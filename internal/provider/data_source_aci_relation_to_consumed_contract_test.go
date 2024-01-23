@@ -14,7 +14,7 @@ import (
 func TestAccDataSourceFvRsConsWithFvAEPg(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "1.0(1e)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -36,7 +36,7 @@ func TestAccDataSourceFvRsConsWithFvAEPg(t *testing.T) {
 func TestAccDataSourceFvRsConsWithFvESg(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "1.0(1e)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{

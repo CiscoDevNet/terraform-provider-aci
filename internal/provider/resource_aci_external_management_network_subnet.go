@@ -330,6 +330,7 @@ func (r *MgmtSubnetResource) Create(ctx context.Context, req resource.CreateRequ
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -444,7 +445,7 @@ func (r *MgmtSubnetResource) ImportState(ctx context.Context, req resource.Impor
 func getAndSetMgmtSubnetAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *MgmtSubnetResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "mgmtSubnet,tagAnnotation,tagTag"), "GET", nil)
 
-	*data = *getEmptyMgmtSubnetResourceModel()
+	readData := getEmptyMgmtSubnetResourceModel()
 
 	if diags.HasError() {
 		return
@@ -455,23 +456,23 @@ func getAndSetMgmtSubnetAttributes(ctx context.Context, diags *diag.Diagnostics,
 			attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
 			for attributeName, attributeValue := range attributes {
 				if attributeName == "dn" {
-					data.Id = basetypes.NewStringValue(attributeValue.(string))
-					setMgmtSubnetParentDn(ctx, attributeValue.(string), data)
+					readData.Id = basetypes.NewStringValue(attributeValue.(string))
+					setMgmtSubnetParentDn(ctx, attributeValue.(string), readData)
 				}
 				if attributeName == "annotation" {
-					data.Annotation = basetypes.NewStringValue(attributeValue.(string))
+					readData.Annotation = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "descr" {
-					data.Descr = basetypes.NewStringValue(attributeValue.(string))
+					readData.Descr = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "ip" {
-					data.Ip = basetypes.NewStringValue(attributeValue.(string))
+					readData.Ip = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "name" {
-					data.Name = basetypes.NewStringValue(attributeValue.(string))
+					readData.Name = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "nameAlias" {
-					data.NameAlias = basetypes.NewStringValue(attributeValue.(string))
+					readData.NameAlias = basetypes.NewStringValue(attributeValue.(string))
 				}
 			}
 			TagAnnotationMgmtSubnetList := make([]TagAnnotationMgmtSubnetResourceModel, 0)
@@ -509,10 +510,10 @@ func getAndSetMgmtSubnetAttributes(ctx context.Context, diags *diag.Diagnostics,
 					}
 				}
 			}
-			tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationMgmtSubnetList)
-			data.TagAnnotation = tagAnnotationSet
-			tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagMgmtSubnetList)
-			data.TagTag = tagTagSet
+			tagAnnotationSet, _ := types.SetValueFrom(ctx, readData.TagAnnotation.ElementType(ctx), TagAnnotationMgmtSubnetList)
+			readData.TagAnnotation = tagAnnotationSet
+			tagTagSet, _ := types.SetValueFrom(ctx, readData.TagTag.ElementType(ctx), TagTagMgmtSubnetList)
+			readData.TagTag = tagTagSet
 		} else {
 			diags.AddError(
 				"too many results in response",
@@ -520,8 +521,9 @@ func getAndSetMgmtSubnetAttributes(ctx context.Context, diags *diag.Diagnostics,
 			)
 		}
 	} else {
-		data.Id = basetypes.NewStringNull()
+		readData.Id = basetypes.NewStringNull()
 	}
+	*data = *readData
 }
 
 func getMgmtSubnetRn(ctx context.Context, data *MgmtSubnetResourceModel) string {
@@ -671,7 +673,6 @@ func getMgmtSubnetCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics
 	if !data.NameAlias.IsNull() && !data.NameAlias.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["nameAlias"] = data.NameAlias.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"mgmtSubnet": payloadMap})
 	if err != nil {
 		diags.AddError(

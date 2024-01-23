@@ -14,7 +14,7 @@ import (
 func TestAccDataSourceFvIdGroupAttrWithFvCrtrn(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "apic", "3.2(10e)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{

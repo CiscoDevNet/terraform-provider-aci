@@ -319,6 +319,7 @@ func (r *MgmtRsOoBConsResource) Create(ctx context.Context, req resource.CreateR
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -433,7 +434,7 @@ func (r *MgmtRsOoBConsResource) ImportState(ctx context.Context, req resource.Im
 func getAndSetMgmtRsOoBConsAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *MgmtRsOoBConsResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "mgmtRsOoBCons,tagAnnotation,tagTag"), "GET", nil)
 
-	*data = *getEmptyMgmtRsOoBConsResourceModel()
+	readData := getEmptyMgmtRsOoBConsResourceModel()
 
 	if diags.HasError() {
 		return
@@ -444,17 +445,17 @@ func getAndSetMgmtRsOoBConsAttributes(ctx context.Context, diags *diag.Diagnosti
 			attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
 			for attributeName, attributeValue := range attributes {
 				if attributeName == "dn" {
-					data.Id = basetypes.NewStringValue(attributeValue.(string))
-					setMgmtRsOoBConsParentDn(ctx, attributeValue.(string), data)
+					readData.Id = basetypes.NewStringValue(attributeValue.(string))
+					setMgmtRsOoBConsParentDn(ctx, attributeValue.(string), readData)
 				}
 				if attributeName == "annotation" {
-					data.Annotation = basetypes.NewStringValue(attributeValue.(string))
+					readData.Annotation = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "prio" {
-					data.Prio = customTypes.NewMgmtRsOoBConsPrioStringValue(attributeValue.(string))
+					readData.Prio = customTypes.NewMgmtRsOoBConsPrioStringValue(attributeValue.(string))
 				}
 				if attributeName == "tnVzOOBBrCPName" {
-					data.TnVzOOBBrCPName = basetypes.NewStringValue(attributeValue.(string))
+					readData.TnVzOOBBrCPName = basetypes.NewStringValue(attributeValue.(string))
 				}
 			}
 			TagAnnotationMgmtRsOoBConsList := make([]TagAnnotationMgmtRsOoBConsResourceModel, 0)
@@ -492,10 +493,10 @@ func getAndSetMgmtRsOoBConsAttributes(ctx context.Context, diags *diag.Diagnosti
 					}
 				}
 			}
-			tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationMgmtRsOoBConsList)
-			data.TagAnnotation = tagAnnotationSet
-			tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagMgmtRsOoBConsList)
-			data.TagTag = tagTagSet
+			tagAnnotationSet, _ := types.SetValueFrom(ctx, readData.TagAnnotation.ElementType(ctx), TagAnnotationMgmtRsOoBConsList)
+			readData.TagAnnotation = tagAnnotationSet
+			tagTagSet, _ := types.SetValueFrom(ctx, readData.TagTag.ElementType(ctx), TagTagMgmtRsOoBConsList)
+			readData.TagTag = tagTagSet
 		} else {
 			diags.AddError(
 				"too many results in response",
@@ -503,8 +504,9 @@ func getAndSetMgmtRsOoBConsAttributes(ctx context.Context, diags *diag.Diagnosti
 			)
 		}
 	} else {
-		data.Id = basetypes.NewStringNull()
+		readData.Id = basetypes.NewStringNull()
 	}
+	*data = *readData
 }
 
 func getMgmtRsOoBConsRn(ctx context.Context, data *MgmtRsOoBConsResourceModel) string {
@@ -648,7 +650,6 @@ func getMgmtRsOoBConsCreateJsonPayload(ctx context.Context, diags *diag.Diagnost
 	if !data.TnVzOOBBrCPName.IsNull() && !data.TnVzOOBBrCPName.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["tnVzOOBBrCPName"] = data.TnVzOOBBrCPName.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"mgmtRsOoBCons": payloadMap})
 	if err != nil {
 		diags.AddError(

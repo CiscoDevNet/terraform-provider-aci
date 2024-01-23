@@ -502,6 +502,7 @@ func (r *FvFBRGroupResource) Create(ctx context.Context, req resource.CreateRequ
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -622,7 +623,7 @@ func (r *FvFBRGroupResource) ImportState(ctx context.Context, req resource.Impor
 func getAndSetFvFBRGroupAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvFBRGroupResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "fvFBRGroup,fvFBRMember,fvFBRoute,tagAnnotation,tagTag"), "GET", nil)
 
-	*data = *getEmptyFvFBRGroupResourceModel()
+	readData := getEmptyFvFBRGroupResourceModel()
 
 	if diags.HasError() {
 		return
@@ -633,20 +634,20 @@ func getAndSetFvFBRGroupAttributes(ctx context.Context, diags *diag.Diagnostics,
 			attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
 			for attributeName, attributeValue := range attributes {
 				if attributeName == "dn" {
-					data.Id = basetypes.NewStringValue(attributeValue.(string))
-					setFvFBRGroupParentDn(ctx, attributeValue.(string), data)
+					readData.Id = basetypes.NewStringValue(attributeValue.(string))
+					setFvFBRGroupParentDn(ctx, attributeValue.(string), readData)
 				}
 				if attributeName == "annotation" {
-					data.Annotation = basetypes.NewStringValue(attributeValue.(string))
+					readData.Annotation = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "descr" {
-					data.Descr = basetypes.NewStringValue(attributeValue.(string))
+					readData.Descr = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "name" {
-					data.Name = basetypes.NewStringValue(attributeValue.(string))
+					readData.Name = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "nameAlias" {
-					data.NameAlias = basetypes.NewStringValue(attributeValue.(string))
+					readData.NameAlias = basetypes.NewStringValue(attributeValue.(string))
 				}
 			}
 			FvFBRMemberFvFBRGroupList := make([]FvFBRMemberFvFBRGroupResourceModel, 0)
@@ -728,19 +729,19 @@ func getAndSetFvFBRGroupAttributes(ctx context.Context, diags *diag.Diagnostics,
 					}
 				}
 			}
-			fvFBRMemberSet, _ := types.SetValueFrom(ctx, data.FvFBRMember.ElementType(ctx), FvFBRMemberFvFBRGroupList)
-			data.FvFBRMember = fvFBRMemberSet
+			fvFBRMemberSet, _ := types.SetValueFrom(ctx, readData.FvFBRMember.ElementType(ctx), FvFBRMemberFvFBRGroupList)
+			readData.FvFBRMember = fvFBRMemberSet
 			if len(FvFBRouteFvFBRGroupList) == 1 {
 				fvFBRouteObject, _ := types.ObjectValueFrom(ctx, FvFBRouteFvFBRGroupType, FvFBRouteFvFBRGroupList[0])
-				data.FvFBRoute = fvFBRouteObject
+				readData.FvFBRoute = fvFBRouteObject
 			} else {
 				fvFBRouteObject, _ := types.ObjectValueFrom(ctx, FvFBRouteFvFBRGroupType, getEmptyFvFBRouteFvFBRGroupResourceModel())
-				data.FvFBRoute = fvFBRouteObject
+				readData.FvFBRoute = fvFBRouteObject
 			}
-			tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationFvFBRGroupList)
-			data.TagAnnotation = tagAnnotationSet
-			tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagFvFBRGroupList)
-			data.TagTag = tagTagSet
+			tagAnnotationSet, _ := types.SetValueFrom(ctx, readData.TagAnnotation.ElementType(ctx), TagAnnotationFvFBRGroupList)
+			readData.TagAnnotation = tagAnnotationSet
+			tagTagSet, _ := types.SetValueFrom(ctx, readData.TagTag.ElementType(ctx), TagTagFvFBRGroupList)
+			readData.TagTag = tagTagSet
 		} else {
 			diags.AddError(
 				"too many results in response",
@@ -748,8 +749,9 @@ func getAndSetFvFBRGroupAttributes(ctx context.Context, diags *diag.Diagnostics,
 			)
 		}
 	} else {
-		data.Id = basetypes.NewStringNull()
+		readData.Id = basetypes.NewStringNull()
 	}
+	*data = *readData
 }
 
 func getFvFBRGroupRn(ctx context.Context, data *FvFBRGroupResourceModel) string {
@@ -993,7 +995,6 @@ func getFvFBRGroupCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics
 	if !data.NameAlias.IsNull() && !data.NameAlias.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["nameAlias"] = data.NameAlias.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"fvFBRGroup": payloadMap})
 	if err != nil {
 		diags.AddError(

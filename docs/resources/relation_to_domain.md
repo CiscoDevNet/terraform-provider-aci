@@ -73,7 +73,6 @@ resource "aci_relation_to_domain" "full_example_application_epg" {
   switching_mode                = "AVE"
   target_dn                     = "uni/vmmp-VMware/dom-domain_2"
   untagged                      = "no"
-  vnet_only                     = "no"
   annotations = [
     {
       key   = "key_0"
@@ -155,9 +154,6 @@ All examples for the Relation To Domain resource can be found in the [examples](
   - Default: `native`
   - Valid Values: `AVE`, `native`.
 * `untagged` (untagged) - (string) The untagged status of the Relation To Domain object.
-  - Default: `no`
-  - Valid Values: `no`, `yes`.
-* `vnet_only` (vnetOnly) - (string) The VNET only status of the Relation To Domain object.
   - Default: `no`
   - Valid Values: `no`, `yes`.
 

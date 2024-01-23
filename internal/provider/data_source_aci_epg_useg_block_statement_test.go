@@ -14,11 +14,11 @@ import (
 func TestAccDataSourceFvCrtrnWithFvAEPg(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "apic", "1.1(1j)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config:             testConfigFvCrtrnDataSourceDependencyWithFvAEPg,
+				Config:             testConfigFvCrtrnDataSourceDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("data.aci_epg_useg_block_statement.test", "annotation", "orchestrator:terraform"),
@@ -28,12 +28,13 @@ func TestAccDataSourceFvCrtrnWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("data.aci_epg_useg_block_statement.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("data.aci_epg_useg_block_statement.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("data.aci_epg_useg_block_statement.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("data.aci_epg_useg_block_statement.test", "precedence", "0"),
-					resource.TestCheckResourceAttr("data.aci_epg_useg_block_statement.test", "scope", "scope-bd"),
+					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)", ">",
+						resource.TestCheckResourceAttr("data.aci_epg_useg_block_statement.test", "precedence", "0"),
+						resource.TestCheckResourceAttr("data.aci_epg_useg_block_statement.test", "scope", "scope-bd")),
 				),
 			},
 			{
-				Config:      testConfigFvCrtrnNotExistingFvAEPg,
+				Config:      testConfigFvCrtrnNotExistingFvAEPg + testConfigDataSourceSystem,
 				ExpectError: regexp.MustCompile("Failed to read aci_epg_useg_block_statement data source"),
 			},
 		},

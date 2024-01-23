@@ -2,6 +2,7 @@
 # In order to regenerate this file execute `go generate` from the repository root.
 # More details can be found in the [README](https://github.com/CiscoDevNet/terraform-provider-aci/blob/master/README.md).
 
+
 default:
   annotation: "orchestrator:terraform"
 
@@ -39,6 +40,7 @@ parents:
     class_in_parent: false
     target_classes:
         - "l3extInstP"
+    test_type: both
 targets:
   - class_name: "l3extInstP"
     target_dn: "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile_1"
@@ -52,3 +54,4 @@ targets:
     static: true
     properties:
         name: "inst_profile_1"
+class_version: 5.0(1k)-

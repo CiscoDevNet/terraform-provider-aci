@@ -14,7 +14,7 @@ import (
 func TestAccResourceMplsNodeSidPWithL3extLoopBackIfP(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "apic", "5.0(1k)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -41,7 +41,7 @@ func TestAccResourceMplsNodeSidPWithL3extLoopBackIfP(t *testing.T) {
 
 	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "apic", "5.0(1k)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -54,7 +54,7 @@ func TestAccResourceMplsNodeSidPWithL3extLoopBackIfP(t *testing.T) {
 
 	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "apic", "5.0(1k)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -80,7 +80,7 @@ func TestAccResourceMplsNodeSidPWithL3extLoopBackIfP(t *testing.T) {
 	})
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "apic", "5.0(1k)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -208,6 +208,7 @@ func TestAccResourceMplsNodeSidPWithL3extLoopBackIfP(t *testing.T) {
 				),
 			},
 		},
+		CheckDestroy: testCheckResourceDestroy,
 	})
 }
 

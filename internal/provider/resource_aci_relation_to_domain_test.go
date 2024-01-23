@@ -14,24 +14,20 @@ import (
 func TestAccResourceFvRsDomAttWithFvAEPg(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "apic", "1.0(1e)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigFvRsDomAttMinDependencyWithFvAEPgAllowExisting,
+				Config:             testConfigFvRsDomAttMinDependencyWithFvAEPgAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test", "target_dn", "uni/vmmp-VMware/dom-domain_1"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test_2", "target_dn", "uni/vmmp-VMware/dom-domain_1"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test_2", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test", "binding_type", "none"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test_2", "binding_type", "none"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test", "class_preference", "encap"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test_2", "class_preference", "encap"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test", "custom_epg_name", ""),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test_2", "custom_epg_name", ""),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test", "delimiter", ""),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test_2", "delimiter", ""),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test", "deployment_immediacy", "lazy"),
@@ -50,10 +46,6 @@ func TestAccResourceFvRsDomAttWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test_2", "lag_policy_name", ""),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test", "netflow_direction", "both"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test_2", "netflow_direction", "both"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test", "number_of_ports", "0"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test_2", "number_of_ports", "0"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test", "port_allocation", "none"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test_2", "port_allocation", "none"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test", "primary_encapsulation", "unknown"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test_2", "primary_encapsulation", "unknown"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test", "primary_encapsulation_inner", "unknown"),
@@ -66,8 +58,16 @@ func TestAccResourceFvRsDomAttWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test_2", "switching_mode", "native"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test", "untagged", "no"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test_2", "untagged", "no"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test", "vnet_only", "no"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test_2", "vnet_only", "no"),
+					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)", ">",
+						resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test", "binding_type", "none"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test_2", "binding_type", "none"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test", "number_of_ports", "0"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test_2", "number_of_ports", "0"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test", "port_allocation", "none"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test_2", "port_allocation", "none")),
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(3j)", ">",
+						resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test", "custom_epg_name", ""),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test_2", "custom_epg_name", "")),
 				),
 			},
 		},
@@ -75,12 +75,12 @@ func TestAccResourceFvRsDomAttWithFvAEPg(t *testing.T) {
 
 	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "apic", "1.0(1e)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:      testConfigFvRsDomAttMinDependencyWithFvAEPgAllowExisting,
+				Config:      testConfigFvRsDomAttMinDependencyWithFvAEPgAllowExisting + testConfigDataSourceSystem,
 				ExpectError: regexp.MustCompile("Object Already Exists"),
 			},
 		},
@@ -88,24 +88,20 @@ func TestAccResourceFvRsDomAttWithFvAEPg(t *testing.T) {
 
 	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "apic", "1.0(1e)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigFvRsDomAttMinDependencyWithFvAEPgAllowExisting,
+				Config:             testConfigFvRsDomAttMinDependencyWithFvAEPgAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test", "target_dn", "uni/vmmp-VMware/dom-domain_1"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test_2", "target_dn", "uni/vmmp-VMware/dom-domain_1"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test_2", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test", "binding_type", "none"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test_2", "binding_type", "none"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test", "class_preference", "encap"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test_2", "class_preference", "encap"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test", "custom_epg_name", ""),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test_2", "custom_epg_name", ""),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test", "delimiter", ""),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test_2", "delimiter", ""),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test", "deployment_immediacy", "lazy"),
@@ -124,10 +120,6 @@ func TestAccResourceFvRsDomAttWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test_2", "lag_policy_name", ""),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test", "netflow_direction", "both"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test_2", "netflow_direction", "both"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test", "number_of_ports", "0"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test_2", "number_of_ports", "0"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test", "port_allocation", "none"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test_2", "port_allocation", "none"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test", "primary_encapsulation", "unknown"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test_2", "primary_encapsulation", "unknown"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test", "primary_encapsulation_inner", "unknown"),
@@ -140,27 +132,33 @@ func TestAccResourceFvRsDomAttWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test_2", "switching_mode", "native"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test", "untagged", "no"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test_2", "untagged", "no"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test", "vnet_only", "no"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test_2", "vnet_only", "no"),
+					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)", ">",
+						resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test", "binding_type", "none"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test_2", "binding_type", "none"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test", "number_of_ports", "0"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test_2", "number_of_ports", "0"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test", "port_allocation", "none"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test_2", "port_allocation", "none")),
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(3j)", ">",
+						resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test", "custom_epg_name", ""),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test_2", "custom_epg_name", "")),
 				),
 			},
 		},
 	})
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "apic", "1.0(1e)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigFvRsDomAttMinDependencyWithFvAEPg,
+				Config:             testConfigFvRsDomAttMinDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "target_dn", "uni/vmmp-VMware/dom-domain_1"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "binding_type", "none"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "class_preference", "encap"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "custom_epg_name", ""),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "delimiter", ""),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "deployment_immediacy", "lazy"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "enable_netflow", "disabled"),
@@ -170,27 +168,28 @@ func TestAccResourceFvRsDomAttWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "epg_cos_pref", "disabled"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "lag_policy_name", ""),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "netflow_direction", "both"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "number_of_ports", "0"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "port_allocation", "none"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "primary_encapsulation", "unknown"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "primary_encapsulation_inner", "unknown"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "resolution_immediacy", "lazy"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "secondary_encapsulation_inner", "unknown"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "switching_mode", "native"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "untagged", "no"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "vnet_only", "no"),
+					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)", ">",
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "binding_type", "none"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "number_of_ports", "0"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "port_allocation", "none")),
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(3j)", ">",
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "custom_epg_name", "")),
 				),
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config:             testConfigFvRsDomAttAllDependencyWithFvAEPg,
+				Config:             testConfigFvRsDomAttAllDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "target_dn", "uni/vmmp-VMware/dom-domain_1"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "annotation", "annotation"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "binding_type", "dynamicBinding"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "class_preference", "encap"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "custom_epg_name", "custom_epg_name_1"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "delimiter", "@"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "deployment_immediacy", "immediate"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "enable_netflow", "disabled"),
@@ -200,20 +199,23 @@ func TestAccResourceFvRsDomAttWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "epg_cos_pref", "disabled"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "lag_policy_name", "lag_policy_name_1"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "netflow_direction", "both"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "number_of_ports", "1"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "port_allocation", "elastic"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "primary_encapsulation", "vlan-200"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "primary_encapsulation_inner", "vlan-300"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "resolution_immediacy", "immediate"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "secondary_encapsulation_inner", "vlan-400"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "switching_mode", "AVE"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "untagged", "no"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "vnet_only", "no"),
+					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)", ">",
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "binding_type", "dynamicBinding"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "number_of_ports", "1"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "port_allocation", "elastic")),
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(3j)", ">",
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "custom_epg_name", "custom_epg_name_1")),
 				),
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config:             testConfigFvRsDomAttMinDependencyWithFvAEPg,
+				Config:             testConfigFvRsDomAttMinDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "target_dn", "uni/vmmp-VMware/dom-domain_1"),
@@ -221,14 +223,12 @@ func TestAccResourceFvRsDomAttWithFvAEPg(t *testing.T) {
 			},
 			// Update with empty strings config or default value
 			{
-				Config:             testConfigFvRsDomAttResetDependencyWithFvAEPg,
+				Config:             testConfigFvRsDomAttResetDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "target_dn", "uni/vmmp-VMware/dom-domain_1"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "binding_type", "none"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "class_preference", "encap"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "custom_epg_name", ""),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "delimiter", ""),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "deployment_immediacy", "lazy"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "enable_netflow", "disabled"),
@@ -238,15 +238,18 @@ func TestAccResourceFvRsDomAttWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "epg_cos_pref", "disabled"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "lag_policy_name", ""),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "netflow_direction", "both"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "number_of_ports", "0"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "port_allocation", "none"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "primary_encapsulation", "unknown"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "primary_encapsulation_inner", "unknown"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "resolution_immediacy", "lazy"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "secondary_encapsulation_inner", "unknown"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "switching_mode", "native"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "untagged", "no"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "vnet_only", "no"),
+					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)", ">",
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "binding_type", "none"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "number_of_ports", "0"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "port_allocation", "none")),
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(3j)", ">",
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "custom_epg_name", "")),
 				),
 			},
 			// Import testing
@@ -257,14 +260,12 @@ func TestAccResourceFvRsDomAttWithFvAEPg(t *testing.T) {
 			},
 			// Update with children
 			{
-				Config:             testConfigFvRsDomAttChildrenDependencyWithFvAEPg,
+				Config:             testConfigFvRsDomAttChildrenDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "target_dn", "uni/vmmp-VMware/dom-domain_1"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "binding_type", "none"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "class_preference", "encap"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "custom_epg_name", ""),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "delimiter", ""),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "deployment_immediacy", "lazy"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "enable_netflow", "disabled"),
@@ -274,15 +275,18 @@ func TestAccResourceFvRsDomAttWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "epg_cos_pref", "disabled"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "lag_policy_name", ""),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "netflow_direction", "both"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "number_of_ports", "0"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "port_allocation", "none"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "primary_encapsulation", "unknown"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "primary_encapsulation_inner", "unknown"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "resolution_immediacy", "lazy"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "secondary_encapsulation_inner", "unknown"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "switching_mode", "native"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "untagged", "no"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "vnet_only", "no"),
+					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)", ">",
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "binding_type", "none"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "number_of_ports", "0"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "port_allocation", "none")),
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(3j)", ">",
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "custom_epg_name", "")),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "annotations.1.key", "key_1"),
@@ -306,7 +310,7 @@ func TestAccResourceFvRsDomAttWithFvAEPg(t *testing.T) {
 			},
 			// Update with children removed from config
 			{
-				Config:             testConfigFvRsDomAttChildrenRemoveFromConfigDependencyWithFvAEPg,
+				Config:             testConfigFvRsDomAttChildrenRemoveFromConfigDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "annotations.0.key", "key_0"),
@@ -323,7 +327,7 @@ func TestAccResourceFvRsDomAttWithFvAEPg(t *testing.T) {
 			},
 			// Update with children first child removed
 			{
-				Config:             testConfigFvRsDomAttChildrenRemoveOneDependencyWithFvAEPg,
+				Config:             testConfigFvRsDomAttChildrenRemoveOneDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "annotations.0.key", "key_1"),
@@ -336,7 +340,7 @@ func TestAccResourceFvRsDomAttWithFvAEPg(t *testing.T) {
 			},
 			// Update with all children removed
 			{
-				Config:             testConfigFvRsDomAttChildrenRemoveAllDependencyWithFvAEPg,
+				Config:             testConfigFvRsDomAttChildrenRemoveAllDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "annotations.#", "0"),
@@ -344,6 +348,7 @@ func TestAccResourceFvRsDomAttWithFvAEPg(t *testing.T) {
 				),
 			},
 		},
+		CheckDestroy: testCheckResourceDestroy,
 	})
 }
 
@@ -374,9 +379,7 @@ resource "aci_relation_to_domain" "test" {
   parent_dn = aci_application_epg.test.id
   target_dn = "uni/vmmp-VMware/dom-domain_1"
   annotation = "annotation"
-  binding_type = "dynamicBinding"
   class_preference = "encap"
-  custom_epg_name = "custom_epg_name_1"
   delimiter = "@"
   deployment_immediacy = "immediate"
   enable_netflow = "disabled"
@@ -386,15 +389,16 @@ resource "aci_relation_to_domain" "test" {
   epg_cos_pref = "disabled"
   lag_policy_name = "lag_policy_name_1"
   netflow_direction = "both"
-  number_of_ports = "1"
-  port_allocation = "elastic"
   primary_encapsulation = "vlan-200"
   primary_encapsulation_inner = "vlan-300"
   resolution_immediacy = "immediate"
   secondary_encapsulation_inner = "vlan-400"
   switching_mode = "AVE"
   untagged = "no"
-  vnet_only = "no"
+  binding_type = provider::aci::compare_versions(data.aci_system.version.version,">=","4.0(1h)") ? "dynamicBinding" : null
+  number_of_ports = provider::aci::compare_versions(data.aci_system.version.version,">=","4.0(1h)") ? "1" : null
+  port_allocation = provider::aci::compare_versions(data.aci_system.version.version,">=","4.0(1h)") ? "elastic" : null
+  custom_epg_name = provider::aci::compare_versions(data.aci_system.version.version,">=","4.2(3j)") ? "custom_epg_name_1" : null
 }
 `
 
@@ -403,9 +407,7 @@ resource "aci_relation_to_domain" "test" {
   parent_dn = aci_application_epg.test.id
   target_dn = "uni/vmmp-VMware/dom-domain_1"
   annotation = "orchestrator:terraform"
-  binding_type = "none"
   class_preference = "encap"
-  custom_epg_name = ""
   delimiter = ""
   deployment_immediacy = "lazy"
   enable_netflow = "disabled"
@@ -415,15 +417,16 @@ resource "aci_relation_to_domain" "test" {
   epg_cos_pref = "disabled"
   lag_policy_name = ""
   netflow_direction = "both"
-  number_of_ports = "0"
-  port_allocation = "none"
   primary_encapsulation = "unknown"
   primary_encapsulation_inner = "unknown"
   resolution_immediacy = "lazy"
   secondary_encapsulation_inner = "unknown"
   switching_mode = "native"
   untagged = "no"
-  vnet_only = "no"
+  binding_type = provider::aci::compare_versions(data.aci_system.version.version,">=","4.0(1h)") ? "none" : null
+  number_of_ports = provider::aci::compare_versions(data.aci_system.version.version,">=","4.0(1h)") ? "0" : null
+  port_allocation = provider::aci::compare_versions(data.aci_system.version.version,">=","4.0(1h)") ? "none" : null
+  custom_epg_name = provider::aci::compare_versions(data.aci_system.version.version,">=","4.2(3j)") ? "" : null
 }
 `
 const testConfigFvRsDomAttChildrenDependencyWithFvAEPg = testDependencyConfigFvRsDomAtt + testConfigFvAEPgMinDependencyWithFvAp + `

@@ -180,6 +180,7 @@ func (r *TagAnnotationResource) Create(ctx context.Context, req resource.CreateR
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -286,7 +287,7 @@ func (r *TagAnnotationResource) ImportState(ctx context.Context, req resource.Im
 func getAndSetTagAnnotationAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *TagAnnotationResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "GET", nil)
 
-	*data = *getEmptyTagAnnotationResourceModel()
+	readData := getEmptyTagAnnotationResourceModel()
 
 	if diags.HasError() {
 		return
@@ -297,14 +298,14 @@ func getAndSetTagAnnotationAttributes(ctx context.Context, diags *diag.Diagnosti
 			attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
 			for attributeName, attributeValue := range attributes {
 				if attributeName == "dn" {
-					data.Id = basetypes.NewStringValue(attributeValue.(string))
-					setTagAnnotationParentDn(ctx, attributeValue.(string), data)
+					readData.Id = basetypes.NewStringValue(attributeValue.(string))
+					setTagAnnotationParentDn(ctx, attributeValue.(string), readData)
 				}
 				if attributeName == "key" {
-					data.Key = basetypes.NewStringValue(attributeValue.(string))
+					readData.Key = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "value" {
-					data.Value = basetypes.NewStringValue(attributeValue.(string))
+					readData.Value = basetypes.NewStringValue(attributeValue.(string))
 				}
 			}
 		} else {
@@ -314,8 +315,9 @@ func getAndSetTagAnnotationAttributes(ctx context.Context, diags *diag.Diagnosti
 			)
 		}
 	} else {
-		data.Id = basetypes.NewStringNull()
+		readData.Id = basetypes.NewStringNull()
 	}
+	*data = *readData
 }
 
 func getTagAnnotationRn(ctx context.Context, data *TagAnnotationResourceModel) string {
@@ -362,7 +364,6 @@ func getTagAnnotationCreateJsonPayload(ctx context.Context, diags *diag.Diagnost
 	if !data.Value.IsNull() && !data.Value.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["value"] = data.Value.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"tagAnnotation": payloadMap})
 	if err != nil {
 		diags.AddError(

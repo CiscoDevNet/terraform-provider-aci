@@ -297,6 +297,7 @@ func (r *FvRsSecInheritedResource) Create(ctx context.Context, req resource.Crea
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -411,7 +412,7 @@ func (r *FvRsSecInheritedResource) ImportState(ctx context.Context, req resource
 func getAndSetFvRsSecInheritedAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvRsSecInheritedResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "fvRsSecInherited,tagAnnotation,tagTag"), "GET", nil)
 
-	*data = *getEmptyFvRsSecInheritedResourceModel()
+	readData := getEmptyFvRsSecInheritedResourceModel()
 
 	if diags.HasError() {
 		return
@@ -422,14 +423,14 @@ func getAndSetFvRsSecInheritedAttributes(ctx context.Context, diags *diag.Diagno
 			attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
 			for attributeName, attributeValue := range attributes {
 				if attributeName == "dn" {
-					data.Id = basetypes.NewStringValue(attributeValue.(string))
-					setFvRsSecInheritedParentDn(ctx, attributeValue.(string), data)
+					readData.Id = basetypes.NewStringValue(attributeValue.(string))
+					setFvRsSecInheritedParentDn(ctx, attributeValue.(string), readData)
 				}
 				if attributeName == "annotation" {
-					data.Annotation = basetypes.NewStringValue(attributeValue.(string))
+					readData.Annotation = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "tDn" {
-					data.TDn = basetypes.NewStringValue(attributeValue.(string))
+					readData.TDn = basetypes.NewStringValue(attributeValue.(string))
 				}
 			}
 			TagAnnotationFvRsSecInheritedList := make([]TagAnnotationFvRsSecInheritedResourceModel, 0)
@@ -467,10 +468,10 @@ func getAndSetFvRsSecInheritedAttributes(ctx context.Context, diags *diag.Diagno
 					}
 				}
 			}
-			tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationFvRsSecInheritedList)
-			data.TagAnnotation = tagAnnotationSet
-			tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagFvRsSecInheritedList)
-			data.TagTag = tagTagSet
+			tagAnnotationSet, _ := types.SetValueFrom(ctx, readData.TagAnnotation.ElementType(ctx), TagAnnotationFvRsSecInheritedList)
+			readData.TagAnnotation = tagAnnotationSet
+			tagTagSet, _ := types.SetValueFrom(ctx, readData.TagTag.ElementType(ctx), TagTagFvRsSecInheritedList)
+			readData.TagTag = tagTagSet
 		} else {
 			diags.AddError(
 				"too many results in response",
@@ -478,8 +479,9 @@ func getAndSetFvRsSecInheritedAttributes(ctx context.Context, diags *diag.Diagno
 			)
 		}
 	} else {
-		data.Id = basetypes.NewStringNull()
+		readData.Id = basetypes.NewStringNull()
 	}
+	*data = *readData
 }
 
 func getFvRsSecInheritedRn(ctx context.Context, data *FvRsSecInheritedResourceModel) string {
@@ -620,7 +622,6 @@ func getFvRsSecInheritedCreateJsonPayload(ctx context.Context, diags *diag.Diagn
 	if !data.TDn.IsNull() && !data.TDn.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["tDn"] = data.TDn.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"fvRsSecInherited": payloadMap})
 	if err != nil {
 		diags.AddError(

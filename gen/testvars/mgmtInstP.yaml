@@ -2,6 +2,7 @@
 # In order to regenerate this file execute `go generate` from the repository root.
 # More details can be found in the [README](https://github.com/CiscoDevNet/terraform-provider-aci/blob/master/README.md).
 
+
 default:
   annotation: "orchestrator:terraform"
   description: ""
@@ -51,3 +52,5 @@ children:
     - key: "key_1"
       value: "test_value"
       
+test_type: both
+class_version: 1.0(1e)-

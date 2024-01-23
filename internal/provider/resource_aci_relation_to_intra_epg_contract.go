@@ -297,6 +297,7 @@ func (r *FvRsIntraEpgResource) Create(ctx context.Context, req resource.CreateRe
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -411,7 +412,7 @@ func (r *FvRsIntraEpgResource) ImportState(ctx context.Context, req resource.Imp
 func getAndSetFvRsIntraEpgAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvRsIntraEpgResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "fvRsIntraEpg,tagAnnotation,tagTag"), "GET", nil)
 
-	*data = *getEmptyFvRsIntraEpgResourceModel()
+	readData := getEmptyFvRsIntraEpgResourceModel()
 
 	if diags.HasError() {
 		return
@@ -422,14 +423,14 @@ func getAndSetFvRsIntraEpgAttributes(ctx context.Context, diags *diag.Diagnostic
 			attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
 			for attributeName, attributeValue := range attributes {
 				if attributeName == "dn" {
-					data.Id = basetypes.NewStringValue(attributeValue.(string))
-					setFvRsIntraEpgParentDn(ctx, attributeValue.(string), data)
+					readData.Id = basetypes.NewStringValue(attributeValue.(string))
+					setFvRsIntraEpgParentDn(ctx, attributeValue.(string), readData)
 				}
 				if attributeName == "annotation" {
-					data.Annotation = basetypes.NewStringValue(attributeValue.(string))
+					readData.Annotation = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "tnVzBrCPName" {
-					data.TnVzBrCPName = basetypes.NewStringValue(attributeValue.(string))
+					readData.TnVzBrCPName = basetypes.NewStringValue(attributeValue.(string))
 				}
 			}
 			TagAnnotationFvRsIntraEpgList := make([]TagAnnotationFvRsIntraEpgResourceModel, 0)
@@ -467,10 +468,10 @@ func getAndSetFvRsIntraEpgAttributes(ctx context.Context, diags *diag.Diagnostic
 					}
 				}
 			}
-			tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationFvRsIntraEpgList)
-			data.TagAnnotation = tagAnnotationSet
-			tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagFvRsIntraEpgList)
-			data.TagTag = tagTagSet
+			tagAnnotationSet, _ := types.SetValueFrom(ctx, readData.TagAnnotation.ElementType(ctx), TagAnnotationFvRsIntraEpgList)
+			readData.TagAnnotation = tagAnnotationSet
+			tagTagSet, _ := types.SetValueFrom(ctx, readData.TagTag.ElementType(ctx), TagTagFvRsIntraEpgList)
+			readData.TagTag = tagTagSet
 		} else {
 			diags.AddError(
 				"too many results in response",
@@ -478,8 +479,9 @@ func getAndSetFvRsIntraEpgAttributes(ctx context.Context, diags *diag.Diagnostic
 			)
 		}
 	} else {
-		data.Id = basetypes.NewStringNull()
+		readData.Id = basetypes.NewStringNull()
 	}
+	*data = *readData
 }
 
 func getFvRsIntraEpgRn(ctx context.Context, data *FvRsIntraEpgResourceModel) string {
@@ -620,7 +622,6 @@ func getFvRsIntraEpgCreateJsonPayload(ctx context.Context, diags *diag.Diagnosti
 	if !data.TnVzBrCPName.IsNull() && !data.TnVzBrCPName.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["tnVzBrCPName"] = data.TnVzBrCPName.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"fvRsIntraEpg": payloadMap})
 	if err != nil {
 		diags.AddError(

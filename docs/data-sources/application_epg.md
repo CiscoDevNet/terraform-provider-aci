@@ -127,7 +127,6 @@ data "aci_application_epg" "example_application_profile" {
   * `switching_mode` (switchingMode) - (string) The switching mode of the Relation To Domain object.
   * `target_dn` (tDn) - (string) The distinguished name of the target Domain object.
   * `untagged` (untagged) - (string) The untagged status of the Relation To Domain object.
-  * `vnet_only` (vnetOnly) - (string) The VNET only status of the Relation To Domain object.
 
 * `relation_to_data_plane_policing_policy` - (map) A map of Relation To Data Plane Policing Policy (ACI object [fvRsDppPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsDppPol/overview)) pointing to Data Plane Policing Policy (ACI Object [qosDppPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/qosDppPol/overview)). This attribute is supported in ACI versions: 3.0(1k) and later.
   * `annotation` (annotation) - (string) The annotation of the Relation To Data Plane Policing Policy object.

@@ -2,6 +2,7 @@
 # In order to regenerate this file execute `go generate` from the repository root.
 # More details can be found in the [README](https://github.com/CiscoDevNet/terraform-provider-aci/blob/master/README.md).
 
+
 default:
   annotation: "orchestrator:terraform"
   description: ""
@@ -50,6 +51,7 @@ parents:
     class_in_parent: false
     target_classes:
         - "fabricPathEp"
+    test_type: apic
 targets:
   - class_name: "fabricPathEp"
     target_dn: "topology/pod-1/paths-101/pathep-[eth1/1]"
@@ -71,3 +73,4 @@ targets:
     parent_dn_key: "parent_dn"
     static: true
     properties:
+class_version: 1.0(1e)-

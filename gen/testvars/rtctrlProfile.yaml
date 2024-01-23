@@ -2,14 +2,17 @@
 # In order to regenerate this file execute `go generate` from the repository root.
 # More details can be found in the [README](https://github.com/CiscoDevNet/terraform-provider-aci/blob/master/README.md).
 
+
 default:
   annotation: "orchestrator:terraform"
-  route_map_continue: "no"
   description: ""
   name_alias: ""
   owner_key: ""
   owner_tag: ""
   route_control_profile_type: "combinable"
+  version_mismatch:
+    4.2(6d)-4.2(7w),5.1(3e):
+      route_map_continue: "no"
 
 datasource_non_existing:
   name: "non_existing_name"
@@ -22,12 +25,14 @@ resource_required:
 
 all:
   annotation: "annotation"
-  route_map_continue: "no"
   description: "description_1"
   name_alias: "name_alias_1"
   owner_key: "owner_key_1"
   owner_tag: "owner_tag_1"
   route_control_profile_type: "combinable"
+  version_mismatch:
+    4.2(6d)-4.2(7w),5.1(3e):
+      route_map_continue: "no"
 
 children:
   annotations:
@@ -49,7 +54,12 @@ parents:
     parent_dependency: ""
     parent_dn: "aci_tenant.test.id"
     class_in_parent: false
+    test_type: both
   - class_name: "l3extOut"
     parent_dependency: ""
     parent_dn: "aci_l3_outside.test.id"
     class_in_parent: false
+    test_type: both
+class_version: 1.0(1e)-
+
+version_mismatch: true

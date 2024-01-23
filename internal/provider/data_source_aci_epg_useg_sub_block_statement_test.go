@@ -14,7 +14,7 @@ import (
 func TestAccDataSourceFvSCrtrnWithFvCrtrn(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "apic", "1.2(1i)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -40,7 +40,7 @@ func TestAccDataSourceFvSCrtrnWithFvCrtrn(t *testing.T) {
 func TestAccDataSourceFvSCrtrnWithFvSCrtrn(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "apic", "1.2(1i)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{

@@ -90,7 +90,7 @@ jobs:
           go-version-file: 'go.mod'
       - uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: '1.7.*'
+          terraform_version: '1.9.*'
           terraform_wrapper: false
       - name: Terraform Acceptance Test (APIC ${{ matrix.apic_host.name }})
         run: go test github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider -v -race -timeout 300m -coverprofile=coverage.out -covermode=atomic

@@ -403,6 +403,7 @@ func (r *FvVmAttrResource) Create(ctx context.Context, req resource.CreateReques
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -517,7 +518,7 @@ func (r *FvVmAttrResource) ImportState(ctx context.Context, req resource.ImportS
 func getAndSetFvVmAttrAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvVmAttrResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "fvVmAttr,tagAnnotation,tagTag"), "GET", nil)
 
-	*data = *getEmptyFvVmAttrResourceModel()
+	readData := getEmptyFvVmAttrResourceModel()
 
 	if diags.HasError() {
 		return
@@ -528,41 +529,41 @@ func getAndSetFvVmAttrAttributes(ctx context.Context, diags *diag.Diagnostics, c
 			attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
 			for attributeName, attributeValue := range attributes {
 				if attributeName == "dn" {
-					data.Id = basetypes.NewStringValue(attributeValue.(string))
-					setFvVmAttrParentDn(ctx, attributeValue.(string), data)
+					readData.Id = basetypes.NewStringValue(attributeValue.(string))
+					setFvVmAttrParentDn(ctx, attributeValue.(string), readData)
 				}
 				if attributeName == "annotation" {
-					data.Annotation = basetypes.NewStringValue(attributeValue.(string))
+					readData.Annotation = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "category" {
-					data.Category = basetypes.NewStringValue(attributeValue.(string))
+					readData.Category = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "descr" {
-					data.Descr = basetypes.NewStringValue(attributeValue.(string))
+					readData.Descr = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "labelName" {
-					data.LabelName = basetypes.NewStringValue(attributeValue.(string))
+					readData.LabelName = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "name" {
-					data.Name = basetypes.NewStringValue(attributeValue.(string))
+					readData.Name = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "nameAlias" {
-					data.NameAlias = basetypes.NewStringValue(attributeValue.(string))
+					readData.NameAlias = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "operator" {
-					data.Operator = basetypes.NewStringValue(attributeValue.(string))
+					readData.Operator = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "ownerKey" {
-					data.OwnerKey = basetypes.NewStringValue(attributeValue.(string))
+					readData.OwnerKey = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "ownerTag" {
-					data.OwnerTag = basetypes.NewStringValue(attributeValue.(string))
+					readData.OwnerTag = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "type" {
-					data.Type = basetypes.NewStringValue(attributeValue.(string))
+					readData.Type = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "value" {
-					data.Value = basetypes.NewStringValue(attributeValue.(string))
+					readData.Value = basetypes.NewStringValue(attributeValue.(string))
 				}
 			}
 			TagAnnotationFvVmAttrList := make([]TagAnnotationFvVmAttrResourceModel, 0)
@@ -600,10 +601,10 @@ func getAndSetFvVmAttrAttributes(ctx context.Context, diags *diag.Diagnostics, c
 					}
 				}
 			}
-			tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationFvVmAttrList)
-			data.TagAnnotation = tagAnnotationSet
-			tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagFvVmAttrList)
-			data.TagTag = tagTagSet
+			tagAnnotationSet, _ := types.SetValueFrom(ctx, readData.TagAnnotation.ElementType(ctx), TagAnnotationFvVmAttrList)
+			readData.TagAnnotation = tagAnnotationSet
+			tagTagSet, _ := types.SetValueFrom(ctx, readData.TagTag.ElementType(ctx), TagTagFvVmAttrList)
+			readData.TagTag = tagTagSet
 		} else {
 			diags.AddError(
 				"too many results in response",
@@ -611,8 +612,9 @@ func getAndSetFvVmAttrAttributes(ctx context.Context, diags *diag.Diagnostics, c
 			)
 		}
 	} else {
-		data.Id = basetypes.NewStringNull()
+		readData.Id = basetypes.NewStringNull()
 	}
+	*data = *readData
 }
 
 func getFvVmAttrRn(ctx context.Context, data *FvVmAttrResourceModel) string {
@@ -780,7 +782,6 @@ func getFvVmAttrCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, 
 	if !data.Value.IsNull() && !data.Value.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["value"] = data.Value.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"fvVmAttr": payloadMap})
 	if err != nil {
 		diags.AddError(

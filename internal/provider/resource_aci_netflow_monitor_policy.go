@@ -630,6 +630,7 @@ func (r *NetflowMonitorPolResource) Create(ctx context.Context, req resource.Cre
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -757,7 +758,7 @@ func (r *NetflowMonitorPolResource) ImportState(ctx context.Context, req resourc
 func getAndSetNetflowMonitorPolAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *NetflowMonitorPolResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "netflowMonitorPol,netflowRsMonitorToExporter,netflowRsMonitorToRecord,tagAnnotation,tagTag"), "GET", nil)
 
-	*data = *getEmptyNetflowMonitorPolResourceModel()
+	readData := getEmptyNetflowMonitorPolResourceModel()
 
 	if diags.HasError() {
 		return
@@ -768,26 +769,26 @@ func getAndSetNetflowMonitorPolAttributes(ctx context.Context, diags *diag.Diagn
 			attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
 			for attributeName, attributeValue := range attributes {
 				if attributeName == "dn" {
-					data.Id = basetypes.NewStringValue(attributeValue.(string))
-					setNetflowMonitorPolParentDn(ctx, attributeValue.(string), data)
+					readData.Id = basetypes.NewStringValue(attributeValue.(string))
+					setNetflowMonitorPolParentDn(ctx, attributeValue.(string), readData)
 				}
 				if attributeName == "annotation" {
-					data.Annotation = basetypes.NewStringValue(attributeValue.(string))
+					readData.Annotation = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "descr" {
-					data.Descr = basetypes.NewStringValue(attributeValue.(string))
+					readData.Descr = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "name" {
-					data.Name = basetypes.NewStringValue(attributeValue.(string))
+					readData.Name = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "nameAlias" {
-					data.NameAlias = basetypes.NewStringValue(attributeValue.(string))
+					readData.NameAlias = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "ownerKey" {
-					data.OwnerKey = basetypes.NewStringValue(attributeValue.(string))
+					readData.OwnerKey = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "ownerTag" {
-					data.OwnerTag = basetypes.NewStringValue(attributeValue.(string))
+					readData.OwnerTag = basetypes.NewStringValue(attributeValue.(string))
 				}
 			}
 			NetflowRsMonitorToExporterNetflowMonitorPolList := make([]NetflowRsMonitorToExporterNetflowMonitorPolResourceModel, 0)
@@ -851,19 +852,19 @@ func getAndSetNetflowMonitorPolAttributes(ctx context.Context, diags *diag.Diagn
 					}
 				}
 			}
-			netflowRsMonitorToExporterSet, _ := types.SetValueFrom(ctx, data.NetflowRsMonitorToExporter.ElementType(ctx), NetflowRsMonitorToExporterNetflowMonitorPolList)
-			data.NetflowRsMonitorToExporter = netflowRsMonitorToExporterSet
+			netflowRsMonitorToExporterSet, _ := types.SetValueFrom(ctx, readData.NetflowRsMonitorToExporter.ElementType(ctx), NetflowRsMonitorToExporterNetflowMonitorPolList)
+			readData.NetflowRsMonitorToExporter = netflowRsMonitorToExporterSet
 			if len(NetflowRsMonitorToRecordNetflowMonitorPolList) == 1 {
 				netflowRsMonitorToRecordObject, _ := types.ObjectValueFrom(ctx, NetflowRsMonitorToRecordNetflowMonitorPolType, NetflowRsMonitorToRecordNetflowMonitorPolList[0])
-				data.NetflowRsMonitorToRecord = netflowRsMonitorToRecordObject
+				readData.NetflowRsMonitorToRecord = netflowRsMonitorToRecordObject
 			} else {
 				netflowRsMonitorToRecordObject, _ := types.ObjectValueFrom(ctx, NetflowRsMonitorToRecordNetflowMonitorPolType, getEmptyNetflowRsMonitorToRecordNetflowMonitorPolResourceModel())
-				data.NetflowRsMonitorToRecord = netflowRsMonitorToRecordObject
+				readData.NetflowRsMonitorToRecord = netflowRsMonitorToRecordObject
 			}
-			tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationNetflowMonitorPolList)
-			data.TagAnnotation = tagAnnotationSet
-			tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagNetflowMonitorPolList)
-			data.TagTag = tagTagSet
+			tagAnnotationSet, _ := types.SetValueFrom(ctx, readData.TagAnnotation.ElementType(ctx), TagAnnotationNetflowMonitorPolList)
+			readData.TagAnnotation = tagAnnotationSet
+			tagTagSet, _ := types.SetValueFrom(ctx, readData.TagTag.ElementType(ctx), TagTagNetflowMonitorPolList)
+			readData.TagTag = tagTagSet
 		} else {
 			diags.AddError(
 				"too many results in response",
@@ -871,8 +872,9 @@ func getAndSetNetflowMonitorPolAttributes(ctx context.Context, diags *diag.Diagn
 			)
 		}
 	} else {
-		data.Id = basetypes.NewStringNull()
+		readData.Id = basetypes.NewStringNull()
 	}
+	*data = *readData
 }
 
 func getNetflowMonitorPolRn(ctx context.Context, data *NetflowMonitorPolResourceModel) string {
@@ -1101,7 +1103,6 @@ func getNetflowMonitorPolCreateJsonPayload(ctx context.Context, diags *diag.Diag
 	if !data.OwnerTag.IsNull() && !data.OwnerTag.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["ownerTag"] = data.OwnerTag.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"netflowMonitorPol": payloadMap})
 	if err != nil {
 		diags.AddError(

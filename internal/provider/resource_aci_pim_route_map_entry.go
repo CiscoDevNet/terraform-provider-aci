@@ -379,6 +379,7 @@ func (r *PimRouteMapEntryResource) Create(ctx context.Context, req resource.Crea
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -493,7 +494,7 @@ func (r *PimRouteMapEntryResource) ImportState(ctx context.Context, req resource
 func getAndSetPimRouteMapEntryAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *PimRouteMapEntryResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "pimRouteMapEntry,tagAnnotation,tagTag"), "GET", nil)
 
-	*data = *getEmptyPimRouteMapEntryResourceModel()
+	readData := getEmptyPimRouteMapEntryResourceModel()
 
 	if diags.HasError() {
 		return
@@ -504,35 +505,35 @@ func getAndSetPimRouteMapEntryAttributes(ctx context.Context, diags *diag.Diagno
 			attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
 			for attributeName, attributeValue := range attributes {
 				if attributeName == "dn" {
-					data.Id = basetypes.NewStringValue(attributeValue.(string))
-					setPimRouteMapEntryParentDn(ctx, attributeValue.(string), data)
+					readData.Id = basetypes.NewStringValue(attributeValue.(string))
+					setPimRouteMapEntryParentDn(ctx, attributeValue.(string), readData)
 				}
 				if attributeName == "action" {
-					data.Action = basetypes.NewStringValue(attributeValue.(string))
+					readData.Action = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "annotation" {
-					data.Annotation = basetypes.NewStringValue(attributeValue.(string))
+					readData.Annotation = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "descr" {
-					data.Descr = basetypes.NewStringValue(attributeValue.(string))
+					readData.Descr = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "grp" {
-					data.Grp = basetypes.NewStringValue(attributeValue.(string))
+					readData.Grp = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "name" {
-					data.Name = basetypes.NewStringValue(attributeValue.(string))
+					readData.Name = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "nameAlias" {
-					data.NameAlias = basetypes.NewStringValue(attributeValue.(string))
+					readData.NameAlias = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "order" {
-					data.Order = basetypes.NewStringValue(attributeValue.(string))
+					readData.Order = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "rp" {
-					data.Rp = basetypes.NewStringValue(attributeValue.(string))
+					readData.Rp = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "src" {
-					data.Src = basetypes.NewStringValue(attributeValue.(string))
+					readData.Src = basetypes.NewStringValue(attributeValue.(string))
 				}
 			}
 			TagAnnotationPimRouteMapEntryList := make([]TagAnnotationPimRouteMapEntryResourceModel, 0)
@@ -570,10 +571,10 @@ func getAndSetPimRouteMapEntryAttributes(ctx context.Context, diags *diag.Diagno
 					}
 				}
 			}
-			tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationPimRouteMapEntryList)
-			data.TagAnnotation = tagAnnotationSet
-			tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagPimRouteMapEntryList)
-			data.TagTag = tagTagSet
+			tagAnnotationSet, _ := types.SetValueFrom(ctx, readData.TagAnnotation.ElementType(ctx), TagAnnotationPimRouteMapEntryList)
+			readData.TagAnnotation = tagAnnotationSet
+			tagTagSet, _ := types.SetValueFrom(ctx, readData.TagTag.ElementType(ctx), TagTagPimRouteMapEntryList)
+			readData.TagTag = tagTagSet
 		} else {
 			diags.AddError(
 				"too many results in response",
@@ -581,8 +582,9 @@ func getAndSetPimRouteMapEntryAttributes(ctx context.Context, diags *diag.Diagno
 			)
 		}
 	} else {
-		data.Id = basetypes.NewStringNull()
+		readData.Id = basetypes.NewStringNull()
 	}
+	*data = *readData
 }
 
 func getPimRouteMapEntryRn(ctx context.Context, data *PimRouteMapEntryResourceModel) string {
@@ -744,7 +746,6 @@ func getPimRouteMapEntryCreateJsonPayload(ctx context.Context, diags *diag.Diagn
 	if !data.Src.IsNull() && !data.Src.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["src"] = data.Src.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"pimRouteMapEntry": payloadMap})
 	if err != nil {
 		diags.AddError(

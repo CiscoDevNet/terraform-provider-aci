@@ -187,6 +187,7 @@ func (r *NetflowRecordPolResource) Schema(ctx context.Context, req resource.Sche
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.Set{
 					setvalidator.SizeAtMost(8),
@@ -211,6 +212,7 @@ func (r *NetflowRecordPolResource) Schema(ctx context.Context, req resource.Sche
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.Set{
 					setvalidator.SizeAtMost(14),
@@ -380,6 +382,7 @@ func (r *NetflowRecordPolResource) Create(ctx context.Context, req resource.Crea
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -494,7 +497,7 @@ func (r *NetflowRecordPolResource) ImportState(ctx context.Context, req resource
 func getAndSetNetflowRecordPolAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *NetflowRecordPolResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "netflowRecordPol,tagAnnotation,tagTag"), "GET", nil)
 
-	*data = *getEmptyNetflowRecordPolResourceModel()
+	readData := getEmptyNetflowRecordPolResourceModel()
 
 	if diags.HasError() {
 		return
@@ -505,42 +508,42 @@ func getAndSetNetflowRecordPolAttributes(ctx context.Context, diags *diag.Diagno
 			attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
 			for attributeName, attributeValue := range attributes {
 				if attributeName == "dn" {
-					data.Id = basetypes.NewStringValue(attributeValue.(string))
-					setNetflowRecordPolParentDn(ctx, attributeValue.(string), data)
+					readData.Id = basetypes.NewStringValue(attributeValue.(string))
+					setNetflowRecordPolParentDn(ctx, attributeValue.(string), readData)
 				}
 				if attributeName == "annotation" {
-					data.Annotation = basetypes.NewStringValue(attributeValue.(string))
+					readData.Annotation = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "collect" {
 					collectList := make([]string, 0)
 					if attributeValue.(string) != "" {
 						collectList = strings.Split(attributeValue.(string), ",")
 					}
-					collectSet, _ := types.SetValueFrom(ctx, data.Collect.ElementType(ctx), collectList)
-					data.Collect = collectSet
+					collectSet, _ := types.SetValueFrom(ctx, readData.Collect.ElementType(ctx), collectList)
+					readData.Collect = collectSet
 				}
 				if attributeName == "descr" {
-					data.Descr = basetypes.NewStringValue(attributeValue.(string))
+					readData.Descr = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "match" {
 					matchList := make([]string, 0)
 					if attributeValue.(string) != "" {
 						matchList = strings.Split(attributeValue.(string), ",")
 					}
-					matchSet, _ := types.SetValueFrom(ctx, data.Match.ElementType(ctx), matchList)
-					data.Match = matchSet
+					matchSet, _ := types.SetValueFrom(ctx, readData.Match.ElementType(ctx), matchList)
+					readData.Match = matchSet
 				}
 				if attributeName == "name" {
-					data.Name = basetypes.NewStringValue(attributeValue.(string))
+					readData.Name = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "nameAlias" {
-					data.NameAlias = basetypes.NewStringValue(attributeValue.(string))
+					readData.NameAlias = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "ownerKey" {
-					data.OwnerKey = basetypes.NewStringValue(attributeValue.(string))
+					readData.OwnerKey = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "ownerTag" {
-					data.OwnerTag = basetypes.NewStringValue(attributeValue.(string))
+					readData.OwnerTag = basetypes.NewStringValue(attributeValue.(string))
 				}
 			}
 			TagAnnotationNetflowRecordPolList := make([]TagAnnotationNetflowRecordPolResourceModel, 0)
@@ -578,10 +581,10 @@ func getAndSetNetflowRecordPolAttributes(ctx context.Context, diags *diag.Diagno
 					}
 				}
 			}
-			tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationNetflowRecordPolList)
-			data.TagAnnotation = tagAnnotationSet
-			tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagNetflowRecordPolList)
-			data.TagTag = tagTagSet
+			tagAnnotationSet, _ := types.SetValueFrom(ctx, readData.TagAnnotation.ElementType(ctx), TagAnnotationNetflowRecordPolList)
+			readData.TagAnnotation = tagAnnotationSet
+			tagTagSet, _ := types.SetValueFrom(ctx, readData.TagTag.ElementType(ctx), TagTagNetflowRecordPolList)
+			readData.TagTag = tagTagSet
 		} else {
 			diags.AddError(
 				"too many results in response",
@@ -589,8 +592,9 @@ func getAndSetNetflowRecordPolAttributes(ctx context.Context, diags *diag.Diagno
 			)
 		}
 	} else {
-		data.Id = basetypes.NewStringNull()
+		readData.Id = basetypes.NewStringNull()
 	}
+	*data = *readData
 }
 
 func getNetflowRecordPolRn(ctx context.Context, data *NetflowRecordPolResourceModel) string {
@@ -753,7 +757,6 @@ func getNetflowRecordPolCreateJsonPayload(ctx context.Context, diags *diag.Diagn
 	if !data.OwnerTag.IsNull() && !data.OwnerTag.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["ownerTag"] = data.OwnerTag.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"netflowRecordPol": payloadMap})
 	if err != nil {
 		diags.AddError(

@@ -2,6 +2,7 @@
 # In order to regenerate this file execute `go generate` from the repository root.
 # More details can be found in the [README](https://github.com/CiscoDevNet/terraform-provider-aci/blob/master/README.md).
 
+
 default:
   annotation: "orchestrator:terraform"
 
@@ -39,6 +40,7 @@ parents:
     class_in_parent: false
     target_classes:
         - "fvFBRGroup"
+    test_type: apic
 targets:
   - class_name: "fvFBRGroup"
     target_dn: "uni/tn-test_tenant/ctx-test_vrf/fbrg-vrf_fallback_route_group_0"
@@ -51,3 +53,4 @@ targets:
     static: false
     properties:
         name: "vrf_fallback_route_group_0"
+class_version: 5.2(4d)-

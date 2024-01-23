@@ -427,6 +427,7 @@ func (r *FhsTrustCtrlPolResource) Create(ctx context.Context, req resource.Creat
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -541,7 +542,7 @@ func (r *FhsTrustCtrlPolResource) ImportState(ctx context.Context, req resource.
 func getAndSetFhsTrustCtrlPolAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FhsTrustCtrlPolResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "fhsTrustCtrlPol,tagAnnotation,tagTag"), "GET", nil)
 
-	*data = *getEmptyFhsTrustCtrlPolResourceModel()
+	readData := getEmptyFhsTrustCtrlPolResourceModel()
 
 	if diags.HasError() {
 		return
@@ -552,44 +553,44 @@ func getAndSetFhsTrustCtrlPolAttributes(ctx context.Context, diags *diag.Diagnos
 			attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
 			for attributeName, attributeValue := range attributes {
 				if attributeName == "dn" {
-					data.Id = basetypes.NewStringValue(attributeValue.(string))
-					setFhsTrustCtrlPolParentDn(ctx, attributeValue.(string), data)
+					readData.Id = basetypes.NewStringValue(attributeValue.(string))
+					setFhsTrustCtrlPolParentDn(ctx, attributeValue.(string), readData)
 				}
 				if attributeName == "annotation" {
-					data.Annotation = basetypes.NewStringValue(attributeValue.(string))
+					readData.Annotation = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "descr" {
-					data.Descr = basetypes.NewStringValue(attributeValue.(string))
+					readData.Descr = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "hasDhcpv4Server" {
-					data.HasDhcpv4Server = basetypes.NewStringValue(attributeValue.(string))
+					readData.HasDhcpv4Server = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "hasDhcpv6Server" {
-					data.HasDhcpv6Server = basetypes.NewStringValue(attributeValue.(string))
+					readData.HasDhcpv6Server = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "hasIpv6Router" {
-					data.HasIpv6Router = basetypes.NewStringValue(attributeValue.(string))
+					readData.HasIpv6Router = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "name" {
-					data.Name = basetypes.NewStringValue(attributeValue.(string))
+					readData.Name = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "nameAlias" {
-					data.NameAlias = basetypes.NewStringValue(attributeValue.(string))
+					readData.NameAlias = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "ownerKey" {
-					data.OwnerKey = basetypes.NewStringValue(attributeValue.(string))
+					readData.OwnerKey = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "ownerTag" {
-					data.OwnerTag = basetypes.NewStringValue(attributeValue.(string))
+					readData.OwnerTag = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "trustArp" {
-					data.TrustArp = basetypes.NewStringValue(attributeValue.(string))
+					readData.TrustArp = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "trustNd" {
-					data.TrustNd = basetypes.NewStringValue(attributeValue.(string))
+					readData.TrustNd = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "trustRa" {
-					data.TrustRa = basetypes.NewStringValue(attributeValue.(string))
+					readData.TrustRa = basetypes.NewStringValue(attributeValue.(string))
 				}
 			}
 			TagAnnotationFhsTrustCtrlPolList := make([]TagAnnotationFhsTrustCtrlPolResourceModel, 0)
@@ -627,10 +628,10 @@ func getAndSetFhsTrustCtrlPolAttributes(ctx context.Context, diags *diag.Diagnos
 					}
 				}
 			}
-			tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationFhsTrustCtrlPolList)
-			data.TagAnnotation = tagAnnotationSet
-			tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagFhsTrustCtrlPolList)
-			data.TagTag = tagTagSet
+			tagAnnotationSet, _ := types.SetValueFrom(ctx, readData.TagAnnotation.ElementType(ctx), TagAnnotationFhsTrustCtrlPolList)
+			readData.TagAnnotation = tagAnnotationSet
+			tagTagSet, _ := types.SetValueFrom(ctx, readData.TagTag.ElementType(ctx), TagTagFhsTrustCtrlPolList)
+			readData.TagTag = tagTagSet
 		} else {
 			diags.AddError(
 				"too many results in response",
@@ -638,8 +639,9 @@ func getAndSetFhsTrustCtrlPolAttributes(ctx context.Context, diags *diag.Diagnos
 			)
 		}
 	} else {
-		data.Id = basetypes.NewStringNull()
+		readData.Id = basetypes.NewStringNull()
 	}
+	*data = *readData
 }
 
 func getFhsTrustCtrlPolRn(ctx context.Context, data *FhsTrustCtrlPolResourceModel) string {
@@ -810,7 +812,6 @@ func getFhsTrustCtrlPolCreateJsonPayload(ctx context.Context, diags *diag.Diagno
 	if !data.TrustRa.IsNull() && !data.TrustRa.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["trustRa"] = data.TrustRa.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"fhsTrustCtrlPol": payloadMap})
 	if err != nil {
 		diags.AddError(

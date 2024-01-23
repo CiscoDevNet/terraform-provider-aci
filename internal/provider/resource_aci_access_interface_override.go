@@ -465,6 +465,7 @@ func (r *InfraHPathSResource) Create(ctx context.Context, req resource.CreateReq
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -585,7 +586,7 @@ func (r *InfraHPathSResource) ImportState(ctx context.Context, req resource.Impo
 func getAndSetInfraHPathSAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *InfraHPathSResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "infraHPathS,infraRsHPathAtt,infraRsPathToAccBaseGrp,tagAnnotation,tagTag"), "GET", nil)
 
-	*data = *getEmptyInfraHPathSResourceModel()
+	readData := getEmptyInfraHPathSResourceModel()
 
 	if diags.HasError() {
 		return
@@ -596,26 +597,26 @@ func getAndSetInfraHPathSAttributes(ctx context.Context, diags *diag.Diagnostics
 			attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
 			for attributeName, attributeValue := range attributes {
 				if attributeName == "dn" {
-					data.Id = basetypes.NewStringValue(attributeValue.(string))
-					setInfraHPathSParentDn(ctx, attributeValue.(string), data)
+					readData.Id = basetypes.NewStringValue(attributeValue.(string))
+					setInfraHPathSParentDn(ctx, attributeValue.(string), readData)
 				}
 				if attributeName == "annotation" {
-					data.Annotation = basetypes.NewStringValue(attributeValue.(string))
+					readData.Annotation = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "descr" {
-					data.Descr = basetypes.NewStringValue(attributeValue.(string))
+					readData.Descr = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "name" {
-					data.Name = basetypes.NewStringValue(attributeValue.(string))
+					readData.Name = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "nameAlias" {
-					data.NameAlias = basetypes.NewStringValue(attributeValue.(string))
+					readData.NameAlias = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "ownerKey" {
-					data.OwnerKey = basetypes.NewStringValue(attributeValue.(string))
+					readData.OwnerKey = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "ownerTag" {
-					data.OwnerTag = basetypes.NewStringValue(attributeValue.(string))
+					readData.OwnerTag = basetypes.NewStringValue(attributeValue.(string))
 				}
 			}
 			InfraRsHPathAttInfraHPathSList := make([]InfraRsHPathAttInfraHPathSResourceModel, 0)
@@ -681,22 +682,22 @@ func getAndSetInfraHPathSAttributes(ctx context.Context, diags *diag.Diagnostics
 			}
 			if len(InfraRsHPathAttInfraHPathSList) == 1 {
 				infraRsHPathAttObject, _ := types.ObjectValueFrom(ctx, InfraRsHPathAttInfraHPathSType, InfraRsHPathAttInfraHPathSList[0])
-				data.InfraRsHPathAtt = infraRsHPathAttObject
+				readData.InfraRsHPathAtt = infraRsHPathAttObject
 			} else {
 				infraRsHPathAttObject, _ := types.ObjectValueFrom(ctx, InfraRsHPathAttInfraHPathSType, getEmptyInfraRsHPathAttInfraHPathSResourceModel())
-				data.InfraRsHPathAtt = infraRsHPathAttObject
+				readData.InfraRsHPathAtt = infraRsHPathAttObject
 			}
 			if len(InfraRsPathToAccBaseGrpInfraHPathSList) == 1 {
 				infraRsPathToAccBaseGrpObject, _ := types.ObjectValueFrom(ctx, InfraRsPathToAccBaseGrpInfraHPathSType, InfraRsPathToAccBaseGrpInfraHPathSList[0])
-				data.InfraRsPathToAccBaseGrp = infraRsPathToAccBaseGrpObject
+				readData.InfraRsPathToAccBaseGrp = infraRsPathToAccBaseGrpObject
 			} else {
 				infraRsPathToAccBaseGrpObject, _ := types.ObjectValueFrom(ctx, InfraRsPathToAccBaseGrpInfraHPathSType, getEmptyInfraRsPathToAccBaseGrpInfraHPathSResourceModel())
-				data.InfraRsPathToAccBaseGrp = infraRsPathToAccBaseGrpObject
+				readData.InfraRsPathToAccBaseGrp = infraRsPathToAccBaseGrpObject
 			}
-			tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationInfraHPathSList)
-			data.TagAnnotation = tagAnnotationSet
-			tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagInfraHPathSList)
-			data.TagTag = tagTagSet
+			tagAnnotationSet, _ := types.SetValueFrom(ctx, readData.TagAnnotation.ElementType(ctx), TagAnnotationInfraHPathSList)
+			readData.TagAnnotation = tagAnnotationSet
+			tagTagSet, _ := types.SetValueFrom(ctx, readData.TagTag.ElementType(ctx), TagTagInfraHPathSList)
+			readData.TagTag = tagTagSet
 		} else {
 			diags.AddError(
 				"too many results in response",
@@ -704,8 +705,9 @@ func getAndSetInfraHPathSAttributes(ctx context.Context, diags *diag.Diagnostics
 			)
 		}
 	} else {
-		data.Id = basetypes.NewStringNull()
+		readData.Id = basetypes.NewStringNull()
 	}
+	*data = *readData
 }
 
 func getInfraHPathSRn(ctx context.Context, data *InfraHPathSResourceModel) string {
@@ -921,7 +923,6 @@ func getInfraHPathSCreateJsonPayload(ctx context.Context, diags *diag.Diagnostic
 	if !data.OwnerTag.IsNull() && !data.OwnerTag.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["ownerTag"] = data.OwnerTag.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"infraHPathS": payloadMap})
 	if err != nil {
 		diags.AddError(

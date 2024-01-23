@@ -71,7 +71,6 @@ type FvRsDomAttResourceModel struct {
 	SwitchingMode       types.String `tfsdk:"switching_mode"`
 	TDn                 types.String `tfsdk:"target_dn"`
 	Untagged            types.String `tfsdk:"untagged"`
-	VnetOnly            types.String `tfsdk:"vnet_only"`
 	TagAnnotation       types.Set    `tfsdk:"annotations"`
 	TagTag              types.Set    `tfsdk:"tags"`
 }
@@ -105,7 +104,6 @@ func getEmptyFvRsDomAttResourceModel() *FvRsDomAttResourceModel {
 		SwitchingMode:       basetypes.NewStringNull(),
 		TDn:                 basetypes.NewStringNull(),
 		Untagged:            basetypes.NewStringNull(),
-		VnetOnly:            basetypes.NewStringNull(),
 		TagAnnotation: types.SetNull(types.ObjectType{
 			AttrTypes: map[string]attr.Type{
 				"key":   types.StringType,
@@ -470,18 +468,6 @@ func (r *FvRsDomAttResource) Schema(ctx context.Context, req resource.SchemaRequ
 				},
 				MarkdownDescription: `The untagged status of the Relation To Domain object.`,
 			},
-			"vnet_only": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				Validators: []validator.String{
-					stringvalidator.OneOf("no", "yes"),
-				},
-				MarkdownDescription: `The VNET only status of the Relation To Domain object.`,
-			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,
 				Optional:            true,
@@ -606,6 +592,7 @@ func (r *FvRsDomAttResource) Create(ctx context.Context, req resource.CreateRequ
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -720,7 +707,7 @@ func (r *FvRsDomAttResource) ImportState(ctx context.Context, req resource.Impor
 func getAndSetFvRsDomAttAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvRsDomAttResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "fvRsDomAtt,tagAnnotation,tagTag"), "GET", nil)
 
-	*data = *getEmptyFvRsDomAttResourceModel()
+	readData := getEmptyFvRsDomAttResourceModel()
 
 	if diags.HasError() {
 		return
@@ -731,90 +718,87 @@ func getAndSetFvRsDomAttAttributes(ctx context.Context, diags *diag.Diagnostics,
 			attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
 			for attributeName, attributeValue := range attributes {
 				if attributeName == "dn" {
-					data.Id = basetypes.NewStringValue(attributeValue.(string))
-					setFvRsDomAttParentDn(ctx, attributeValue.(string), data)
+					readData.Id = basetypes.NewStringValue(attributeValue.(string))
+					setFvRsDomAttParentDn(ctx, attributeValue.(string), readData)
 				}
 				if attributeName == "annotation" {
-					data.Annotation = basetypes.NewStringValue(attributeValue.(string))
+					readData.Annotation = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "bindingType" && attributeValue.(string) == "" {
-					data.BindingType = basetypes.NewStringValue("none")
+					readData.BindingType = basetypes.NewStringValue("none")
 				} else if attributeName == "bindingType" {
-					data.BindingType = basetypes.NewStringValue(attributeValue.(string))
+					readData.BindingType = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "classPref" {
-					data.ClassPref = basetypes.NewStringValue(attributeValue.(string))
+					readData.ClassPref = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "customEpgName" {
-					data.CustomEpgName = basetypes.NewStringValue(attributeValue.(string))
+					readData.CustomEpgName = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "delimiter" {
-					data.Delimiter = basetypes.NewStringValue(attributeValue.(string))
+					readData.Delimiter = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "encap" {
-					data.Encap = basetypes.NewStringValue(attributeValue.(string))
+					readData.Encap = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "encapMode" {
-					data.EncapMode = basetypes.NewStringValue(attributeValue.(string))
+					readData.EncapMode = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "epgCos" {
-					data.EpgCos = basetypes.NewStringValue(attributeValue.(string))
+					readData.EpgCos = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "epgCosPref" {
-					data.EpgCosPref = basetypes.NewStringValue(attributeValue.(string))
+					readData.EpgCosPref = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "instrImedcy" {
-					data.InstrImedcy = basetypes.NewStringValue(attributeValue.(string))
+					readData.InstrImedcy = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "ipamDhcpOverride" {
-					data.IpamDhcpOverride = basetypes.NewStringValue(attributeValue.(string))
+					readData.IpamDhcpOverride = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "ipamEnabled" {
-					data.IpamEnabled = basetypes.NewStringValue(attributeValue.(string))
+					readData.IpamEnabled = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "ipamGateway" {
-					data.IpamGateway = basetypes.NewStringValue(attributeValue.(string))
+					readData.IpamGateway = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "lagPolicyName" {
-					data.LagPolicyName = basetypes.NewStringValue(attributeValue.(string))
+					readData.LagPolicyName = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "netflowDir" {
-					data.NetflowDir = basetypes.NewStringValue(attributeValue.(string))
+					readData.NetflowDir = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "netflowPref" {
-					data.NetflowPref = basetypes.NewStringValue(attributeValue.(string))
+					readData.NetflowPref = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "numPorts" {
-					data.NumPorts = basetypes.NewStringValue(attributeValue.(string))
+					readData.NumPorts = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "portAllocation" && attributeValue.(string) == "" {
-					data.PortAllocation = basetypes.NewStringValue("none")
+					readData.PortAllocation = basetypes.NewStringValue("none")
 				} else if attributeName == "portAllocation" {
-					data.PortAllocation = basetypes.NewStringValue(attributeValue.(string))
+					readData.PortAllocation = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "primaryEncap" {
-					data.PrimaryEncap = basetypes.NewStringValue(attributeValue.(string))
+					readData.PrimaryEncap = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "primaryEncapInner" {
-					data.PrimaryEncapInner = basetypes.NewStringValue(attributeValue.(string))
+					readData.PrimaryEncapInner = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "resImedcy" {
-					data.ResImedcy = basetypes.NewStringValue(attributeValue.(string))
+					readData.ResImedcy = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "secondaryEncapInner" {
-					data.SecondaryEncapInner = basetypes.NewStringValue(attributeValue.(string))
+					readData.SecondaryEncapInner = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "switchingMode" {
-					data.SwitchingMode = basetypes.NewStringValue(attributeValue.(string))
+					readData.SwitchingMode = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "tDn" {
-					data.TDn = basetypes.NewStringValue(attributeValue.(string))
+					readData.TDn = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "untagged" {
-					data.Untagged = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "vnetOnly" {
-					data.VnetOnly = basetypes.NewStringValue(attributeValue.(string))
+					readData.Untagged = basetypes.NewStringValue(attributeValue.(string))
 				}
 			}
 			TagAnnotationFvRsDomAttList := make([]TagAnnotationFvRsDomAttResourceModel, 0)
@@ -852,10 +836,10 @@ func getAndSetFvRsDomAttAttributes(ctx context.Context, diags *diag.Diagnostics,
 					}
 				}
 			}
-			tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationFvRsDomAttList)
-			data.TagAnnotation = tagAnnotationSet
-			tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagFvRsDomAttList)
-			data.TagTag = tagTagSet
+			tagAnnotationSet, _ := types.SetValueFrom(ctx, readData.TagAnnotation.ElementType(ctx), TagAnnotationFvRsDomAttList)
+			readData.TagAnnotation = tagAnnotationSet
+			tagTagSet, _ := types.SetValueFrom(ctx, readData.TagTag.ElementType(ctx), TagTagFvRsDomAttList)
+			readData.TagTag = tagTagSet
 		} else {
 			diags.AddError(
 				"too many results in response",
@@ -863,8 +847,9 @@ func getAndSetFvRsDomAttAttributes(ctx context.Context, diags *diag.Diagnostics,
 			)
 		}
 	} else {
-		data.Id = basetypes.NewStringNull()
+		readData.Id = basetypes.NewStringNull()
 	}
+	*data = *readData
 }
 
 func getFvRsDomAttRn(ctx context.Context, data *FvRsDomAttResourceModel) string {
@@ -1074,10 +1059,6 @@ func getFvRsDomAttCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics
 	if !data.Untagged.IsNull() && !data.Untagged.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["untagged"] = data.Untagged.ValueString()
 	}
-	if !data.VnetOnly.IsNull() && !data.VnetOnly.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["vnetOnly"] = data.VnetOnly.ValueString()
-	}
-
 	payload, err := json.Marshal(map[string]interface{}{"fvRsDomAtt": payloadMap})
 	if err != nil {
 		diags.AddError(

@@ -448,10 +448,6 @@ func (d *FvAEPgDataSource) Schema(ctx context.Context, req datasource.SchemaRequ
 							Computed:            true,
 							MarkdownDescription: `The untagged status of the Relation To Domain object.`,
 						},
-						"vnet_only": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The VNET only status of the Relation To Domain object.`,
-						},
 					},
 				},
 			},

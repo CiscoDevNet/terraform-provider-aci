@@ -1762,6 +1762,7 @@ func (r *FvESgResource) Create(ctx context.Context, req resource.CreateRequest, 
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -1901,7 +1902,7 @@ func (r *FvESgResource) ImportState(ctx context.Context, req resource.ImportStat
 func getAndSetFvESgAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvESgResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "fvESg,fvRsCons,fvRsConsIf,fvRsIntraEpg,fvRsProv,fvRsScope,fvRsSecInherited,tagAnnotation,tagTag"), "GET", nil)
 
-	*data = *getEmptyFvESgResourceModel()
+	readData := getEmptyFvESgResourceModel()
 
 	if diags.HasError() {
 		return
@@ -1912,38 +1913,38 @@ func getAndSetFvESgAttributes(ctx context.Context, diags *diag.Diagnostics, clie
 			attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
 			for attributeName, attributeValue := range attributes {
 				if attributeName == "dn" {
-					data.Id = basetypes.NewStringValue(attributeValue.(string))
-					setFvESgParentDn(ctx, attributeValue.(string), data)
+					readData.Id = basetypes.NewStringValue(attributeValue.(string))
+					setFvESgParentDn(ctx, attributeValue.(string), readData)
 				}
 				if attributeName == "annotation" {
-					data.Annotation = basetypes.NewStringValue(attributeValue.(string))
+					readData.Annotation = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "descr" {
-					data.Descr = basetypes.NewStringValue(attributeValue.(string))
+					readData.Descr = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "exceptionTag" {
-					data.ExceptionTag = basetypes.NewStringValue(attributeValue.(string))
+					readData.ExceptionTag = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "matchT" {
-					data.MatchT = basetypes.NewStringValue(attributeValue.(string))
+					readData.MatchT = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "name" {
-					data.Name = basetypes.NewStringValue(attributeValue.(string))
+					readData.Name = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "nameAlias" {
-					data.NameAlias = basetypes.NewStringValue(attributeValue.(string))
+					readData.NameAlias = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "pcEnfPref" {
-					data.PcEnfPref = basetypes.NewStringValue(attributeValue.(string))
+					readData.PcEnfPref = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "pcTag" {
-					data.PcTag = basetypes.NewStringValue(attributeValue.(string))
+					readData.PcTag = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "prefGrMemb" {
-					data.PrefGrMemb = basetypes.NewStringValue(attributeValue.(string))
+					readData.PrefGrMemb = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "shutdown" {
-					data.Shutdown = basetypes.NewStringValue(attributeValue.(string))
+					readData.Shutdown = basetypes.NewStringValue(attributeValue.(string))
 				}
 			}
 			FvRsConsFvESgList := make([]FvRsConsFvESgResourceModel, 0)
@@ -2071,28 +2072,28 @@ func getAndSetFvESgAttributes(ctx context.Context, diags *diag.Diagnostics, clie
 					}
 				}
 			}
-			fvRsConsSet, _ := types.SetValueFrom(ctx, data.FvRsCons.ElementType(ctx), FvRsConsFvESgList)
-			data.FvRsCons = fvRsConsSet
-			fvRsConsIfSet, _ := types.SetValueFrom(ctx, data.FvRsConsIf.ElementType(ctx), FvRsConsIfFvESgList)
-			data.FvRsConsIf = fvRsConsIfSet
-			fvRsIntraEpgSet, _ := types.SetValueFrom(ctx, data.FvRsIntraEpg.ElementType(ctx), FvRsIntraEpgFvESgList)
-			data.FvRsIntraEpg = fvRsIntraEpgSet
-			fvRsProvSet, _ := types.SetValueFrom(ctx, data.FvRsProv.ElementType(ctx), FvRsProvFvESgList)
-			data.FvRsProv = fvRsProvSet
+			fvRsConsSet, _ := types.SetValueFrom(ctx, readData.FvRsCons.ElementType(ctx), FvRsConsFvESgList)
+			readData.FvRsCons = fvRsConsSet
+			fvRsConsIfSet, _ := types.SetValueFrom(ctx, readData.FvRsConsIf.ElementType(ctx), FvRsConsIfFvESgList)
+			readData.FvRsConsIf = fvRsConsIfSet
+			fvRsIntraEpgSet, _ := types.SetValueFrom(ctx, readData.FvRsIntraEpg.ElementType(ctx), FvRsIntraEpgFvESgList)
+			readData.FvRsIntraEpg = fvRsIntraEpgSet
+			fvRsProvSet, _ := types.SetValueFrom(ctx, readData.FvRsProv.ElementType(ctx), FvRsProvFvESgList)
+			readData.FvRsProv = fvRsProvSet
 			if len(FvRsScopeFvESgList) == 1 {
 				fvRsScopeObject, _ := types.ObjectValueFrom(ctx, FvRsScopeFvESgType, FvRsScopeFvESgList[0])
-				data.FvRsScope = fvRsScopeObject
+				readData.FvRsScope = fvRsScopeObject
 			} else {
 				fvRsScopeObject, _ := types.ObjectValueFrom(ctx, FvRsScopeFvESgType, getEmptyFvRsScopeFvESgResourceModel())
-				data.FvRsScope = fvRsScopeObject
+				readData.FvRsScope = fvRsScopeObject
 			}
-			fvRsSecInheritedSet, _ := types.SetValueFrom(ctx, data.FvRsSecInherited.ElementType(ctx), FvRsSecInheritedFvESgList)
-			data.FvRsSecInherited = fvRsSecInheritedSet
-			tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationFvESgList)
-			data.TagAnnotation = tagAnnotationSet
-			tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagFvESgList)
-			data.TagTag = tagTagSet
-			setFvESgLegacyAttributes(ctx, diags, data, classReadInfo)
+			fvRsSecInheritedSet, _ := types.SetValueFrom(ctx, readData.FvRsSecInherited.ElementType(ctx), FvRsSecInheritedFvESgList)
+			readData.FvRsSecInherited = fvRsSecInheritedSet
+			tagAnnotationSet, _ := types.SetValueFrom(ctx, readData.TagAnnotation.ElementType(ctx), TagAnnotationFvESgList)
+			readData.TagAnnotation = tagAnnotationSet
+			tagTagSet, _ := types.SetValueFrom(ctx, readData.TagTag.ElementType(ctx), TagTagFvESgList)
+			readData.TagTag = tagTagSet
+			setFvESgLegacyAttributes(ctx, diags, readData, classReadInfo)
 		} else {
 			diags.AddError(
 				"too many results in response",
@@ -2100,8 +2101,9 @@ func getAndSetFvESgAttributes(ctx context.Context, diags *diag.Diagnostics, clie
 			)
 		}
 	} else {
-		data.Id = basetypes.NewStringNull()
+		readData.Id = basetypes.NewStringNull()
 	}
+	*data = *readData
 }
 
 func getFvESgRn(ctx context.Context, data *FvESgResourceModel) string {
@@ -2539,7 +2541,6 @@ func getFvESgCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, cre
 	if !data.Shutdown.IsNull() && !data.Shutdown.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["shutdown"] = data.Shutdown.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"fvESg": payloadMap})
 	if err != nil {
 		diags.AddError(

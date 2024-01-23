@@ -126,7 +126,6 @@ resource "aci_application_epg" "full_example_application_profile" {
       switching_mode                = "AVE"
       target_dn                     = "uni/vmmp-VMware/dom-domain_1"
       untagged                      = "no"
-      vnet_only                     = "no"
     }
   ]
   relation_to_data_plane_policing_policy = {
@@ -396,9 +395,6 @@ All examples for the Application EPG resource can be found in the [examples](htt
       - Default: `native`
       - Valid Values: `AVE`, `native`.
   * `untagged` (untagged) - (string) The untagged status of the Relation To Domain object.
-      - Default: `no`
-      - Valid Values: `no`, `yes`.
-  * `vnet_only` (vnetOnly) - (string) The VNET only status of the Relation To Domain object.
       - Default: `no`
       - Valid Values: `no`, `yes`.
 

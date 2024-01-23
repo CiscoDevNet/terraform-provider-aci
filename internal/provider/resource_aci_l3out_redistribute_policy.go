@@ -314,6 +314,7 @@ func (r *L3extRsRedistributePolResource) Create(ctx context.Context, req resourc
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -428,7 +429,7 @@ func (r *L3extRsRedistributePolResource) ImportState(ctx context.Context, req re
 func getAndSetL3extRsRedistributePolAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *L3extRsRedistributePolResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "l3extRsRedistributePol,tagAnnotation,tagTag"), "GET", nil)
 
-	*data = *getEmptyL3extRsRedistributePolResourceModel()
+	readData := getEmptyL3extRsRedistributePolResourceModel()
 
 	if diags.HasError() {
 		return
@@ -439,17 +440,17 @@ func getAndSetL3extRsRedistributePolAttributes(ctx context.Context, diags *diag.
 			attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
 			for attributeName, attributeValue := range attributes {
 				if attributeName == "dn" {
-					data.Id = basetypes.NewStringValue(attributeValue.(string))
-					setL3extRsRedistributePolParentDn(ctx, attributeValue.(string), data)
+					readData.Id = basetypes.NewStringValue(attributeValue.(string))
+					setL3extRsRedistributePolParentDn(ctx, attributeValue.(string), readData)
 				}
 				if attributeName == "annotation" {
-					data.Annotation = basetypes.NewStringValue(attributeValue.(string))
+					readData.Annotation = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "src" {
-					data.Src = basetypes.NewStringValue(attributeValue.(string))
+					readData.Src = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "tnRtctrlProfileName" {
-					data.TnRtctrlProfileName = basetypes.NewStringValue(attributeValue.(string))
+					readData.TnRtctrlProfileName = basetypes.NewStringValue(attributeValue.(string))
 				}
 			}
 			TagAnnotationL3extRsRedistributePolList := make([]TagAnnotationL3extRsRedistributePolResourceModel, 0)
@@ -487,10 +488,10 @@ func getAndSetL3extRsRedistributePolAttributes(ctx context.Context, diags *diag.
 					}
 				}
 			}
-			tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationL3extRsRedistributePolList)
-			data.TagAnnotation = tagAnnotationSet
-			tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagL3extRsRedistributePolList)
-			data.TagTag = tagTagSet
+			tagAnnotationSet, _ := types.SetValueFrom(ctx, readData.TagAnnotation.ElementType(ctx), TagAnnotationL3extRsRedistributePolList)
+			readData.TagAnnotation = tagAnnotationSet
+			tagTagSet, _ := types.SetValueFrom(ctx, readData.TagTag.ElementType(ctx), TagTagL3extRsRedistributePolList)
+			readData.TagTag = tagTagSet
 		} else {
 			diags.AddError(
 				"too many results in response",
@@ -498,8 +499,9 @@ func getAndSetL3extRsRedistributePolAttributes(ctx context.Context, diags *diag.
 			)
 		}
 	} else {
-		data.Id = basetypes.NewStringNull()
+		readData.Id = basetypes.NewStringNull()
 	}
+	*data = *readData
 }
 
 func getL3extRsRedistributePolRn(ctx context.Context, data *L3extRsRedistributePolResourceModel) string {
@@ -643,7 +645,6 @@ func getL3extRsRedistributePolCreateJsonPayload(ctx context.Context, diags *diag
 	if !data.TnRtctrlProfileName.IsNull() && !data.TnRtctrlProfileName.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["tnRtctrlProfileName"] = data.TnRtctrlProfileName.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"l3extRsRedistributePol": payloadMap})
 	if err != nil {
 		diags.AddError(

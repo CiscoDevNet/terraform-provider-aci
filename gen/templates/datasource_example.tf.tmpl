@@ -1,4 +1,9 @@
+{{- if not .MultiParentFormats }}
 {{- if .DocumentationExamples}}{{$parentIndex := 0}}{{- range $key := .DocumentationExamples}}
+{{- $testType := $.TestType }}
+{{- if eq $testType "cloud"}}
+// This example is only applicable to Cisco Cloud Network Controller
+{{- end}}
 data "aci_{{$.ResourceName}}" "example_{{getResourceName $key $.Definitions}}" {
   {{- if $.HasParent}}
   parent_dn = {{createParentDnValue $key "example" $.Definitions}}
@@ -13,16 +18,44 @@ data "aci_{{$.ResourceName}}" "example_{{getResourceName $key $.Definitions}}" {
       {{- end}}
     {{- end}}
     {{- else}}
-  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = "{{lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions}}"{{- end}}{{- end}}
+  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = {{lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions $.Properties}}{{- end}}{{- end}}
   {{- end}}
 }
 {{ end}}
 {{- else}}
+{{- $testType := $.TestType }}
+{{- if eq $testType "cloud"}}
+// This example is only applicable to Cisco Cloud Network Controller
+{{- end}}
 data "aci_{{$.ResourceName}}" "example" {
   {{- range $.Properties}}{{- if .IsNaming}}{{- if ne .NamedPropertyClass ""}}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = aci_{{getResourceName .NamedPropertyClass $.Definitions}}.example.name
     {{- else}}
-  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = "{{lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions}}"{{- end}}{{- end}}
+  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = {{lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions $.Properties}}{{- end}}{{- end}}
   {{- end}}
 }
 {{ end}}
+{{- else}}
+{{- $topContext := . }}
+{{- range $formatKey, $formatValue := $topContext.MultiParentFormats }}
+{{- $testType := $formatValue.TestType }}
+{{- if eq $testType "cloud"}}
+// This example is only applicable to Cisco Cloud Network Controller
+{{- end}}
+data "aci_{{ $topContext.ResourceName }}" {{- if ne $formatValue.ContainedBy ""}}"example_{{ getResourceName $formatValue.ContainedBy $topContext.Definitions }}"{{- else}}"example"{{- end }} {
+{{- if ne $formatValue.ContainedBy ""}}
+    parent_dn = {{createParentDnValue $formatValue.ContainedBy "example" $topContext.Definitions}}
+  {{- end }}
+      {{- range $topContext.Properties }}
+      {{- if .IsNaming }}
+        {{- if ne .NamedPropertyClass "" }}
+  {{ overwriteProperty .PkgName .SnakeCaseName $topContext.Definitions }} = aci_{{getResourceName .NamedPropertyClass $.Definitions}}.example.name
+        {{- else }}
+  {{ overwriteProperty .PkgName .SnakeCaseName $topContext.Definitions }} = {{ lookupTestValue .PkgName .SnakeCaseName $topContext.TestVars $topContext.Definitions $topContext.Properties}}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+}
+{{- println }}
+{{- end -}}
+{{- end}}

@@ -14,24 +14,43 @@ import (
 {{- if .parents}}
 	{{- range .parents}}{{$target_classes := .target_classes}}
 		{{- $parentClassName := capitalize .class_name }}
-func TestAccDataSource{{$.resourceClassName}}With{{capitalize .class_name}} (t *testing.T) {
+func TestAccDataSource{{$.resourceClassName}}{{if .class_name}}With{{capitalize .class_name}}{{end}} (t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "{{.test_type}}", "{{$.class_version}}") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config: testConfig{{$.resourceClassName}}DataSourceDependencyWith{{capitalize .class_name}} ,
+				Config: testConfig{{$.resourceClassName}}DataSource{{if .class_name}}DependencyWith{{capitalize .class_name}}{{end}}{{if $.version_mismatch}} + testConfigDataSourceSystem{{end}},
 				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
 					{{- range $key, $value := $.datasource_required}}
 						{{- if eq $key "target_dn" }}
 					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}", "{{$key}}", "{{getTestTargetDn $.targets $.resourceName $value false $target_classes 0 false}}"),
 						{{- else }}
+					{{- if not (definedInList $.exclude_attributes $key) }}
 					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}", "{{$key}}", "{{$value}}"),
 						{{- end }}
 					{{- end}}
+					{{- end}}
 					{{- range $key, $value := $.default}}
+					{{- if eq $key "version_mismatch" }}
+        					{{- range $version, $attributes := $value }}
+					composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", ">",{{- range $attributeName, $attributeValue := $attributes}}
+					{{- if not (definedInList $.exclude_attributes $attributeName) }}
+						{{- if (isInterfaceSlice $attributeValue)}}
+					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}", "{{$attributeName}}.#", "{{len $attributeValue}}"),
+							  {{- range $index, $subvalue := $attributeValue}}
+					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}", "{{$attributeName}}.{{$index}}", "{{$subvalue}}"),
+							  {{- end}}
+						  {{- else}}
+					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}", "{{$attributeName}}", "{{$attributeValue}}"),
+						  {{- end}}
+					    {{- end}}
+					  {{- end}}),
+					{{- end}}
+					{{- else}}
+					{{- if not (definedInList $.exclude_attributes $key) }}
 						{{- if (isInterfaceSlice $value)}}
 					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}", "{{$key}}.#", "{{len $value}}"),
 							{{- range $index, $subvalue := $value}}
@@ -40,6 +59,8 @@ func TestAccDataSource{{$.resourceClassName}}With{{capitalize .class_name}} (t *
 						{{- else}}
 					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}", "{{$key}}", "{{$value}}"),
 						{{- end}}
+					  {{- end}}
+					{{- end}}
 					{{- end}}
 					{{- range $index, $key := $.read_only}}
 					resource.TestCheckResourceAttrSet("data.aci_{{$.resourceName}}.test", "{{$key}}"),
@@ -47,7 +68,7 @@ func TestAccDataSource{{$.resourceClassName}}With{{capitalize .class_name}} (t *
 				),
 			},
 			{
-				Config:      testConfig{{$.resourceClassName}}NotExisting{{capitalize .class_name}},
+				Config:      testConfig{{$.resourceClassName}}NotExisting{{if .class_name}}{{capitalize .class_name}}{{end}}{{if $.version_mismatch}} + testConfigDataSourceSystem{{end}},
 				ExpectError: regexp.MustCompile("Failed to read aci_{{$.resourceName}} data source"),
 			},
 		},
@@ -58,16 +79,35 @@ func TestAccDataSource{{$.resourceClassName}}With{{capitalize .class_name}} (t *
 func TestAccDataSource{{.resourceClassName}}(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "{{.test_type}}", "{{.class_version}}") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config: testConfig{{.resourceClassName}}DataSource,
+				Config: testConfig{{.resourceClassName}}DataSource{{if $.version_mismatch}} + testConfigDataSourceSystem{{end}},
 				Check: resource.ComposeAggregateTestCheckFunc(
 					{{- range $key, $value := .min}}
+					{{- if not (definedInList $.exclude_attributes $key) }}
 					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
 					{{- end}}
+					{{- end}}
 					{{- range $key, $value := .all}}
+						{{- if eq $key "version_mismatch" }}
+        					{{- range $version, $attributes := $value }}
+					composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", ">",{{- range $attributeName, $attributeValue := $attributes}}
+																{{- if not (definedInList $.exclude_attributes $attributeName) }}
+								{{- if (isInterfaceSlice $attributeValue)}}
+							resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$attributeName}}.#", "{{len $attributeValue}}"),
+								{{- range $index, $subvalue := $attributeValue}}
+							resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$attributeName}}.{{$index}}", "{{$subvalue}}"),
+								{{- end}}
+							{{- else}}
+							resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$attributeName}}", "{{$attributeValue}}"),
+							{{- end}}
+						{{- end}}
+        			{{- end }}),
+				{{- end }}
+			{{- else }}
+			{{- if not (definedInList $.exclude_attributes $key) }}
 						{{- if (isInterfaceSlice $value)}}
 					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$key}}.#", "{{len $value}}"),
 							{{- range $index, $subvalue := $value}}
@@ -77,10 +117,12 @@ func TestAccDataSource{{.resourceClassName}}(t *testing.T) {
 					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
 						{{- end}}
 					{{- end}}
+					{{- end}}
+					{{- end}}
 				),
 			},
 			{
-				Config:      testConfig{{.resourceClassName}}NotExisting,
+				Config:      testConfig{{.resourceClassName}}NotExisting{{if $.version_mismatch}} + testConfigDataSourceSystem{{end}},
 				ExpectError: regexp.MustCompile("Failed to read aci_{{$.resourceName}} data source"),
 			},
 		},
@@ -91,9 +133,11 @@ func TestAccDataSource{{.resourceClassName}}(t *testing.T) {
 {{- if .parents}}
 	{{- range .parents}}{{$target_classes := .target_classes}}
 		{{- $parentClassName := capitalize .class_name }}
-const testConfig{{$.resourceClassName}}DataSourceDependencyWith{{capitalize .class_name}}  = testConfig{{$.resourceClassName}}MinDependencyWith{{capitalize .class_name}}  + `
+const testConfig{{$.resourceClassName}}DataSource{{if .class_name}}DependencyWith{{capitalize .class_name}}{{end}}  = testConfig{{$.resourceClassName}}Min{{if .class_name}}DependencyWith{{capitalize .class_name}}{{end}}  + `
 data "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}" {
+  {{- if ne .parent_dn ""}}
   parent_dn = {{.parent_dn}}
+  {{- end}}
   {{- range $key, $value := $.datasource_required}}
 		{{- if eq $key "target_dn" }}{{$attributeValue := getTestTargetDn $.targets $.resourceName $value true $target_classes 0 false}}
   {{$key}} = {{if containsString $attributeValue "."}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}
@@ -105,9 +149,11 @@ data "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClassNam
 }
 `
 
-const testConfig{{$.resourceClassName}}NotExisting{{capitalize .class_name}}  = testConfig{{capitalize .class_name}}Min{{- if ne .parent_dependency ""}}DependencyWith{{capitalize .parent_dependency}}{{if and (ne .parent_dependency_name nil) (ne .parent_dependency_name "")}}{{capitalize .parent_dependency_name }}{{- end }}{{- end}} + `
+const testConfig{{$.resourceClassName}}NotExisting{{if .class_name}}{{capitalize .class_name}}{{end}}  = testConfig{{if .class_name}}{{capitalize .class_name}}{{else}}{{$.resourceClassName}}{{end}}Min{{- if ne .parent_dependency ""}}DependencyWith{{capitalize .parent_dependency}}{{if and (ne .parent_dependency_name nil) (ne .parent_dependency_name "")}}{{capitalize .parent_dependency_name }}{{- end }}{{- end}} + `
 data "aci_{{$.resourceName}}" "test_non_existing" {
+  {{- if ne .parent_dn ""}}
   parent_dn = {{.parent_dn}}
+  {{- end}}
   {{- range $key, $value := $.datasource_non_existing}}
 		{{- if and (eq $key "target_dn") (not (hasPrefix $value "topology/")) }}
   {{$key}} = "{{getTestTargetDn $.targets $.resourceName $value false $target_classes 0 false}}_not_existing"

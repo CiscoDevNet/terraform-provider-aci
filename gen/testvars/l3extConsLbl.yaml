@@ -2,6 +2,7 @@
 # In order to regenerate this file execute `go generate` from the repository root.
 # More details can be found in the [README](https://github.com/CiscoDevNet/terraform-provider-aci/blob/master/README.md).
 
+
 default:
   annotation: "orchestrator:terraform"
   description: ""
@@ -65,6 +66,7 @@ parents:
     parent_dependency: ""
     parent_dn: "aci_l3_outside.test.id"
     class_in_parent: false
+    test_type: apic
 child_targets:
   - class_name: "l3extInstP"
     target_dn: "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile_1"
@@ -76,3 +78,4 @@ child_targets:
     target_dn_overwrite_docs: "aci_route_control_profile.example.id"
     relation_resource_name: "route_control_profile"
     static: true
+class_version: 2.0(1m)-

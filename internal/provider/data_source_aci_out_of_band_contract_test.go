@@ -14,25 +14,26 @@ import (
 func TestAccDataSourceVzOOBBrCP(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "1.0(1e)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config: testConfigVzOOBBrCPDataSource,
+				Config: testConfigVzOOBBrCPDataSource + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("data.aci_out_of_band_contract.test", "annotation", "annotation"),
 					resource.TestCheckResourceAttr("data.aci_out_of_band_contract.test", "description", "description_1"),
-					resource.TestCheckResourceAttr("data.aci_out_of_band_contract.test", "intent", "estimate_add"),
 					resource.TestCheckResourceAttr("data.aci_out_of_band_contract.test", "name_alias", "name_alias_1"),
 					resource.TestCheckResourceAttr("data.aci_out_of_band_contract.test", "owner_key", "owner_key_1"),
 					resource.TestCheckResourceAttr("data.aci_out_of_band_contract.test", "owner_tag", "owner_tag_1"),
 					resource.TestCheckResourceAttr("data.aci_out_of_band_contract.test", "priority", "level1"),
 					resource.TestCheckResourceAttr("data.aci_out_of_band_contract.test", "scope", "application-profile"),
 					resource.TestCheckResourceAttr("data.aci_out_of_band_contract.test", "target_dscp", "AF11"),
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)", ">",
+						resource.TestCheckResourceAttr("data.aci_out_of_band_contract.test", "intent", "estimate_add")),
 				),
 			},
 			{
-				Config:      testConfigVzOOBBrCPNotExisting,
+				Config:      testConfigVzOOBBrCPNotExisting + testConfigDataSourceSystem,
 				ExpectError: regexp.MustCompile("Failed to read aci_out_of_band_contract data source"),
 			},
 		},

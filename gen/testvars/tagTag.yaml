@@ -2,6 +2,7 @@
 # In order to regenerate this file execute `go generate` from the repository root.
 # More details can be found in the [README](https://github.com/CiscoDevNet/terraform-provider-aci/blob/master/README.md).
 
+
 default:
   value: "test_value"
 
@@ -23,7 +24,10 @@ parents:
     parent_dependency: ""
     parent_dn: "aci_tenant.test.id"
     class_in_parent: false
+    test_type: both
   - class_name: "fvAEPg"
     parent_dependency: ""
     parent_dn: "aci_application_epg.test.id"
     class_in_parent: false
+    test_type: both
+class_version: 3.2(1l)-

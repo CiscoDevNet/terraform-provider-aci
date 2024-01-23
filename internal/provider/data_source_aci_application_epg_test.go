@@ -14,32 +14,33 @@ import (
 func TestAccDataSourceFvAEPgWithFvAp(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "apic", "1.0(1e)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config:             testConfigFvAEPgDataSourceDependencyWithFvAp,
+				Config:             testConfigFvAEPgDataSourceDependencyWithFvAp + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("data.aci_application_epg.test", "name", "test_name"),
-					resource.TestCheckResourceAttr("data.aci_application_epg.test", "admin_state", "no"),
 					resource.TestCheckResourceAttr("data.aci_application_epg.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("data.aci_application_epg.test", "contract_exception_tag", ""),
 					resource.TestCheckResourceAttr("data.aci_application_epg.test", "description", ""),
 					resource.TestCheckResourceAttr("data.aci_application_epg.test", "flood_in_encapsulation", "disabled"),
 					resource.TestCheckResourceAttr("data.aci_application_epg.test", "forwarding_control", "none"),
-					resource.TestCheckResourceAttr("data.aci_application_epg.test", "has_multicast_source", "no"),
 					resource.TestCheckResourceAttr("data.aci_application_epg.test", "intra_epg_isolation", "unenforced"),
 					resource.TestCheckResourceAttr("data.aci_application_epg.test", "match_criteria", "AtleastOne"),
 					resource.TestCheckResourceAttr("data.aci_application_epg.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("data.aci_application_epg.test", "preferred_group_member", "exclude"),
 					resource.TestCheckResourceAttr("data.aci_application_epg.test", "priority", "unspecified"),
 					resource.TestCheckResourceAttr("data.aci_application_epg.test", "useg_epg", "no"),
+					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)", ">",
+						resource.TestCheckResourceAttr("data.aci_application_epg.test", "admin_state", "no"),
+						resource.TestCheckResourceAttr("data.aci_application_epg.test", "has_multicast_source", "no")),
 					resource.TestCheckResourceAttrSet("data.aci_application_epg.test", "pc_tag"),
 				),
 			},
 			{
-				Config:      testConfigFvAEPgNotExistingFvAp,
+				Config:      testConfigFvAEPgNotExistingFvAp + testConfigDataSourceSystem,
 				ExpectError: regexp.MustCompile("Failed to read aci_application_epg data source"),
 			},
 		},

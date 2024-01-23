@@ -7,6 +7,7 @@ global:
 
 fvTenant:
   resource_name: "tenant"
+  resource_identifier: "tn"
 
 fvBD:
   resource_name: "bridge_domain"
@@ -649,3 +650,25 @@ topSystem:
   sub_category: "Fabric Inventory"
   dn_formats:
     - "topology/pod-{id}/node-{id}/sys"
+    
+pkiTP:
+  sub_category: "AAA"
+  ui_locations:
+    - "Admin -> AAA -> Security -> Certificate Authorities"
+    - "Cloud Network Controller -> Administrative -> Security -> Certificate Authorities"
+  multi_parents: 
+    - rn_prepend: "certstore"
+      contained_by: "fvTenant"
+      wrapper_class: "cloudCertStore"
+      test_type: "cloud"
+
+pkiKeyRing:
+  sub_category: "AAA"
+  ui_locations:
+    - "Admin -> AAA -> Security -> Key Rings"
+    - "Cloud Network Controller -> Administrative -> Security -> Key Rings"
+  multi_parents: 
+    - rn_prepend: "certstore"
+      contained_by: "fvTenant"
+      wrapper_class: "cloudCertStore"
+      test_type: "cloud"

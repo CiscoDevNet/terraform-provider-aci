@@ -64,18 +64,16 @@ Data source for ACI {{.ResourceNameAsDescription}}
   {{- end}}
 {{- end}}
 
-{{- if and .HasParent (getDefaultValues .PkgName "parent_dn" $.Definitions)}}
+{{- if  and .HasParent (getDefaultValues .PkgName "parent_dn" $.Definitions) }}
 
 ### Optional ###
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
-  {{- range .DocumentationParentDns}}
+    {{- range .DocumentationParentDns }}
   - {{ . }}
-  {{- end}}
-  {{- if getDefaultValues .PkgName "parent_dn" $.Definitions}}
+    {{- end }}
   - Default: `{{ getDefaultValues .PkgName "parent_dn" $.Definitions}}`
-  {{- end}}
-{{- end}}
+{{- end }}
 
 ### Read-Only ###
 

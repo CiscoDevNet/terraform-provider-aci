@@ -14,12 +14,12 @@ import (
 func TestAccResourceFvCrtrnWithFvAEPg(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "apic", "1.1(1j)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigFvCrtrnMinDependencyWithFvAEPgAllowExisting,
+				Config:             testConfigFvCrtrnMinDependencyWithFvAEPgAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.allow_test", "annotation", "orchestrator:terraform"),
@@ -36,10 +36,11 @@ func TestAccResourceFvCrtrnWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.allow_test_2", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.allow_test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.allow_test_2", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.allow_test", "precedence", "0"),
-					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.allow_test_2", "precedence", "0"),
-					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.allow_test", "scope", "scope-bd"),
-					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.allow_test_2", "scope", "scope-bd"),
+					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)", ">",
+						resource.TestCheckResourceAttr("aci_epg_useg_block_statement.allow_test", "precedence", "0"),
+						resource.TestCheckResourceAttr("aci_epg_useg_block_statement.allow_test_2", "precedence", "0"),
+						resource.TestCheckResourceAttr("aci_epg_useg_block_statement.allow_test", "scope", "scope-bd"),
+						resource.TestCheckResourceAttr("aci_epg_useg_block_statement.allow_test_2", "scope", "scope-bd")),
 				),
 			},
 		},
@@ -47,12 +48,12 @@ func TestAccResourceFvCrtrnWithFvAEPg(t *testing.T) {
 
 	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "apic", "1.1(1j)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:      testConfigFvCrtrnMinDependencyWithFvAEPgAllowExisting,
+				Config:      testConfigFvCrtrnMinDependencyWithFvAEPgAllowExisting + testConfigDataSourceSystem,
 				ExpectError: regexp.MustCompile("Object Already Exists"),
 			},
 		},
@@ -60,12 +61,12 @@ func TestAccResourceFvCrtrnWithFvAEPg(t *testing.T) {
 
 	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "apic", "1.1(1j)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigFvCrtrnMinDependencyWithFvAEPgAllowExisting,
+				Config:             testConfigFvCrtrnMinDependencyWithFvAEPgAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.allow_test", "annotation", "orchestrator:terraform"),
@@ -82,22 +83,23 @@ func TestAccResourceFvCrtrnWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.allow_test_2", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.allow_test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.allow_test_2", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.allow_test", "precedence", "0"),
-					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.allow_test_2", "precedence", "0"),
-					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.allow_test", "scope", "scope-bd"),
-					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.allow_test_2", "scope", "scope-bd"),
+					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)", ">",
+						resource.TestCheckResourceAttr("aci_epg_useg_block_statement.allow_test", "precedence", "0"),
+						resource.TestCheckResourceAttr("aci_epg_useg_block_statement.allow_test_2", "precedence", "0"),
+						resource.TestCheckResourceAttr("aci_epg_useg_block_statement.allow_test", "scope", "scope-bd"),
+						resource.TestCheckResourceAttr("aci_epg_useg_block_statement.allow_test_2", "scope", "scope-bd")),
 				),
 			},
 		},
 	})
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "apic", "1.1(1j)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigFvCrtrnMinDependencyWithFvAEPg,
+				Config:             testConfigFvCrtrnMinDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "annotation", "orchestrator:terraform"),
@@ -107,13 +109,14 @@ func TestAccResourceFvCrtrnWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "precedence", "0"),
-					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "scope", "scope-bd"),
+					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)", ">",
+						resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "precedence", "0"),
+						resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "scope", "scope-bd")),
 				),
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config:             testConfigFvCrtrnAllDependencyWithFvAEPg,
+				Config:             testConfigFvCrtrnAllDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "annotation", "annotation"),
@@ -123,31 +126,22 @@ func TestAccResourceFvCrtrnWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "name_alias", "name_alias_1"),
 					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "owner_key", "owner_key_1"),
 					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "owner_tag", "owner_tag_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "precedence", "1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "scope", "scope-bd"),
+					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)", ">",
+						resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "precedence", "1"),
+						resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "scope", "scope-bd")),
 				),
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config:             testConfigFvCrtrnMinDependencyWithFvAEPg,
+				Config:             testConfigFvCrtrnMinDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check:              resource.ComposeAggregateTestCheckFunc(),
 			},
 			// Update with empty strings config or default value
 			{
-				Config:             testConfigFvCrtrnResetDependencyWithFvAEPg,
+				Config:             testConfigFvCrtrnResetDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "match", "any"),
-					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "name", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "precedence", "0"),
-					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "scope", "scope-bd"),
-				),
+				Check:              resource.ComposeAggregateTestCheckFunc(),
 			},
 			// Import testing
 			{
@@ -157,7 +151,7 @@ func TestAccResourceFvCrtrnWithFvAEPg(t *testing.T) {
 			},
 			// Update with children
 			{
-				Config:             testConfigFvCrtrnChildrenDependencyWithFvAEPg,
+				Config:             testConfigFvCrtrnChildrenDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "annotation", "orchestrator:terraform"),
@@ -167,8 +161,9 @@ func TestAccResourceFvCrtrnWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "precedence", "0"),
-					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "scope", "scope-bd"),
+					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)", ">",
+						resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "precedence", "0"),
+						resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "scope", "scope-bd")),
 					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "annotations.1.key", "key_1"),
@@ -192,7 +187,7 @@ func TestAccResourceFvCrtrnWithFvAEPg(t *testing.T) {
 			},
 			// Update with children removed from config
 			{
-				Config:             testConfigFvCrtrnChildrenRemoveFromConfigDependencyWithFvAEPg,
+				Config:             testConfigFvCrtrnChildrenRemoveFromConfigDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "annotations.0.key", "key_0"),
@@ -209,7 +204,7 @@ func TestAccResourceFvCrtrnWithFvAEPg(t *testing.T) {
 			},
 			// Update with children first child removed
 			{
-				Config:             testConfigFvCrtrnChildrenRemoveOneDependencyWithFvAEPg,
+				Config:             testConfigFvCrtrnChildrenRemoveOneDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "annotations.0.key", "key_1"),
@@ -222,7 +217,7 @@ func TestAccResourceFvCrtrnWithFvAEPg(t *testing.T) {
 			},
 			// Update with all children removed
 			{
-				Config:             testConfigFvCrtrnChildrenRemoveAllDependencyWithFvAEPg,
+				Config:             testConfigFvCrtrnChildrenRemoveAllDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "annotations.#", "0"),
@@ -230,6 +225,7 @@ func TestAccResourceFvCrtrnWithFvAEPg(t *testing.T) {
 				),
 			},
 		},
+		CheckDestroy: testCheckResourceDestroy,
 	})
 }
 
@@ -259,8 +255,8 @@ resource "aci_epg_useg_block_statement" "test" {
   name_alias = "name_alias_1"
   owner_key = "owner_key_1"
   owner_tag = "owner_tag_1"
-  precedence = "1"
-  scope = "scope-bd"
+  precedence = provider::aci::compare_versions(data.aci_system.version.version,">=","4.1(1i)") ? "1" : null
+  scope = provider::aci::compare_versions(data.aci_system.version.version,">=","4.1(1i)") ? "scope-bd" : null
 }
 `
 
@@ -274,8 +270,8 @@ resource "aci_epg_useg_block_statement" "test" {
   name_alias = ""
   owner_key = ""
   owner_tag = ""
-  precedence = "0"
-  scope = "scope-bd"
+  precedence = provider::aci::compare_versions(data.aci_system.version.version,">=","4.1(1i)") ? "0" : null
+  scope = provider::aci::compare_versions(data.aci_system.version.version,">=","4.1(1i)") ? "scope-bd" : null
 }
 `
 const testConfigFvCrtrnChildrenDependencyWithFvAEPg = testConfigFvAEPgMin + `

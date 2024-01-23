@@ -352,6 +352,7 @@ func (r *FvIdGroupAttrResource) Create(ctx context.Context, req resource.CreateR
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -466,7 +467,7 @@ func (r *FvIdGroupAttrResource) ImportState(ctx context.Context, req resource.Im
 func getAndSetFvIdGroupAttrAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvIdGroupAttrResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "fvIdGroupAttr,tagAnnotation,tagTag"), "GET", nil)
 
-	*data = *getEmptyFvIdGroupAttrResourceModel()
+	readData := getEmptyFvIdGroupAttrResourceModel()
 
 	if diags.HasError() {
 		return
@@ -477,29 +478,29 @@ func getAndSetFvIdGroupAttrAttributes(ctx context.Context, diags *diag.Diagnosti
 			attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
 			for attributeName, attributeValue := range attributes {
 				if attributeName == "dn" {
-					data.Id = basetypes.NewStringValue(attributeValue.(string))
-					setFvIdGroupAttrParentDn(ctx, attributeValue.(string), data)
+					readData.Id = basetypes.NewStringValue(attributeValue.(string))
+					setFvIdGroupAttrParentDn(ctx, attributeValue.(string), readData)
 				}
 				if attributeName == "annotation" {
-					data.Annotation = basetypes.NewStringValue(attributeValue.(string))
+					readData.Annotation = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "descr" {
-					data.Descr = basetypes.NewStringValue(attributeValue.(string))
+					readData.Descr = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "name" {
-					data.Name = basetypes.NewStringValue(attributeValue.(string))
+					readData.Name = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "nameAlias" {
-					data.NameAlias = basetypes.NewStringValue(attributeValue.(string))
+					readData.NameAlias = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "ownerKey" {
-					data.OwnerKey = basetypes.NewStringValue(attributeValue.(string))
+					readData.OwnerKey = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "ownerTag" {
-					data.OwnerTag = basetypes.NewStringValue(attributeValue.(string))
+					readData.OwnerTag = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "selector" {
-					data.Selector = basetypes.NewStringValue(attributeValue.(string))
+					readData.Selector = basetypes.NewStringValue(attributeValue.(string))
 				}
 			}
 			TagAnnotationFvIdGroupAttrList := make([]TagAnnotationFvIdGroupAttrResourceModel, 0)
@@ -537,10 +538,10 @@ func getAndSetFvIdGroupAttrAttributes(ctx context.Context, diags *diag.Diagnosti
 					}
 				}
 			}
-			tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationFvIdGroupAttrList)
-			data.TagAnnotation = tagAnnotationSet
-			tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagFvIdGroupAttrList)
-			data.TagTag = tagTagSet
+			tagAnnotationSet, _ := types.SetValueFrom(ctx, readData.TagAnnotation.ElementType(ctx), TagAnnotationFvIdGroupAttrList)
+			readData.TagAnnotation = tagAnnotationSet
+			tagTagSet, _ := types.SetValueFrom(ctx, readData.TagTag.ElementType(ctx), TagTagFvIdGroupAttrList)
+			readData.TagTag = tagTagSet
 		} else {
 			diags.AddError(
 				"too many results in response",
@@ -548,8 +549,9 @@ func getAndSetFvIdGroupAttrAttributes(ctx context.Context, diags *diag.Diagnosti
 			)
 		}
 	} else {
-		data.Id = basetypes.NewStringNull()
+		readData.Id = basetypes.NewStringNull()
 	}
+	*data = *readData
 }
 
 func getFvIdGroupAttrRn(ctx context.Context, data *FvIdGroupAttrResourceModel) string {
@@ -705,7 +707,6 @@ func getFvIdGroupAttrCreateJsonPayload(ctx context.Context, diags *diag.Diagnost
 	if !data.Selector.IsNull() && !data.Selector.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["selector"] = data.Selector.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"fvIdGroupAttr": payloadMap})
 	if err != nil {
 		diags.AddError(
