@@ -130,3 +130,35 @@ fvEpIpTag:
   ui_locations:
     - "Tenants -> Policies -> Protocol -> Endpoint Tags -> Endpoint IP"
   sub_category: "Tenant Policies"
+
+commHttps:
+  include: true
+
+# pkiKeyRing:
+#   contained_by:
+#     - "polUni"
+#   rn_prepend: "userext/pkiext"
+#   dn_formats:
+#    #- "uni/tn-{name}/certstore/tp-{name}"
+#    - "uni/userext/pkiext/tp-{name}"
+
+# cloudCertStore:
+#   rn_format: "uni/tn-{name}"
+
+# pkiKeyRing:
+#   parent_dn:
+#    - "uni/userext/pkiext"
+
+pkiTP:
+  # contained_by:
+  #   - "pkiEp"
+  parent_dn:
+    - "uni/userext/pkiext"
+
+# aaaUserEp:
+#   contained_by:
+#     - "polUni"
+#   rn_prepend: "uni"
+#   dn_formats:
+#     - "uni/userext"
+  

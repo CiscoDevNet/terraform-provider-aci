@@ -44,3 +44,5 @@ resource "aci_l3_outside" "test" {
   relation_l3ext_rs_ectx = aci_vrf.test.id
 }
 `
+
+const testConfigPkiEpMin = ``

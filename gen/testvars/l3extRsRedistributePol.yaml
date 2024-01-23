@@ -5,7 +5,6 @@
 default:
   annotation: "orchestrator:terraform"
   source: "direct"
-
 datasource_non_existing:
   source: "static"
   route_control_profile_name: "non_existing_tn_rtctrl_profile_name"
@@ -16,7 +15,7 @@ datasource_required:
 
 resource_required:
   source: "direct"
-  route_control_profile_name: "test_tn_rtctrl_profile_name"
+  route_control_profile_name: "test_tn_rtctrl_profile_name" 
 
 all:
   annotation: "annotation"

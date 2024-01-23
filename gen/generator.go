@@ -100,6 +100,10 @@ var templateFuncs = template.FuncMap{
 	"getResourceNameAsDescription": GetResourceNameAsDescription,
 	"capitalize":                   Capitalize,
 	"getDevnetDocForClass":         GetDevnetDocForClass,
+	"spaceToNewLine":               SpaceToNewline,
+	"contains":                     strings.Contains,
+	"appendNewLine":                AppendNewline,
+	"hasKey":                       HasKey,
 }
 
 // Global variables used for unique resource name setting based on label from meta data
@@ -117,6 +121,37 @@ func GetResourceNameAsDescription(s string) string {
 
 func GetDevnetDocForClass(className string) string {
 	return fmt.Sprintf("[%s](%s/app/index.html#/objects/%s/overview)", className, pubhupDevnetBaseUrl, className)
+}
+
+func SpaceToNewline(s string) string {
+	s = strings.ReplaceAll(s, " ", "\n")
+	s = strings.ReplaceAll(s, "_", " ")
+	return s
+}
+
+func AppendNewline(s string) string {
+	s = strings.ReplaceAll(s, "<<EOT", "")
+	s = strings.ReplaceAll(s, "EOT", "")
+
+	trimmed := strings.TrimSpace(s)
+	words := strings.Split(trimmed, " ")
+	replaced := strings.Join(words, "\\n")
+
+	if strings.HasPrefix(s, " ") {
+		replaced = "" + replaced
+	}
+
+	if strings.HasSuffix(s, " ") {
+		replaced = replaced + "\\n"
+	}
+
+	s = strings.ReplaceAll(replaced, "_", " ")
+	return s
+}
+
+func HasKey(dict map[interface{}]interface{}, key string) bool {
+	_, ok := dict[key]
+	return ok
 }
 
 func Capitalize(s string) string {
@@ -549,6 +584,7 @@ func main() {
 			// Set the documentation specific information for the resource
 			// This is done to ensure references can be made to parent/child resources and output amounts can be restricted
 			setDocumentationData(&model, definitions)
+			setExplicitParentDns(&model)
 
 			// Render the testvars file for the resource
 			// First generate run would not mean the file is correct from beginning since some testvars would need to be manually overwritten in the properties definitions YAML file
@@ -579,7 +615,6 @@ func main() {
 			// Leverage the hclwrite package to format the example code
 			model.ExampleDataSource = string(hclwrite.Format(getExampleCode(fmt.Sprintf("%s/%s_%s/data-source.tf", datasourcesExamplesPath, providerName, model.ResourceName))))
 			renderTemplate("datasource.md.tmpl", fmt.Sprintf("%s.md", model.ResourceName), datasourcesDocsPath, model)
-
 			renderTemplate("resource_test.go.tmpl", fmt.Sprintf("resource_%s_%s_test.go", providerName, model.ResourceName), providerPath, model)
 			renderTemplate("datasource_test.go.tmpl", fmt.Sprintf("data_source_%s_%s_test.go", providerName, model.ResourceName), providerPath, model)
 
@@ -636,6 +671,7 @@ type Model struct {
 	DatasourceWarnings       []string
 	Parents                  []string
 	UiLocations              []string
+	ExplicitParentDns        []string
 	IdentifiedBy             []interface{}
 	DnFormats                []interface{}
 	Properties               map[string]Property
@@ -1325,6 +1361,7 @@ func GetOverwriteDnFormats(dnFormats []interface{}, classPkgName string, definit
 }
 
 // Determine if possible dn formats in terraform documentation should be overwritten by dn formats from the classes.yaml file
+<<<<<<< HEAD
 func GetOverwriteExampleClasses(classPkgName string, definitions Definitions) []interface{} {
 	overwriteExampleClasses := []interface{}{}
 	if v, ok := definitions.Classes[classPkgName]; ok {
@@ -1335,6 +1372,25 @@ func GetOverwriteExampleClasses(classPkgName string, definitions Definitions) []
 		}
 	}
 	return overwriteExampleClasses
+=======
+func GetOverwriteParentDn(classPkgName string, definitions Definitions) []interface{} {
+	var parentDn []interface{}
+	if v, ok := definitions.Classes[classPkgName]; ok {
+		for key, value := range v.(map[interface{}]interface{}) {
+			if key.(string) == "parent_dn" {
+				parentDn = value.([]interface{})
+			}
+		}
+	}
+	return parentDn
+}
+
+func setExplicitParentDns(m *Model) {
+	for _, parentDn := range GetOverwriteParentDn(m.PkgName, m.Definitions) {
+		log.Println(parentDn.(string))
+		m.ExplicitParentDns = append(m.ExplicitParentDns, parentDn.(string))
+	}
+>>>>>>> b2f52a6d ([minor_change] Addition of new generated resource and data source for pkiTP)
 }
 
 // Set variables that are used during the rendering of the example and documentation templates
@@ -1402,6 +1458,7 @@ func setDocumentationData(m *Model, definitions Definitions) {
 
 	// TODO add overwrite to provide which documentation examples to be included
 	docsExampleAmount := m.Configuration["docs_examples_amount"].(int)
+<<<<<<< HEAD
 	if len(m.ContainedBy) >= docsExampleAmount {
 		overwriteExampleClasses := GetOverwriteExampleClasses(m.PkgName, definitions)
 		if len(overwriteExampleClasses) > 0 {
@@ -1412,6 +1469,11 @@ func setDocumentationData(m *Model, definitions Definitions) {
 			for _, resourceDetails := range resourcesFound[0:docsExampleAmount] {
 				m.DocumentationExamples = append(m.DocumentationExamples, resourceDetails[1])
 			}
+=======
+	if len(m.ContainedBy) > docsExampleAmount {
+		for _, resourceDetails := range resourcesFound[0:docsExampleAmount] {
+			m.DocumentationExamples = append(m.DocumentationExamples, resourceDetails[1])
+>>>>>>> b2f52a6d ([minor_change] Addition of new generated resource and data source for pkiTP)
 		}
 	} else {
 		for _, resourceDetails := range resourcesFound {
