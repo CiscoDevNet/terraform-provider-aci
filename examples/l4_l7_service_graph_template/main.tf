@@ -76,6 +76,8 @@ resource "aci_cloud_l4_l7_native_load_balancer" "cloud_native_alb" {
     aci_cloud_subnet.cloud_subnet.id
   ]
   cloud_l4l7_load_balancer_type = "application"
+  is_static_ip                           = "yes"
+  static_ip_address = ["10.1.1.0"]
 }
 
 # Third-Party Firewall
