@@ -402,7 +402,7 @@ func setAciRestManagedAttributes(ctx context.Context, diags *diag.Diagnostics, c
 	var paramString string
 	var match bool
 	for _, configOnlyDn := range ConfigOnlyDns {
-		match, _ = regexp.MatchString(fmt.Sprintf("%s[a-zA-Z0-9_.:-]+$[^/]*$", configOnlyDn), data.Dn.ValueString())
+		match, _ = regexp.MatchString(fmt.Sprintf("%s[a-zA-Z0-9_.:-]*$[^/]*$", configOnlyDn), data.Dn.ValueString())
 		if match {
 			break
 		}
