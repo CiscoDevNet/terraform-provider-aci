@@ -1,3 +1,9 @@
+## 2.13.0 (January 25, 2024)
+IMPROVEMENTS:
+- Add support importing for specified children in aci_rest_managed_resource
+- Migration of aci_rest_managed into plugin framework
+- Add ip_data_plane_learning attribute to aci_subnet resource and data source (#1138)
+
 ## 2.12.0 (December 22, 2023)
 This release is the first release of a muxed provider including resources created using the new terraform-plugin-framework.
 New resources will be created using the new approach based on terraform-plugin-framework.
