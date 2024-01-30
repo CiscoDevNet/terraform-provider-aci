@@ -43,6 +43,11 @@ func CheckDn(ctx context.Context, client *client.Client, dn string, diags *diag.
 
 func DoRestRequest(ctx context.Context, diags *diag.Diagnostics, client *client.Client, path, method string, payload *container.Container) *container.Container {
 
+	// Ensure path starts with a slash to assure signature is created correctly
+	if !strings.HasPrefix("/", path) {
+		path = fmt.Sprintf("/%s", path)
+	}
+
 	restRequest, err := client.MakeRestRequest(method, path, payload, true)
 	if err != nil {
 		diags.AddError(
