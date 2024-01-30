@@ -1,3 +1,7 @@
+## 2.13.2 (January 30, 2024)
+BUG FIXES:
+- Fix path for signature calculation for private_key authentication in plugin framework provider resources
+
 ## 2.13.1 (January 30, 2024)
 BUG FIXES:
 -  Fix regex match to allow matching full dn in aci_rest_managed
