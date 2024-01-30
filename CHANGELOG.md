@@ -1,3 +1,7 @@
+## 2.13.1 (January 30, 2024)
+BUG FIXES:
+-  Fix regex match to allow matching full dn in aci_rest_managed
+
 ## 2.13.0 (January 25, 2024)
 IMPROVEMENTS:
 - Add support importing for specified children in aci_rest_managed_resource
