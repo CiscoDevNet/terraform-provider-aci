@@ -11,6 +11,7 @@ The code assumes that the following directories with content exist in the curren
 	- provider.go.tmpl (the template used to generate the provider.go file in the ../internal/provider directory)
 	- index.md.tmpl (the template used to generate the index (provider) documentation file in the ../docs directory)
 	- testvars.yaml.tmpl (the template used to generate test variables in the ../testvars directory)
+	- annotation_unsupported.go.tmpl (the template used to generate the list of classes that do not support annotation in the ../internal/provider directory)
 
 	- resource.go.tmpl (the template used to generate the resource_*.go files in the ../internal/provider directory)
 	- resource.md.tmpl (the template used to generate the *.md files in the ../docs/resources directory)
@@ -239,6 +240,8 @@ func renderTemplate(templateName, outputFileName, outputPath string, outputData 
 		err = tmpl.Execute(&buffer, outputData.(ProviderModel))
 	} else if strings.Contains(templateName, "_test.go.tmpl") {
 		err = tmpl.Execute(&buffer, outputData.(Model).TestVars)
+	} else if strings.Contains(templateName, "annotation_unsupported.go.tmpl") {
+		err = tmpl.Execute(&buffer, outputData.([]string))
 	} else {
 		err = tmpl.Execute(&buffer, outputData.(Model))
 	}
@@ -403,7 +406,7 @@ func migrateLegacyDocumentation() {
 // Container function to clean all directories properly
 func cleanDirectories() {
 	cleanDirectory(docsPath, []string{"resources", "data-sources"})
-	cleanDirectory(providerPath, []string{"provider_test.go", "utils.go", "annotation_unsupported.go", "test_constants.go", "resource_aci_rest_managed.go", "resource_aci_rest_managed_test.go", "data_source_aci_rest_managed.go", "data_source_aci_rest_managed_test.go"})
+	cleanDirectory(providerPath, []string{"provider_test.go", "utils.go", "test_constants.go", "resource_aci_rest_managed.go", "resource_aci_rest_managed_test.go", "data_source_aci_rest_managed.go", "data_source_aci_rest_managed_test.go"})
 	cleanDirectory(resourcesDocsPath, []string{})
 	cleanDirectory(datasourcesDocsPath, []string{})
 	cleanDirectory(testVarsPath, []string{})
@@ -473,16 +476,58 @@ func getClassMetadata() {
 	}
 }
 
-func main() {
+// When GEN_ANNOTATION_UNSUPPORTED environment variable is set, the list of classes that don't support annotation are retrieved and annotation_unsupported.go is generated.
+func genAnnotationUnsupported() []string {
+	classes := []string{}
+	_, gen_annotation_unsupported := os.LookupEnv("GEN_ANNOTATION_UNSUPPORTED")
+	if gen_annotation_unsupported {
+		var url string
+		host := os.Getenv("GEN_HOST")
+		if host == "" {
+			url = fmt.Sprintf("%s/doc/jsonmeta/aci-meta.json", pubhupDevnetBaseUrl)
+		} else {
+			url = fmt.Sprintf("https://%s/acimeta/aci-meta.json", host)
+		}
 
+		client := &http.Client{Transport: &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}}
+		res, err := client.Get(url)
+		if err != nil {
+			panic(err)
+		}
+
+		resBody, err := io.ReadAll(res.Body)
+		if err != nil {
+			panic(err)
+		}
+		var result Metadata
+		err = json.Unmarshal(resBody, &result)
+		if err != nil {
+			log.Fatal("Error during Unmarshal(): ", err)
+		}
+
+		for class, meta := range result.Classes {
+			if meta.IsConfigurable && meta.Properties.Annotation == nil {
+				classes = append(classes, class)
+			}
+		}
+		sort.Strings(classes)
+	}
+	return classes
+}
+
+func main() {
 	getClassMetadata()
 	cleanDirectories()
 
 	definitions := getDefinitions()
 	classModels := getClassModels(definitions)
+	annotationUnsupported := genAnnotationUnsupported()
 
 	renderTemplate("provider.go.tmpl", "provider.go", providerPath, classModels)
 	renderTemplate("index.md.tmpl", "index.md", docsPath, ProviderModel{Example: string(getExampleCode(providerExamplePath))})
+	if len(annotationUnsupported) > 0 {
+		renderTemplate("annotation_unsupported.go.tmpl", "annotation_unsupported.go", providerPath, annotationUnsupported)
+	}
 	for _, model := range classModels {
 
 		// Only render resources and datasources when the class has a unique identifier or is marked as include in the classes definitions YAML file
@@ -550,6 +595,16 @@ func main() {
 // A Model that represents the provider
 type ProviderModel struct {
 	Example string
+}
+
+// A Model that represents the ACI Metadata for purposes of finding annotation supported classes.
+type Metadata struct {
+	Classes map[string]struct {
+		IsConfigurable bool `json:"isConfigurable"`
+		Properties     struct {
+			Annotation interface{} `json:"annotation"`
+		} `json:"properties"`
+	} `json:"classes"`
 }
 
 // A Model represents a ACI class
