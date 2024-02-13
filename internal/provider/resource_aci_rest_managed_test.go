@@ -445,6 +445,23 @@ func TestAccAciRestManaged_globalAnnotation(t *testing.T) {
 			},
 		},
 	})
+	setGlobalAnnotationEnvVariable(t, "")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config:             testAccAciRestManagedConfig_globalAnnotation(name),
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "child.#", "0"),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "dn", "uni/tn-"+name),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "annotation", ""),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "content.name", name),
+				),
+			},
+		},
+	})
 
 }
 
