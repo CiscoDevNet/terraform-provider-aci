@@ -99,3 +99,9 @@ fvEpMacTag:
   rn_prepend: "eptags"
   contained_by:
     - "fvTenant"
+
+fvEpIpTag:
+  resource_name: "endpoint_tag_ip"
+  rn_prepend: "eptags"
+  contained_by:
+    - "fvTenant"

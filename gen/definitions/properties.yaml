@@ -113,6 +113,23 @@ fvEpMacTag:
   ignores:
   - "ctxName"
 
+fvEpIpTag:
+  test_values:
+    default:
+      ip: "10.0.0.1"
+      id_attribute: "0"
+    resource_required:
+      ip: "10.0.0.2"
+    datasource_required:
+      ip: "10.0.0.2"
+    all:
+      id_attribute: "1"
+      ip: "10.0.0.2"
+    datasource_non_existing:
+      ip: "10.0.1.2"
+  documentation:
+    ip: "The IP address of the %s object."
+
 tagAnnotation:
   documentation:
     key: "The key used to uniquely identify this configuration object."
