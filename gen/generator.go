@@ -86,7 +86,6 @@ var templateFuncs = template.FuncMap{
 	"listToString":                 ListToString,
 	"overwriteProperty":            GetOverwriteAttributeName,
 	"overwritePropertyValue":       GetOverwriteAttributeValue,
-	"getRnPrefix":                  GetRnPrefix,
 	"createTestValue":              func(val string) string { return fmt.Sprintf("test_%s", val) },
 	"createNonExistingValue":       func(val string) string { return fmt.Sprintf("non_existing_%s", val) },
 	"getParentTestDependencies":    GetParentTestDependencies,
@@ -112,17 +111,6 @@ var targetRelationalPropertyClasses = map[string]string{}
 
 func GetResourceNameAsDescription(s string) string {
 	return cases.Title(language.English).String(strings.ReplaceAll(s, "_", " "))
-}
-
-func GetRnPrefix(s string, definitions Definitions) string {
-	if v, ok := definitions.Classes[s]; ok {
-		for key, value := range v.(map[interface{}]interface{}) {
-			if key.(string) == "rn_format" {
-				SetRnPrefix(s, value.(string))
-			}
-		}
-	}
-	return rnPrefix[s]
 }
 
 func GetDevnetDocForClass(className string) string {
@@ -614,6 +602,7 @@ type Model struct {
 	Label                    string
 	Name                     string
 	RnFormat                 string
+	RnPrepend                string
 	Comment                  string
 	ResourceClassName        string
 	ResourceName             string
@@ -828,28 +817,11 @@ func (m *Model) SetClassName(classDetails interface{}) {
 }
 
 func (m *Model) SetClassRnFormat(classDetails interface{}) {
-	m.RnFormat = GetOverwriteRnFormat(classDetails.(map[string]interface{})["rnFormat"].(string), m.PkgName, m.Definitions)
+	m.GetOverwriteRnFormat(classDetails.(map[string]interface{})["rnFormat"].(string))
 	if strings.HasPrefix(m.RnFormat, "rs") {
 		toMo := classDetails.(map[string]interface{})["relationInfo"].(map[string]interface{})["toMo"].(string)
 		m.RelationshipClass = strings.Replace(toMo, ":", "", 1)
 	}
-	SetRnPrefix(m.PkgName, m.RnFormat)
-}
-
-func SetRnPrefix(className, rnFormat string) {
-	bracketIndex := 0
-	rnIndex := 0
-	for i := len(rnFormat) - 1; i >= 0; i-- {
-		if string(rnFormat[i]) == "]" {
-			bracketIndex = bracketIndex + 1
-		} else if string(rnFormat[i]) == "[" {
-			bracketIndex = bracketIndex - 1
-		} else if string(rnFormat[i]) == "/" && bracketIndex == 0 {
-			rnIndex = i
-			break
-		}
-	}
-	rnPrefix[className] = fmt.Sprintf("%s-", strings.Split(rnFormat[rnIndex:], "-")[0])
 }
 
 func (m *Model) SetClassDnFormats(classDetails interface{}) {
@@ -1320,15 +1292,16 @@ func GetOverwriteContainedBy(classDetails interface{}, classPkgName string, defi
 }
 
 // Determine if a reformat in terraform configuration should be prepended with a rn from the classes.yaml file
-func GetOverwriteRnFormat(rnFormat, classPkgName string, definitions Definitions) string {
-	if v, ok := definitions.Classes[classPkgName]; ok {
+func (m *Model) GetOverwriteRnFormat(rnFormat string) {
+	m.RnFormat = rnFormat
+	if v, ok := m.Definitions.Classes[m.PkgName]; ok {
 		for key, value := range v.(map[interface{}]interface{}) {
 			if key.(string) == "rn_prepend" {
-				rnFormat = fmt.Sprintf("%s/%s", value.(string), rnFormat)
+				m.RnFormat = fmt.Sprintf("%s/%s", value.(string), rnFormat)
+				m.RnPrepend = value.(string)
 			}
 		}
 	}
-	return rnFormat
 }
 
 // Determine if possible dn formats in terraform documentation should be overwritten by dn formats from the classes.yaml file
@@ -1341,6 +1314,19 @@ func GetOverwriteDnFormats(dnFormats []interface{}, classPkgName string, definit
 		}
 	}
 	return dnFormats
+}
+
+// Determine if possible dn formats in terraform documentation should be overwritten by dn formats from the classes.yaml file
+func GetOverwriteExampleClasses(classPkgName string, definitions Definitions) []interface{} {
+	example_classes := []interface{}{}
+	if v, ok := definitions.Classes[classPkgName]; ok {
+		for key, value := range v.(map[interface{}]interface{}) {
+			if key.(string) == "example_classes" {
+				example_classes = value.([]interface{})
+			}
+		}
+	}
+	return example_classes
 }
 
 // Set variables that are used during the rendering of the example and documentation templates
@@ -1409,8 +1395,15 @@ func setDocumentationData(m *Model, definitions Definitions) {
 	// TODO add overwrite to provide which documentation examples to be included
 	docsExampleAmount := m.Configuration["docs_examples_amount"].(int)
 	if len(m.ContainedBy) >= docsExampleAmount {
-		for _, resourceDetails := range resourcesFound[0:docsExampleAmount] {
-			m.DocumentationExamples = append(m.DocumentationExamples, resourceDetails[1])
+		example_classes := GetOverwriteExampleClasses(m.PkgName, definitions)
+		if len(example_classes) > 0 {
+			for _, exampleClass := range example_classes {
+				m.DocumentationExamples = append(m.DocumentationExamples, exampleClass.(string))
+			}
+		} else {
+			for _, resourceDetails := range resourcesFound[0:docsExampleAmount] {
+				m.DocumentationExamples = append(m.DocumentationExamples, resourceDetails[1])
+			}
 		}
 	} else {
 		for _, resourceDetails := range resourcesFound {

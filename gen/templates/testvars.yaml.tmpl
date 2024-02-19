@@ -3,47 +3,47 @@
 # More details can be found in the [README](https://github.com/CiscoDevNet/terraform-provider-aci/blob/master/README.md).
 
 default:
-  {{- range .Properties}}
+  {{- range .Properties}}{{$overwritePropertyName := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
     {{- if .DefaultValue}}
-  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName .SnakeCaseName .DefaultValue "default" $.Definitions}}"
+  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName .DefaultValue "default" $.Definitions}}"
     {{- else if not .IsNaming}}
-  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName .SnakeCaseName "" "default" $.Definitions}}"
+  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName "" "default" $.Definitions}}"
     {{- end}}
   {{- end}}
 
 datasource_non_existing:
-  {{- range .Properties}}{{$testValue := createNonExistingValue .SnakeCaseName}}
+  {{- range .Properties}}{{$testValue := createNonExistingValue .SnakeCaseName}}{{$overwritePropertyName := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
     {{- if or .IsNaming }}
-  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName .SnakeCaseName $testValue "datasource_non_existing" $.Definitions}}"
+  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName $testValue "datasource_non_existing" $.Definitions}}"
     {{- end}}
   {{- end}}
 
 datasource_required:
-  {{- range .Properties}}{{$testValue := createTestValue .SnakeCaseName}}
+  {{- range .Properties}}{{$testValue := createTestValue .SnakeCaseName}}{{$overwritePropertyName := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
     {{- if or .IsNaming }}
-  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName .SnakeCaseName $testValue "datasource_required" $.Definitions}}"
+  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName $testValue "datasource_required" $.Definitions}}"
     {{- end}}
   {{- end}}
 
 resource_required:
-  {{- range .Properties}}{{$testValue := createTestValue .SnakeCaseName}}
+  {{- range .Properties}}{{$testValue := createTestValue .SnakeCaseName}}{{$overwritePropertyName := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
     {{- if or .IsNaming .IsRequired}}
-  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName .SnakeCaseName $testValue "resource_required" $.Definitions}}"
+  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName $testValue "resource_required" $.Definitions}}"
     {{- end}}
   {{- end}}
 
 all:
-  {{- range .Properties}}
+  {{- range .Properties}}{{$overwritePropertyName := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
     {{- if overwriteProperty .PkgName .SnakeCaseName $.Definitions | eq "annotation"}}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "annotation"
     {{- else if .DefaultValue}}{{$length := len .ValidValues}}
       {{- if eq $length 0}}
-  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName .SnakeCaseName .DefaultValue "all" $.Definitions}}"
+  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName .DefaultValue "all" $.Definitions}}"
       {{- else }}{{$testValue := index .ValidValues 0 }}
-  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName .SnakeCaseName $testValue "all" $.Definitions}}"
+  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName $testValue "all" $.Definitions}}"
       {{- end}}
-    {{- else if not .IsNaming}}{{$testValue := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
-  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName .SnakeCaseName $testValue "all" $.Definitions}}"{{- end}}
+    {{- else if not .IsNaming}}
+  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName $overwritePropertyName "all" $.Definitions}}"{{- end}}
     {{- end}}
 {{ if .Children}}
 children:

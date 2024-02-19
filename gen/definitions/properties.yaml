@@ -6,6 +6,10 @@ global:
     nameAlias: "The name alias of the %s object."
     descr: "The description of the %s object."
     owner: "The owner of the %s object."
+    mac: "The MAC address of the %s object."
+    bdName: "The bridge domain name of the %s object."
+    ctxName: "The VRF name of the %s object."
+    id: "The identifier of the %s object."
     tnVzOOBBrCPName: "The name of the Out Of Band Contract object."
     tnRtctrlProfileName: "The name of the Route Control Profile object."
   overwrites:
@@ -26,15 +30,15 @@ l3extRsRedistributePol:
     src: "The source of the %s object."
   test_values:
     resource_required:
-      src: "direct"
+      source: "direct"
     datasource_required:
-      src: "direct"
+      source: "direct"
     datasource_non_existing:
-      src: "static"
+      source: "static"
     all:
-      src: "direct"
+      source: "direct"
     default:
-      src: "direct"
+      source: "direct"
   parents:
     - parent_dependency: "fvTenant"
       class_in_parent: true
@@ -77,9 +81,9 @@ pimRouteMapEntry:
     action: "The route action of the %s object."
   test_values:
     default:
-      grp: "0.0.0.0"
-      rp: "0.0.0.0"
-      src: "0.0.0.0"
+      group_ip: "0.0.0.0"
+      rendezvous_point_ip: "0.0.0.0"
+      source_ip: "0.0.0.0"
     resource_required:
       order: "1"
     datasource_required:
@@ -87,11 +91,27 @@ pimRouteMapEntry:
     datasource_non_existing:
       order: "2"
     all:
-      grp: "0.0.0.0"
-      rp: "0.0.0.0"
-      src: "1.1.1.1/30"
+      group_ip: "0.0.0.0"
+      rendezvous_point_ip: "0.0.0.0"
+      source_ip: "1.1.1.1/30"
   parents:
     - parent_dependency: "fvTenant"
+
+fvEpMacTag:
+  test_values:
+    default:
+      mac: "00:00:00:00:00:00"
+      id_attribute: "0"
+    resource_required:
+      mac: "00:00:00:00:00:01"
+    datasource_required:
+      mac: "00:00:00:00:00:01"
+    all:
+      id_attribute: "1"
+    datasource_non_existing:
+      mac: "00:00:00:00:00:01"
+  ignores:
+  - "ctxName"
 
 tagAnnotation:
   documentation:
