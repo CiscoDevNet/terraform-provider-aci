@@ -593,7 +593,13 @@ func set{{.ResourceClassName}}ParentDn(ctx context.Context, dn string, data *{{.
 			break
 		}
 	}
+	{{- if eq .RnPrepend ""}}
 	data.ParentDn = basetypes.NewStringValue(dn[:rnIndex])
+	{{- else}}
+	parentDn := dn[:rnIndex]
+	parentDn = parentDn[:strings.Index(parentDn, "/{{.RnPrepend}}")]
+	data.ParentDn = basetypes.NewStringValue(parentDn)
+	{{- end}}
 }
 {{- end}}
 
