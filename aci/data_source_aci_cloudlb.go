@@ -163,7 +163,7 @@ func dataSourceAciCloudL4L7LoadBalancerRead(ctx context.Context, d *schema.Resou
 
 	_, err := getAndSetRemoteCloudL4L7LoadBalancerAttributes(aciClient, dn, d)
 	if err != nil {
-		return errorForObjectNotFound(err, dn, d)
+		return diag.FromErr(err)
 	}
 
 	return nil

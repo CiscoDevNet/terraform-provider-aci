@@ -153,7 +153,7 @@ func dataSourceAciCloudL4L7DeviceRead(ctx context.Context, d *schema.ResourceDat
 
 	_, err := getAndSetRemoteCloudL4L7DeviceAttributes(aciClient, dn, d)
 	if err != nil {
-		return errorForObjectNotFound(err, dn, d)
+		return diag.FromErr(err)
 	}
 	return nil
 }
