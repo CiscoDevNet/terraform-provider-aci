@@ -96,7 +96,7 @@ func dataSourceAciInterfaceConfigurationRead(ctx context.Context, d *schema.Reso
 
 	err := getAndSetRemoteInterfaceConfiguration(dn, aciClient, d)
 	if err != nil {
-		return nil
+		return diag.FromErr(err)
 	}
 	d.SetId(dn)
 	return nil
