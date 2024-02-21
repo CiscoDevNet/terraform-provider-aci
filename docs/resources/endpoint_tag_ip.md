@@ -20,6 +20,7 @@ Manages ACI Endpoint Tag Ip
 
 * Class: [fvEpIpTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvEpIpTag/overview)
 
+* Supported in ACI versions: 5.2(1g) and later.
 
 * Distinguished Name Format: `uni/tn-{name}/eptags/epiptag-[{ip}]-{ctxName}`
 
