@@ -1318,15 +1318,15 @@ func GetOverwriteDnFormats(dnFormats []interface{}, classPkgName string, definit
 
 // Determine if possible dn formats in terraform documentation should be overwritten by dn formats from the classes.yaml file
 func GetOverwriteExampleClasses(classPkgName string, definitions Definitions) []interface{} {
-	example_classes := []interface{}{}
+	overwriteExampleClasses := []interface{}{}
 	if v, ok := definitions.Classes[classPkgName]; ok {
 		for key, value := range v.(map[interface{}]interface{}) {
 			if key.(string) == "example_classes" {
-				example_classes = value.([]interface{})
+				overwriteExampleClasses = value.([]interface{})
 			}
 		}
 	}
-	return example_classes
+	return overwriteExampleClasses
 }
 
 // Set variables that are used during the rendering of the example and documentation templates
@@ -1395,9 +1395,9 @@ func setDocumentationData(m *Model, definitions Definitions) {
 	// TODO add overwrite to provide which documentation examples to be included
 	docsExampleAmount := m.Configuration["docs_examples_amount"].(int)
 	if len(m.ContainedBy) >= docsExampleAmount {
-		example_classes := GetOverwriteExampleClasses(m.PkgName, definitions)
-		if len(example_classes) > 0 {
-			for _, exampleClass := range example_classes {
+		overwriteExampleClasses := GetOverwriteExampleClasses(m.PkgName, definitions)
+		if len(overwriteExampleClasses) > 0 {
+			for _, exampleClass := range overwriteExampleClasses {
 				m.DocumentationExamples = append(m.DocumentationExamples, exampleClass.(string))
 			}
 		} else {
