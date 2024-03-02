@@ -103,6 +103,11 @@ func CheckForErrors(cont *container.Container, method string, skipLoggingPayload
 					log.Printf("[DEBUG] Exit from error 1, 107 or 120 %v", cont)
 				}
 				return nil
+			} else if errorCode == "202" { // Ignore errors of type "Request in progress"
+				if !skipLoggingPayload {
+					log.Printf("[DEBUG] Exit from error 202 %v", cont)
+				}
+				return nil
 			} else {
 				if (models.StripQuotes(imdata.Path("error.attributes.text").String()) == "" && errorCode == "403") || (errorCode == "401") {
 					if !skipLoggingPayload {
