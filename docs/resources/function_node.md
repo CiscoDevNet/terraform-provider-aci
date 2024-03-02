@@ -38,13 +38,17 @@ resource "aci_function_node" "example" {
   share_encap                          = "yes"
   l4_l7_device_interface_consumer_name = "interface1"
   l4_l7_device_interface_provider_name = "interface2"
+  l4_l7_device_interface_consumer_connector_type = "none"
+  l4_l7_device_interface_provider_connector_type = "redir"
+  l4_l7_device_interface_consumer_att_notify = "no"
+  l4_l7_device_interface_provider_att_notify = "yes"
 }
 ```
 
 ## Argument Reference
 
 - `l4_l7_service_graph_template_dn` - (Required) Distinguished name of parent L4-L7 Service Graph Template object. Type: String.
-- `name` - (Required) Name of the Function Node object. Type: String.
+- `name` - (Required) Name of the Function Node object. The valid function node format is `NX`, where X is a number starting with 0. Type: String.
 - `annotation` - (Optional) Annotation of the Function Node object. Type: String.
 - `description` - (Optional) Description of the Function Node object. Type: String.
 - `func_template_type` - (Optional) Function Template type of the Function Node object. Allowed values: "OTHER", "FW_TRANS", "FW_ROUTED", "CLOUD_VENDOR_LB", "CLOUD_VENDOR_FW", "CLOUD_NATIVE_LB", "CLOUD_NATIVE_FW", "ADC_TWO_ARM", "ADC_ONE_ARM". Default value: "OTHER". Type: String.
@@ -62,6 +66,10 @@ resource "aci_function_node" "example" {
 - `relation_vns_rs_node_to_m_func` - (Optional) Represents the relation to Meta Function (class vnsMFunc). Type: String.
 - `relation_vns_rs_default_scope_to_term` - (Optional) Represents the relation to Terminal Abstract Class (class vnsATerm). Type: String.
 - `relation_vns_rs_node_to_cloud_l_dev` - (Optional) Represents the relation to Cloud L4-L7 Abstract Devices (class cloudALDev). Type: String.
+- `l4_l7_device_interface_consumer_connector_type` - (Optional) The connection type of the consumer interface. Allowed values: "none", "redir". Default value: "none". This argument can be set only when the function node is a "network load balancer" or "third party firewall". Type: String.
+- `l4_l7_device_interface_provider_connector_type` - (Optional) The connection type of the provider interface. Allowed values: "none", "redir", "dnat", "snat", "snat_dnat". This argument can be set only when the function node is a "network load balancer" or "third party firewall". Default value: "none". Type: String.
+- `l4_l7_device_interface_consumer_att_notify` - (Optional) The consumer interface attribute notification. Allowed values: "no", "yes". Default value: "no". Type: String.
+- `l4_l7_device_interface_provider_att_notify` - (Optional) The provider interface attribute notification. Allowed values: "no", "yes". Default value: "no". Type: String.
 
 ## Importing
 

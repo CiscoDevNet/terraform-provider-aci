@@ -148,29 +148,63 @@ func resourceAciFunctionNode() *schema.Resource {
 			},
 
 			"relation_vns_rs_node_to_abs_func_prof": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
 				Optional: true,
 			},
 			"relation_vns_rs_node_to_l_dev": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
 				Optional: true,
 			},
 			"relation_vns_rs_node_to_m_func": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
 				Optional: true,
 			},
 			"relation_vns_rs_default_scope_to_term": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
 				Optional: true,
 			},
 			"relation_vns_rs_node_to_cloud_l_dev": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
 				Optional: true,
+			},
+			"l4_l7_device_interface_consumer_connector_type": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"none",
+					"redir",
+				}, false),
+			},
+			"l4_l7_device_interface_provider_connector_type": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"none",
+					"redir",
+					"dnat",
+					"snat",
+					"snat_dnat",
+				}, false),
+			},
+			"l4_l7_device_interface_consumer_att_notify": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"no",
+					"yes",
+				}, false),
+			},
+			"l4_l7_device_interface_provider_att_notify": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"no",
+					"yes",
+				}, false),
 			},
 		}),
 	}
@@ -231,6 +265,8 @@ func getAndSetFunctionNodeRelationalAttributes(client *client.Client, dn string,
 	}
 	d.Set("conn_consumer_dn", vnsAbsFuncConn.DistinguishedName)
 	d.Set("l4_l7_device_interface_consumer_name", vnsAbsFuncConn.DeviceLIfName)
+	d.Set("l4_l7_device_interface_consumer_connector_type", vnsAbsFuncConn.ConnType)
+	d.Set("l4_l7_device_interface_consumer_att_notify", vnsAbsFuncConn.AttNotify)
 
 	// Provider Part
 	provDn := fmt.Sprintf("%s/AbsFConn-provider", dn)
@@ -244,6 +280,8 @@ func getAndSetFunctionNodeRelationalAttributes(client *client.Client, dn string,
 	}
 	d.Set("conn_provider_dn", vnsAbsFuncConn.DistinguishedName)
 	d.Set("l4_l7_device_interface_provider_name", vnsAbsFuncConn.DeviceLIfName)
+	d.Set("l4_l7_device_interface_provider_connector_type", vnsAbsFuncConn.ConnType)
+	d.Set("l4_l7_device_interface_provider_att_notify", vnsAbsFuncConn.AttNotify)
 
 	vnsRsNodeToAbsFuncProfData, err := client.ReadRelationvnsRsNodeToAbsFuncProfFromFunctionNode(dn)
 	if err != nil {
@@ -361,6 +399,8 @@ func resourceAciFunctionNodeCreate(ctx context.Context, d *schema.ResourceData, 
 	vnsAbsFuncConnAttr := models.FunctionConnectorAttributes{}
 	vnsAbsFuncConnAttr.Annotation = "{}"
 	vnsAbsFuncConnAttr.DeviceLIfName = d.Get("l4_l7_device_interface_consumer_name").(string)
+	vnsAbsFuncConnAttr.AttNotify = d.Get("l4_l7_device_interface_consumer_att_notify").(string)
+	vnsAbsFuncConnAttr.ConnType = d.Get("l4_l7_device_interface_consumer_connector_type").(string)
 	vnsAbsFuncConn := models.NewFunctionConnector(fmt.Sprintf("AbsFConn-%s", "consumer"), vnsAbsNode.DistinguishedName, "", vnsAbsFuncConnAttr)
 	err = aciClient.Save(vnsAbsFuncConn)
 	if err != nil {
@@ -369,6 +409,8 @@ func resourceAciFunctionNodeCreate(ctx context.Context, d *schema.ResourceData, 
 	d.Set("conn_consumer_dn", vnsAbsFuncConn.DistinguishedName)
 
 	vnsAbsFuncConnAttr.DeviceLIfName = d.Get("l4_l7_device_interface_provider_name").(string)
+	vnsAbsFuncConnAttr.AttNotify = d.Get("l4_l7_device_interface_provider_att_notify").(string)
+	vnsAbsFuncConnAttr.ConnType = d.Get("l4_l7_device_interface_provider_connector_type").(string)
 	vnsAbsFuncConn = models.NewFunctionConnector(fmt.Sprintf("AbsFConn-%s", "provider"), vnsAbsNode.DistinguishedName, "", vnsAbsFuncConnAttr)
 	err = aciClient.Save(vnsAbsFuncConn)
 	if err != nil {
@@ -509,6 +551,8 @@ func resourceAciFunctionNodeUpdate(ctx context.Context, d *schema.ResourceData, 
 		vnsAbsFuncConnAttr := models.FunctionConnectorAttributes{}
 		vnsAbsFuncConnAttr.Annotation = "{}"
 		vnsAbsFuncConnAttr.DeviceLIfName = d.Get("l4_l7_device_interface_consumer_name").(string)
+		vnsAbsFuncConnAttr.AttNotify = d.Get("l4_l7_device_interface_consumer_att_notify").(string)
+		vnsAbsFuncConnAttr.ConnType = d.Get("l4_l7_device_interface_consumer_connector_type").(string)
 		vnsAbsFuncConn := models.NewFunctionConnector(fmt.Sprintf("AbsFConn-%s", "consumer"), vnsAbsNode.DistinguishedName, "", vnsAbsFuncConnAttr)
 		err = aciClient.Save(vnsAbsFuncConn)
 		if err != nil {
@@ -521,6 +565,8 @@ func resourceAciFunctionNodeUpdate(ctx context.Context, d *schema.ResourceData, 
 		vnsAbsFuncConnAttr := models.FunctionConnectorAttributes{}
 		vnsAbsFuncConnAttr.Annotation = "{}"
 		vnsAbsFuncConnAttr.DeviceLIfName = d.Get("l4_l7_device_interface_provider_name").(string)
+		vnsAbsFuncConnAttr.AttNotify = d.Get("l4_l7_device_interface_provider_att_notify").(string)
+		vnsAbsFuncConnAttr.ConnType = d.Get("l4_l7_device_interface_provider_connector_type").(string)
 		vnsAbsFuncConn := models.NewFunctionConnector(fmt.Sprintf("AbsFConn-%s", "provider"), vnsAbsNode.DistinguishedName, "", vnsAbsFuncConnAttr)
 		err = aciClient.Save(vnsAbsFuncConn)
 		if err != nil {
