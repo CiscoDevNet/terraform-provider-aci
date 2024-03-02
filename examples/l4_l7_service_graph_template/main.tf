@@ -5,226 +5,239 @@ terraform {
     }
   }
 }
+# provider "aci" { #azure 26
+#   username = "admin"
+#   password = "C!sco123456$"
+#   url      = "https://172.167.14.72/"
+#   insecure = true
+# }
 
 provider "aci" {
-  username = ""
-  password = ""
-  url      = ""
+  username = "ansible_github_ci"
+  password = "sJ94G92#8dq2hx*K4qh"
+  url      = "https://20.253.151.162"
   insecure = true
 }
 
-resource "aci_tenant" "tf_tenant" {
-  name = "tf_tenant"
+
+
+data "aci_tenant" "tf_tenant" {
+  name  = "ansible_test_anv"
+}
+data "aci_vrf" "tf_vrf" {
+  tenant_dn  = data.aci_tenant.tf_tenant.id
+  name       = "vrf_anv"
 }
 
-# VRF setup part
-resource "aci_vrf" "vrf1" {
-  tenant_dn = aci_tenant.tf_tenant.id
-  name      = "vrf-1"
+data "aci_cloud_context_profile" "ccp1" {
+  tenant_dn  = data.aci_tenant.tf_tenant.id
+  name       = "ccp"
+}
+data "aci_cloud_cidr_pool" "cidr1" {
+  cloud_context_profile_dn  = data.aci_cloud_context_profile.ccp1.id
+  addr  = "10.20.0.0/25"
+}
+data "aci_cloud_subnet" "cs1" {
+  cloud_cidr_pool_dn  = data.aci_cloud_cidr_pool.cidr1.id
+  ip                  = "10.20.0.0/25"
 }
 
-# AAA Domain setup part
-resource "aci_aaa_domain" "aaa_domain_1" {
-  name = "aaa_domain_1"
+data "aci_cloud_context_profile" "ccp2" {
+  tenant_dn  = data.aci_tenant.tf_tenant.id
+  name       = "ccp_anv2"
+}
+data "aci_cloud_cidr_pool" "cidr2" {
+  cloud_context_profile_dn  = data.aci_cloud_context_profile.ccp2.id
+  addr  = "10.40.20.0/16"
+}
+data "aci_cloud_subnet" "cs2" {
+  cloud_cidr_pool_dn  = data.aci_cloud_cidr_pool.cidr2.id
+  ip                  = "10.40.20.0/24"
 }
 
-resource "aci_cloud_context_profile" "ctx1" {
-  name                     = "tf_ctx1"
-  tenant_dn                = aci_tenant.tf_tenant.id
-  primary_cidr             = "10.1.0.0/16"
-  region                   = "westus"
-  cloud_vendor             = "azure"
-  relation_cloud_rs_to_ctx = aci_vrf.vrf1.id
-  hub_network              = "uni/tn-infra/gwrouterp-default"
+
+# Create Logical Firewall Representation (3rd party example)
+
+resource "aci_cloud_l4_l7_third_party_device" "third_pa_fw" {
+  # tenant_dn                     = data.aci_tenant.infra_tenant.id
+  tenant_dn   = data.aci_tenant.tf_tenant.id  # aci_tenant.tf_tenant.id
+  name                          = "tf_third_party_fw"
+  # relation_cloud_rs_ldev_to_ctx = data.aci_vrf.services_vrf.id 
+  relation_cloud_rs_ldev_to_ctx = data.aci_vrf.tf_vrf.id #aci_vrf.vrf1.id
+
+  interface_selectors {
+    allow_all = "yes"
+    name      = "trust"
+    end_point_selectors {
+      match_expression = "custom:internal=='trust'"
+      name             = "trust"
+    }
+  }
+  interface_selectors {
+    allow_all = "yes"
+    name      = "untrust"
+    end_point_selectors {
+      match_expression = "custom:external=='untrust'"
+      name             = "untrust"
+    }
+  }
 }
 
-resource "aci_cloud_cidr_pool" "cloud_cidr_pool" {
-  cloud_context_profile_dn = aci_cloud_context_profile.ctx1.id
-  addr                     = "10.1.0.0/16"
-}
+# Create Native Network Load Balancer for Firewall
 
-data "aci_cloud_provider_profile" "cloud_profile" {
-  vendor = "azure"
-}
-
-data "aci_cloud_providers_region" "cloud_region" {
-  cloud_provider_profile_dn = data.aci_cloud_provider_profile.cloud_profile.id
-  name                      = "westus"
-}
-
-data "aci_cloud_availability_zone" "region_availability_zone" {
-  cloud_providers_region_dn = data.aci_cloud_providers_region.cloud_region.id
-  name                      = "default"
-}
-
-resource "aci_cloud_subnet" "cloud_subnet" {
-  cloud_cidr_pool_dn = aci_cloud_cidr_pool.cloud_cidr_pool.id
-  ip                 = "10.1.1.0/24"
-  usage              = "gateway"
-  zone               = data.aci_cloud_availability_zone.region_availability_zone.id
-  scope              = ["shared", "private", "public"]
-}
-
-# Application Load Balancer
-resource "aci_cloud_l4_l7_native_load_balancer" "cloud_native_alb" {
-  tenant_dn = aci_tenant.tf_tenant.id
-  name      = "cloud_native_alb"
-  aaa_domain_dn = [
-    aci_aaa_domain.aaa_domain_1.id
-  ]
-  relation_cloud_rs_ldev_to_cloud_subnet = [
-    aci_cloud_subnet.cloud_subnet.id
-  ]
-  cloud_l4l7_load_balancer_type = "application"
+resource "aci_cloud_l4_l7_native_load_balancer" "cloud_nlb" {
+  # tenant_dn                              = data.aci_tenant.infra_tenant.id
+  tenant_dn   =  data.aci_tenant.tf_tenant.id  # aci_tenant.tf_tenant.id
+  name                                   = "tf_cloud_nlb"
+  # relation_cloud_rs_ldev_to_cloud_subnet = [data.aci_cloud_subnet.cs1.id, data.aci_cloud_subnet.cs2.id]
+  relation_cloud_rs_ldev_to_cloud_subnet = [data.aci_cloud_subnet.cs1.id]
+  allow_all                              = "yes"
   is_static_ip                           = "yes"
-  static_ip_address = ["10.1.1.0"]
+  # static_ip_address                      = ["10.40.20.0", "10.20.0.0"]
+  static_ip_address = ["10.20.0.0"] 
+  scheme                                 = "internal"
+  cloud_l4l7_load_balancer_type          = "network"
 }
 
-# Third-Party Firewall
-resource "aci_cloud_l4_l7_third_party_device" "cloud_third_party_fw" {
-  tenant_dn    = aci_tenant.tf_tenant.id
-  name         = "cloud_third_party_fw"
-  service_type = "FW"
-
-  aaa_domain_dn = [
-    aci_aaa_domain.aaa_domain_1.id
-  ]
-  relation_cloud_rs_ldev_to_ctx = aci_vrf.vrf1.id
-
-  interface_selectors {
-    allow_all = "no"
-    name      = "Interface_1"
-    end_point_selectors {
-      match_expression = "IP=='1.1.1.21/24'"
-      name             = "Interface_1_ep_1"
-    }
-    end_point_selectors {
-      match_expression = "custom:Name1=='admin-ep1'"
-      name             = "Interface_1_ep_2"
-    }
-  }
-  interface_selectors {
-    allow_all = "no"
-    name      = "Interface_2"
-    end_point_selectors {
-      match_expression = "IP=='1.1.1.21/24'"
-      name             = "Interface_2_ep_1"
-    }
-    end_point_selectors {
-      match_expression = "custom:Name1=='admin-ep1'"
-      name             = "Interface_2_ep_2"
-    }
-  }
-}
-
-# Third-Party Load Balancer
-resource "aci_cloud_l4_l7_third_party_device" "cloud_third_party_lb" {
-  tenant_dn    = aci_tenant.tf_tenant.id
-  name         = "cloud_third_party_lb"
-  service_type = "ADC"
-
-  aaa_domain_dn = [
-    aci_aaa_domain.aaa_domain_1.id
-  ]
-  relation_cloud_rs_ldev_to_ctx = aci_vrf.vrf1.id
-
-  interface_selectors {
-    allow_all = "no"
-    name      = "Interface_1"
-    end_point_selectors {
-      match_expression = "IP=='1.1.1.21/24'"
-      name             = "Interface_1_ep_1"
-    }
-    end_point_selectors {
-      match_expression = "custom:Name1=='admin-ep1'"
-      name             = "Interface_1_ep_2"
-    }
-  }
-}
-
-# Service Graph Part
-resource "aci_l4_l7_service_graph_template" "cloud_service_graph" {
-  tenant_dn                         = aci_tenant.tf_tenant.id
-  name                              = "cloud_service_graph"
+resource "aci_l4_l7_service_graph_template" "tf_sg" {
+  tenant_dn                         = data.aci_tenant.tf_tenant.id
+  name                              = "tf_sg_1"
   l4_l7_service_graph_template_type = "cloud"
 }
 
-resource "aci_function_node" "function_node_0" {
-  l4_l7_service_graph_template_dn     = aci_l4_l7_service_graph_template.cloud_service_graph.id
+resource "aci_function_node" "tf_nlb" {
+  l4_l7_service_graph_template_dn     = aci_l4_l7_service_graph_template.tf_sg.id
   name                                = "N0"
   func_template_type                  = "ADC_ONE_ARM"
-  managed                             = "yes"
-  relation_vns_rs_node_to_cloud_l_dev = aci_cloud_l4_l7_native_load_balancer.cloud_native_alb.id
+  # routing_mode                        = "Redirect" # No option to set Redirect on consumer and provider connector types
+  relation_vns_rs_node_to_cloud_l_dev = aci_cloud_l4_l7_native_load_balancer.cloud_nlb.id
+  managed = "yes"
 }
 
-resource "aci_function_node" "function_node_1" {
-  l4_l7_service_graph_template_dn     = aci_l4_l7_service_graph_template.cloud_service_graph.id
-  name                                = "N2"
-  func_template_type                  = "OTHER"
-  managed                             = "no"
-  relation_vns_rs_node_to_cloud_l_dev = aci_cloud_l4_l7_third_party_device.cloud_third_party_lb.id
-}
-
-resource "aci_function_node" "function_node_2" {
-  l4_l7_service_graph_template_dn      = aci_l4_l7_service_graph_template.cloud_service_graph.id
+resource "aci_function_node" "tf_fw" { # does not get configured
+  l4_l7_service_graph_template_dn      = aci_function_node.tf_nlb.l4_l7_service_graph_template_dn
   name                                 = "N1"
   func_template_type                   = "FW_ROUTED"
-  managed                              = "no"
-  relation_vns_rs_node_to_cloud_l_dev  = aci_cloud_l4_l7_third_party_device.cloud_third_party_fw.id
-  l4_l7_device_interface_consumer_name = "Interface_1"
-  l4_l7_device_interface_provider_name = "Interface_2"
+  relation_vns_rs_node_to_cloud_l_dev  = aci_cloud_l4_l7_third_party_device.third_pa_fw.id
+  l4_l7_device_interface_consumer_name = "trust"
+  l4_l7_device_interface_provider_name = "untrust"
+  managed = "no"
 }
 
-resource "aci_connection" "consumer" {
-  l4_l7_service_graph_template_dn = aci_l4_l7_service_graph_template.cloud_service_graph.id
-  name                            = "CON0"
-  adj_type                        = "L3"
-  conn_dir                        = "consumer"
-  conn_type                       = "external"
-  direct_connect                  = "yes"
-  unicast_route                   = "yes"
-  relation_vns_rs_abs_connection_conns = [
-    aci_l4_l7_service_graph_template.cloud_service_graph.term_cons_dn,
-    aci_function_node.function_node_0.conn_consumer_dn,
-  ]
+# Create L4-L7 Service Graph template T1 connection.
+resource "aci_connection" "t1-n0" {
+    l4_l7_service_graph_template_dn = aci_l4_l7_service_graph_template.tf_sg.id
+    name                            = "CON0"
+    adj_type                        = "L3"
+    conn_dir                        = "provider"
+    conn_type                       = "external"
+    direct_connect                  = "no"
+    unicast_route                   = "yes"
+    relation_vns_rs_abs_connection_conns = [
+        aci_l4_l7_service_graph_template.tf_sg.term_cons_dn,
+        aci_function_node.tf_nlb.conn_consumer_dn
+    ]
 }
 
-resource "aci_connection" "consumer_provider_1" {
-  l4_l7_service_graph_template_dn = aci_l4_l7_service_graph_template.cloud_service_graph.id
-  name                            = "CON1"
-  adj_type                        = "L3"
-  conn_type                       = "external"
-  direct_connect                  = "yes"
-  unicast_route                   = "yes"
-  relation_vns_rs_abs_connection_conns = [
-    aci_function_node.function_node_1.conn_consumer_dn,
-    aci_function_node.function_node_0.conn_provider_dn
-  ]
+resource "aci_connection" "n0-n1" {
+    l4_l7_service_graph_template_dn = aci_l4_l7_service_graph_template.tf_sg.id
+    name                            = "CON1"
+    adj_type                        = "L3"
+    conn_dir                        = "provider"
+    conn_type                       = "external"
+    direct_connect                  = "no"
+    unicast_route                   = "yes"
+    relation_vns_rs_abs_connection_conns = [
+        aci_function_node.tf_nlb.conn_provider_dn,
+        aci_function_node.tf_fw.conn_consumer_dn
+    ]
 }
 
-resource "aci_connection" "consumer_provider_2" {
-  l4_l7_service_graph_template_dn = aci_l4_l7_service_graph_template.cloud_service_graph.id
-  name                            = "CON2"
-  adj_type                        = "L3"
-  conn_type                       = "external"
-  direct_connect                  = "yes"
-  unicast_route                   = "yes"
-  relation_vns_rs_abs_connection_conns = [
-    aci_function_node.function_node_1.conn_provider_dn,
-    aci_function_node.function_node_2.conn_consumer_dn
-  ]
+resource "aci_connection" "n1-t1" {
+    l4_l7_service_graph_template_dn = aci_l4_l7_service_graph_template.tf_sg.id
+    name                            = "CON2"
+    adj_type                        = "L3"
+    conn_dir                        = "provider"
+    conn_type                       = "external"
+    direct_connect                  = "no"
+    unicast_route                   = "yes"
+    relation_vns_rs_abs_connection_conns = [
+        aci_function_node.tf_fw.conn_provider_dn,
+        aci_l4_l7_service_graph_template.tf_sg.term_prov_dn
+    ]
 }
 
-resource "aci_connection" "provider" {
-  l4_l7_service_graph_template_dn = aci_l4_l7_service_graph_template.cloud_service_graph.id
-  name                            = "CON3"
-  adj_type                        = "L3"
-  conn_dir                        = "provider"
-  conn_type                       = "external"
-  direct_connect                  = "yes"
-  unicast_route                   = "yes"
-  relation_vns_rs_abs_connection_conns = [
-    aci_l4_l7_service_graph_template.cloud_service_graph.term_prov_dn,
-    aci_function_node.function_node_2.conn_provider_dn
-  ]
+
+resource "aci_l4_l7_service_graph_template" "tf_sg2" {
+  tenant_dn                         = data.aci_tenant.tf_tenant.id
+  name                              = "tf_sg_2"
+  l4_l7_service_graph_template_type = "cloud"
+}
+
+resource "aci_function_node" "tf_nlb2" {
+  l4_l7_service_graph_template_dn     = aci_l4_l7_service_graph_template.tf_sg2.id
+  name                                = "N0"
+  func_template_type                  = "ADC_ONE_ARM"
+  routing_mode                        = "Redirect"
+  relation_vns_rs_node_to_cloud_l_dev = aci_cloud_l4_l7_native_load_balancer.cloud_nlb.id
+  managed = "yes"
+  l4_l7_device_interface_consumer_connector_type = "none"
+  l4_l7_device_interface_provider_connector_type = "redir"
+}
+
+resource "aci_function_node" "tf_fw2" { # does not get configured
+  l4_l7_service_graph_template_dn      = aci_function_node.tf_nlb2.l4_l7_service_graph_template_dn
+  name                                 = "N1"
+  func_template_type                   = "FW_ROUTED"
+  relation_vns_rs_node_to_cloud_l_dev  = aci_cloud_l4_l7_third_party_device.third_pa_fw.id
+  l4_l7_device_interface_consumer_name = "trust"
+  l4_l7_device_interface_provider_name = "untrust"
+  l4_l7_device_interface_consumer_connector_type = "redir"
+  l4_l7_device_interface_provider_connector_type = "snat"
+  l4_l7_device_interface_consumer_att_notify = "no"
+  l4_l7_device_interface_provider_att_notify = "yes"
+  managed = "no"
+}
+
+# Create L4-L7 Service Graph template T1 connection.
+resource "aci_connection" "t1-n0-2" {
+    l4_l7_service_graph_template_dn = aci_l4_l7_service_graph_template.tf_sg2.id
+    name                            = "CON0"
+    adj_type                        = "L3"
+    conn_dir                        = "provider"
+    conn_type                       = "external"
+    direct_connect                  = "no"
+    unicast_route                   = "yes"
+    relation_vns_rs_abs_connection_conns = [
+        aci_l4_l7_service_graph_template.tf_sg2.term_cons_dn,
+        aci_function_node.tf_nlb2.conn_consumer_dn
+    ]
+}
+
+resource "aci_connection" "n0-n1-2" {
+    l4_l7_service_graph_template_dn = aci_l4_l7_service_graph_template.tf_sg2.id
+    name                            = "CON1"
+    adj_type                        = "L3"
+    conn_dir                        = "provider"
+    conn_type                       = "external"
+    direct_connect                  = "no"
+    unicast_route                   = "yes"
+    relation_vns_rs_abs_connection_conns = [
+        aci_function_node.tf_nlb2.conn_provider_dn,
+        aci_function_node.tf_fw2.conn_consumer_dn
+    ]
+}
+
+resource "aci_connection" "n1-t1-2" {
+    l4_l7_service_graph_template_dn = aci_l4_l7_service_graph_template.tf_sg2.id
+    name                            = "CON2"
+    adj_type                        = "L3"
+    conn_dir                        = "provider"
+    conn_type                       = "external"
+    direct_connect                  = "no"
+    unicast_route                   = "yes"
+    relation_vns_rs_abs_connection_conns = [
+        aci_function_node.tf_fw2.conn_provider_dn,
+        aci_l4_l7_service_graph_template.tf_sg2.term_prov_dn
+    ]
 }

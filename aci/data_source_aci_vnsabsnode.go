@@ -97,6 +97,22 @@ func dataSourceAciFunctionNode() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"l4_l7_device_interface_consumer_connector_type": &schema.Schema{
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"l4_l7_device_interface_provider_connector_type": &schema.Schema{
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"l4_l7_device_interface_consumer_att_notify": &schema.Schema{
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"l4_l7_device_interface_provider_att_notify": &schema.Schema{
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 		}),
 	}
 }
