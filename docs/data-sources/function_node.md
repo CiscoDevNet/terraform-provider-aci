@@ -54,7 +54,3 @@ data "aci_function_node" "example" {
 - `relation_vns_rs_node_to_m_func` - (Read-Only) Represents the relation to Meta Function (class vnsMFunc). Type: String.
 - `relation_vns_rs_default_scope_to_term` - (Read-Only) Represents the relation to Terminal Abstract Class (class vnsATerm). Type: String.
 - `relation_vns_rs_node_to_cloud_l_dev` - (Read-Only) Represents the relation to Cloud L4-L7 Abstract Devices (class cloudALDev). Type: String.
-- `l4_l7_device_interface_consumer_connector_type` - (Read-Only) The connection type of the consumer interface. Type: String.
-- `l4_l7_device_interface_provider_connector_type` - (Read-Only) The connection type of the provider interface. Type: String.
-- `l4_l7_device_interface_consumer_att_notify` - (Read-Only) The consumer interface attribute notification. Type: String.
-- `l4_l7_device_interface_provider_att_notify` - (Read-Only) The provider interface attribute notification. Type: String.

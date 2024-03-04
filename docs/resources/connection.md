@@ -34,25 +34,24 @@ resource "aci_connection" "conn2" {
 
 ## Argument Reference
 
-- `l4_l7_service_graph_template_dn` - (Required) Distinguished name of parent L4-L7 Service Graph Template object.
+- `l4_l7_service_graph_template_dn` - (Required) Distinguished name of parent L4-L7 Service Graph Template object. Type: String.
 - `name` - (Required) Name of object connection. The valid connection name format is `CONX`, where X is a number starting with 0. Type: String.
-- `adj_type` - (Optional) Connector adjacency type. Allowed values are "L2", "L3". Default value is "L2".
-- `annotation` - (Optional) Annotation for object connection.
-- `description` - (Optional) Description for object connection.
-- `conn_dir` - (Optional) Connection directory for object connection. Allowed values are "consumer", "provider". Default value is "provider".
-- `conn_type` - (Optional) Connection type of connection object. Allowed values are "external", "internal". Default value is "external".
-- `direct_connect` - (Optional) Direct connect for object connection. Allowed values are "yes" and "no". Default value is "no".
-- `name_alias` - (Optional) Name alias for object connection.
-- `unicast_route` - (Optional) Unicast route for connection object. Unicast route setting should be true for L3 connections. Allowed values are "yes" and "no". Default value is "yes".
+- `adj_type` - (Optional) Connector adjacency type. Allowed values are "L2", "L3". Default value is "L2". Type: String.
+- `annotation` - (Optional) Annotation for object connection. Type: String.
+- `description` - (Optional) Description for object connection. Type: String.
+- `conn_dir` - (Optional) Connection directory for object connection. Allowed values are "consumer", "provider". Default value is "provider". Type: String.
+- `conn_type` - (Optional) Connection type of connection object. Allowed values are "external", "internal". Default value is "external". Type: String.
+- `direct_connect` - (Optional) Direct connect for object connection. Allowed values are "yes" and "no". Default value is "no". Type: String.
+- `name_alias` - (Optional) Name alias for object connection. Type: String.
+- `unicast_route` - (Optional) Unicast route for connection object. Unicast route setting should be true for L3 connections. Allowed values are "yes" and "no". Default value is "yes". Type: String.
 
-- `relation_vns_rs_abs_copy_connection` - (Optional) List of relation to class vnsAConn. Cardinality - ONE_TO_M. Type - Set of String.
-- `relation_vns_rs_abs_connection_conns` - (Optional) list of relation to class vnsAConn. Cardinality - ONE_TO_M. Type - Set of String.
+- `relation_vns_rs_abs_copy_connection` - (Optional) List of relation to class vnsAConn. Cardinality - ONE_TO_M. Type: Set of String.
+- `relation_vns_rs_abs_connection_conns` - (Optional) list of relation to class vnsAConn. Cardinality - ONE_TO_M. Type: Set of String.
 
 ## Attribute Reference
 
 The only attribute that this resource exports is the `id`, which is set to the
 Dn of the Connection.
-
 ## Importing
 
 An existing Connection can be [imported][docs-import] into this resource via its Dn, via the following command:

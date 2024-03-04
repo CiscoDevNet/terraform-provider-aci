@@ -153,7 +153,7 @@ func dataSourceAciCloudL4L7LoadBalancer() *schema.Resource {
 			"static_ip_address": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
-				Optional: true,
+				Computed: true,
 				Set:      schema.HashString,
 			},
 		}),
