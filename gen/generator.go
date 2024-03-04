@@ -617,7 +617,6 @@ func main() {
 			model.TestType = classifyTests(model.PkgName, predecessorPaths, testCloudApic, testApic)
 		}
 
-		log.Printf("HERE test types for class %v and its paths %v are %v", model.PkgName, predecessorPaths, model.TestType)
 		addGetTestClassificationFunc(model.TestType)
 		// Only render resources and datasources when the class has a unique identifier or is marked as include in the classes definitions YAML file
 		if len(model.IdentifiedBy) > 0 || model.Include {
