@@ -116,6 +116,7 @@ var rnPrefix = map[string]string{}
 var targetRelationalPropertyClasses = map[string]string{}
 var alwaysIncludeChildren = []string{"tag:Annotation", "tag:Tag"}
 var excludeChildResourceNamesFromDocs = []string{"", "annotation", "tag"}
+var testCloudApic, testApic []interface{}
 
 func GetResourceNameAsDescription(s string, definitions Definitions) string {
 	resourceName := cases.Title(language.English).String(strings.ReplaceAll(s, "_", " "))
@@ -261,6 +262,17 @@ func FromInterfacesToString(identifiedBy []interface{}) string {
 	return fmt.Sprintf("\"%s\"", strings.Join(identifiers, "\", \""))
 }
 
+func addGetTestClassificationFunc(testType []TestClassification) {
+	templateFuncs["getTestType"] = func(parent string) string {
+		for _, testClassification := range testType {
+			if testClassification.ImmediateParent == parent {
+				return testClassification.TestClassification
+			}
+		}
+		return "both"
+	}
+}
+
 // Renders the templates and writes a file to the output directory
 func renderTemplate(templateName, outputFileName, outputPath string, outputData interface{}) {
 	templateData, err := os.ReadFile(fmt.Sprintf("%s/%s", templatePath, templateName))
@@ -324,10 +336,18 @@ func getClassModels(definitions Definitions) map[string]Model {
 		pkgNames = append(pkgNames, strings.TrimSuffix(file.Name(), path.Ext(file.Name())))
 	}
 	for _, pkgName := range pkgNames {
-
 		classModel := Model{PkgName: pkgName}
 		classModel.setClassModel(metaPath, false, definitions, []string{}, pkgNames)
 		classModels[pkgName] = classModel
+
+		apicType, _ := classModel.PlatformFlavors["apicType"]
+		for _, value := range apicType {
+			if value.(string) == "capic" {
+				testCloudApic = append(testCloudApic, pkgName)
+			} else if value.(string) == "apic" {
+				testApic = append(testApic, pkgName)
+			}
+		}
 	}
 	return classModels
 }
@@ -583,7 +603,22 @@ func main() {
 		renderTemplate("annotation_unsupported.go.tmpl", "annotation_unsupported.go", providerPath, annotationUnsupported)
 	}
 	for _, model := range classModels {
+		predecessorPaths := calculatePredecessors(nil, model.PkgName, classModels)
+		testType := GetOverwriteTestType(model.PkgName, definitions)
+		foundValidTestType := false
+		for _, test := range testType {
+			if test.TestClassification != "none" {
+				model.TestType = testType
+				foundValidTestType = true
+				break
+			}
+		}
+		if !foundValidTestType {
+			model.TestType = classifyTests(model.PkgName, predecessorPaths, testCloudApic, testApic)
+		}
 
+		log.Printf("HERE test types for class %v and its paths %v are %v", model.PkgName, predecessorPaths, model.TestType)
+		addGetTestClassificationFunc(model.TestType)
 		// Only render resources and datasources when the class has a unique identifier or is marked as include in the classes definitions YAML file
 		if len(model.IdentifiedBy) > 0 || model.Include {
 
@@ -609,7 +644,7 @@ func main() {
 			// Set the documentation specific information for the resource
 			// This is done to ensure references can be made to parent/child resources and output amounts can be restricted
 			setDocumentationData(&model, definitions)
-			setExplicitParentDns(&model)
+			setParentDnOptional(&model)
 
 			// Render the testvars file for the resource
 			// First generate run would not mean the file is correct from beginning since some testvars would need to be manually overwritten in the properties definitions YAML file
@@ -648,6 +683,90 @@ func main() {
 
 }
 
+type TestClassification struct {
+	ImmediateParent    string
+	TestClassification string
+}
+
+func classifyTests(classPkgName string, paths [][]string, cloudApic []interface{}, apic []interface{}) []TestClassification {
+	contains := func(list []interface{}, item string) bool {
+		for _, listItem := range list {
+			if listItem == item {
+				return true
+			}
+		}
+		return false
+	}
+
+	var testClassifications []TestClassification
+	immediateParent := classPkgName
+	foundInCloud := false
+	foundInApic := false
+	if contains(cloudApic, classPkgName) {
+		foundInCloud = true
+	} else if contains(apic, classPkgName) {
+		foundInApic = true
+	}
+
+	for _, path := range paths {
+		if len(path) == 0 {
+			continue
+		}
+		immediateParent = path[0]
+		if !foundInCloud && !foundInApic {
+			for _, item := range path {
+				if contains(cloudApic, item) {
+					foundInCloud = true
+					break
+				}
+				if contains(apic, item) {
+					foundInApic = true
+				}
+			}
+		}
+		var testClassification string
+		if foundInCloud {
+			testClassification = "cloud"
+		} else if foundInApic {
+			testClassification = "apic"
+		} else {
+			testClassification = "both"
+		}
+
+		testClassifications = append(testClassifications, TestClassification{
+			ImmediateParent:    immediateParent,
+			TestClassification: testClassification,
+		})
+
+		//Reset the flags
+		foundInCloud = false
+		foundInApic = false
+
+	}
+
+	return testClassifications
+}
+
+func calculatePredecessors(predecessor []string, classPkgName string, classModels map[string]Model) [][]string {
+	var results [][]string
+	for _, model := range classModels {
+		if model.PkgName == classPkgName {
+			for _, classInContained := range model.ContainedBy {
+				newPredecessor := make([]string, len(predecessor))
+				copy(newPredecessor, predecessor)
+				newPredecessor = append(newPredecessor, classInContained)
+				paths := calculatePredecessors(newPredecessor, classInContained, classModels)
+				results = append(results, paths...)
+			}
+			break
+		}
+	}
+	if len(results) == 0 {
+		return [][]string{predecessor}
+	}
+	return results
+}
+
 // A Model that represents the provider
 type ProviderModel struct {
 	Example string
@@ -666,50 +785,93 @@ type Metadata struct {
 // A Model represents a ACI class
 // All information is retrieved directly or deduced from the metadata
 type Model struct {
-	PkgName                   string
-	Label                     string
-	Name                      string
-	RnFormat                  string
-	RnPrepend                 string
-	Comment                   string
-	ResourceClassName         string
-	ResourceName              string
-	ResourceNameDocReference  string
-	ChildResourceName         string
-	ExampleDataSource         string
-	ExampleResource           string
-	ExampleResourceFull       string
-	SubCategory               string
-	RelationshipClass         string
-	RelationshipResourceName  string
-	Versions                  string
-	ChildClasses              []string
-	ContainedBy               []string
-	Contains                  []string
-	DocumentationDnFormats    []string
-	DocumentationParentDns    []string
-	DocumentationExamples     []string
-	TargetResourceClassName   string
-	TargetResourceName        string
-	TargetDn                  string
-	TargetProperties          map[string]Property
-	TargetNamedProperties     map[string]Property
-	DocumentationChildren     []string
-	ResourceNotes             []string
-	ResourceWarnings          []string
-	DatasourceNotes           []string
-	DatasourceWarnings        []string
-	Parents                   []string
-	UiLocations               []string
-	IdentifiedBy              []interface{}
-	DnFormats                 []interface{}
-	Properties                map[string]Property
-	NamedProperties           map[string]Property
-	Children                  map[string]Model
-	Configuration             map[string]interface{}
-	TestVars                  map[string]interface{}
-	Definitions               Definitions
-	ResourceNameAsDescription string
+	PkgName                     string
+	Label                       string
+	Name                        string
+	RnFormat                    string
+	RnPrepend                   string
+	Comment                     string
+	ResourceClassName           string
+	ResourceName                string
+	ResourceNameDocReference    string
+	ChildResourceName           string
+	ExampleDataSource           string
+	ExampleResource             string
+	ExampleResourceFull         string
+	SubCategory                 string
+	RelationshipClass           string
+	RelationshipResourceName    string
+	Versions                    string
+	TargetResourceClassName     string
+	TargetResourceName          string
+	TargetDn                    string
+	ChildClasses                []string
+	ContainedBy                 []string
+	Contains                    []string
+	DocumentationDnFormats      []string
+	DocumentationParentDns      []string
+	DocumentationExamples       []string
+	DocumentationChildren       []string
+	ResourceNotes               []string
+	ResourceWarnings            []string
+	DatasourceNotes             []string
+	DatasourceWarnings          []string
+	Parents                     []string
+	UiLocations                 []string
+	IdentifiedBy                []interface{}
+	DnFormats                   []interface{}
+	TargetProperties            map[string]Property
+	TargetNamedProperties       map[string]Property
+	Properties                  map[string]Property
+	NamedProperties             map[string]Property
+	Children                    map[string]Model
+	Configuration               map[string]interface{}
+	TestVars                    map[string]interface{}
+	Definitions                 Definitions
+	ResourceNameAsDescription   string
+	PkgName                     string
+	Label                       string
+	Name                        string
+	RnFormat                    string
+	RnPrepend                   string
+	Comment                     string
+	ResourceClassName           string
+	ResourceName                string
+	ResourceNameDocReference    string
+	ChildResourceName           string
+	ExampleDataSource           string
+	ExampleResource             string
+	ExampleResourceFull         string
+	SubCategory                 string
+	RelationshipClass           string
+	RelationshipResourceName    string
+	Versions                    string
+	TestType                    []TestClassification
+	ChildClasses                []string
+	ContainedBy                 []string
+	Contains                    []string
+	DocumentationDnFormats      []string
+	DocumentationParentDns      []string
+	DocumentationExamples       []string
+	DocumentationChildren       []string
+	ResourceNotes               []string
+	ResourceWarnings            []string
+	DatasourceNotes             []string
+	DatasourceWarnings          []string
+	Parents                     []string
+	UiLocations                 []string
+	RnFormatMap                 map[string]string
+	IdentifiedBy                []interface{}
+	DnFormats                   []interface{}
+	PlatformFlavors             map[string][]interface{}
+	MultiParentFormats          map[string]string
+	MultiParentFormatsTestTypes map[string]string
+	Properties                  map[string]Property
+	NamedProperties             map[string]Property
+	Children                    map[string]Model
+	Configuration               map[string]interface{}
+	TestVars                    map[string]interface{}
+	Definitions                 Definitions
 	// Below booleans are used during template rendering to determine correct rendering the go code
 	AllowDelete               bool
 	AllowChildDelete          bool
@@ -725,6 +887,7 @@ type Model struct {
 	HasNamedProperties        bool
 	HasChildNamedProperties   bool
 	Include                   bool
+	ParentDnOptional          bool
 }
 
 // A Property represents a ACI class property
@@ -778,6 +941,7 @@ func (m *Model) setClassModel(metaPath string, child bool, definitions Definitio
 		m.SetClassLabel(classDetails, child)
 		m.SetClassName(classDetails)
 		m.SetClassRnFormat(classDetails)
+		m.SetClassRnFormatList(classDetails)
 		m.SetClassDnFormats(classDetails)
 		m.SetClassIdentifiers(classDetails)
 		m.SetClassInclude()
@@ -790,6 +954,7 @@ func (m *Model) setClassModel(metaPath string, child bool, definitions Definitio
 		m.SetClassChildren(classDetails, pkgNames)
 		m.SetResourceNotesAndWarnigns(m.PkgName, definitions)
 		m.SetResourceNameAsDescription(m.PkgName, definitions)
+		m.SetApicType(classDetails)
 	}
 
 	/*
@@ -990,6 +1155,14 @@ func (m *Model) SetResourceNotesAndWarnigns(classPkgName string, definitions Def
 
 func (m *Model) SetResourceNameAsDescription(classPkgName string, definitions Definitions) {
 	m.ResourceNameAsDescription = GetResourceNameAsDescription(GetResourceName(classPkgName, definitions), definitions)
+}
+
+func (m *Model) SetApicType(classDetails interface{}) {
+	platform := make(map[string][]interface{})
+	if platformFlavors, ok := classDetails.(map[string]interface{})["platformFlavors"].([]interface{}); ok {
+		platform["apicType"] = platformFlavors
+		m.PlatformFlavors = platform
+	}
 }
 
 // Determine if a class is allowed to be deleted as defined in the classes.yaml file
@@ -1438,6 +1611,93 @@ func (m *Model) GetOverwriteRnFormat(rnFormat string) {
 				m.RnFormat = fmt.Sprintf("%s/%s", value.(string), rnFormat)
 				m.RnPrepend = value.(string)
 			}
+		}
+	}
+}
+
+func GetOverwriteTestType(classPkgName string, definitions Definitions) []TestClassification {
+	var testClassifications []TestClassification
+	if v, ok := definitions.Classes[classPkgName]; ok {
+		for key, value := range v.(map[interface{}]interface{}) {
+			if key.(string) == "test_type" {
+				testClassifications = append(testClassifications, TestClassification{
+					ImmediateParent:    classPkgName,
+					TestClassification: value.(string),
+				})
+				return testClassifications
+			}
+		}
+	}
+	testClassifications = append(testClassifications, TestClassification{
+		ImmediateParent:    classPkgName,
+		TestClassification: "none",
+	})
+	return testClassifications
+}
+
+func GetMultiParentFormats(classPkgName string, definitions Definitions) (map[string]interface{}, map[string]string) {
+	multiParents := make(map[string]interface{})
+	testTypes := make(map[string]string)
+	var containedBy, rnPrepend, testType string
+	if v, ok := definitions.Classes[classPkgName]; ok {
+		for key, value := range v.(map[interface{}]interface{}) {
+			if key.(string) == "multi_parents" {
+				for _, pair := range value.([]interface{}) {
+					pairMap, _ := pair.(map[interface{}]interface{})
+					for pair1, pair2 := range pairMap {
+						switch pair1 {
+						case "contained_by":
+							containedBy = pair2.(string)
+						case "rn_prepend":
+							rnPrepend = pair2.(string)
+						case "test_type":
+							testType = pair2.(string)
+						}
+					}
+					multiParents[containedBy] = rnPrepend
+					testTypes[containedBy] = testType
+				}
+			}
+		}
+	}
+	return multiParents, testTypes
+}
+
+func GetResourceIdentifier(classPkgName string, definitions Definitions) string {
+	if v, ok := definitions.Classes[classPkgName]; ok {
+		for key, value := range v.(map[interface{}]interface{}) {
+			if key.(string) == "resource_identifier" {
+				return value.(string)
+			}
+		}
+	}
+	return resourceNames[classPkgName]
+}
+
+func (m *Model) SetClassRnFormatList(classDetails interface{}) {
+	rnFormat := classDetails.(map[string]interface{})["rnFormat"].(string)
+	multiParentFormats := make(map[string]string)
+	getMultiParentFormats, getTestType := GetMultiParentFormats(m.PkgName, m.Definitions)
+	rnFormatMap := make(map[string]string)
+	for parentClass, rnPrepend := range getMultiParentFormats {
+		resourceIdentifier := GetResourceIdentifier(parentClass, m.Definitions)
+		rnFormatMap[resourceIdentifier] = fmt.Sprintf("%s/%s", rnPrepend, rnFormat)
+		if rn_prep, ok := rnPrepend.(interface{}); ok {
+			multiParentFormats[parentClass] = rn_prep.(string)
+		}
+	}
+
+	m.RnFormatMap = rnFormatMap
+	m.MultiParentFormats = multiParentFormats
+	m.MultiParentFormatsTestTypes = getTestType
+}
+
+func setParentDnOptional(m *Model) {
+	getMultiParentFormats, _ := GetMultiParentFormats(m.PkgName, m.Definitions)
+	for parent, _ := range getMultiParentFormats {
+		if parent == "polUni" {
+			m.ParentDnOptional = true
+			break
 		}
 	}
 }

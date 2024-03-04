@@ -139,9 +139,6 @@ tagAnnotation:
       value: "test_value"
 
 pkiTP:
-  parents:
-    - parent_dn: "uni/userext/pkiext"
-    - is_explicit_parent_dn: true
   resource_required:
     - "certChain"
   test_values:

@@ -75,14 +75,14 @@ children:
       {{ end}}{{- end}}{{- end}}{{- end}}
 {{- if and .ContainedBy (not .ExplicitParentDns) }}
 parents:
-    {{- $index := 0}}{{- range $key := .DocumentationExamples}}{{$parentDependency := getParentTestDependencies $.PkgName $index $.Definitions}}
+    {{- $index := 0}}{{- range $key := .DocumentationExamples}}{{$parentDependency := getParentTestDependencies $.PkgName $index $.Definitions}}{{$testType := getTestType $key}}
   - class_name: "{{ $key }}"
     parent_dependency: "{{$parentDependency.parent_dependency}}"
     parent_dn: "{{createParentDnValue $key "test" $.Definitions}}"
     class_in_parent: {{$parentDependency.class_in_parent}}
       {{- if ne $parentDependency.parent_dependency_name "" }}
     parent_dependency_name: "{{$parentDependency.parent_dependency_name}}"{{$index = add $index 1}}
-      {{- end }}
+    test_type: {{$testType}}
     {{- end}}
 
   {{- $index := 0}}{{- $key := .TargetResourceClassName}}
@@ -109,3 +109,25 @@ targets:
       {{- end}}{{$index = add $index 1}}
     {{- end }}
   {{- end}}
+{{- end}}
+
+{{- if .MultiParentFormats}}
+parents:
+{{- $topContext := . }}
+{{- range $key, $value := .MultiParentFormats }}
+    {{$parentDependency := getParentTestDependencies $topContext.PkgName 0 $topContext.Definitions}}
+    - class_name: "{{ $key }}"
+      parent_dependency: "{{$parentDependency.parent_dependency}}"
+      parent_dn: "{{createParentDnValue $key "test" $topContext.Definitions}}"
+      class_in_parent: false
+      {{- $testType := index $topContext.MultiParentFormatsTestTypes $key }}
+      {{- if $testType }}
+      test_type: {{$testType}}
+      {{- end}}
+{{- end}}
+{{- end}}
+
+{{- if and (not .ContainedBy) (not .RnFormatMap)}}
+{{$testType := getTestType $.PkgName}}
+test_type: {{$testType}}
+{{- end}}

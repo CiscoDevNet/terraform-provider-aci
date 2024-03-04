@@ -18,22 +18,13 @@ all:
   value: "value"
 
 parents:
-<<<<<<< HEAD
   - class_name: "fvTenant"
     parent_dependency: ""
     parent_dn: "aci_tenant.test.id"
     class_in_parent: false
+    test_type: both
   - class_name: "fvAEPg"
     parent_dependency: ""
     parent_dn: "aci_application_epg.test.id"
     class_in_parent: false
-=======
-  - class_name: "fvAEPg"
-    parent_dependency: "commPol"
-    parent_dn: "aci_application_epg.test.id"
-    class_in_parent: false
-  - class_name: "fvTenant"
-    parent_dependency: ""
-    parent_dn: "aci_tenant.test.id"
-    class_in_parent: false
->>>>>>> b2f52a6d ([minor_change] Addition of new generated resource and data source for pkiTP)
+    test_type: both

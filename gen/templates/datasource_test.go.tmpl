@@ -16,7 +16,7 @@ import (
 func TestAccDataSource{{$.resourceClassName}}With{{capitalize .class_name}} (t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "{{.test_type}}") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -47,7 +47,7 @@ func TestAccDataSource{{$.resourceClassName}}With{{capitalize .class_name}} (t *
 func TestAccDataSource{{.resourceClassName}}(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "{{.test_type}}") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{

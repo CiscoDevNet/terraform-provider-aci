@@ -1,13 +1,8 @@
 {{- if .DocumentationExamples}}{{- range $key := .DocumentationExamples}}
 resource "aci_{{$.ResourceName}}" "example_{{getResourceName $key $.Definitions}}" { 
-    {{- if and $.HasParent (not $.ExplicitParentDns)}}
+    {{- if $.HasParent}}
   parent_dn = {{createParentDnValue $key "example" $.Definitions}}
     {{- end}}
-    {{- if $.ExplicitParentDns}}
-    {{- range $.ExplicitParentDns}}
-  parent_dn = "{{.}}"
-    {{- end}}
-     {{- end}}
     {{- range $.Properties}}{{- if .IsRequired}}{{- if ne .NamedPropertyClass ""}}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = aci_{{getResourceName .NamedPropertyClass $.Definitions}}.example.name
     {{- else if eq .SnakeCaseName "t_dn" }}

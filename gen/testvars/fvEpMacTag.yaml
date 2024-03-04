@@ -7,7 +7,6 @@ default:
   id_attribute: "0"
   name: ""
   name_alias: ""
-
 datasource_non_existing:
   bd_name: "non_existing_bd_name"
   mac: "00:00:00:00:00:01"
@@ -18,7 +17,7 @@ datasource_required:
 
 resource_required:
   bd_name: "test_bd_name"
-  mac: "00:00:00:00:00:01"
+  mac: "00:00:00:00:00:01" 
 
 all:
   annotation: "annotation"
@@ -46,3 +45,4 @@ parents:
     parent_dependency: ""
     parent_dn: "aci_tenant.test.id"
     class_in_parent: false
+    test_type: apic

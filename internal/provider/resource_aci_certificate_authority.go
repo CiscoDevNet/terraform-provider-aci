@@ -84,7 +84,7 @@ func (r *PkiTPResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				},
 			},
 			"parent_dn": schema.StringAttribute{
-				Required:            true,
+				Optional:            true,
 				MarkdownDescription: "The distinguished name (DN) of the parent object.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
@@ -230,7 +230,7 @@ func (r *PkiTPResource) Create(ctx context.Context, req resource.CreateRequest, 
 		return
 	}
 
-	doPkiTPRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -292,7 +292,7 @@ func (r *PkiTPResource) Update(ctx context.Context, req resource.UpdateRequest, 
 		return
 	}
 
-	doPkiTPRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -317,11 +317,11 @@ func (r *PkiTPResource) Delete(ctx context.Context, req resource.DeleteRequest, 
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Delete of resource aci_certificate_authority with id '%s'", data.Id.ValueString()))
-	jsonPayload := getPkiTPDeleteJsonPayload(ctx, &resp.Diagnostics, data)
+	jsonPayload := GetDeleteJsonPayload(ctx, &resp.Diagnostics, "pkiTP", data.Id.ValueString())
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	doPkiTPRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -340,7 +340,7 @@ func (r *PkiTPResource) ImportState(ctx context.Context, req resource.ImportStat
 }
 
 func getAndSetPkiTPAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *PkiTPResourceModel) {
-	requestData := doPkiTPRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "pkiTP,tagAnnotation"), "GET", nil)
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "pkiTP,tagAnnotation"), "GET", nil)
 
 	if diags.HasError() {
 		return
@@ -413,14 +413,16 @@ func getAndSetPkiTPAttributes(ctx context.Context, diags *diag.Diagnostics, clie
 	}
 }
 
-func getPkiTPRn(ctx context.Context, data *PkiTPResourceModel) string {
-	rn := "tp-{name}"
+func getPkiTPRn(ctx context.Context, data *PkiTPResourceModel) map[string]string {
+	rn_map := map[string]string{"": "uni/userext/pkiext/tp-{name}", "tn": "certstore/tp-{name}"}
 	for _, identifier := range []string{"name"} {
 		fieldName := fmt.Sprintf("%s%s", strings.ToUpper(identifier[:1]), identifier[1:])
 		fieldValue := reflect.ValueOf(data).Elem().FieldByName(fieldName).Interface().(basetypes.StringValue).ValueString()
-		rn = strings.ReplaceAll(rn, fmt.Sprintf("{%s}", identifier), fieldValue)
+		for parent_identifier, rn_prepend := range rn_map {
+			rn_map[parent_identifier] = strings.ReplaceAll(rn_prepend, fmt.Sprintf("{%s}", identifier), fieldValue)
+		}
 	}
-	return rn
+	return rn_map
 }
 
 func setPkiTPParentDn(ctx context.Context, dn string, data *PkiTPResourceModel) {
@@ -436,12 +438,27 @@ func setPkiTPParentDn(ctx context.Context, dn string, data *PkiTPResourceModel) 
 			break
 		}
 	}
-	data.ParentDn = basetypes.NewStringValue(dn[:rnIndex])
+	rn_map := map[string]string{"": "uni/userext/pkiext/tp-{name}", "tn": "certstore/tp-{name}"}
+	parentDn := dn[:rnIndex]
+	for parent_identifier, rn_prepend := range rn_map {
+		if strings.Contains(parentDn, parent_identifier) && parent_identifier != "" {
+			parentDn = parentDn[:strings.Index(parentDn, "/"+rn_prepend)]
+			data.ParentDn = basetypes.NewStringValue(parentDn)
+		}
+		break
+	}
+
 }
 
 func setPkiTPId(ctx context.Context, data *PkiTPResourceModel) {
-	rn := getPkiTPRn(ctx, data)
-	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
+	rn_map := getPkiTPRn(ctx, data)
+	for parent_identifier, rn_prepend := range rn_map {
+		if data.ParentDn.ValueString() == "" && parent_identifier == "" {
+			data.Id = types.StringValue(fmt.Sprintf("%s", rn_prepend))
+		} else if parent_identifier != "" && strings.Contains(data.ParentDn.ValueString(), parent_identifier) {
+			data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn_prepend))
+		}
+	}
 }
 
 func getPkiTPTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *PkiTPResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationPkiTPResourceModel) []map[string]interface{} {
@@ -537,48 +554,4 @@ func getPkiTPCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, dat
 		return nil
 	}
 	return jsonPayload
-}
-
-func getPkiTPDeleteJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *PkiTPResourceModel) *container.Container {
-
-	jsonString := fmt.Sprintf(`{"pkiTP":{"attributes":{"dn": "%s","status": "deleted"}}}`, data.Id.ValueString())
-	jsonPayload, err := container.ParseJSON([]byte(jsonString))
-	if err != nil {
-		diags.AddError(
-			"Construction of json payload failed",
-			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
-		)
-		return nil
-	}
-	return jsonPayload
-}
-
-func doPkiTPRequest(ctx context.Context, diags *diag.Diagnostics, client *client.Client, path, method string, payload *container.Container) *container.Container {
-
-	restRequest, err := client.MakeRestRequest(method, path, payload, true)
-	if err != nil {
-		diags.AddError(
-			"Creation of rest request failed",
-			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
-		)
-		return nil
-	}
-
-	cont, restResponse, err := client.Do(restRequest)
-
-	if restResponse != nil && restResponse.StatusCode != 200 {
-		diags.AddError(
-			fmt.Sprintf("The %s rest request failed", strings.ToLower(method)),
-			fmt.Sprintf("Response: %s, err: %s. Please report this issue to the provider developers.", cont.Data().(map[string]interface{})["imdata"], err),
-		)
-		return nil
-	} else if err != nil {
-		diags.AddError(
-			fmt.Sprintf("The %s rest request failed", strings.ToLower(method)),
-			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
-		)
-		return nil
-	}
-
-	return cont
 }
