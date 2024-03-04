@@ -31,7 +31,7 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
   {{- end}}
 {{- end}}
 PreCheck: func() { 
-  testAccPreCheck(t) 
+  testAccPreCheck(t, "{{.test_type}}")
   {{- if $found_cert }}
     time.Sleep(10 * time.Second)
   {{- end }}
@@ -149,7 +149,11 @@ PreCheck: func() {
 				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
 		{{- range $key, $value := $.resource_required}}
+		{{- if contains $value "<<EOT -----BEGIN_CERTIFICATE-----" }}
+  					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{ $value | appendNewLine }}" ),
+		{{- else}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+		{{- end}}
 		{{- end}}
 			{{- range $key, $value := $.default}}{{$contains := definedInMap $key $.resource_required}}
 				{{- if not $contains}}
@@ -172,7 +176,11 @@ PreCheck: func() {
 				ImportStateVerify: true,
 				Check: resource.ComposeAggregateTestCheckFunc(
 		{{- range $key, $value := $.resource_required}}
+		{{- if contains $value "<<EOT -----BEGIN_CERTIFICATE-----" }}
+  					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{ $value | appendNewLine }}" ),
+		{{- else}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+		{{- end}}
 		{{- end}}
 			{{- range $key, $value := $.default}}{{$contains := definedInMap $key $.resource_required}}
 				{{- if not $contains}}
@@ -259,7 +267,7 @@ PreCheck: func() {
 func TestAccResource{{.resourceClassName}}(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "{{.test_type}}") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -435,9 +443,7 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 
 const testConfig{{$.resourceClassName}}MinDependencyWith{{capitalize .class_name}} = testConfig{{capitalize .class_name}}Min{{- if ne .parent_dependency ""}}DependencyWith{{capitalize .parent_dependency}}{{- end}} + `
 resource "aci_{{$.resourceName}}" "test" {
-  {{- if .is_explicit_parent_dn}}
-  parent_dn = "{{.parent_dn}}"
-  {{- else}}
+  {{- if ne .class_name "polUni"}}
   parent_dn = {{.parent_dn}}
   {{- end}}
   {{- range $key, $value := $.resource_required}}
@@ -452,9 +458,7 @@ resource "aci_{{$.resourceName}}" "test" {
 
 const testConfig{{$.resourceClassName}}AllDependencyWith{{capitalize .class_name}} = testConfig{{capitalize .class_name}}Min{{- if ne .parent_dependency ""}}DependencyWith{{capitalize .parent_dependency}}{{- end}} + `
 resource "aci_{{$.resourceName}}" "test" {
-  {{- if .is_explicit_parent_dn}}
-  parent_dn = "{{.parent_dn}}"
-  {{- else}}
+  {{- if ne .class_name "polUni"}}
   parent_dn = {{.parent_dn}}
   {{- end}}
 		{{- range $key, $value := $.resource_required}}{{$contains := definedInMap $key $.all}}
@@ -474,9 +478,7 @@ resource "aci_{{$.resourceName}}" "test" {
 
 const testConfig{{$.resourceClassName}}ResetDependencyWith{{capitalize .class_name}} = testConfig{{capitalize .class_name}}Min{{- if ne .parent_dependency ""}}DependencyWith{{capitalize .parent_dependency}}{{- end}} + `
 resource "aci_{{$.resourceName}}" "test" {
-  {{- if .is_explicit_parent_dn}}
-  parent_dn = "{{.parent_dn}}"
-  {{- else}}
+  {{- if ne .class_name "polUni"}}
   parent_dn = {{.parent_dn}}
   {{- end}}
 		{{- range $key, $value := $.resource_required}}{{$contains := definedInMap $key $.default}}
@@ -497,9 +499,15 @@ resource "aci_{{$.resourceName}}" "test" {
 		{{- if $.children}}
 const testConfig{{$.resourceClassName}}ChildrenDependencyWith{{capitalize .class_name}} = testConfig{{capitalize .class_name}}Min{{- if ne .parent_dependency ""}}DependencyWith{{capitalize .parent_dependency}}{{- end}} + `
 resource "aci_{{$.resourceName}}" "test" {
+  {{- if ne .class_name "polUni"}}
   parent_dn = {{.parent_dn}}
+  {{- end}}
   			{{- range $key, $value := $.resource_required}}
+			{{- if contains $value "<<EOT -----BEGIN_CERTIFICATE-----" }}
+  {{$key}} = {{ $value | spaceToNewLine }}
+  {{- else}}
   {{$key}} = "{{$value}}"
+		{{- end}}
   			{{- end}}
   			{{- range $key, $value := $.children}}
   {{$key}} = [
@@ -517,18 +525,30 @@ resource "aci_{{$.resourceName}}" "test" {
 
 const testConfig{{$.resourceClassName}}ChildrenRemoveFromConfigDependencyWith{{capitalize .class_name}} = testConfig{{capitalize .class_name}}Min{{- if ne .parent_dependency ""}}DependencyWith{{capitalize .parent_dependency}}{{- end}} + `
 resource "aci_{{$.resourceName}}" "test" {
+  {{- if ne .class_name "polUni"}}
   parent_dn = {{.parent_dn}}
+  {{- end}}
   		{{- range $key, $value := $.resource_required}}
+  {{- if contains $value "<<EOT -----BEGIN_CERTIFICATE-----" }}
+  {{$key}} = {{ $value | spaceToNewLine }}
+  {{- else}}
   {{$key}} = "{{$value}}"
+		{{- end}}
   		{{- end}}
 }
 `
 
 const testConfig{{$.resourceClassName}}ChildrenRemoveOneDependencyWith{{capitalize .class_name}} = testConfig{{capitalize .class_name}}Min{{- if ne .parent_dependency ""}}DependencyWith{{capitalize .parent_dependency}}{{- end}} + `
 resource "aci_{{$.resourceName}}" "test" {
+  {{- if ne .class_name "polUni"}}
   parent_dn = {{.parent_dn}}
+  {{- end}}
     	{{- range $key, $value := $.resource_required}}
+  {{- if contains $value "<<EOT -----BEGIN_CERTIFICATE-----" }}
+  {{$key}} = {{ $value | spaceToNewLine }}
+  {{- else}}
   {{$key}} = "{{$value}}"
+		{{- end}}
   		{{- end}}
   		{{- range $key, $value := $.children}}
   {{$key}} = [ {{$child := index $value 1 }}
@@ -544,9 +564,15 @@ resource "aci_{{$.resourceName}}" "test" {
 
 const testConfig{{$.resourceClassName}}ChildrenRemoveAllDependencyWith{{capitalize .class_name}} = testConfig{{capitalize .class_name}}Min{{- if ne .parent_dependency ""}}DependencyWith{{capitalize .parent_dependency}}{{- end}} + `
 resource "aci_{{$.resourceName}}" "test" {
+  {{- if ne .class_name "polUni"}}
   parent_dn = {{.parent_dn}}
+  {{- end}}
     	{{- range $key, $value := $.resource_required}}
+  {{- if contains $value "<<EOT -----BEGIN_CERTIFICATE-----" }}
+  {{$key}} = {{ $value | spaceToNewLine }}
+  {{- else}}
   {{$key}} = "{{$value}}"
+		{{- end}}
   		{{- end}}
   		{{- range $key, $value := $.children}}
   {{$key}} = []
@@ -594,7 +620,11 @@ resource "aci_{{$.resourceName}}" "test" {
 const testConfig{{.resourceClassName}}Children = `
 resource "aci_{{$.resourceName}}" "test" {
   		{{- range $key, $value := $.resource_required}}
+  {{- if contains $value "<<EOT -----BEGIN_CERTIFICATE-----" }}
+  {{$key}} = {{ $value | spaceToNewLine }}
+  {{- else}}
   {{$key}} = "{{$value}}"
+		{{- end}}
   		{{- end}}
   		{{- range $key, $value := $.children}}
   {{$key}} = [
@@ -613,7 +643,11 @@ resource "aci_{{$.resourceName}}" "test" {
 const testConfig{{.resourceClassName}}ChildrenRemoveFromConfig = `
 resource "aci_{{$.resourceName}}" "test" {
   		{{- range $key, $value := $.resource_required}}
+  {{- if contains $value "<<EOT -----BEGIN_CERTIFICATE-----" }}
+  {{$key}} = {{ $value | spaceToNewLine }}
+  {{- else}}
   {{$key}} = "{{$value}}"
+		{{- end}}
   		{{- end}}
 }
 `
@@ -621,7 +655,11 @@ resource "aci_{{$.resourceName}}" "test" {
 const testConfig{{.resourceClassName}}ChildrenRemoveOne = `
 resource "aci_{{$.resourceName}}" "test" {
     	{{- range $key, $value := $.resource_required}}
+  {{- if contains $value "<<EOT -----BEGIN_CERTIFICATE-----" }}
+  {{$key}} = {{ $value | spaceToNewLine }}
+  {{- else}}
   {{$key}} = "{{$value}}"
+		{{- end}}
   		{{- end}}
   		{{- range $key, $value := $.children}}
   {{$key}} = [ {{$child := index $value 1 }}
@@ -638,7 +676,11 @@ resource "aci_{{$.resourceName}}" "test" {
 const testConfig{{.resourceClassName}}ChildrenRemoveAll = `
 resource "aci_{{$.resourceName}}" "test" {
     	{{- range $key, $value := $.resource_required}}
+  {{- if contains $value "<<EOT -----BEGIN_CERTIFICATE-----" }}
+  {{$key}} = {{ $value | spaceToNewLine }}
+  {{- else}}
   {{$key}} = "{{$value}}"
+		{{- end}}
   		{{- end}}
   		{{- range $key, $value := $.children}}
   {{$key}} = []

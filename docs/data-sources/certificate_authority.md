@@ -31,6 +31,11 @@ Data source for Certificate Authority
 
 ```hcl
 
+data "aci_certificate_authority" "example_certificate_store" {
+  parent_dn = aci_certificate_store.example.id
+  name      = "test_name"
+}
+
 data "aci_certificate_authority" "example_public_key_management" {
   parent_dn = aci_public_key_management.example.id
   name      = "test_name"
@@ -43,10 +48,8 @@ data "aci_certificate_authority" "example_public_key_management" {
 ### Required ###
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
+  - [aci_certificate_store](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/certificate_store) ([cloudCertStore](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/cloudCertStore/overview))
   - [aci_public_key_management](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/public_key_management) ([pkiEp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/pkiEp/overview))
-  - The distinquised name (DN) of classes below can be used but currently there is no available resource for it:
-    - [cloudCertStore](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/cloudCertStore/overview)
-
 * `name` (name) - (string) The name of the Certificate Authority object.
 
 ### Read-Only ###

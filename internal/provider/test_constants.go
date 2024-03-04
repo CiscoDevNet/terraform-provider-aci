@@ -45,4 +45,4 @@ resource "aci_l3_outside" "test" {
 }
 `
 
-const testConfigPkiEpMin = ``
+const testConfigPolUniMin = ``

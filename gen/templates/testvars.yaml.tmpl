@@ -5,15 +5,9 @@
 default:
   {{- range .Properties}}{{$overwritePropertyName := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
     {{- if .DefaultValue}}
-<<<<<<< HEAD
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName .DefaultValue "default" $.Definitions}}"
     {{- else if not .IsNaming}}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName "" "default" $.Definitions}}"
-=======
-  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{(overwritePropertyValue .PkgName .SnakeCaseName .DefaultValue "default" $.Definitions) }}"
-    {{- else if not .IsNaming}}
-  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{(overwritePropertyValue .PkgName .SnakeCaseName "" "default" $.Definitions) }}"
->>>>>>> b2f52a6d ([minor_change] Addition of new generated resource and data source for pkiTP)
     {{- end}}
   {{- end}}
 
@@ -61,24 +55,33 @@ children:
       {{ end}}
     - {{ range .Properties}}{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: {{$length := len .ValidValues}}{{if ge $length 2}}"{{ index .ValidValues 1 }}"{{else if not .IsNaming}}"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}_2"{{- else}}"{{$name}}_2"{{- end}}
       {{ end}}{{- end}}{{- end}}
-{{- if and .ContainedBy (not .ExplicitParentDns) }}
+{{- if and .ContainedBy (not .RnFormatMap)}}
 parents:
-    {{- $index := 0}}{{- range $key := .DocumentationExamples}}{{$parentDependency := getParentTestDependencies $.PkgName $index $.Definitions}}
+    {{- $index := 0}}{{- range $key := .DocumentationExamples}}{{$parentDependency := getParentTestDependencies $.PkgName $index $.Definitions}}{{$testType := getTestType $key}}
   - class_name: "{{ $key }}"
     parent_dependency: "{{$parentDependency.parent_dependency}}"
     parent_dn: "{{createParentDnValue $key "test" $.Definitions}}"
     class_in_parent: {{$parentDependency.class_in_parent}}{{$index = add $index 1}}
+    test_type: {{$testType}}
     {{- end}}
 {{- end}}
-{{- if .ExplicitParentDns}}
+{{- if .MultiParentFormats}}
 parents:
-{{- $index := 0}}{{- range $key := .DocumentationExamples}}{{$parentDependency := getParentTestDependencies $.PkgName $index $.Definitions}}
-  - class_name: "{{ $key }}"
-    parent_dependency: "{{$parentDependency.parent_dependency}}"
-    class_in_parent: {{$parentDependency.class_in_parent}}{{$index = add $index 1}}
-     {{- end}}
-{{- range .ExplicitParentDns}}
-    parent_dn: "{{.}}"
-    is_explicit_parent_dn: true
-    {{- end}}
-     {{- end}}
+{{- $topContext := . }}
+{{- range $key, $value := .MultiParentFormats }}
+    {{$parentDependency := getParentTestDependencies $topContext.PkgName 0 $topContext.Definitions}}
+    - class_name: "{{ $key }}"
+      parent_dependency: "{{$parentDependency.parent_dependency}}"
+      parent_dn: "{{createParentDnValue $key "test" $topContext.Definitions}}"
+      class_in_parent: false
+      {{- $testType := index $topContext.MultiParentFormatsTestTypes $key }}
+      {{- if $testType }}
+      test_type: {{$testType}}
+      {{- end}}
+{{- end}}
+{{- end}}
+
+{{- if and (not .ContainedBy) (not .RnFormatMap)}}
+{{$testType := getTestType $.PkgName}}
+test_type: {{$testType}}
+{{- end}}

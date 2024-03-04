@@ -7,6 +7,7 @@ global:
 
 fvTenant:
   resource_name: "tenant"
+  resource_identifier: "tn"
 
 fvAEPg:
   resource_name: "application_epg"
@@ -131,34 +132,14 @@ fvEpIpTag:
     - "Tenants -> Policies -> Protocol -> Endpoint Tags -> Endpoint IP"
   sub_category: "Tenant Policies"
 
-commHttps:
-  include: true
-
-# pkiKeyRing:
-#   contained_by:
-#     - "polUni"
-#   rn_prepend: "userext/pkiext"
-#   dn_formats:
-#    #- "uni/tn-{name}/certstore/tp-{name}"
-#    - "uni/userext/pkiext/tp-{name}"
-
-# cloudCertStore:
-#   rn_format: "uni/tn-{name}"
-
-# pkiKeyRing:
-#   parent_dn:
-#    - "uni/userext/pkiext"
-
 pkiTP:
-  # contained_by:
-  #   - "pkiEp"
-  parent_dn:
-    - "uni/userext/pkiext"
-
-# aaaUserEp:
-#   contained_by:
-#     - "polUni"
-#   rn_prepend: "uni"
-#   dn_formats:
-#     - "uni/userext"
+  multi_parents: 
+    - rn_prepend: "certstore"
+      contained_by: "fvTenant"
+      test_type: "cloud"
+    - rn_prepend: "uni/userext/pkiext"
+      contained_by: "polUni"
+      test_type: "both"
+  #   - contained_by:
+  #       - "pkiEp"
   

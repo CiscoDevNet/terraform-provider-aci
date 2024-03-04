@@ -36,8 +36,15 @@ children:
       value: "value_2"
       
 parents:
-  - class_name: "pkiEp"
-    parent_dependency: ""
-    class_in_parent: false
-    parent_dn: "uni/userext/pkiext"
-    is_explicit_parent_dn: true
+    
+    - class_name: "fvTenant"
+      parent_dependency: ""
+      parent_dn: "aci_tenant.test.id"
+      class_in_parent: false
+      test_type: cloud
+    
+    - class_name: "polUni"
+      parent_dependency: ""
+      parent_dn: "aci_.test.id"
+      class_in_parent: false
+      test_type: both

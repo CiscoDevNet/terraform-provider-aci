@@ -50,3 +50,4 @@ parents:
     parent_dependency: "fvTenant"
     parent_dn: "aci_pim_route_map_policy.test.id"
     class_in_parent: false
+    test_type: both

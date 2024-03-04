@@ -35,8 +35,14 @@ The configuration snippet below creates a Certificate Authority with only requir
 
 ```hcl
 
+resource "aci_certificate_authority" "example_certificate_store" {
+  parent_dn  = aci_certificate_store.example.id
+  cert_chain = "<<EOT -----BEGIN_CERTIFICATE----- MIICODCCAaGgAwIBAgIJAIt8XMntue0VMA0GCSqGSIb3DQEBCwUAMDQxDjAMBgNV BAMMBUFkbWluMRUwEwYDVQQKDAxZb3VyIENvbXBhbnkxCzAJBgNVBAYTAlVTMCAX DTE4MDEwOTAwNTk0NFoYDzIxMTcxMjE2MDA1OTQ0WjA0MQ4wDAYDVQQDDAVBZG1p bjEVMBMGA1UECgwMWW91ciBDb21wYW55MQswCQYDVQQGEwJVUzCBnzANBgkqhkiG 9w0BAQEFAAOBjQAwgYkCgYEAohG/7axtt7CbSaMP7r+2mhTKbNgh0Ww36C7Ta14i v+VmLyKkQHnXinKGhp6uy3Nug+15a+eIu7CrgpBVMQeCiWfsnwRocKcQJWIYDrWl XHxGQn31yYKR6mylE7Dcj3rMFybnyhezr5D8GcP85YRPmwG9H2hO/0Y1FUnWu9Iw AQkCAwEAAaNQME4wHQYDVR0OBBYEFD0jLXfpkrU/ChzRvfruRs/fy1VXMB8GA1Ud IwQYMBaAFD0jLXfpkrU/ChzRvfruRs/fy1VXMAwGA1UdEwQFMAMBAf8wDQYJKoZI hvcNAQELBQADgYEAOmvre+5tgZ0+F3DgsfxNQqLTrGiBgGCIymPkP/cBXXkNuJyl 3ac7tArHQc7WEA4U2R2rZbEq8FC3UJJm4nUVtCPvEh3G9OhN2xwYev79yt6pIn/l KU0Td2OpVyo0eLqjoX5u2G90IBWzhyjFbo+CcKMrSVKj1YOdG0E3OuiJf00= -----END_CERTIFICATE----- EOT"
+  name       = "test_name"
+}
+
 resource "aci_certificate_authority" "example_public_key_management" {
-  parent_dn  = "uni/userext/pkiext"
+  parent_dn  = aci_public_key_management.example.id
   cert_chain = "<<EOT -----BEGIN_CERTIFICATE----- MIICODCCAaGgAwIBAgIJAIt8XMntue0VMA0GCSqGSIb3DQEBCwUAMDQxDjAMBgNV BAMMBUFkbWluMRUwEwYDVQQKDAxZb3VyIENvbXBhbnkxCzAJBgNVBAYTAlVTMCAX DTE4MDEwOTAwNTk0NFoYDzIxMTcxMjE2MDA1OTQ0WjA0MQ4wDAYDVQQDDAVBZG1p bjEVMBMGA1UECgwMWW91ciBDb21wYW55MQswCQYDVQQGEwJVUzCBnzANBgkqhkiG 9w0BAQEFAAOBjQAwgYkCgYEAohG/7axtt7CbSaMP7r+2mhTKbNgh0Ww36C7Ta14i v+VmLyKkQHnXinKGhp6uy3Nug+15a+eIu7CrgpBVMQeCiWfsnwRocKcQJWIYDrWl XHxGQn31yYKR6mylE7Dcj3rMFybnyhezr5D8GcP85YRPmwG9H2hO/0Y1FUnWu9Iw AQkCAwEAAaNQME4wHQYDVR0OBBYEFD0jLXfpkrU/ChzRvfruRs/fy1VXMB8GA1Ud IwQYMBaAFD0jLXfpkrU/ChzRvfruRs/fy1VXMAwGA1UdEwQFMAMBAf8wDQYJKoZI hvcNAQELBQADgYEAOmvre+5tgZ0+F3DgsfxNQqLTrGiBgGCIymPkP/cBXXkNuJyl 3ac7tArHQc7WEA4U2R2rZbEq8FC3UJJm4nUVtCPvEh3G9OhN2xwYev79yt6pIn/l KU0Td2OpVyo0eLqjoX5u2G90IBWzhyjFbo+CcKMrSVKj1YOdG0E3OuiJf00= -----END_CERTIFICATE----- EOT"
   name       = "test_name"
 }
@@ -47,6 +53,23 @@ The configuration snippet below shows all possible attributes of the Certificate
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
 ```hcl
+
+resource "aci_certificate_authority" "full_example_certificate_store" {
+  parent_dn   = aci_certificate_store.example.id
+  annotation  = "annotation"
+  cert_chain  = "<<EOT -----BEGIN_CERTIFICATE----- MIICODCCAaGgAwIBAgIJAIt8XMntue0VMA0GCSqGSIb3DQEBCwUAMDQxDjAMBgNV BAMMBUFkbWluMRUwEwYDVQQKDAxZb3VyIENvbXBhbnkxCzAJBgNVBAYTAlVTMCAX DTE4MDEwOTAwNTk0NFoYDzIxMTcxMjE2MDA1OTQ0WjA0MQ4wDAYDVQQDDAVBZG1p bjEVMBMGA1UECgwMWW91ciBDb21wYW55MQswCQYDVQQGEwJVUzCBnzANBgkqhkiG 9w0BAQEFAAOBjQAwgYkCgYEAohG/7axtt7CbSaMP7r+2mhTKbNgh0Ww36C7Ta14i v+VmLyKkQHnXinKGhp6uy3Nug+15a+eIu7CrgpBVMQeCiWfsnwRocKcQJWIYDrWl XHxGQn31yYKR6mylE7Dcj3rMFybnyhezr5D8GcP85YRPmwG9H2hO/0Y1FUnWu9Iw AQkCAwEAAaNQME4wHQYDVR0OBBYEFD0jLXfpkrU/ChzRvfruRs/fy1VXMB8GA1Ud IwQYMBaAFD0jLXfpkrU/ChzRvfruRs/fy1VXMAwGA1UdEwQFMAMBAf8wDQYJKoZI hvcNAQELBQADgYEAOmvre+5tgZ0+F3DgsfxNQqLTrGiBgGCIymPkP/cBXXkNuJyl 3ac7tArHQc7WEA4U2R2rZbEq8FC3UJJm4nUVtCPvEh3G9OhN2xwYev79yt6pIn/l KU0Td2OpVyo0eLqjoX5u2G90IBWzhyjFbo+CcKMrSVKj1YOdG0E3OuiJf00= -----END_CERTIFICATE----- EOT"
+  description = "description"
+  name        = "test_name"
+  name_alias  = "name_alias"
+  owner_key   = "owner_key"
+  owner_tag   = "owner_tag"
+  annotations = [
+    {
+      key   = "annotations_1"
+      value = "value_1"
+    }
+  ]
+}
 
 resource "aci_certificate_authority" "full_example_public_key_management" {
   parent_dn   = aci_public_key_management.example.id
@@ -74,10 +97,8 @@ All examples for the Certificate Authority resource can be found in the [example
 ### Required ###
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
+  - [aci_certificate_store](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/certificate_store) ([cloudCertStore](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/cloudCertStore/overview))
   - [aci_public_key_management](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/public_key_management) ([pkiEp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/pkiEp/overview))
-  - The distinquised name (DN) of classes below can be used but currently there is no available resource for it:
-    - [cloudCertStore](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/cloudCertStore/overview)
-
 * `cert_chain` (certChain) - (string) The PEM-encoded chain of trust from the trustpoint to a trusted root authority.
 * `name` (name) - (string) The name of the Certificate Authority object.
 
@@ -106,7 +127,7 @@ All examples for the Certificate Authority resource can be found in the [example
 An existing Certificate Authority can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_certificate_authority.example_public_key_management uni/tn-{name}/certstore/tp-{name}
+terraform import aci_certificate_authority.example_certificate_store uni/tn-{name}/certstore/tp-{name}
 ```
 
 Starting in Terraform version 1.5, an existing Certificate Authority can be imported 
@@ -115,6 +136,6 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/tn-{name}/certstore/tp-{name}"
-  to = aci_certificate_authority.example_public_key_management
+  to = aci_certificate_authority.example_certificate_store
 }
 ```
