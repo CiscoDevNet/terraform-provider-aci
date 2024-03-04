@@ -592,7 +592,6 @@ func main() {
 			model.TestType = classifyTests(model.PkgName, predecessorPaths, testCloudApic, testApic)
 		}
 
-		log.Printf("HERE test types for class %v and its paths %v are %v", model.PkgName, predecessorPaths, model.TestType)
 		addGetTestClassificationFunc(model.TestType)
 		// Only render resources and datasources when the class has a unique identifier or is marked as include in the classes definitions YAML file
 		if len(model.IdentifiedBy) > 0 || model.Include {
@@ -1592,18 +1591,6 @@ func GetOverwriteExampleClasses(classPkgName string, definitions Definitions) []
 		}
 	}
 	return overwriteExampleClasses
-}
-
-func GetOverwriteParentDn(classPkgName string, definitions Definitions) []interface{} {
-	var parentDn []interface{}
-	if v, ok := definitions.Classes[classPkgName]; ok {
-		for key, value := range v.(map[interface{}]interface{}) {
-			if key.(string) == "parent_dn" {
-				parentDn = value.([]interface{})
-			}
-		}
-	}
-	return parentDn
 }
 
 // Set variables that are used during the rendering of the example and documentation templates
