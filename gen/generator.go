@@ -394,7 +394,7 @@ func migrateLegacyDocumentation() {
 // Container function to clean all directories properly
 func cleanDirectories() {
 	cleanDirectory(docsPath, []string{"resources", "data-sources"})
-	cleanDirectory(providerPath, []string{"provider_test.go", "utils.go", "test_constants.go", "resource_aci_rest_managed.go", "resource_aci_rest_managed_test.go", "data_source_aci_rest_managed.go", "data_source_aci_rest_managed_test.go"})
+	cleanDirectory(providerPath, []string{"provider_test.go", "utils.go", "test_constants.go", "resource_aci_rest_managed.go", "resource_aci_rest_managed_test.go", "data_source_aci_rest_managed.go", "data_source_aci_rest_managed_test.go", "annotation_unsupported.go"})
 	cleanDirectory(resourcesDocsPath, []string{})
 	cleanDirectory(datasourcesDocsPath, []string{})
 	cleanDirectory(testVarsPath, []string{})
@@ -514,6 +514,10 @@ func main() {
 	renderTemplate("provider.go.tmpl", "provider.go", providerPath, classModels)
 	renderTemplate("index.md.tmpl", "index.md", docsPath, ProviderModel{Example: string(getExampleCode(providerExamplePath))})
 	if len(annotationUnsupported) > 0 {
+		err := os.Remove(filepath.Join(providerPath, "annotation_unsupported.go"))
+		if err != nil {
+			panic(err)
+		}
 		renderTemplate("annotation_unsupported.go.tmpl", "annotation_unsupported.go", providerPath, annotationUnsupported)
 	}
 	for _, model := range classModels {
