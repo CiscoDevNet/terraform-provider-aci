@@ -1,7 +1,5 @@
 module github.com/CiscoDevNet/terraform-provider-aci/v2
 
-replace github.com/ciscoecosystem/aci-go-client/v2 => /Users/anvjain/Terraform/ACI/aci-go-client
-
 go 1.18
 
 require (
