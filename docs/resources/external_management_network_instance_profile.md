@@ -64,6 +64,12 @@ resource "aci_external_management_network_instance_profile" "full_example" {
       value = "value_1"
     }
   ]
+  tags = [
+    {
+      key   = "tags_1"
+      value = "value_1"
+    }
+  ]
 }
 
 ```
@@ -111,6 +117,13 @@ All examples for the External Management Network Instance Profile resource can b
   * `key` (key) - (string) The key used to uniquely identify this configuration object.
   * `value` (value) - (string) The value of the property.
 
+* `tags` - (list) A list of Tags objects ([tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+  
+  #### Required ####
+  
+  * `key` (key) - (string) The key or password used to uniquely identify this configuration object.
+  * `value` (value) - (string) The value of the property.
+
 ## Importing
 
 An existing External Management Network Instance Profile can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
@@ -132,3 +145,4 @@ import {
 ## Child Resources
   
   - [aci_external_management_network_subnet](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/external_management_network_subnet)
+  - [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag)

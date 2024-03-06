@@ -87,6 +87,10 @@ func TestAccResourceMgmtSubnetWithMgmtInstP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.1.key", "annotations_2"),
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.0.key", "tags_1"),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.1.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.1.value", "value_2"),
 				),
 			},
 			// Import testing with children
@@ -104,6 +108,10 @@ func TestAccResourceMgmtSubnetWithMgmtInstP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.1.key", "annotations_2"),
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.0.key", "tags_1"),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.1.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.1.value", "value_2"),
 				),
 			},
 			// Update with children removed from config
@@ -116,6 +124,11 @@ func TestAccResourceMgmtSubnetWithMgmtInstP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.1.key", "annotations_2"),
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.1.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.#", "2"),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.0.key", "tags_1"),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.1.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.#", "2"),
 				),
 			},
 			// Update with children first child removed
@@ -126,6 +139,9 @@ func TestAccResourceMgmtSubnetWithMgmtInstP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.0.key", "annotations_2"),
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.0.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.#", "1"),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.0.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.0.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.#", "1"),
 				),
 			},
 			// Update with all children removed
@@ -134,6 +150,7 @@ func TestAccResourceMgmtSubnetWithMgmtInstP(t *testing.T) {
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.#", "0"),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.#", "0"),
 				),
 			},
 		},
@@ -182,6 +199,16 @@ resource "aci_external_management_network_subnet" "test" {
 	  value = "value_2"
 	},
   ]
+  tags = [
+	{
+	  key = "tags_1"
+	  value = "value_1"
+	},
+	{
+	  key = "tags_2"
+	  value = "value_2"
+	},
+  ]
 }
 `
 
@@ -202,6 +229,12 @@ resource "aci_external_management_network_subnet" "test" {
 	  value = "value_2"
 	},
   ]
+  tags = [ 
+	{
+	  key = "tags_2"
+	  value = "value_2"
+	},
+  ]
 }
 `
 
@@ -210,5 +243,6 @@ resource "aci_external_management_network_subnet" "test" {
   parent_dn = aci_external_management_network_instance_profile.test.id
   ip = "1.1.1.0/24"
   annotations = []
+  tags = []
 }
 `

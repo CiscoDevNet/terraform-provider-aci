@@ -49,10 +49,17 @@ type MgmtRsOoBConsResourceModel struct {
 	Prio            types.String `tfsdk:"priority"`
 	TnVzOOBBrCPName types.String `tfsdk:"out_of_band_contract_name"`
 	TagAnnotation   types.Set    `tfsdk:"annotations"`
+	TagTag          types.Set    `tfsdk:"tags"`
 }
 
 // TagAnnotationMgmtRsOoBConsResourceModel describes the resource data model for the children without relation ships.
 type TagAnnotationMgmtRsOoBConsResourceModel struct {
+	Key   types.String `tfsdk:"key"`
+	Value types.String `tfsdk:"value"`
+}
+
+// TagTagMgmtRsOoBConsResourceModel describes the resource data model for the children without relation ships.
+type TagTagMgmtRsOoBConsResourceModel struct {
 	Key   types.String `tfsdk:"key"`
 	Value types.String `tfsdk:"value"`
 }
@@ -143,6 +150,32 @@ func (r *MgmtRsOoBConsResource) Schema(ctx context.Context, req resource.SchemaR
 					},
 				},
 			},
+			"tags": schema.SetNestedAttribute{
+				MarkdownDescription: ``,
+				Optional:            true,
+				Computed:            true,
+				PlanModifiers: []planmodifier.Set{
+					setplanmodifier.UseStateForUnknown(),
+				},
+				NestedObject: schema.NestedAttributeObject{
+					Attributes: map[string]schema.Attribute{
+						"key": schema.StringAttribute{
+							Required: true,
+							PlanModifiers: []planmodifier.String{
+								stringplanmodifier.UseStateForUnknown(),
+							},
+							MarkdownDescription: `The key or password used to uniquely identify this configuration object.`,
+						},
+						"value": schema.StringAttribute{
+							Required: true,
+							PlanModifiers: []planmodifier.String{
+								stringplanmodifier.UseStateForUnknown(),
+							},
+							MarkdownDescription: `The value of the property.`,
+						},
+					},
+				},
+			},
 		},
 	}
 	tflog.Debug(ctx, "End schema of resource: aci_relation_to_consumed_out_of_band_contract")
@@ -194,7 +227,10 @@ func (r *MgmtRsOoBConsResource) Create(ctx context.Context, req resource.CreateR
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationMgmtRsOoBConsResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
 	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
-	jsonPayload := getMgmtRsOoBConsCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState)
+	var tagTagPlan, tagTagState []TagTagMgmtRsOoBConsResourceModel
+	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
+	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
+	jsonPayload := getMgmtRsOoBConsCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -256,7 +292,10 @@ func (r *MgmtRsOoBConsResource) Update(ctx context.Context, req resource.UpdateR
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationMgmtRsOoBConsResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
 	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
-	jsonPayload := getMgmtRsOoBConsCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState)
+	var tagTagPlan, tagTagState []TagTagMgmtRsOoBConsResourceModel
+	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
+	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
+	jsonPayload := getMgmtRsOoBConsCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -310,7 +349,7 @@ func (r *MgmtRsOoBConsResource) ImportState(ctx context.Context, req resource.Im
 }
 
 func getAndSetMgmtRsOoBConsAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *MgmtRsOoBConsResourceModel) {
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "mgmtRsOoBCons,tagAnnotation"), "GET", nil)
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "mgmtRsOoBCons,tagAnnotation,tagTag"), "GET", nil)
 
 	if diags.HasError() {
 		return
@@ -335,6 +374,7 @@ func getAndSetMgmtRsOoBConsAttributes(ctx context.Context, diags *diag.Diagnosti
 				}
 			}
 			TagAnnotationMgmtRsOoBConsList := make([]TagAnnotationMgmtRsOoBConsResourceModel, 0)
+			TagTagMgmtRsOoBConsList := make([]TagTagMgmtRsOoBConsResourceModel, 0)
 			_, ok := classReadInfo[0].(map[string]interface{})["children"]
 			if ok {
 				children := classReadInfo[0].(map[string]interface{})["children"].([]interface{})
@@ -353,12 +393,28 @@ func getAndSetMgmtRsOoBConsAttributes(ctx context.Context, diags *diag.Diagnosti
 							}
 							TagAnnotationMgmtRsOoBConsList = append(TagAnnotationMgmtRsOoBConsList, TagAnnotationMgmtRsOoBCons)
 						}
+						if childClassName == "tagTag" {
+							TagTagMgmtRsOoBCons := TagTagMgmtRsOoBConsResourceModel{}
+							for childAttributeName, childAttributeValue := range childAttributes {
+								if childAttributeName == "key" {
+									TagTagMgmtRsOoBCons.Key = basetypes.NewStringValue(childAttributeValue.(string))
+								}
+								if childAttributeName == "value" {
+									TagTagMgmtRsOoBCons.Value = basetypes.NewStringValue(childAttributeValue.(string))
+								}
+							}
+							TagTagMgmtRsOoBConsList = append(TagTagMgmtRsOoBConsList, TagTagMgmtRsOoBCons)
+						}
 					}
 				}
 			}
 			if len(TagAnnotationMgmtRsOoBConsList) > 0 {
 				tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationMgmtRsOoBConsList)
 				data.TagAnnotation = tagAnnotationSet
+			}
+			if len(TagTagMgmtRsOoBConsList) > 0 {
+				tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagMgmtRsOoBConsList)
+				data.TagTag = tagTagSet
 			}
 		} else {
 			diags.AddError(
@@ -441,8 +497,47 @@ func getMgmtRsOoBConsTagAnnotationChildPayloads(ctx context.Context, diags *diag
 
 	return childPayloads
 }
+func getMgmtRsOoBConsTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *MgmtRsOoBConsResourceModel, tagTagPlan, tagTagState []TagTagMgmtRsOoBConsResourceModel) []map[string]interface{} {
 
-func getMgmtRsOoBConsCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *MgmtRsOoBConsResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationMgmtRsOoBConsResourceModel) *container.Container {
+	childPayloads := []map[string]interface{}{}
+	if !data.TagTag.IsUnknown() {
+		tagTagIdentifiers := []TagTagIdentifier{}
+		for _, tagTag := range tagTagPlan {
+			childMap := map[string]map[string]interface{}{"attributes": {}}
+			if !tagTag.Key.IsUnknown() {
+				childMap["attributes"]["key"] = tagTag.Key.ValueString()
+			}
+			if !tagTag.Value.IsUnknown() {
+				childMap["attributes"]["value"] = tagTag.Value.ValueString()
+			}
+			childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})
+			tagTagIdentifier := TagTagIdentifier{}
+			tagTagIdentifier.Key = tagTag.Key
+			tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
+		}
+		for _, tagTag := range tagTagState {
+			delete := true
+			for _, tagTagIdentifier := range tagTagIdentifiers {
+				if tagTagIdentifier.Key == tagTag.Key {
+					delete = false
+					break
+				}
+			}
+			if delete {
+				childMap := map[string]map[string]interface{}{"attributes": {}}
+				childMap["attributes"]["status"] = "deleted"
+				childMap["attributes"]["key"] = tagTag.Key.ValueString()
+				childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})
+			}
+		}
+	} else {
+		data.TagTag = types.SetNull(data.TagTag.ElementType(ctx))
+	}
+
+	return childPayloads
+}
+
+func getMgmtRsOoBConsCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *MgmtRsOoBConsResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationMgmtRsOoBConsResourceModel, tagTagPlan, tagTagState []TagTagMgmtRsOoBConsResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 	childPayloads := []map[string]interface{}{}
@@ -452,6 +547,12 @@ func getMgmtRsOoBConsCreateJsonPayload(ctx context.Context, diags *diag.Diagnost
 		return nil
 	}
 	childPayloads = append(childPayloads, TagAnnotationchildPayloads...)
+
+	TagTagchildPayloads := getMgmtRsOoBConsTagTagChildPayloads(ctx, diags, data, tagTagPlan, tagTagState)
+	if TagTagchildPayloads == nil {
+		return nil
+	}
+	childPayloads = append(childPayloads, TagTagchildPayloads...)
 
 	payloadMap["children"] = childPayloads
 	if !data.Annotation.IsNull() && !data.Annotation.IsUnknown() {

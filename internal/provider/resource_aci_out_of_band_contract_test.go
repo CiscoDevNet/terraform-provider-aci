@@ -116,6 +116,11 @@ func TestAccResourceVzOOBBrCP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotations.1.key", "annotations_2"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotations.1.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotations.#", "2"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "tags.0.key", "tags_1"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "tags.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "tags.1.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "tags.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "tags.#", "2"),
 				),
 			},
 			// Update with children removed from config
@@ -136,6 +141,11 @@ func TestAccResourceVzOOBBrCP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotations.1.key", "annotations_2"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotations.1.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotations.#", "2"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "tags.0.key", "tags_1"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "tags.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "tags.1.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "tags.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "tags.#", "2"),
 				),
 			},
 			// Update with children first child removed
@@ -154,6 +164,9 @@ func TestAccResourceVzOOBBrCP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotations.0.key", "annotations_2"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotations.0.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotations.#", "1"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "tags.0.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "tags.0.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "tags.#", "1"),
 				),
 			},
 			// Update with all children removed
@@ -170,6 +183,7 @@ func TestAccResourceVzOOBBrCP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "scope", "context"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "target_dscp", "unspecified"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotations.#", "0"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "tags.#", "0"),
 				),
 			},
 		},
@@ -224,6 +238,16 @@ resource "aci_out_of_band_contract" "test" {
 	  value = "value_2"
 	},
   ]
+  tags = [
+	{
+	  key = "tags_1"
+	  value = "value_1"
+	},
+	{
+	  key = "tags_2"
+	  value = "value_2"
+	},
+  ]
 }
 `
 
@@ -242,6 +266,12 @@ resource "aci_out_of_band_contract" "test" {
 	  value = "value_2"
 	},
   ]
+  tags = [ 
+	{
+	  key = "tags_2"
+	  value = "value_2"
+	},
+  ]
 }
 `
 
@@ -249,5 +279,6 @@ const testConfigVzOOBBrCPChildrenRemoveAll = `
 resource "aci_out_of_band_contract" "test" {
   name = "test_name"
   annotations = []
+  tags = []
 }
 `

@@ -15,4 +15,10 @@ resource "aci_l3out_consumer_label" "full_example_l3_outside" {
       value = "value_1"
     }
   ]
+  tags = [
+    {
+      key   = "tags_1"
+      value = "value_1"
+    }
+  ]
 }

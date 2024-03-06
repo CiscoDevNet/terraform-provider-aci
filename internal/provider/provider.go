@@ -206,6 +206,7 @@ func (p *AciProvider) Resources(ctx context.Context) []func() resource.Resource 
 		NewPimRouteMapEntryResource,
 		NewPimRouteMapPolResource,
 		NewTagAnnotationResource,
+		NewTagTagResource,
 		NewVzOOBBrCPResource,
 		NewAciRestManagedResource,
 	}
@@ -223,6 +224,7 @@ func (p *AciProvider) DataSources(ctx context.Context) []func() datasource.DataS
 		NewPimRouteMapEntryDataSource,
 		NewPimRouteMapPolDataSource,
 		NewTagAnnotationDataSource,
+		NewTagTagDataSource,
 		NewVzOOBBrCPDataSource,
 		NewAciRestManagedDataSource,
 	}

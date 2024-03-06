@@ -50,10 +50,17 @@ type FvEpIpTagResourceModel struct {
 	Name          types.String `tfsdk:"name"`
 	NameAlias     types.String `tfsdk:"name_alias"`
 	TagAnnotation types.Set    `tfsdk:"annotations"`
+	TagTag        types.Set    `tfsdk:"tags"`
 }
 
 // TagAnnotationFvEpIpTagResourceModel describes the resource data model for the children without relation ships.
 type TagAnnotationFvEpIpTagResourceModel struct {
+	Key   types.String `tfsdk:"key"`
+	Value types.String `tfsdk:"value"`
+}
+
+// TagTagFvEpIpTagResourceModel describes the resource data model for the children without relation ships.
+type TagTagFvEpIpTagResourceModel struct {
 	Key   types.String `tfsdk:"key"`
 	Value types.String `tfsdk:"value"`
 }
@@ -166,6 +173,32 @@ func (r *FvEpIpTagResource) Schema(ctx context.Context, req resource.SchemaReque
 					},
 				},
 			},
+			"tags": schema.SetNestedAttribute{
+				MarkdownDescription: ``,
+				Optional:            true,
+				Computed:            true,
+				PlanModifiers: []planmodifier.Set{
+					setplanmodifier.UseStateForUnknown(),
+				},
+				NestedObject: schema.NestedAttributeObject{
+					Attributes: map[string]schema.Attribute{
+						"key": schema.StringAttribute{
+							Required: true,
+							PlanModifiers: []planmodifier.String{
+								stringplanmodifier.UseStateForUnknown(),
+							},
+							MarkdownDescription: `The key or password used to uniquely identify this configuration object.`,
+						},
+						"value": schema.StringAttribute{
+							Required: true,
+							PlanModifiers: []planmodifier.String{
+								stringplanmodifier.UseStateForUnknown(),
+							},
+							MarkdownDescription: `The value of the property.`,
+						},
+					},
+				},
+			},
 		},
 	}
 	tflog.Debug(ctx, "End schema of resource: aci_endpoint_tag_ip")
@@ -217,7 +250,10 @@ func (r *FvEpIpTagResource) Create(ctx context.Context, req resource.CreateReque
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationFvEpIpTagResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
 	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
-	jsonPayload := getFvEpIpTagCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState)
+	var tagTagPlan, tagTagState []TagTagFvEpIpTagResourceModel
+	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
+	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
+	jsonPayload := getFvEpIpTagCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -279,7 +315,10 @@ func (r *FvEpIpTagResource) Update(ctx context.Context, req resource.UpdateReque
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationFvEpIpTagResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
 	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
-	jsonPayload := getFvEpIpTagCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState)
+	var tagTagPlan, tagTagState []TagTagFvEpIpTagResourceModel
+	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
+	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
+	jsonPayload := getFvEpIpTagCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -333,7 +372,7 @@ func (r *FvEpIpTagResource) ImportState(ctx context.Context, req resource.Import
 }
 
 func getAndSetFvEpIpTagAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvEpIpTagResourceModel) {
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "fvEpIpTag,tagAnnotation"), "GET", nil)
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "fvEpIpTag,tagAnnotation,tagTag"), "GET", nil)
 
 	if diags.HasError() {
 		return
@@ -367,6 +406,7 @@ func getAndSetFvEpIpTagAttributes(ctx context.Context, diags *diag.Diagnostics, 
 				}
 			}
 			TagAnnotationFvEpIpTagList := make([]TagAnnotationFvEpIpTagResourceModel, 0)
+			TagTagFvEpIpTagList := make([]TagTagFvEpIpTagResourceModel, 0)
 			_, ok := classReadInfo[0].(map[string]interface{})["children"]
 			if ok {
 				children := classReadInfo[0].(map[string]interface{})["children"].([]interface{})
@@ -385,12 +425,28 @@ func getAndSetFvEpIpTagAttributes(ctx context.Context, diags *diag.Diagnostics, 
 							}
 							TagAnnotationFvEpIpTagList = append(TagAnnotationFvEpIpTagList, TagAnnotationFvEpIpTag)
 						}
+						if childClassName == "tagTag" {
+							TagTagFvEpIpTag := TagTagFvEpIpTagResourceModel{}
+							for childAttributeName, childAttributeValue := range childAttributes {
+								if childAttributeName == "key" {
+									TagTagFvEpIpTag.Key = basetypes.NewStringValue(childAttributeValue.(string))
+								}
+								if childAttributeName == "value" {
+									TagTagFvEpIpTag.Value = basetypes.NewStringValue(childAttributeValue.(string))
+								}
+							}
+							TagTagFvEpIpTagList = append(TagTagFvEpIpTagList, TagTagFvEpIpTag)
+						}
 					}
 				}
 			}
 			if len(TagAnnotationFvEpIpTagList) > 0 {
 				tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationFvEpIpTagList)
 				data.TagAnnotation = tagAnnotationSet
+			}
+			if len(TagTagFvEpIpTagList) > 0 {
+				tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagFvEpIpTagList)
+				data.TagTag = tagTagSet
 			}
 		} else {
 			diags.AddError(
@@ -475,8 +531,47 @@ func getFvEpIpTagTagAnnotationChildPayloads(ctx context.Context, diags *diag.Dia
 
 	return childPayloads
 }
+func getFvEpIpTagTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvEpIpTagResourceModel, tagTagPlan, tagTagState []TagTagFvEpIpTagResourceModel) []map[string]interface{} {
 
-func getFvEpIpTagCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *FvEpIpTagResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvEpIpTagResourceModel) *container.Container {
+	childPayloads := []map[string]interface{}{}
+	if !data.TagTag.IsUnknown() {
+		tagTagIdentifiers := []TagTagIdentifier{}
+		for _, tagTag := range tagTagPlan {
+			childMap := map[string]map[string]interface{}{"attributes": {}}
+			if !tagTag.Key.IsUnknown() {
+				childMap["attributes"]["key"] = tagTag.Key.ValueString()
+			}
+			if !tagTag.Value.IsUnknown() {
+				childMap["attributes"]["value"] = tagTag.Value.ValueString()
+			}
+			childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})
+			tagTagIdentifier := TagTagIdentifier{}
+			tagTagIdentifier.Key = tagTag.Key
+			tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
+		}
+		for _, tagTag := range tagTagState {
+			delete := true
+			for _, tagTagIdentifier := range tagTagIdentifiers {
+				if tagTagIdentifier.Key == tagTag.Key {
+					delete = false
+					break
+				}
+			}
+			if delete {
+				childMap := map[string]map[string]interface{}{"attributes": {}}
+				childMap["attributes"]["status"] = "deleted"
+				childMap["attributes"]["key"] = tagTag.Key.ValueString()
+				childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})
+			}
+		}
+	} else {
+		data.TagTag = types.SetNull(data.TagTag.ElementType(ctx))
+	}
+
+	return childPayloads
+}
+
+func getFvEpIpTagCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *FvEpIpTagResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvEpIpTagResourceModel, tagTagPlan, tagTagState []TagTagFvEpIpTagResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 	childPayloads := []map[string]interface{}{}
@@ -486,6 +581,12 @@ func getFvEpIpTagCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics,
 		return nil
 	}
 	childPayloads = append(childPayloads, TagAnnotationchildPayloads...)
+
+	TagTagchildPayloads := getFvEpIpTagTagTagChildPayloads(ctx, diags, data, tagTagPlan, tagTagState)
+	if TagTagchildPayloads == nil {
+		return nil
+	}
+	childPayloads = append(childPayloads, TagTagchildPayloads...)
 
 	payloadMap["children"] = childPayloads
 	if !data.Annotation.IsNull() && !data.Annotation.IsUnknown() {

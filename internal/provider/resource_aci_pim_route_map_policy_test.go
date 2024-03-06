@@ -92,6 +92,10 @@ func TestAccResourcePimRouteMapPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "annotations.1.key", "annotations_2"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "tags.0.key", "tags_1"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "tags.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "tags.1.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "tags.1.value", "value_2"),
 				),
 			},
 			// Import testing with children
@@ -110,6 +114,10 @@ func TestAccResourcePimRouteMapPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "annotations.1.key", "annotations_2"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "tags.0.key", "tags_1"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "tags.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "tags.1.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "tags.1.value", "value_2"),
 				),
 			},
 			// Update with children removed from config
@@ -122,6 +130,11 @@ func TestAccResourcePimRouteMapPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "annotations.1.key", "annotations_2"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "annotations.1.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "annotations.#", "2"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "tags.0.key", "tags_1"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "tags.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "tags.1.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "tags.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "tags.#", "2"),
 				),
 			},
 			// Update with children first child removed
@@ -132,6 +145,9 @@ func TestAccResourcePimRouteMapPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "annotations.0.key", "annotations_2"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "annotations.0.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "annotations.#", "1"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "tags.0.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "tags.0.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "tags.#", "1"),
 				),
 			},
 			// Update with all children removed
@@ -140,6 +156,7 @@ func TestAccResourcePimRouteMapPolWithFvTenant(t *testing.T) {
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "annotations.#", "0"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "tags.#", "0"),
 				),
 			},
 		},
@@ -190,6 +207,16 @@ resource "aci_pim_route_map_policy" "test" {
 	  value = "value_2"
 	},
   ]
+  tags = [
+	{
+	  key = "tags_1"
+	  value = "value_1"
+	},
+	{
+	  key = "tags_2"
+	  value = "value_2"
+	},
+  ]
 }
 `
 
@@ -210,6 +237,12 @@ resource "aci_pim_route_map_policy" "test" {
 	  value = "value_2"
 	},
   ]
+  tags = [ 
+	{
+	  key = "tags_2"
+	  value = "value_2"
+	},
+  ]
 }
 `
 
@@ -218,5 +251,6 @@ resource "aci_pim_route_map_policy" "test" {
   parent_dn = aci_tenant.test.id
   name = "test_name"
   annotations = []
+  tags = []
 }
 `
