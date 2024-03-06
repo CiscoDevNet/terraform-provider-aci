@@ -224,15 +224,19 @@ func (r *PkiTPResource) Create(ctx context.Context, req resource.CreateRequest, 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationPkiTPResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
 	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
-	jsonPayload := getPkiTPCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState)
+	jsonPayload := getPkiTPCreateJsonPayload(ctx, &resp.Diagnostics, data, stateData, tagAnnotationPlan, tagAnnotationState)
 
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
-	if resp.Diagnostics.HasError() {
-		return
+	wrapperClassMap := map[string]string{"uni/userext/pkiext": "", "certstore": "cloudCertStore"}
+	for rnPrepend, wrapperClass := range wrapperClassMap {
+		if strings.Contains(data.Id.ValueString(), rnPrepend) && wrapperClass != "" {
+			DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", strings.Split(data.Id.ValueString(), rnPrepend)[0]+rnPrepend), "POST", jsonPayload)
+		} else if strings.Contains(data.Id.ValueString(), rnPrepend) && wrapperClass == "" {
+			DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+		}
 	}
 
 	getAndSetPkiTPAttributes(ctx, &resp.Diagnostics, r.client, data)
@@ -286,16 +290,19 @@ func (r *PkiTPResource) Update(ctx context.Context, req resource.UpdateRequest, 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationPkiTPResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
 	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
-	jsonPayload := getPkiTPCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState)
+	jsonPayload := getPkiTPCreateJsonPayload(ctx, &resp.Diagnostics, data, stateData, tagAnnotationPlan, tagAnnotationState)
 
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
-
-	if resp.Diagnostics.HasError() {
-		return
+	wrapperClassMap := map[string]string{"uni/userext/pkiext": "", "certstore": "cloudCertStore"}
+	for rnPrepend, wrapperClass := range wrapperClassMap {
+		if strings.Contains(data.Id.ValueString(), rnPrepend) && wrapperClass != "" {
+			DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", strings.Split(data.Id.ValueString(), rnPrepend)[0]+rnPrepend), "POST", jsonPayload)
+		} else if strings.Contains(data.Id.ValueString(), rnPrepend) && wrapperClass == "" {
+			DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+		}
 	}
 
 	getAndSetPkiTPAttributes(ctx, &resp.Diagnostics, r.client, data)
@@ -413,16 +420,14 @@ func getAndSetPkiTPAttributes(ctx context.Context, diags *diag.Diagnostics, clie
 	}
 }
 
-func getPkiTPRn(ctx context.Context, data *PkiTPResourceModel) map[string]string {
-	rn_map := map[string]string{"": "uni/userext/pkiext/tp-{name}", "tn": "certstore/tp-{name}"}
+func getPkiTPRn(ctx context.Context, data *PkiTPResourceModel) string {
+	rn := "tp-{name}"
 	for _, identifier := range []string{"name"} {
 		fieldName := fmt.Sprintf("%s%s", strings.ToUpper(identifier[:1]), identifier[1:])
 		fieldValue := reflect.ValueOf(data).Elem().FieldByName(fieldName).Interface().(basetypes.StringValue).ValueString()
-		for parent_identifier, rn_prepend := range rn_map {
-			rn_map[parent_identifier] = strings.ReplaceAll(rn_prepend, fmt.Sprintf("{%s}", identifier), fieldValue)
-		}
+		rn = strings.ReplaceAll(rn, fmt.Sprintf("{%s}", identifier), fieldValue)
 	}
-	return rn_map
+	return rn
 }
 
 func setPkiTPParentDn(ctx context.Context, dn string, data *PkiTPResourceModel) {
@@ -438,25 +443,24 @@ func setPkiTPParentDn(ctx context.Context, dn string, data *PkiTPResourceModel) 
 			break
 		}
 	}
-	rn_map := map[string]string{"": "uni/userext/pkiext/tp-{name}", "tn": "certstore/tp-{name}"}
 	parentDn := dn[:rnIndex]
-	for parent_identifier, rn_prepend := range rn_map {
-		if strings.Contains(parentDn, parent_identifier) && parent_identifier != "" {
+	rnMap := map[string]string{"tn": "certstore"}
+	for parent_identifier, rn_prepend := range rnMap {
+		if strings.Contains(parentDn, parent_identifier) {
 			parentDn = parentDn[:strings.Index(parentDn, "/"+rn_prepend)]
 			data.ParentDn = basetypes.NewStringValue(parentDn)
 		}
-		break
 	}
-
 }
 
 func setPkiTPId(ctx context.Context, data *PkiTPResourceModel) {
-	rn_map := getPkiTPRn(ctx, data)
-	for parent_identifier, rn_prepend := range rn_map {
+	rn := getPkiTPRn(ctx, data)
+	rnMap := map[string]string{"": "uni/userext/pkiext", "tn": "certstore"}
+	for parent_identifier, rn_prepend := range rnMap {
 		if data.ParentDn.ValueString() == "" && parent_identifier == "" {
-			data.Id = types.StringValue(fmt.Sprintf("%s", rn_prepend))
+			data.Id = types.StringValue(fmt.Sprintf("%s", rn_prepend+"/"+rn))
 		} else if parent_identifier != "" && strings.Contains(data.ParentDn.ValueString(), parent_identifier) {
-			data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn_prepend))
+			data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn_prepend+"/"+rn))
 		}
 	}
 }
@@ -501,7 +505,7 @@ func getPkiTPTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnos
 	return childPayloads
 }
 
-func getPkiTPCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *PkiTPResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationPkiTPResourceModel) *container.Container {
+func getPkiTPCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data, stateData *PkiTPResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationPkiTPResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 	childPayloads := []map[string]interface{}{}
@@ -534,8 +538,22 @@ func getPkiTPCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, dat
 	if !data.OwnerTag.IsNull() && !data.OwnerTag.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["ownerTag"] = data.OwnerTag.ValueString()
 	}
-
-	payload, err := json.Marshal(map[string]interface{}{"pkiTP": payloadMap})
+	wrapperClassMap := map[string]string{"uni/userext/pkiext": "", "certstore": "cloudCertStore"}
+	var payload []byte
+	var err error
+	for rnPrepend, wrapperClass := range wrapperClassMap {
+		if strings.Contains(data.Id.ValueString(), rnPrepend) && wrapperClass != "" && stateData.Id.ValueString() == "" {
+			wrapperPayloadMap := map[string]interface{}{
+				wrapperClass: map[string]interface{}{
+					"attributes": map[string]interface{}{},
+					"children":   []interface{}{map[string]interface{}{"pkiTP": payloadMap}},
+				},
+			}
+			payload, err = json.Marshal(wrapperPayloadMap)
+		} else if (strings.Contains(data.Id.ValueString(), rnPrepend) && wrapperClass == "") || stateData.Id.ValueString() != "" {
+			payload, err = json.Marshal(map[string]interface{}{"pkiTP": payloadMap})
+		}
+	}
 	if err != nil {
 		diags.AddError(
 			"Marshalling of json payload failed",
@@ -543,7 +561,6 @@ func getPkiTPCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, dat
 		)
 		return nil
 	}
-
 	jsonPayload, err := container.ParseJSON(payload)
 
 	if err != nil {

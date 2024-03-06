@@ -11,6 +11,7 @@ default:
   name_alias: ""
   rendezvous_point_ip: "0.0.0.0"
   source_ip: "0.0.0.0"
+
 datasource_non_existing:
   order: "2"
 
@@ -18,7 +19,7 @@ datasource_required:
   order: "1"
 
 resource_required:
-  order: "1" 
+  order: "1"
 
 all:
   action: "deny"

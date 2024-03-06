@@ -8,6 +8,7 @@ default:
   name_alias: ""
   owner_key: ""
   owner_tag: ""
+
 datasource_non_existing:
   name: "non_existing_name"
 
@@ -15,7 +16,7 @@ datasource_required:
   name: "test_name"
 
 resource_required:
-  name: "test_name" 
+  name: "test_name"
 
 all:
   annotation: "annotation"
