@@ -10,4 +10,10 @@ resource "aci_relation_to_consumed_out_of_band_contract" "full_example_external_
       value = "value_1"
     }
   ]
+  tags = [
+    {
+      key   = "tags_1"
+      value = "value_1"
+    }
+  ]
 }

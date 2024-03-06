@@ -16,4 +16,10 @@ resource "aci_out_of_band_contract" "full_example" {
       value = "value_1"
     }
   ]
+  tags = [
+    {
+      key   = "tags_1"
+      value = "value_1"
+    }
+  ]
 }

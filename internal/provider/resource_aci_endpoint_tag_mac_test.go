@@ -93,6 +93,10 @@ func TestAccResourceFvEpMacTagWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "annotations.1.key", "annotations_2"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "tags.0.key", "tags_1"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "tags.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "tags.1.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "tags.1.value", "value_2"),
 				),
 			},
 			// Import testing with children
@@ -111,6 +115,10 @@ func TestAccResourceFvEpMacTagWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "annotations.1.key", "annotations_2"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "tags.0.key", "tags_1"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "tags.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "tags.1.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "tags.1.value", "value_2"),
 				),
 			},
 			// Update with children removed from config
@@ -123,6 +131,11 @@ func TestAccResourceFvEpMacTagWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "annotations.1.key", "annotations_2"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "annotations.1.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "annotations.#", "2"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "tags.0.key", "tags_1"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "tags.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "tags.1.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "tags.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "tags.#", "2"),
 				),
 			},
 			// Update with children first child removed
@@ -133,6 +146,9 @@ func TestAccResourceFvEpMacTagWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "annotations.0.key", "annotations_2"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "annotations.0.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "annotations.#", "1"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "tags.0.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "tags.0.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "tags.#", "1"),
 				),
 			},
 			// Update with all children removed
@@ -141,6 +157,7 @@ func TestAccResourceFvEpMacTagWithFvTenant(t *testing.T) {
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "annotations.#", "0"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "tags.#", "0"),
 				),
 			},
 		},
@@ -193,6 +210,16 @@ resource "aci_endpoint_tag_mac" "test" {
 	  value = "value_2"
 	},
   ]
+  tags = [
+	{
+	  key = "tags_1"
+	  value = "value_1"
+	},
+	{
+	  key = "tags_2"
+	  value = "value_2"
+	},
+  ]
 }
 `
 
@@ -215,6 +242,12 @@ resource "aci_endpoint_tag_mac" "test" {
 	  value = "value_2"
 	},
   ]
+  tags = [ 
+	{
+	  key = "tags_2"
+	  value = "value_2"
+	},
+  ]
 }
 `
 
@@ -224,5 +257,6 @@ resource "aci_endpoint_tag_mac" "test" {
   bd_name = "test_bd_name"
   mac = "00:00:00:00:00:01"
   annotations = []
+  tags = []
 }
 `

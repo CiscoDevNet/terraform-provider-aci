@@ -13,4 +13,10 @@ resource "aci_endpoint_tag_ip" "full_example_tenant" {
       value = "value_1"
     }
   ]
+  tags = [
+    {
+      key   = "tags_1"
+      value = "value_1"
+    }
+  ]
 }

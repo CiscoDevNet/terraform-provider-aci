@@ -31,6 +31,13 @@ children:
     - key: "annotations_2"
       value: "value_2"
       
+  tags:
+    - key: "tags_1"
+      value: "value_1"
+      
+    - key: "tags_2"
+      value: "value_2"
+      
 parents:
   - class_name: "mgmtInstP"
     parent_dependency: ""

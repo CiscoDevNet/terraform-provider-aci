@@ -13,4 +13,10 @@ resource "aci_pim_route_map_policy" "full_example_tenant" {
       value = "value_1"
     }
   ]
+  tags = [
+    {
+      key   = "tags_1"
+      value = "value_1"
+    }
+  ]
 }

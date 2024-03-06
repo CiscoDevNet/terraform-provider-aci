@@ -78,6 +78,10 @@ func TestAccResourceL3extRsRedistributePolWithL3extOut(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotations.1.key", "annotations_2"),
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "tags.0.key", "tags_1"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "tags.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "tags.1.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "tags.1.value", "value_2"),
 				),
 			},
 			// Import testing with children
@@ -93,6 +97,10 @@ func TestAccResourceL3extRsRedistributePolWithL3extOut(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotations.1.key", "annotations_2"),
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "tags.0.key", "tags_1"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "tags.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "tags.1.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "tags.1.value", "value_2"),
 				),
 			},
 			// Update with children removed from config
@@ -105,6 +113,11 @@ func TestAccResourceL3extRsRedistributePolWithL3extOut(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotations.1.key", "annotations_2"),
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotations.1.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotations.#", "2"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "tags.0.key", "tags_1"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "tags.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "tags.1.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "tags.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "tags.#", "2"),
 				),
 			},
 			// Update with children first child removed
@@ -115,6 +128,9 @@ func TestAccResourceL3extRsRedistributePolWithL3extOut(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotations.0.key", "annotations_2"),
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotations.0.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotations.#", "1"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "tags.0.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "tags.0.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "tags.#", "1"),
 				),
 			},
 			// Update with all children removed
@@ -123,6 +139,7 @@ func TestAccResourceL3extRsRedistributePolWithL3extOut(t *testing.T) {
 				ExpectNonEmptyPlan: true,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotations.#", "0"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "tags.#", "0"),
 				),
 			},
 		},
@@ -169,6 +186,16 @@ resource "aci_l3out_redistribute_policy" "test" {
 	  value = "value_2"
 	},
   ]
+  tags = [
+	{
+	  key = "tags_1"
+	  value = "value_1"
+	},
+	{
+	  key = "tags_2"
+	  value = "value_2"
+	},
+  ]
 }
 `
 
@@ -191,6 +218,12 @@ resource "aci_l3out_redistribute_policy" "test" {
 	  value = "value_2"
 	},
   ]
+  tags = [ 
+	{
+	  key = "tags_2"
+	  value = "value_2"
+	},
+  ]
 }
 `
 
@@ -200,5 +233,6 @@ resource "aci_l3out_redistribute_policy" "test" {
   route_control_profile_name = "test_tn_rtctrl_profile_name"
   source = "direct"
   annotations = []
+  tags = []
 }
 `

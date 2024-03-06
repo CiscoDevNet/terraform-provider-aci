@@ -57,6 +57,12 @@ resource "aci_relation_to_consumed_out_of_band_contract" "full_example_external_
       value = "value_1"
     }
   ]
+  tags = [
+    {
+      key   = "tags_1"
+      value = "value_1"
+    }
+  ]
 }
 
 ```
@@ -90,6 +96,13 @@ All examples for the Relation To Consumed Out Of Band Contract resource can be f
   * `key` (key) - (string) The key used to uniquely identify this configuration object.
   * `value` (value) - (string) The value of the property.
 
+* `tags` - (list) A list of Tags objects ([tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+  
+  #### Required ####
+  
+  * `key` (key) - (string) The key or password used to uniquely identify this configuration object.
+  * `value` (value) - (string) The value of the property.
+
 ## Importing
 
 An existing Relation To Consumed Out Of Band Contract can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
@@ -107,3 +120,7 @@ import {
   to = aci_relation_to_consumed_out_of_band_contract.example_external_management_network_instance_profile
 }
 ```
+
+## Child Resources
+  
+  - [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag)

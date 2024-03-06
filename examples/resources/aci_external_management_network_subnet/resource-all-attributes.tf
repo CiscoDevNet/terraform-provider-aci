@@ -12,4 +12,10 @@ resource "aci_external_management_network_subnet" "full_example_external_managem
       value = "value_1"
     }
   ]
+  tags = [
+    {
+      key   = "tags_1"
+      value = "value_1"
+    }
+  ]
 }

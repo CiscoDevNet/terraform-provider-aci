@@ -103,6 +103,7 @@ var templateFuncs = template.FuncMap{
 }
 
 // Global variables used for unique resource name setting based on label from meta data
+var alwaysIncludeChildren = []string{"tag:Annotation", "tag:Tag"}
 var labels = []string{"dns_provider", "filter_entry"}
 var duplicateLabels = []string{}
 var resourceNames = map[string]string{}
@@ -847,7 +848,7 @@ func (m *Model) SetClassChildren(classDetails interface{}, pkgNames []string) {
 	rnMap := classDetails.(map[string]interface{})["rnMap"].(map[string]interface{})
 	for rn, className := range rnMap {
 		// TODO check if this condition is correct since there might be cases where that we should exclude
-		if !strings.HasSuffix(rn, "-") || strings.HasPrefix(rn, "rs") || className.(string) == "tag:Annotation" {
+		if !strings.HasSuffix(rn, "-") || strings.HasPrefix(rn, "rs") || slices.Contains(alwaysIncludeChildren, className.(string)) {
 			pkgName := strings.ReplaceAll(className.(string), ":", "")
 			if slices.Contains(pkgNames, pkgName) {
 				childClasses = append(childClasses, pkgName)
