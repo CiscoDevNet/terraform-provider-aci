@@ -7,6 +7,7 @@ default:
   id_attribute: "0"
   name: ""
   name_alias: ""
+
 datasource_non_existing:
   vrf_name: "non_existing_ctx_name"
   ip: "10.0.1.2"
@@ -17,7 +18,7 @@ datasource_required:
 
 resource_required:
   vrf_name: "test_ctx_name"
-  ip: "10.0.0.2" 
+  ip: "10.0.0.2"
 
 all:
   annotation: "annotation"

@@ -6,15 +6,6 @@ package provider
 
 import (
 	"testing"
-	{{- $found_time_cert := false -}}
-    {{- range $key, $value := $.default}}
-        {{- if contains $key "cert" }}
-            {{- $found_time_cert = true -}}
-        {{- end}}
-    {{- end}}
-    {{- if $found_time_cert }}
-        "time"
-    {{- end}}
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
@@ -32,9 +23,6 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 {{- end}}
 PreCheck: func() { 
   testAccPreCheck(t, "{{.test_type}}")
-  {{- if $found_cert }}
-    time.Sleep(10 * time.Second)
-  {{- end }}
 },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{

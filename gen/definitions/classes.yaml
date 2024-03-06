@@ -136,6 +136,7 @@ pkiTP:
   multi_parents: 
     - rn_prepend: "certstore"
       contained_by: "fvTenant"
+      wrapper_class: "cloudCertStore"
       test_type: "cloud"
     - rn_prepend: "uni/userext/pkiext"
       contained_by: "polUni"

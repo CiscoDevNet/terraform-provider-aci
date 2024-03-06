@@ -114,7 +114,7 @@ var rnPrefix = map[string]string{}
 var targetRelationalPropertyClasses = map[string]string{}
 var alwaysIncludeChildren = []string{"tag:Annotation", "tag:Tag"}
 var excludeChildResourceNamesFromDocs = []string{"", "annotation", "tag"}
-var testCloudApic, testApic []interface{}
+var testCloudApic, testApic, resourceIdentifier []interface{}
 
 func GetResourceNameAsDescription(s string) string {
 	return cases.Title(language.English).String(strings.ReplaceAll(s, "_", " "))
@@ -337,6 +337,10 @@ func getClassModels(definitions Definitions) map[string]Model {
 				testApic = append(testApic, pkgName)
 			}
 		}
+
+		rnName := make(map[string]string)
+		rnName[pkgName] = classModel.RnFormat
+		resourceIdentifier = append(resourceIdentifier, rnName)
 	}
 	return classModels
 }
@@ -595,7 +599,6 @@ func main() {
 		addGetTestClassificationFunc(model.TestType)
 		// Only render resources and datasources when the class has a unique identifier or is marked as include in the classes definitions YAML file
 		if len(model.IdentifiedBy) > 0 || model.Include {
-
 			// All classmodels have been read, thus now the model, child and relational resources names can be set
 			// When done before additional files would need to be opened and read which would slow down the generation process
 			model.ResourceName = GetResourceName(model.PkgName, definitions)
@@ -791,10 +794,11 @@ type Model struct {
 	Parents                     []string
 	UiLocations                 []string
 	RnFormatMap                 map[string]string
+	RnFormatMapWithWrapperClass map[string]string
 	IdentifiedBy                []interface{}
 	DnFormats                   []interface{}
 	PlatformFlavors             map[string][]interface{}
-	MultiParentFormats          map[string]string
+	MultiParentFormats          map[string]MultiParentFormat
 	MultiParentFormatsTestTypes map[string]string
 	Properties                  map[string]Property
 	NamedProperties             map[string]Property
@@ -1501,35 +1505,81 @@ func GetOverwriteTestType(classPkgName string, definitions Definitions) []TestCl
 	return testClassifications
 }
 
-func GetMultiParentFormats(classPkgName string, definitions Definitions) (map[string]interface{}, map[string]string) {
-	multiParents := make(map[string]interface{})
-	testTypes := make(map[string]string)
-	var containedBy, rnPrepend, testType string
+type MultiParentFormat struct {
+	RnPrepend    string
+	WrapperClass string
+	TestType     string
+	ContainedBy  string
+	RnFormat     string
+}
+
+func GetMultiParentFormats(classPkgName string, definitions Definitions) map[string]MultiParentFormat {
+	multiParentFormats := make(map[string]MultiParentFormat)
 	if v, ok := definitions.Classes[classPkgName]; ok {
-		for key, value := range v.(map[interface{}]interface{}) {
-			if key.(string) == "multi_parents" {
-				for _, pair := range value.([]interface{}) {
-					pairMap, _ := pair.(map[interface{}]interface{})
-					for pair1, pair2 := range pairMap {
-						switch pair1 {
-						case "contained_by":
-							containedBy = pair2.(string)
-						case "rn_prepend":
-							rnPrepend = pair2.(string)
-						case "test_type":
-							testType = pair2.(string)
+		classMap, ok := v.(map[interface{}]interface{})
+		if !ok {
+			return multiParentFormats
+		}
+		multiParentsValue, ok := classMap["multi_parents"]
+		if !ok {
+			return multiParentFormats
+		}
+		multiParentsSlice, ok := multiParentsValue.([]interface{})
+		if !ok {
+			return multiParentFormats
+		}
+		for _, entry := range multiParentsSlice {
+			entryMap, ok := entry.(map[interface{}]interface{})
+			if !ok {
+				continue
+			}
+			var multiParentEntry MultiParentFormat
+			for key, value := range entryMap {
+				switch key {
+				case "rn_prepend":
+					multiParentEntry.RnPrepend, ok = value.(string)
+				case "contained_by":
+					multiParentEntry.ContainedBy, ok = value.(string)
+				case "test_type":
+					multiParentEntry.TestType, ok = value.(string)
+				case "wrapper_class":
+					multiParentEntry.WrapperClass, ok = value.(string)
+				}
+				if !ok {
+					break
+				}
+			}
+			if ok {
+				identifier := GetOverwriteResourceIdentifier(multiParentEntry.ContainedBy, definitions)
+				pattern := regexp.MustCompile(`^(.*?)-[\[{]`)
+				if identifier == "" {
+					for _, item := range resourceIdentifier {
+						if rnMap, ok := item.(map[string]string); ok {
+							if value, found := rnMap[multiParentEntry.ContainedBy]; found {
+								matches := pattern.FindStringSubmatch(value)
+								if len(matches) > 1 {
+									identifier = matches[1] + "-"
+								} else {
+									identifier = ""
+								}
+								break
+							}
 						}
 					}
-					multiParents[containedBy] = rnPrepend
-					testTypes[containedBy] = testType
+				}
+				multiParentFormats[identifier] = MultiParentFormat{
+					ContainedBy:  multiParentEntry.ContainedBy,
+					RnPrepend:    multiParentEntry.RnPrepend,
+					WrapperClass: multiParentEntry.WrapperClass,
+					TestType:     multiParentEntry.TestType,
 				}
 			}
 		}
 	}
-	return multiParents, testTypes
+	return multiParentFormats
 }
 
-func GetResourceIdentifier(classPkgName string, definitions Definitions) string {
+func GetOverwriteResourceIdentifier(classPkgName string, definitions Definitions) string {
 	if v, ok := definitions.Classes[classPkgName]; ok {
 		for key, value := range v.(map[interface{}]interface{}) {
 			if key.(string) == "resource_identifier" {
@@ -1537,31 +1587,23 @@ func GetResourceIdentifier(classPkgName string, definitions Definitions) string 
 			}
 		}
 	}
-	return resourceNames[classPkgName]
+	return ""
 }
 
 func (m *Model) SetClassRnFormatList(classDetails interface{}) {
 	rnFormat := classDetails.(map[string]interface{})["rnFormat"].(string)
-	multiParentFormats := make(map[string]string)
-	getMultiParentFormats, getTestType := GetMultiParentFormats(m.PkgName, m.Definitions)
-	rnFormatMap := make(map[string]string)
-	for parentClass, rnPrepend := range getMultiParentFormats {
-		resourceIdentifier := GetResourceIdentifier(parentClass, m.Definitions)
-		rnFormatMap[resourceIdentifier] = fmt.Sprintf("%s/%s", rnPrepend, rnFormat)
-		if rn_prep, ok := rnPrepend.(interface{}); ok {
-			multiParentFormats[parentClass] = rn_prep.(string)
-		}
+	getMultiParentFormats := GetMultiParentFormats(m.PkgName, m.Definitions)
+	for key, format := range getMultiParentFormats {
+		format.RnFormat = rnFormat
+		getMultiParentFormats[key] = format
 	}
-
-	m.RnFormatMap = rnFormatMap
-	m.MultiParentFormats = multiParentFormats
-	m.MultiParentFormatsTestTypes = getTestType
+	m.MultiParentFormats = getMultiParentFormats
 }
 
 func setParentDnOptional(m *Model) {
-	getMultiParentFormats, _ := GetMultiParentFormats(m.PkgName, m.Definitions)
-	for parent, _ := range getMultiParentFormats {
-		if parent == "polUni" {
+	getMultiParentFormats := GetMultiParentFormats(m.PkgName, m.Definitions)
+	for _, format := range getMultiParentFormats {
+		if format.ContainedBy == "polUni" {
 			m.ParentDnOptional = true
 			break
 		}

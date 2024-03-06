@@ -4,6 +4,7 @@
 
 default:
   value: "test_value"
+
 datasource_non_existing:
   key: "non_existing_key"
 
@@ -12,7 +13,7 @@ datasource_required:
 
 resource_required:
   key: "test_key"
-  value: "test_value" 
+  value: "test_value"
 
 all:
   value: "value"
