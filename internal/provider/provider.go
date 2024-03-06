@@ -147,7 +147,7 @@ func (p *AciProvider) Configure(ctx context.Context, req provider.ConfigureReque
 	isInsecure := stringToBool(resp, "insecure", getStringAttribute(data.IsInsecure, "ACI_INSECURE"), true)
 	validateRelationDn := stringToBool(resp, "insecure", getStringAttribute(data.ValidateRelationDn, "ACI_VAL_REL_DN"), true)
 	maxRetries := stringToInt(resp, "retries", getStringAttribute(data.MaxRetries, "ACI_RETRIES"), 2)
-	annotation := getStringAttribute(data.Annotation, "ACI_ANNOTATION")
+	setGlobalAnnotation(data.Annotation, "ACI_ANNOTATION")
 
 	if username == "" {
 		resp.Diagnostics.AddError(
@@ -188,12 +188,6 @@ func (p *AciProvider) Configure(ctx context.Context, req provider.ConfigureReque
 		aciClient = client.GetClient(url, username, client.Password(password), client.Insecure(isInsecure), client.ProxyUrl(proxyUrl), client.ProxyCreds(proxyCreds), client.ValidateRelationDn(validateRelationDn), client.MaxRetries(maxRetries))
 	} else {
 		aciClient = client.GetClient(url, username, client.PrivateKey(privateKey), client.AdminCert(certName), client.Insecure(isInsecure), client.ProxyUrl(proxyUrl), client.ProxyCreds(proxyCreds), client.ValidateRelationDn(validateRelationDn), client.MaxRetries(maxRetries))
-	}
-
-	if annotation == "" {
-		globalAnnotation = "orchestrator:terraform"
-	} else {
-		globalAnnotation = annotation
 	}
 
 	resp.DataSourceData = aciClient
@@ -239,6 +233,20 @@ func New(version string) func() provider.Provider {
 		return &AciProvider{
 			version: version,
 		}
+	}
+}
+
+func setGlobalAnnotation(attribute basetypes.StringValue, envKey string) {
+
+	if attribute.IsNull() {
+		attributeValue, found := os.LookupEnv(envKey)
+		if found {
+			globalAnnotation = attributeValue
+		} else {
+			globalAnnotation = "orchestrator:terraform"
+		}
+	} else {
+		globalAnnotation = attribute.ValueString()
 	}
 }
 

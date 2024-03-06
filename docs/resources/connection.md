@@ -45,8 +45,8 @@ resource "aci_connection" "conn2" {
 - `name_alias` - (Optional) Name alias for object connection. Type: String.
 - `unicast_route` - (Optional) Unicast route for connection object. Unicast route setting should be true for L3 connections. Allowed values are "yes" and "no". Default value is "yes". Type: String.
 
-- `relation_vns_rs_abs_copy_connection` - (Optional) List of relation to class vnsAConn. Cardinality - ONE_TO_M. Type: Set of String.
-- `relation_vns_rs_abs_connection_conns` - (Optional) list of relation to class vnsAConn. Cardinality - ONE_TO_M. Type: Set of String.
+- `relation_vns_rs_abs_copy_connection` - (Optional) A list of relation to class vnsAConn. Cardinality - ONE_TO_M. Type: List.
+- `relation_vns_rs_abs_connection_conns` - (Optional) A list of relation to class vnsAConn. Cardinality - ONE_TO_M. Type: List.
 
 ## Attribute Reference
 

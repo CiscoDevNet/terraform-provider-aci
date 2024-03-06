@@ -71,4 +71,4 @@ data "aci_cloud_l4_l7_native_load_balancer" "example" {
 * `cloud_l4l7_load_balancer_type` - (Read-Only) Type of the Cloud L4-L7 Native Load Balancer object. Type: String.
 * `relation_cloud_rs_ldev_to_cloud_subnet` - (Read-Only) Represents the relation to a Relation from Cloud LDev to Cloud Subnet (class cloudSubnet). Type: List.
 * `aaa_domain_dn` - (Read-Only) Represents the relation to a Relation from AAA Domain to Cloud L4L7 Native Load Balancer (class aaaRbacAnnotation). Type: List.
-* `static_ip_address` - (Read-Only) Static IP Address of the Cloud L4-L7 Native Load Balancer object. Type: Set of String.
+* `static_ip_address` - (Read-Only) A list of unique Static IP Address of the Cloud L4-L7 Native Load Balancer object. Type: List.

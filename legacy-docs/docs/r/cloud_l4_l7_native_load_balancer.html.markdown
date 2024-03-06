@@ -96,8 +96,7 @@ resource "aci_cloud_l4_l7_native_load_balancer" "example" {
 * `cloud_l4l7_load_balancer_type` - (Optional) Type of the Cloud L4-L7 Native Load Balancer object. Allowed values are "application", "network", and default value is "application". Type: String.
 * `relation_cloud_rs_ldev_to_cloud_subnet` - (Optional) Represents the relation to a Relation from Cloud LDev to Cloud Subnet (class cloudSubnet). Type: List.
 * `aaa_domain_dn` - (Optional) Represents the relation to a Relation from AAA Domain to Cloud L4L7 Native Load Balancer (class aaaRbacAnnotation). Type: List.
-* `static_ip_address` - (Optional) Static IP Address of the Cloud L4-L7 Native Load Balancer object. Type: Set of String.
-
+* `static_ip_address` - (Optional) A list of unique Static IP Address of the Cloud L4-L7 Native Load Balancer object. Type: List.
 
 ## Importing ##
 
