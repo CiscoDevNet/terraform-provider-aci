@@ -3,7 +3,6 @@ package provider
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
 	"strings"
 
@@ -92,7 +91,6 @@ func DoRestRequest(ctx context.Context, diags *diag.Diagnostics, client *client.
 }
 
 func GetDeleteJsonPayload(ctx context.Context, diags *diag.Diagnostics, className, dn string) *container.Container {
-	log.Printf("HERE DEL%v", dn)
 	jsonString := fmt.Sprintf(`{"%s":{"attributes":{"dn": "%s","status": "deleted"}}}`, className, dn)
 	jsonPayload, err := container.ParseJSON([]byte(jsonString))
 	if err != nil {
