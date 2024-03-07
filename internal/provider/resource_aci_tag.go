@@ -83,7 +83,7 @@ func (r *TagTagResource) Schema(ctx context.Context, req resource.SchemaRequest,
 					stringplanmodifier.UseStateForUnknown(),
 					stringplanmodifier.RequiresReplace(),
 				},
-				MarkdownDescription: `The key or password used to uniquely identify this configuration object.`,
+				MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 			},
 			"value": schema.StringAttribute{
 				Required: true,

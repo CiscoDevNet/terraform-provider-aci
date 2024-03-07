@@ -100,7 +100,7 @@ All examples for the Relation To Consumed Out Of Band Contract resource can be f
   
   #### Required ####
   
-  * `key` (key) - (string) The key or password used to uniquely identify this configuration object.
+  * `key` (key) - (string) The key used to uniquely identify this configuration object.
   * `value` (value) - (string) The value of the property.
 
 ## Importing
@@ -120,7 +120,3 @@ import {
   to = aci_relation_to_consumed_out_of_band_contract.example_external_management_network_instance_profile
 }
 ```
-
-## Child Resources
-  
-  - [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag)

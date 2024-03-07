@@ -116,7 +116,7 @@ All examples for the Out Of Band Contract resource can be found in the [examples
   
   #### Required ####
   
-  * `key` (key) - (string) The key or password used to uniquely identify this configuration object.
+  * `key` (key) - (string) The key used to uniquely identify this configuration object.
   * `value` (value) - (string) The value of the property.
 
 ## Importing
@@ -136,7 +136,3 @@ import {
   to = aci_out_of_band_contract.example
 }
 ```
-
-## Child Resources
-  
-  - [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag)

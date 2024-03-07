@@ -10,6 +10,61 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
+func TestAccResourceTagTagWithFvTenant(t *testing.T) {
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:             testConfigTagTagMinDependencyWithFvTenant,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_tag.test", "key", "test_key"),
+					resource.TestCheckResourceAttr("aci_tag.test", "value", "test_value"),
+				),
+			},
+			// Update with all config and verify default APIC values
+			{
+				Config:             testConfigTagTagAllDependencyWithFvTenant,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_tag.test", "key", "test_key"),
+					resource.TestCheckResourceAttr("aci_tag.test", "value", "value"),
+				),
+			},
+			// Update with minimum config and verify config is unchanged
+			{
+				Config:             testConfigTagTagMinDependencyWithFvTenant,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_tag.test", "key", "test_key"),
+					resource.TestCheckResourceAttr("aci_tag.test", "value", "test_value"),
+				),
+			},
+			// Update with empty strings config or default value
+			{
+				Config:             testConfigTagTagResetDependencyWithFvTenant,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_tag.test", "key", "test_key"),
+					resource.TestCheckResourceAttr("aci_tag.test", "value", "test_value"),
+				),
+			},
+			// Import testing
+			{
+				ResourceName:      "aci_tag.test",
+				ImportState:       true,
+				ImportStateVerify: true,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_tag.test", "key", "test_key"),
+					resource.TestCheckResourceAttr("aci_tag.test", "value", "test_value"),
+				),
+			},
+		},
+	})
+}
 func TestAccResourceTagTagWithFvAEPg(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
@@ -19,7 +74,7 @@ func TestAccResourceTagTagWithFvAEPg(t *testing.T) {
 			// Create with minimum config and verify default APIC values
 			{
 				Config:             testConfigTagTagMinDependencyWithFvAEPg,
-				ExpectNonEmptyPlan: false,
+				ExpectNonEmptyPlan: true,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_tag.test", "key", "test_key"),
 					resource.TestCheckResourceAttr("aci_tag.test", "value", "test_value"),
@@ -28,7 +83,7 @@ func TestAccResourceTagTagWithFvAEPg(t *testing.T) {
 			// Update with all config and verify default APIC values
 			{
 				Config:             testConfigTagTagAllDependencyWithFvAEPg,
-				ExpectNonEmptyPlan: false,
+				ExpectNonEmptyPlan: true,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_tag.test", "key", "test_key"),
 					resource.TestCheckResourceAttr("aci_tag.test", "value", "value"),
@@ -37,7 +92,7 @@ func TestAccResourceTagTagWithFvAEPg(t *testing.T) {
 			// Update with minimum config and verify config is unchanged
 			{
 				Config:             testConfigTagTagMinDependencyWithFvAEPg,
-				ExpectNonEmptyPlan: false,
+				ExpectNonEmptyPlan: true,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_tag.test", "key", "test_key"),
 					resource.TestCheckResourceAttr("aci_tag.test", "value", "test_value"),
@@ -46,61 +101,6 @@ func TestAccResourceTagTagWithFvAEPg(t *testing.T) {
 			// Update with empty strings config or default value
 			{
 				Config:             testConfigTagTagResetDependencyWithFvAEPg,
-				ExpectNonEmptyPlan: false,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_tag.test", "key", "test_key"),
-					resource.TestCheckResourceAttr("aci_tag.test", "value", "test_value"),
-				),
-			},
-			// Import testing
-			{
-				ResourceName:      "aci_tag.test",
-				ImportState:       true,
-				ImportStateVerify: true,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_tag.test", "key", "test_key"),
-					resource.TestCheckResourceAttr("aci_tag.test", "value", "test_value"),
-				),
-			},
-		},
-	})
-}
-func TestAccResourceTagTagWithFvEpIpTag(t *testing.T) {
-
-	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
-		Steps: []resource.TestStep{
-			// Create with minimum config and verify default APIC values
-			{
-				Config:             testConfigTagTagMinDependencyWithFvEpIpTag,
-				ExpectNonEmptyPlan: true,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_tag.test", "key", "test_key"),
-					resource.TestCheckResourceAttr("aci_tag.test", "value", "test_value"),
-				),
-			},
-			// Update with all config and verify default APIC values
-			{
-				Config:             testConfigTagTagAllDependencyWithFvEpIpTag,
-				ExpectNonEmptyPlan: true,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_tag.test", "key", "test_key"),
-					resource.TestCheckResourceAttr("aci_tag.test", "value", "value"),
-				),
-			},
-			// Update with minimum config and verify config is unchanged
-			{
-				Config:             testConfigTagTagMinDependencyWithFvEpIpTag,
-				ExpectNonEmptyPlan: true,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_tag.test", "key", "test_key"),
-					resource.TestCheckResourceAttr("aci_tag.test", "value", "test_value"),
-				),
-			},
-			// Update with empty strings config or default value
-			{
-				Config:             testConfigTagTagResetDependencyWithFvEpIpTag,
 				ExpectNonEmptyPlan: true,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_tag.test", "key", "test_key"),
@@ -121,7 +121,31 @@ func TestAccResourceTagTagWithFvEpIpTag(t *testing.T) {
 	})
 }
 
-const testConfigTagTagMinDependencyWithFvAEPg = testConfigFvAEPgMin + `
+const testConfigTagTagMinDependencyWithFvTenant = testConfigFvTenantMin + `
+resource "aci_tag" "test" {
+  parent_dn = aci_tenant.test.id
+  key = "test_key"
+  value = "test_value"
+}
+`
+
+const testConfigTagTagAllDependencyWithFvTenant = testConfigFvTenantMin + `
+resource "aci_tag" "test" {
+  parent_dn = aci_tenant.test.id
+  key = "test_key"
+  value = "value"
+}
+`
+
+const testConfigTagTagResetDependencyWithFvTenant = testConfigFvTenantMin + `
+resource "aci_tag" "test" {
+  parent_dn = aci_tenant.test.id
+  key = "test_key"
+  value = "test_value"
+}
+`
+
+const testConfigTagTagMinDependencyWithFvAEPg = testConfigFvAEPgMinDependencyWithFvTenant + `
 resource "aci_tag" "test" {
   parent_dn = aci_application_epg.test.id
   key = "test_key"
@@ -129,7 +153,7 @@ resource "aci_tag" "test" {
 }
 `
 
-const testConfigTagTagAllDependencyWithFvAEPg = testConfigFvAEPgMin + `
+const testConfigTagTagAllDependencyWithFvAEPg = testConfigFvAEPgMinDependencyWithFvTenant + `
 resource "aci_tag" "test" {
   parent_dn = aci_application_epg.test.id
   key = "test_key"
@@ -137,33 +161,9 @@ resource "aci_tag" "test" {
 }
 `
 
-const testConfigTagTagResetDependencyWithFvAEPg = testConfigFvAEPgMin + `
+const testConfigTagTagResetDependencyWithFvAEPg = testConfigFvAEPgMinDependencyWithFvTenant + `
 resource "aci_tag" "test" {
   parent_dn = aci_application_epg.test.id
-  key = "test_key"
-  value = "test_value"
-}
-`
-
-const testConfigTagTagMinDependencyWithFvEpIpTag = testConfigFvEpIpTagMinDependencyWithFvTenant + `
-resource "aci_tag" "test" {
-  parent_dn = aci_endpoint_tag_ip.test.id
-  key = "test_key"
-  value = "test_value"
-}
-`
-
-const testConfigTagTagAllDependencyWithFvEpIpTag = testConfigFvEpIpTagMinDependencyWithFvTenant + `
-resource "aci_tag" "test" {
-  parent_dn = aci_endpoint_tag_ip.test.id
-  key = "test_key"
-  value = "value"
-}
-`
-
-const testConfigTagTagResetDependencyWithFvEpIpTag = testConfigFvEpIpTagMinDependencyWithFvTenant + `
-resource "aci_tag" "test" {
-  parent_dn = aci_endpoint_tag_ip.test.id
   key = "test_key"
   value = "test_value"
 }

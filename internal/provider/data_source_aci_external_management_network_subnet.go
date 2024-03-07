@@ -91,7 +91,7 @@ func (d *MgmtSubnetDataSource) Schema(ctx context.Context, req datasource.Schema
 					Attributes: map[string]schema.Attribute{
 						"key": schema.StringAttribute{
 							Computed:            true,
-							MarkdownDescription: `The key or password used to uniquely identify this configuration object.`,
+							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
 						"value": schema.StringAttribute{
 							Computed:            true,

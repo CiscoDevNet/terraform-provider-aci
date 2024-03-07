@@ -1,12 +1,12 @@
 
-resource "aci_tag" "full_example_application_epg" {
-  parent_dn = aci_application_epg.example.id
+resource "aci_tag" "full_example_tenant" {
+  parent_dn = aci_tenant.example.id
   key       = "test_key"
   value     = "test_value"
 }
 
-resource "aci_tag" "full_example_endpoint_tag_ip" {
-  parent_dn = aci_endpoint_tag_ip.example.id
+resource "aci_tag" "full_example_application_epg" {
+  parent_dn = aci_application_epg.example.id
   key       = "test_key"
   value     = "test_value"
 }

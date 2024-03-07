@@ -102,7 +102,7 @@ All examples for the External Management Network Subnet resource can be found in
   
   #### Required ####
   
-  * `key` (key) - (string) The key or password used to uniquely identify this configuration object.
+  * `key` (key) - (string) The key used to uniquely identify this configuration object.
   * `value` (value) - (string) The value of the property.
 
 ## Importing
@@ -122,7 +122,3 @@ import {
   to = aci_external_management_network_subnet.example_external_management_network_instance_profile
 }
 ```
-
-## Child Resources
-  
-  - [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag)

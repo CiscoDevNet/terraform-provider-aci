@@ -164,7 +164,7 @@ func (r *MgmtRsOoBConsResource) Schema(ctx context.Context, req resource.SchemaR
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
-							MarkdownDescription: `The key or password used to uniquely identify this configuration object.`,
+							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
 						"value": schema.StringAttribute{
 							Required: true,

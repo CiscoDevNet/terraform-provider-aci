@@ -30,19 +30,19 @@ Data source for Tag
 
 ## GUI Information ##
 
-* Location: `Generic`
+* Location: `Under every object as Policy Tags in the Operational tab in recent APIC versions.`
 
 ## Example Usage ##
 
 ```hcl
 
-data "aci_tag" "example_application_epg" {
-  parent_dn = aci_application_epg.example.id
+data "aci_tag" "example_tenant" {
+  parent_dn = aci_tenant.example.id
   key       = "test_key"
 }
 
-data "aci_tag" "example_endpoint_tag_ip" {
-  parent_dn = aci_endpoint_tag_ip.example.id
+data "aci_tag" "example_application_epg" {
+  parent_dn = aci_application_epg.example.id
   key       = "test_key"
 }
 
@@ -69,7 +69,7 @@ data "aci_tag" "example_endpoint_tag_ip" {
   - [aci_contract_interface](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/contract_interface) ([vzCPIf](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzCPIf/overview))
   - [aci_out_of_band_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/out_of_band_contract) ([vzOOBBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzOOBBrCP/overview))
   - Too many classes to display, see model documentation for all possible classes of [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview).
-* `key` (key) - (string) The key or password used to uniquely identify this configuration object.
+* `key` (key) - (string) The key used to uniquely identify this configuration object.
 
 ### Read-Only ###
 
