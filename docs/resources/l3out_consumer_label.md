@@ -89,7 +89,7 @@ All examples for the L3out Consumer Label resource can be found in the [examples
 * `id` - (string) The distinguished name (DN) of the L3out Consumer Label object.
 
 ### Optional ###
-  
+
 * `annotation` (annotation) - (string) The annotation of the L3out Consumer Label object.
   - Default: `orchestrator:terraform`
 * `description` (descr) - (string) The description of the L3out Consumer Label object.

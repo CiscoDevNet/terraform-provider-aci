@@ -60,7 +60,12 @@ parents:
     parent_dependency: "{{$parentDependency.parent_dependency}}"
     parent_dn: "{{createParentDnValue $key "test" $.Definitions}}"
     class_in_parent: {{$parentDependency.class_in_parent}}{{$index = add $index 1}}
+    {{$test := getTestType $.PkgName}}
+    {{- if $test -}}
+    test_type: {{$test}}
+    {{- else -}}
     test_type: {{$testType}}
+    {{- end}}
     {{- end}}
 {{- end}}
 {{- if .MultiParentFormats}}
@@ -74,10 +79,16 @@ parents:
     {{- $testType := $value.TestType }}
     {{- if $testType }}
     test_type: {{$testType}}
+    {{- else -}}
+    test_type: both
     {{- end}}
 {{- end}}
 {{- end}}
 {{- if and (not .ContainedBy) (not .MultiParentFormats) -}}
 {{$testType := getTestType $.PkgName}}
+{{- if $testType }}
 test_type: {{$testType}}
+{{- else }}
+test_type: both
+{{- end}}
 {{- end}}

@@ -1,3 +1,23 @@
+{{- $topContext := . -}}
+{{- if .MultiParentFormats -}}
+{{- range $formatKey, $formatValue := $topContext.MultiParentFormats -}}
+data "aci_{{ $topContext.ResourceName }}" {{- if ne $formatValue.ContainedBy "polUni"}}"example_{{ getResourceName $formatValue.ContainedBy $topContext.Definitions }}"{{- else}}"example"{{- end }} {
+{{- if ne $formatValue.ContainedBy "polUni"}}
+    parent_dn = {{createParentDnValue $formatValue.ContainedBy "example" $topContext.Definitions}}
+  {{- end }}
+      {{- range $topContext.Properties }}
+      {{- if .IsNaming }}
+        {{- if ne .NamedPropertyClass "" }}
+  {{ overwriteProperty .PkgName .SnakeCaseName $topContext.Definitions }} = aci_{{getResourceName .NamedPropertyClass $.Definitions}}.example.name
+        {{- else }}
+  {{ overwriteProperty .PkgName .SnakeCaseName $topContext.Definitions }} = "{{ lookupTestValue .PkgName .SnakeCaseName $topContext.TestVars $topContext.Definitions }}"
+        {{- end }}
+      {{- end }}
+    {{- end }}
+}
+{{ println }}
+{{- end -}}
+{{- else}}
 {{- if .DocumentationExamples}}{{- range $key := .DocumentationExamples}}
 data "aci_{{$.ResourceName}}" "example_{{getResourceName $key $.Definitions}}" {
   {{- if $.HasParent}}
@@ -19,3 +39,4 @@ data "aci_{{$.ResourceName}}" "example" {
   {{- end}}
 }
 {{ end}}
+{{- end}}

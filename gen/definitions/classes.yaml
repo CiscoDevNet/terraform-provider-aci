@@ -96,6 +96,7 @@ tagAnnotation:
     - "uni/tn-{name}/BD-{name}/annotationKey-[{key}]"
     - "uni/tn-{name}/ctx-{name}/annotationKey-[{key}]"
     - "Too many DN formats to display, see model documentation for all possible parents of [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)."
+  test_type: "apic"
 
 tagTag:
   ui_locations:
@@ -141,6 +142,3 @@ pkiTP:
     - rn_prepend: "uni/userext/pkiext"
       contained_by: "polUni"
       test_type: "both"
-  #   - contained_by:
-  #       - "pkiEp"
-  
