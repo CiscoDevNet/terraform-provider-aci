@@ -25,14 +25,6 @@ func dataSourceAciFunctionNode() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"l4_l7_device_interface_consumer_name": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"l4_l7_device_interface_provider_name": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
-			},
 			"annotation": &schema.Schema{
 				Type:     schema.TypeString,
 				Computed: true,
@@ -65,14 +57,6 @@ func dataSourceAciFunctionNode() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"conn_consumer_dn": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"conn_provider_dn": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
-			},
 			"share_encap": &schema.Schema{
 				Type:     schema.TypeString,
 				Computed: true,
@@ -97,7 +81,27 @@ func dataSourceAciFunctionNode() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"l4_l7_device_interface_consumer_name": &schema.Schema{
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"conn_consumer_dn": &schema.Schema{
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 			"l4_l7_device_interface_consumer_connector_type": &schema.Schema{
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"l4_l7_device_interface_consumer_attachment_notification": &schema.Schema{
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"l4_l7_device_interface_provider_name": &schema.Schema{
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"conn_provider_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Computed: true,
 			},
@@ -105,11 +109,7 @@ func dataSourceAciFunctionNode() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"l4_l7_device_interface_consumer_att_notify": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"l4_l7_device_interface_provider_att_notify": &schema.Schema{
+			"l4_l7_device_interface_provider_attachment_notification": &schema.Schema{
 				Type:     schema.TypeString,
 				Computed: true,
 			},

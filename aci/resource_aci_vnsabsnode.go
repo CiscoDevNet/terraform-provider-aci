@@ -31,28 +31,16 @@ func resourceAciFunctionNode() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
-
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
-			},
-			"l4_l7_device_interface_consumer_name": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-			"l4_l7_device_interface_provider_name": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
 			},
 			"annotation": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 			},
-
 			"func_template_type": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -69,7 +57,6 @@ func resourceAciFunctionNode() *schema.Resource {
 					"ADC_ONE_ARM",
 				}, false),
 			},
-
 			"func_type": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -118,25 +105,11 @@ func resourceAciFunctionNode() *schema.Resource {
 					"unspecified",
 				}, false),
 			},
-
 			"sequence_number": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 			},
-
-			"conn_consumer_dn": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
-			"conn_provider_dn": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"share_encap": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -146,7 +119,6 @@ func resourceAciFunctionNode() *schema.Resource {
 					"no",
 				}, false),
 			},
-
 			"relation_vns_rs_node_to_abs_func_prof": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -167,6 +139,16 @@ func resourceAciFunctionNode() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"l4_l7_device_interface_consumer_name": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"conn_consumer_dn": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"l4_l7_device_interface_consumer_connector_type": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -175,6 +157,25 @@ func resourceAciFunctionNode() *schema.Resource {
 					"none",
 					"redir",
 				}, false),
+			},
+			"l4_l7_device_interface_consumer_attachment_notification": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"no",
+					"yes",
+				}, false),
+			},
+			"l4_l7_device_interface_provider_name": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"conn_provider_dn": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
 			},
 			"l4_l7_device_interface_provider_connector_type": &schema.Schema{
 				Type:     schema.TypeString,
@@ -188,16 +189,7 @@ func resourceAciFunctionNode() *schema.Resource {
 					"snat_dnat",
 				}, false),
 			},
-			"l4_l7_device_interface_consumer_att_notify": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"no",
-					"yes",
-				}, false),
-			},
-			"l4_l7_device_interface_provider_att_notify": &schema.Schema{
+			"l4_l7_device_interface_provider_attachment_notification": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -266,7 +258,7 @@ func getAndSetFunctionNodeRelationalAttributes(client *client.Client, dn string,
 	d.Set("conn_consumer_dn", vnsAbsFuncConn.DistinguishedName)
 	d.Set("l4_l7_device_interface_consumer_name", vnsAbsFuncConn.DeviceLIfName)
 	d.Set("l4_l7_device_interface_consumer_connector_type", vnsAbsFuncConn.ConnType)
-	d.Set("l4_l7_device_interface_consumer_att_notify", vnsAbsFuncConn.AttNotify)
+	d.Set("l4_l7_device_interface_consumer_attachment_notification", vnsAbsFuncConn.AttNotify)
 
 	// Provider Part
 	provDn := fmt.Sprintf("%s/AbsFConn-provider", dn)
@@ -281,7 +273,7 @@ func getAndSetFunctionNodeRelationalAttributes(client *client.Client, dn string,
 	d.Set("conn_provider_dn", vnsAbsFuncConn.DistinguishedName)
 	d.Set("l4_l7_device_interface_provider_name", vnsAbsFuncConn.DeviceLIfName)
 	d.Set("l4_l7_device_interface_provider_connector_type", vnsAbsFuncConn.ConnType)
-	d.Set("l4_l7_device_interface_provider_att_notify", vnsAbsFuncConn.AttNotify)
+	d.Set("l4_l7_device_interface_provider_attachment_notification", vnsAbsFuncConn.AttNotify)
 
 	vnsRsNodeToAbsFuncProfData, err := client.ReadRelationvnsRsNodeToAbsFuncProfFromFunctionNode(dn)
 	if err != nil {
@@ -399,7 +391,7 @@ func resourceAciFunctionNodeCreate(ctx context.Context, d *schema.ResourceData, 
 	vnsAbsFuncConnAttr := models.FunctionConnectorAttributes{}
 	vnsAbsFuncConnAttr.Annotation = "{}"
 	vnsAbsFuncConnAttr.DeviceLIfName = d.Get("l4_l7_device_interface_consumer_name").(string)
-	vnsAbsFuncConnAttr.AttNotify = d.Get("l4_l7_device_interface_consumer_att_notify").(string)
+	vnsAbsFuncConnAttr.AttNotify = d.Get("l4_l7_device_interface_consumer_attachment_notification").(string)
 	vnsAbsFuncConnAttr.ConnType = d.Get("l4_l7_device_interface_consumer_connector_type").(string)
 	vnsAbsFuncConn := models.NewFunctionConnector(fmt.Sprintf("AbsFConn-%s", "consumer"), vnsAbsNode.DistinguishedName, "", vnsAbsFuncConnAttr)
 	err = aciClient.Save(vnsAbsFuncConn)
@@ -409,7 +401,7 @@ func resourceAciFunctionNodeCreate(ctx context.Context, d *schema.ResourceData, 
 	d.Set("conn_consumer_dn", vnsAbsFuncConn.DistinguishedName)
 
 	vnsAbsFuncConnAttr.DeviceLIfName = d.Get("l4_l7_device_interface_provider_name").(string)
-	vnsAbsFuncConnAttr.AttNotify = d.Get("l4_l7_device_interface_provider_att_notify").(string)
+	vnsAbsFuncConnAttr.AttNotify = d.Get("l4_l7_device_interface_provider_attachment_notification").(string)
 	vnsAbsFuncConnAttr.ConnType = d.Get("l4_l7_device_interface_provider_connector_type").(string)
 	vnsAbsFuncConn = models.NewFunctionConnector(fmt.Sprintf("AbsFConn-%s", "provider"), vnsAbsNode.DistinguishedName, "", vnsAbsFuncConnAttr)
 	err = aciClient.Save(vnsAbsFuncConn)
@@ -551,7 +543,7 @@ func resourceAciFunctionNodeUpdate(ctx context.Context, d *schema.ResourceData, 
 		vnsAbsFuncConnAttr := models.FunctionConnectorAttributes{}
 		vnsAbsFuncConnAttr.Annotation = "{}"
 		vnsAbsFuncConnAttr.DeviceLIfName = d.Get("l4_l7_device_interface_consumer_name").(string)
-		vnsAbsFuncConnAttr.AttNotify = d.Get("l4_l7_device_interface_consumer_att_notify").(string)
+		vnsAbsFuncConnAttr.AttNotify = d.Get("l4_l7_device_interface_consumer_attachment_notification").(string)
 		vnsAbsFuncConnAttr.ConnType = d.Get("l4_l7_device_interface_consumer_connector_type").(string)
 		vnsAbsFuncConn := models.NewFunctionConnector(fmt.Sprintf("AbsFConn-%s", "consumer"), vnsAbsNode.DistinguishedName, "", vnsAbsFuncConnAttr)
 		err = aciClient.Save(vnsAbsFuncConn)
@@ -565,7 +557,7 @@ func resourceAciFunctionNodeUpdate(ctx context.Context, d *schema.ResourceData, 
 		vnsAbsFuncConnAttr := models.FunctionConnectorAttributes{}
 		vnsAbsFuncConnAttr.Annotation = "{}"
 		vnsAbsFuncConnAttr.DeviceLIfName = d.Get("l4_l7_device_interface_provider_name").(string)
-		vnsAbsFuncConnAttr.AttNotify = d.Get("l4_l7_device_interface_provider_att_notify").(string)
+		vnsAbsFuncConnAttr.AttNotify = d.Get("l4_l7_device_interface_provider_attachment_notification").(string)
 		vnsAbsFuncConnAttr.ConnType = d.Get("l4_l7_device_interface_provider_connector_type").(string)
 		vnsAbsFuncConn := models.NewFunctionConnector(fmt.Sprintf("AbsFConn-%s", "provider"), vnsAbsNode.DistinguishedName, "", vnsAbsFuncConnAttr)
 		err = aciClient.Save(vnsAbsFuncConn)
