@@ -162,17 +162,17 @@ resource "aci_function_node" "tf_nlb2" {
 }
 
 resource "aci_function_node" "tf_fw2" { # does not get configured
-  l4_l7_service_graph_template_dn                = aci_function_node.tf_nlb2.l4_l7_service_graph_template_dn
-  name                                           = "N1"
-  func_template_type                             = "FW_ROUTED"
-  relation_vns_rs_node_to_cloud_l_dev            = aci_cloud_l4_l7_third_party_device.third_pa_fw.id
-  l4_l7_device_interface_consumer_name           = "trust"
-  l4_l7_device_interface_provider_name           = "untrust"
-  l4_l7_device_interface_consumer_connector_type = "redir"
-  l4_l7_device_interface_provider_connector_type = "snat"
-  l4_l7_device_interface_consumer_att_notify     = "no"
-  l4_l7_device_interface_provider_att_notify     = "yes"
-  managed                                        = "no"
+  l4_l7_service_graph_template_dn                         = aci_function_node.tf_nlb2.l4_l7_service_graph_template_dn
+  name                                                    = "N1"
+  func_template_type                                      = "FW_ROUTED"
+  relation_vns_rs_node_to_cloud_l_dev                     = aci_cloud_l4_l7_third_party_device.third_pa_fw.id
+  l4_l7_device_interface_consumer_name                    = "trust"
+  l4_l7_device_interface_provider_name                    = "untrust"
+  l4_l7_device_interface_consumer_connector_type          = "redir"
+  l4_l7_device_interface_provider_connector_type          = "snat"
+  l4_l7_device_interface_consumer_attachment_notification = "no"
+  l4_l7_device_interface_provider_attachment_notification = "yes"
+  managed                                                 = "no"
 }
 
 # Create L4-L7 Service Graph tf_sg2 connection with template T1 and the first node N0.

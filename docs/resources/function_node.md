@@ -55,13 +55,17 @@ resource "aci_function_node" "example" {
 - `routing_mode` - (Optional) Routing mode of the Function Node object. Allowed values: "Redirect", "unspecified". Default value: "unspecified". Type: String.
 - `sequence_number` - (Optional) Internal property incremented when aaa user logs in. Type: String.
 - `share_encap` - (Optional) Enables encap sharing on node. Allowed values: "yes", "no". Default value: "no". Type: String.
-- `l4_l7_device_interface_consumer_name` - (Optional) The device interface is used to map with a service graph Function Node Connector consumer object. Type: String.
-- `l4_l7_device_interface_provider_name` - (Optional) The device interface is used to map with a service graph Function Node Connector provider object. Type: String.
 - `relation_vns_rs_node_to_abs_func_prof` - (Optional) Represents the relation to L4-L7 Services Function Profile (class vnsAbsFuncProf). Type: String.
 - `relation_vns_rs_node_to_l_dev` - (Optional) Represents the relation to Logical Device Abstraction (class vnsALDevIf). Type: String.
 - `relation_vns_rs_node_to_m_func` - (Optional) Represents the relation to Meta Function (class vnsMFunc). Type: String.
 - `relation_vns_rs_default_scope_to_term` - (Optional) Represents the relation to Terminal Abstract Class (class vnsATerm). Type: String.
 - `relation_vns_rs_node_to_cloud_l_dev` - (Optional) Represents the relation to Cloud L4-L7 Abstract Devices (class cloudALDev). Type: String.
+- `l4_l7_device_interface_consumer_name` - (Optional) The device interface is used to map with a service graph Function Node Connector consumer object. Type: String.
+- `l4_l7_device_interface_consumer_connector_type` - (Read-Only) The device interface connector type used to map with a service graph Function Node Connector consumer object. Allowed values: "none", "redir". Default value: "none". Type: String.
+- `l4_l7_device_interface_consumer_attachment_notification` - (Read-Only) Represents the consumer attachment notification. Allowed values: "yes", "no". Default value: "no". Type: String.
+- `l4_l7_device_interface_provider_name` - (Optional) The device interface is used to map with a service graph Function Node Connector provider object. Type: String.
+- `l4_l7_device_interface_provider_connector_type` - (Read-Only) The device interface connector type used to map with a service graph Function Node Connector provider object. Allowed values: "none", "redir", "dnat", "snat", "snat_dnat". Default value: "none". Type: String.
+- `l4_l7_device_interface_provider_attachment_notification` - (Read-Only) Represents the provider attachment notification. Allowed values: "yes", "no". Default value: "no". Type: String.
 
 ## Importing
 
