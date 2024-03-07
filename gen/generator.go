@@ -269,7 +269,7 @@ func addGetTestClassificationFunc(testType []TestClassification) {
 				return testClassification.TestClassification
 			}
 		}
-		return "both"
+		return ""
 	}
 }
 
@@ -611,7 +611,7 @@ func main() {
 		testType := GetOverwriteTestType(model.PkgName, definitions)
 		foundValidTestType := false
 		for _, test := range testType {
-			if test.TestClassification != "none" {
+			if test.TestClassification != "none" && test.ImmediateParent == model.PkgName {
 				model.TestType = testType
 				foundValidTestType = true
 				break

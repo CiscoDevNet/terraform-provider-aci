@@ -30,8 +30,13 @@ func TestAccDataSource{{$.resourceClassName}}With{{capitalize .class_name}} (t *
 					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
 						{{- end }}
 					{{- end}}
+					{{- end}}
 					{{- range $key, $value := $.default}}
+					{{- if contains $value "<<EOT -----BEGIN_CERTIFICATE-----" }}
+  					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$key}}", "{{ $value | appendNewLine }}" ),
+					{{- else}}
 					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+					{{- end}}
 					{{- end}}
 				),
 			},
@@ -54,10 +59,18 @@ func TestAccDataSource{{.resourceClassName}}(t *testing.T) {
 				Config: testConfig{{.resourceClassName}}DataSource,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					{{- range $key, $value := .min}}
+					{{- if contains $value "<<EOT -----BEGIN_CERTIFICATE-----" }}
+  					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$key}}", "{{ $value | appendNewLine }}" ),
+					{{- else}}
 					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
 					{{- end}}
+					{{- end}}
 					{{- range $key, $value := .all}}
+					{{- if contains $value "<<EOT -----BEGIN_CERTIFICATE-----" }}
+  					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$key}}", "{{ $value | appendNewLine }}" ),
+					{{- else}}
 					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+					{{- end}}
 					{{- end}}
 				),
 			},
@@ -74,7 +87,9 @@ func TestAccDataSource{{.resourceClassName}}(t *testing.T) {
 	{{- range .parents}}
 const testConfig{{$.resourceClassName}}DataSourceDependencyWith{{capitalize .class_name}}  = testConfig{{$.resourceClassName}}MinDependencyWith{{capitalize .class_name}}  + `
 data "aci_{{$.resourceName}}" "test" {
+  {{- if ne .class_name "polUni"}}
   parent_dn = {{.parent_dn}}
+  {{- end}}
   {{- range $key, $value := $.datasource_required}}
 		{{- if eq $key "target_dn" }}
   {{$key}} = {{$value}}
@@ -88,7 +103,9 @@ data "aci_{{$.resourceName}}" "test" {
 
 const testConfig{{$.resourceClassName}}NotExisting{{capitalize .class_name}}  = testConfig{{$.resourceClassName}}MinDependencyWith{{capitalize .class_name}}  + `
 data "aci_{{$.resourceName}}" "test_non_existing" {
+  {{- if ne .class_name "polUni"}}
   parent_dn = {{.parent_dn}}
+  {{- end}}
   {{- range $key, $value := $.datasource_non_existing}}
 		{{- if eq $key "target_dn" }}
   {{$key}} = "{{$.targetDn}}_not_existing"

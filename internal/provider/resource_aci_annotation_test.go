@@ -14,7 +14,7 @@ func TestAccResourceTagAnnotationWithFvTenant(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
 		PreCheck: func() {
-			testAccPreCheck(t, "both")
+			testAccPreCheck(t, "apic")
 		},
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
@@ -71,7 +71,7 @@ func TestAccResourceTagAnnotationWithFvAEPg(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
 		PreCheck: func() {
-			testAccPreCheck(t, "both")
+			testAccPreCheck(t, "apic")
 		},
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{

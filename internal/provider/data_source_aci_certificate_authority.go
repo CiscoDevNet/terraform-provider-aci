@@ -45,7 +45,7 @@ func (d *PkiTPDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 				MarkdownDescription: "The distinguished name (DN) of the Certificate Authority object.",
 			},
 			"parent_dn": schema.StringAttribute{
-				Required:            true,
+				Optional:            true,
 				MarkdownDescription: "The distinguished name (DN) of the parent object.",
 			},
 			"annotation": schema.StringAttribute{
