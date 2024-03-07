@@ -104,7 +104,7 @@ All examples for the Pim Route Map Policy resource can be found in the [examples
   
   #### Required ####
   
-  * `key` (key) - (string) The key or password used to uniquely identify this configuration object.
+  * `key` (key) - (string) The key used to uniquely identify this configuration object.
   * `value` (value) - (string) The value of the property.
 
 ## Importing
@@ -128,4 +128,3 @@ import {
 ## Child Resources
   
   - [aci_pim_route_map_entry](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/pim_route_map_entry)
-  - [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag)

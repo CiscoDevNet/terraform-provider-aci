@@ -105,7 +105,7 @@ All examples for the Endpoint Tag Mac resource can be found in the [examples](ht
   
   #### Required ####
   
-  * `key` (key) - (string) The key or password used to uniquely identify this configuration object.
+  * `key` (key) - (string) The key used to uniquely identify this configuration object.
   * `value` (value) - (string) The value of the property.
 
 ## Importing
@@ -125,7 +125,3 @@ import {
   to = aci_endpoint_tag_mac.example_tenant
 }
 ```
-
-## Child Resources
-  
-  - [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag)

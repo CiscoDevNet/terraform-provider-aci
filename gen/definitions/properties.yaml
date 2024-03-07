@@ -140,6 +140,8 @@ tagAnnotation:
       value: "test_value"
 
 tagTag:
+  documentation:
+    key: "The key used to uniquely identify this configuration object."
   resource_required:
     - "value"
   test_values:

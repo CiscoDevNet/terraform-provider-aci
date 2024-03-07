@@ -30,7 +30,7 @@ Data source for Annotation
 
 ## GUI Information ##
 
-* Location: `Generic`
+* Location: `Under every object as Annotations in the Policy tab in recent APIC versions.`
 
 ## Example Usage ##
 

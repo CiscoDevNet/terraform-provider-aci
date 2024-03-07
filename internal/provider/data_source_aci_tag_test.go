@@ -11,6 +11,27 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
+func TestAccDataSourceTagTagWithFvTenant(t *testing.T) {
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config:             testConfigTagTagDataSourceDependencyWithFvTenant,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("data.aci_tag.test", "key", "test_key"),
+					resource.TestCheckResourceAttr("data.aci_tag.test", "value", "test_value"),
+				),
+			},
+			{
+				Config:      testConfigTagTagNotExistingFvTenant,
+				ExpectError: regexp.MustCompile("Failed to read aci_tag data source"),
+			},
+		},
+	})
+}
 func TestAccDataSourceTagTagWithFvAEPg(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
@@ -19,7 +40,7 @@ func TestAccDataSourceTagTagWithFvAEPg(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				Config:             testConfigTagTagDataSourceDependencyWithFvAEPg,
-				ExpectNonEmptyPlan: false,
+				ExpectNonEmptyPlan: true,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("data.aci_tag.test", "key", "test_key"),
 					resource.TestCheckResourceAttr("data.aci_tag.test", "value", "test_value"),
@@ -32,28 +53,22 @@ func TestAccDataSourceTagTagWithFvAEPg(t *testing.T) {
 		},
 	})
 }
-func TestAccDataSourceTagTagWithFvEpIpTag(t *testing.T) {
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
-		Steps: []resource.TestStep{
-			{
-				Config:             testConfigTagTagDataSourceDependencyWithFvEpIpTag,
-				ExpectNonEmptyPlan: true,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.aci_tag.test", "key", "test_key"),
-					resource.TestCheckResourceAttr("data.aci_tag.test", "value", "test_value"),
-				),
-			},
-			{
-				Config:      testConfigTagTagNotExistingFvEpIpTag,
-				ExpectError: regexp.MustCompile("Failed to read aci_tag data source"),
-			},
-		},
-	})
+const testConfigTagTagDataSourceDependencyWithFvTenant = testConfigTagTagMinDependencyWithFvTenant + `
+data "aci_tag" "test" {
+  parent_dn = aci_tenant.test.id
+  key = "test_key"
+  depends_on = [aci_tag.test]
 }
+`
 
+const testConfigTagTagNotExistingFvTenant = testConfigTagTagMinDependencyWithFvTenant + `
+data "aci_tag" "test_non_existing" {
+  parent_dn = aci_tenant.test.id
+  key = "non_existing_key"
+  depends_on = [aci_tag.test]
+}
+`
 const testConfigTagTagDataSourceDependencyWithFvAEPg = testConfigTagTagMinDependencyWithFvAEPg + `
 data "aci_tag" "test" {
   parent_dn = aci_application_epg.test.id
@@ -65,21 +80,6 @@ data "aci_tag" "test" {
 const testConfigTagTagNotExistingFvAEPg = testConfigTagTagMinDependencyWithFvAEPg + `
 data "aci_tag" "test_non_existing" {
   parent_dn = aci_application_epg.test.id
-  key = "non_existing_key"
-  depends_on = [aci_tag.test]
-}
-`
-const testConfigTagTagDataSourceDependencyWithFvEpIpTag = testConfigTagTagMinDependencyWithFvEpIpTag + `
-data "aci_tag" "test" {
-  parent_dn = aci_endpoint_tag_ip.test.id
-  key = "test_key"
-  depends_on = [aci_tag.test]
-}
-`
-
-const testConfigTagTagNotExistingFvEpIpTag = testConfigTagTagMinDependencyWithFvEpIpTag + `
-data "aci_tag" "test_non_existing" {
-  parent_dn = aci_endpoint_tag_ip.test.id
   key = "non_existing_key"
   depends_on = [aci_tag.test]
 }

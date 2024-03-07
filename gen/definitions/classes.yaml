@@ -81,6 +81,8 @@ l3extRsRedistributePol:
   sub_category: "L3Out"
 
 tagAnnotation:
+  ui_locations:
+    - "Under every object as Annotations in the Policy tab in recent APIC versions."
   resource_notes:
     - "This resource should not be used in combination with the `annotations` nested attributes of other resources for the same object. Doing so will result in unexpected behaviour."
   example_classes:
@@ -95,15 +97,17 @@ tagAnnotation:
     - "Too many DN formats to display, see model documentation for all possible parents of [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)."
 
 tagTag:
+  ui_locations:
+    - "Under every object as Policy Tags in the Operational tab in recent APIC versions."
   resource_notes:
     - "This resource should not be used in combination with the `tags` nested attributes of other resources for the same object. Doing so will result in unexpected behaviour."
   example_classes:
+    - "fvTenant"
     - "fvAEPg"
-    - "fvEpIpTag"
   dn_formats:
-    - "uni/tn-{name}/ap-{name}/epg-{name}/tagKey-{key}"
-    - "uni/tn-{name}/eptags/epiptag-[{ip}]-{ctxName}/tagKey-{key}"
     - "uni/tn-{name}/tagKey-{key}"
+    - "uni/tn-{name}/eptags/epiptag-[{ip}]-{ctxName}/tagKey-{key}"
+    - "uni/tn-{name}/ap-{name}/epg-{name}/tagKey-{key}"
     - "uni/tn-{name}/ap-{name}/tagKey-{key}"
     - "uni/tn-{name}/BD-{name}/tagKey-{key}"
     - "Too many DN formats to display, see model documentation for all possible parents of [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)."

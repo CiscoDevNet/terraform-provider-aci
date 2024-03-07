@@ -103,12 +103,13 @@ var templateFuncs = template.FuncMap{
 }
 
 // Global variables used for unique resource name setting based on label from meta data
-var alwaysIncludeChildren = []string{"tag:Annotation", "tag:Tag"}
 var labels = []string{"dns_provider", "filter_entry"}
 var duplicateLabels = []string{}
 var resourceNames = map[string]string{}
 var rnPrefix = map[string]string{}
 var targetRelationalPropertyClasses = map[string]string{}
+var alwaysIncludeChildren = []string{"tag:Annotation", "tag:Tag"}
+var excludeChildResourceNamesFromDocs = []string{"", "annotation", "tag"}
 
 func GetResourceNameAsDescription(s string) string {
 	return cases.Title(language.English).String(strings.ReplaceAll(s, "_", " "))
@@ -1421,7 +1422,7 @@ func setDocumentationData(m *Model, definitions Definitions) {
 		match, _ := regexp.MatchString("[Rs][A-Z][^\r\n\t\f\v]", child) // match all Rs classes
 		if !match {
 			resourceName := GetResourceName(child, definitions)
-			if resourceName != "" && resourceName != "annotation" { // exclude anotation children since they will be included into the resource when possible
+			if !slices.Contains(excludeChildResourceNamesFromDocs, resourceName) { // exclude anotation children since they will be included into the resource when possible
 				m.DocumentationChildren = append(m.DocumentationChildren, fmt.Sprintf("[%s_%s](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/%s)", providerName, resourceName, resourceName))
 			}
 		}
