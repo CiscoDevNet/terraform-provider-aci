@@ -260,11 +260,18 @@ func getAndSetFunctionNodeRelationalAttributes(client *client.Client, dn string,
 	d.Set("l4_l7_device_interface_consumer_connector_type", vnsAbsFuncConn.ConnType)
 	d.Set("l4_l7_device_interface_consumer_attachment_notification", vnsAbsFuncConn.AttNotify)
 
-	// Provider Part
-	provDn := fmt.Sprintf("%s/AbsFConn-provider", dn)
-	vnsAbsFuncConnCont, err = client.Get(provDn)
-	if err != nil {
-		return err
+		// Provider Part
+		provDn := fmt.Sprintf("%s/AbsFConn-provider", dn)
+		vnsAbsFuncConnCont, err = client.Get(provDn)
+		if err != nil {
+			return err
+		}
+		vnsAbsFuncConn = models.FunctionConnectorFromContainer(vnsAbsFuncConnCont)
+		if vnsAbsFuncConn.DistinguishedName == "" {
+			return fmt.Errorf("Function Connector %s not found", provDn)
+		}
+		d.Set("conn_provider_dn", vnsAbsFuncConn.DistinguishedName)
+		d.Set("l4_l7_device_interface_provider_name", vnsAbsFuncConn.DeviceLIfName)
 	}
 	vnsAbsFuncConn = models.FunctionConnectorFromContainer(vnsAbsFuncConnCont)
 	if vnsAbsFuncConn.DistinguishedName == "" {
@@ -408,7 +415,6 @@ func resourceAciFunctionNodeCreate(ctx context.Context, d *schema.ResourceData, 
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	d.Set("conn_provider_dn", vnsAbsFuncConn.DistinguishedName)
 
 	checkDns := make([]string, 0, 1)
 
@@ -539,9 +545,19 @@ func resourceAciFunctionNodeUpdate(ctx context.Context, d *schema.ResourceData, 
 		return diag.FromErr(err)
 	}
 
+	vnsAbsFuncConnAttr := models.FunctionConnectorAttributes{}
+	vnsAbsFuncConnAttr.Annotation = "{}"
+	if vnsAbsNodeAttr.IsCopy == "yes" {
+		vnsAbsFuncConnAttr.DeviceLIfName = ""
+		vnsAbsFuncConn := models.NewFunctionConnector(fmt.Sprintf("AbsFConn-%s", "copy"), vnsAbsNode.DistinguishedName, "", vnsAbsFuncConnAttr)
+		err = aciClient.Save(vnsAbsFuncConn)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		d.Set("conn_copy_dn", vnsAbsFuncConn.DistinguishedName)
+	}
+
 	if d.HasChange("l4_l7_device_interface_consumer_name") {
-		vnsAbsFuncConnAttr := models.FunctionConnectorAttributes{}
-		vnsAbsFuncConnAttr.Annotation = "{}"
 		vnsAbsFuncConnAttr.DeviceLIfName = d.Get("l4_l7_device_interface_consumer_name").(string)
 		vnsAbsFuncConnAttr.AttNotify = d.Get("l4_l7_device_interface_consumer_attachment_notification").(string)
 		vnsAbsFuncConnAttr.ConnType = d.Get("l4_l7_device_interface_consumer_connector_type").(string)
@@ -554,8 +570,6 @@ func resourceAciFunctionNodeUpdate(ctx context.Context, d *schema.ResourceData, 
 	}
 
 	if d.HasChange("l4_l7_device_interface_provider_name") {
-		vnsAbsFuncConnAttr := models.FunctionConnectorAttributes{}
-		vnsAbsFuncConnAttr.Annotation = "{}"
 		vnsAbsFuncConnAttr.DeviceLIfName = d.Get("l4_l7_device_interface_provider_name").(string)
 		vnsAbsFuncConnAttr.AttNotify = d.Get("l4_l7_device_interface_provider_attachment_notification").(string)
 		vnsAbsFuncConnAttr.ConnType = d.Get("l4_l7_device_interface_provider_connector_type").(string)
@@ -567,13 +581,16 @@ func resourceAciFunctionNodeUpdate(ctx context.Context, d *schema.ResourceData, 
 		d.Set("conn_provider_dn", vnsAbsFuncConn.DistinguishedName)
 	}
 
-	if d.HasChange("conn_consumer_dn") || d.HasChange("conn_provider_dn") {
+	if d.HasChange("conn_consumer_dn") || d.HasChange("conn_provider_dn") || d.HasChange("conn_copy_dn") {
 		consOld, _ := d.GetChange("conn_consumer_dn")
 		d.Set("conn_consumer_dn", consOld.(string))
 
 		provOld, _ := d.GetChange("conn_provider_dn")
 		d.Set("conn_provider_dn", provOld.(string))
-		return diag.FromErr(fmt.Errorf("conn_consumer_dn and conn_provider_dn is not user configurable"))
+
+		copyOld, _ := d.GetChange("conn_copy_dn")
+		d.Set("conn_copy_dn", copyOld.(string))
+		return diag.FromErr(fmt.Errorf("conn_consumer_dn, conn_provider_dn and conn_copy_dn is not user configurable"))
 	}
 
 	checkDns := make([]string, 0, 1)
