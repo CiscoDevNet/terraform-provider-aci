@@ -278,7 +278,7 @@ func resourceAciCloudL4L7LoadBalancer() *schema.Resource {
 				Optional: true,
 				Set:      schema.HashString,
 			},
-			"static_ip_address": &schema.Schema{
+			"static_ip_addresses": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
@@ -431,7 +431,7 @@ func getAndSetRemoteCloudL4L7LoadBalancerAttributes(client *client.Client, dn st
 		}
 	}
 	d.Set("relation_cloud_rs_ldev_to_cloud_subnet", cloudLBChildSubnetList)
-	d.Set("static_ip_address", cloudLBChildStaticIPList)
+	d.Set("static_ip_addresses", cloudLBChildStaticIPList)
 	d.Set("aaa_domain_dn", cloudLBChildAaaDomainList)
 
 	d.SetId(cloudLBDistinguishedName)
@@ -482,7 +482,7 @@ func resourceAciCloudL4L7LoadBalancerCreate(ctx context.Context, d *schema.Resou
 		cloudLBChildList = append(cloudLBChildList, mapListOfAaaDomainAttrs("created", toStringList(aaaDomainDn.(*schema.Set).List()))...)
 	}
 
-	if staticIPAddress, ok := d.GetOk("static_ip_address"); ok {
+	if staticIPAddress, ok := d.GetOk("static_ip_addresses"); ok {
 		cloudLBChildList = append(cloudLBChildList, mapCloudFrontendIPv4AddrAttrs(annotation, "created", toStringList(staticIPAddress.(*schema.Set).List())))
 
 	}
@@ -547,8 +547,8 @@ func resourceAciCloudL4L7LoadBalancerUpdate(ctx context.Context, d *schema.Resou
 		cloudLBChildList = append(cloudLBChildList, mapCloudRsLDevToCloudSubnetAttrs(annotation, "created, modified", relToCreate)...)
 	}
 
-	if d.HasChange("static_ip_address") {
-		oldRel, newRel := d.GetChange("static_ip_address")
+	if d.HasChange("static_ip_addresses") {
+		oldRel, newRel := d.GetChange("static_ip_addresses")
 		oldRelSet := oldRel.(*schema.Set)
 		newRelSet := newRel.(*schema.Set)
 		relToDelete := toStringList(oldRelSet.Difference(newRelSet).List())

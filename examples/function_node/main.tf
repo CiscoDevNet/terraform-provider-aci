@@ -66,7 +66,7 @@ resource "aci_cloud_l4_l7_native_load_balancer" "cloud_nlb" {
   relation_cloud_rs_ldev_to_cloud_subnet = [data.aci_cloud_subnet.cs1.id]
   allow_all                              = "yes"
   is_static_ip                           = "yes"
-  static_ip_address                      = ["10.20.0.0"]
+  static_ip_addresses                      = ["10.20.0.0"]
   scheme                                 = "internal"
   cloud_l4l7_load_balancer_type          = "network"
 }

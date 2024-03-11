@@ -52,7 +52,7 @@ data "aci_cloud_l4_l7_native_load_balancer" "example" {
 * `instance_count` - (Read-Only) Instance Count of the Cloud L4-L7 Native Load Balancer object. Type: String.
 * `is_copy` - (Read-Only) Enables the device to be a copy device. Type: String.
 * `is_instantiation` - (Read-Only) Enables Instantiation of the Cloud L4-L7 Native Load Balancer object. Type: String.
-* `is_static_ip` - (Read-Only) Enables Static IP of the Cloud L4-L7 Native Load Balancer object. Type: String.
+* `is_static_ip` - (Read-Only) Enables static IP of the Cloud L4-L7 Native Load Balancer object. Type: String.
 * `l4l7_device_application_security_group` - (Read-Only) Naming for the Third Party Device Application Security Group of the Cloud L4-L7 Native Load Balancer object. Type: String.
 * `l4l7_third_party_device` - (Read-Only) Naming for the Third Party Device of the Cloud L4-L7 Native Load Balancer object. Type: String.
 * `managed` - (Read-Only) Enables the device to be a managed device. Type: String.
@@ -71,4 +71,4 @@ data "aci_cloud_l4_l7_native_load_balancer" "example" {
 * `cloud_l4l7_load_balancer_type` - (Read-Only) Type of the Cloud L4-L7 Native Load Balancer object. Type: String.
 * `relation_cloud_rs_ldev_to_cloud_subnet` - (Read-Only) Represents the relation to a Relation from Cloud LDev to Cloud Subnet (class cloudSubnet). Type: List.
 * `aaa_domain_dn` - (Read-Only) Represents the relation to a Relation from AAA Domain to Cloud L4L7 Native Load Balancer (class aaaRbacAnnotation). Type: List.
-* `static_ip_address` - (Read-Only) A list of unique static IP addresses of the Cloud L4-L7 Native Load Balancer object. Type: List.
+* `static_ip_addresses` - (Read-Only) A list of unique static IP addresses of the Cloud L4-L7 Native Load Balancer object. Type: List.
