@@ -77,7 +77,7 @@ resource "aci_cloud_l4_l7_native_load_balancer" "example" {
 * `instance_count` - (Optional) Instance Count of the Cloud L4-L7 Native Load Balancer object. Default value is "2". Type: String.
 * `is_copy` - (Optional) Enables the device to be a copy device. Allowed values are "no", "yes", and default value is "no". Type: String.
 * `is_instantiation` - (Optional) Enables Instantiation of the Cloud L4-L7 Native Load Balancer object. Allowed values are "no", "yes", and default value is "no". Type: String.
-* `is_static_ip` - (Optional) Enables Static IP of the Cloud L4-L7 Native Load Balancer object. Allowed values are "no", "yes", and default value is "no". Type: String.
+* `is_static_ip` - (Optional) Enables static IP of the Cloud L4-L7 Native Load Balancer object. Allowed values are "no", "yes", and default value is "no". Type: String.
 * `l4l7_device_application_security_group` - (Optional) Naming for the Third Party Device Application Security Group of the Cloud L4-L7 Native Load Balancer object. Type: String.
 * `l4l7_third_party_device` - (Optional) Naming for the Third Party Device of the Cloud L4-L7 Native Load Balancer object. Type: String.
 * `managed` - (Optional) Enables the device to be a managed device. Allowed values are "no", "yes", and default value is "yes". Type: String.
@@ -96,7 +96,7 @@ resource "aci_cloud_l4_l7_native_load_balancer" "example" {
 * `cloud_l4l7_load_balancer_type` - (Optional) Type of the Cloud L4-L7 Native Load Balancer object. Allowed values are "application", "network", and default value is "application". Type: String.
 * `relation_cloud_rs_ldev_to_cloud_subnet` - (Optional) Represents the relation to a Relation from Cloud LDev to Cloud Subnet (class cloudSubnet). Type: List.
 * `aaa_domain_dn` - (Optional) Represents the relation to a Relation from AAA Domain to Cloud L4L7 Native Load Balancer (class aaaRbacAnnotation). Type: List.
-* `static_ip_address` - (Optional) A list of unique static IP addresses of the Cloud L4-L7 Native Load Balancer object. Type: List.
+* `static_ip_addresses` - (Optional) A list of unique static IP addresses of the Cloud L4-L7 Native Load Balancer object. Type: List.
 
 ## Importing ##
 
