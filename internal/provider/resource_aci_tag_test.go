@@ -74,7 +74,7 @@ func TestAccResourceTagTagWithFvAEPg(t *testing.T) {
 			// Create with minimum config and verify default APIC values
 			{
 				Config:             testConfigTagTagMinDependencyWithFvAEPg,
-				ExpectNonEmptyPlan: true,
+				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_tag.test", "key", "test_key"),
 					resource.TestCheckResourceAttr("aci_tag.test", "value", "test_value"),
@@ -83,7 +83,7 @@ func TestAccResourceTagTagWithFvAEPg(t *testing.T) {
 			// Update with all config and verify default APIC values
 			{
 				Config:             testConfigTagTagAllDependencyWithFvAEPg,
-				ExpectNonEmptyPlan: true,
+				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_tag.test", "key", "test_key"),
 					resource.TestCheckResourceAttr("aci_tag.test", "value", "value"),
@@ -92,7 +92,7 @@ func TestAccResourceTagTagWithFvAEPg(t *testing.T) {
 			// Update with minimum config and verify config is unchanged
 			{
 				Config:             testConfigTagTagMinDependencyWithFvAEPg,
-				ExpectNonEmptyPlan: true,
+				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_tag.test", "key", "test_key"),
 					resource.TestCheckResourceAttr("aci_tag.test", "value", "test_value"),
@@ -101,7 +101,7 @@ func TestAccResourceTagTagWithFvAEPg(t *testing.T) {
 			// Update with empty strings config or default value
 			{
 				Config:             testConfigTagTagResetDependencyWithFvAEPg,
-				ExpectNonEmptyPlan: true,
+				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_tag.test", "key", "test_key"),
 					resource.TestCheckResourceAttr("aci_tag.test", "value", "test_value"),
@@ -145,7 +145,7 @@ resource "aci_tag" "test" {
 }
 `
 
-const testConfigTagTagMinDependencyWithFvAEPg = testConfigFvAEPgMinDependencyWithFvTenant + `
+const testConfigTagTagMinDependencyWithFvAEPg = testConfigFvAEPgMin + `
 resource "aci_tag" "test" {
   parent_dn = aci_application_epg.test.id
   key = "test_key"
@@ -153,7 +153,7 @@ resource "aci_tag" "test" {
 }
 `
 
-const testConfigTagTagAllDependencyWithFvAEPg = testConfigFvAEPgMinDependencyWithFvTenant + `
+const testConfigTagTagAllDependencyWithFvAEPg = testConfigFvAEPgMin + `
 resource "aci_tag" "test" {
   parent_dn = aci_application_epg.test.id
   key = "test_key"
@@ -161,7 +161,7 @@ resource "aci_tag" "test" {
 }
 `
 
-const testConfigTagTagResetDependencyWithFvAEPg = testConfigFvAEPgMinDependencyWithFvTenant + `
+const testConfigTagTagResetDependencyWithFvAEPg = testConfigFvAEPgMin + `
 resource "aci_tag" "test" {
   parent_dn = aci_application_epg.test.id
   key = "test_key"

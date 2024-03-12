@@ -565,10 +565,12 @@ func main() {
 			os.Mkdir(fmt.Sprintf("%s/%s_%s", resourcesExamplesPath, providerName, model.ResourceName), 0755)
 			renderTemplate("provider_example.tf.tmpl", fmt.Sprintf("%s_%s/provider.tf", providerName, model.ResourceName), resourcesExamplesPath, model)
 			renderTemplate("resource_example.tf.tmpl", fmt.Sprintf("%s_%s/resource.tf", providerName, model.ResourceName), resourcesExamplesPath, model)
-			renderTemplate("resource_example_all_attributes.tf.tmpl", fmt.Sprintf("%s_%s/resource-all-attributes.tf", providerName, model.ResourceName), resourcesExamplesPath, model)
+			if !model.HasOnlyRequiredProperties {
+				renderTemplate("resource_example_all_attributes.tf.tmpl", fmt.Sprintf("%s_%s/resource-all-attributes.tf", providerName, model.ResourceName), resourcesExamplesPath, model)
+				model.ExampleResourceFull = string(hclwrite.Format(getExampleCode(fmt.Sprintf("%s/%s_%s/resource-all-attributes.tf", resourcesExamplesPath, providerName, model.ResourceName))))
+			}
 			// Leverage the hclwrite package to format the example code
 			model.ExampleResource = string(hclwrite.Format(getExampleCode(fmt.Sprintf("%s/%s_%s/resource.tf", resourcesExamplesPath, providerName, model.ResourceName))))
-			model.ExampleResourceFull = string(hclwrite.Format(getExampleCode(fmt.Sprintf("%s/%s_%s/resource-all-attributes.tf", resourcesExamplesPath, providerName, model.ResourceName))))
 			renderTemplate("resource.md.tmpl", fmt.Sprintf("%s.md", model.ResourceName), resourcesDocsPath, model)
 
 			os.Mkdir(fmt.Sprintf("%s/%s_%s", datasourcesExamplesPath, providerName, model.ResourceName), 0755)
