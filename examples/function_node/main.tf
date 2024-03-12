@@ -1,3 +1,4 @@
+# terraform plan for cloud APICs
 terraform {
   required_providers {
     aci = {
@@ -36,7 +37,7 @@ data "aci_cloud_subnet" "cs1" {
 
 # Create Logical Firewall Representation (3rd party example)
 
-resource "aci_cloud_l4_l7_third_party_device" "third_pa_fw" {
+resource "aci_cloud_l4_l7_third_party_device" "third_party_fw" {
   tenant_dn                     = data.aci_tenant.tf_tenant.id
   name                          = "tf_third_party_fw"
   relation_cloud_rs_ldev_to_ctx = data.aci_vrf.tf_vrf.id
@@ -71,14 +72,21 @@ resource "aci_cloud_l4_l7_native_load_balancer" "cloud_nlb" {
   cloud_l4l7_load_balancer_type          = "network"
 }
 
-resource "aci_l4_l7_service_graph_template" "tf_sg" {
+#  1. Create first L4-L7 Service Graph Template 'sg1' with type cloud
+#    Create two nodes with basic parameters
+#     - The first node 'N0' with type ADC_ONE_ARM and relation to the cloud native load balancer
+#     - The second node 'N1' with type FW_ROUTED and relation to the 3rd party firewall
+#    Create the connection between the templates ('T1 - consumer' and 'T2 - provider') and nodes ('N0' and 'N1').
+
+resource "aci_l4_l7_service_graph_template" "sg1" {
   tenant_dn                         = data.aci_tenant.tf_tenant.id
   name                              = "tf_sg_1"
   l4_l7_service_graph_template_type = "cloud"
 }
 
-resource "aci_function_node" "tf_nlb" {
-  l4_l7_service_graph_template_dn     = aci_l4_l7_service_graph_template.tf_sg.id
+# Create a function node with type ADC_ONE_ARM and relation to the cloud native load balancer
+resource "aci_function_node" "function_node_nlb" {
+  l4_l7_service_graph_template_dn     = aci_l4_l7_service_graph_template.sg1.id
   name                                = "N0"
   func_template_type                  = "ADC_ONE_ARM"
   relation_vns_rs_node_to_cloud_l_dev = aci_cloud_l4_l7_native_load_balancer.cloud_nlb.id
@@ -88,19 +96,20 @@ resource "aci_function_node" "tf_nlb" {
   sequence_number                     = "0"
 }
 
-resource "aci_function_node" "tf_fw" { # does not get configured
-  l4_l7_service_graph_template_dn      = aci_function_node.tf_nlb.l4_l7_service_graph_template_dn
+# Create a function node with type FW_ROUTED and relation to the 3rd party firewall
+resource "aci_function_node" "function_node_fw" {
+  l4_l7_service_graph_template_dn      = aci_function_node.function_node_nlb.l4_l7_service_graph_template_dn
   name                                 = "N1"
   func_template_type                   = "FW_ROUTED"
-  relation_vns_rs_node_to_cloud_l_dev  = aci_cloud_l4_l7_third_party_device.third_pa_fw.id
+  relation_vns_rs_node_to_cloud_l_dev  = aci_cloud_l4_l7_third_party_device.third_party_fw.id
   l4_l7_device_interface_consumer_name = "trust"
   l4_l7_device_interface_provider_name = "untrust"
   managed                              = "no"
 }
 
 # Create L4-L7 Service Graph connection with template T1 and the first node N0.
-resource "aci_connection" "t1-n0" {
-  l4_l7_service_graph_template_dn = aci_l4_l7_service_graph_template.tf_sg.id
+resource "aci_connection" "sg1_t1-n0" {
+  l4_l7_service_graph_template_dn = aci_l4_l7_service_graph_template.sg1.id
   name                            = "CON0"
   adj_type                        = "L3"
   conn_dir                        = "provider"
@@ -108,14 +117,14 @@ resource "aci_connection" "t1-n0" {
   direct_connect                  = "no"
   unicast_route                   = "yes"
   relation_vns_rs_abs_connection_conns = [
-    aci_l4_l7_service_graph_template.tf_sg.term_cons_dn,
-    aci_function_node.tf_nlb.conn_consumer_dn
+    aci_l4_l7_service_graph_template.sg1.term_cons_dn,
+    aci_function_node.function_node_nlb.conn_consumer_dn
   ]
 }
 
 # Create L4-L7 Service Graph connection with current node N0 and next node N1.
-resource "aci_connection" "n0-n1" {
-  l4_l7_service_graph_template_dn = aci_l4_l7_service_graph_template.tf_sg.id
+resource "aci_connection" "sg1_n0-n1" {
+  l4_l7_service_graph_template_dn = aci_l4_l7_service_graph_template.sg1.id
   name                            = "CON1"
   adj_type                        = "L3"
   conn_dir                        = "provider"
@@ -123,14 +132,14 @@ resource "aci_connection" "n0-n1" {
   direct_connect                  = "no"
   unicast_route                   = "yes"
   relation_vns_rs_abs_connection_conns = [
-    aci_function_node.tf_nlb.conn_provider_dn,
-    aci_function_node.tf_fw.conn_consumer_dn
+    aci_function_node.function_node_nlb.conn_provider_dn,
+    aci_function_node.function_node_fw.conn_consumer_dn
   ]
 }
 
 # Create L4-L7 Service Graph connection with the last node N1 and template T2.
-resource "aci_connection" "n1-t1" {
-  l4_l7_service_graph_template_dn = aci_l4_l7_service_graph_template.tf_sg.id
+resource "aci_connection" "sg1_n1-t1" {
+  l4_l7_service_graph_template_dn = aci_l4_l7_service_graph_template.sg1.id
   name                            = "CON2"
   adj_type                        = "L3"
   conn_dir                        = "provider"
@@ -138,20 +147,27 @@ resource "aci_connection" "n1-t1" {
   direct_connect                  = "no"
   unicast_route                   = "yes"
   relation_vns_rs_abs_connection_conns = [
-    aci_function_node.tf_fw.conn_provider_dn,
-    aci_l4_l7_service_graph_template.tf_sg.term_prov_dn
+    aci_function_node.function_node_fw.conn_provider_dn,
+    aci_l4_l7_service_graph_template.sg1.term_prov_dn
   ]
 }
 
+#  2. Create second L4-L7 Service Graph Template 'sg2' with type cloud
+#    Create two nodes with additional parameters
+#     - The first node 'N0' with type ADC_ONE_ARM and relation to the cloud native load balancer
+#     - The second node 'N1' with type FW_ROUTED and relation to the 3rd party firewall
+#    Create the connection between the templates ('T1 - consumer' and 'T2 - provider') and nodes ('N0' and 'N1').
 
-resource "aci_l4_l7_service_graph_template" "tf_sg2" {
+resource "aci_l4_l7_service_graph_template" "sg2" {
   tenant_dn                         = data.aci_tenant.tf_tenant.id
   name                              = "tf_sg_2"
   l4_l7_service_graph_template_type = "cloud"
 }
 
-resource "aci_function_node" "tf_nlb2" {
-  l4_l7_service_graph_template_dn                = aci_l4_l7_service_graph_template.tf_sg2.id
+# Create a function node with type ADC_ONE_ARM and relation to the cloud native load balancer
+# Additional parameters are added to the function node to demonstrate the different options available.
+resource "aci_function_node" "function_node_nlb2" {
+  l4_l7_service_graph_template_dn                = aci_l4_l7_service_graph_template.sg2.id
   name                                           = "N0"
   func_template_type                             = "ADC_ONE_ARM"
   routing_mode                                   = "Redirect"
@@ -161,11 +177,13 @@ resource "aci_function_node" "tf_nlb2" {
   l4_l7_device_interface_provider_connector_type = "redir"
 }
 
-resource "aci_function_node" "tf_fw2" { # does not get configured
-  l4_l7_service_graph_template_dn                         = aci_function_node.tf_nlb2.l4_l7_service_graph_template_dn
+# Create a function node with type FW_ROUTED and relation to the 3rd party firewall
+# Additional parameters are added to the function node to demonstrate the different options available.
+resource "aci_function_node" "function_node_fw2" {
+  l4_l7_service_graph_template_dn                         = aci_function_node.function_node_nlb2.l4_l7_service_graph_template_dn
   name                                                    = "N1"
   func_template_type                                      = "FW_ROUTED"
-  relation_vns_rs_node_to_cloud_l_dev                     = aci_cloud_l4_l7_third_party_device.third_pa_fw.id
+  relation_vns_rs_node_to_cloud_l_dev                     = aci_cloud_l4_l7_third_party_device.third_party_fw.id
   l4_l7_device_interface_consumer_name                    = "trust"
   l4_l7_device_interface_provider_name                    = "untrust"
   l4_l7_device_interface_consumer_connector_type          = "redir"
@@ -175,9 +193,9 @@ resource "aci_function_node" "tf_fw2" { # does not get configured
   managed                                                 = "no"
 }
 
-# Create L4-L7 Service Graph tf_sg2 connection with template T1 and the first node N0.
-resource "aci_connection" "t1-n0-2" {
-  l4_l7_service_graph_template_dn = aci_l4_l7_service_graph_template.tf_sg2.id
+# Create L4-L7 Service Graph sg2 connection with template T1 and the first node N0.
+resource "aci_connection" "sg2_t1-n0" {
+  l4_l7_service_graph_template_dn = aci_l4_l7_service_graph_template.sg2.id
   name                            = "CON0"
   adj_type                        = "L3"
   conn_dir                        = "provider"
@@ -185,14 +203,14 @@ resource "aci_connection" "t1-n0-2" {
   direct_connect                  = "no"
   unicast_route                   = "yes"
   relation_vns_rs_abs_connection_conns = [
-    aci_l4_l7_service_graph_template.tf_sg2.term_cons_dn,
-    aci_function_node.tf_nlb2.conn_consumer_dn
+    aci_l4_l7_service_graph_template.sg2.term_cons_dn,
+    aci_function_node.function_node_nlb2.conn_consumer_dn
   ]
 }
 
-# Create L4-L7 Service Graph tf_sg2 connection with current node N0 and next node N1.
-resource "aci_connection" "n0-n1-2" {
-  l4_l7_service_graph_template_dn = aci_l4_l7_service_graph_template.tf_sg2.id
+# Create L4-L7 Service Graph sg2 connection with current node N0 and next node N1.
+resource "aci_connection" "sg2_n0-n1" {
+  l4_l7_service_graph_template_dn = aci_l4_l7_service_graph_template.sg2.id
   name                            = "CON1"
   adj_type                        = "L3"
   conn_dir                        = "provider"
@@ -200,14 +218,14 @@ resource "aci_connection" "n0-n1-2" {
   direct_connect                  = "no"
   unicast_route                   = "yes"
   relation_vns_rs_abs_connection_conns = [
-    aci_function_node.tf_nlb2.conn_provider_dn,
-    aci_function_node.tf_fw2.conn_consumer_dn
+    aci_function_node.function_node_nlb2.conn_provider_dn,
+    aci_function_node.function_node_fw2.conn_consumer_dn
   ]
 }
 
-# Create L4-L7 Service Graph tf_sg2 connection with the last node N1 and template T2.
-resource "aci_connection" "n1-t1-2" {
-  l4_l7_service_graph_template_dn = aci_l4_l7_service_graph_template.tf_sg2.id
+# Create L4-L7 Service Graph sg2 connection with the last node N1 and template T2.
+resource "aci_connection" "sg2_n1-t1" {
+  l4_l7_service_graph_template_dn = aci_l4_l7_service_graph_template.sg2.id
   name                            = "CON2"
   adj_type                        = "L3"
   conn_dir                        = "provider"
@@ -215,7 +233,7 @@ resource "aci_connection" "n1-t1-2" {
   direct_connect                  = "no"
   unicast_route                   = "yes"
   relation_vns_rs_abs_connection_conns = [
-    aci_function_node.tf_fw2.conn_provider_dn,
-    aci_l4_l7_service_graph_template.tf_sg2.term_prov_dn
+    aci_function_node.function_node_fw2.conn_provider_dn,
+    aci_l4_l7_service_graph_template.sg2.term_prov_dn
   ]
 }

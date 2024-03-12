@@ -35,7 +35,9 @@ resource "aci_connection" "conn2" {
 ## Argument Reference
 
 - `l4_l7_service_graph_template_dn` - (Required) Distinguished name of parent L4-L7 Service Graph Template object. Type: String.
-- `name` - (Required) Name of object connection. The valid connection name format is `CONX`, where X is a number starting with 0. Type: String.
+- `name` - (Required) Name of object connection. Type: String.
+    - The valid connection name format for cloud APICs is `CONX`, where X is a number starting with 0.
+    - The valid connection name format for on-prem APICs is `CX`, where X is a number starting with 1.
 - `adj_type` - (Optional) Connector adjacency type. Allowed values are "L2", "L3". Default value is "L2". Type: String.
 - `annotation` - (Optional) Annotation for object connection. Type: String.
 - `description` - (Optional) Description for object connection. Type: String.
