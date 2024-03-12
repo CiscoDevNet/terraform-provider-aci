@@ -24,6 +24,6 @@ parents:
     parent_dn: "aci_tenant.test.id"
     class_in_parent: false
   - class_name: "fvAEPg"
-    parent_dependency: "fvTenant"
+    parent_dependency: ""
     parent_dn: "aci_application_epg.test.id"
-    class_in_parent: true
+    class_in_parent: false

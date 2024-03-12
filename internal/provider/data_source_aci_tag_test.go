@@ -40,7 +40,7 @@ func TestAccDataSourceTagTagWithFvAEPg(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				Config:             testConfigTagTagDataSourceDependencyWithFvAEPg,
-				ExpectNonEmptyPlan: true,
+				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("data.aci_tag.test", "key", "test_key"),
 					resource.TestCheckResourceAttr("data.aci_tag.test", "value", "test_value"),
