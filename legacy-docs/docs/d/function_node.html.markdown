@@ -58,3 +58,5 @@ data "aci_function_node" "example" {
 - `l4_l7_device_interface_provider_name` - (Read-Only) The device interface is used to map with a service graph Function Node Connector provider object. Type: String.
 - `l4_l7_device_interface_provider_connector_type` - (Read-Only) The device interface connector type used to map with a service graph Function Node Connector provider object. Type: String.
 - `l4_l7_device_interface_provider_attachment_notification` - (Read-Only) Represents the provider attachment notification. Type: String.
+- `conn_consumer_dn` - (Read-Only) Distinguished name of the Function Node consumer connector. Type: String.
+- `conn_provider_dn` - (Read-Only) Distinguished name of the Function Node provider connector. Type: String.
