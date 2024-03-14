@@ -41,6 +41,34 @@ func ApplyResourceChangeResponse(in *tfprotov6.ApplyResourceChangeResponse) *tfp
 	}
 }
 
+func CallFunctionRequest(in *tfprotov6.CallFunctionRequest) *tfprotov5.CallFunctionRequest {
+	if in == nil {
+		return nil
+	}
+
+	out := &tfprotov5.CallFunctionRequest{
+		Arguments: make([]*tfprotov5.DynamicValue, 0, len(in.Arguments)),
+		Name:      in.Name,
+	}
+
+	for _, argument := range in.Arguments {
+		out.Arguments = append(out.Arguments, DynamicValue(argument))
+	}
+
+	return out
+}
+
+func CallFunctionResponse(in *tfprotov6.CallFunctionResponse) *tfprotov5.CallFunctionResponse {
+	if in == nil {
+		return nil
+	}
+
+	return &tfprotov5.CallFunctionResponse{
+		Error:  FunctionError(in.Error),
+		Result: DynamicValue(in.Result),
+	}
+}
+
 func ConfigureProviderRequest(in *tfprotov6.ConfigureProviderRequest) *tfprotov5.ConfigureProviderRequest {
 	if in == nil {
 		return nil
@@ -103,6 +131,97 @@ func DynamicValue(in *tfprotov6.DynamicValue) *tfprotov5.DynamicValue {
 	}
 }
 
+func Function(in *tfprotov6.Function) *tfprotov5.Function {
+	if in == nil {
+		return nil
+	}
+
+	out := &tfprotov5.Function{
+		DeprecationMessage: in.DeprecationMessage,
+		Description:        in.Description,
+		DescriptionKind:    StringKind(in.DescriptionKind),
+		Parameters:         make([]*tfprotov5.FunctionParameter, 0, len(in.Parameters)),
+		Return:             FunctionReturn(in.Return),
+		Summary:            in.Summary,
+		VariadicParameter:  FunctionParameter(in.VariadicParameter),
+	}
+
+	for _, parameter := range in.Parameters {
+		out.Parameters = append(out.Parameters, FunctionParameter(parameter))
+	}
+
+	return out
+}
+
+func FunctionError(in *tfprotov6.FunctionError) *tfprotov5.FunctionError {
+	if in == nil {
+		return nil
+	}
+
+	out := &tfprotov5.FunctionError{
+		Text:             in.Text,
+		FunctionArgument: in.FunctionArgument,
+	}
+
+	return out
+}
+
+func FunctionMetadata(in tfprotov6.FunctionMetadata) tfprotov5.FunctionMetadata {
+	return tfprotov5.FunctionMetadata{
+		Name: in.Name,
+	}
+}
+
+func FunctionParameter(in *tfprotov6.FunctionParameter) *tfprotov5.FunctionParameter {
+	if in == nil {
+		return nil
+	}
+
+	return &tfprotov5.FunctionParameter{
+		AllowNullValue:     in.AllowNullValue,
+		AllowUnknownValues: in.AllowUnknownValues,
+		Description:        in.Description,
+		DescriptionKind:    StringKind(in.DescriptionKind),
+		Name:               in.Name,
+		Type:               in.Type,
+	}
+}
+
+func FunctionReturn(in *tfprotov6.FunctionReturn) *tfprotov5.FunctionReturn {
+	if in == nil {
+		return nil
+	}
+
+	return &tfprotov5.FunctionReturn{
+		Type: in.Type,
+	}
+}
+
+func GetFunctionsRequest(in *tfprotov6.GetFunctionsRequest) *tfprotov5.GetFunctionsRequest {
+	if in == nil {
+		return nil
+	}
+
+	return &tfprotov5.GetFunctionsRequest{}
+}
+
+func GetFunctionsResponse(in *tfprotov6.GetFunctionsResponse) *tfprotov5.GetFunctionsResponse {
+	if in == nil {
+		return nil
+	}
+
+	functions := make(map[string]*tfprotov5.Function, len(in.Functions))
+
+	for name, function := range in.Functions {
+		functions[name] = Function(function)
+	}
+
+	return &tfprotov5.GetFunctionsResponse{
+		Diagnostics: Diagnostics(in.Diagnostics),
+		Functions:   functions,
+	}
+}
+
 func GetMetadataRequest(in *tfprotov6.GetMetadataRequest) *tfprotov5.GetMetadataRequest {
 	if in == nil {
 		return nil
@@ -119,12 +238,17 @@ func GetMetadataResponse(in *tfprotov6.GetMetadataResponse) *tfprotov5.GetMetada
 	resp := &tfprotov5.GetMetadataResponse{
 		DataSources:        make([]tfprotov5.DataSourceMetadata, 0, len(in.DataSources)),
 		Diagnostics:        Diagnostics(in.Diagnostics),
+		Functions:          make([]tfprotov5.FunctionMetadata, 0, len(in.Functions)),
 		Resources:          make([]tfprotov5.ResourceMetadata, 0, len(in.Resources)),
 		ServerCapabilities: ServerCapabilities(in.ServerCapabilities),
 	}
 
 	for _, datasource := range in.DataSources {
 		resp.DataSources = append(resp.DataSources, DataSourceMetadata(datasource))
+	}
+
+	for _, function := range in.Functions {
+		resp.Functions = append(resp.Functions, FunctionMetadata(function))
 	}
 
 	for _, resource := range in.Resources {
@@ -159,6 +283,12 @@ func GetProviderSchemaResponse(in *tfprotov6.GetProviderSchemaResponse) (*tfprot
 		dataSourceSchemas[k] = v5Schema
 	}
 
+	functions := make(map[string]*tfprotov5.Function, len(in.Functions))
+
+	for name, function := range in.Functions {
+		functions[name] = Function(function)
+	}
+
 	provider, err := Schema(in.Provider)
 
 	if err != nil {
@@ -186,6 +316,7 @@ func GetProviderSchemaResponse(in *tfprotov6.GetProviderSchemaResponse) (*tfprot
 	return &tfprotov5.GetProviderSchemaResponse{
 		DataSourceSchemas: dataSourceSchemas,
 		Diagnostics:       Diagnostics(in.Diagnostics),
+		Functions:         functions,
 		Provider:          provider,
 		ProviderMeta:      providerMeta,
 		ResourceSchemas:   resourceSchemas,
@@ -235,6 +366,33 @@ func ImportedResources(in []*tfprotov6.ImportedResource) []*tfprotov5.ImportedRe
 	}
 
 	return res
+}
+
+func MoveResourceStateRequest(in *tfprotov6.MoveResourceStateRequest) *tfprotov5.MoveResourceStateRequest {
+	if in == nil {
+		return nil
+	}
+
+	return &tfprotov5.MoveResourceStateRequest{
+		SourcePrivate:         in.SourcePrivate,
+		SourceProviderAddress: in.SourceProviderAddress,
+		SourceSchemaVersion:   in.SourceSchemaVersion,
+		SourceState:           RawState(in.SourceState),
+		SourceTypeName:        in.SourceTypeName,
+		TargetTypeName:        in.TargetTypeName,
+	}
+}
+
+func MoveResourceStateResponse(in *tfprotov6.MoveResourceStateResponse) *tfprotov5.MoveResourceStateResponse {
+	if in == nil {
+		return nil
+	}
+
+	return &tfprotov5.MoveResourceStateResponse{
+		Diagnostics:   Diagnostics(in.Diagnostics),
+		TargetPrivate: in.TargetPrivate,
+		TargetState:   DynamicValue(in.TargetState),
+	}
 }
 
 func PlanResourceChangeRequest(in *tfprotov6.PlanResourceChangeRequest) *tfprotov5.PlanResourceChangeRequest {

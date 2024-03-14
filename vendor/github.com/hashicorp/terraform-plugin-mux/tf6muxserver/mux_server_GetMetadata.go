@@ -26,6 +26,7 @@ func (s *muxServer) GetMetadata(ctx context.Context, req *tfprotov6.GetMetadataR
 
 	resp := &tfprotov6.GetMetadataResponse{
 		DataSources:        make([]tfprotov6.DataSourceMetadata, 0),
+		Functions:          make([]tfprotov6.FunctionMetadata, 0),
 		Resources:          make([]tfprotov6.ResourceMetadata, 0),
 		ServerCapabilities: serverCapabilities,
 	}
@@ -53,6 +54,17 @@ func (s *muxServer) GetMetadata(ctx context.Context, req *tfprotov6.GetMetadataR
 			resp.DataSources = append(resp.DataSources, datasource)
 		}
 
+		for _, function := range serverResp.Functions {
+			if functionMetadataContainsName(resp.Functions, function.Name) {
+				resp.Diagnostics = append(resp.Diagnostics, functionDuplicateError(function.Name))
+
+				continue
+			}
+
+			s.functions[function.Name] = server
+			resp.Functions = append(resp.Functions, function)
+		}
+
 		for _, resource := range serverResp.Resources {
 			if resourceMetadataContainsTypeName(resp.Resources, resource.TypeName) {
 				resp.Diagnostics = append(resp.Diagnostics, resourceDuplicateError(resource.TypeName))
@@ -72,6 +84,16 @@ func (s *muxServer) GetMetadata(ctx context.Context, req *tfprotov6.GetMetadataR
 func datasourceMetadataContainsTypeName(metadatas []tfprotov6.DataSourceMetadata, typeName string) bool {
 	for _, metadata := range metadatas {
 		if typeName == metadata.TypeName {
+			return true
+		}
+	}
+
+	return false
+}
+
+func functionMetadataContainsName(metadatas []tfprotov6.FunctionMetadata, name string) bool {
+	for _, metadata := range metadatas {
+		if name == metadata.Name {
 			return true
 		}
 	}
