@@ -15,12 +15,24 @@ import (
 
 var _ tfprotov6.ProviderServer = &muxServer{}
 
+// Temporarily verify that v5tov6Server implements new RPCs correctly.
+// Reference: https://github.com/hashicorp/terraform-plugin-mux/issues/210
+// Reference: https://github.com/hashicorp/terraform-plugin-mux/issues/219
+var (
+	_ tfprotov6.FunctionServer = &muxServer{}
+	//nolint:staticcheck // Intentional verification of interface implementation.
+	_ tfprotov6.ResourceServerWithMoveResourceState = &muxServer{}
+)
+
 // muxServer is a gRPC server implementation that stands in front of other
 // gRPC servers, routing requests to them as if they were a single server. It
 // should always be instantiated by calling NewMuxServer().
 type muxServer struct {
 	// Routing for data source types
 	dataSources map[string]tfprotov6.ProviderServer
+
+	// Routing for functions
+	functions map[string]tfprotov6.ProviderServer
 
 	// Routing for resource types
 	resources map[string]tfprotov6.ProviderServer
@@ -87,6 +99,41 @@ func (s *muxServer) getDataSourceServer(ctx context.Context, typeName string) (t
 	return server, s.serverDiscoveryDiagnostics, nil
 }
 
+func (s *muxServer) getFunctionServer(ctx context.Context, name string) (tfprotov6.ProviderServer, []*tfprotov6.Diagnostic, error) {
+	s.serverDiscoveryMutex.RLock()
+	server, ok := s.functions[name]
+	discoveryComplete := s.serverDiscoveryComplete
+	s.serverDiscoveryMutex.RUnlock()
+
+	if discoveryComplete {
+		if ok {
+			return server, s.serverDiscoveryDiagnostics, nil
+		}
+
+		return nil, []*tfprotov6.Diagnostic{
+			functionMissingError(name),
+		}, nil
+	}
+
+	err := s.serverDiscovery(ctx)
+
+	if err != nil || diagnosticsHasError(s.serverDiscoveryDiagnostics) {
+		return nil, s.serverDiscoveryDiagnostics, err
+	}
+
+	s.serverDiscoveryMutex.RLock()
+	server, ok = s.functions[name]
+	s.serverDiscoveryMutex.RUnlock()
+
+	if !ok {
+		return nil, []*tfprotov6.Diagnostic{
+			functionMissingError(name),
+		}, nil
+	}
+
+	return server, s.serverDiscoveryDiagnostics, nil
+}
+
 func (s *muxServer) getResourceServer(ctx context.Context, typeName string) (tfprotov6.ProviderServer, []*tfprotov6.Diagnostic, error) {
 	s.serverDiscoveryMutex.RLock()
 	server, ok := s.resources[typeName]
@@ -122,10 +169,10 @@ func (s *muxServer) getResourceServer(ctx context.Context, typeName string) (tfp
 	return server, s.serverDiscoveryDiagnostics, nil
 }
 
-// serverDiscovery will populate the mux server "routing" for resource types by
-// calling all underlying server GetMetadata RPC and falling back to
-// GetProviderSchema RPC. It is intended to only be called through
-// getDataSourceServer and getResourceServer.
+// serverDiscovery will populate the mux server "routing" for functions and
+// resource types by calling all underlying server GetMetadata RPC and falling
+// back to GetProviderSchema RPC. It is intended to only be called through
+// getDataSourceServer, getFunctionServer, and getResourceServer.
 //
 // The error return represents gRPC errors, which except for the GetMetadata
 // call returning the gRPC unimplemented error, is always returned.
@@ -161,6 +208,16 @@ func (s *muxServer) serverDiscovery(ctx context.Context) error {
 				}
 
 				s.dataSources[serverDataSource.TypeName] = server
+			}
+
+			for _, serverFunction := range metadataResp.Functions {
+				if _, ok := s.functions[serverFunction.Name]; ok {
+					s.serverDiscoveryDiagnostics = append(s.serverDiscoveryDiagnostics, functionDuplicateError(serverFunction.Name))
+
+					continue
+				}
+
+				s.functions[serverFunction.Name] = server
 			}
 
 			for _, serverResource := range metadataResp.Resources {
@@ -205,6 +262,16 @@ func (s *muxServer) serverDiscovery(ctx context.Context) error {
 			s.dataSources[typeName] = server
 		}
 
+		for name := range providerSchemaResp.Functions {
+			if _, ok := s.functions[name]; ok {
+				s.serverDiscoveryDiagnostics = append(s.serverDiscoveryDiagnostics, functionDuplicateError(name))
+
+				continue
+			}
+
+			s.functions[name] = server
+		}
+
 		for typeName := range providerSchemaResp.ResourceSchemas {
 			if _, ok := s.resources[typeName]; ok {
 				s.serverDiscoveryDiagnostics = append(s.serverDiscoveryDiagnostics, resourceDuplicateError(typeName))
@@ -231,9 +298,11 @@ func (s *muxServer) serverDiscovery(ctx context.Context) error {
 //   - All provider meta schemas exactly match
 //   - Only one provider implements each managed resource
 //   - Only one provider implements each data source
+//   - Only one provider implements each function
 func NewMuxServer(_ context.Context, servers ...func() tfprotov6.ProviderServer) (*muxServer, error) {
 	result := muxServer{
 		dataSources:          make(map[string]tfprotov6.ProviderServer),
+		functions:            make(map[string]tfprotov6.ProviderServer),
 		resources:            make(map[string]tfprotov6.ProviderServer),
 		resourceCapabilities: make(map[string]*tfprotov6.ServerCapabilities),
 		servers:              make([]tfprotov6.ProviderServer, 0, len(servers)),
