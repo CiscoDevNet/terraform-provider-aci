@@ -18,6 +18,7 @@ Data source for Certificate Authority
 
 * Class: [pkiTP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/pkiTP/overview)
 
+* Supported in ACI versions: 1.0(1e) and later.
 
 * Distinguished Name Formats:
   - `uni/tn-{name}/certstore/tp-{name}`
@@ -30,6 +31,7 @@ Data source for Certificate Authority
 ## Example Usage ##
 
 ```hcl
+
 data "aci_certificate_authority" "example" {
   name = "test_name"
 }
@@ -38,7 +40,6 @@ data "aci_certificate_authority" "example_tenant" {
   parent_dn = aci_tenant.example.id
   name      = "test_name"
 }
-
 
 ```
 
@@ -51,16 +52,15 @@ data "aci_certificate_authority" "example_tenant" {
 ### Optional ###
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
-  - [aci_certificate_store](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/certificate_store) ([cloudCertStore](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/cloudCertStore/overview))
-  - [aci_public_key_management](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/public_key_management) ([pkiEp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/pkiEp/overview))
+  - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/fvTenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
 
 ### Read-Only ###
 
 * `id` - (string) The distinguished name (DN) of the Certificate Authority object.
-* `annotation` (annotation) - (string) The annotation of the Certificate Authority object.
+* `annotation` (annotation) - (string) The annotation of the Certificate Authority object. This attribute is supported in ACI versions: 3.2(1l) and later.
 * `cert_chain` (certChain) - (string) The PEM-encoded chain of trust from the trustpoint to a trusted root authority.
 * `description` (descr) - (string) The description of the Certificate Authority object.
-* `name_alias` (nameAlias) - (string) The name alias of the Certificate Authority object.
+* `name_alias` (nameAlias) - (string) The name alias of the Certificate Authority object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 

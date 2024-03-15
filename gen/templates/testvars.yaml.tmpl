@@ -120,7 +120,7 @@ parents:
 {{- range $key, $value := .MultiParentFormats }}{{$parentDependency := getParentTestDependencies $topContext.PkgName 0 $topContext.Definitions}}
   - class_name: "{{ $value.ContainedBy }}"
     parent_dependency: "{{$parentDependency.parent_dependency}}"
-    parent_dn: "{{createParentDnValue $value.ContainedBy "test" $topContext.Definitions}}"
+    parent_dn: {{ if eq $value.ContainedBy "polUni"}}""{{else}}"{{createParentDnValue $value.ContainedBy "test" $topContext.Definitions}}"{{- end}}
     class_in_parent: false
     {{- $testType := $value.TestType }}
     {{- if $testType }}
@@ -136,5 +136,19 @@ parents:
 test_type: {{$testType}}
 {{- else }}
 test_type: both
+{{- end}}
+{{- end}}
+{{ $exists_exclude := false -}}
+{{- range .Properties}}
+{{- if eq .ValueType "password"}}
+{{- $exists_exclude = true -}}
+{{- end}}
+{{- end}}
+{{- if $exists_exclude }}
+exclude_attributes:
+  {{- range .Properties}}
+		{{- if eq .ValueType "password"}}
+  - "{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}"
+{{- end}}
 {{- end}}
 {{- end}}

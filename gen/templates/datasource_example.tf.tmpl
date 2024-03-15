@@ -1,6 +1,6 @@
-{{- $topContext := . -}}
-{{- if .MultiParentFormats -}}
-{{- range $formatKey, $formatValue := $topContext.MultiParentFormats -}}
+{{- $topContext := . }}
+{{- if .MultiParentFormats }}
+{{- range $formatKey, $formatValue := $topContext.MultiParentFormats }}
 data "aci_{{ $topContext.ResourceName }}" {{- if ne $formatValue.ContainedBy "polUni"}}"example_{{ getResourceName $formatValue.ContainedBy $topContext.Definitions }}"{{- else}}"example"{{- end }} {
 {{- if ne $formatValue.ContainedBy "polUni"}}
     parent_dn = {{createParentDnValue $formatValue.ContainedBy "example" $topContext.Definitions}}
@@ -15,7 +15,7 @@ data "aci_{{ $topContext.ResourceName }}" {{- if ne $formatValue.ContainedBy "po
       {{- end }}
     {{- end }}
 }
-{{ println }}
+{{- println }}
 {{- end -}}
 {{- else}}
 {{- if .DocumentationExamples}}{{- range $key := .DocumentationExamples}}

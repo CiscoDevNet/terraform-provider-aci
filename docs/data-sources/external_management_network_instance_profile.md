@@ -45,9 +45,9 @@ data "aci_external_management_network_instance_profile" "example" {
 ### Read-Only ###
 
 * `id` - (string) The distinguished name (DN) of the External Management Network Instance Profile object.
-* `annotation` (annotation) - (string) The annotation of the External Management Network Instance Profile object.
+* `annotation` (annotation) - (string) The annotation of the External Management Network Instance Profile object. This attribute is supported in ACI versions: 3.2(1l) and later.
 * `description` (descr) - (string) The description of the External Management Network Instance Profile object.
-* `name_alias` (nameAlias) - (string) The name alias of the External Management Network Instance Profile object.
+* `name_alias` (nameAlias) - (string) The name alias of the External Management Network Instance Profile object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `priority` (prio) - (string) The QoS priority class identifier.
 
 * `relation_to_consumed_out_of_band_contracts` - (list) A list of Relation To Consumed Out Of Band Contracts (ACI object [mgmtRsOoBCons](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/mgmtRsOoBCons/overview)) pointing to Out Of Band Contract (ACI Object [vzOOBBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzOOBBrCP/overview)).

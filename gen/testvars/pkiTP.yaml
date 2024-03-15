@@ -39,7 +39,7 @@ children:
 parents:
   - class_name: "polUni"
     parent_dependency: ""
-    parent_dn: "aci_.test.id"
+    parent_dn: ""
     class_in_parent: false
     test_type: both
   - class_name: "fvTenant"

@@ -4,7 +4,6 @@ const testConfigFvTenantMin = `
 resource "aci_tenant" "test" {
   name = "test_tenant"
 }
-
 `
 
 const testConfigL3extOutMin = testConfigFvTenantMin + `
