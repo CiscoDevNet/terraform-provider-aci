@@ -93,8 +93,10 @@ All examples for the {{getResourceNameAsDescription .ResourceName}} resource can
 ### Optional ###
 {{ if .ParentDnOptional }}
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
+{{- if .MultiParentFormats }}
 {{- range .DocumentationParentDns}}
   - {{ . }}
+{{- end}}
 {{- end}}
 {{- end -}}
   {{ range .Properties}}

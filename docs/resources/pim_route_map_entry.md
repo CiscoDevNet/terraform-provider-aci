@@ -92,12 +92,12 @@ All examples for the Pim Route Map Entry resource can be found in the [examples]
 * `action` (action) - (string) The route action of the Pim Route Map Entry object.
   - Default: `permit`
   - Valid Values: `deny`, `permit`.
-* `annotation` (annotation) - (string) The annotation of the Pim Route Map Entry object.
+* `annotation` (annotation) - (string) The annotation of the Pim Route Map Entry object. This attribute is supported in ACI versions: 3.2(1l) and later.
   - Default: `orchestrator:terraform`
-* `description` (descr) - (string) The description of the Pim Route Map Entry object.
+* `description` (descr) - (string) The description of the Pim Route Map Entry object. This attribute is supported in ACI versions: 1.0(1e) and later.
 * `group_ip` (grp) - (string) The group ip of the Pim Route Map Entry object.
-* `name` (name) - (string) The name of the Pim Route Map Entry object.
-* `name_alias` (nameAlias) - (string) The name alias of the Pim Route Map Entry object.
+* `name` (name) - (string) The name of the Pim Route Map Entry object. This attribute is supported in ACI versions: 1.0(1e) and later.
+* `name_alias` (nameAlias) - (string) The name alias of the Pim Route Map Entry object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `rendezvous_point_ip` (rp) - (string) The rendezvous point ip of the Pim Route Map Entry object.
 * `source_ip` (src) - (string) The source ip of the Pim Route Map Entry object.
 

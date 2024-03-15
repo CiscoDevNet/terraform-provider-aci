@@ -13,6 +13,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -21,64 +22,72 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &PkiTPResource{}
-var _ resource.ResourceWithImportState = &PkiTPResource{}
+var _ resource.Resource = &PkiKeyRingResource{}
+var _ resource.ResourceWithImportState = &PkiKeyRingResource{}
 
-func NewPkiTPResource() resource.Resource {
-	return &PkiTPResource{}
+func NewPkiKeyRingResource() resource.Resource {
+	return &PkiKeyRingResource{}
 }
 
-// PkiTPResource defines the resource implementation.
-type PkiTPResource struct {
+// PkiKeyRingResource defines the resource implementation.
+type PkiKeyRingResource struct {
 	client *client.Client
 }
 
-// PkiTPResourceModel describes the resource data model.
-type PkiTPResourceModel struct {
+// PkiKeyRingResourceModel describes the resource data model.
+type PkiKeyRingResourceModel struct {
 	Id            types.String `tfsdk:"id"`
 	ParentDn      types.String `tfsdk:"parent_dn"`
+	AdminState    types.String `tfsdk:"admin_state"`
 	Annotation    types.String `tfsdk:"annotation"`
-	CertChain     types.String `tfsdk:"cert_chain"`
+	Cert          types.String `tfsdk:"cert"`
 	Descr         types.String `tfsdk:"description"`
+	EccCurve      types.String `tfsdk:"ecc_curve"`
+	Key           types.String `tfsdk:"key"`
+	KeyType       types.String `tfsdk:"key_type"`
+	Modulus       types.String `tfsdk:"modulus"`
 	Name          types.String `tfsdk:"name"`
 	NameAlias     types.String `tfsdk:"name_alias"`
 	OwnerKey      types.String `tfsdk:"owner_key"`
 	OwnerTag      types.String `tfsdk:"owner_tag"`
+	Regen         types.String `tfsdk:"regen"`
+	Tp            types.String `tfsdk:"tp"`
 	TagAnnotation types.Set    `tfsdk:"annotations"`
 }
 
-// TagAnnotationPkiTPResourceModel describes the resource data model for the children without relation ships.
-type TagAnnotationPkiTPResourceModel struct {
+// TagAnnotationPkiKeyRingResourceModel describes the resource data model for the children without relation ships.
+type TagAnnotationPkiKeyRingResourceModel struct {
 	Key   types.String `tfsdk:"key"`
 	Value types.String `tfsdk:"value"`
 }
 
-type PkiTPIdentifier struct {
+type PkiKeyRingIdentifier struct {
 	Name types.String
 }
 
-func (r *PkiTPResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	tflog.Debug(ctx, "Start metadata of resource: aci_certificate_authority")
-	resp.TypeName = req.ProviderTypeName + "_certificate_authority"
-	tflog.Debug(ctx, "End metadata of resource: aci_certificate_authority")
+func (r *PkiKeyRingResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	tflog.Debug(ctx, "Start metadata of resource: aci_key_ring")
+	resp.TypeName = req.ProviderTypeName + "_key_ring"
+	tflog.Debug(ctx, "End metadata of resource: aci_key_ring")
 }
 
-func (r *PkiTPResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
-	tflog.Debug(ctx, "Start schema of resource: aci_certificate_authority")
+func (r *PkiKeyRingResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+	tflog.Debug(ctx, "Start schema of resource: aci_key_ring")
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "The certificate_authority resource for the 'pkiTP' class",
+		MarkdownDescription: "The key_ring resource for the 'pkiKeyRing' class",
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Certificate Authority object.",
+				MarkdownDescription: "The distinguished name (DN) of the Key Ring object.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
@@ -91,6 +100,18 @@ func (r *PkiTPResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 					stringplanmodifier.RequiresReplace(),
 				},
 			},
+			"admin_state": schema.StringAttribute{
+				Optional: true,
+				Computed: true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
+				},
+				Validators: []validator.String{
+					stringvalidator.OneOf("completed", "created", "reqCreated", "started", "tpSet"),
+				},
+				MarkdownDescription: `The current administrative state of the certificate request process.`,
+			},
 			"annotation": schema.StringAttribute{
 				Optional: true,
 				Computed: true,
@@ -99,15 +120,16 @@ func (r *PkiTPResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
-				MarkdownDescription: `The annotation of the Certificate Authority object.`,
+				MarkdownDescription: `The annotation of the Key Ring object.`,
 			},
-			"cert_chain": schema.StringAttribute{
-				Required: true,
+			"cert": schema.StringAttribute{
+				Optional: true,
+				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The PEM-encoded chain of trust from the trustpoint to a trusted root authority.`,
+				MarkdownDescription: `A certificate is a file containing a device's public key along with signed information verifying the identity of the device.`,
 			},
 			"description": schema.StringAttribute{
 				Optional: true,
@@ -116,7 +138,51 @@ func (r *PkiTPResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The description of the Certificate Authority object.`,
+				MarkdownDescription: `The description of the Key Ring object.`,
+			},
+			"ecc_curve": schema.StringAttribute{
+				Optional: true,
+				Computed: true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
+				},
+				Validators: []validator.String{
+					stringvalidator.OneOf("none", "prime256v1", "secp384r1", "secp521r1"),
+				},
+				MarkdownDescription: `ECC Curve.`,
+			},
+			"key": schema.StringAttribute{
+				Optional: true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
+				},
+				MarkdownDescription: `The private key of the certificate.`,
+			},
+			"key_type": schema.StringAttribute{
+				Optional: true,
+				Computed: true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
+				},
+				Validators: []validator.String{
+					stringvalidator.OneOf("ECC", "RSA", "indeterminate"),
+				},
+				MarkdownDescription: `Key Type.`,
+			},
+			"modulus": schema.StringAttribute{
+				Optional: true,
+				Computed: true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
+				},
+				Validators: []validator.String{
+					stringvalidator.OneOf("mod1024", "mod1536", "mod2048", "mod3072", "mod4096", "mod512", "none"),
+				},
+				MarkdownDescription: `The length of the encryption keys. A longer key length increases the difficulty of breaking the key.`,
 			},
 			"name": schema.StringAttribute{
 				Required: true,
@@ -125,7 +191,7 @@ func (r *PkiTPResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
-				MarkdownDescription: `The name of the Certificate Authority object.`,
+				MarkdownDescription: `The name of the Key Ring object.`,
 			},
 			"name_alias": schema.StringAttribute{
 				Optional: true,
@@ -134,7 +200,7 @@ func (r *PkiTPResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The name alias of the Certificate Authority object.`,
+				MarkdownDescription: `The name alias of the Key Ring object.`,
 			},
 			"owner_key": schema.StringAttribute{
 				Optional: true,
@@ -153,6 +219,27 @@ func (r *PkiTPResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
+			},
+			"regen": schema.StringAttribute{
+				Optional: true,
+				Computed: true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
+				},
+				Validators: []validator.String{
+					stringvalidator.OneOf("no", "yes"),
+				},
+				MarkdownDescription: `Forces regeneration of the keypair. Each PKI device holds a pair of asymmetric Rivest-Shamir-Adleman (RSA) or Elliptic Curve Cryptography (ECC) encryption keys, one kept private and one made public, stored in an internal key ring.`,
+			},
+			"tp": schema.StringAttribute{
+				Optional: true,
+				Computed: true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
+				},
+				MarkdownDescription: `A third-party certificate from a trusted source, or trusted point, that affirms the identity of your device. The third-party certificate is signed by the issuing certificate authority (CA or trustpoint), which can be a root CA, an intermediate CA, or a trust anchor that is part of a trust chain that leads to a root CA.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,
@@ -182,11 +269,11 @@ func (r *PkiTPResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 			},
 		},
 	}
-	tflog.Debug(ctx, "End schema of resource: aci_certificate_authority")
+	tflog.Debug(ctx, "End schema of resource: aci_key_ring")
 }
 
-func (r *PkiTPResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	tflog.Debug(ctx, "Start configure of resource: aci_certificate_authority")
+func (r *PkiKeyRingResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+	tflog.Debug(ctx, "Start configure of resource: aci_key_ring")
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
 		return
@@ -204,18 +291,18 @@ func (r *PkiTPResource) Configure(ctx context.Context, req resource.ConfigureReq
 	}
 
 	r.client = client
-	tflog.Debug(ctx, "End configure of resource: aci_certificate_authority")
+	tflog.Debug(ctx, "End configure of resource: aci_key_ring")
 }
 
-func (r *PkiTPResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	tflog.Debug(ctx, "Start create of resource: aci_certificate_authority")
+func (r *PkiKeyRingResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	tflog.Debug(ctx, "Start create of resource: aci_key_ring")
 	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
-	var stateData *PkiTPResourceModel
+	var stateData *PkiKeyRingResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
-	setPkiTPId(ctx, stateData)
-	getAndSetPkiTPAttributes(ctx, &resp.Diagnostics, r.client, stateData)
+	setPkiKeyRingId(ctx, stateData)
+	getAndSetPkiKeyRingAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 
-	var data *PkiTPResourceModel
+	var data *PkiKeyRingResourceModel
 
 	// Read Terraform plan data into the model
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
@@ -224,14 +311,14 @@ func (r *PkiTPResource) Create(ctx context.Context, req resource.CreateRequest, 
 		return
 	}
 
-	setPkiTPId(ctx, data)
+	setPkiKeyRingId(ctx, data)
 
-	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_certificate_authority with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_key_ring with id '%s'", data.Id.ValueString()))
 
-	var tagAnnotationPlan, tagAnnotationState []TagAnnotationPkiTPResourceModel
+	var tagAnnotationPlan, tagAnnotationState []TagAnnotationPkiKeyRingResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
 	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
-	jsonPayload := getPkiTPCreateJsonPayload(ctx, &resp.Diagnostics, data, stateData, tagAnnotationPlan, tagAnnotationState)
+	jsonPayload := getPkiKeyRingCreateJsonPayload(ctx, &resp.Diagnostics, data, stateData, tagAnnotationPlan, tagAnnotationState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -246,16 +333,16 @@ func (r *PkiTPResource) Create(ctx context.Context, req resource.CreateRequest, 
 		}
 	}
 
-	getAndSetPkiTPAttributes(ctx, &resp.Diagnostics, r.client, data)
+	getAndSetPkiKeyRingAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_certificate_authority with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_key_ring with id '%s'", data.Id.ValueString()))
 }
 
-func (r *PkiTPResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
-	tflog.Debug(ctx, "Start read of resource: aci_certificate_authority")
-	var data *PkiTPResourceModel
+func (r *PkiKeyRingResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+	tflog.Debug(ctx, "Start read of resource: aci_key_ring")
+	var data *PkiKeyRingResourceModel
 
 	// Read Terraform prior state data into the model
 	resp.Diagnostics.Append(req.State.Get(ctx, &data)...)
@@ -264,25 +351,25 @@ func (r *PkiTPResource) Read(ctx context.Context, req resource.ReadRequest, resp
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Read of resource aci_certificate_authority with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Read of resource aci_key_ring with id '%s'", data.Id.ValueString()))
 
-	getAndSetPkiTPAttributes(ctx, &resp.Diagnostics, r.client, data)
+	getAndSetPkiKeyRingAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save updated data into Terraform state
 	if data.Id.IsNull() {
-		var emptyData *PkiTPResourceModel
+		var emptyData *PkiKeyRingResourceModel
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_certificate_authority with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_key_ring with id '%s'", data.Id.ValueString()))
 }
 
-func (r *PkiTPResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	tflog.Debug(ctx, "Start update of resource: aci_certificate_authority")
-	var data *PkiTPResourceModel
-	var stateData *PkiTPResourceModel
+func (r *PkiKeyRingResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+	tflog.Debug(ctx, "Start update of resource: aci_key_ring")
+	var data *PkiKeyRingResourceModel
+	var stateData *PkiKeyRingResourceModel
 
 	// Read Terraform plan data into the model
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
@@ -292,12 +379,12 @@ func (r *PkiTPResource) Update(ctx context.Context, req resource.UpdateRequest, 
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_certificate_authority with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_key_ring with id '%s'", data.Id.ValueString()))
 
-	var tagAnnotationPlan, tagAnnotationState []TagAnnotationPkiTPResourceModel
+	var tagAnnotationPlan, tagAnnotationState []TagAnnotationPkiKeyRingResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
 	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
-	jsonPayload := getPkiTPCreateJsonPayload(ctx, &resp.Diagnostics, data, stateData, tagAnnotationPlan, tagAnnotationState)
+	jsonPayload := getPkiKeyRingCreateJsonPayload(ctx, &resp.Diagnostics, data, stateData, tagAnnotationPlan, tagAnnotationState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -312,16 +399,16 @@ func (r *PkiTPResource) Update(ctx context.Context, req resource.UpdateRequest, 
 		}
 	}
 
-	getAndSetPkiTPAttributes(ctx, &resp.Diagnostics, r.client, data)
+	getAndSetPkiKeyRingAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_certificate_authority with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_key_ring with id '%s'", data.Id.ValueString()))
 }
 
-func (r *PkiTPResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	tflog.Debug(ctx, "Start delete of resource: aci_certificate_authority")
-	var data *PkiTPResourceModel
+func (r *PkiKeyRingResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	tflog.Debug(ctx, "Start delete of resource: aci_key_ring")
+	var data *PkiKeyRingResourceModel
 
 	// Read Terraform prior state data into the model
 	resp.Diagnostics.Append(req.State.Get(ctx, &data)...)
@@ -330,8 +417,8 @@ func (r *PkiTPResource) Delete(ctx context.Context, req resource.DeleteRequest, 
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Delete of resource aci_certificate_authority with id '%s'", data.Id.ValueString()))
-	jsonPayload := GetDeleteJsonPayload(ctx, &resp.Diagnostics, "pkiTP", data.Id.ValueString())
+	tflog.Debug(ctx, fmt.Sprintf("Delete of resource aci_key_ring with id '%s'", data.Id.ValueString()))
+	jsonPayload := GetDeleteJsonPayload(ctx, &resp.Diagnostics, "pkiKeyRing", data.Id.ValueString())
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -339,43 +426,62 @@ func (r *PkiTPResource) Delete(ctx context.Context, req resource.DeleteRequest, 
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_certificate_authority with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_key_ring with id '%s'", data.Id.ValueString()))
 }
 
-func (r *PkiTPResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	tflog.Debug(ctx, "Start import state of resource: aci_certificate_authority")
+func (r *PkiKeyRingResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	tflog.Debug(ctx, "Start import state of resource: aci_key_ring")
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 
-	var stateData *PkiTPResourceModel
+	var stateData *PkiKeyRingResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
-	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_certificate_authority with id '%s'", stateData.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_key_ring with id '%s'", stateData.Id.ValueString()))
 
-	tflog.Debug(ctx, "End import of state resource: aci_certificate_authority")
+	tflog.Debug(ctx, "End import of state resource: aci_key_ring")
 }
 
-func getAndSetPkiTPAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *PkiTPResourceModel) {
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "pkiTP,tagAnnotation"), "GET", nil)
+func getAndSetPkiKeyRingAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *PkiKeyRingResourceModel) {
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "pkiKeyRing,tagAnnotation"), "GET", nil)
 
 	if diags.HasError() {
 		return
 	}
-	if requestData.Search("imdata").Search("pkiTP").Data() != nil {
-		classReadInfo := requestData.Search("imdata").Search("pkiTP").Data().([]interface{})
+	if requestData.Search("imdata").Search("pkiKeyRing").Data() != nil {
+		classReadInfo := requestData.Search("imdata").Search("pkiKeyRing").Data().([]interface{})
 		if len(classReadInfo) == 1 {
 			attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
 			for attributeName, attributeValue := range attributes {
 				if attributeName == "dn" {
 					data.Id = basetypes.NewStringValue(attributeValue.(string))
-					setPkiTPParentDn(ctx, attributeValue.(string), data)
+					setPkiKeyRingParentDn(ctx, attributeValue.(string), data)
+				}
+				if attributeName == "adminState" {
+					data.AdminState = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "annotation" {
 					data.Annotation = basetypes.NewStringValue(attributeValue.(string))
 				}
-				if attributeName == "certChain" {
-					data.CertChain = basetypes.NewStringValue(attributeValue.(string))
+				if attributeName == "cert" {
+					data.Cert = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "descr" {
 					data.Descr = basetypes.NewStringValue(attributeValue.(string))
+				}
+				if attributeName == "eccCurve" && attributeValue.(string) == "" {
+					data.EccCurve = basetypes.NewStringValue("none")
+				} else if attributeName == "eccCurve" {
+					data.EccCurve = basetypes.NewStringValue(attributeValue.(string))
+				}
+				if attributeName == "key" {
+					data.Key = basetypes.NewStringValue(attributeValue.(string))
+				}
+				if attributeName == "keyType" {
+					data.KeyType = basetypes.NewStringValue(attributeValue.(string))
+				}
+				if attributeName == "modulus" && attributeValue.(string) == "" {
+					data.Modulus = basetypes.NewStringValue("none")
+				} else if attributeName == "modulus" {
+					data.Modulus = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "name" {
 					data.Name = basetypes.NewStringValue(attributeValue.(string))
@@ -389,15 +495,36 @@ func getAndSetPkiTPAttributes(ctx context.Context, diags *diag.Diagnostics, clie
 				if attributeName == "ownerTag" {
 					data.OwnerTag = basetypes.NewStringValue(attributeValue.(string))
 				}
+				if attributeName == "regen" {
+					data.Regen = basetypes.NewStringValue(attributeValue.(string))
+				}
+				if attributeName == "tp" {
+					data.Tp = basetypes.NewStringValue(attributeValue.(string))
+				}
+			}
+			if data.AdminState.IsUnknown() {
+				data.AdminState = types.StringNull()
 			}
 			if data.Annotation.IsUnknown() {
 				data.Annotation = types.StringNull()
 			}
-			if data.CertChain.IsUnknown() {
-				data.CertChain = types.StringNull()
+			if data.Cert.IsUnknown() {
+				data.Cert = types.StringNull()
 			}
 			if data.Descr.IsUnknown() {
 				data.Descr = types.StringNull()
+			}
+			if data.EccCurve.IsUnknown() {
+				data.EccCurve = types.StringNull()
+			}
+			if data.Key.IsUnknown() {
+				data.Key = types.StringNull()
+			}
+			if data.KeyType.IsUnknown() {
+				data.KeyType = types.StringNull()
+			}
+			if data.Modulus.IsUnknown() {
+				data.Modulus = types.StringNull()
 			}
 			if data.Name.IsUnknown() {
 				data.Name = types.StringNull()
@@ -411,7 +538,13 @@ func getAndSetPkiTPAttributes(ctx context.Context, diags *diag.Diagnostics, clie
 			if data.OwnerTag.IsUnknown() {
 				data.OwnerTag = types.StringNull()
 			}
-			TagAnnotationPkiTPList := make([]TagAnnotationPkiTPResourceModel, 0)
+			if data.Regen.IsUnknown() {
+				data.Regen = types.StringNull()
+			}
+			if data.Tp.IsUnknown() {
+				data.Tp = types.StringNull()
+			}
+			TagAnnotationPkiKeyRingList := make([]TagAnnotationPkiKeyRingResourceModel, 0)
 			_, ok := classReadInfo[0].(map[string]interface{})["children"]
 			if ok {
 				children := classReadInfo[0].(map[string]interface{})["children"].([]interface{})
@@ -419,28 +552,28 @@ func getAndSetPkiTPAttributes(ctx context.Context, diags *diag.Diagnostics, clie
 					for childClassName, childClassDetails := range child.(map[string]interface{}) {
 						childAttributes := childClassDetails.(map[string]interface{})["attributes"].(map[string]interface{})
 						if childClassName == "tagAnnotation" {
-							TagAnnotationPkiTP := TagAnnotationPkiTPResourceModel{}
+							TagAnnotationPkiKeyRing := TagAnnotationPkiKeyRingResourceModel{}
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "key" {
-									TagAnnotationPkiTP.Key = basetypes.NewStringValue(childAttributeValue.(string))
+									TagAnnotationPkiKeyRing.Key = basetypes.NewStringValue(childAttributeValue.(string))
 								}
 								if childAttributeName == "value" {
-									TagAnnotationPkiTP.Value = basetypes.NewStringValue(childAttributeValue.(string))
+									TagAnnotationPkiKeyRing.Value = basetypes.NewStringValue(childAttributeValue.(string))
 								}
 							}
-							TagAnnotationPkiTPList = append(TagAnnotationPkiTPList, TagAnnotationPkiTP)
+							TagAnnotationPkiKeyRingList = append(TagAnnotationPkiKeyRingList, TagAnnotationPkiKeyRing)
 						}
 					}
 				}
 			}
-			if len(TagAnnotationPkiTPList) > 0 {
-				tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationPkiTPList)
+			if len(TagAnnotationPkiKeyRingList) > 0 {
+				tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationPkiKeyRingList)
 				data.TagAnnotation = tagAnnotationSet
 			}
 		} else {
 			diags.AddError(
 				"too many results in response",
-				fmt.Sprintf("%v matches returned for class 'pkiTP'. Please report this issue to the provider developers.", len(classReadInfo)),
+				fmt.Sprintf("%v matches returned for class 'pkiKeyRing'. Please report this issue to the provider developers.", len(classReadInfo)),
 			)
 		}
 	} else {
@@ -448,8 +581,8 @@ func getAndSetPkiTPAttributes(ctx context.Context, diags *diag.Diagnostics, clie
 	}
 }
 
-func getPkiTPRn(ctx context.Context, data *PkiTPResourceModel) string {
-	rn := "tp-{name}"
+func getPkiKeyRingRn(ctx context.Context, data *PkiKeyRingResourceModel) string {
+	rn := "keyring-{name}"
 	for _, identifier := range []string{"name"} {
 		fieldName := fmt.Sprintf("%s%s", strings.ToUpper(identifier[:1]), identifier[1:])
 		fieldValue := reflect.ValueOf(data).Elem().FieldByName(fieldName).Interface().(basetypes.StringValue).ValueString()
@@ -458,7 +591,7 @@ func getPkiTPRn(ctx context.Context, data *PkiTPResourceModel) string {
 	return rn
 }
 
-func setPkiTPParentDn(ctx context.Context, dn string, data *PkiTPResourceModel) {
+func setPkiKeyRingParentDn(ctx context.Context, dn string, data *PkiKeyRingResourceModel) {
 	bracketIndex := 0
 	rnIndex := 0
 	for i := len(dn) - 1; i >= 0; i-- {
@@ -481,8 +614,8 @@ func setPkiTPParentDn(ctx context.Context, dn string, data *PkiTPResourceModel) 
 	}
 }
 
-func setPkiTPId(ctx context.Context, data *PkiTPResourceModel) {
-	rn := getPkiTPRn(ctx, data)
+func setPkiKeyRingId(ctx context.Context, data *PkiKeyRingResourceModel) {
+	rn := getPkiKeyRingRn(ctx, data)
 	rnMap := map[string]string{"": "uni/userext/pkiext", "tn": "certstore"}
 	for parent_identifier, rn_prepend := range rnMap {
 		if data.ParentDn.ValueString() == "" && parent_identifier == "" {
@@ -493,7 +626,7 @@ func setPkiTPId(ctx context.Context, data *PkiTPResourceModel) {
 	}
 }
 
-func getPkiTPTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *PkiTPResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationPkiTPResourceModel) []map[string]interface{} {
+func getPkiKeyRingTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *PkiKeyRingResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationPkiKeyRingResourceModel) []map[string]interface{} {
 
 	childPayloads := []map[string]interface{}{}
 	if !data.TagAnnotation.IsUnknown() {
@@ -533,26 +666,41 @@ func getPkiTPTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnos
 	return childPayloads
 }
 
-func getPkiTPCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data, stateData *PkiTPResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationPkiTPResourceModel) *container.Container {
+func getPkiKeyRingCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data, stateData *PkiKeyRingResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationPkiKeyRingResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 	childPayloads := []map[string]interface{}{}
 
-	TagAnnotationchildPayloads := getPkiTPTagAnnotationChildPayloads(ctx, diags, data, tagAnnotationPlan, tagAnnotationState)
+	TagAnnotationchildPayloads := getPkiKeyRingTagAnnotationChildPayloads(ctx, diags, data, tagAnnotationPlan, tagAnnotationState)
 	if TagAnnotationchildPayloads == nil {
 		return nil
 	}
 	childPayloads = append(childPayloads, TagAnnotationchildPayloads...)
 
 	payloadMap["children"] = childPayloads
+	if !data.AdminState.IsNull() && !data.AdminState.IsUnknown() {
+		payloadMap["attributes"].(map[string]string)["adminState"] = data.AdminState.ValueString()
+	}
 	if !data.Annotation.IsNull() && !data.Annotation.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["annotation"] = data.Annotation.ValueString()
 	}
-	if !data.CertChain.IsNull() && !data.CertChain.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["certChain"] = data.CertChain.ValueString()
+	if !data.Cert.IsNull() && !data.Cert.IsUnknown() {
+		payloadMap["attributes"].(map[string]string)["cert"] = data.Cert.ValueString()
 	}
 	if !data.Descr.IsNull() && !data.Descr.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["descr"] = data.Descr.ValueString()
+	}
+	if !data.EccCurve.IsNull() && !data.EccCurve.IsUnknown() {
+		payloadMap["attributes"].(map[string]string)["eccCurve"] = data.EccCurve.ValueString()
+	}
+	if !data.Key.IsNull() && !data.Key.IsUnknown() {
+		payloadMap["attributes"].(map[string]string)["key"] = data.Key.ValueString()
+	}
+	if !data.KeyType.IsNull() && !data.KeyType.IsUnknown() {
+		payloadMap["attributes"].(map[string]string)["keyType"] = data.KeyType.ValueString()
+	}
+	if !data.Modulus.IsNull() && !data.Modulus.IsUnknown() {
+		payloadMap["attributes"].(map[string]string)["modulus"] = data.Modulus.ValueString()
 	}
 	if !data.Name.IsNull() && !data.Name.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["name"] = data.Name.ValueString()
@@ -566,6 +714,12 @@ func getPkiTPCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, dat
 	if !data.OwnerTag.IsNull() && !data.OwnerTag.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["ownerTag"] = data.OwnerTag.ValueString()
 	}
+	if !data.Regen.IsNull() && !data.Regen.IsUnknown() {
+		payloadMap["attributes"].(map[string]string)["regen"] = data.Regen.ValueString()
+	}
+	if !data.Tp.IsNull() && !data.Tp.IsUnknown() {
+		payloadMap["attributes"].(map[string]string)["tp"] = data.Tp.ValueString()
+	}
 	wrapperClassMap := map[string]string{"uni/userext/pkiext": "", "certstore": "cloudCertStore"}
 	var payload []byte
 	var err error
@@ -574,12 +728,12 @@ func getPkiTPCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, dat
 			wrapperPayloadMap := map[string]interface{}{
 				wrapperClass: map[string]interface{}{
 					"attributes": map[string]interface{}{},
-					"children":   []interface{}{map[string]interface{}{"pkiTP": payloadMap}},
+					"children":   []interface{}{map[string]interface{}{"pkiKeyRing": payloadMap}},
 				},
 			}
 			payload, err = json.Marshal(wrapperPayloadMap)
 		} else if (strings.Contains(data.Id.ValueString(), rnPrepend) && wrapperClass == "") || stateData.Id.ValueString() != "" {
-			payload, err = json.Marshal(map[string]interface{}{"pkiTP": payloadMap})
+			payload, err = json.Marshal(map[string]interface{}{"pkiKeyRing": payloadMap})
 		}
 	}
 	if err != nil {

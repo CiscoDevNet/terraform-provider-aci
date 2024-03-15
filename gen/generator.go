@@ -39,6 +39,7 @@ import (
 	"go/format"
 	"io"
 	"log"
+	"math"
 	"net/http"
 	"os"
 	"path"
@@ -104,6 +105,7 @@ var templateFuncs = template.FuncMap{
 	"contains":                     strings.Contains,
 	"appendNewLine":                AppendNewline,
 	"hasKey":                       HasKey,
+	"definedInList":                DefinedInList,
 }
 
 // Global variables used for unique resource name setting based on label from meta data
@@ -114,7 +116,7 @@ var rnPrefix = map[string]string{}
 var targetRelationalPropertyClasses = map[string]string{}
 var alwaysIncludeChildren = []string{"tag:Annotation", "tag:Tag"}
 var excludeChildResourceNamesFromDocs = []string{"", "annotation", "tag"}
-var testCloudApic, testApic, resourceIdentifier []interface{}
+var testCloudApic, testApic, resourceIdentifier, excludeResources []interface{}
 
 func GetResourceNameAsDescription(s string) string {
 	return cases.Title(language.English).String(strings.ReplaceAll(s, "_", " "))
@@ -159,6 +161,21 @@ func Capitalize(s string) string {
 	return fmt.Sprintf("%s%s", strings.ToUpper(s[:1]), s[1:])
 }
 
+func DefinedInList(list interface{}, item string) bool {
+	listStr, ok := list.([]interface{})
+	if !ok {
+		return false
+	}
+
+	for _, v := range listStr {
+		if v == item {
+			return true
+		}
+	}
+
+	return false
+}
+
 func ContainsString(s, sub string) bool {
 	if strings.Contains(s, sub) {
 		return true
@@ -196,20 +213,23 @@ func CreateParentDnValue(className, caller string, definitions Definitions) stri
 func LookupTestValue(classPkgName, propertyName string, testVars map[string]interface{}, definitions Definitions) string {
 	lookupValue := "test_value"
 	propertyName = GetOverwriteAttributeName(classPkgName, propertyName, definitions)
-	_, ok := testVars["all"]
-	if ok {
-		val, ok := testVars["all"].(interface{}).(map[interface{}]interface{})[propertyName]
-		if ok {
-			lookupValue = val.(string)
+
+	if allVars, ok := testVars["all"].(map[interface{}]interface{}); ok {
+		if val, ok := allVars[propertyName]; ok {
+			if strVal, ok := val.(string); ok {
+				lookupValue = strVal
+			}
 		}
 	}
-	_, ok = testVars["resource_required"]
-	if ok {
-		val, ok := testVars["resource_required"].(interface{}).(map[interface{}]interface{})[propertyName]
-		if ok {
-			lookupValue = val.(string)
+
+	if resourceVars, ok := testVars["resource_required"].(map[interface{}]interface{}); ok {
+		if val, ok := resourceVars[propertyName]; ok {
+			if strVal, ok := val.(string); ok {
+				lookupValue = strVal
+			}
 		}
 	}
+
 	return lookupValue
 }
 
@@ -336,6 +356,10 @@ func getClassModels(definitions Definitions) map[string]Model {
 			} else if value.(string) == "apic" {
 				testApic = append(testApic, pkgName)
 			}
+		}
+
+		if len(classModel.IdentifiedBy) == 0 {
+			excludeResources = append(excludeResources, pkgName)
 		}
 
 		rnName := make(map[string]string)
@@ -595,10 +619,13 @@ func main() {
 		if !foundValidTestType {
 			model.TestType = classifyTests(model.PkgName, predecessorPaths, testCloudApic, testApic)
 		}
-
+		log.Printf("HERE test types for class %v and its paths %v are %v", model.PkgName, predecessorPaths, model.TestType)
 		addGetTestClassificationFunc(model.TestType)
+		if model.Exclude {
+			excludeResources = append(excludeResources, model.PkgName)
+		}
 		// Only render resources and datasources when the class has a unique identifier or is marked as include in the classes definitions YAML file
-		if len(model.IdentifiedBy) > 0 || model.Include {
+		if (len(model.IdentifiedBy) > 0 && !model.Exclude) || model.Include {
 			// All classmodels have been read, thus now the model, child and relational resources names can be set
 			// When done before additional files would need to be opened and read which would slow down the generation process
 			model.ResourceName = GetResourceName(model.PkgName, definitions)
@@ -821,6 +848,7 @@ type Model struct {
 	HasNamedProperties        bool
 	HasChildNamedProperties   bool
 	Include                   bool
+	Exclude                   bool
 	ParentDnOptional          bool
 }
 
@@ -879,6 +907,7 @@ func (m *Model) setClassModel(metaPath string, child bool, definitions Definitio
 		m.SetClassDnFormats(classDetails)
 		m.SetClassIdentifiers(classDetails)
 		m.SetClassInclude()
+		m.SetClassExclude()
 		m.SetClassAllowDelete(classDetails)
 		m.SetClassContainedByAndParent(classDetails, parents)
 		m.SetClassContains(classDetails)
@@ -1094,6 +1123,18 @@ func (m *Model) SetApicType(classDetails interface{}) {
 	}
 }
 
+func (m *Model) SetClassExclude() {
+	if classDetails, ok := m.Definitions.Classes[m.PkgName]; ok {
+		for key, value := range classDetails.(map[interface{}]interface{}) {
+			if key.(string) == "exclude" {
+				m.Exclude = value.(bool)
+			} else {
+				m.Exclude = false
+			}
+		}
+	}
+}
+
 // Determine if a class is allowed to be deleted as defined in the classes.yaml file
 // Flag created to ensure classes that only classes allowed to be deleted are deleted
 func AllowClassDelete(classPkgName string, definitions Definitions) bool {
@@ -1283,6 +1324,10 @@ func (m *Model) SetClassProperties(classDetails interface{}) {
 				targetRelationalPropertyClasses[property.SnakeCaseName] = namedClassName
 				namedProperties[propertyName] = property
 				m.HasNamedProperties = true
+			}
+
+			if propertyValue.(map[string]interface{})["versions"] != nil {
+				property.Versions = formatVersion(propertyValue.(map[string]interface{})["versions"].(string))
 			}
 
 			properties[propertyName] = property
@@ -1635,6 +1680,15 @@ func GetOverwriteExampleClasses(classPkgName string, definitions Definitions) []
 	return overwriteExampleClasses
 }
 
+func resourcesExcluded(slice []interface{}, str string) bool {
+	for _, item := range slice {
+		if s, ok := item.(string); ok && s == str {
+			return true
+		}
+	}
+	return false
+}
+
 // Set variables that are used during the rendering of the example and documentation templates
 func setDocumentationData(m *Model, definitions Definitions) {
 	UiLocations := []string{}
@@ -1659,11 +1713,13 @@ func setDocumentationData(m *Model, definitions Definitions) {
 	resourcesFound := [][]string{}
 	resourcesNotFound := []string{}
 	for _, containedClassName := range m.ContainedBy {
-		resourceName := GetResourceName(containedClassName, definitions)
-		if resourceName != "" {
-			resourcesFound = append(resourcesFound, []string{resourceName, containedClassName})
-		} else {
-			resourcesNotFound = append(resourcesNotFound, containedClassName)
+		if !resourcesExcluded(excludeResources, containedClassName) {
+			resourceName := GetResourceName(containedClassName, definitions)
+			if resourceName != "" {
+				resourcesFound = append(resourcesFound, []string{resourceName, containedClassName})
+			} else {
+				resourcesNotFound = append(resourcesNotFound, containedClassName)
+			}
 		}
 	}
 
@@ -1681,20 +1737,31 @@ func setDocumentationData(m *Model, definitions Definitions) {
 	} else {
 		for _, resourceDetails := range resourcesFound {
 			m.DocumentationParentDns = append(m.DocumentationParentDns, fmt.Sprintf("[%s_%s](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/%s) (%s)", providerName, resourceDetails[0], resourceDetails[0], GetDevnetDocForClass(resourceDetails[1])))
+
 		}
 	}
 
 	if len(resourcesNotFound) != 0 {
 		if len(resourcesNotFound) > docsParentDnAmount-len(resourcesFound) {
 			// TODO catch default classes and add to documentation
-			resourcesNotFound = resourcesNotFound[0:(docsParentDnAmount - len(resourcesFound))]
+			resourcesNotFound = resourcesNotFound[0:int(math.Abs(float64((docsParentDnAmount - len(resourcesFound)))))]
 			m.DocumentationParentDns = append(m.DocumentationParentDns, fmt.Sprintf("Too many classes to display, see model documentation for all possible classes of %s.", GetDevnetDocForClass(m.PkgName)))
 		} else {
 			var resourceDetails string
 			for _, resource := range resourcesNotFound {
 				resourceDetails = fmt.Sprintf("%s    - %s\n", resourceDetails, GetDevnetDocForClass(resource))
 			}
-			m.DocumentationParentDns = append(m.DocumentationParentDns, fmt.Sprintf("The distinquised name (DN) of classes below can be used but currently there is no available resource for it:\n%s", resourceDetails))
+			m.DocumentationParentDns = append(m.DocumentationParentDns, fmt.Sprintf("The distinguised name (DN) of classes below can be used but currently there is no available resource for it:\n%s", resourceDetails))
+		}
+	}
+
+	getMultiParentFormats := GetMultiParentFormats(m.PkgName, definitions)
+	if len(getMultiParentFormats) > 0 {
+		m.DocumentationParentDns = nil
+		for _, format := range getMultiParentFormats {
+			if format.ContainedBy != "polUni" {
+				m.DocumentationParentDns = append(m.DocumentationParentDns, fmt.Sprintf("[%s_%s](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/%s) (%s)", providerName, GetResourceName(format.ContainedBy, definitions), format.ContainedBy, GetDevnetDocForClass(format.ContainedBy)))
+			}
 		}
 	}
 

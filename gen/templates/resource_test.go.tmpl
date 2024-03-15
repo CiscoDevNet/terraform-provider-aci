@@ -16,7 +16,7 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 
 	resource.Test(t, resource.TestCase{
 		{{- $found_cert := false -}}
-{{- range $key, $value := $.default}}
+{{- range $key, $value := $.all}}
   {{- if contains $key "cert" }}
     {{- $found_cert = true -}}
   {{- end}}
@@ -33,14 +33,18 @@ PreCheck: func() {
 				Check: resource.ComposeAggregateTestCheckFunc(
 		{{- range $key, $value := $.resource_required}}{{$contains := definedInMap $key $.default}}
 			{{- if not $contains}}
+					{{- if not (definedInList $.exclude_attributes $key) }}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+			{{- end}}
 			{{- end}}
 		{{- end}}
 		{{- range $key, $value := $.default}}
 		{{- if contains $value "<<EOT -----BEGIN_CERTIFICATE-----" }}
   					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{ $value | appendNewLine }}" ),
 		{{- else}}
+			{{- if not (definedInList $.exclude_attributes $key) }}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+			{{- end}}
 		{{- end}}
 		{{- end}}
 				),
@@ -52,14 +56,18 @@ PreCheck: func() {
 				Check: resource.ComposeAggregateTestCheckFunc(
 		{{- range $key, $value := $.resource_required}}{{$contains := definedInMap $key $.all}}
 			{{- if not $contains}}
+					{{- if not (definedInList $.exclude_attributes $key) }}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+			{{- end}}
 			{{- end}}
 		{{- end}}
 		{{- range $key, $value := $.all}}
 		{{- if contains $value "<<EOT -----BEGIN_CERTIFICATE-----" }}
   					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{ $value | appendNewLine }}" ),
 		{{- else}}
+					{{- if not (definedInList $.exclude_attributes $key) }}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+			{{- end}}
 		{{- end}}
 		{{- end}}
 				),
@@ -73,7 +81,9 @@ PreCheck: func() {
 		{{- if contains $value "<<EOT -----BEGIN_CERTIFICATE-----" }}
   					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{ $value | appendNewLine }}" ),
 		{{- else}}
+					{{- if not (definedInList $.exclude_attributes $key) }}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+			{{- end}}
 		{{- end}}
 		{{- end}}
 		{{- range $key, $value := $.all}}{{$contains := definedInMap $key $.all}}
@@ -100,13 +110,19 @@ PreCheck: func() {
 		{{- if contains $value "<<EOT -----BEGIN_CERTIFICATE-----" }}
   					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{ $value | appendNewLine }}" ),
 		{{- else}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
-		{{- end}}
-		{{- end}}
-		{{- range $key, $value := $.default}}{{$contains := definedInMap $key $.resource_required}}
-			{{- if not $contains}}
+					{{- if not (definedInList $.exclude_attributes $key) }}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
 			{{- end}}
+		{{- end}}
+		{{- end}}
+	{{- if $.resource_required }}
+		{{- range $key, $value := $.default}}{{$contains := definedInMap $key $.resource_required}}
+			{{- if not $contains}}
+					{{- if not (definedInList $.exclude_attributes $key) }}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+			{{- end}}
+			{{- end}}
+		{{- end}}
 		{{- end}}
 				),
 			},
@@ -115,18 +131,29 @@ PreCheck: func() {
 				ResourceName:      "aci_{{$.resourceName}}.test",
 				ImportState:       true,
         		ImportStateVerify: true,
+				{{- range $key, $value := $.all}}
+				{{- if eq $key "key" }}
+				ImportStateVerifyIgnore: []string{
+                "{{$key}}",
+            	},
+				{{- end}}
+				{{- end}}
 				Check: resource.ComposeAggregateTestCheckFunc(
 		{{- range $key, $value := $.resource_required}}
 		{{- if contains $value "<<EOT -----BEGIN_CERTIFICATE-----" }}
   					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{ $value | appendNewLine }}" ),
 		{{- else}}
+					{{- if not (definedInList $.exclude_attributes $key) }}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+			{{- end}}
 		{{- end}}
 		{{- end}}
+		{{- if $.resource_required }}
 		{{- range $key, $value := $.default}}{{$contains := definedInMap $key $.resource_required}}
 			{{- if not $contains}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
 			{{- end}}
+		{{- end}}
 		{{- end}}
 				),
 			},
@@ -140,13 +167,19 @@ PreCheck: func() {
 		{{- if contains $value "<<EOT -----BEGIN_CERTIFICATE-----" }}
   					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{ $value | appendNewLine }}" ),
 		{{- else}}
+					{{- if not (definedInList $.exclude_attributes $key) }}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+			{{- end}}
 		{{- end}}
 		{{- end}}
+		{{- if $.resource_required }}
 			{{- range $key, $value := $.default}}{{$contains := definedInMap $key $.resource_required}}
 				{{- if not $contains}}
+					{{- if not (definedInList $.exclude_attributes $key) }}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+			{{- end}}
 				{{- end}}
+			{{- end}}
 			{{- end}}
 			{{- range $key, $value := $.children}}
 				{{- range $child_index, $child := $value}}
@@ -162,18 +195,31 @@ PreCheck: func() {
 				ResourceName:      "aci_{{$.resourceName}}.test",
 				ImportState:       true,
 				ImportStateVerify: true,
+				{{- range $key, $value := $.all}}
+				{{- if eq $key "key" }}
+				ImportStateVerifyIgnore: []string{
+                "{{$key}}",
+            	},
+				{{- end}}
+				{{- end}}
 				Check: resource.ComposeAggregateTestCheckFunc(
 		{{- range $key, $value := $.resource_required}}
 		{{- if contains $value "<<EOT -----BEGIN_CERTIFICATE-----" }}
   					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{ $value | appendNewLine }}" ),
 		{{- else}}
+					{{- if not (definedInList $.exclude_attributes $key) }}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+			{{- end}}
 		{{- end}}
 		{{- end}}
+		{{- if $.resource_required }}
 			{{- range $key, $value := $.default}}{{$contains := definedInMap $key $.resource_required}}
 				{{- if not $contains}}
+					{{- if not (definedInList $.exclude_attributes $key) }}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+			{{- end}}
 				{{- end}}
+			{{- end}}
 			{{- end}}
 			{{- range $key, $value := $.children}}
 				{{- range $child_index, $child := $value}}
@@ -192,10 +238,12 @@ PreCheck: func() {
 		{{- range $key, $value := .min}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
 		{{- end}}
+		{{- if $.resource_required }}
 		{{- range $key, $value := .default}}{{$contains := definedInMap $key $.resource_required}}
 				{{- if not $contains}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
 			{{- end}}
+		{{- end}}
 		{{- end}}
 		{{- range $key, $value := $.children}}
 			{{- range $child_index, $child := $value}}
@@ -431,14 +479,16 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 
 const testConfig{{$.resourceClassName}}MinDependencyWith{{capitalize .class_name}} = testConfig{{capitalize .class_name}}Min{{- if ne .parent_dependency ""}}DependencyWith{{capitalize .parent_dependency}}{{- end}} + `
 resource "aci_{{$.resourceName}}" "test" {
-  {{- if ne .class_name "polUni"}}
+  {{- if ne .parent_dn ""}}
   parent_dn = {{.parent_dn}}
   {{- end}}
   {{- range $key, $value := $.resource_required}}
-  {{- if contains $value "<<EOT -----BEGIN_CERTIFICATE-----" }}
+  {{- if or (contains $value "<<EOT -----BEGIN_CERTIFICATE-----") ( contains $value "<<EOT -----BEGIN_PRIVATE_KEY-----") }}
   {{$key}} = {{ $value | spaceToNewLine }}
   {{- else}}
+  {{- if not (definedInList $.exclude_attributes $key) }}
   {{$key}} = "{{$value}}"
+  {{- end}}
   		{{- end}}
 		{{- end}}
 }
@@ -446,19 +496,23 @@ resource "aci_{{$.resourceName}}" "test" {
 
 const testConfig{{$.resourceClassName}}AllDependencyWith{{capitalize .class_name}} = testConfig{{capitalize .class_name}}Min{{- if ne .parent_dependency ""}}DependencyWith{{capitalize .parent_dependency}}{{- end}} + `
 resource "aci_{{$.resourceName}}" "test" {
-  {{- if ne .class_name "polUni"}}
+  {{- if ne .parent_dn ""}}
   parent_dn = {{.parent_dn}}
   {{- end}}
 		{{- range $key, $value := $.resource_required}}{{$contains := definedInMap $key $.all}}
 			{{- if not $contains}}
+  {{- if not (definedInList $.exclude_attributes $key) }}
   {{$key}} = "{{$value}}"
+  {{- end}}
 			{{- end}}
 		{{- end}}
 		{{- range $key, $value := $.all}}
-  {{- if contains $value "<<EOT -----BEGIN_CERTIFICATE-----" }}
+  {{- if or (contains $value "<<EOT -----BEGIN_CERTIFICATE-----") ( contains $value "<<EOT -----BEGIN_PRIVATE_KEY-----") }}
   {{$key}} = {{ $value | spaceToNewLine }}
   {{- else}}
+  {{- if not (definedInList $.exclude_attributes $key) }}
   {{$key}} = "{{$value}}"
+  {{- end}}
 		{{- end}}
 		{{- end}}
 }
@@ -466,19 +520,23 @@ resource "aci_{{$.resourceName}}" "test" {
 
 const testConfig{{$.resourceClassName}}ResetDependencyWith{{capitalize .class_name}} = testConfig{{capitalize .class_name}}Min{{- if ne .parent_dependency ""}}DependencyWith{{capitalize .parent_dependency}}{{- end}} + `
 resource "aci_{{$.resourceName}}" "test" {
-  {{- if ne .class_name "polUni"}}
+  {{- if ne .parent_dn ""}}
   parent_dn = {{.parent_dn}}
   {{- end}}
 		{{- range $key, $value := $.resource_required}}{{$contains := definedInMap $key $.default}}
 			{{- if not $contains}}
+  {{- if not (definedInList $.exclude_attributes $key) }}
   {{$key}} = "{{$value}}"
+  {{- end}}
 			{{- end}}
 		{{- end}}
 		{{- range $key, $value := $.default}}
-		{{- if contains $value "<<EOT -----BEGIN_CERTIFICATE-----" }}
+		{{- if or (contains $value "<<EOT -----BEGIN_CERTIFICATE-----") ( contains $value "<<EOT -----BEGIN_PRIVATE_KEY-----") }}
   {{$key}} = {{ $value | spaceToNewLine }}
   {{- else}}
+  {{- if not (definedInList $.exclude_attributes $key) }}
   {{$key}} = "{{$value}}"
+  {{- end}}
 		{{- end}}
 		{{- end}}
 }
@@ -487,14 +545,16 @@ resource "aci_{{$.resourceName}}" "test" {
 		{{- if $.children}}
 const testConfig{{$.resourceClassName}}ChildrenDependencyWith{{capitalize .class_name}} = testConfig{{capitalize .class_name}}Min{{- if ne .parent_dependency ""}}DependencyWith{{capitalize .parent_dependency}}{{- end}} + `
 resource "aci_{{$.resourceName}}" "test" {
-  {{- if ne .class_name "polUni"}}
+  {{- if ne .parent_dn ""}}
   parent_dn = {{.parent_dn}}
   {{- end}}
   			{{- range $key, $value := $.resource_required}}
-			{{- if contains $value "<<EOT -----BEGIN_CERTIFICATE-----" }}
+			{{- if or (contains $value "<<EOT -----BEGIN_CERTIFICATE-----") ( contains $value "<<EOT -----BEGIN_PRIVATE_KEY-----") }}
   {{$key}} = {{ $value | spaceToNewLine }}
   {{- else}}
+  {{- if not (definedInList $.exclude_attributes $key) }}
   {{$key}} = "{{$value}}"
+  {{- end}}
 		{{- end}}
   			{{- end}}
   			{{- range $key, $value := $.children}}
@@ -513,14 +573,16 @@ resource "aci_{{$.resourceName}}" "test" {
 
 const testConfig{{$.resourceClassName}}ChildrenRemoveFromConfigDependencyWith{{capitalize .class_name}} = testConfig{{capitalize .class_name}}Min{{- if ne .parent_dependency ""}}DependencyWith{{capitalize .parent_dependency}}{{- end}} + `
 resource "aci_{{$.resourceName}}" "test" {
-  {{- if ne .class_name "polUni"}}
+  {{- if ne .parent_dn ""}}
   parent_dn = {{.parent_dn}}
   {{- end}}
   		{{- range $key, $value := $.resource_required}}
-  {{- if contains $value "<<EOT -----BEGIN_CERTIFICATE-----" }}
+  {{- if or (contains $value "<<EOT -----BEGIN_CERTIFICATE-----") ( contains $value "<<EOT -----BEGIN_PRIVATE_KEY-----") }}
   {{$key}} = {{ $value | spaceToNewLine }}
   {{- else}}
+  {{- if not (definedInList $.exclude_attributes $key) }}
   {{$key}} = "{{$value}}"
+  {{- end}}
 		{{- end}}
   		{{- end}}
 }
@@ -528,14 +590,16 @@ resource "aci_{{$.resourceName}}" "test" {
 
 const testConfig{{$.resourceClassName}}ChildrenRemoveOneDependencyWith{{capitalize .class_name}} = testConfig{{capitalize .class_name}}Min{{- if ne .parent_dependency ""}}DependencyWith{{capitalize .parent_dependency}}{{- end}} + `
 resource "aci_{{$.resourceName}}" "test" {
-  {{- if ne .class_name "polUni"}}
+  {{- if ne .parent_dn ""}}
   parent_dn = {{.parent_dn}}
   {{- end}}
     	{{- range $key, $value := $.resource_required}}
-  {{- if contains $value "<<EOT -----BEGIN_CERTIFICATE-----" }}
+  {{- if or (contains $value "<<EOT -----BEGIN_CERTIFICATE-----") ( contains $value "<<EOT -----BEGIN_PRIVATE_KEY-----") }}
   {{$key}} = {{ $value | spaceToNewLine }}
   {{- else}}
+  {{- if not (definedInList $.exclude_attributes $key) }}
   {{$key}} = "{{$value}}"
+  {{- end}}
 		{{- end}}
   		{{- end}}
   		{{- range $key, $value := $.children}}
@@ -552,14 +616,16 @@ resource "aci_{{$.resourceName}}" "test" {
 
 const testConfig{{$.resourceClassName}}ChildrenRemoveAllDependencyWith{{capitalize .class_name}} = testConfig{{capitalize .class_name}}Min{{- if ne .parent_dependency ""}}DependencyWith{{capitalize .parent_dependency}}{{- end}} + `
 resource "aci_{{$.resourceName}}" "test" {
-  {{- if ne .class_name "polUni"}}
+  {{- if ne .parent_dn ""}}
   parent_dn = {{.parent_dn}}
   {{- end}}
     	{{- range $key, $value := $.resource_required}}
-  {{- if contains $value "<<EOT -----BEGIN_CERTIFICATE-----" }}
+  {{- if or (contains $value "<<EOT -----BEGIN_CERTIFICATE-----") ( contains $value "<<EOT -----BEGIN_PRIVATE_KEY-----") }}
   {{$key}} = {{ $value | spaceToNewLine }}
   {{- else}}
+  {{- if not (definedInList $.exclude_attributes $key) }}
   {{$key}} = "{{$value}}"
+  {{- end}}
 		{{- end}}
   		{{- end}}
   		{{- range $key, $value := $.children}}
@@ -608,7 +674,7 @@ resource "aci_{{$.resourceName}}" "test" {
 const testConfig{{.resourceClassName}}Children = `
 resource "aci_{{$.resourceName}}" "test" {
   		{{- range $key, $value := $.resource_required}}
-  {{- if contains $value "<<EOT -----BEGIN_CERTIFICATE-----" }}
+  {{- if or (contains $value "<<EOT -----BEGIN_CERTIFICATE-----") ( contains $value "<<EOT -----BEGIN_PRIVATE_KEY-----") }}
   {{$key}} = {{ $value | spaceToNewLine }}
   {{- else}}
   {{$key}} = "{{$value}}"
@@ -631,7 +697,7 @@ resource "aci_{{$.resourceName}}" "test" {
 const testConfig{{.resourceClassName}}ChildrenRemoveFromConfig = `
 resource "aci_{{$.resourceName}}" "test" {
   		{{- range $key, $value := $.resource_required}}
-  {{- if contains $value "<<EOT -----BEGIN_CERTIFICATE-----" }}
+  {{- if or (contains $value "<<EOT -----BEGIN_CERTIFICATE-----") ( contains $value "<<EOT -----BEGIN_PRIVATE_KEY-----") }}
   {{$key}} = {{ $value | spaceToNewLine }}
   {{- else}}
   {{$key}} = "{{$value}}"
@@ -643,7 +709,7 @@ resource "aci_{{$.resourceName}}" "test" {
 const testConfig{{.resourceClassName}}ChildrenRemoveOne = `
 resource "aci_{{$.resourceName}}" "test" {
     	{{- range $key, $value := $.resource_required}}
-  {{- if contains $value "<<EOT -----BEGIN_CERTIFICATE-----" }}
+  {{- if or (contains $value "<<EOT -----BEGIN_CERTIFICATE-----") ( contains $value "<<EOT -----BEGIN_PRIVATE_KEY-----") }}
   {{$key}} = {{ $value | spaceToNewLine }}
   {{- else}}
   {{$key}} = "{{$value}}"
@@ -664,7 +730,7 @@ resource "aci_{{$.resourceName}}" "test" {
 const testConfig{{.resourceClassName}}ChildrenRemoveAll = `
 resource "aci_{{$.resourceName}}" "test" {
     	{{- range $key, $value := $.resource_required}}
-  {{- if contains $value "<<EOT -----BEGIN_CERTIFICATE-----" }}
+  {{- if or (contains $value "<<EOT -----BEGIN_CERTIFICATE-----") ( contains $value "<<EOT -----BEGIN_PRIVATE_KEY-----") }}
   {{$key}} = {{ $value | spaceToNewLine }}
   {{- else}}
   {{$key}} = "{{$value}}"

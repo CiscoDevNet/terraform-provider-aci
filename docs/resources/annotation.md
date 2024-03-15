@@ -62,7 +62,6 @@ All examples for the Annotation resource can be found in the [examples](https://
 ### Required ###
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
-  - [aci_certificate_store](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/certificate_store) ([cloudCertStore](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/cloudCertStore/overview))
   - [aci_application_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/application_epg) ([fvAEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvAEPg/overview))
   - [aci_endpoint_tag_ip](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/endpoint_tag_ip) ([fvEpIpTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvEpIpTag/overview))
   - [aci_endpoint_tag_mac](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/endpoint_tag_mac) ([fvEpMacTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvEpMacTag/overview))
@@ -75,7 +74,7 @@ All examples for the Annotation resource can be found in the [examples](https://
   - [aci_external_management_network_subnet](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/external_management_network_subnet) ([mgmtSubnet](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/mgmtSubnet/overview))
   - [aci_pim_route_map_entry](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/pim_route_map_entry) ([pimRouteMapEntry](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/pimRouteMapEntry/overview))
   - [aci_pim_route_map_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/pim_route_map_policy) ([pimRouteMapPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/pimRouteMapPol/overview))
-  - [aci_public_key_management](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/public_key_management) ([pkiEp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/pkiEp/overview))
+  - [aci_key_ring](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/key_ring) ([pkiKeyRing](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/pkiKeyRing/overview))
   - [aci_certificate_authority](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/certificate_authority) ([pkiTP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/pkiTP/overview))
   - [aci_route_control_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/route_control_profile) ([rtctrlProfile](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/rtctrlProfile/overview))
   - [aci_contract_interface](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/contract_interface) ([vzCPIf](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzCPIf/overview))

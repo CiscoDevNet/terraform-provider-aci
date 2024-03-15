@@ -138,9 +138,12 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 			"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": schema.SetAttribute{
 				MarkdownDescription: `{{.Comment}}`,
 				Optional:            true,
+				{{- if ne .ValueType "password"}}
 				Computed:            true,
+				{{- end}}
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				{{- if .ValidValues}}
 				Validators: []validator.Set{
@@ -158,10 +161,13 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 				Required:            true,
 					{{- else }}
 				Optional:            true,
+				{{- if ne .ValueType "password"}}
 				Computed:            true,
+				{{- end}}
 					{{- end}}
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					{{- if or .IsNaming .CreateOnly}}
 					stringplanmodifier.RequiresReplace(),
 					{{- end}}
@@ -198,7 +204,9 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 						"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": schema.SetAttribute{
 							MarkdownDescription: `{{.Comment}}`,
 							Optional:            true,
+							{{- if ne .ValueType "password"}}
 							Computed:            true,
+							{{- end}}
 							PlanModifiers: []planmodifier.Set{
 								setplanmodifier.UseStateForUnknown(),
 							},
@@ -218,7 +226,9 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 							Required:            true,
 							{{- else }}
 							Optional:            true,
+							{{- if ne .ValueType "password"}}
 							Computed:            true,
+							{{- end}}
 							{{- end}}
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
@@ -306,7 +316,7 @@ func (r *{{.ResourceClassName}}Resource) Create(ctx context.Context, req resourc
 	wrapperClassMap := map[string]string{ {{- range $key, $value := .MultiParentFormats }}"{{ $value.RnPrepend }}": "{{ $value.WrapperClass }}",{{- end }} }
 	for rnPrepend, wrapperClass := range wrapperClassMap {
 		if strings.Contains(data.Id.ValueString(), rnPrepend) && wrapperClass != "" {
-			DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", strings.Split(data.Id.ValueString(), rnPrepend)[0]+rnPrepend), "POST", jsonPayload)
+			DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s%s.json", strings.Split(data.Id.ValueString(), rnPrepend)[0],rnPrepend), "POST", jsonPayload)
 		} else if strings.Contains(data.Id.ValueString(), rnPrepend) && wrapperClass == "" {
 			DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
 		}
@@ -407,7 +417,7 @@ func (r *{{.ResourceClassName}}Resource) Update(ctx context.Context, req resourc
 	wrapperClassMap := map[string]string{ {{- range $key, $value := .MultiParentFormats }}"{{ $value.RnPrepend }}": "{{ $value.WrapperClass }}",{{- end }} }
 	for rnPrepend, wrapperClass := range wrapperClassMap {
 		if strings.Contains(data.Id.ValueString(), rnPrepend) && wrapperClass != ""{
-			DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", strings.Split(data.Id.ValueString(), rnPrepend)[0]+rnPrepend), "POST", jsonPayload)
+			DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s%s.json", strings.Split(data.Id.ValueString(), rnPrepend)[0],rnPrepend), "POST", jsonPayload)
 		} else if strings.Contains(data.Id.ValueString(), rnPrepend) && wrapperClass == "" {
 			DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
 		}
@@ -492,7 +502,7 @@ func (r *{{.ResourceClassName}}Resource) ImportState(ctx context.Context, req re
 
 func getAndSet{{.ResourceClassName}}Attributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *{{.ResourceClassName}}ResourceModel) {
 	{{- if .HasChild}}
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "{{- .PkgName}},{{- listToString .ChildClasses}}"), "GET", nil)
+	requestData := DoRestRequest(ctx, diags, client,  fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "{{- .PkgName}},{{- listToString .ChildClasses}}"), "GET", nil)
 	{{- else}}
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "GET", nil)
 	{{- end}}
@@ -544,7 +554,14 @@ func getAndSet{{.ResourceClassName}}Attributes(ctx context.Context, diags *diag.
 					{{- end}}
 				{{- end}}
 			}
-			
+
+
+			{{- range .Properties}}
+			if data.{{.Name}}.IsUnknown() {
+			data.{{.Name}} = types.StringNull()
+			}
+			{{- end}}
+
 			{{- if .HasChild}}
 				{{- range .Children}}
 					{{- if .IdentifiedBy}}
@@ -652,7 +669,7 @@ func set{{.ResourceClassName}}ParentDn(ctx context.Context, dn string, data *{{.
 	rnMap := map[string]string{ {{- range $key, $value := .MultiParentFormats }}{{if ne $key ""}}"{{ $key }}": "{{ $value.RnPrepend }}",{{- end }}{{- end }} }
 	for parent_identifier, rn_prepend := range rnMap {
 	if strings.Contains(parentDn, parent_identifier) {
-			parentDn = parentDn[:strings.Index(parentDn, "/"+rn_prepend)]
+			parentDn = parentDn[:strings.Index(parentDn, fmt.Sprintf("/%s",rn_prepend))]
 			data.ParentDn = basetypes.NewStringValue(parentDn)
 		}
 	}
@@ -663,9 +680,9 @@ func set{{.ResourceClassName}}Id(ctx context.Context, data *{{.ResourceClassName
 	rnMap := map[string]string{ {{- range $key, $value := .MultiParentFormats }}"{{ $key }}": "{{ $value.RnPrepend }}",{{- end }} }
 	for parent_identifier, rn_prepend := range rnMap {
 		if data.ParentDn.ValueString() == "" && parent_identifier == "" {
-			data.Id =  types.StringValue(fmt.Sprintf("%s", rn_prepend+"/"+rn))
+			data.Id =  types.StringValue(fmt.Sprintf("%s/%s", rn_prepend, rn))
 		} else if parent_identifier != "" && strings.Contains(data.ParentDn.ValueString(), parent_identifier){
-			data.Id =  types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn_prepend+"/"+rn))
+			data.Id =  types.StringValue(fmt.Sprintf("%s/%s/%s", data.ParentDn.ValueString(), rn_prepend, rn))
 		}
 	}
 }

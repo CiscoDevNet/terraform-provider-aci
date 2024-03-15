@@ -1,31 +1,37 @@
 {
-    "pki:TP": {
+    "pki:KeyRing": {
         "contains": {
             "aaa:RbacAnnotation": "",
             "fault:Counts": "",
             "fault:Delegate": "",
             "fault:Inst": "",
             "health:Inst": "",
-            "pki:RtClientCertCA": "",
-            "pki:RtSvrCertChain": "",
+            "pki:CertReq": "",
+            "pki:RtKeyRing": "",
+            "pki:RtKeyringRef": "",
+            "pki:RtListenerToCert": "",
+            "pki:RtSvrKeyRing": "",
             "tag:Annotation": "",
             "tag:Tag": ""
         },
         "rnMap": {
             "annotationKey-": "tag:Annotation",
+            "certreq": "pki:CertReq",
             "fault-": "fault:Inst",
             "fd-": "fault:Delegate",
             "fltCnts": "fault:Counts",
             "health": "health:Inst",
             "rbacDom-": "aaa:RbacAnnotation",
-            "rtadepgSvrCertChain-": "pki:RtSvrCertChain",
-            "rtcommClientCertCA-": "pki:RtClientCertCA",
+            "rtaaaKeyringRef-": "pki:RtKeyringRef",
+            "rtadepgSvrKeyRing-": "pki:RtSvrKeyRing",
+            "rtcloudListenerToCert-": "pki:RtListenerToCert",
+            "rtcommKeyRing-": "pki:RtKeyRing",
             "tagKey-": "tag:Tag"
         },
         "identifiedBy": [
             "name"
         ],
-        "rnFormat": "tp-{name}",
+        "rnFormat": "keyring-{name}",
         "containedBy": {
             "cloud:CertStore": "",
             "pki:Ep": ""
@@ -41,15 +47,17 @@
 
         },
         "relationFrom": {
-            "pki:RtClientCertCA": "comm:Https",
-            "pki:RtSvrCertChain": "adepg:ASvr"
+            "pki:RtKeyRing": "comm:Https",
+            "pki:RtKeyringRef": "aaa:KeyringRelnHolder",
+            "pki:RtListenerToCert": "cloud:Listener",
+            "pki:RtSvrKeyRing": "adepg:ASvr"
         },
         "relationTo": {
 
         },
         "dnFormats": [
-            "uni/tn-{name}/certstore/tp-{name}",
-            "uni/userext/pkiext/tp-{name}"
+            "uni/tn-{name}/certstore/keyring-{name}",
+            "uni/userext/pkiext/keyring-{name}"
         ],
         "writeAccess": [
             "aaa",
@@ -57,18 +65,21 @@
         ],
         "readAccess": [
             "aaa",
-            "admin"
+            "admin",
+            "nw-svc-policy"
         ],
         "faults": {
-            "F4503": "fltPkiTPTPExpired"
+            "F4502": "fltPkiKeyRingCustomKeyRingExpired",
+            "F4501": "fltPkiKeyRingCustomKeyRingExpiring",
+            "F4510": "fltPkiKeyRingKeyRingInsecure"
         },
         "events": {
-            "E4204971": "creation||pki:TP",
-            "E4204972": "deletion||pki:TP",
-            "E4204973": "modification||pki:TP",
-            "E4212896": "creation||pki:TP",
-            "E4212897": "modification||pki:TP",
-            "E4212898": "deletion||pki:TP"
+            "E4204952": "creation|createKeyRing|pki:KeyRing",
+            "E4204957": "deletion|deleteKeyRing|pki:KeyRing",
+            "E4204968": "modification|modKeyRing|pki:KeyRing",
+            "E4212893": "creation||pki:KeyRing",
+            "E4212894": "modification||pki:KeyRing",
+            "E4212895": "deletion||pki:KeyRing"
         },
         "stats": {
 
@@ -80,7 +91,7 @@
         "isNxosConverged": false,
         "isDeprecated": false,
         "isHidden": false,
-        "isEncrypted": false,
+        "isEncrypted": true,
         "isExportable": true,
         "isPersistent": true,
         "isSubjectToQuota": false,
@@ -100,23 +111,85 @@
         "platformFlavors": [
 
         ],
-        "classId": "1483",
-        "className": "TP",
+        "classId": "1482",
+        "className": "KeyRing",
         "classPkg": "pki",
         "featureTag": "",
         "moCategory": "Regular",
-        "label": "Certificate Authority",
+        "label": "Key Ring",
         "comment": [
-            "A trustpoint (certificate authority/CA), which issues and validates (signs) digital certificates. When participating in secure communications using the public key infrastructure (PKI), a participant can verify the identity of the other party through the CA that signed the other party's public key."
+            "A keyring to create and hold an SSL certificate. The SSL certificate contains the public RSA key and signed identity information of a PKI device. The PKI device holds a pair of RSA encryption keys, one kept private and one made public, stored in an internal key ring. The keyring certificate merges into the PKI device keyring to create a trusted relationship."
         ],
         "properties": {
+            "adminState": {
+                "versions": "1.0(1e)-",
+                "comment": [
+                     "The current administrative state of the certificate request process."
+                ],
+                "isConfigurable": true,
+                "propGlobalId": "1199",
+                "propLocalId": "91",
+                "label": "adminState",
+                "baseType": "scalar:Enum8",
+                "modelType": "pki:KeyringState",
+                "needsPropDelimiters": false,
+                "uitype": "enum",
+                "createOnly": false,
+                "readWrite": true,
+                "readOnly": false,
+                "isNaming": false,
+                "secure": false,
+                "implicit": false,
+                "mandatory": false,
+                "isOverride": false,
+                "isLike": false,
+                "validValues": [
+                     { "value": "5", "localName": "completed",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "Completed "},
+                     { "value": "2", "localName": "created",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "Created "},
+                     { "value": "started", "localName": "defaultValue",
+                         "platformFlavors": [
+
+                         ],
+                         "label": " "},
+                     { "value": "3", "localName": "reqCreated",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "Request Created "},
+                     { "value": "1", "localName": "started",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "Started "},
+                     { "value": "4", "localName": "tpSet",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "Trust Provider Set "}
+                ],
+                "default": "started",
+                "platformFlavors": [
+
+                ],
+                "isNxosConverged": false,
+                "isDeprecated": false,
+                "isHidden": false
+            },
             "annotation": {
                 "versions": "3.2(1l)-",
                 "comment": [
                      "User annotation. Suggested format orchestrator:value"
                 ],
                 "isConfigurable": true,
-                "propGlobalId": "37509",
+                "propGlobalId": "37508",
                 "propLocalId": "8719",
                 "label": "Annotation",
                 "baseType": "string:Basic",
@@ -146,15 +219,15 @@
                 "isDeprecated": false,
                 "isHidden": false
             },
-            "certChain": {
+            "cert": {
                 "versions": "1.0(1e)-",
                 "comment": [
-                     "The PEM-encoded chain of trust from the trustpoint to a trusted root authority."
+                     "A certificate is a file containing a device's public key along with signed information verifying the identity of the device."
                 ],
                 "isConfigurable": true,
-                "propGlobalId": "1207",
-                "propLocalId": "635",
-                "label": "Certificate Chain",
+                "propGlobalId": "1203",
+                "propLocalId": "631",
+                "label": "Certificate",
                 "baseType": "string:CharBuffer",
                 "modelType": "pki:Cert",
                 "needsPropDelimiters": false,
@@ -176,16 +249,45 @@
                 "isHidden": false
             },
             "certValidUntil": {
-                "versions": "3.1(1i)-",
+                "versions": "1.0(1e)-",
                 "comment": [
-                     "The certificate expiration date of the certificate posted by the user in the cert field."
+                     ""
                 ],
                 "isConfigurable": false,
-                "propGlobalId": "35520",
+                "propGlobalId": "1204",
                 "propLocalId": "632",
                 "label": "Certificate Validity",
                 "baseType": "string:CharBuffer",
                 "modelType": "pki:CertValidity",
+                "needsPropDelimiters": false,
+                "uitype": "auto",
+                "createOnly": false,
+                "readWrite": false,
+                "readOnly": true,
+                "isNaming": false,
+                "secure": false,
+                "implicit": true,
+                "mandatory": false,
+                "isOverride": false,
+                "isLike": false,
+                "platformFlavors": [
+
+                ],
+                "isNxosConverged": false,
+                "isDeprecated": false,
+                "isHidden": false
+            },
+            "certificateDecodeInformation": {
+                "versions": "1.0(1e)-",
+                "comment": [
+                     ""
+                ],
+                "isConfigurable": false,
+                "propGlobalId": "1205",
+                "propLocalId": "633",
+                "label": "Certificate Decode Information",
+                "baseType": "string:CharBuffer",
+                "modelType": "pki:Cert",
                 "needsPropDelimiters": false,
                 "uitype": "auto",
                 "createOnly": false,
@@ -243,6 +345,50 @@
                          ],
                          "label": "Ignore "}
                 ],
+                "platformFlavors": [
+
+                ],
+                "isNxosConverged": false,
+                "isDeprecated": false,
+                "isHidden": false
+            },
+            "creator": {
+                "versions": "6.0(2h)-",
+                "isConfigurable": false,
+                "propGlobalId": "68676",
+                "propLocalId": "14578",
+                "label": "MO creator origin",
+                "baseType": "scalar:Enum8",
+                "modelType": "fabric:CreatorType",
+                "needsPropDelimiters": false,
+                "uitype": "enum",
+                "createOnly": false,
+                "readWrite": false,
+                "readOnly": true,
+                "isNaming": false,
+                "secure": false,
+                "implicit": true,
+                "mandatory": false,
+                "isOverride": false,
+                "isLike": false,
+                "validValues": [
+                     { "value": "1", "localName": "SYSTEM",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "system maintained "},
+                     { "value": "0", "localName": "USER",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "created by the user "},
+                     { "value": "USER", "localName": "defaultValue",
+                         "platformFlavors": [
+
+                         ],
+                         "label": " "}
+                ],
+                "default": "USER",
                 "platformFlavors": [
 
                 ],
@@ -316,10 +462,58 @@
                 "isDeprecated": false,
                 "isHidden": false
             },
+            "eccCurve": {
+                "versions": "6.0(2h)-",
+                "isConfigurable": true,
+                "propGlobalId": "68747",
+                "propLocalId": "14922",
+                "label": "ECC Curve",
+                "baseType": "scalar:Enum16",
+                "modelType": "pki:EccCurve",
+                "needsPropDelimiters": false,
+                "uitype": "enum",
+                "createOnly": false,
+                "readWrite": true,
+                "readOnly": false,
+                "isNaming": false,
+                "secure": false,
+                "implicit": false,
+                "mandatory": false,
+                "isOverride": false,
+                "isLike": false,
+                "validValues": [
+                     { "value": "0", "localName": "none",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "None "},
+                     { "value": "1", "localName": "prime256v1",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "P-256 "},
+                     { "value": "2", "localName": "secp384r1",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "P-384 "},
+                     { "value": "3", "localName": "secp521r1",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "P-521 "}
+                ],
+                "platformFlavors": [
+
+                ],
+                "isNxosConverged": false,
+                "isDeprecated": false,
+                "isHidden": false
+            },
             "expState": {
                 "versions": "3.1(1i)-",
                 "isConfigurable": false,
-                "propGlobalId": "35521",
+                "propGlobalId": "35519",
                 "propLocalId": "8280",
                 "label": "expState",
                 "baseType": "scalar:Enum8",
@@ -371,7 +565,7 @@
                      "Indicates which orchestrator is managing this MO"
                 ],
                 "isConfigurable": false,
-                "propGlobalId": "39648",
+                "propGlobalId": "39647",
                 "propLocalId": "8023",
                 "label": "Managed By",
                 "baseType": "scalar:Bitmask32",
@@ -412,28 +606,88 @@
                 "isDeprecated": false,
                 "isHidden": false
             },
-            "fp": {
+            "key": {
                 "versions": "1.0(1e)-",
                 "comment": [
-                     "This property is managed internally and should not be modified by the user."
+                     "The private key of the certificate."
                 ],
-                "isConfigurable": false,
-                "propGlobalId": "1208",
-                "propLocalId": "636",
-                "label": "fp",
-                "baseType": "string:CharBuffer",
-                "modelType": "pki:FP",
+                "isConfigurable": true,
+                "propGlobalId": "1201",
+                "propLocalId": "542",
+                "label": "key",
+                "baseType": "string:Password",
+                "modelType": "pki:PrivateKey",
                 "needsPropDelimiters": false,
-                "uitype": "auto",
+                "uitype": "password",
                 "createOnly": false,
-                "readWrite": false,
-                "readOnly": true,
+                "readWrite": true,
+                "readOnly": false,
                 "isNaming": false,
-                "secure": false,
-                "implicit": true,
+                "secure": true,
+                "implicit": false,
                 "mandatory": false,
                 "isOverride": false,
                 "isLike": false,
+                "validators": [
+                     {"min" : 0, "max": 4096 }
+                ],
+                "validValues": [
+                     { "value": "", "localName": "defaultValue",
+                         "platformFlavors": [
+
+                         ],
+                         "label": " "}
+                ],
+                "default": "",
+                "platformFlavors": [
+
+                ],
+                "isNxosConverged": false,
+                "isDeprecated": false,
+                "isHidden": false
+            },
+            "keyType": {
+                "versions": "6.0(2h)-",
+                "isConfigurable": true,
+                "propGlobalId": "68746",
+                "propLocalId": "7905",
+                "label": "Key Type",
+                "baseType": "scalar:Enum8",
+                "modelType": "pki:KeyType",
+                "needsPropDelimiters": false,
+                "uitype": "enum",
+                "createOnly": false,
+                "readWrite": true,
+                "readOnly": false,
+                "isNaming": false,
+                "secure": false,
+                "implicit": false,
+                "mandatory": false,
+                "isOverride": false,
+                "isLike": false,
+                "validValues": [
+                     { "value": "1", "localName": "ECC",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "ECC "},
+                     { "value": "0", "localName": "RSA",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "RSA "},
+                     { "value": "RSA", "localName": "defaultValue",
+                         "platformFlavors": [
+
+                         ],
+                         "label": " "},
+                     { "value": "2", "localName": "indeterminate",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "indeterminate "}
+                ],
+                "default": "RSA",
                 "platformFlavors": [
 
                 ],
@@ -545,13 +799,85 @@
                 "isDeprecated": false,
                 "isHidden": false
             },
+            "modulus": {
+                "versions": "1.0(1e)-",
+                "comment": [
+                     "The length of the encryption keys. A longer key length increases the difficulty of breaking the key."
+                ],
+                "isConfigurable": true,
+                "propGlobalId": "1202",
+                "propLocalId": "630",
+                "label": "Modulus",
+                "baseType": "scalar:Enum16",
+                "modelType": "pki:Modulus",
+                "needsPropDelimiters": false,
+                "uitype": "enum",
+                "createOnly": false,
+                "readWrite": true,
+                "readOnly": false,
+                "isNaming": false,
+                "secure": false,
+                "implicit": false,
+                "mandatory": false,
+                "isOverride": false,
+                "isLike": false,
+                "validValues": [
+                     { "value": "mod2048", "localName": "defaultValue",
+                         "platformFlavors": [
+
+                         ],
+                         "label": " "},
+                     { "value": "1024", "localName": "mod1024",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "MOD 1024 "},
+                     { "value": "1536", "localName": "mod1536",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "MOD 1536 "},
+                     { "value": "2048", "localName": "mod2048",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "MOD 2048 "},
+                     { "value": "3072", "localName": "mod3072",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "MOD 2048 "},
+                     { "value": "4096", "localName": "mod4096",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "MOD 4096 "},
+                     { "value": "512", "localName": "mod512",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "MOD 512 "},
+                     { "value": "0", "localName": "none",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "none "}
+                ],
+                "default": "mod2048",
+                "platformFlavors": [
+
+                ],
+                "isNxosConverged": false,
+                "isDeprecated": false,
+                "isHidden": false
+            },
             "monPolDn": {
                 "versions": "3.1(1i)-",
                 "comment": [
                      "The monitoring policy attached to this observable object."
                 ],
                 "isConfigurable": false,
-                "propGlobalId": "26561",
+                "propGlobalId": "14135",
                 "propLocalId": "228",
                 "label": "Monitoring Policy",
                 "baseType": "reference:BinRef",
@@ -577,10 +903,10 @@
             "name": {
                 "versions": "1.0(1e)-",
                 "comment": [
-                     "The name of the certificate authority (CA or trustpoint)."
+                     "The name of the key ring."
                 ],
                 "isConfigurable": true,
-                "propGlobalId": "7018",
+                "propGlobalId": "7017",
                 "propLocalId": "13",
                 "label": "Name",
                 "baseType": "string:Basic",
@@ -636,43 +962,6 @@
                          ]
                      }
                 ],
-                "platformFlavors": [
-
-                ],
-                "isNxosConverged": false,
-                "isDeprecated": false,
-                "isHidden": false
-            },
-            "numCerts": {
-                "versions": "1.0(1e)-",
-                "comment": [
-                     "The number of certificates found in the certificate chain."
-                ],
-                "isConfigurable": false,
-                "propGlobalId": "1209",
-                "propLocalId": "637",
-                "label": "numCerts",
-                "baseType": "scalar:Uint32",
-                "modelType": "scalar:Uint32",
-                "needsPropDelimiters": false,
-                "uitype": "auto",
-                "createOnly": false,
-                "readWrite": false,
-                "readOnly": true,
-                "isNaming": false,
-                "secure": false,
-                "implicit": true,
-                "mandatory": false,
-                "isOverride": false,
-                "isLike": false,
-                "validValues": [
-                     { "value": "0", "localName": "defaultValue",
-                         "platformFlavors": [
-
-                         ],
-                         "label": " "}
-                ],
-                "default": "0",
                 "platformFlavors": [
 
                 ],
@@ -745,6 +1034,53 @@
                          ]
                      }
                 ],
+                "platformFlavors": [
+
+                ],
+                "isNxosConverged": false,
+                "isDeprecated": false,
+                "isHidden": false
+            },
+            "regen": {
+                "versions": "1.0(1e)-",
+                "comment": [
+                     "Forces regeneration of the keypair. Each PKI device holds a pair of asymmetric Rivest-Shamir-Adleman (RSA) or Elliptic Curve Cryptography (ECC) encryption keys, one kept private and one made public, stored in an internal key ring."
+                ],
+                "isConfigurable": true,
+                "propGlobalId": "1200",
+                "propLocalId": "629",
+                "label": "Regenerate",
+                "baseType": "scalar:Bool",
+                "modelType": "scalar:Bool",
+                "needsPropDelimiters": false,
+                "uitype": "boolean",
+                "createOnly": false,
+                "readWrite": true,
+                "readOnly": false,
+                "isNaming": false,
+                "secure": false,
+                "implicit": false,
+                "mandatory": false,
+                "isOverride": false,
+                "isLike": false,
+                "validValues": [
+                     { "value": "false", "localName": "defaultValue",
+                         "platformFlavors": [
+
+                         ],
+                         "label": " "},
+                     { "value": "false", "localName": "no",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "No "},
+                     { "value": "true", "localName": "yes",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "Yes "}
+                ],
+                "default": "false",
                 "platformFlavors": [
 
                 ],
@@ -828,6 +1164,42 @@
                              "In a setter method: specifies that an object should be modified  \nIn the return value of a setter method: indicates that an object has been modified.\n"
                          ],
                          "label": "Modified "}
+                ],
+                "platformFlavors": [
+
+                ],
+                "isNxosConverged": false,
+                "isDeprecated": false,
+                "isHidden": false
+            },
+            "tp": {
+                "versions": "1.0(1e)-",
+                "comment": [
+                     "A third-party certificate from a trusted source, or trusted point, that affirms the identity of your device. The third-party certificate is signed by the issuing certificate authority (CA or trustpoint), which can be a root CA, an intermediate CA, or a trust anchor that is part of a trust chain that leads to a root CA."
+                ],
+                "isConfigurable": true,
+                "propGlobalId": "1206",
+                "propLocalId": "634",
+                "label": "Certificate Authority",
+                "baseType": "string:Basic",
+                "modelType": "naming:LongName",
+                "needsPropDelimiters": false,
+                "uitype": "string",
+                "createOnly": false,
+                "readWrite": true,
+                "readOnly": false,
+                "isNaming": false,
+                "secure": false,
+                "implicit": false,
+                "mandatory": false,
+                "isOverride": false,
+                "isLike": false,
+                "validators": [
+                     {"min" : 0, "max": 64,
+                         "regexs": [
+                             {"regex" : "^[a-zA-Z0-9_.:-]+$", "type": "include"}
+                         ]
+                     }
                 ],
                 "platformFlavors": [
 

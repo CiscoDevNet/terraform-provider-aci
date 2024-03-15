@@ -27,14 +27,18 @@ func TestAccDataSource{{$.resourceClassName}}With{{capitalize .class_name}} (t *
 					{{- if contains $value "<<EOT -----BEGIN_CERTIFICATE-----" }}
   					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$key}}", "{{ $value | appendNewLine }}" ),
 					{{- else}}
+					{{- if not (definedInList $.exclude_attributes $key) }}
 					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+					{{- end}}
 					{{- end}}
 					{{- end}}
 					{{- range $key, $value := $.default}}
-					{{- if contains $value "<<EOT -----BEGIN_CERTIFICATE-----" }}
+					{{- if or (contains $value "<<EOT -----BEGIN_CERTIFICATE-----") (contains $value "<<EOT -----BEGIN_PRIVATE_KEY-----") }}
   					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$key}}", "{{ $value | appendNewLine }}" ),
 					{{- else}}
+					{{- if not (definedInList $.exclude_attributes $key) }}
 					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+					{{- end}}
 					{{- end}}
 					{{- end}}
 				),
@@ -61,14 +65,18 @@ func TestAccDataSource{{.resourceClassName}}(t *testing.T) {
 					{{- if contains $value "<<EOT -----BEGIN_CERTIFICATE-----" }}
   					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$key}}", "{{ $value | appendNewLine }}" ),
 					{{- else}}
+					{{- if not (definedInList $.exclude_attributes $key) }}
 					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+					{{- end}}
 					{{- end}}
 					{{- end}}
 					{{- range $key, $value := .all}}
 					{{- if contains $value "<<EOT -----BEGIN_CERTIFICATE-----" }}
   					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$key}}", "{{ $value | appendNewLine }}" ),
 					{{- else}}
+					{{- if not (definedInList $.exclude_attributes $key) }}
 					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+					{{- end}}
 					{{- end}}
 					{{- end}}
 				),

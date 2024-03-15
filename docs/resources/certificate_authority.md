@@ -20,6 +20,7 @@ Manages ACI Certificate Authority
 
 * Class: [pkiTP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/pkiTP/overview)
 
+* Supported in ACI versions: 1.0(1e) and later.
 
 * Distinguished Name Formats:
   - `uni/tn-{name}/certstore/tp-{name}`
@@ -34,6 +35,7 @@ Manages ACI Certificate Authority
 The configuration snippet below creates a Certificate Authority with only required attributes.
 
 ```hcl
+
 resource "aci_certificate_authority" "example" {
   cert_chain = "-----BEGIN CERTIFICATE-----\nMIICODCCAaGgAwIBAgIJAIt8XMntue0VMA0GCSqGSIb3DQEBCwUAMDQxDjAMBgNV\nBAMMBUFkbWluMRUwEwYDVQQKDAxZb3VyIENvbXBhbnkxCzAJBgNVBAYTAlVTMCAX\nDTE4MDEwOTAwNTk0NFoYDzIxMTcxMjE2MDA1OTQ0WjA0MQ4wDAYDVQQDDAVBZG1p\nbjEVMBMGA1UECgwMWW91ciBDb21wYW55MQswCQYDVQQGEwJVUzCBnzANBgkqhkiG\n9w0BAQEFAAOBjQAwgYkCgYEAohG/7axtt7CbSaMP7r+2mhTKbNgh0Ww36C7Ta14i\nv+VmLyKkQHnXinKGhp6uy3Nug+15a+eIu7CrgpBVMQeCiWfsnwRocKcQJWIYDrWl\nXHxGQn31yYKR6mylE7Dcj3rMFybnyhezr5D8GcP85YRPmwG9H2hO/0Y1FUnWu9Iw\nAQkCAwEAAaNQME4wHQYDVR0OBBYEFD0jLXfpkrU/ChzRvfruRs/fy1VXMB8GA1Ud\nIwQYMBaAFD0jLXfpkrU/ChzRvfruRs/fy1VXMAwGA1UdEwQFMAMBAf8wDQYJKoZI\nhvcNAQELBQADgYEAOmvre+5tgZ0+F3DgsfxNQqLTrGiBgGCIymPkP/cBXXkNuJyl\n3ac7tArHQc7WEA4U2R2rZbEq8FC3UJJm4nUVtCPvEh3G9OhN2xwYev79yt6pIn/l\nKU0Td2OpVyo0eLqjoX5u2G90IBWzhyjFbo+CcKMrSVKj1YOdG0E3OuiJf00=\n-----END CERTIFICATE-----\n"
   name       = "test_name"
@@ -45,13 +47,13 @@ resource "aci_certificate_authority" "example_tenant" {
   name       = "test_name"
 }
 
-
 ```
 The configuration snippet below shows all possible attributes of the Certificate Authority.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
 ```hcl
+
 resource "aci_certificate_authority" "full_example" {
   annotation  = "annotation"
   cert_chain  = "-----BEGIN CERTIFICATE-----\nMIICODCCAaGgAwIBAgIJAIt8XMntue0VMA0GCSqGSIb3DQEBCwUAMDQxDjAMBgNV\nBAMMBUFkbWluMRUwEwYDVQQKDAxZb3VyIENvbXBhbnkxCzAJBgNVBAYTAlVTMCAX\nDTE4MDEwOTAwNTk0NFoYDzIxMTcxMjE2MDA1OTQ0WjA0MQ4wDAYDVQQDDAVBZG1p\nbjEVMBMGA1UECgwMWW91ciBDb21wYW55MQswCQYDVQQGEwJVUzCBnzANBgkqhkiG\n9w0BAQEFAAOBjQAwgYkCgYEAohG/7axtt7CbSaMP7r+2mhTKbNgh0Ww36C7Ta14i\nv+VmLyKkQHnXinKGhp6uy3Nug+15a+eIu7CrgpBVMQeCiWfsnwRocKcQJWIYDrWl\nXHxGQn31yYKR6mylE7Dcj3rMFybnyhezr5D8GcP85YRPmwG9H2hO/0Y1FUnWu9Iw\nAQkCAwEAAaNQME4wHQYDVR0OBBYEFD0jLXfpkrU/ChzRvfruRs/fy1VXMB8GA1Ud\nIwQYMBaAFD0jLXfpkrU/ChzRvfruRs/fy1VXMAwGA1UdEwQFMAMBAf8wDQYJKoZI\nhvcNAQELBQADgYEAOmvre+5tgZ0+F3DgsfxNQqLTrGiBgGCIymPkP/cBXXkNuJyl\n3ac7tArHQc7WEA4U2R2rZbEq8FC3UJJm4nUVtCPvEh3G9OhN2xwYev79yt6pIn/l\nKU0Td2OpVyo0eLqjoX5u2G90IBWzhyjFbo+CcKMrSVKj1YOdG0E3OuiJf00=\n-----END CERTIFICATE-----\n"
@@ -85,7 +87,6 @@ resource "aci_certificate_authority" "full_example_tenant" {
   ]
 }
 
-
 ```
 
 All examples for the Certificate Authority resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/resources/aci_certificate_authority) folder.
@@ -104,12 +105,11 @@ All examples for the Certificate Authority resource can be found in the [example
 ### Optional ###
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
-  - [aci_certificate_store](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/certificate_store) ([cloudCertStore](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/cloudCertStore/overview))
-  - [aci_public_key_management](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/public_key_management) ([pkiEp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/pkiEp/overview))
-* `annotation` (annotation) - (string) The annotation of the Certificate Authority object.
+  - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/fvTenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
+* `annotation` (annotation) - (string) The annotation of the Certificate Authority object. This attribute is supported in ACI versions: 3.2(1l) and later.
   - Default: `orchestrator:terraform`
 * `description` (descr) - (string) The description of the Certificate Authority object.
-* `name_alias` (nameAlias) - (string) The name alias of the Certificate Authority object.
+* `name_alias` (nameAlias) - (string) The name alias of the Certificate Authority object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 
@@ -125,7 +125,7 @@ All examples for the Certificate Authority resource can be found in the [example
 An existing Certificate Authority can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_certificate_authority.example_certificate_store uni/tn-{name}/certstore/tp-{name}
+terraform import aci_certificate_authority.example uni/tn-{name}/certstore/tp-{name}
 ```
 
 Starting in Terraform version 1.5, an existing Certificate Authority can be imported 
@@ -134,6 +134,6 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/tn-{name}/certstore/tp-{name}"
-  to = aci_certificate_authority.example_certificate_store
+  to = aci_certificate_authority.example
 }
 ```

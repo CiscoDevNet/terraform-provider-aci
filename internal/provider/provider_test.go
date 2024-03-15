@@ -14,6 +14,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
 	"github.com/hashicorp/terraform-plugin-mux/tf5to6server"
 	"github.com/hashicorp/terraform-plugin-mux/tf6muxserver"
+	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	"github.com/hashicorp/terraform-plugin-testing/terraform"
 )
 
 var testAccProtoV6ProviderFactories = map[string]func() (tfprotov6.ProviderServer, error){
@@ -92,6 +94,27 @@ func extractEnvironmentValue(requestData *container.Container) (string, error) {
 	}
 	return "", fmt.Errorf("no cloudProvP instances found in the response")
 
+}
+
+func testCheckResourceAttr(resourceName, attribute, value1 string) resource.TestCheckFunc {
+	return func(s *terraform.State) error {
+
+		rs, ok := s.RootModule().Resources[resourceName]
+		if !ok {
+			return fmt.Errorf("resource not found: %s", resourceName)
+		}
+
+		attrValue, ok := rs.Primary.Attributes[attribute]
+		if !ok {
+			return nil
+		}
+
+		if attrValue != value1 {
+			return fmt.Errorf("attribute %s in resource %s should be %s , but got %s", attribute, resourceName, value1, attrValue)
+		}
+
+		return nil
+	}
 }
 
 func setGlobalAnnotationEnvVariable(t *testing.T, annotation string) {
