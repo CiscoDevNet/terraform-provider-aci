@@ -58,14 +58,14 @@ data "aci_key_ring" "example_tenant" {
 
 * `id` - (string) The distinguished name (DN) of the Key Ring object.
 * `admin_state` (adminState) - (string) The current administrative state of the certificate request process.
-* `annotation` (annotation) - (string) The annotation of the Key Ring object. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotation` (annotation) - (string) The annotation of the Key Ring object.
 * `cert` (cert) - (string) A certificate is a file containing a device's public key along with signed information verifying the identity of the device.
 * `description` (descr) - (string) The description of the Key Ring object.
-* `ecc_curve` (eccCurve) - (string) ECC Curve. This attribute is supported in ACI versions: 6.0(2h) and later.
+* `ecc_curve` (eccCurve) - (string) ECC Curve.
 * `key` (key) - (string) The private key of the certificate.
-* `key_type` (keyType) - (string) Key Type. This attribute is supported in ACI versions: 6.0(2h) and later.
+* `key_type` (keyType) - (string) Key Type.
 * `modulus` (modulus) - (string) The length of the encryption keys. A longer key length increases the difficulty of breaking the key.
-* `name_alias` (nameAlias) - (string) The name alias of the Key Ring object. This attribute is supported in ACI versions: 2.2(1k) and later.
+* `name_alias` (nameAlias) - (string) The name alias of the Key Ring object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `regen` (regen) - (string) Forces regeneration of the keypair. Each PKI device holds a pair of asymmetric Rivest-Shamir-Adleman (RSA) or Elliptic Curve Cryptography (ECC) encryption keys, one kept private and one made public, stored in an internal key ring.

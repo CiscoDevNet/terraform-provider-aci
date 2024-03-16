@@ -51,7 +51,7 @@ data "aci_endpoint_tag_ip" "example_tenant" {
 
 * `id` - (string) The distinguished name (DN) of the Endpoint Tag Ip object.
 * `annotation` (annotation) - (string) The annotation of the Endpoint Tag Ip object.
-* `id_attribute` (id) - (string) The identifier of the Endpoint Tag Ip object. This attribute is supported in ACI versions: 1.0(1e) and later.
+* `id_attribute` (id) - (string) The identifier of the Endpoint Tag Ip object.
 * `name` (name) - (string) The name of the Endpoint Tag Ip object.
 * `name_alias` (nameAlias) - (string) The name alias of the Endpoint Tag Ip object.
 

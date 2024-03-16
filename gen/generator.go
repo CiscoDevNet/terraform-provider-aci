@@ -619,7 +619,6 @@ func main() {
 		if !foundValidTestType {
 			model.TestType = classifyTests(model.PkgName, predecessorPaths, testCloudApic, testApic)
 		}
-		log.Printf("HERE test types for class %v and its paths %v are %v", model.PkgName, predecessorPaths, model.TestType)
 		addGetTestClassificationFunc(model.TestType)
 		if model.Exclude {
 			excludeResources = append(excludeResources, model.PkgName)
@@ -1326,9 +1325,9 @@ func (m *Model) SetClassProperties(classDetails interface{}) {
 				m.HasNamedProperties = true
 			}
 
-			if propertyValue.(map[string]interface{})["versions"] != nil {
-				property.Versions = formatVersion(propertyValue.(map[string]interface{})["versions"].(string))
-			}
+			// if propertyValue.(map[string]interface{})["versions"] != nil {
+			// 	property.Versions = formatVersion(propertyValue.(map[string]interface{})["versions"].(string))
+			// }
 
 			properties[propertyName] = property
 

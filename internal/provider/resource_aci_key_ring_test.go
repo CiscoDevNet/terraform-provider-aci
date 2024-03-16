@@ -9,12 +9,14 @@ import (
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	"github.com/hashicorp/terraform-plugin-testing/terraform"
 )
 
 func TestAccResourcePkiKeyRingWithPolUni(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
 		PreCheck: func() {
+			time.Sleep(10 * time.Second)
 			testAccPreCheck(t, "both")
 		},
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -24,6 +26,18 @@ func TestAccResourcePkiKeyRingWithPolUni(t *testing.T) {
 				Config:             testConfigPkiKeyRingMinDependencyWithPolUni,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
+					func(s *terraform.State) error {
+						stateRefreshFunc := func() (interface{}, string, error) {
+							time.Sleep(15 * time.Second)
+							return nil, "", nil
+						}
+						conf := &resource.StateChangeConf{
+							Refresh: stateRefreshFunc,
+							Timeout: 1 * time.Second,
+						}
+						conf.WaitForState()
+						return nil
+					},
 					resource.TestCheckResourceAttr("aci_key_ring.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "admin_state", "started"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotation", "orchestrator:terraform"),
@@ -41,12 +55,21 @@ func TestAccResourcePkiKeyRingWithPolUni(t *testing.T) {
 			},
 			// Update with all config and verify default APIC values
 			{
-				PreConfig: func() {
-					time.Sleep(10 * time.Second)
-				},
 				Config:             testConfigPkiKeyRingAllDependencyWithPolUni,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
+					func(s *terraform.State) error {
+						stateRefreshFunc := func() (interface{}, string, error) {
+							time.Sleep(15 * time.Second)
+							return nil, "", nil
+						}
+						conf := &resource.StateChangeConf{
+							Refresh: stateRefreshFunc,
+							Timeout: 1 * time.Second,
+						}
+						conf.WaitForState()
+						return nil
+					},
 					resource.TestCheckResourceAttr("aci_key_ring.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "admin_state", "completed"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotation", "annotation"),
@@ -64,23 +87,41 @@ func TestAccResourcePkiKeyRingWithPolUni(t *testing.T) {
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				PreConfig: func() {
-					time.Sleep(10 * time.Second)
-				},
 				Config:             testConfigPkiKeyRingMinDependencyWithPolUni,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
+					func(s *terraform.State) error {
+						stateRefreshFunc := func() (interface{}, string, error) {
+							time.Sleep(15 * time.Second)
+							return nil, "", nil
+						}
+						conf := &resource.StateChangeConf{
+							Refresh: stateRefreshFunc,
+							Timeout: 1 * time.Second,
+						}
+						conf.WaitForState()
+						return nil
+					},
 					resource.TestCheckResourceAttr("aci_key_ring.test", "name", "test_name"),
 				),
 			},
 			// Update with empty strings config or default value
 			{
-				PreConfig: func() {
-					time.Sleep(10 * time.Second)
-				},
 				Config:             testConfigPkiKeyRingResetDependencyWithPolUni,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
+					func(s *terraform.State) error {
+						stateRefreshFunc := func() (interface{}, string, error) {
+							time.Sleep(15 * time.Second)
+							return nil, "", nil
+						}
+						conf := &resource.StateChangeConf{
+							Refresh: stateRefreshFunc,
+							Timeout: 1 * time.Second,
+						}
+						conf.WaitForState()
+						return nil
+					},
 					resource.TestCheckResourceAttr("aci_key_ring.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "admin_state", "started"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotation", "orchestrator:terraform"),
@@ -105,6 +146,18 @@ func TestAccResourcePkiKeyRingWithPolUni(t *testing.T) {
 					"key",
 				},
 				Check: resource.ComposeAggregateTestCheckFunc(
+					func(s *terraform.State) error {
+						stateRefreshFunc := func() (interface{}, string, error) {
+							time.Sleep(15 * time.Second)
+							return nil, "", nil
+						}
+						conf := &resource.StateChangeConf{
+							Refresh: stateRefreshFunc,
+							Timeout: 1 * time.Second,
+						}
+						conf.WaitForState()
+						return nil
+					},
 					resource.TestCheckResourceAttr("aci_key_ring.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "admin_state", "started"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotation", "orchestrator:terraform"),
@@ -123,12 +176,21 @@ func TestAccResourcePkiKeyRingWithPolUni(t *testing.T) {
 			},
 			// Update with children
 			{
-				PreConfig: func() {
-					time.Sleep(10 * time.Second)
-				},
 				Config:             testConfigPkiKeyRingChildrenDependencyWithPolUni,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
+					func(s *terraform.State) error {
+						stateRefreshFunc := func() (interface{}, string, error) {
+							time.Sleep(15 * time.Second)
+							return nil, "", nil
+						}
+						conf := &resource.StateChangeConf{
+							Refresh: stateRefreshFunc,
+							Timeout: 1 * time.Second,
+						}
+						conf.WaitForState()
+						return nil
+					},
 					resource.TestCheckResourceAttr("aci_key_ring.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "admin_state", "started"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotation", "orchestrator:terraform"),
@@ -178,12 +240,21 @@ func TestAccResourcePkiKeyRingWithPolUni(t *testing.T) {
 			},
 			// Update with children removed from config
 			{
-				PreConfig: func() {
-					time.Sleep(10 * time.Second)
-				},
 				Config:             testConfigPkiKeyRingChildrenRemoveFromConfigDependencyWithPolUni,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
+					func(s *terraform.State) error {
+						stateRefreshFunc := func() (interface{}, string, error) {
+							time.Sleep(15 * time.Second)
+							return nil, "", nil
+						}
+						conf := &resource.StateChangeConf{
+							Refresh: stateRefreshFunc,
+							Timeout: 1 * time.Second,
+						}
+						conf.WaitForState()
+						return nil
+					},
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.key", "annotations_1"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.key", "annotations_2"),
@@ -193,12 +264,21 @@ func TestAccResourcePkiKeyRingWithPolUni(t *testing.T) {
 			},
 			// Update with children first child removed
 			{
-				PreConfig: func() {
-					time.Sleep(10 * time.Second)
-				},
 				Config:             testConfigPkiKeyRingChildrenRemoveOneDependencyWithPolUni,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
+					func(s *terraform.State) error {
+						stateRefreshFunc := func() (interface{}, string, error) {
+							time.Sleep(15 * time.Second)
+							return nil, "", nil
+						}
+						conf := &resource.StateChangeConf{
+							Refresh: stateRefreshFunc,
+							Timeout: 1 * time.Second,
+						}
+						conf.WaitForState()
+						return nil
+					},
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.key", "annotations_2"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.#", "1"),
@@ -206,12 +286,21 @@ func TestAccResourcePkiKeyRingWithPolUni(t *testing.T) {
 			},
 			// Update with all children removed
 			{
-				PreConfig: func() {
-					time.Sleep(10 * time.Second)
-				},
 				Config:             testConfigPkiKeyRingChildrenRemoveAllDependencyWithPolUni,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
+					func(s *terraform.State) error {
+						stateRefreshFunc := func() (interface{}, string, error) {
+							time.Sleep(15 * time.Second)
+							return nil, "", nil
+						}
+						conf := &resource.StateChangeConf{
+							Refresh: stateRefreshFunc,
+							Timeout: 1 * time.Second,
+						}
+						conf.WaitForState()
+						return nil
+					},
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.#", "0"),
 				),
 			},
@@ -222,6 +311,7 @@ func TestAccResourcePkiKeyRingWithFvTenant(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
 		PreCheck: func() {
+			time.Sleep(10 * time.Second)
 			testAccPreCheck(t, "cloud")
 		},
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -231,6 +321,18 @@ func TestAccResourcePkiKeyRingWithFvTenant(t *testing.T) {
 				Config:             testConfigPkiKeyRingMinDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
+					func(s *terraform.State) error {
+						stateRefreshFunc := func() (interface{}, string, error) {
+							time.Sleep(15 * time.Second)
+							return nil, "", nil
+						}
+						conf := &resource.StateChangeConf{
+							Refresh: stateRefreshFunc,
+							Timeout: 1 * time.Second,
+						}
+						conf.WaitForState()
+						return nil
+					},
 					resource.TestCheckResourceAttr("aci_key_ring.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "admin_state", "started"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotation", "orchestrator:terraform"),
@@ -248,12 +350,21 @@ func TestAccResourcePkiKeyRingWithFvTenant(t *testing.T) {
 			},
 			// Update with all config and verify default APIC values
 			{
-				PreConfig: func() {
-					time.Sleep(10 * time.Second)
-				},
 				Config:             testConfigPkiKeyRingAllDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
+					func(s *terraform.State) error {
+						stateRefreshFunc := func() (interface{}, string, error) {
+							time.Sleep(15 * time.Second)
+							return nil, "", nil
+						}
+						conf := &resource.StateChangeConf{
+							Refresh: stateRefreshFunc,
+							Timeout: 1 * time.Second,
+						}
+						conf.WaitForState()
+						return nil
+					},
 					resource.TestCheckResourceAttr("aci_key_ring.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "admin_state", "completed"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotation", "annotation"),
@@ -271,23 +382,41 @@ func TestAccResourcePkiKeyRingWithFvTenant(t *testing.T) {
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				PreConfig: func() {
-					time.Sleep(10 * time.Second)
-				},
 				Config:             testConfigPkiKeyRingMinDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
+					func(s *terraform.State) error {
+						stateRefreshFunc := func() (interface{}, string, error) {
+							time.Sleep(15 * time.Second)
+							return nil, "", nil
+						}
+						conf := &resource.StateChangeConf{
+							Refresh: stateRefreshFunc,
+							Timeout: 1 * time.Second,
+						}
+						conf.WaitForState()
+						return nil
+					},
 					resource.TestCheckResourceAttr("aci_key_ring.test", "name", "test_name"),
 				),
 			},
 			// Update with empty strings config or default value
 			{
-				PreConfig: func() {
-					time.Sleep(10 * time.Second)
-				},
 				Config:             testConfigPkiKeyRingResetDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
+					func(s *terraform.State) error {
+						stateRefreshFunc := func() (interface{}, string, error) {
+							time.Sleep(15 * time.Second)
+							return nil, "", nil
+						}
+						conf := &resource.StateChangeConf{
+							Refresh: stateRefreshFunc,
+							Timeout: 1 * time.Second,
+						}
+						conf.WaitForState()
+						return nil
+					},
 					resource.TestCheckResourceAttr("aci_key_ring.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "admin_state", "started"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotation", "orchestrator:terraform"),
@@ -312,6 +441,18 @@ func TestAccResourcePkiKeyRingWithFvTenant(t *testing.T) {
 					"key",
 				},
 				Check: resource.ComposeAggregateTestCheckFunc(
+					func(s *terraform.State) error {
+						stateRefreshFunc := func() (interface{}, string, error) {
+							time.Sleep(15 * time.Second)
+							return nil, "", nil
+						}
+						conf := &resource.StateChangeConf{
+							Refresh: stateRefreshFunc,
+							Timeout: 1 * time.Second,
+						}
+						conf.WaitForState()
+						return nil
+					},
 					resource.TestCheckResourceAttr("aci_key_ring.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "admin_state", "started"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotation", "orchestrator:terraform"),
@@ -330,12 +471,21 @@ func TestAccResourcePkiKeyRingWithFvTenant(t *testing.T) {
 			},
 			// Update with children
 			{
-				PreConfig: func() {
-					time.Sleep(10 * time.Second)
-				},
 				Config:             testConfigPkiKeyRingChildrenDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
+					func(s *terraform.State) error {
+						stateRefreshFunc := func() (interface{}, string, error) {
+							time.Sleep(15 * time.Second)
+							return nil, "", nil
+						}
+						conf := &resource.StateChangeConf{
+							Refresh: stateRefreshFunc,
+							Timeout: 1 * time.Second,
+						}
+						conf.WaitForState()
+						return nil
+					},
 					resource.TestCheckResourceAttr("aci_key_ring.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "admin_state", "started"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotation", "orchestrator:terraform"),
@@ -385,12 +535,21 @@ func TestAccResourcePkiKeyRingWithFvTenant(t *testing.T) {
 			},
 			// Update with children removed from config
 			{
-				PreConfig: func() {
-					time.Sleep(10 * time.Second)
-				},
 				Config:             testConfigPkiKeyRingChildrenRemoveFromConfigDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
+					func(s *terraform.State) error {
+						stateRefreshFunc := func() (interface{}, string, error) {
+							time.Sleep(15 * time.Second)
+							return nil, "", nil
+						}
+						conf := &resource.StateChangeConf{
+							Refresh: stateRefreshFunc,
+							Timeout: 1 * time.Second,
+						}
+						conf.WaitForState()
+						return nil
+					},
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.key", "annotations_1"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.key", "annotations_2"),
@@ -400,12 +559,21 @@ func TestAccResourcePkiKeyRingWithFvTenant(t *testing.T) {
 			},
 			// Update with children first child removed
 			{
-				PreConfig: func() {
-					time.Sleep(10 * time.Second)
-				},
 				Config:             testConfigPkiKeyRingChildrenRemoveOneDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
+					func(s *terraform.State) error {
+						stateRefreshFunc := func() (interface{}, string, error) {
+							time.Sleep(15 * time.Second)
+							return nil, "", nil
+						}
+						conf := &resource.StateChangeConf{
+							Refresh: stateRefreshFunc,
+							Timeout: 1 * time.Second,
+						}
+						conf.WaitForState()
+						return nil
+					},
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.key", "annotations_2"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.#", "1"),
@@ -413,12 +581,21 @@ func TestAccResourcePkiKeyRingWithFvTenant(t *testing.T) {
 			},
 			// Update with all children removed
 			{
-				PreConfig: func() {
-					time.Sleep(10 * time.Second)
-				},
 				Config:             testConfigPkiKeyRingChildrenRemoveAllDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
+					func(s *terraform.State) error {
+						stateRefreshFunc := func() (interface{}, string, error) {
+							time.Sleep(15 * time.Second)
+							return nil, "", nil
+						}
+						conf := &resource.StateChangeConf{
+							Refresh: stateRefreshFunc,
+							Timeout: 1 * time.Second,
+						}
+						conf.WaitForState()
+						return nil
+					},
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.#", "0"),
 				),
 			},

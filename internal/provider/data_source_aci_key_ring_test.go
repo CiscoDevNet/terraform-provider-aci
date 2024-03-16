@@ -7,20 +7,37 @@ package provider
 import (
 	"regexp"
 	"testing"
+	"time"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	"github.com/hashicorp/terraform-plugin-testing/terraform"
 )
 
 func TestAccDataSourcePkiKeyRingWithPolUni(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t, "both") },
+		PreCheck: func() {
+			time.Sleep(10 * time.Second)
+			testAccPreCheck(t, "both")
+		},
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
 				Config:             testConfigPkiKeyRingDataSourceDependencyWithPolUni,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
+					func(s *terraform.State) error {
+						stateRefreshFunc := func() (interface{}, string, error) {
+							time.Sleep(15 * time.Second)
+							return nil, "", nil
+						}
+						conf := &resource.StateChangeConf{
+							Refresh: stateRefreshFunc,
+							Timeout: 1 * time.Second,
+						}
+						conf.WaitForState()
+						return nil
+					},
 					resource.TestCheckResourceAttr("data.aci_key_ring.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("data.aci_key_ring.test", "admin_state", "started"),
 					resource.TestCheckResourceAttr("data.aci_key_ring.test", "annotation", "orchestrator:terraform"),
@@ -46,13 +63,28 @@ func TestAccDataSourcePkiKeyRingWithPolUni(t *testing.T) {
 func TestAccDataSourcePkiKeyRingWithFvTenant(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t, "cloud") },
+		PreCheck: func() {
+			time.Sleep(10 * time.Second)
+			testAccPreCheck(t, "cloud")
+		},
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
 				Config:             testConfigPkiKeyRingDataSourceDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
+					func(s *terraform.State) error {
+						stateRefreshFunc := func() (interface{}, string, error) {
+							time.Sleep(15 * time.Second)
+							return nil, "", nil
+						}
+						conf := &resource.StateChangeConf{
+							Refresh: stateRefreshFunc,
+							Timeout: 1 * time.Second,
+						}
+						conf.WaitForState()
+						return nil
+					},
 					resource.TestCheckResourceAttr("data.aci_key_ring.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("data.aci_key_ring.test", "admin_state", "started"),
 					resource.TestCheckResourceAttr("data.aci_key_ring.test", "annotation", "orchestrator:terraform"),
