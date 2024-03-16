@@ -106,10 +106,10 @@ All examples for the Certificate Authority resource can be found in the [example
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/fvTenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
-* `annotation` (annotation) - (string) The annotation of the Certificate Authority object. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotation` (annotation) - (string) The annotation of the Certificate Authority object.
   - Default: `orchestrator:terraform`
 * `description` (descr) - (string) The description of the Certificate Authority object.
-* `name_alias` (nameAlias) - (string) The name alias of the Certificate Authority object. This attribute is supported in ACI versions: 2.2(1k) and later.
+* `name_alias` (nameAlias) - (string) The name alias of the Certificate Authority object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 

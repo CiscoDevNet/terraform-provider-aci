@@ -4,10 +4,21 @@
 
 package provider
 
+{{- $found_cert := false -}}
+{{- range $key, $value := $.all}}
+  {{- if contains $key "cert" }}
+    {{- $found_cert = true -}}
+  {{- end}}
+{{- end}}
+
 import (
 	"testing"
+	"time"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	{{- if $found_cert }}
+	"github.com/hashicorp/terraform-plugin-testing/terraform"
+	{{- end}}
 )
 
 {{- if .parents}}
@@ -15,13 +26,8 @@ import (
 func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		{{- $found_cert := false -}}
-{{- range $key, $value := $.all}}
-  {{- if contains $key "cert" }}
-    {{- $found_cert = true -}}
-  {{- end}}
-{{- end}}
 PreCheck: func() { 
+  time.Sleep(10 * time.Second)
   testAccPreCheck(t, "{{.test_type}}")
 },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -31,6 +37,20 @@ PreCheck: func() {
 				Config: testConfig{{$.resourceClassName}}MinDependencyWith{{capitalize .class_name}},
 				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
+				{{- if $found_cert }}
+				func(s *terraform.State) error {
+                        stateRefreshFunc := func() (interface{}, string, error) {
+                            time.Sleep(15 * time.Second)
+                            return nil, "", nil
+                        }
+                        conf := &resource.StateChangeConf{
+                            Refresh: stateRefreshFunc,
+							Timeout: 1 * time.Second,
+                        }
+                        conf.WaitForState()
+                        return nil
+                    },
+				{{- end}}
 		{{- range $key, $value := $.resource_required}}{{$contains := definedInMap $key $.default}}
 			{{- if not $contains}}
 				{{- if eq $key "target_dn" }}
@@ -58,6 +78,20 @@ PreCheck: func() {
 				Config: testConfig{{$.resourceClassName}}AllDependencyWith{{capitalize .class_name}},
 				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
+				{{- if $found_cert }}
+				func(s *terraform.State) error {
+                        stateRefreshFunc := func() (interface{}, string, error) {
+                            time.Sleep(15 * time.Second)
+                            return nil, "", nil
+                        }
+                        conf := &resource.StateChangeConf{
+                            Refresh: stateRefreshFunc,
+							Timeout: 1 * time.Second,
+                        }
+                        conf.WaitForState()
+                        return nil
+                    },
+				{{- end}}
 		{{- range $key, $value := $.resource_required}}{{$contains := definedInMap $key $.all}}
 			{{- if not $contains}}
 				{{- if eq $key "target_dn" }}
@@ -85,6 +119,20 @@ PreCheck: func() {
 				Config: testConfig{{$.resourceClassName}}MinDependencyWith{{capitalize .class_name}},
 				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
+				{{- if $found_cert }}
+				func(s *terraform.State) error {
+                        stateRefreshFunc := func() (interface{}, string, error) {
+                            time.Sleep(15 * time.Second)
+                            return nil, "", nil
+                        }
+                        conf := &resource.StateChangeConf{
+                            Refresh: stateRefreshFunc,
+							Timeout: 1 * time.Second,
+                        }
+                        conf.WaitForState()
+                        return nil
+                    },
+				{{- end}}
 		{{- range $key, $value := $.resource_required}}
 			{{- if eq $key "target_dn" }}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$.targetDn}}"),
@@ -115,6 +163,20 @@ PreCheck: func() {
 				Config: testConfig{{$.resourceClassName}}ResetDependencyWith{{capitalize .class_name}},
 				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
+				{{- if $found_cert }}
+				func(s *terraform.State) error {
+                        stateRefreshFunc := func() (interface{}, string, error) {
+                            time.Sleep(15 * time.Second)
+                            return nil, "", nil
+                        }
+                        conf := &resource.StateChangeConf{
+                            Refresh: stateRefreshFunc,
+							Timeout: 1 * time.Second,
+                        }
+                        conf.WaitForState()
+                        return nil
+                    },
+				{{- end}}
 		{{- range $key, $value := $.resource_required}}
 			{{- if eq $key "target_dn" }}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$.targetDn}}"),
@@ -154,6 +216,20 @@ PreCheck: func() {
 				{{- end}}
 				{{- end}}
 				Check: resource.ComposeAggregateTestCheckFunc(
+				{{- if $found_cert }}
+				func(s *terraform.State) error {
+                        stateRefreshFunc := func() (interface{}, string, error) {
+                            time.Sleep(15 * time.Second)
+                            return nil, "", nil
+                        }
+                        conf := &resource.StateChangeConf{
+                            Refresh: stateRefreshFunc,
+							Timeout: 1 * time.Second,
+                        }
+                        conf.WaitForState()
+                        return nil
+                    },
+				{{- end}}
 		{{- range $key, $value := $.resource_required}}
 			{{- if eq $key "target_dn" }}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$.targetDn}}"),
@@ -178,6 +254,20 @@ PreCheck: func() {
 				Config: testConfig{{$.resourceClassName}}ChildrenDependencyWith{{capitalize .class_name}},
 				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
+				{{- if $found_cert }}
+				func(s *terraform.State) error {
+                        stateRefreshFunc := func() (interface{}, string, error) {
+                            time.Sleep(15 * time.Second)
+                            return nil, "", nil
+                        }
+                        conf := &resource.StateChangeConf{
+                            Refresh: stateRefreshFunc,
+							Timeout: 1 * time.Second,
+                        }
+                        conf.WaitForState()
+                        return nil
+                    },
+				{{- end}}
 		{{- range $key, $value := $.resource_required}}
 			{{- if eq $key "target_dn" }}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$.targetDn}}"),
@@ -254,6 +344,20 @@ PreCheck: func() {
 				Config: testConfig{{$.resourceClassName}}ChildrenRemoveFromConfigDependencyWith{{capitalize .class_name}},
 				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
+				{{- if $found_cert }}
+				func(s *terraform.State) error {
+                        stateRefreshFunc := func() (interface{}, string, error) {
+                            time.Sleep(15 * time.Second)
+                            return nil, "", nil
+                        }
+                        conf := &resource.StateChangeConf{
+                            Refresh: stateRefreshFunc,
+							Timeout: 1 * time.Second,
+                        }
+                        conf.WaitForState()
+                        return nil
+                    },
+				{{- end}}
 		{{- range $key, $value := .min}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
 		{{- end}}
@@ -285,6 +389,20 @@ PreCheck: func() {
 				Config: testConfig{{$.resourceClassName}}ChildrenRemoveOneDependencyWith{{capitalize .class_name}},
 				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
+				{{- if $found_cert }}
+				func(s *terraform.State) error {
+                        stateRefreshFunc := func() (interface{}, string, error) {
+                            time.Sleep(15 * time.Second)
+                            return nil, "", nil
+                        }
+                        conf := &resource.StateChangeConf{
+                            Refresh: stateRefreshFunc,
+							Timeout: 1 * time.Second,
+                        }
+                        conf.WaitForState()
+                        return nil
+                    },
+				{{- end}}
 		{{- range $key, $value := .min}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
 		{{- end}}
@@ -320,6 +438,20 @@ PreCheck: func() {
 				Config: testConfig{{$.resourceClassName}}ChildrenRemoveAllDependencyWith{{capitalize .class_name}},
 				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
+				{{- if $found_cert }}
+				func(s *terraform.State) error {
+                        stateRefreshFunc := func() (interface{}, string, error) {
+                            time.Sleep(15 * time.Second)
+                            return nil, "", nil
+                        }
+                        conf := &resource.StateChangeConf{
+                            Refresh: stateRefreshFunc,
+							Timeout: 1 * time.Second,
+                        }
+                        conf.WaitForState()
+                        return nil
+                    },
+				{{- end}}
 		{{- range $key, $value := .min}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
 		{{- end}}
@@ -355,13 +487,29 @@ PreCheck: func() {
 func TestAccResource{{.resourceClassName}}(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t, "{{.test_type}}") },
+		PreCheck:                 func() { 
+		time.Sleep(10 * time.Second)
+		testAccPreCheck(t, "{{.test_type}}") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
 				Config: testConfig{{.resourceClassName}}Min,
 				Check: resource.ComposeAggregateTestCheckFunc(
+				{{- if $found_cert }}
+				func(s *terraform.State) error {
+                        stateRefreshFunc := func() (interface{}, string, error) {
+                            time.Sleep(15 * time.Second)
+                            return nil, "", nil
+                        }
+                        conf := &resource.StateChangeConf{
+                            Refresh: stateRefreshFunc,
+							Timeout: 1 * time.Second,
+                        }
+                        conf.WaitForState()
+                        return nil
+                    },
+				{{- end}}
 	{{- range $key, $value := .resource_required}}{{$contains := definedInMap $key $.default}}
 		{{- if not $contains}}
 			{{- if eq $key "target_dn" }}
@@ -380,6 +528,20 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 			{
 				Config: testConfig{{.resourceClassName}}All,
 				Check: resource.ComposeAggregateTestCheckFunc(
+				{{- if $found_cert }}
+				func(s *terraform.State) error {
+                        stateRefreshFunc := func() (interface{}, string, error) {
+                            time.Sleep(15 * time.Second)
+                            return nil, "", nil
+                        }
+                        conf := &resource.StateChangeConf{
+                            Refresh: stateRefreshFunc,
+							Timeout: 1 * time.Second,
+                        }
+                        conf.WaitForState()
+                        return nil
+                    },
+				{{- end}}
 	{{- range $key, $value := .resource_required}}{{$contains := definedInMap $key $.all}}
 		{{- if not $contains}}
 			{{- if eq $key "target_dn" }}
@@ -398,6 +560,20 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 			{
 				Config: testConfig{{.resourceClassName}}Min,
 				Check: resource.ComposeAggregateTestCheckFunc(
+				{{- if $found_cert }}
+				func(s *terraform.State) error {
+                        stateRefreshFunc := func() (interface{}, string, error) {
+                            time.Sleep(15 * time.Second)
+                            return nil, "", nil
+                        }
+                        conf := &resource.StateChangeConf{
+                            Refresh: stateRefreshFunc,
+							Timeout: 1 * time.Second,
+                        }
+                        conf.WaitForState()
+                        return nil
+                    },
+				{{- end}}
 	{{- range $key, $value := .resource_required}}{{$contains := definedInMap $key $.all}}
 		{{- if not $contains}}
 			{{- if eq $key "target_dn" }}
@@ -424,6 +600,20 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 			{
 				Config: testConfig{{.resourceClassName}}Reset,
 				Check: resource.ComposeAggregateTestCheckFunc(
+				{{- if $found_cert }}
+				func(s *terraform.State) error {
+                        stateRefreshFunc := func() (interface{}, string, error) {
+                            time.Sleep(15 * time.Second)
+                            return nil, "", nil
+                        }
+                        conf := &resource.StateChangeConf{
+                            Refresh: stateRefreshFunc,
+							Timeout: 1 * time.Second,
+                        }
+                        conf.WaitForState()
+                        return nil
+                    },
+				{{- end}}
 	{{- range $key, $value := $.resource_required}}
 			{{- if eq $key "target_dn" }}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$.targetDn}}"),
@@ -523,6 +713,20 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 			{
 				Config: testConfig{{.resourceClassName}}ChildrenRemoveOne,
 				Check: resource.ComposeAggregateTestCheckFunc(
+				{{- if $found_cert }}
+				func(s *terraform.State) error {
+                        stateRefreshFunc := func() (interface{}, string, error) {
+                            time.Sleep(15 * time.Second)
+                            return nil, "", nil
+                        }
+                        conf := &resource.StateChangeConf{
+                            Refresh: stateRefreshFunc,
+							Timeout: 1 * time.Second,
+                        }
+                        conf.WaitForState()
+                        return nil
+                    },
+				{{- end}}
 		{{- range $key, $value := .min}}
 			{{- if eq $key "target_dn" }}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$.targetDn}}"),
@@ -561,6 +765,20 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 			{
 				Config: testConfig{{.resourceClassName}}ChildrenRemoveAll,
 				Check: resource.ComposeAggregateTestCheckFunc(
+				{{- if $found_cert }}
+				func(s *terraform.State) error {
+                        stateRefreshFunc := func() (interface{}, string, error) {
+                            time.Sleep(15 * time.Second)
+                            return nil, "", nil
+                        }
+                        conf := &resource.StateChangeConf{
+                            Refresh: stateRefreshFunc,
+							Timeout: 1 * time.Second,
+                        }
+                        conf.WaitForState()
+                        return nil
+                    },
+				{{- end}}
 		{{- range $key, $value := .min}}
 			{{- if eq $key "target_dn" }}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$.targetDn}}"),
