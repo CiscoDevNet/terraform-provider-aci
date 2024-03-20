@@ -47,7 +47,7 @@ resource "aci_function_node" "example" {
 - `name` - (Required) Name of the Function Node object. Type: String.
     - The valid function node name format for cloud APICs is `NX`, where X is a number starting with 0.
     - The valid function node name format for on-prem APICs is `NX`, where X is a number starting with 1.
-    - The valid function node - copy name format for on-prem APICs is `CPX`, where X is a number starting with 1.
+    - The valid copy function node name format for on-premises APICs is `CPX`, where X is a number starting with 1.
 - `annotation` - (Optional) Annotation of the Function Node object. Type: String.
 - `description` - (Optional) Description of the Function Node object. Type: String.
 - `func_template_type` - (Optional) Function Template type of the Function Node object. Allowed values: "OTHER", "FW_TRANS", "FW_ROUTED", "CLOUD_VENDOR_LB", "CLOUD_VENDOR_FW", "CLOUD_NATIVE_LB", "CLOUD_NATIVE_FW", "ADC_TWO_ARM", "ADC_ONE_ARM". Default value: "OTHER". Type: String.

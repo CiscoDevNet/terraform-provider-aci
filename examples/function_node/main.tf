@@ -17,6 +17,7 @@ provider "aci" {
 data "aci_tenant" "tf_tenant" {
   name = "tf_ansible_test"
 }
+
 data "aci_vrf" "tf_vrf" {
   tenant_dn = data.aci_tenant.tf_tenant.id
   name      = "tf_vrf"
@@ -26,10 +27,12 @@ data "aci_cloud_context_profile" "ccp1" {
   tenant_dn = data.aci_tenant.tf_tenant.id
   name      = "tf_ccp"
 }
+
 data "aci_cloud_cidr_pool" "cidr1" {
   cloud_context_profile_dn = data.aci_cloud_context_profile.ccp1.id
   addr                     = "10.20.0.0/25"
 }
+
 data "aci_cloud_subnet" "cs1" {
   cloud_cidr_pool_dn = data.aci_cloud_cidr_pool.cidr1.id
   ip                 = "10.20.0.0/25"
@@ -67,13 +70,13 @@ resource "aci_cloud_l4_l7_native_load_balancer" "cloud_nlb" {
   relation_cloud_rs_ldev_to_cloud_subnet = [data.aci_cloud_subnet.cs1.id]
   allow_all                              = "yes"
   is_static_ip                           = "yes"
-  static_ip_addresses                      = ["10.20.0.0"]
+  static_ip_addresses                    = ["10.20.0.0"]
   scheme                                 = "internal"
   cloud_l4l7_load_balancer_type          = "network"
 }
 
 #  1. Create first L4-L7 Service Graph Template 'sg1' with type cloud
-#    Create two nodes with basic parameters
+#    Add two nodes with basic parameters
 #     - The first node 'N0' with type ADC_ONE_ARM and relation to the cloud native load balancer
 #     - The second node 'N1' with type FW_ROUTED and relation to the 3rd party firewall
 #    Create the connection between the templates ('T1 - consumer' and 'T2 - provider') and nodes ('N0' and 'N1').
@@ -153,7 +156,7 @@ resource "aci_connection" "sg1_n1-t1" {
 }
 
 #  2. Create second L4-L7 Service Graph Template 'sg2' with type cloud
-#    Create two nodes with additional parameters
+#    Add two nodes with additional parameters
 #     - The first node 'N0' with type ADC_ONE_ARM and relation to the cloud native load balancer
 #     - The second node 'N1' with type FW_ROUTED and relation to the 3rd party firewall
 #    Create the connection between the templates ('T1 - consumer' and 'T2 - provider') and nodes ('N0' and 'N1').
