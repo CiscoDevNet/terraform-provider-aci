@@ -21,7 +21,7 @@ global:
     prio: "priority"
     descr: "description"
   ignores:
-  - "userdom"
+    - "userdom"
 
 l3extRsRedistributePol:
   overwrites:
@@ -111,7 +111,7 @@ fvEpMacTag:
     datasource_non_existing:
       mac: "00:00:00:00:00:01"
   ignores:
-  - "ctxName"
+    - "ctxName"
 
 fvEpIpTag:
   test_values:
@@ -156,3 +156,50 @@ tagTag:
       parent_dependency: ""
       parent_dn: "aci_tenant.test.id"
       class_in_parent: false
+
+fvFBRGroup:
+  resource_required:
+    - "name"
+  datasource_required:
+    - "name"
+  test_values:
+    default:
+      name: "fallback_route_group"
+    resource_required:
+      name: "fallback_route_group"
+    datasource_required:
+      name: "fallback_route_group"
+    datasource_non_existing:
+      name: "fallback_route_group_non_existing"
+  parents:
+    - class_name: "fvCtx"
+      parent_dependency: "fvTenant"
+      parent_dn: "aci_vrf.test.id"
+      class_in_parent: false
+
+fvFBRMember:
+  overwrites:
+    rnh_addr: "fallback_member_addr"
+  documentation:
+    rnhAddr: "The Fallback Member Address of the %s object."
+  resource_required:
+    - "fallback_member_addr"
+  datasource_required:
+    - "fallback_member_addr"
+  test_values:
+    default:
+      fallback_member_addr: "2.2.2.2"
+    resource_required:
+      fallback_member_addr: "2.2.2.3"
+    datasource_required:
+      fallback_member_addr: "2.2.2.3"
+    datasource_non_existing:
+      fallback_member_addr: "2.2.2.4"
+    test_values_for_parent:
+      - fallback_member_addr: "2.2.2.2"
+      - fallback_member_addr: "2.2.2.3"
+  parents:
+    - class_name: "fvFBRGroup"
+      parent_dependency: "fvCtx"
+      parent_dn: "aci_fallback_route_group.test.id"
+      class_in_parent: true

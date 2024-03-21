@@ -12,13 +12,13 @@ resource "aci_pim_route_map_entry" "full_example_pim_route_map_policy" {
   source_ip           = "1.1.1.1/30"
   annotations = [
     {
-      key   = "annotations_1"
+      key   = "key_0"
       value = "value_1"
     }
   ]
   tags = [
     {
-      key   = "tags_1"
+      key   = "key_0"
       value = "value_1"
     }
   ]

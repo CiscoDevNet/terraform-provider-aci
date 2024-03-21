@@ -103,13 +103,13 @@ func TestAccResourcePimRouteMapEntryWithPimRouteMapPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "rendezvous_point_ip", "0.0.0.0"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "source_ip", "0.0.0.0"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.0.key", "annotations_1"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.1.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.1.value", "value_2"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "tags.0.key", "tags_1"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "tags.1.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "tags.1.value", "value_2"),
 				),
 			},
@@ -128,13 +128,13 @@ func TestAccResourcePimRouteMapEntryWithPimRouteMapPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "rendezvous_point_ip", "0.0.0.0"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "source_ip", "0.0.0.0"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.0.key", "annotations_1"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.1.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.1.value", "value_2"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "tags.0.key", "tags_1"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "tags.1.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "tags.1.value", "value_2"),
 				),
 			},
@@ -143,14 +143,14 @@ func TestAccResourcePimRouteMapEntryWithPimRouteMapPol(t *testing.T) {
 				Config:             testConfigPimRouteMapEntryChildrenRemoveFromConfigDependencyWithPimRouteMapPol,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.0.key", "annotations_1"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.1.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.1.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "tags.0.key", "tags_1"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "tags.1.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "tags.1.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "tags.#", "2"),
 				),
@@ -160,10 +160,10 @@ func TestAccResourcePimRouteMapEntryWithPimRouteMapPol(t *testing.T) {
 				Config:             testConfigPimRouteMapEntryChildrenRemoveOneDependencyWithPimRouteMapPol,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.0.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.0.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.0.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "tags.0.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "tags.0.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "tags.0.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "tags.#", "1"),
 				),
@@ -223,21 +223,21 @@ resource "aci_pim_route_map_entry" "test" {
   order = "1"
   annotations = [
 	{
-	  key = "annotations_1"
+	  key = "key_0"
 	  value = "value_1"
 	},
 	{
-	  key = "annotations_2"
+	  key = "key_1"
 	  value = "value_2"
 	},
   ]
   tags = [
 	{
-	  key = "tags_1"
+	  key = "key_0"
 	  value = "value_1"
 	},
 	{
-	  key = "tags_2"
+	  key = "key_1"
 	  value = "value_2"
 	},
   ]
@@ -257,13 +257,13 @@ resource "aci_pim_route_map_entry" "test" {
   order = "1"
   annotations = [ 
 	{
-	  key = "annotations_2"
+	  key = "key_1"
 	  value = "value_2"
 	},
   ]
   tags = [ 
 	{
-	  key = "tags_2"
+	  key = "key_1"
 	  value = "value_2"
 	},
   ]

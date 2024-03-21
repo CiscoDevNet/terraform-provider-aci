@@ -60,13 +60,13 @@ resource "aci_l3out_consumer_label" "full_example_l3_outside" {
   tag         = "lemon-chiffon"
   annotations = [
     {
-      key   = "annotations_1"
+      key   = "key_0"
       value = "value_1"
     }
   ]
   tags = [
     {
-      key   = "tags_1"
+      key   = "key_0"
       value = "value_1"
     }
   ]

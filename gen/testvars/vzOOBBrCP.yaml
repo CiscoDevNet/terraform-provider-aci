@@ -35,16 +35,16 @@ all:
 
 children:
   annotations:
-    - key: "annotations_1"
+    - key: "key_0"
       value: "value_1"
       
-    - key: "annotations_2"
+    - key: "key_1"
       value: "value_2"
       
   tags:
-    - key: "tags_1"
+    - key: "key_0"
       value: "value_1"
       
-    - key: "tags_2"
+    - key: "key_1"
       value: "value_2"
       
