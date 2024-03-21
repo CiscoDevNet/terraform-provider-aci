@@ -9,13 +9,13 @@ resource "aci_pim_route_map_policy" "full_example_tenant" {
   owner_tag   = "owner_tag"
   annotations = [
     {
-      key   = "annotations_1"
+      key   = "key_0"
       value = "value_1"
     }
   ]
   tags = [
     {
-      key   = "tags_1"
+      key   = "key_0"
       value = "value_1"
     }
   ]

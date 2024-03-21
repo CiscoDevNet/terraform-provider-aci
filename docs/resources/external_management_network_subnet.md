@@ -55,13 +55,13 @@ resource "aci_external_management_network_subnet" "full_example_external_managem
   name_alias  = "name_alias"
   annotations = [
     {
-      key   = "annotations_1"
+      key   = "key_0"
       value = "value_1"
     }
   ]
   tags = [
     {
-      key   = "tags_1"
+      key   = "key_0"
       value = "value_1"
     }
   ]

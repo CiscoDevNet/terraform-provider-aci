@@ -98,13 +98,13 @@ func TestAccResourceL3extConsLblWithL3extOut(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "tag", "yellow-green"),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.0.key", "annotations_1"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.1.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.1.value", "value_2"),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "tags.0.key", "tags_1"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "tags.1.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "tags.1.value", "value_2"),
 				),
 			},
@@ -122,13 +122,13 @@ func TestAccResourceL3extConsLblWithL3extOut(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "tag", "yellow-green"),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.0.key", "annotations_1"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.1.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.1.value", "value_2"),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "tags.0.key", "tags_1"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "tags.1.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "tags.1.value", "value_2"),
 				),
 			},
@@ -137,14 +137,14 @@ func TestAccResourceL3extConsLblWithL3extOut(t *testing.T) {
 				Config:             testConfigL3extConsLblChildrenRemoveFromConfigDependencyWithL3extOut,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.0.key", "annotations_1"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.1.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.1.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "tags.0.key", "tags_1"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "tags.1.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "tags.1.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "tags.#", "2"),
 				),
@@ -154,10 +154,10 @@ func TestAccResourceL3extConsLblWithL3extOut(t *testing.T) {
 				Config:             testConfigL3extConsLblChildrenRemoveOneDependencyWithL3extOut,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.0.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.0.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.0.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "tags.0.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "tags.0.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "tags.0.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "tags.#", "1"),
 				),
@@ -215,21 +215,21 @@ resource "aci_l3out_consumer_label" "test" {
   name = "test_name"
   annotations = [
 	{
-	  key = "annotations_1"
+	  key = "key_0"
 	  value = "value_1"
 	},
 	{
-	  key = "annotations_2"
+	  key = "key_1"
 	  value = "value_2"
 	},
   ]
   tags = [
 	{
-	  key = "tags_1"
+	  key = "key_0"
 	  value = "value_1"
 	},
 	{
-	  key = "tags_2"
+	  key = "key_1"
 	  value = "value_2"
 	},
   ]
@@ -249,13 +249,13 @@ resource "aci_l3out_consumer_label" "test" {
   name = "test_name"
   annotations = [ 
 	{
-	  key = "annotations_2"
+	  key = "key_1"
 	  value = "value_2"
 	},
   ]
   tags = [ 
 	{
-	  key = "tags_2"
+	  key = "key_1"
 	  value = "value_2"
 	},
   ]

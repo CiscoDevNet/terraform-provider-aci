@@ -44,3 +44,10 @@ resource "aci_l3_outside" "test" {
   relation_l3ext_rs_ectx = aci_vrf.test.id
 }
 `
+
+const testConfigFvCtxMinDependencyWithFvTenant = testConfigFvTenantMin + `
+resource "aci_vrf" "test" {
+  tenant_dn = aci_tenant.test.id
+  name      = "test_vrf"
+}
+`

@@ -179,17 +179,22 @@ func LookupTestValue(classPkgName, propertyName string, testVars map[string]inte
 
 // Retrieves a value for a attribute of a aci class when defined in the testVars YAML file of the class
 // Returns "test_value_for_child" if no value is defined in the testVars YAML file
-func LookupChildTestValue(classPkgName, childResourceName, propertyName string, testVars map[string]interface{}, definitions Definitions) string {
-	lookupValue := "test_value_for_child"
+func LookupChildTestValue(classPkgName, childResourceName, propertyName string, testVars map[string]interface{}, testValueIndex int, definitions Definitions) string {
 	propertyName = GetOverwriteAttributeName(classPkgName, propertyName, definitions)
+	overwritePropertyValue := GetOverwriteAttributeValue(classPkgName, propertyName, "", "test_values_for_parent", testValueIndex, definitions)
+	if overwritePropertyValue != "" {
+		return overwritePropertyValue
+	}
 	_, ok := testVars["children"]
 	if ok {
 		val, ok := testVars["children"].(map[interface{}]interface{})[childResourceName].([]interface{})[0].(map[interface{}]interface{})[propertyName]
 		if ok {
-			lookupValue = val.(string)
+			return val.(string)
 		}
+	} else {
+		return fmt.Sprintf("%s_%d", propertyName, testValueIndex)
 	}
-	return lookupValue
+	return "test_value_for_child"
 }
 
 func ContainsNoneAttributeValue(values []string) bool {
@@ -1240,18 +1245,23 @@ Determine if a attribute value in testvars should be overwritten by a attribute 
 Precendence order is:
  1. class level from properties.yaml
 */
-func GetOverwriteAttributeValue(classPkgName, propertyName, propertyValue, testType string, definitions Definitions) string {
+func GetOverwriteAttributeValue(classPkgName, propertyName, propertyValue, testType string, valueIndex int, definitions Definitions) string {
 	if classDetails, ok := definitions.Properties[classPkgName]; ok {
 		for key, value := range classDetails.(map[interface{}]interface{}) {
 			if key.(string) == "test_values" {
 				for test_type, test_type_values := range value.(map[interface{}]interface{}) {
-					if test_type.(string) == testType {
-						for k, v := range test_type_values.(map[interface{}]interface{}) {
-							if k.(string) == propertyName {
-								return v.(string)
-							}
+					test_type_value := make(map[interface{}]interface{})
+					if test_type.(string) == "test_values_for_parent" && testType == "test_values_for_parent" {
+						test_type_value = test_type_values.([]interface{})[valueIndex].(map[interface{}]interface{})
+					} else if test_type.(string) == testType {
+						test_type_value = test_type_values.(map[interface{}]interface{})
+					}
+					for k, v := range test_type_value {
+						if k.(string) == propertyName {
+							return v.(string)
 						}
 					}
+
 				}
 			}
 		}

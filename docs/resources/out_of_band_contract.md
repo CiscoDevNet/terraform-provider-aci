@@ -58,13 +58,13 @@ resource "aci_out_of_band_contract" "full_example" {
   target_dscp = "AF11"
   annotations = [
     {
-      key   = "annotations_1"
+      key   = "key_0"
       value = "value_1"
     }
   ]
   tags = [
     {
-      key   = "tags_1"
+      key   = "key_0"
       value = "value_1"
     }
   ]

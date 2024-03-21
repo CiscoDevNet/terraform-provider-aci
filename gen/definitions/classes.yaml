@@ -11,6 +11,9 @@ fvTenant:
 fvAEPg:
   resource_name: "application_epg"
 
+fvCtx:
+  resource_name: "vrf"
+
 vzCPIf:
   resource_name: "contract_interface"
 
@@ -112,7 +115,6 @@ tagTag:
     - "uni/tn-{name}/BD-{name}/tagKey-{key}"
     - "Too many DN formats to display, see model documentation for all possible parents of [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)."
 
-
 fvEpMacTag:
   resource_name: "endpoint_tag_mac"
   rn_prepend: "eptags"
@@ -130,3 +132,23 @@ fvEpIpTag:
   ui_locations:
     - "Tenants -> Policies -> Protocol -> Endpoint Tags -> Endpoint IP"
   sub_category: "Tenant Policies"
+
+fvFBRGroup:
+  resource_name: "fallback_route_group"
+  children:
+    - "fvFBRMember"
+  contained_by:
+    - "fvCtx"
+  ui_locations:
+    - "Tenants -> Networking -> VRFs -> Policy -> Fallback Route Group"
+  sub_category: "Networking"
+
+fvFBRMember:
+  resource_name: "fallback_member"
+  contained_by:
+    - "fvFBRGroup"
+  ui_locations:
+    - "Tenants -> Networking -> VRFs -> Policy -> Fallback Route Group -> Next Hop Address"
+  sub_category: "Networking"
+  resource_notes:
+    - "This resource should not be used in combination with the `fallback_route_group` nested attributes of other resources for the same object. Doing so will result in unexpected behaviour."

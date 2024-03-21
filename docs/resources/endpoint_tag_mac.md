@@ -57,13 +57,13 @@ resource "aci_endpoint_tag_mac" "full_example_tenant" {
   name_alias   = "name_alias"
   annotations = [
     {
-      key   = "annotations_1"
+      key   = "key_0"
       value = "value_1"
     }
   ]
   tags = [
     {
-      key   = "tags_1"
+      key   = "key_0"
       value = "value_1"
     }
   ]
