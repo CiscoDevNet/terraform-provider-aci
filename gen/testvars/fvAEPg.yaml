@@ -67,37 +67,157 @@ children:
         4.1(1i):
           precedence: "1"
           scope: "scope-bd"
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
   relation_to_application_epg_monitoring_policy:
     - annotation: "annotation_1"
       monitoring_policy_name: "monitoring_policy_name_1"
       deletable_child: true
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
   relation_to_bridge_domain:
     - annotation: "annotation_1"
       bridge_domain_name: "bridge_domain_name_1"
       deletable_child: false
+      
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
       
   relation_to_consumed_contracts:
     - annotation: "annotation_1"
       priority: "level1"
       contract_name: "contract_name_0"
       
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
     - annotation: "annotation_2"
       priority: "level2"
       contract_name: "contract_name_1"
+      
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
       
   relation_to_imported_contracts:
     - annotation: "annotation_1"
       priority: "level1"
       imported_contract_name: "imported_contract_name_0"
       
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
     - annotation: "annotation_2"
       priority: "level2"
       imported_contract_name: "imported_contract_name_1"
+      
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
       
   relation_to_custom_qos_policy:
     - annotation: "annotation_1"
       custom_qos_policy_name: "custom_qos_policy_name_1"
       deletable_child: false
+      
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
       
   relation_to_domains:
     - annotation: "annotation_1"
@@ -126,6 +246,21 @@ children:
           port_allocation: "elastic"
         4.2(3j):
           custom_epg_name: "custom_epg_name_1"
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
     - annotation: "annotation_2"
       class_preference: "useg"
       delimiter: ""
@@ -152,10 +287,40 @@ children:
           port_allocation: "fixed"
         4.2(3j):
           custom_epg_name: "custom_epg_name_2"
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
   relation_to_data_plane_policing_policy:
     - annotation: "annotation_1"
       data_plane_policing_policy_name: "data_plane_policing_policy_name_1"
       deletable_child: true
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
   relation_to_fibre_channel_paths:
     - annotation: "annotation_1"
       description: "description_1"
@@ -163,18 +328,78 @@ children:
       vsan: "vsan-10"
       vsan_mode: "native"
       
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
     - annotation: "annotation_2"
       description: "description_2"
       target_dn: "target_dn_1"
       vsan: "unknown"
       vsan_mode: "regular"
       
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
   relation_to_intra_epg_contracts:
     - annotation: "annotation_1"
       contract_name: "contract_name_0"
       
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
     - annotation: "annotation_2"
       contract_name: "contract_name_1"
+      
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
       
   relation_to_static_leafs:
     - annotation: "annotation_1"
@@ -184,12 +409,42 @@ children:
       mode: "native"
       target_dn: "target_dn_0"
       
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
     - annotation: "annotation_2"
       description: "description_2"
       encapsulation: "vlan-101"
       deployment_immediacy: "lazy"
       mode: "regular"
       target_dn: "target_dn_1"
+      
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
       
   relation_to_static_paths:
     - annotation: "annotation_1"
@@ -200,6 +455,21 @@ children:
       primary_encapsulation: "vlan-203"
       target_dn: "target_dn_0"
       
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
     - annotation: "annotation_2"
       description: "description_2"
       encapsulation: "vlan-201"
@@ -208,12 +478,57 @@ children:
       primary_encapsulation: "unknown"
       target_dn: "target_dn_1"
       
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
   relation_to_taboo_contracts:
     - annotation: "annotation_1"
       taboo_contract_name: "taboo_contract_name_0"
       
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
     - annotation: "annotation_2"
       taboo_contract_name: "taboo_contract_name_1"
+      
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
       
   relation_to_provided_contracts:
     - annotation: "annotation_1"
@@ -221,22 +536,97 @@ children:
       priority: "level1"
       contract_name: "contract_name_0"
       
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
     - annotation: "annotation_2"
       match_criteria: "AtleastOne"
       priority: "level2"
       contract_name: "contract_name_1"
       
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
   relation_to_contract_masters:
     - annotation: "annotation_1"
       target_dn: "target_dn_0"
       
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
     - annotation: "annotation_2"
       target_dn: "target_dn_1"
+      
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
       
   relation_to_trust_control_policy:
     - annotation: "annotation_1"
       trust_control_policy_name: "trust_control_policy_name_1"
       deletable_child: true
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
   annotations:
     - key: "key_0"
       value: "value_1"
@@ -313,5 +703,4 @@ child_targets:
     properties:
         name: "epg_3"
 class_version: 1.0(1e)-
-
 version_mismatch: true

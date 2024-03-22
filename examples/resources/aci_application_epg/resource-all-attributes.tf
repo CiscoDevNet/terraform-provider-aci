@@ -25,20 +25,68 @@ resource "aci_application_epg" "full_example_application_profile" {
     owner_tag   = "owner_tag_1"
     precedence  = "1"
     scope       = "scope-bd"
+    annotations = [
+      {
+        key   = "key_0"
+        value = "value_1"
+      }
+    ]
+    tags = [
+      {
+        key   = "key_0"
+        value = "value_1"
+      }
+    ]
   }
   relation_to_application_epg_monitoring_policy = {
     annotation             = "annotation_1"
     monitoring_policy_name = aci_monitoring_policy.example.name
+    annotations = [
+      {
+        key   = "key_0"
+        value = "value_1"
+      }
+    ]
+    tags = [
+      {
+        key   = "key_0"
+        value = "value_1"
+      }
+    ]
   }
   relation_to_bridge_domain = {
     annotation         = "annotation_1"
     bridge_domain_name = aci_bridge_domain.example.name
+    annotations = [
+      {
+        key   = "key_0"
+        value = "value_1"
+      }
+    ]
+    tags = [
+      {
+        key   = "key_0"
+        value = "value_1"
+      }
+    ]
   }
   relation_to_consumed_contracts = [
     {
       annotation    = "annotation_1"
       priority      = "level1"
       contract_name = aci_contract.example.name
+      annotations = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
+      tags = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
     }
   ]
   relation_to_imported_contracts = [
@@ -46,11 +94,35 @@ resource "aci_application_epg" "full_example_application_profile" {
       annotation             = "annotation_1"
       priority               = "level1"
       imported_contract_name = aci_imported_contract.example.name
+      annotations = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
+      tags = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
     }
   ]
   relation_to_custom_qos_policy = {
     annotation             = "annotation_1"
     custom_qos_policy_name = aci_custom_qos_policy.example.name
+    annotations = [
+      {
+        key   = "key_0"
+        value = "value_1"
+      }
+    ]
+    tags = [
+      {
+        key   = "key_0"
+        value = "value_1"
+      }
+    ]
   }
   relation_to_domains = [
     {
@@ -79,11 +151,35 @@ resource "aci_application_epg" "full_example_application_profile" {
       switching_mode                = "AVE"
       target_dn                     = "uni/vmmp-VMware/dom-domain_1"
       untagged                      = "no"
+      annotations = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
+      tags = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
     }
   ]
   relation_to_data_plane_policing_policy = {
     annotation                      = "annotation_1"
     data_plane_policing_policy_name = aci_data_plane_policing_policy.example.name
+    annotations = [
+      {
+        key   = "key_0"
+        value = "value_1"
+      }
+    ]
+    tags = [
+      {
+        key   = "key_0"
+        value = "value_1"
+      }
+    ]
   }
   relation_to_fibre_channel_paths = [
     {
@@ -92,12 +188,36 @@ resource "aci_application_epg" "full_example_application_profile" {
       target_dn   = "topology/pod-1/paths-101/pathep-[eth1/1]"
       vsan        = "vsan-10"
       vsan_mode   = "native"
+      annotations = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
+      tags = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
     }
   ]
   relation_to_intra_epg_contracts = [
     {
       annotation    = "annotation_1"
       contract_name = aci_contract.example.name
+      annotations = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
+      tags = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
     }
   ]
   relation_to_static_leafs = [
@@ -108,6 +228,18 @@ resource "aci_application_epg" "full_example_application_profile" {
       deployment_immediacy = "immediate"
       mode                 = "native"
       target_dn            = "topology/pod-1/node-101"
+      annotations = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
+      tags = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
     }
   ]
   relation_to_static_paths = [
@@ -119,12 +251,36 @@ resource "aci_application_epg" "full_example_application_profile" {
       mode                  = "native"
       primary_encapsulation = "vlan-203"
       target_dn             = "topology/pod-1/paths-101/pathep-[eth1/1]"
+      annotations = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
+      tags = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
     }
   ]
   relation_to_taboo_contracts = [
     {
       annotation          = "annotation_1"
       taboo_contract_name = aci_taboo_contract.example.name
+      annotations = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
+      tags = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
     }
   ]
   relation_to_provided_contracts = [
@@ -133,17 +289,53 @@ resource "aci_application_epg" "full_example_application_profile" {
       match_criteria = "All"
       priority       = "level1"
       contract_name  = aci_contract.example.name
+      annotations = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
+      tags = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
     }
   ]
   relation_to_contract_masters = [
     {
       annotation = "annotation_1"
       target_dn  = aci_application_epg.test_application_epg_0.id
+      annotations = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
+      tags = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
     }
   ]
   relation_to_trust_control_policy = {
     annotation                = "annotation_1"
     trust_control_policy_name = aci_trust_control_policy.example.name
+    annotations = [
+      {
+        key   = "key_0"
+        value = "value_1"
+      }
+    ]
+    tags = [
+      {
+        key   = "key_0"
+        value = "value_1"
+      }
+    ]
   }
   annotations = [
     {

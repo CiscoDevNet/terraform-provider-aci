@@ -77,5 +77,4 @@ parents:
     class_in_parent: false
     test_type: both
 class_version: 1.1(1j)-
-
 version_mismatch: true

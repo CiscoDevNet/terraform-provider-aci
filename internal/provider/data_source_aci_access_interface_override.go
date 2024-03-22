@@ -85,6 +85,38 @@ func (d *InfraHPathSDataSource) Schema(ctx context.Context, req datasource.Schem
 						Computed:            true,
 						MarkdownDescription: `The distinguished name of the target.`,
 					},
+					"annotations": schema.SetNestedAttribute{
+						MarkdownDescription: ``,
+						Computed:            true,
+						NestedObject: schema.NestedAttributeObject{
+							Attributes: map[string]schema.Attribute{
+								"key": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+								},
+								"value": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The value of the property.`,
+								},
+							},
+						},
+					},
+					"tags": schema.SetNestedAttribute{
+						MarkdownDescription: ``,
+						Computed:            true,
+						NestedObject: schema.NestedAttributeObject{
+							Attributes: map[string]schema.Attribute{
+								"key": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+								},
+								"value": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The value of the property.`,
+								},
+							},
+						},
+					},
 				},
 			},
 			"relation_to_access_interface_policy_group": schema.SingleNestedAttribute{
@@ -98,6 +130,38 @@ func (d *InfraHPathSDataSource) Schema(ctx context.Context, req datasource.Schem
 					"target_dn": schema.StringAttribute{
 						Computed:            true,
 						MarkdownDescription: `The distinguished name of the target.`,
+					},
+					"annotations": schema.SetNestedAttribute{
+						MarkdownDescription: ``,
+						Computed:            true,
+						NestedObject: schema.NestedAttributeObject{
+							Attributes: map[string]schema.Attribute{
+								"key": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+								},
+								"value": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The value of the property.`,
+								},
+							},
+						},
+					},
+					"tags": schema.SetNestedAttribute{
+						MarkdownDescription: ``,
+						Computed:            true,
+						NestedObject: schema.NestedAttributeObject{
+							Attributes: map[string]schema.Attribute{
+								"key": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+								},
+								"value": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The value of the property.`,
+								},
+							},
+						},
 					},
 				},
 			},

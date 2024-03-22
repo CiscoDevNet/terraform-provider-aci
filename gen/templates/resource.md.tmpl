@@ -126,61 +126,11 @@ All examples for the {{.ResourceNameAsDescription}} resource can be found in the
     {{- end}}
   {{- end}}
 {{- end}}
-{{ range .Children }}{{$childVersion := .Versions}}{{$RelationshipClasses := .RelationshipClasses}}{{$length := len .RelationshipClasses}}
-    {{- if ge $length 1}}
-      {{- if .MultiRelationshipClass}}
-      {{$RelationshipResourceNames := .RelationshipResourceNames}}
-* `{{- overwriteProperty .PkgName .ResourceName $.Definitions}}` - (list) A list of {{getResourceNameAsDescription .ResourceName $.Definitions}} (ACI object {{getDevnetDocForClass .PkgName}}). This relation{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}} and{{- end}} can point to multiple ACI objects:
-        {{- range $index, $value := .RelationshipClasses}}
-          {{- if le $index (len $RelationshipResourceNames)}}
-    - {{getDevnetDocForClass $value}}{{- if ne (index $RelationshipResourceNames $index) ""}} which can be configured using the [aci_{{(index $RelationshipResourceNames $index)}}](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{(index $RelationshipResourceNames $index)}}) resource.{{- else}}. Currently there is no resource available to configure this ACI object.{{- end}}
-          {{- end}}
-        {{- end}}
-      {{- else}}
-        {{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
-* `{{- overwriteProperty .PkgName .ResourceName $.Definitions}}` - (map) A map of {{getResourceNameAsDescription .ResourceName $.Definitions}} (ACI object {{getDevnetDocForClass .PkgName}}) pointing to {{range $index, $value := .RelationshipResourceNames}}{{- if or (eq $length 1) (eq $.PkgName (index $RelationshipClasses $index))}}{{getResourceNameAsDescription $value $.Definitions}} (ACI Object {{getDevnetDocForClass (index $RelationshipClasses $index)}}){{- if and (ne $value "") (isResourceClass (index $RelationshipClasses $index)) }} which can be configured using the [aci_{{($value)}}](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{($value)}}) resource{{end}}{{end}}{{end}}.{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
-        {{- else}}
-* `{{- overwriteProperty .PkgName .ResourceName $.Definitions}}` - (list) A list of {{getResourceNameAsDescription .ResourceName $.Definitions}} (ACI object {{getDevnetDocForClass .PkgName}}) pointing to {{range $index, $value := .RelationshipResourceNames}}{{- if or (eq $length 1) (eq $.PkgName (index $RelationshipClasses $index))}}{{getResourceNameAsDescription $value $.Definitions}} (ACI Object {{getDevnetDocForClass (index $RelationshipClasses $index)}}){{- if and (ne $value "") (isResourceClass (index $RelationshipClasses $index)) }} which can be configured using the [aci_{{($value)}}](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{($value)}}) resource{{end}}{{end}}{{end}}.{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
-        {{- end}}
-    {{- end}}
-    {{- else}}
-      {{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
-* `{{- overwriteProperty .PkgName .ResourceName $.Definitions}}` - (map) A map of {{getResourceNameAsDescription .ResourceName $.Definitions}} (ACI object {{getDevnetDocForClass .PkgName}}).{{if .Include}} {{getResourceNameAsDescription .ResourceName $.Definitions}} can also be configured using a separate [aci_{{.ResourceNameDocReference}}](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{.ResourceNameDocReference}}) resource.{{end}}{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
-      {{- else}}
-* `{{- overwriteProperty .PkgName .ResourceName $.Definitions}}` - (list) A list of {{getResourceNameAsDescription .ResourceName $.Definitions}} (ACI object {{getDevnetDocForClass .PkgName}}). {{getResourceNameAsDescription .ResourceName $.Definitions}} can also be configured using a separate [aci_{{.ResourceNameDocReference}}](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{.ResourceNameDocReference}}) resource.{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
-      {{- end}}
-    {{- end}}
-  {{ if containsRequired .Properties}}
-  #### Required ####
-  {{ range .Properties}}
-      {{- if or .IsNaming .IsRequired}}
-          {{- if eq .ValueType "bitmask"}}
-  * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (list) {{.Comment}}{{if ne $childVersion .Versions}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
-          {{- else}}
-  * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}}{{if ne .NamedPropertyClass ""}}{{$RName := getResourceName .NamedPropertyClass $.Definitions}} This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{$RName}}) with `aci_{{$RName}}.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/{{$RName}}) with `data.aci_{{$RName}}.example.name`.{{end}}{{if ne $childVersion .Versions}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
-          {{- end}}
-      {{- end}}
-  {{- end}}{{- end}}
-  {{- if .HasOptionalProperties}}
+{{- range .Children }}
+  {{- $newCtx := addToTemplateProperties . "Indent" "" "Versions" $.Versions }}
+  {{- template "childResourcesAndProperties" $newCtx }}
+{{- end}}
 
-  #### Optional ####
-    {{ range .Properties}}
-      {{- if and (not .IsNaming) (not .IsRequired)}}
-        {{- if eq .ValueType "bitmask"}}
-  * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (list) {{.Comment}}{{if ne $childVersion .Versions}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
-        {{- else}}
-  * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}}{{if ne $childVersion .Versions}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
-        {{- end}}
-        {{- if .DefaultValue }}
-      - Default: `{{ .DefaultValue }}`
-        {{- end}}
-        {{- if .ValidValues }}{{$i := 1}}{{$length := len .ValidValues}}
-      - Valid Values:{{ range .ValidValues}} `{{ . }}`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
-        {{- end}}
-      {{- end}}
-    {{- end}}
-  {{- end}}
-{{ end}}
 ## Importing
 
 An existing {{.ResourceNameAsDescription}} can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
@@ -204,3 +154,66 @@ import {
   - {{ . }}
   {{- end}}
 {{- end}}
+
+{{- /* A sub template for including nested children in the docs. */}}
+{{- define "childResourcesAndProperties" -}}
+{{- $indent := .TemplateProperties.Indent }}
+{{- $parentVersion := .TemplateProperties.Versions }}
+{{- $childVersion := .Versions }}{{$RelationshipClasses := .RelationshipClasses}}{{$length := len .RelationshipClasses}}
+    {{- if ge $length 1}}
+      {{- if .MultiRelationshipClass}}
+      {{$RelationshipResourceNames := .RelationshipResourceNames}}
+{{ $indent }}* `{{- overwriteProperty .PkgName .ResourceName $.Definitions}}` - (list) A list of {{getResourceNameAsDescription .ResourceName $.Definitions}} (ACI object {{getDevnetDocForClass .PkgName}}). This relation{{if and (ne $parentVersion .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}} and{{- end}} can point to multiple ACI objects:
+        {{- range $index, $value := .RelationshipClasses}}
+          {{- if le $index (len $RelationshipResourceNames)}}
+    {{ $indent }}- {{getDevnetDocForClass $value}}{{- if ne (index $RelationshipResourceNames $index) ""}} which can be configured using the [aci_{{(index $RelationshipResourceNames $index)}}](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{(index $RelationshipResourceNames $index)}}) resource.{{- else}}. Currently there is no resource available to configure this ACI object.{{- end}}
+          {{- end}}
+        {{- end}}
+      {{- else}}
+        {{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+{{ $indent }}* `{{- overwriteProperty .PkgName .ResourceName $.Definitions}}` - (map) A map of {{getResourceNameAsDescription .ResourceName $.Definitions}} (ACI object {{getDevnetDocForClass .PkgName}}) pointing to {{range $index, $value := .RelationshipResourceNames}}{{- if or (eq $length 1) (eq $.PkgName (index $RelationshipClasses $index))}}{{getResourceNameAsDescription $value $.Definitions}} (ACI Object {{getDevnetDocForClass (index $RelationshipClasses $index)}}){{- if and (ne $value "") (isResourceClass (index $RelationshipClasses $index)) }} which can be configured using the [aci_{{($value)}}](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{($value)}}) resource{{end}}{{end}}{{end}}.{{if and (ne $parentVersion .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
+        {{- else}}
+{{ $indent }}* `{{- overwriteProperty .PkgName .ResourceName $.Definitions}}` - (list) A list of {{getResourceNameAsDescription .ResourceName $.Definitions}} (ACI object {{getDevnetDocForClass .PkgName}}) pointing to {{range $index, $value := .RelationshipResourceNames}}{{- if or (eq $length 1) (eq $.PkgName (index $RelationshipClasses $index))}}{{getResourceNameAsDescription $value $.Definitions}} (ACI Object {{getDevnetDocForClass (index $RelationshipClasses $index)}}){{- if and (ne $value "") (isResourceClass (index $RelationshipClasses $index)) }} which can be configured using the [aci_{{($value)}}](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{($value)}}) resource{{end}}{{end}}{{end}}.{{if and (ne $parentVersion .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
+        {{- end}}
+    {{- end}}
+    {{- else}}
+      {{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+{{ $indent }}* `{{- overwriteProperty .PkgName .ResourceName $.Definitions}}` - (map) A map of {{getResourceNameAsDescription .ResourceName $.Definitions}} (ACI object {{getDevnetDocForClass .PkgName}}).{{if .Include}} {{getResourceNameAsDescription .ResourceName $.Definitions}} can also be configured using a separate [aci_{{.ResourceNameDocReference}}](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{.ResourceNameDocReference}}) resource.{{end}}{{if and (ne $parentVersion .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
+      {{- else}}
+{{ $indent }}* `{{- overwriteProperty .PkgName .ResourceName $.Definitions}}` - (list) A list of {{getResourceNameAsDescription .ResourceName $.Definitions}} (ACI object {{getDevnetDocForClass .PkgName}}). {{getResourceNameAsDescription .ResourceName $.Definitions}} can also be configured using a separate [aci_{{.ResourceNameDocReference}}](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{.ResourceNameDocReference}}) resource.{{if and (ne $parentVersion .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
+      {{- end}}
+    {{- end}}
+  {{- if containsRequired .Properties}}
+  {{ $indent }}#### Required ####
+  {{ range .Properties}}
+      {{- if or .IsNaming .IsRequired}}
+          {{- if eq .ValueType "bitmask"}}
+    {{ $indent }}* `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (list) {{.Comment}}{{if ne $childVersion .Versions}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
+          {{- else}}
+    {{ $indent }}* `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}}{{if ne .NamedPropertyClass ""}}{{$RName := getResourceName .NamedPropertyClass $.Definitions}} This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{$RName}}) with `aci_{{$RName}}.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/{{$RName}}) with `data.aci_{{$RName}}.example.name`.{{end}}{{if ne $childVersion .Versions}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
+          {{- end}}
+      {{- end}}
+  {{- end}}{{- end}}
+  {{- if .HasOptionalProperties}}
+  {{ $indent }}#### Optional ####
+    {{ range .Properties}}
+      {{- if and (not .IsNaming) (not .IsRequired)}}
+        {{- if eq .ValueType "bitmask"}}
+    {{ $indent }}* `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (list) {{.Comment}}{{if ne $childVersion .Versions}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
+        {{- else}}
+    {{ $indent }}* `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}}{{if ne $childVersion .Versions}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
+        {{- end}}
+        {{- if .DefaultValue }}
+      {{ $indent }}- Default: `{{ .DefaultValue }}`
+        {{- end}}
+        {{- if .ValidValues }}{{$i := 1}}{{$length := len .ValidValues}}
+      {{ $indent }}- Valid Values:{{ range .ValidValues}} `{{ . }}`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
+        {{- end}}
+      {{- end}}
+    {{- end}}
+  {{- end}}
+{{- range .Children }}
+  {{- $newCtx := addToTemplateProperties . "Indent" (print $indent "    ") "Versions" $parentVersion }}
+  {{- template "childResourcesAndProperties" $newCtx }}
+{{- end }}
+{{- end }}

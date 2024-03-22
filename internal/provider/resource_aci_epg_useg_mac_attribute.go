@@ -92,6 +92,13 @@ func getEmptyTagAnnotationFvMacAttrResourceModel() TagAnnotationFvMacAttrResourc
 	}
 }
 
+var TagAnnotationFvMacAttrType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
+}
+
 // TagTagFvMacAttrResourceModel describes the resource data model for the children without relation ships.
 type TagTagFvMacAttrResourceModel struct {
 	Key   types.String `tfsdk:"key"`
@@ -103,6 +110,13 @@ func getEmptyTagTagFvMacAttrResourceModel() TagTagFvMacAttrResourceModel {
 		Key:   basetypes.NewStringNull(),
 		Value: basetypes.NewStringNull(),
 	}
+}
+
+var TagTagFvMacAttrType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
 }
 
 type FvMacAttrIdentifier struct {
@@ -462,7 +476,7 @@ func (r *FvMacAttrResource) ImportState(ctx context.Context, req resource.Import
 }
 
 func getAndSetFvMacAttrAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvMacAttrResourceModel) {
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "fvMacAttr,tagAnnotation,tagTag"), "GET", nil)
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "fvMacAttr,tagAnnotation,tagTag"), "GET", nil)
 
 	readData := getEmptyFvMacAttrResourceModel()
 
@@ -517,6 +531,7 @@ func getAndSetFvMacAttrAttributes(ctx context.Context, diags *diag.Diagnostics, 
 								if childAttributeName == "value" {
 									TagAnnotationFvMacAttr.Value = basetypes.NewStringValue(childAttributeValue.(string))
 								}
+
 							}
 							TagAnnotationFvMacAttrList = append(TagAnnotationFvMacAttrList, TagAnnotationFvMacAttr)
 						}
@@ -529,6 +544,7 @@ func getAndSetFvMacAttrAttributes(ctx context.Context, diags *diag.Diagnostics, 
 								if childAttributeName == "value" {
 									TagTagFvMacAttr.Value = basetypes.NewStringValue(childAttributeValue.(string))
 								}
+
 							}
 							TagTagFvMacAttrList = append(TagTagFvMacAttrList, TagTagFvMacAttr)
 						}
@@ -576,25 +592,24 @@ func setFvMacAttrId(ctx context.Context, data *FvMacAttrResourceModel) {
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
 
-func getFvMacAttrTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvMacAttrResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvMacAttrResourceModel) []map[string]interface{} {
-
+func getFvMacAttrTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvMacAttrResourceModel, tagAnnotationFvMacAttrPlan, tagAnnotationFvMacAttrState []TagAnnotationFvMacAttrResourceModel) []map[string]interface{} {
 	childPayloads := []map[string]interface{}{}
-	if !data.TagAnnotation.IsUnknown() {
+	if !data.TagAnnotation.IsNull() && !data.TagAnnotation.IsUnknown() {
 		tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
-		for _, tagAnnotation := range tagAnnotationPlan {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagAnnotation.Key.IsUnknown() && !tagAnnotation.Key.IsNull() {
-				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
+		for _, tagAnnotationFvMacAttr := range tagAnnotationFvMacAttrPlan {
+			childMap := NewAciObject()
+			if !tagAnnotationFvMacAttr.Key.IsNull() && !tagAnnotationFvMacAttr.Key.IsUnknown() {
+				childMap.Attributes["key"] = tagAnnotationFvMacAttr.Key.ValueString()
 			}
-			if !tagAnnotation.Value.IsUnknown() && !tagAnnotation.Value.IsNull() {
-				childMap["attributes"]["value"] = tagAnnotation.Value.ValueString()
+			if !tagAnnotationFvMacAttr.Value.IsNull() && !tagAnnotationFvMacAttr.Value.IsUnknown() {
+				childMap.Attributes["value"] = tagAnnotationFvMacAttr.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
 			tagAnnotationIdentifier := TagAnnotationIdentifier{}
-			tagAnnotationIdentifier.Key = tagAnnotation.Key
+			tagAnnotationIdentifier.Key = tagAnnotationFvMacAttr.Key
 			tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
 		}
-		for _, tagAnnotation := range tagAnnotationState {
+		for _, tagAnnotation := range tagAnnotationFvMacAttrState {
 			delete := true
 			for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
 				if tagAnnotationIdentifier.Key == tagAnnotation.Key {
@@ -603,10 +618,10 @@ func getFvMacAttrTagAnnotationChildPayloads(ctx context.Context, diags *diag.Dia
 				}
 			}
 			if delete {
-				childMap := map[string]map[string]interface{}{"attributes": {}}
-				childMap["attributes"]["status"] = "deleted"
-				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
+				tagAnnotationChildMapForDelete := NewAciObject()
+				tagAnnotationChildMapForDelete.Attributes["status"] = "deleted"
+				tagAnnotationChildMapForDelete.Attributes["key"] = tagAnnotation.Key.ValueString()
+				childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": tagAnnotationChildMapForDelete})
 			}
 		}
 	} else {
@@ -615,25 +630,25 @@ func getFvMacAttrTagAnnotationChildPayloads(ctx context.Context, diags *diag.Dia
 
 	return childPayloads
 }
-func getFvMacAttrTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvMacAttrResourceModel, tagTagPlan, tagTagState []TagTagFvMacAttrResourceModel) []map[string]interface{} {
 
+func getFvMacAttrTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvMacAttrResourceModel, tagTagFvMacAttrPlan, tagTagFvMacAttrState []TagTagFvMacAttrResourceModel) []map[string]interface{} {
 	childPayloads := []map[string]interface{}{}
-	if !data.TagTag.IsUnknown() {
+	if !data.TagTag.IsNull() && !data.TagTag.IsUnknown() {
 		tagTagIdentifiers := []TagTagIdentifier{}
-		for _, tagTag := range tagTagPlan {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagTag.Key.IsUnknown() && !tagTag.Key.IsNull() {
-				childMap["attributes"]["key"] = tagTag.Key.ValueString()
+		for _, tagTagFvMacAttr := range tagTagFvMacAttrPlan {
+			childMap := NewAciObject()
+			if !tagTagFvMacAttr.Key.IsNull() && !tagTagFvMacAttr.Key.IsUnknown() {
+				childMap.Attributes["key"] = tagTagFvMacAttr.Key.ValueString()
 			}
-			if !tagTag.Value.IsUnknown() && !tagTag.Value.IsNull() {
-				childMap["attributes"]["value"] = tagTag.Value.ValueString()
+			if !tagTagFvMacAttr.Value.IsNull() && !tagTagFvMacAttr.Value.IsUnknown() {
+				childMap.Attributes["value"] = tagTagFvMacAttr.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})
 			tagTagIdentifier := TagTagIdentifier{}
-			tagTagIdentifier.Key = tagTag.Key
+			tagTagIdentifier.Key = tagTagFvMacAttr.Key
 			tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
 		}
-		for _, tagTag := range tagTagState {
+		for _, tagTag := range tagTagFvMacAttrState {
 			delete := true
 			for _, tagTagIdentifier := range tagTagIdentifiers {
 				if tagTagIdentifier.Key == tagTag.Key {
@@ -642,10 +657,10 @@ func getFvMacAttrTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostic
 				}
 			}
 			if delete {
-				childMap := map[string]map[string]interface{}{"attributes": {}}
-				childMap["attributes"]["status"] = "deleted"
-				childMap["attributes"]["key"] = tagTag.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})
+				tagTagChildMapForDelete := NewAciObject()
+				tagTagChildMapForDelete.Attributes["status"] = "deleted"
+				tagTagChildMapForDelete.Attributes["key"] = tagTag.Key.ValueString()
+				childPayloads = append(childPayloads, map[string]interface{}{"tagTag": tagTagChildMapForDelete})
 			}
 		}
 	} else {
