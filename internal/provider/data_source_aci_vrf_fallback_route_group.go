@@ -89,6 +89,38 @@ func (d *FvFBRGroupDataSource) Schema(ctx context.Context, req datasource.Schema
 							Computed:            true,
 							MarkdownDescription: `The address of the VRF Fallback Route Group Member object.`,
 						},
+						"annotations": schema.SetNestedAttribute{
+							MarkdownDescription: ``,
+							Computed:            true,
+							NestedObject: schema.NestedAttributeObject{
+								Attributes: map[string]schema.Attribute{
+									"key": schema.StringAttribute{
+										Computed:            true,
+										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+									},
+									"value": schema.StringAttribute{
+										Computed:            true,
+										MarkdownDescription: `The value of the property.`,
+									},
+								},
+							},
+						},
+						"tags": schema.SetNestedAttribute{
+							MarkdownDescription: ``,
+							Computed:            true,
+							NestedObject: schema.NestedAttributeObject{
+								Attributes: map[string]schema.Attribute{
+									"key": schema.StringAttribute{
+										Computed:            true,
+										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+									},
+									"value": schema.StringAttribute{
+										Computed:            true,
+										MarkdownDescription: `The value of the property.`,
+									},
+								},
+							},
+						},
 					},
 				},
 			},
@@ -115,6 +147,38 @@ func (d *FvFBRGroupDataSource) Schema(ctx context.Context, req datasource.Schema
 					"name_alias": schema.StringAttribute{
 						Computed:            true,
 						MarkdownDescription: `The name alias of the VRF Fallback Route object.`,
+					},
+					"annotations": schema.SetNestedAttribute{
+						MarkdownDescription: ``,
+						Computed:            true,
+						NestedObject: schema.NestedAttributeObject{
+							Attributes: map[string]schema.Attribute{
+								"key": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+								},
+								"value": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The value of the property.`,
+								},
+							},
+						},
+					},
+					"tags": schema.SetNestedAttribute{
+						MarkdownDescription: ``,
+						Computed:            true,
+						NestedObject: schema.NestedAttributeObject{
+							Attributes: map[string]schema.Attribute{
+								"key": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+								},
+								"value": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The value of the property.`,
+								},
+							},
+						},
 					},
 				},
 			},

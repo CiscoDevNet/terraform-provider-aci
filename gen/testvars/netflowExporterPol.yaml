@@ -53,10 +53,40 @@ children:
     - annotation: "annotation_1"
       target_dn: "target_dn_1"
       deletable_child: true
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
   relation_to_epg:
     - annotation: "annotation_1"
       target_dn: "target_dn_1"
       deletable_child: true
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
   annotations:
     - key: "key_0"
       value: "value_1"

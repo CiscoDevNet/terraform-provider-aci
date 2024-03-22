@@ -88,6 +88,13 @@ func getEmptyTagAnnotationFvRogueExceptionMacResourceModel() TagAnnotationFvRogu
 	}
 }
 
+var TagAnnotationFvRogueExceptionMacType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
+}
+
 // TagTagFvRogueExceptionMacResourceModel describes the resource data model for the children without relation ships.
 type TagTagFvRogueExceptionMacResourceModel struct {
 	Key   types.String `tfsdk:"key"`
@@ -99,6 +106,13 @@ func getEmptyTagTagFvRogueExceptionMacResourceModel() TagTagFvRogueExceptionMacR
 		Key:   basetypes.NewStringNull(),
 		Value: basetypes.NewStringNull(),
 	}
+}
+
+var TagTagFvRogueExceptionMacType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
 }
 
 type FvRogueExceptionMacIdentifier struct {
@@ -441,7 +455,7 @@ func (r *FvRogueExceptionMacResource) ImportState(ctx context.Context, req resou
 }
 
 func getAndSetFvRogueExceptionMacAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvRogueExceptionMacResourceModel) {
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "fvRogueExceptionMac,tagAnnotation,tagTag"), "GET", nil)
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "fvRogueExceptionMac,tagAnnotation,tagTag"), "GET", nil)
 
 	readData := getEmptyFvRogueExceptionMacResourceModel()
 
@@ -490,6 +504,7 @@ func getAndSetFvRogueExceptionMacAttributes(ctx context.Context, diags *diag.Dia
 								if childAttributeName == "value" {
 									TagAnnotationFvRogueExceptionMac.Value = basetypes.NewStringValue(childAttributeValue.(string))
 								}
+
 							}
 							TagAnnotationFvRogueExceptionMacList = append(TagAnnotationFvRogueExceptionMacList, TagAnnotationFvRogueExceptionMac)
 						}
@@ -502,6 +517,7 @@ func getAndSetFvRogueExceptionMacAttributes(ctx context.Context, diags *diag.Dia
 								if childAttributeName == "value" {
 									TagTagFvRogueExceptionMac.Value = basetypes.NewStringValue(childAttributeValue.(string))
 								}
+
 							}
 							TagTagFvRogueExceptionMacList = append(TagTagFvRogueExceptionMacList, TagTagFvRogueExceptionMac)
 						}
@@ -549,25 +565,24 @@ func setFvRogueExceptionMacId(ctx context.Context, data *FvRogueExceptionMacReso
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
 
-func getFvRogueExceptionMacTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvRogueExceptionMacResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvRogueExceptionMacResourceModel) []map[string]interface{} {
-
+func getFvRogueExceptionMacTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvRogueExceptionMacResourceModel, tagAnnotationFvRogueExceptionMacPlan, tagAnnotationFvRogueExceptionMacState []TagAnnotationFvRogueExceptionMacResourceModel) []map[string]interface{} {
 	childPayloads := []map[string]interface{}{}
-	if !data.TagAnnotation.IsUnknown() {
+	if !data.TagAnnotation.IsNull() && !data.TagAnnotation.IsUnknown() {
 		tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
-		for _, tagAnnotation := range tagAnnotationPlan {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagAnnotation.Key.IsUnknown() && !tagAnnotation.Key.IsNull() {
-				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
+		for _, tagAnnotationFvRogueExceptionMac := range tagAnnotationFvRogueExceptionMacPlan {
+			childMap := NewAciObject()
+			if !tagAnnotationFvRogueExceptionMac.Key.IsNull() && !tagAnnotationFvRogueExceptionMac.Key.IsUnknown() {
+				childMap.Attributes["key"] = tagAnnotationFvRogueExceptionMac.Key.ValueString()
 			}
-			if !tagAnnotation.Value.IsUnknown() && !tagAnnotation.Value.IsNull() {
-				childMap["attributes"]["value"] = tagAnnotation.Value.ValueString()
+			if !tagAnnotationFvRogueExceptionMac.Value.IsNull() && !tagAnnotationFvRogueExceptionMac.Value.IsUnknown() {
+				childMap.Attributes["value"] = tagAnnotationFvRogueExceptionMac.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
 			tagAnnotationIdentifier := TagAnnotationIdentifier{}
-			tagAnnotationIdentifier.Key = tagAnnotation.Key
+			tagAnnotationIdentifier.Key = tagAnnotationFvRogueExceptionMac.Key
 			tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
 		}
-		for _, tagAnnotation := range tagAnnotationState {
+		for _, tagAnnotation := range tagAnnotationFvRogueExceptionMacState {
 			delete := true
 			for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
 				if tagAnnotationIdentifier.Key == tagAnnotation.Key {
@@ -576,10 +591,10 @@ func getFvRogueExceptionMacTagAnnotationChildPayloads(ctx context.Context, diags
 				}
 			}
 			if delete {
-				childMap := map[string]map[string]interface{}{"attributes": {}}
-				childMap["attributes"]["status"] = "deleted"
-				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
+				tagAnnotationChildMapForDelete := NewAciObject()
+				tagAnnotationChildMapForDelete.Attributes["status"] = "deleted"
+				tagAnnotationChildMapForDelete.Attributes["key"] = tagAnnotation.Key.ValueString()
+				childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": tagAnnotationChildMapForDelete})
 			}
 		}
 	} else {
@@ -588,25 +603,25 @@ func getFvRogueExceptionMacTagAnnotationChildPayloads(ctx context.Context, diags
 
 	return childPayloads
 }
-func getFvRogueExceptionMacTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvRogueExceptionMacResourceModel, tagTagPlan, tagTagState []TagTagFvRogueExceptionMacResourceModel) []map[string]interface{} {
 
+func getFvRogueExceptionMacTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvRogueExceptionMacResourceModel, tagTagFvRogueExceptionMacPlan, tagTagFvRogueExceptionMacState []TagTagFvRogueExceptionMacResourceModel) []map[string]interface{} {
 	childPayloads := []map[string]interface{}{}
-	if !data.TagTag.IsUnknown() {
+	if !data.TagTag.IsNull() && !data.TagTag.IsUnknown() {
 		tagTagIdentifiers := []TagTagIdentifier{}
-		for _, tagTag := range tagTagPlan {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagTag.Key.IsUnknown() && !tagTag.Key.IsNull() {
-				childMap["attributes"]["key"] = tagTag.Key.ValueString()
+		for _, tagTagFvRogueExceptionMac := range tagTagFvRogueExceptionMacPlan {
+			childMap := NewAciObject()
+			if !tagTagFvRogueExceptionMac.Key.IsNull() && !tagTagFvRogueExceptionMac.Key.IsUnknown() {
+				childMap.Attributes["key"] = tagTagFvRogueExceptionMac.Key.ValueString()
 			}
-			if !tagTag.Value.IsUnknown() && !tagTag.Value.IsNull() {
-				childMap["attributes"]["value"] = tagTag.Value.ValueString()
+			if !tagTagFvRogueExceptionMac.Value.IsNull() && !tagTagFvRogueExceptionMac.Value.IsUnknown() {
+				childMap.Attributes["value"] = tagTagFvRogueExceptionMac.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})
 			tagTagIdentifier := TagTagIdentifier{}
-			tagTagIdentifier.Key = tagTag.Key
+			tagTagIdentifier.Key = tagTagFvRogueExceptionMac.Key
 			tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
 		}
-		for _, tagTag := range tagTagState {
+		for _, tagTag := range tagTagFvRogueExceptionMacState {
 			delete := true
 			for _, tagTagIdentifier := range tagTagIdentifiers {
 				if tagTagIdentifier.Key == tagTag.Key {
@@ -615,10 +630,10 @@ func getFvRogueExceptionMacTagTagChildPayloads(ctx context.Context, diags *diag.
 				}
 			}
 			if delete {
-				childMap := map[string]map[string]interface{}{"attributes": {}}
-				childMap["attributes"]["status"] = "deleted"
-				childMap["attributes"]["key"] = tagTag.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})
+				tagTagChildMapForDelete := NewAciObject()
+				tagTagChildMapForDelete.Attributes["status"] = "deleted"
+				tagTagChildMapForDelete.Attributes["key"] = tagTag.Key.ValueString()
+				childPayloads = append(childPayloads, map[string]interface{}{"tagTag": tagTagChildMapForDelete})
 			}
 		}
 	} else {

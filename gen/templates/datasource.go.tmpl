@@ -135,50 +135,7 @@ func (d *{{.ResourceClassName}}DataSource) Schema(ctx context.Context, req datas
 			},{{- end}}
 			{{- end}}
 			{{- range .Children}}
-				{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
-			"{{overwriteProperty .PkgName .ResourceName $.Definitions}}": schema.SingleNestedAttribute{
-				MarkdownDescription: `{{.Comment}}`,
-				Computed:            true,
-				Attributes: map[string]schema.Attribute{
-					{{- range .Properties}}
-						{{- if eq .ValueType "bitmask"}}
-					"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": schema.SetAttribute{
-						Computed:            true,
-						MarkdownDescription: `{{.Comment}}`,
-						ElementType: types.StringType,
-					},{{else}}
-					"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": schema.StringAttribute{
-						Computed:            true,
-						MarkdownDescription: `{{.Comment}}`,
-					},{{- end}}
-					{{- end}}
-				},
-			},
-				{{- else}}
-			"{{overwriteProperty .PkgName .ResourceName $.Definitions}}": schema.SetNestedAttribute{
-				MarkdownDescription: `{{.Comment}}`,
-				Computed:            true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-					{{- range .Properties}}
-						{{- if eq .ValueType "bitmask"}}
-						"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": schema.SetAttribute{
-							Computed:            true,
-							MarkdownDescription: `{{.Comment}}`,
-							ElementType: types.StringType,
-						},{{else}}
-						"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": schema.StringAttribute{
-								{{- if .HasCustomType}}
-							CustomType: customTypes.{{.ResourceClassName}}{{.Name}}StringType{},
-								{{- end}}
-							Computed:            true,
-							MarkdownDescription: `{{.Comment}}`,
-						},{{- end}}
-					{{- end}}
-					},
-				},
-			},
-				{{- end}}
+				{{- template "childAttributes" . }}
 			{{- end}}
 		},
 		{{- if .LegacyAttributes}}
@@ -277,3 +234,57 @@ func (d *{{.ResourceClassName}}DataSource) Read(ctx context.Context, req datasou
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_{{.ResourceName}} with id '%s'", data.Id.ValueString()))
 }
+
+{{/* A sub template for the child attributes used in the Attributes block. */}}
+{{- define "childAttributes" }}
+  {{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+			"{{overwriteProperty .PkgName .ResourceName $.Definitions}}": schema.SingleNestedAttribute{
+				MarkdownDescription: `{{.Comment}}`,
+				Computed:            true,
+				Attributes: map[string]schema.Attribute{
+					{{- range .Properties}}
+						{{- if eq .ValueType "bitmask"}}
+					"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": schema.SetAttribute{
+						Computed:            true,
+						MarkdownDescription: `{{.Comment}}`,
+						ElementType: types.StringType,
+					},{{else}}
+					"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": schema.StringAttribute{
+						Computed:            true,
+						MarkdownDescription: `{{.Comment}}`,
+					},{{- end}}
+					{{- end}}
+					{{- range .Children }}
+        				{{- template "childAttributes" . }}
+  					{{- end }}
+				},
+			},
+				{{- else}}
+			"{{overwriteProperty .PkgName .ResourceName $.Definitions}}": schema.SetNestedAttribute{
+				MarkdownDescription: `{{.Comment}}`,
+				Computed:            true,
+				NestedObject: schema.NestedAttributeObject{
+					Attributes: map[string]schema.Attribute{
+					{{- range .Properties}}
+						{{- if eq .ValueType "bitmask"}}
+						"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": schema.SetAttribute{
+							Computed:            true,
+							MarkdownDescription: `{{.Comment}}`,
+							ElementType: types.StringType,
+						},{{else}}
+						"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": schema.StringAttribute{
+								{{- if .HasCustomType}}
+							CustomType: customTypes.{{.ResourceClassName}}{{.Name}}StringType{},
+								{{- end}}
+							Computed:            true,
+							MarkdownDescription: `{{.Comment}}`,
+						},{{- end}}
+					{{- end}}
+					{{- range .Children }}
+        				{{- template "childAttributes" . }}
+  					{{- end }}
+					},
+				},
+			},
+	{{- end}}
+{{- end }}

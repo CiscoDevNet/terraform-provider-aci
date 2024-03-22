@@ -65,11 +65,9 @@ data "aci_neighbor_discovery_interface_policy" "example_tenant" {
 * `router_advertisement_lifetime` (raLifetime) - (string) The default router lifetime (seconds).
 * `reachable_time` (reachableTime) - (string) The time (milliseconds) for which a neighbor is considered reachable after receiving reachability confirmation.
 * `retransmit_timer` (retransTimer) - (string) The retransmission time (milliseconds) for sending neighbor solicitation messages.
-
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
-  * `key` (key) - (string) The key used to uniquely identify this configuration object.
-  * `value` (value) - (string) The value of the property.
-
+    * `key` (key) - (string) The key used to uniquely identify this configuration object.
+    * `value` (value) - (string) The value of the property.
 * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
-  * `key` (key) - (string) The key used to uniquely identify this configuration object.
-  * `value` (value) - (string) The value of the property.
+    * `key` (key) - (string) The key used to uniquely identify this configuration object.
+    * `value` (value) - (string) The value of the property.

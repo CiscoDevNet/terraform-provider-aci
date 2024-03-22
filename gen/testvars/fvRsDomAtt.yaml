@@ -109,5 +109,4 @@ targets:
     static: true
     properties:
 class_version: 1.0(1e)-
-
 version_mismatch: true

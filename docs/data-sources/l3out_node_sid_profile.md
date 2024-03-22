@@ -53,11 +53,9 @@ data "aci_l3out_node_sid_profile" "example_l3out_loopback_interface_profile" {
 * `loopback_address` (loopbackAddr) - (string) The loopback address of the L3Out Node SR-MPLS Segment ID Profile object.
 * `name` (name) - (string) The name of the L3Out Node SR-MPLS Segment ID Profile object.
 * `name_alias` (nameAlias) - (string) The name alias of the L3Out Node SR-MPLS Segment ID Profile object.
-
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
-  * `key` (key) - (string) The key used to uniquely identify this configuration object.
-  * `value` (value) - (string) The value of the property.
-
+    * `key` (key) - (string) The key used to uniquely identify this configuration object.
+    * `value` (value) - (string) The value of the property.
 * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
-  * `key` (key) - (string) The key used to uniquely identify this configuration object.
-  * `value` (value) - (string) The value of the property.
+    * `key` (key) - (string) The key used to uniquely identify this configuration object.
+    * `value` (value) - (string) The value of the property.

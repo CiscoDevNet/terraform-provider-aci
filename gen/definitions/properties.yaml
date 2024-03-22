@@ -63,6 +63,11 @@ global:
     Nd: "Neighbor Discovery (ND)"
     Mld: "MLD"
     Igmp: "IGMP"
+    Ssh Service: "SSH Service"
+    Shellinabox Service: "SSH access via WEB"
+    Tp: "Certificate Authority"
+    Http Ssl Configuration: "HTTPS Service"
+    Http Service: "HTTP Service"
   ignores:
     - "userdom"
 
@@ -1299,7 +1304,6 @@ pkiKeyRing:
         name: "test_name"
         certificate_chain: -----BEGIN CERTIFICATE-----\\nMIICODCCAaGgAwIBAgIJAIt8XMntue0VMA0GCSqGSIb3DQEBCwUAMDQxDjAMBgNV\\nBAMMBUFkbWluMRUwEwYDVQQKDAxZb3VyIENvbXBhbnkxCzAJBgNVBAYTAlVTMCAX\\nDTE4MDEwOTAwNTk0NFoYDzIxMTcxMjE2MDA1OTQ0WjA0MQ4wDAYDVQQDDAVBZG1p\\nbjEVMBMGA1UECgwMWW91ciBDb21wYW55MQswCQYDVQQGEwJVUzCBnzANBgkqhkiG\\n9w0BAQEFAAOBjQAwgYkCgYEAohG/7axtt7CbSaMP7r+2mhTKbNgh0Ww36C7Ta14i\\nv+VmLyKkQHnXinKGhp6uy3Nug+15a+eIu7CrgpBVMQeCiWfsnwRocKcQJWIYDrWl\\nXHxGQn31yYKR6mylE7Dcj3rMFybnyhezr5D8GcP85YRPmwG9H2hO/0Y1FUnWu9Iw\\nAQkCAwEAAaNQME4wHQYDVR0OBBYEFD0jLXfpkrU/ChzRvfruRs/fy1VXMB8GA1Ud\\nIwQYMBaAFD0jLXfpkrU/ChzRvfruRs/fy1VXMAwGA1UdEwQFMAMBAf8wDQYJKoZI\\nhvcNAQELBQADgYEAOmvre+5tgZ0+F3DgsfxNQqLTrGiBgGCIymPkP/cBXXkNuJyl\\n3ac7tArHQc7WEA4U2R2rZbEq8FC3UJJm4nUVtCPvEh3G9OhN2xwYev79yt6pIn/l\\nKU0Td2OpVyo0eLqjoX5u2G90IBWzhyjFbo+CcKMrSVKj1YOdG0E3OuiJf00=\\n-----END CERTIFICATE-----
   test_values:
-    test_values:
     default:
       regenerate : "no"
       elliptic_curve: "none"
@@ -1639,3 +1643,160 @@ fhsRaGuardPol:
       max_hop_limit: "10"
       min_hop_limit: "1"
     
+commPol:
+  documentation:
+    strictSecurityOnApicOOBSubnet: "Removes implicit access permissions from any APIC out-of-band (OOB) subnet IP address."
+  ignore_properties_in_test:
+    "strictSecurityOnApicOOBSubnet": "no"
+  default_values:
+    strictSecurityOnApicOOBSubnet: "no"
+
+commHttp:
+  documentation:
+    accessControlAllowCredential: "Determines if credentials are allowed in HTTP responses."
+    accessControlAllowOrigins: "Determines which origins can access the resource. For example, inputting http://127.0.0.1:8000 would allow access from a source device with that IP address and port."
+    adminSt: "The administrative state of the HTTP Service."
+    cliOnlyMode: "Determines if CLI-only mode is enabled."
+    globalThrottleRate: "The maximum amount of API calls allowed per unit time."
+    globalThrottleUnit: "The unit of measurement for rate limiting."
+    globalThrottleSt: "The throttle state for all clients without specific identifier in their headers."
+    nodeExporter: "The node exporter service status."
+    redirectSt: "The state of HTTP communication service."
+    serverHeader: "Determines if the server header is included in responses."
+    throttleSt: "The state of login and refresh throttling."
+    visoreAccess: "Grants permissions for accessing the Visore tool, also known as Object Store Browser, in Cisco ACI."
+    port: "The port used by the HTTP communication service."
+  overwrites:
+    admin_st: "admin_state"
+    redirect_st: "redirect_state"
+    global_throttle_st: "global_throttle_state"
+    throttle_st: "login_throttle_state"
+    throttle_rate: "login_throttle_rate"
+    access_control_allow_credential: "allow_credentials"
+    access_control_allow_origins: "allow_origins"
+  test_values:
+    all:
+      description: "description_1"
+      global_throttle_rate: "10000"
+      global_throttle_state: "disabled"
+      global_throttle_unit: "r/s"
+      max_request_status_count: "0"
+      name: "name_1"
+      name_alias: "name_alias_1"
+      node_exporter: "disabled"
+      port: "80"
+      referer: "referer_1"
+      server_header: "disabled"
+      login_throttle_rate: "2"
+      login_throttle_state: "disabled"
+
+commHttps:
+  documentation:
+    accessControlAllowCredential: "Determines if credentials are allowed in HTTPS responses."
+    accessControlAllowOrigins: "Determines which origins can access the resource. For example, inputting http://127.0.0.1:8000 would allow access from a source device with that IP address and port."
+    adminSt: "The administrative state of the HTTPS Service."
+    cliOnlyMode: "Determines if CLI-only mode is enabled."
+    globalThrottleRate: "The maximum amount of API calls allowed per unit time."
+    globalThrottleUnit: "The unit of measurement for rate limiting specified with the 'global_throttle_rate' attribute."
+    globalThrottleSt: "The throttle state for all clients without specific identifier in their headers."
+    nodeExporter: "The node exporter service status."
+    serverHeader: "Determines if the server header is included in responses."
+    throttleSt: "The state of login and refresh throttling."
+    visoreAccess: "Grants permissions for accessing the Visore tool, also known as Object Store Browser, in Cisco ACI."
+    clientCertAuthState: "The authentication state of the client certificate."
+    dhParam: "Determines the settings for Diffie-Hellman (DH) parameters."
+    referer: "Allowed HTTP referers."
+    sslProtocols: "The SSL protocols allowed by HTTPS communication service."
+    port: "The port used by the HTTPS communication service."
+  overwrites:
+    admin_st: "admin_state"
+    global_throttle_st: "global_throttle_state"
+    throttle_st: "login_throttle_state"
+    throttle_rate: "login_throttle_rate"
+    access_control_allow_credential: "allow_credentials"
+    access_control_allow_origins: "allow_origins"
+    dh_param: "dh_parameter"
+    client_cert_auth_state: "client_certificate_authentication_state"
+  remove_valid_values:
+    adminSt:
+      - "disabled"
+  add_valid_values:
+    globalThrottleUnit:
+      - "r/s"
+      - "r/m"
+  targets:
+    - class_name: "pkiTP"
+      properties:
+        name: "test_name"
+        certificate_chain: -----BEGIN CERTIFICATE-----\\nMIICODCCAaGgAwIBAgIJAIt8XMntue0VMA0GCSqGSIb3DQEBCwUAMDQxDjAMBgNV\\nBAMMBUFkbWluMRUwEwYDVQQKDAxZb3VyIENvbXBhbnkxCzAJBgNVBAYTAlVTMCAX\\nDTE4MDEwOTAwNTk0NFoYDzIxMTcxMjE2MDA1OTQ0WjA0MQ4wDAYDVQQDDAVBZG1p\\nbjEVMBMGA1UECgwMWW91ciBDb21wYW55MQswCQYDVQQGEwJVUzCBnzANBgkqhkiG\\n9w0BAQEFAAOBjQAwgYkCgYEAohG/7axtt7CbSaMP7r+2mhTKbNgh0Ww36C7Ta14i\\nv+VmLyKkQHnXinKGhp6uy3Nug+15a+eIu7CrgpBVMQeCiWfsnwRocKcQJWIYDrWl\\nXHxGQn31yYKR6mylE7Dcj3rMFybnyhezr5D8GcP85YRPmwG9H2hO/0Y1FUnWu9Iw\\nAQkCAwEAAaNQME4wHQYDVR0OBBYEFD0jLXfpkrU/ChzRvfruRs/fy1VXMB8GA1Ud\\nIwQYMBaAFD0jLXfpkrU/ChzRvfruRs/fy1VXMAwGA1UdEwQFMAMBAf8wDQYJKoZI\\nhvcNAQELBQADgYEAOmvre+5tgZ0+F3DgsfxNQqLTrGiBgGCIymPkP/cBXXkNuJyl\\n3ac7tArHQc7WEA4U2R2rZbEq8FC3UJJm4nUVtCPvEh3G9OhN2xwYev79yt6pIn/l\\nKU0Td2OpVyo0eLqjoX5u2G90IBWzhyjFbo+CcKMrSVKj1YOdG0E3OuiJf00=\\n-----END CERTIFICATE-----
+  test_values:
+    all:
+      cli_only_mode: "disabled"
+      client_cert_auth_state: "disabled"
+      description: "description_1"
+      global_throttle_rate: "10000"
+      global_throttle_state: "disabled"
+      global_throttle_unit: "r/s"
+      max_request_status_count: "0"
+      name: "name_1"
+      name_alias: "name_alias_1"
+      node_exporter: "disabled"
+      port: "443"
+      referer: "referer_1"
+      server_header: "disabled"
+      ssl_protocols: 
+        - "TLSv1"
+      login_throttle_rate: "2"
+      login_throttle_state: "disabled"
+      visore_access: "disabled"
+
+commRsClientCertCA:
+  overwrites:
+    tp: "certificate_authority"
+    admin_st: "admin_state"
+  test_values:
+    all:
+      target_dn: uni/userext/pkiext/tp-test_name
+
+commRsKeyRing:
+  overwrites:
+    admin_st: "admin_state"
+  test_values:
+    all:
+      key_ring_name: "default"
+
+commSsh:
+  documentation:
+    hostkeyAlgos: "The supported algorithms for the host key."
+    sshMacs: "The message authentication codes (MACs) supported by the SSH service."
+    kexAlgos: "The supported algorithms for key exchange."
+    sshCiphers: "The ciphers supported by the SSH service."
+    passwordAuth: "Determines the state of password-based authentication to control administrator access to the management interfaces of the ACI fabric."
+    port: "The port used by the SSH service."
+  ignore_properties_in_test:
+    "hostkeyAlgos": ["rsa-sha2-256"]
+    "kexAlgos": ["curve25519-sha256"]
+  overwrites:
+    admin_st: "admin_state"
+    kex_algos: "kex_algorithms"
+    hostkey_algos: "host_key_algorithms"
+    password_auth: "password_authentication_state"
+  test_values:
+    all:
+      ssh_ciphers: ["aes192-ctr"]
+      ssh_macs: ["hmac-sha1"]
+      port: "22"
+
+commShellinabox:
+  overwrites:
+    admin_st: "admin_state"
+    shellinabox_service: "ssh_access_via_web"
+
+commTelnet:
+  documentation:
+    port: "The port used by the Telnet service."
+  overwrites:
+    admin_st: "admin_state"
+  test_values:
+    all:
+      port: "23"

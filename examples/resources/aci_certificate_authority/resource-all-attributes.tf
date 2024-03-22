@@ -27,12 +27,36 @@ EOT
     {
       key   = "key_0"
       value = "value_1"
+      annotations = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
+      tags = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
     }
   ]
   tags = [
     {
       key   = "key_0"
       value = "value_1"
+      annotations = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
+      tags = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
     }
   ]
 }
@@ -67,12 +91,36 @@ EOT
     {
       key   = "key_0"
       value = "value_1"
+      annotations = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
+      tags = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
     }
   ]
   tags = [
     {
       key   = "key_0"
       value = "value_1"
+      annotations = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
+      tags = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
     }
   ]
 }
