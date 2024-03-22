@@ -53,6 +53,10 @@ data "aci_annotation" "example_application_epg" {
 ### Required ###
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
+  - [aci_http_ssl_configuration](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/http_ssl_configuration) ([commHttps](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/commHttps/overview))
+  - [aci_communication_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/communication_policy) ([commPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/commPol/overview))
+  - [aci_tp](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tp) ([commRsClientCertCA](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/commRsClientCertCA/overview))
+  - [aci_key_ring](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/key_ring) ([commRsKeyRing](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/commRsKeyRing/overview))
   - [aci_application_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/application_epg) ([fvAEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvAEPg/overview))
   - [aci_endpoint_tag_ip](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/endpoint_tag_ip) ([fvEpIpTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvEpIpTag/overview))
   - [aci_endpoint_tag_mac](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/endpoint_tag_mac) ([fvEpMacTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvEpMacTag/overview))

@@ -196,6 +196,7 @@ func (p *AciProvider) Configure(ctx context.Context, req provider.ConfigureReque
 
 func (p *AciProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
+		NewCommPolResource,
 		NewFvEpIpTagResource,
 		NewFvEpMacTagResource,
 		NewL3extConsLblResource,
@@ -213,6 +214,7 @@ func (p *AciProvider) Resources(ctx context.Context) []func() resource.Resource 
 
 func (p *AciProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
+		NewCommPolDataSource,
 		NewFvEpIpTagDataSource,
 		NewFvEpMacTagDataSource,
 		NewL3extConsLblDataSource,
