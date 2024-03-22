@@ -34,9 +34,39 @@ children:
       priority: "level1"
       out_of_band_contract_name: "out_of_band_contract_name_0"
       
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
     - annotation: "annotation_2"
       priority: "level2"
       out_of_band_contract_name: "out_of_band_contract_name_1"
+      
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
       
   annotations:
     - key: "key_0"
@@ -52,5 +82,6 @@ children:
     - key: "key_1"
       value: "test_value"
       
+
 test_type: both
 class_version: 1.0(1e)-

@@ -72,15 +72,19 @@ func getEmptyL3extConsLblResourceModel() *L3extConsLblResourceModel {
 		Tag:        basetypes.NewStringNull(),
 		L3extRsLblToInstP: types.SetNull(types.ObjectType{
 			AttrTypes: map[string]attr.Type{
-				"annotation": types.StringType,
-				"target_dn":  types.StringType,
+				"annotation":  types.StringType,
+				"target_dn":   types.StringType,
+				"annotations": types.SetType{ElemType: TagAnnotationL3extRsLblToInstPL3extConsLblType},
+				"tags":        types.SetType{ElemType: TagTagL3extRsLblToInstPL3extConsLblType},
 			},
 		}),
 		L3extRsLblToProfile: types.SetNull(types.ObjectType{
 			AttrTypes: map[string]attr.Type{
-				"annotation": types.StringType,
-				"direction":  types.StringType,
-				"target_dn":  types.StringType,
+				"annotation":  types.StringType,
+				"direction":   types.StringType,
+				"target_dn":   types.StringType,
+				"annotations": types.SetType{ElemType: TagAnnotationL3extRsLblToProfileL3extConsLblType},
+				"tags":        types.SetType{ElemType: TagTagL3extRsLblToProfileL3extConsLblType},
 			},
 		}),
 		TagAnnotation: types.SetNull(types.ObjectType{
@@ -100,22 +104,87 @@ func getEmptyL3extConsLblResourceModel() *L3extConsLblResourceModel {
 
 // L3extRsLblToInstPL3extConsLblResourceModel describes the resource data model for the children without relation ships.
 type L3extRsLblToInstPL3extConsLblResourceModel struct {
-	Annotation types.String `tfsdk:"annotation"`
-	TDn        types.String `tfsdk:"target_dn"`
+	Annotation    types.String `tfsdk:"annotation"`
+	TDn           types.String `tfsdk:"target_dn"`
+	TagAnnotation types.Set    `tfsdk:"annotations"`
+	TagTag        types.Set    `tfsdk:"tags"`
 }
 
 func getEmptyL3extRsLblToInstPL3extConsLblResourceModel() L3extRsLblToInstPL3extConsLblResourceModel {
 	return L3extRsLblToInstPL3extConsLblResourceModel{
 		Annotation: basetypes.NewStringNull(),
 		TDn:        basetypes.NewStringNull(),
+		TagAnnotation: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"key":   types.StringType,
+				"value": types.StringType,
+			},
+		}),
+		TagTag: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"key":   types.StringType,
+				"value": types.StringType,
+			},
+		}),
 	}
+}
+
+var L3extRsLblToInstPL3extConsLblType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"annotation":  types.StringType,
+		"target_dn":   types.StringType,
+		"annotations": types.SetType{ElemType: TagAnnotationL3extRsLblToInstPL3extConsLblType},
+		"tags":        types.SetType{ElemType: TagTagL3extRsLblToInstPL3extConsLblType},
+	},
+}
+
+// TagAnnotationL3extRsLblToInstPL3extConsLblResourceModel describes the resource data model for the children without relation ships.
+type TagAnnotationL3extRsLblToInstPL3extConsLblResourceModel struct {
+	Key   types.String `tfsdk:"key"`
+	Value types.String `tfsdk:"value"`
+}
+
+func getEmptyTagAnnotationL3extRsLblToInstPL3extConsLblResourceModel() TagAnnotationL3extRsLblToInstPL3extConsLblResourceModel {
+	return TagAnnotationL3extRsLblToInstPL3extConsLblResourceModel{
+		Key:   basetypes.NewStringNull(),
+		Value: basetypes.NewStringNull(),
+	}
+}
+
+var TagAnnotationL3extRsLblToInstPL3extConsLblType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
+}
+
+// TagTagL3extRsLblToInstPL3extConsLblResourceModel describes the resource data model for the children without relation ships.
+type TagTagL3extRsLblToInstPL3extConsLblResourceModel struct {
+	Key   types.String `tfsdk:"key"`
+	Value types.String `tfsdk:"value"`
+}
+
+func getEmptyTagTagL3extRsLblToInstPL3extConsLblResourceModel() TagTagL3extRsLblToInstPL3extConsLblResourceModel {
+	return TagTagL3extRsLblToInstPL3extConsLblResourceModel{
+		Key:   basetypes.NewStringNull(),
+		Value: basetypes.NewStringNull(),
+	}
+}
+
+var TagTagL3extRsLblToInstPL3extConsLblType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
 }
 
 // L3extRsLblToProfileL3extConsLblResourceModel describes the resource data model for the children without relation ships.
 type L3extRsLblToProfileL3extConsLblResourceModel struct {
-	Annotation types.String `tfsdk:"annotation"`
-	Direction  types.String `tfsdk:"direction"`
-	TDn        types.String `tfsdk:"target_dn"`
+	Annotation    types.String `tfsdk:"annotation"`
+	Direction     types.String `tfsdk:"direction"`
+	TDn           types.String `tfsdk:"target_dn"`
+	TagAnnotation types.Set    `tfsdk:"annotations"`
+	TagTag        types.Set    `tfsdk:"tags"`
 }
 
 func getEmptyL3extRsLblToProfileL3extConsLblResourceModel() L3extRsLblToProfileL3extConsLblResourceModel {
@@ -123,7 +192,69 @@ func getEmptyL3extRsLblToProfileL3extConsLblResourceModel() L3extRsLblToProfileL
 		Annotation: basetypes.NewStringNull(),
 		Direction:  basetypes.NewStringNull(),
 		TDn:        basetypes.NewStringNull(),
+		TagAnnotation: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"key":   types.StringType,
+				"value": types.StringType,
+			},
+		}),
+		TagTag: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"key":   types.StringType,
+				"value": types.StringType,
+			},
+		}),
 	}
+}
+
+var L3extRsLblToProfileL3extConsLblType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"annotation":  types.StringType,
+		"direction":   types.StringType,
+		"target_dn":   types.StringType,
+		"annotations": types.SetType{ElemType: TagAnnotationL3extRsLblToProfileL3extConsLblType},
+		"tags":        types.SetType{ElemType: TagTagL3extRsLblToProfileL3extConsLblType},
+	},
+}
+
+// TagAnnotationL3extRsLblToProfileL3extConsLblResourceModel describes the resource data model for the children without relation ships.
+type TagAnnotationL3extRsLblToProfileL3extConsLblResourceModel struct {
+	Key   types.String `tfsdk:"key"`
+	Value types.String `tfsdk:"value"`
+}
+
+func getEmptyTagAnnotationL3extRsLblToProfileL3extConsLblResourceModel() TagAnnotationL3extRsLblToProfileL3extConsLblResourceModel {
+	return TagAnnotationL3extRsLblToProfileL3extConsLblResourceModel{
+		Key:   basetypes.NewStringNull(),
+		Value: basetypes.NewStringNull(),
+	}
+}
+
+var TagAnnotationL3extRsLblToProfileL3extConsLblType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
+}
+
+// TagTagL3extRsLblToProfileL3extConsLblResourceModel describes the resource data model for the children without relation ships.
+type TagTagL3extRsLblToProfileL3extConsLblResourceModel struct {
+	Key   types.String `tfsdk:"key"`
+	Value types.String `tfsdk:"value"`
+}
+
+func getEmptyTagTagL3extRsLblToProfileL3extConsLblResourceModel() TagTagL3extRsLblToProfileL3extConsLblResourceModel {
+	return TagTagL3extRsLblToProfileL3extConsLblResourceModel{
+		Key:   basetypes.NewStringNull(),
+		Value: basetypes.NewStringNull(),
+	}
+}
+
+var TagTagL3extRsLblToProfileL3extConsLblType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
 }
 
 // TagAnnotationL3extConsLblResourceModel describes the resource data model for the children without relation ships.
@@ -139,6 +270,13 @@ func getEmptyTagAnnotationL3extConsLblResourceModel() TagAnnotationL3extConsLblR
 	}
 }
 
+var TagAnnotationL3extConsLblType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
+}
+
 // TagTagL3extConsLblResourceModel describes the resource data model for the children without relation ships.
 type TagTagL3extConsLblResourceModel struct {
 	Key   types.String `tfsdk:"key"`
@@ -150,6 +288,13 @@ func getEmptyTagTagL3extConsLblResourceModel() TagTagL3extConsLblResourceModel {
 		Key:   basetypes.NewStringNull(),
 		Value: basetypes.NewStringNull(),
 	}
+}
+
+var TagTagL3extConsLblType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
 }
 
 type L3extConsLblIdentifier struct {
@@ -312,6 +457,58 @@ func (r *L3extConsLblResource) Schema(ctx context.Context, req resource.SchemaRe
 							},
 							MarkdownDescription: `The distinguished name (DN) of the External EPG object.`,
 						},
+						"annotations": schema.SetNestedAttribute{
+							MarkdownDescription: ``,
+							Optional:            true,
+							Computed:            true,
+							PlanModifiers: []planmodifier.Set{
+								setplanmodifier.UseStateForUnknown(),
+							},
+							NestedObject: schema.NestedAttributeObject{
+								Attributes: map[string]schema.Attribute{
+									"key": schema.StringAttribute{
+										Required: true,
+										PlanModifiers: []planmodifier.String{
+											stringplanmodifier.UseStateForUnknown(),
+										},
+										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+									},
+									"value": schema.StringAttribute{
+										Required: true,
+										PlanModifiers: []planmodifier.String{
+											stringplanmodifier.UseStateForUnknown(),
+										},
+										MarkdownDescription: `The value of the property.`,
+									},
+								},
+							},
+						},
+						"tags": schema.SetNestedAttribute{
+							MarkdownDescription: ``,
+							Optional:            true,
+							Computed:            true,
+							PlanModifiers: []planmodifier.Set{
+								setplanmodifier.UseStateForUnknown(),
+							},
+							NestedObject: schema.NestedAttributeObject{
+								Attributes: map[string]schema.Attribute{
+									"key": schema.StringAttribute{
+										Required: true,
+										PlanModifiers: []planmodifier.String{
+											stringplanmodifier.UseStateForUnknown(),
+										},
+										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+									},
+									"value": schema.StringAttribute{
+										Required: true,
+										PlanModifiers: []planmodifier.String{
+											stringplanmodifier.UseStateForUnknown(),
+										},
+										MarkdownDescription: `The value of the property.`,
+									},
+								},
+							},
+						},
 					},
 				},
 			},
@@ -349,6 +546,58 @@ func (r *L3extConsLblResource) Schema(ctx context.Context, req resource.SchemaRe
 								stringplanmodifier.UseStateForUnknown(),
 							},
 							MarkdownDescription: `The distinguished name (DN) of the Route Control Profile object.`,
+						},
+						"annotations": schema.SetNestedAttribute{
+							MarkdownDescription: ``,
+							Optional:            true,
+							Computed:            true,
+							PlanModifiers: []planmodifier.Set{
+								setplanmodifier.UseStateForUnknown(),
+							},
+							NestedObject: schema.NestedAttributeObject{
+								Attributes: map[string]schema.Attribute{
+									"key": schema.StringAttribute{
+										Required: true,
+										PlanModifiers: []planmodifier.String{
+											stringplanmodifier.UseStateForUnknown(),
+										},
+										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+									},
+									"value": schema.StringAttribute{
+										Required: true,
+										PlanModifiers: []planmodifier.String{
+											stringplanmodifier.UseStateForUnknown(),
+										},
+										MarkdownDescription: `The value of the property.`,
+									},
+								},
+							},
+						},
+						"tags": schema.SetNestedAttribute{
+							MarkdownDescription: ``,
+							Optional:            true,
+							Computed:            true,
+							PlanModifiers: []planmodifier.Set{
+								setplanmodifier.UseStateForUnknown(),
+							},
+							NestedObject: schema.NestedAttributeObject{
+								Attributes: map[string]schema.Attribute{
+									"key": schema.StringAttribute{
+										Required: true,
+										PlanModifiers: []planmodifier.String{
+											stringplanmodifier.UseStateForUnknown(),
+										},
+										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+									},
+									"value": schema.StringAttribute{
+										Required: true,
+										PlanModifiers: []planmodifier.String{
+											stringplanmodifier.UseStateForUnknown(),
+										},
+										MarkdownDescription: `The value of the property.`,
+									},
+								},
+							},
 						},
 					},
 				},
@@ -602,7 +851,7 @@ func (r *L3extConsLblResource) ImportState(ctx context.Context, req resource.Imp
 }
 
 func getAndSetL3extConsLblAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *L3extConsLblResourceModel) {
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "l3extConsLbl,l3extRsLblToInstP,l3extRsLblToProfile,tagAnnotation,tagTag"), "GET", nil)
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "l3extConsLbl,l3extRsLblToInstP,l3extRsLblToProfile,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag"), "GET", nil)
 
 	readData := getEmptyL3extConsLblResourceModel()
 
@@ -662,7 +911,47 @@ func getAndSetL3extConsLblAttributes(ctx context.Context, diags *diag.Diagnostic
 								if childAttributeName == "tDn" {
 									L3extRsLblToInstPL3extConsLbl.TDn = basetypes.NewStringValue(childAttributeValue.(string))
 								}
+
 							}
+							TagAnnotationL3extRsLblToInstPL3extConsLblList := make([]TagAnnotationL3extRsLblToInstPL3extConsLblResourceModel, 0)
+							TagTagL3extRsLblToInstPL3extConsLblList := make([]TagTagL3extRsLblToInstPL3extConsLblResourceModel, 0)
+							childrenOfL3extRsLblToInstPL3extConsLbl, childrenOfL3extRsLblToInstPL3extConsLblExist := childClassDetails.(map[string]interface{})["children"]
+							if childrenOfL3extRsLblToInstPL3extConsLblExist {
+								for _, childL3extRsLblToInstPL3extConsLbl := range childrenOfL3extRsLblToInstPL3extConsLbl.([]interface{}) {
+									for childClassNameL3extRsLblToInstPL3extConsLbl, childClassDetailsL3extRsLblToInstPL3extConsLbl := range childL3extRsLblToInstPL3extConsLbl.(map[string]interface{}) {
+										if childClassNameL3extRsLblToInstPL3extConsLbl == "tagAnnotation" {
+											TagAnnotationL3extRsLblToInstPL3extConsLbl := getEmptyTagAnnotationL3extRsLblToInstPL3extConsLblResourceModel()
+											tagAnnotationchildAttributeValue := childClassDetailsL3extRsLblToInstPL3extConsLbl.(map[string]interface{})["attributes"].(map[string]interface{})
+											for childAttributeName, childAttributeValue := range tagAnnotationchildAttributeValue {
+												if childAttributeName == "key" {
+													TagAnnotationL3extRsLblToInstPL3extConsLbl.Key = basetypes.NewStringValue(childAttributeValue.(string))
+												}
+												if childAttributeName == "value" {
+													TagAnnotationL3extRsLblToInstPL3extConsLbl.Value = basetypes.NewStringValue(childAttributeValue.(string))
+												}
+											}
+											TagAnnotationL3extRsLblToInstPL3extConsLblList = append(TagAnnotationL3extRsLblToInstPL3extConsLblList, TagAnnotationL3extRsLblToInstPL3extConsLbl)
+										}
+										if childClassNameL3extRsLblToInstPL3extConsLbl == "tagTag" {
+											TagTagL3extRsLblToInstPL3extConsLbl := getEmptyTagTagL3extRsLblToInstPL3extConsLblResourceModel()
+											tagTagchildAttributeValue := childClassDetailsL3extRsLblToInstPL3extConsLbl.(map[string]interface{})["attributes"].(map[string]interface{})
+											for childAttributeName, childAttributeValue := range tagTagchildAttributeValue {
+												if childAttributeName == "key" {
+													TagTagL3extRsLblToInstPL3extConsLbl.Key = basetypes.NewStringValue(childAttributeValue.(string))
+												}
+												if childAttributeName == "value" {
+													TagTagL3extRsLblToInstPL3extConsLbl.Value = basetypes.NewStringValue(childAttributeValue.(string))
+												}
+											}
+											TagTagL3extRsLblToInstPL3extConsLblList = append(TagTagL3extRsLblToInstPL3extConsLblList, TagTagL3extRsLblToInstPL3extConsLbl)
+										}
+									}
+								}
+							}
+							TagAnnotationL3extRsLblToInstPL3extConsLblSet, _ := types.SetValueFrom(ctx, TagAnnotationL3extRsLblToInstPL3extConsLblType, TagAnnotationL3extRsLblToInstPL3extConsLblList)
+							L3extRsLblToInstPL3extConsLbl.TagAnnotation = TagAnnotationL3extRsLblToInstPL3extConsLblSet
+							TagTagL3extRsLblToInstPL3extConsLblSet, _ := types.SetValueFrom(ctx, TagTagL3extRsLblToInstPL3extConsLblType, TagTagL3extRsLblToInstPL3extConsLblList)
+							L3extRsLblToInstPL3extConsLbl.TagTag = TagTagL3extRsLblToInstPL3extConsLblSet
 							L3extRsLblToInstPL3extConsLblList = append(L3extRsLblToInstPL3extConsLblList, L3extRsLblToInstPL3extConsLbl)
 						}
 						if childClassName == "l3extRsLblToProfile" {
@@ -677,7 +966,47 @@ func getAndSetL3extConsLblAttributes(ctx context.Context, diags *diag.Diagnostic
 								if childAttributeName == "tDn" {
 									L3extRsLblToProfileL3extConsLbl.TDn = basetypes.NewStringValue(childAttributeValue.(string))
 								}
+
 							}
+							TagAnnotationL3extRsLblToProfileL3extConsLblList := make([]TagAnnotationL3extRsLblToProfileL3extConsLblResourceModel, 0)
+							TagTagL3extRsLblToProfileL3extConsLblList := make([]TagTagL3extRsLblToProfileL3extConsLblResourceModel, 0)
+							childrenOfL3extRsLblToProfileL3extConsLbl, childrenOfL3extRsLblToProfileL3extConsLblExist := childClassDetails.(map[string]interface{})["children"]
+							if childrenOfL3extRsLblToProfileL3extConsLblExist {
+								for _, childL3extRsLblToProfileL3extConsLbl := range childrenOfL3extRsLblToProfileL3extConsLbl.([]interface{}) {
+									for childClassNameL3extRsLblToProfileL3extConsLbl, childClassDetailsL3extRsLblToProfileL3extConsLbl := range childL3extRsLblToProfileL3extConsLbl.(map[string]interface{}) {
+										if childClassNameL3extRsLblToProfileL3extConsLbl == "tagAnnotation" {
+											TagAnnotationL3extRsLblToProfileL3extConsLbl := getEmptyTagAnnotationL3extRsLblToProfileL3extConsLblResourceModel()
+											tagAnnotationchildAttributeValue := childClassDetailsL3extRsLblToProfileL3extConsLbl.(map[string]interface{})["attributes"].(map[string]interface{})
+											for childAttributeName, childAttributeValue := range tagAnnotationchildAttributeValue {
+												if childAttributeName == "key" {
+													TagAnnotationL3extRsLblToProfileL3extConsLbl.Key = basetypes.NewStringValue(childAttributeValue.(string))
+												}
+												if childAttributeName == "value" {
+													TagAnnotationL3extRsLblToProfileL3extConsLbl.Value = basetypes.NewStringValue(childAttributeValue.(string))
+												}
+											}
+											TagAnnotationL3extRsLblToProfileL3extConsLblList = append(TagAnnotationL3extRsLblToProfileL3extConsLblList, TagAnnotationL3extRsLblToProfileL3extConsLbl)
+										}
+										if childClassNameL3extRsLblToProfileL3extConsLbl == "tagTag" {
+											TagTagL3extRsLblToProfileL3extConsLbl := getEmptyTagTagL3extRsLblToProfileL3extConsLblResourceModel()
+											tagTagchildAttributeValue := childClassDetailsL3extRsLblToProfileL3extConsLbl.(map[string]interface{})["attributes"].(map[string]interface{})
+											for childAttributeName, childAttributeValue := range tagTagchildAttributeValue {
+												if childAttributeName == "key" {
+													TagTagL3extRsLblToProfileL3extConsLbl.Key = basetypes.NewStringValue(childAttributeValue.(string))
+												}
+												if childAttributeName == "value" {
+													TagTagL3extRsLblToProfileL3extConsLbl.Value = basetypes.NewStringValue(childAttributeValue.(string))
+												}
+											}
+											TagTagL3extRsLblToProfileL3extConsLblList = append(TagTagL3extRsLblToProfileL3extConsLblList, TagTagL3extRsLblToProfileL3extConsLbl)
+										}
+									}
+								}
+							}
+							TagAnnotationL3extRsLblToProfileL3extConsLblSet, _ := types.SetValueFrom(ctx, TagAnnotationL3extRsLblToProfileL3extConsLblType, TagAnnotationL3extRsLblToProfileL3extConsLblList)
+							L3extRsLblToProfileL3extConsLbl.TagAnnotation = TagAnnotationL3extRsLblToProfileL3extConsLblSet
+							TagTagL3extRsLblToProfileL3extConsLblSet, _ := types.SetValueFrom(ctx, TagTagL3extRsLblToProfileL3extConsLblType, TagTagL3extRsLblToProfileL3extConsLblList)
+							L3extRsLblToProfileL3extConsLbl.TagTag = TagTagL3extRsLblToProfileL3extConsLblSet
 							L3extRsLblToProfileL3extConsLblList = append(L3extRsLblToProfileL3extConsLblList, L3extRsLblToProfileL3extConsLbl)
 						}
 						if childClassName == "tagAnnotation" {
@@ -689,6 +1018,7 @@ func getAndSetL3extConsLblAttributes(ctx context.Context, diags *diag.Diagnostic
 								if childAttributeName == "value" {
 									TagAnnotationL3extConsLbl.Value = basetypes.NewStringValue(childAttributeValue.(string))
 								}
+
 							}
 							TagAnnotationL3extConsLblList = append(TagAnnotationL3extConsLblList, TagAnnotationL3extConsLbl)
 						}
@@ -701,6 +1031,7 @@ func getAndSetL3extConsLblAttributes(ctx context.Context, diags *diag.Diagnostic
 								if childAttributeName == "value" {
 									TagTagL3extConsLbl.Value = basetypes.NewStringValue(childAttributeValue.(string))
 								}
+
 							}
 							TagTagL3extConsLblList = append(TagTagL3extConsLblList, TagTagL3extConsLbl)
 						}
@@ -752,27 +1083,102 @@ func setL3extConsLblId(ctx context.Context, data *L3extConsLblResourceModel) {
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
 
-func getL3extConsLblL3extRsLblToInstPChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *L3extConsLblResourceModel, l3extRsLblToInstPPlan, l3extRsLblToInstPState []L3extRsLblToInstPL3extConsLblResourceModel) []map[string]interface{} {
-
+func getL3extConsLblL3extRsLblToInstPChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *L3extConsLblResourceModel, l3extRsLblToInstPL3extConsLblPlan, l3extRsLblToInstPL3extConsLblState []L3extRsLblToInstPL3extConsLblResourceModel) []map[string]interface{} {
 	childPayloads := []map[string]interface{}{}
-	if !data.L3extRsLblToInstP.IsUnknown() {
+	if !data.L3extRsLblToInstP.IsNull() && !data.L3extRsLblToInstP.IsUnknown() {
 		l3extRsLblToInstPIdentifiers := []L3extRsLblToInstPIdentifier{}
-		for _, l3extRsLblToInstP := range l3extRsLblToInstPPlan {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !l3extRsLblToInstP.Annotation.IsUnknown() && !l3extRsLblToInstP.Annotation.IsNull() {
-				childMap["attributes"]["annotation"] = l3extRsLblToInstP.Annotation.ValueString()
+		for _, l3extRsLblToInstPL3extConsLbl := range l3extRsLblToInstPL3extConsLblPlan {
+			L3extRsLblToInstPL3extConsLblChildren := make([]map[string]interface{}, 0)
+			childMap := NewAciObject()
+			if !l3extRsLblToInstPL3extConsLbl.Annotation.IsNull() && !l3extRsLblToInstPL3extConsLbl.Annotation.IsUnknown() {
+				childMap.Attributes["annotation"] = l3extRsLblToInstPL3extConsLbl.Annotation.ValueString()
 			} else {
-				childMap["attributes"]["annotation"] = globalAnnotation
+				childMap.Attributes["annotation"] = globalAnnotation
 			}
-			if !l3extRsLblToInstP.TDn.IsUnknown() && !l3extRsLblToInstP.TDn.IsNull() {
-				childMap["attributes"]["tDn"] = l3extRsLblToInstP.TDn.ValueString()
+			if !l3extRsLblToInstPL3extConsLbl.TDn.IsNull() && !l3extRsLblToInstPL3extConsLbl.TDn.IsUnknown() {
+				childMap.Attributes["tDn"] = l3extRsLblToInstPL3extConsLbl.TDn.ValueString()
 			}
+
+			var tagAnnotationL3extRsLblToInstPL3extConsLblPlan, tagAnnotationL3extRsLblToInstPL3extConsLblState []TagAnnotationL3extRsLblToInstPL3extConsLblResourceModel
+			l3extRsLblToInstPL3extConsLbl.TagAnnotation.ElementsAs(ctx, &tagAnnotationL3extRsLblToInstPL3extConsLblPlan, false)
+			for _, tagAnnotationL3extRsLblToInstPL3extConsLblstate := range l3extRsLblToInstPL3extConsLblState {
+				tagAnnotationL3extRsLblToInstPL3extConsLblstate.TagAnnotation.ElementsAs(ctx, &tagAnnotationL3extRsLblToInstPL3extConsLblState, false)
+			}
+			if !l3extRsLblToInstPL3extConsLbl.TagAnnotation.IsNull() && !l3extRsLblToInstPL3extConsLbl.TagAnnotation.IsUnknown() {
+				tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
+				for _, tagAnnotationL3extRsLblToInstPL3extConsLbl := range tagAnnotationL3extRsLblToInstPL3extConsLblPlan {
+					tagAnnotationL3extRsLblToInstPL3extConsLblChildMap := NewAciObject()
+					if !tagAnnotationL3extRsLblToInstPL3extConsLbl.Key.IsNull() && !tagAnnotationL3extRsLblToInstPL3extConsLbl.Key.IsUnknown() {
+						tagAnnotationL3extRsLblToInstPL3extConsLblChildMap.Attributes["key"] = tagAnnotationL3extRsLblToInstPL3extConsLbl.Key.ValueString()
+					}
+					if !tagAnnotationL3extRsLblToInstPL3extConsLbl.Value.IsNull() && !tagAnnotationL3extRsLblToInstPL3extConsLbl.Value.IsUnknown() {
+						tagAnnotationL3extRsLblToInstPL3extConsLblChildMap.Attributes["value"] = tagAnnotationL3extRsLblToInstPL3extConsLbl.Value.ValueString()
+					}
+					L3extRsLblToInstPL3extConsLblChildren = append(L3extRsLblToInstPL3extConsLblChildren, map[string]interface{}{"tagAnnotation": tagAnnotationL3extRsLblToInstPL3extConsLblChildMap})
+					tagAnnotationIdentifier := TagAnnotationIdentifier{}
+					tagAnnotationIdentifier.Key = tagAnnotationL3extRsLblToInstPL3extConsLbl.Key
+					tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
+				}
+				for _, tagAnnotationL3extRsLblToInstPL3extConsLbl := range tagAnnotationL3extRsLblToInstPL3extConsLblState {
+					delete := true
+					for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
+						if tagAnnotationIdentifier.Key == tagAnnotationL3extRsLblToInstPL3extConsLbl.Key {
+							delete = false
+							break
+						}
+					}
+					if delete {
+						tagAnnotationL3extRsLblToInstPL3extConsLblChildMapForDelete := NewAciObject()
+						tagAnnotationL3extRsLblToInstPL3extConsLblChildMapForDelete.Attributes["status"] = "deleted"
+						tagAnnotationL3extRsLblToInstPL3extConsLblChildMapForDelete.Attributes["key"] = tagAnnotationL3extRsLblToInstPL3extConsLbl.Key.ValueString()
+						L3extRsLblToInstPL3extConsLblChildren = append(L3extRsLblToInstPL3extConsLblChildren, map[string]interface{}{"tagAnnotation": tagAnnotationL3extRsLblToInstPL3extConsLblChildMapForDelete})
+					}
+				}
+			}
+
+			var tagTagL3extRsLblToInstPL3extConsLblPlan, tagTagL3extRsLblToInstPL3extConsLblState []TagTagL3extRsLblToInstPL3extConsLblResourceModel
+			l3extRsLblToInstPL3extConsLbl.TagTag.ElementsAs(ctx, &tagTagL3extRsLblToInstPL3extConsLblPlan, false)
+			for _, tagTagL3extRsLblToInstPL3extConsLblstate := range l3extRsLblToInstPL3extConsLblState {
+				tagTagL3extRsLblToInstPL3extConsLblstate.TagTag.ElementsAs(ctx, &tagTagL3extRsLblToInstPL3extConsLblState, false)
+			}
+			if !l3extRsLblToInstPL3extConsLbl.TagTag.IsNull() && !l3extRsLblToInstPL3extConsLbl.TagTag.IsUnknown() {
+				tagTagIdentifiers := []TagTagIdentifier{}
+				for _, tagTagL3extRsLblToInstPL3extConsLbl := range tagTagL3extRsLblToInstPL3extConsLblPlan {
+					tagTagL3extRsLblToInstPL3extConsLblChildMap := NewAciObject()
+					if !tagTagL3extRsLblToInstPL3extConsLbl.Key.IsNull() && !tagTagL3extRsLblToInstPL3extConsLbl.Key.IsUnknown() {
+						tagTagL3extRsLblToInstPL3extConsLblChildMap.Attributes["key"] = tagTagL3extRsLblToInstPL3extConsLbl.Key.ValueString()
+					}
+					if !tagTagL3extRsLblToInstPL3extConsLbl.Value.IsNull() && !tagTagL3extRsLblToInstPL3extConsLbl.Value.IsUnknown() {
+						tagTagL3extRsLblToInstPL3extConsLblChildMap.Attributes["value"] = tagTagL3extRsLblToInstPL3extConsLbl.Value.ValueString()
+					}
+					L3extRsLblToInstPL3extConsLblChildren = append(L3extRsLblToInstPL3extConsLblChildren, map[string]interface{}{"tagTag": tagTagL3extRsLblToInstPL3extConsLblChildMap})
+					tagTagIdentifier := TagTagIdentifier{}
+					tagTagIdentifier.Key = tagTagL3extRsLblToInstPL3extConsLbl.Key
+					tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
+				}
+				for _, tagTagL3extRsLblToInstPL3extConsLbl := range tagTagL3extRsLblToInstPL3extConsLblState {
+					delete := true
+					for _, tagTagIdentifier := range tagTagIdentifiers {
+						if tagTagIdentifier.Key == tagTagL3extRsLblToInstPL3extConsLbl.Key {
+							delete = false
+							break
+						}
+					}
+					if delete {
+						tagTagL3extRsLblToInstPL3extConsLblChildMapForDelete := NewAciObject()
+						tagTagL3extRsLblToInstPL3extConsLblChildMapForDelete.Attributes["status"] = "deleted"
+						tagTagL3extRsLblToInstPL3extConsLblChildMapForDelete.Attributes["key"] = tagTagL3extRsLblToInstPL3extConsLbl.Key.ValueString()
+						L3extRsLblToInstPL3extConsLblChildren = append(L3extRsLblToInstPL3extConsLblChildren, map[string]interface{}{"tagTag": tagTagL3extRsLblToInstPL3extConsLblChildMapForDelete})
+					}
+				}
+			}
+			childMap.Children = L3extRsLblToInstPL3extConsLblChildren
 			childPayloads = append(childPayloads, map[string]interface{}{"l3extRsLblToInstP": childMap})
 			l3extRsLblToInstPIdentifier := L3extRsLblToInstPIdentifier{}
-			l3extRsLblToInstPIdentifier.TDn = l3extRsLblToInstP.TDn
+			l3extRsLblToInstPIdentifier.TDn = l3extRsLblToInstPL3extConsLbl.TDn
 			l3extRsLblToInstPIdentifiers = append(l3extRsLblToInstPIdentifiers, l3extRsLblToInstPIdentifier)
 		}
-		for _, l3extRsLblToInstP := range l3extRsLblToInstPState {
+		for _, l3extRsLblToInstP := range l3extRsLblToInstPL3extConsLblState {
 			delete := true
 			for _, l3extRsLblToInstPIdentifier := range l3extRsLblToInstPIdentifiers {
 				if l3extRsLblToInstPIdentifier.TDn == l3extRsLblToInstP.TDn {
@@ -781,10 +1187,10 @@ func getL3extConsLblL3extRsLblToInstPChildPayloads(ctx context.Context, diags *d
 				}
 			}
 			if delete {
-				childMap := map[string]map[string]interface{}{"attributes": {}}
-				childMap["attributes"]["status"] = "deleted"
-				childMap["attributes"]["tDn"] = l3extRsLblToInstP.TDn.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"l3extRsLblToInstP": childMap})
+				l3extRsLblToInstPChildMapForDelete := NewAciObject()
+				l3extRsLblToInstPChildMapForDelete.Attributes["status"] = "deleted"
+				l3extRsLblToInstPChildMapForDelete.Attributes["tDn"] = l3extRsLblToInstP.TDn.ValueString()
+				childPayloads = append(childPayloads, map[string]interface{}{"l3extRsLblToInstP": l3extRsLblToInstPChildMapForDelete})
 			}
 		}
 	} else {
@@ -793,31 +1199,107 @@ func getL3extConsLblL3extRsLblToInstPChildPayloads(ctx context.Context, diags *d
 
 	return childPayloads
 }
-func getL3extConsLblL3extRsLblToProfileChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *L3extConsLblResourceModel, l3extRsLblToProfilePlan, l3extRsLblToProfileState []L3extRsLblToProfileL3extConsLblResourceModel) []map[string]interface{} {
 
+func getL3extConsLblL3extRsLblToProfileChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *L3extConsLblResourceModel, l3extRsLblToProfileL3extConsLblPlan, l3extRsLblToProfileL3extConsLblState []L3extRsLblToProfileL3extConsLblResourceModel) []map[string]interface{} {
 	childPayloads := []map[string]interface{}{}
-	if !data.L3extRsLblToProfile.IsUnknown() {
+	if !data.L3extRsLblToProfile.IsNull() && !data.L3extRsLblToProfile.IsUnknown() {
 		l3extRsLblToProfileIdentifiers := []L3extRsLblToProfileIdentifier{}
-		for _, l3extRsLblToProfile := range l3extRsLblToProfilePlan {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !l3extRsLblToProfile.Annotation.IsUnknown() && !l3extRsLblToProfile.Annotation.IsNull() {
-				childMap["attributes"]["annotation"] = l3extRsLblToProfile.Annotation.ValueString()
+		for _, l3extRsLblToProfileL3extConsLbl := range l3extRsLblToProfileL3extConsLblPlan {
+			L3extRsLblToProfileL3extConsLblChildren := make([]map[string]interface{}, 0)
+			childMap := NewAciObject()
+			if !l3extRsLblToProfileL3extConsLbl.Annotation.IsNull() && !l3extRsLblToProfileL3extConsLbl.Annotation.IsUnknown() {
+				childMap.Attributes["annotation"] = l3extRsLblToProfileL3extConsLbl.Annotation.ValueString()
 			} else {
-				childMap["attributes"]["annotation"] = globalAnnotation
+				childMap.Attributes["annotation"] = globalAnnotation
 			}
-			if !l3extRsLblToProfile.Direction.IsUnknown() && !l3extRsLblToProfile.Direction.IsNull() {
-				childMap["attributes"]["direction"] = l3extRsLblToProfile.Direction.ValueString()
+			if !l3extRsLblToProfileL3extConsLbl.Direction.IsNull() && !l3extRsLblToProfileL3extConsLbl.Direction.IsUnknown() {
+				childMap.Attributes["direction"] = l3extRsLblToProfileL3extConsLbl.Direction.ValueString()
 			}
-			if !l3extRsLblToProfile.TDn.IsUnknown() && !l3extRsLblToProfile.TDn.IsNull() {
-				childMap["attributes"]["tDn"] = l3extRsLblToProfile.TDn.ValueString()
+			if !l3extRsLblToProfileL3extConsLbl.TDn.IsNull() && !l3extRsLblToProfileL3extConsLbl.TDn.IsUnknown() {
+				childMap.Attributes["tDn"] = l3extRsLblToProfileL3extConsLbl.TDn.ValueString()
 			}
+
+			var tagAnnotationL3extRsLblToProfileL3extConsLblPlan, tagAnnotationL3extRsLblToProfileL3extConsLblState []TagAnnotationL3extRsLblToProfileL3extConsLblResourceModel
+			l3extRsLblToProfileL3extConsLbl.TagAnnotation.ElementsAs(ctx, &tagAnnotationL3extRsLblToProfileL3extConsLblPlan, false)
+			for _, tagAnnotationL3extRsLblToProfileL3extConsLblstate := range l3extRsLblToProfileL3extConsLblState {
+				tagAnnotationL3extRsLblToProfileL3extConsLblstate.TagAnnotation.ElementsAs(ctx, &tagAnnotationL3extRsLblToProfileL3extConsLblState, false)
+			}
+			if !l3extRsLblToProfileL3extConsLbl.TagAnnotation.IsNull() && !l3extRsLblToProfileL3extConsLbl.TagAnnotation.IsUnknown() {
+				tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
+				for _, tagAnnotationL3extRsLblToProfileL3extConsLbl := range tagAnnotationL3extRsLblToProfileL3extConsLblPlan {
+					tagAnnotationL3extRsLblToProfileL3extConsLblChildMap := NewAciObject()
+					if !tagAnnotationL3extRsLblToProfileL3extConsLbl.Key.IsNull() && !tagAnnotationL3extRsLblToProfileL3extConsLbl.Key.IsUnknown() {
+						tagAnnotationL3extRsLblToProfileL3extConsLblChildMap.Attributes["key"] = tagAnnotationL3extRsLblToProfileL3extConsLbl.Key.ValueString()
+					}
+					if !tagAnnotationL3extRsLblToProfileL3extConsLbl.Value.IsNull() && !tagAnnotationL3extRsLblToProfileL3extConsLbl.Value.IsUnknown() {
+						tagAnnotationL3extRsLblToProfileL3extConsLblChildMap.Attributes["value"] = tagAnnotationL3extRsLblToProfileL3extConsLbl.Value.ValueString()
+					}
+					L3extRsLblToProfileL3extConsLblChildren = append(L3extRsLblToProfileL3extConsLblChildren, map[string]interface{}{"tagAnnotation": tagAnnotationL3extRsLblToProfileL3extConsLblChildMap})
+					tagAnnotationIdentifier := TagAnnotationIdentifier{}
+					tagAnnotationIdentifier.Key = tagAnnotationL3extRsLblToProfileL3extConsLbl.Key
+					tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
+				}
+				for _, tagAnnotationL3extRsLblToProfileL3extConsLbl := range tagAnnotationL3extRsLblToProfileL3extConsLblState {
+					delete := true
+					for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
+						if tagAnnotationIdentifier.Key == tagAnnotationL3extRsLblToProfileL3extConsLbl.Key {
+							delete = false
+							break
+						}
+					}
+					if delete {
+						tagAnnotationL3extRsLblToProfileL3extConsLblChildMapForDelete := NewAciObject()
+						tagAnnotationL3extRsLblToProfileL3extConsLblChildMapForDelete.Attributes["status"] = "deleted"
+						tagAnnotationL3extRsLblToProfileL3extConsLblChildMapForDelete.Attributes["key"] = tagAnnotationL3extRsLblToProfileL3extConsLbl.Key.ValueString()
+						L3extRsLblToProfileL3extConsLblChildren = append(L3extRsLblToProfileL3extConsLblChildren, map[string]interface{}{"tagAnnotation": tagAnnotationL3extRsLblToProfileL3extConsLblChildMapForDelete})
+					}
+				}
+			}
+
+			var tagTagL3extRsLblToProfileL3extConsLblPlan, tagTagL3extRsLblToProfileL3extConsLblState []TagTagL3extRsLblToProfileL3extConsLblResourceModel
+			l3extRsLblToProfileL3extConsLbl.TagTag.ElementsAs(ctx, &tagTagL3extRsLblToProfileL3extConsLblPlan, false)
+			for _, tagTagL3extRsLblToProfileL3extConsLblstate := range l3extRsLblToProfileL3extConsLblState {
+				tagTagL3extRsLblToProfileL3extConsLblstate.TagTag.ElementsAs(ctx, &tagTagL3extRsLblToProfileL3extConsLblState, false)
+			}
+			if !l3extRsLblToProfileL3extConsLbl.TagTag.IsNull() && !l3extRsLblToProfileL3extConsLbl.TagTag.IsUnknown() {
+				tagTagIdentifiers := []TagTagIdentifier{}
+				for _, tagTagL3extRsLblToProfileL3extConsLbl := range tagTagL3extRsLblToProfileL3extConsLblPlan {
+					tagTagL3extRsLblToProfileL3extConsLblChildMap := NewAciObject()
+					if !tagTagL3extRsLblToProfileL3extConsLbl.Key.IsNull() && !tagTagL3extRsLblToProfileL3extConsLbl.Key.IsUnknown() {
+						tagTagL3extRsLblToProfileL3extConsLblChildMap.Attributes["key"] = tagTagL3extRsLblToProfileL3extConsLbl.Key.ValueString()
+					}
+					if !tagTagL3extRsLblToProfileL3extConsLbl.Value.IsNull() && !tagTagL3extRsLblToProfileL3extConsLbl.Value.IsUnknown() {
+						tagTagL3extRsLblToProfileL3extConsLblChildMap.Attributes["value"] = tagTagL3extRsLblToProfileL3extConsLbl.Value.ValueString()
+					}
+					L3extRsLblToProfileL3extConsLblChildren = append(L3extRsLblToProfileL3extConsLblChildren, map[string]interface{}{"tagTag": tagTagL3extRsLblToProfileL3extConsLblChildMap})
+					tagTagIdentifier := TagTagIdentifier{}
+					tagTagIdentifier.Key = tagTagL3extRsLblToProfileL3extConsLbl.Key
+					tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
+				}
+				for _, tagTagL3extRsLblToProfileL3extConsLbl := range tagTagL3extRsLblToProfileL3extConsLblState {
+					delete := true
+					for _, tagTagIdentifier := range tagTagIdentifiers {
+						if tagTagIdentifier.Key == tagTagL3extRsLblToProfileL3extConsLbl.Key {
+							delete = false
+							break
+						}
+					}
+					if delete {
+						tagTagL3extRsLblToProfileL3extConsLblChildMapForDelete := NewAciObject()
+						tagTagL3extRsLblToProfileL3extConsLblChildMapForDelete.Attributes["status"] = "deleted"
+						tagTagL3extRsLblToProfileL3extConsLblChildMapForDelete.Attributes["key"] = tagTagL3extRsLblToProfileL3extConsLbl.Key.ValueString()
+						L3extRsLblToProfileL3extConsLblChildren = append(L3extRsLblToProfileL3extConsLblChildren, map[string]interface{}{"tagTag": tagTagL3extRsLblToProfileL3extConsLblChildMapForDelete})
+					}
+				}
+			}
+			childMap.Children = L3extRsLblToProfileL3extConsLblChildren
 			childPayloads = append(childPayloads, map[string]interface{}{"l3extRsLblToProfile": childMap})
 			l3extRsLblToProfileIdentifier := L3extRsLblToProfileIdentifier{}
-			l3extRsLblToProfileIdentifier.Direction = l3extRsLblToProfile.Direction
-			l3extRsLblToProfileIdentifier.TDn = l3extRsLblToProfile.TDn
+			l3extRsLblToProfileIdentifier.Direction = l3extRsLblToProfileL3extConsLbl.Direction
+			l3extRsLblToProfileIdentifier.TDn = l3extRsLblToProfileL3extConsLbl.TDn
 			l3extRsLblToProfileIdentifiers = append(l3extRsLblToProfileIdentifiers, l3extRsLblToProfileIdentifier)
 		}
-		for _, l3extRsLblToProfile := range l3extRsLblToProfileState {
+		for _, l3extRsLblToProfile := range l3extRsLblToProfileL3extConsLblState {
 			delete := true
 			for _, l3extRsLblToProfileIdentifier := range l3extRsLblToProfileIdentifiers {
 				if l3extRsLblToProfileIdentifier.Direction == l3extRsLblToProfile.Direction &&
@@ -827,11 +1309,11 @@ func getL3extConsLblL3extRsLblToProfileChildPayloads(ctx context.Context, diags 
 				}
 			}
 			if delete {
-				childMap := map[string]map[string]interface{}{"attributes": {}}
-				childMap["attributes"]["status"] = "deleted"
-				childMap["attributes"]["direction"] = l3extRsLblToProfile.Direction.ValueString()
-				childMap["attributes"]["tDn"] = l3extRsLblToProfile.TDn.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"l3extRsLblToProfile": childMap})
+				l3extRsLblToProfileChildMapForDelete := NewAciObject()
+				l3extRsLblToProfileChildMapForDelete.Attributes["status"] = "deleted"
+				l3extRsLblToProfileChildMapForDelete.Attributes["direction"] = l3extRsLblToProfile.Direction.ValueString()
+				l3extRsLblToProfileChildMapForDelete.Attributes["tDn"] = l3extRsLblToProfile.TDn.ValueString()
+				childPayloads = append(childPayloads, map[string]interface{}{"l3extRsLblToProfile": l3extRsLblToProfileChildMapForDelete})
 			}
 		}
 	} else {
@@ -840,25 +1322,25 @@ func getL3extConsLblL3extRsLblToProfileChildPayloads(ctx context.Context, diags 
 
 	return childPayloads
 }
-func getL3extConsLblTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *L3extConsLblResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationL3extConsLblResourceModel) []map[string]interface{} {
 
+func getL3extConsLblTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *L3extConsLblResourceModel, tagAnnotationL3extConsLblPlan, tagAnnotationL3extConsLblState []TagAnnotationL3extConsLblResourceModel) []map[string]interface{} {
 	childPayloads := []map[string]interface{}{}
-	if !data.TagAnnotation.IsUnknown() {
+	if !data.TagAnnotation.IsNull() && !data.TagAnnotation.IsUnknown() {
 		tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
-		for _, tagAnnotation := range tagAnnotationPlan {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagAnnotation.Key.IsUnknown() && !tagAnnotation.Key.IsNull() {
-				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
+		for _, tagAnnotationL3extConsLbl := range tagAnnotationL3extConsLblPlan {
+			childMap := NewAciObject()
+			if !tagAnnotationL3extConsLbl.Key.IsNull() && !tagAnnotationL3extConsLbl.Key.IsUnknown() {
+				childMap.Attributes["key"] = tagAnnotationL3extConsLbl.Key.ValueString()
 			}
-			if !tagAnnotation.Value.IsUnknown() && !tagAnnotation.Value.IsNull() {
-				childMap["attributes"]["value"] = tagAnnotation.Value.ValueString()
+			if !tagAnnotationL3extConsLbl.Value.IsNull() && !tagAnnotationL3extConsLbl.Value.IsUnknown() {
+				childMap.Attributes["value"] = tagAnnotationL3extConsLbl.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
 			tagAnnotationIdentifier := TagAnnotationIdentifier{}
-			tagAnnotationIdentifier.Key = tagAnnotation.Key
+			tagAnnotationIdentifier.Key = tagAnnotationL3extConsLbl.Key
 			tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
 		}
-		for _, tagAnnotation := range tagAnnotationState {
+		for _, tagAnnotation := range tagAnnotationL3extConsLblState {
 			delete := true
 			for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
 				if tagAnnotationIdentifier.Key == tagAnnotation.Key {
@@ -867,10 +1349,10 @@ func getL3extConsLblTagAnnotationChildPayloads(ctx context.Context, diags *diag.
 				}
 			}
 			if delete {
-				childMap := map[string]map[string]interface{}{"attributes": {}}
-				childMap["attributes"]["status"] = "deleted"
-				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
+				tagAnnotationChildMapForDelete := NewAciObject()
+				tagAnnotationChildMapForDelete.Attributes["status"] = "deleted"
+				tagAnnotationChildMapForDelete.Attributes["key"] = tagAnnotation.Key.ValueString()
+				childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": tagAnnotationChildMapForDelete})
 			}
 		}
 	} else {
@@ -879,25 +1361,25 @@ func getL3extConsLblTagAnnotationChildPayloads(ctx context.Context, diags *diag.
 
 	return childPayloads
 }
-func getL3extConsLblTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *L3extConsLblResourceModel, tagTagPlan, tagTagState []TagTagL3extConsLblResourceModel) []map[string]interface{} {
 
+func getL3extConsLblTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *L3extConsLblResourceModel, tagTagL3extConsLblPlan, tagTagL3extConsLblState []TagTagL3extConsLblResourceModel) []map[string]interface{} {
 	childPayloads := []map[string]interface{}{}
-	if !data.TagTag.IsUnknown() {
+	if !data.TagTag.IsNull() && !data.TagTag.IsUnknown() {
 		tagTagIdentifiers := []TagTagIdentifier{}
-		for _, tagTag := range tagTagPlan {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagTag.Key.IsUnknown() && !tagTag.Key.IsNull() {
-				childMap["attributes"]["key"] = tagTag.Key.ValueString()
+		for _, tagTagL3extConsLbl := range tagTagL3extConsLblPlan {
+			childMap := NewAciObject()
+			if !tagTagL3extConsLbl.Key.IsNull() && !tagTagL3extConsLbl.Key.IsUnknown() {
+				childMap.Attributes["key"] = tagTagL3extConsLbl.Key.ValueString()
 			}
-			if !tagTag.Value.IsUnknown() && !tagTag.Value.IsNull() {
-				childMap["attributes"]["value"] = tagTag.Value.ValueString()
+			if !tagTagL3extConsLbl.Value.IsNull() && !tagTagL3extConsLbl.Value.IsUnknown() {
+				childMap.Attributes["value"] = tagTagL3extConsLbl.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})
 			tagTagIdentifier := TagTagIdentifier{}
-			tagTagIdentifier.Key = tagTag.Key
+			tagTagIdentifier.Key = tagTagL3extConsLbl.Key
 			tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
 		}
-		for _, tagTag := range tagTagState {
+		for _, tagTag := range tagTagL3extConsLblState {
 			delete := true
 			for _, tagTagIdentifier := range tagTagIdentifiers {
 				if tagTagIdentifier.Key == tagTag.Key {
@@ -906,10 +1388,10 @@ func getL3extConsLblTagTagChildPayloads(ctx context.Context, diags *diag.Diagnos
 				}
 			}
 			if delete {
-				childMap := map[string]map[string]interface{}{"attributes": {}}
-				childMap["attributes"]["status"] = "deleted"
-				childMap["attributes"]["key"] = tagTag.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})
+				tagTagChildMapForDelete := NewAciObject()
+				tagTagChildMapForDelete.Attributes["status"] = "deleted"
+				tagTagChildMapForDelete.Attributes["key"] = tagTag.Key.ValueString()
+				childPayloads = append(childPayloads, map[string]interface{}{"tagTag": tagTagChildMapForDelete})
 			}
 		}
 	} else {

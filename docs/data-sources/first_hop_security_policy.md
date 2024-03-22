@@ -56,26 +56,29 @@ data "aci_first_hop_security_policy" "example_tenant" {
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `router_advertisement` (raGuardAdminSt) - (string) Enable Router Advertisement Guard for the First Hop Security Policy object.
 * `source_guard` (srcGuardAdminSt) - (string) The Source Guard Status for IPv4 and IPv6 traffic of the First Hop Security Policy object.
-
 * `route_advertisement_guard_policy` - (map) A map of Route Advertisement Guard Policy (ACI object [fhsRaGuardPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fhsRaGuardPol/overview)).
-  * `annotation` (annotation) - (string) The annotation of the Route Advertisement Guard Policy object.
-  * `description` (descr) - (string) The description of the Route Advertisement Guard Policy object.
-  * `managed_config_check` (managedConfigCheck) - (string) Perform a managed configuration check for the Route Advertisement Guard Policy object.
-  * `managed_config_flag` (managedConfigFlag) - (string) The managed configuration flag setting for the Route Advertisement Guard Policy object.
-  * `max_hop_limit` (maxHopLimit) - (string) The maximum hop limit for the Route Advertisement Guard Policy object.
-  * `max_router_preference` (maxRouterPref) - (string) The allowed maximum router preference for the Route Advertisement Guard Policy object.
-  * `min_hop_limit` (minHopLimit) - (string) The minimum hop limit for the Route Advertisement Guard Policy object.
-  * `name` (name) - (string) The name of the Route Advertisement Guard Policy object.
-  * `name_alias` (nameAlias) - (string) The name alias of the Route Advertisement Guard Policy object.
-  * `other_config_check` (otherConfigCheck) - (string) Perform other configuration checks for the Route Advertisement Guard Policy object.
-  * `other_config_flag` (otherConfigFlag) - (string) The other configuration flag setting for the Route Advertisement Guard Policy object.
-  * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
-  * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
-
+    * `annotation` (annotation) - (string) The annotation of the Route Advertisement Guard Policy object.
+    * `description` (descr) - (string) The description of the Route Advertisement Guard Policy object.
+    * `managed_config_check` (managedConfigCheck) - (string) Perform a managed configuration check for the Route Advertisement Guard Policy object.
+    * `managed_config_flag` (managedConfigFlag) - (string) The managed configuration flag setting for the Route Advertisement Guard Policy object.
+    * `max_hop_limit` (maxHopLimit) - (string) The maximum hop limit for the Route Advertisement Guard Policy object.
+    * `max_router_preference` (maxRouterPref) - (string) The allowed maximum router preference for the Route Advertisement Guard Policy object.
+    * `min_hop_limit` (minHopLimit) - (string) The minimum hop limit for the Route Advertisement Guard Policy object.
+    * `name` (name) - (string) The name of the Route Advertisement Guard Policy object.
+    * `name_alias` (nameAlias) - (string) The name alias of the Route Advertisement Guard Policy object.
+    * `other_config_check` (otherConfigCheck) - (string) Perform other configuration checks for the Route Advertisement Guard Policy object.
+    * `other_config_flag` (otherConfigFlag) - (string) The other configuration flag setting for the Route Advertisement Guard Policy object.
+    * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
+    * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
-  * `key` (key) - (string) The key used to uniquely identify this configuration object.
-  * `value` (value) - (string) The value of the property.
-
+    * `key` (key) - (string) The key used to uniquely identify this configuration object.
+    * `value` (value) - (string) The value of the property.
 * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
-  * `key` (key) - (string) The key used to uniquely identify this configuration object.
-  * `value` (value) - (string) The value of the property.
+    * `key` (key) - (string) The key used to uniquely identify this configuration object.
+    * `value` (value) - (string) The value of the property.

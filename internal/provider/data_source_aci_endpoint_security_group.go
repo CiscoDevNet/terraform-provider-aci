@@ -149,6 +149,38 @@ func (d *FvESgDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 							Computed:            true,
 							MarkdownDescription: `The consumer contract name.`,
 						},
+						"annotations": schema.SetNestedAttribute{
+							MarkdownDescription: ``,
+							Computed:            true,
+							NestedObject: schema.NestedAttributeObject{
+								Attributes: map[string]schema.Attribute{
+									"key": schema.StringAttribute{
+										Computed:            true,
+										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+									},
+									"value": schema.StringAttribute{
+										Computed:            true,
+										MarkdownDescription: `The value of the property.`,
+									},
+								},
+							},
+						},
+						"tags": schema.SetNestedAttribute{
+							MarkdownDescription: ``,
+							Computed:            true,
+							NestedObject: schema.NestedAttributeObject{
+								Attributes: map[string]schema.Attribute{
+									"key": schema.StringAttribute{
+										Computed:            true,
+										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+									},
+									"value": schema.StringAttribute{
+										Computed:            true,
+										MarkdownDescription: `The value of the property.`,
+									},
+								},
+							},
+						},
 					},
 				},
 			},
@@ -170,6 +202,38 @@ func (d *FvESgDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 							Computed:            true,
 							MarkdownDescription: `The contract interface name.`,
 						},
+						"annotations": schema.SetNestedAttribute{
+							MarkdownDescription: ``,
+							Computed:            true,
+							NestedObject: schema.NestedAttributeObject{
+								Attributes: map[string]schema.Attribute{
+									"key": schema.StringAttribute{
+										Computed:            true,
+										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+									},
+									"value": schema.StringAttribute{
+										Computed:            true,
+										MarkdownDescription: `The value of the property.`,
+									},
+								},
+							},
+						},
+						"tags": schema.SetNestedAttribute{
+							MarkdownDescription: ``,
+							Computed:            true,
+							NestedObject: schema.NestedAttributeObject{
+								Attributes: map[string]schema.Attribute{
+									"key": schema.StringAttribute{
+										Computed:            true,
+										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+									},
+									"value": schema.StringAttribute{
+										Computed:            true,
+										MarkdownDescription: `The value of the property.`,
+									},
+								},
+							},
+						},
 					},
 				},
 			},
@@ -189,6 +253,38 @@ func (d *FvESgDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 						"contract_name": schema.StringAttribute{
 							Computed:            true,
 							MarkdownDescription: `The contract name.`,
+						},
+						"annotations": schema.SetNestedAttribute{
+							MarkdownDescription: ``,
+							Computed:            true,
+							NestedObject: schema.NestedAttributeObject{
+								Attributes: map[string]schema.Attribute{
+									"key": schema.StringAttribute{
+										Computed:            true,
+										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+									},
+									"value": schema.StringAttribute{
+										Computed:            true,
+										MarkdownDescription: `The value of the property.`,
+									},
+								},
+							},
+						},
+						"tags": schema.SetNestedAttribute{
+							MarkdownDescription: ``,
+							Computed:            true,
+							NestedObject: schema.NestedAttributeObject{
+								Attributes: map[string]schema.Attribute{
+									"key": schema.StringAttribute{
+										Computed:            true,
+										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+									},
+									"value": schema.StringAttribute{
+										Computed:            true,
+										MarkdownDescription: `The value of the property.`,
+									},
+								},
+							},
 						},
 					},
 				},
@@ -215,6 +311,38 @@ func (d *FvESgDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 							Computed:            true,
 							MarkdownDescription: `The provider contract name.`,
 						},
+						"annotations": schema.SetNestedAttribute{
+							MarkdownDescription: ``,
+							Computed:            true,
+							NestedObject: schema.NestedAttributeObject{
+								Attributes: map[string]schema.Attribute{
+									"key": schema.StringAttribute{
+										Computed:            true,
+										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+									},
+									"value": schema.StringAttribute{
+										Computed:            true,
+										MarkdownDescription: `The value of the property.`,
+									},
+								},
+							},
+						},
+						"tags": schema.SetNestedAttribute{
+							MarkdownDescription: ``,
+							Computed:            true,
+							NestedObject: schema.NestedAttributeObject{
+								Attributes: map[string]schema.Attribute{
+									"key": schema.StringAttribute{
+										Computed:            true,
+										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+									},
+									"value": schema.StringAttribute{
+										Computed:            true,
+										MarkdownDescription: `The value of the property.`,
+									},
+								},
+							},
+						},
 					},
 				},
 			},
@@ -230,6 +358,38 @@ func (d *FvESgDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 						Computed:            true,
 						MarkdownDescription: `The name of the VRF object.`,
 					},
+					"annotations": schema.SetNestedAttribute{
+						MarkdownDescription: ``,
+						Computed:            true,
+						NestedObject: schema.NestedAttributeObject{
+							Attributes: map[string]schema.Attribute{
+								"key": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+								},
+								"value": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The value of the property.`,
+								},
+							},
+						},
+					},
+					"tags": schema.SetNestedAttribute{
+						MarkdownDescription: ``,
+						Computed:            true,
+						NestedObject: schema.NestedAttributeObject{
+							Attributes: map[string]schema.Attribute{
+								"key": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+								},
+								"value": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The value of the property.`,
+								},
+							},
+						},
+					},
 				},
 			},
 			"relation_to_contract_masters": schema.SetNestedAttribute{
@@ -244,6 +404,38 @@ func (d *FvESgDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 						"target_dn": schema.StringAttribute{
 							Computed:            true,
 							MarkdownDescription: `The distinguished name of the target.`,
+						},
+						"annotations": schema.SetNestedAttribute{
+							MarkdownDescription: ``,
+							Computed:            true,
+							NestedObject: schema.NestedAttributeObject{
+								Attributes: map[string]schema.Attribute{
+									"key": schema.StringAttribute{
+										Computed:            true,
+										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+									},
+									"value": schema.StringAttribute{
+										Computed:            true,
+										MarkdownDescription: `The value of the property.`,
+									},
+								},
+							},
+						},
+						"tags": schema.SetNestedAttribute{
+							MarkdownDescription: ``,
+							Computed:            true,
+							NestedObject: schema.NestedAttributeObject{
+								Attributes: map[string]schema.Attribute{
+									"key": schema.StringAttribute{
+										Computed:            true,
+										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+									},
+									"value": schema.StringAttribute{
+										Computed:            true,
+										MarkdownDescription: `The value of the property.`,
+									},
+								},
+							},
 						},
 					},
 				},

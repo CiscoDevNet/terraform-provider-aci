@@ -111,6 +111,10 @@ func (d *FvBDDataSource) Schema(ctx context.Context, req datasource.SchemaReques
 				ElementType:        types.StringType,
 				DeprecationMessage: "Attribute `relation_fv_rs_bd_flood_to` is deprecated. The attribute will be removed in the next major version of the provider.",
 			},
+			"relation_fv_rs_bd_to_relay_p": schema.StringAttribute{
+				Computed:           true,
+				DeprecationMessage: "Attribute 'relation_fv_rs_bd_to_relay_p' is deprecated, please refer to 'relation_to_dhcp_relay_policy.dhcp_relay_policy_name' instead. The attribute will be removed in the next major version of the provider.",
+			},
 			"relation_fv_rs_bd_to_ep_ret": schema.StringAttribute{
 				Computed:           true,
 				DeprecationMessage: "Attribute 'relation_fv_rs_bd_to_ep_ret' is deprecated, please refer to 'relation_to_end_point_retention_policy.end_point_retention_policy_name' instead. The attribute will be removed in the next major version of the provider.",
@@ -139,10 +143,6 @@ func (d *FvBDDataSource) Schema(ctx context.Context, req datasource.SchemaReques
 			"relation_fv_rs_bd_to_nd_p": schema.StringAttribute{
 				Computed:           true,
 				DeprecationMessage: "Attribute 'relation_fv_rs_bd_to_nd_p' is deprecated, please refer to 'relation_to_neighbor_discovery_interface_policy.neighbor_discovery_interface_policy_name' instead. The attribute will be removed in the next major version of the provider.",
-			},
-			"relation_fv_rs_bd_to_relay_p": schema.StringAttribute{
-				Computed:           true,
-				DeprecationMessage: "Attribute 'relation_fv_rs_bd_to_relay_p' is deprecated, please refer to 'relation_to_relay_policy.dhcp_relay_policy_name' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			"relation_fv_rs_bd_to_profile": schema.StringAttribute{
 				Computed:           true,
@@ -305,6 +305,38 @@ func (d *FvBDDataSource) Schema(ctx context.Context, req datasource.SchemaReques
 						Computed:            true,
 						MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
 					},
+					"annotations": schema.SetNestedAttribute{
+						MarkdownDescription: ``,
+						Computed:            true,
+						NestedObject: schema.NestedAttributeObject{
+							Attributes: map[string]schema.Attribute{
+								"key": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+								},
+								"value": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The value of the property.`,
+								},
+							},
+						},
+					},
+					"tags": schema.SetNestedAttribute{
+						MarkdownDescription: ``,
+						Computed:            true,
+						NestedObject: schema.NestedAttributeObject{
+							Attributes: map[string]schema.Attribute{
+								"key": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+								},
+								"value": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The value of the property.`,
+								},
+							},
+						},
+					},
 				},
 			},
 			"rogue_coop_exceptions": schema.SetNestedAttribute{
@@ -332,6 +364,38 @@ func (d *FvBDDataSource) Schema(ctx context.Context, req datasource.SchemaReques
 							Computed:            true,
 							MarkdownDescription: `The name alias of the Rogue Coop Exception object.`,
 						},
+						"annotations": schema.SetNestedAttribute{
+							MarkdownDescription: ``,
+							Computed:            true,
+							NestedObject: schema.NestedAttributeObject{
+								Attributes: map[string]schema.Attribute{
+									"key": schema.StringAttribute{
+										Computed:            true,
+										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+									},
+									"value": schema.StringAttribute{
+										Computed:            true,
+										MarkdownDescription: `The value of the property.`,
+									},
+								},
+							},
+						},
+						"tags": schema.SetNestedAttribute{
+							MarkdownDescription: ``,
+							Computed:            true,
+							NestedObject: schema.NestedAttributeObject{
+								Attributes: map[string]schema.Attribute{
+									"key": schema.StringAttribute{
+										Computed:            true,
+										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+									},
+									"value": schema.StringAttribute{
+										Computed:            true,
+										MarkdownDescription: `The value of the property.`,
+									},
+								},
+							},
+						},
 					},
 				},
 			},
@@ -347,6 +411,38 @@ func (d *FvBDDataSource) Schema(ctx context.Context, req datasource.SchemaReques
 						Computed:            true,
 						MarkdownDescription: `The name of the Monitoring Policy object.`,
 					},
+					"annotations": schema.SetNestedAttribute{
+						MarkdownDescription: ``,
+						Computed:            true,
+						NestedObject: schema.NestedAttributeObject{
+							Attributes: map[string]schema.Attribute{
+								"key": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+								},
+								"value": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The value of the property.`,
+								},
+							},
+						},
+					},
+					"tags": schema.SetNestedAttribute{
+						MarkdownDescription: ``,
+						Computed:            true,
+						NestedObject: schema.NestedAttributeObject{
+							Attributes: map[string]schema.Attribute{
+								"key": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+								},
+								"value": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The value of the property.`,
+								},
+							},
+						},
+					},
 				},
 			},
 			"relation_to_first_hop_security_policy": schema.SingleNestedAttribute{
@@ -361,6 +457,38 @@ func (d *FvBDDataSource) Schema(ctx context.Context, req datasource.SchemaReques
 						Computed:            true,
 						MarkdownDescription: `The name of the First Hop Security Policy object.`,
 					},
+					"annotations": schema.SetNestedAttribute{
+						MarkdownDescription: ``,
+						Computed:            true,
+						NestedObject: schema.NestedAttributeObject{
+							Attributes: map[string]schema.Attribute{
+								"key": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+								},
+								"value": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The value of the property.`,
+								},
+							},
+						},
+					},
+					"tags": schema.SetNestedAttribute{
+						MarkdownDescription: ``,
+						Computed:            true,
+						NestedObject: schema.NestedAttributeObject{
+							Attributes: map[string]schema.Attribute{
+								"key": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+								},
+								"value": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The value of the property.`,
+								},
+							},
+						},
+					},
 				},
 			},
 			"relation_to_neighbor_discovery_interface_policy": schema.SingleNestedAttribute{
@@ -374,6 +502,38 @@ func (d *FvBDDataSource) Schema(ctx context.Context, req datasource.SchemaReques
 					"neighbor_discovery_interface_policy_name": schema.StringAttribute{
 						Computed:            true,
 						MarkdownDescription: `The name of the Neighbor Discovery Interface Policy object.`,
+					},
+					"annotations": schema.SetNestedAttribute{
+						MarkdownDescription: ``,
+						Computed:            true,
+						NestedObject: schema.NestedAttributeObject{
+							Attributes: map[string]schema.Attribute{
+								"key": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+								},
+								"value": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The value of the property.`,
+								},
+							},
+						},
+					},
+					"tags": schema.SetNestedAttribute{
+						MarkdownDescription: ``,
+						Computed:            true,
+						NestedObject: schema.NestedAttributeObject{
+							Attributes: map[string]schema.Attribute{
+								"key": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+								},
+								"value": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The value of the property.`,
+								},
+							},
+						},
 					},
 				},
 			},
@@ -394,6 +554,38 @@ func (d *FvBDDataSource) Schema(ctx context.Context, req datasource.SchemaReques
 							Computed:            true,
 							MarkdownDescription: `The name of the NetFlow Monitor Policy object.`,
 						},
+						"annotations": schema.SetNestedAttribute{
+							MarkdownDescription: ``,
+							Computed:            true,
+							NestedObject: schema.NestedAttributeObject{
+								Attributes: map[string]schema.Attribute{
+									"key": schema.StringAttribute{
+										Computed:            true,
+										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+									},
+									"value": schema.StringAttribute{
+										Computed:            true,
+										MarkdownDescription: `The value of the property.`,
+									},
+								},
+							},
+						},
+						"tags": schema.SetNestedAttribute{
+							MarkdownDescription: ``,
+							Computed:            true,
+							NestedObject: schema.NestedAttributeObject{
+								Attributes: map[string]schema.Attribute{
+									"key": schema.StringAttribute{
+										Computed:            true,
+										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+									},
+									"value": schema.StringAttribute{
+										Computed:            true,
+										MarkdownDescription: `The value of the property.`,
+									},
+								},
+							},
+						},
 					},
 				},
 			},
@@ -409,6 +601,38 @@ func (d *FvBDDataSource) Schema(ctx context.Context, req datasource.SchemaReques
 						"l3_outside_name": schema.StringAttribute{
 							Computed:            true,
 							MarkdownDescription: `The name of the L3 Outside object.`,
+						},
+						"annotations": schema.SetNestedAttribute{
+							MarkdownDescription: ``,
+							Computed:            true,
+							NestedObject: schema.NestedAttributeObject{
+								Attributes: map[string]schema.Attribute{
+									"key": schema.StringAttribute{
+										Computed:            true,
+										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+									},
+									"value": schema.StringAttribute{
+										Computed:            true,
+										MarkdownDescription: `The value of the property.`,
+									},
+								},
+							},
+						},
+						"tags": schema.SetNestedAttribute{
+							MarkdownDescription: ``,
+							Computed:            true,
+							NestedObject: schema.NestedAttributeObject{
+								Attributes: map[string]schema.Attribute{
+									"key": schema.StringAttribute{
+										Computed:            true,
+										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+									},
+									"value": schema.StringAttribute{
+										Computed:            true,
+										MarkdownDescription: `The value of the property.`,
+									},
+								},
+							},
 						},
 					},
 				},
@@ -429,6 +653,38 @@ func (d *FvBDDataSource) Schema(ctx context.Context, req datasource.SchemaReques
 						Computed:            true,
 						MarkdownDescription: `The name of the Route Control Profile object.`,
 					},
+					"annotations": schema.SetNestedAttribute{
+						MarkdownDescription: ``,
+						Computed:            true,
+						NestedObject: schema.NestedAttributeObject{
+							Attributes: map[string]schema.Attribute{
+								"key": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+								},
+								"value": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The value of the property.`,
+								},
+							},
+						},
+					},
+					"tags": schema.SetNestedAttribute{
+						MarkdownDescription: ``,
+						Computed:            true,
+						NestedObject: schema.NestedAttributeObject{
+							Attributes: map[string]schema.Attribute{
+								"key": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+								},
+								"value": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The value of the property.`,
+								},
+							},
+						},
+					},
 				},
 			},
 			"relation_to_dhcp_relay_policy": schema.SingleNestedAttribute{
@@ -442,6 +698,38 @@ func (d *FvBDDataSource) Schema(ctx context.Context, req datasource.SchemaReques
 					"dhcp_relay_policy_name": schema.StringAttribute{
 						Computed:            true,
 						MarkdownDescription: `The name of the DHCP Relay Policy object.`,
+					},
+					"annotations": schema.SetNestedAttribute{
+						MarkdownDescription: ``,
+						Computed:            true,
+						NestedObject: schema.NestedAttributeObject{
+							Attributes: map[string]schema.Attribute{
+								"key": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+								},
+								"value": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The value of the property.`,
+								},
+							},
+						},
+					},
+					"tags": schema.SetNestedAttribute{
+						MarkdownDescription: ``,
+						Computed:            true,
+						NestedObject: schema.NestedAttributeObject{
+							Attributes: map[string]schema.Attribute{
+								"key": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+								},
+								"value": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The value of the property.`,
+								},
+							},
+						},
 					},
 				},
 			},
@@ -461,6 +749,38 @@ func (d *FvBDDataSource) Schema(ctx context.Context, req datasource.SchemaReques
 						Computed:            true,
 						MarkdownDescription: `The name of the Endpoint Retention Policy object.`,
 					},
+					"annotations": schema.SetNestedAttribute{
+						MarkdownDescription: ``,
+						Computed:            true,
+						NestedObject: schema.NestedAttributeObject{
+							Attributes: map[string]schema.Attribute{
+								"key": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+								},
+								"value": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The value of the property.`,
+								},
+							},
+						},
+					},
+					"tags": schema.SetNestedAttribute{
+						MarkdownDescription: ``,
+						Computed:            true,
+						NestedObject: schema.NestedAttributeObject{
+							Attributes: map[string]schema.Attribute{
+								"key": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+								},
+								"value": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The value of the property.`,
+								},
+							},
+						},
+					},
 				},
 			},
 			"relation_to_vrf": schema.SingleNestedAttribute{
@@ -474,6 +794,38 @@ func (d *FvBDDataSource) Schema(ctx context.Context, req datasource.SchemaReques
 					"vrf_name": schema.StringAttribute{
 						Computed:            true,
 						MarkdownDescription: `The name of the VRF object.`,
+					},
+					"annotations": schema.SetNestedAttribute{
+						MarkdownDescription: ``,
+						Computed:            true,
+						NestedObject: schema.NestedAttributeObject{
+							Attributes: map[string]schema.Attribute{
+								"key": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+								},
+								"value": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The value of the property.`,
+								},
+							},
+						},
+					},
+					"tags": schema.SetNestedAttribute{
+						MarkdownDescription: ``,
+						Computed:            true,
+						NestedObject: schema.NestedAttributeObject{
+							Attributes: map[string]schema.Attribute{
+								"key": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+								},
+								"value": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The value of the property.`,
+								},
+							},
+						},
 					},
 				},
 			},
@@ -489,6 +841,38 @@ func (d *FvBDDataSource) Schema(ctx context.Context, req datasource.SchemaReques
 						Computed:            true,
 						MarkdownDescription: `The name of the IGMP Snooping Policy object.`,
 					},
+					"annotations": schema.SetNestedAttribute{
+						MarkdownDescription: ``,
+						Computed:            true,
+						NestedObject: schema.NestedAttributeObject{
+							Attributes: map[string]schema.Attribute{
+								"key": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+								},
+								"value": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The value of the property.`,
+								},
+							},
+						},
+					},
+					"tags": schema.SetNestedAttribute{
+						MarkdownDescription: ``,
+						Computed:            true,
+						NestedObject: schema.NestedAttributeObject{
+							Attributes: map[string]schema.Attribute{
+								"key": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+								},
+								"value": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The value of the property.`,
+								},
+							},
+						},
+					},
 				},
 			},
 			"relation_to_mld_snooping_policy": schema.SingleNestedAttribute{
@@ -502,6 +886,38 @@ func (d *FvBDDataSource) Schema(ctx context.Context, req datasource.SchemaReques
 					"mld_snooping_policy_name": schema.StringAttribute{
 						Computed:            true,
 						MarkdownDescription: `The name of the MLD Snooping Policy object.`,
+					},
+					"annotations": schema.SetNestedAttribute{
+						MarkdownDescription: ``,
+						Computed:            true,
+						NestedObject: schema.NestedAttributeObject{
+							Attributes: map[string]schema.Attribute{
+								"key": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+								},
+								"value": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The value of the property.`,
+								},
+							},
+						},
+					},
+					"tags": schema.SetNestedAttribute{
+						MarkdownDescription: ``,
+						Computed:            true,
+						NestedObject: schema.NestedAttributeObject{
+							Attributes: map[string]schema.Attribute{
+								"key": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+								},
+								"value": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The value of the property.`,
+								},
+							},
+						},
 					},
 				},
 			},
@@ -544,11 +960,11 @@ func (d *FvBDDataSource) Schema(ctx context.Context, req datasource.SchemaReques
 					Attributes: map[string]schema.Attribute{
 						"flt_type": schema.StringAttribute{
 							Computed:           true,
-							DeprecationMessage: "Attribute 'flt_type' will be deprecated soon, please refer to 'relation_to_netflow_monitor_policy.filter_type' instead",
+							DeprecationMessage: "Attribute 'flt_type' will be deprecated soon, please refer to 'relation_to_netflow_monitor_policies.filter_type' instead",
 						},
 						"tn_netflow_monitor_pol_name": schema.StringAttribute{
 							Computed:           true,
-							DeprecationMessage: "Attribute 'tn_netflow_monitor_pol_name' will be deprecated soon, please refer to 'relation_to_netflow_monitor_policy.netflow_monitor_policy_name' instead",
+							DeprecationMessage: "Attribute 'tn_netflow_monitor_pol_name' will be deprecated soon, please refer to 'relation_to_netflow_monitor_policies.netflow_monitor_policy_name' instead",
 						},
 					},
 				},

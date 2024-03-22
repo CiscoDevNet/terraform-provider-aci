@@ -87,36 +87,48 @@ Data source for ACI {{.ResourceNameAsDescription}}
         {{- end}}
     {{- end}}
 {{- end}}
-{{ range .Children }}{{$childVersion := .Versions}}{{$RelationshipClasses := .RelationshipClasses}}{{$length := len .RelationshipClasses}}
+{{- range .Children }}
+  {{- $newCtx := addToTemplateProperties . "Indent" "" "Versions" $.Versions }}
+  {{- template "childResourcesAndProperties" $newCtx }}
+{{- end}}
+{{/* A sub template for including nested children in the docs. */}}
+{{- define "childResourcesAndProperties" -}}
+{{- $indent := .TemplateProperties.Indent }}
+{{- $parentVersion := .TemplateProperties.Versions }}
+{{- $childVersion := .Versions}}{{$RelationshipClasses := .RelationshipClasses}}{{$length := len .RelationshipClasses}}
     {{- if ge $length 1}}
       {{- if .MultiRelationshipClass}}
-      {{$RelationshipResourceNames := .RelationshipResourceNames}}
-* `{{- overwriteProperty .PkgName .ResourceName $.Definitions}}` - (list) A list of {{getResourceNameAsDescription .ResourceName $.Definitions}} (ACI object {{getDevnetDocForClass .PkgName}}). This relation{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}} and{{- end}} can point to multiple ACI objects:
+      {{ $RelationshipResourceNames := .RelationshipResourceNames}}
+{{ $indent }}* `{{- overwriteProperty .PkgName .ResourceName $.Definitions}}` - (list) A list of {{getResourceNameAsDescription .ResourceName $.Definitions}} (ACI object {{getDevnetDocForClass .PkgName}}). This relation{{if and (ne $parentVersion .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}} and{{- end}} can point to multiple ACI objects:
         {{- range $index, $value := .RelationshipClasses}}
           {{- if le $index (len $RelationshipResourceNames)}}
-    - {{getDevnetDocForClass $value}}.
+    {{ $indent }}- {{getDevnetDocForClass $value}}.
           {{- end}}
         {{- end}}
       {{- else}}
       {{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
-* `{{- overwriteProperty .PkgName .ResourceName $.Definitions}}` - (map) A map of {{getResourceNameAsDescription .ResourceName $.Definitions}} (ACI object {{getDevnetDocForClass .PkgName}}) pointing to {{range $index, $value := .RelationshipResourceNames}}{{- if or (eq $length 1) (eq $.PkgName (index $RelationshipClasses $index))}}{{getResourceNameAsDescription $value $.Definitions}} (ACI Object {{getDevnetDocForClass (index $RelationshipClasses $index)}}){{end}}{{end}}.{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
+{{ $indent }}* `{{- overwriteProperty .PkgName .ResourceName $.Definitions}}` - (map) A map of {{getResourceNameAsDescription .ResourceName $.Definitions}} (ACI object {{getDevnetDocForClass .PkgName}}) pointing to {{range $index, $value := .RelationshipResourceNames}}{{- if or (eq $length 1) (eq $.PkgName (index $RelationshipClasses $index))}}{{getResourceNameAsDescription $value $.Definitions}} (ACI Object {{getDevnetDocForClass (index $RelationshipClasses $index)}}){{end}}{{end}}.{{if and (ne $parentVersion .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
       {{- else}}
-* `{{- overwriteProperty .PkgName .ResourceName $.Definitions}}` - (list) A list of {{getResourceNameAsDescription .ResourceName $.Definitions}} (ACI object {{getDevnetDocForClass .PkgName}}) pointing to {{range $index, $value := .RelationshipResourceNames}}{{- if or (eq $length 1) (eq $.PkgName (index $RelationshipClasses $index))}}{{getResourceNameAsDescription $value $.Definitions}} (ACI Object {{getDevnetDocForClass (index $RelationshipClasses $index)}}){{end}}{{end}}.{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
+{{ $indent }}* `{{- overwriteProperty .PkgName .ResourceName $.Definitions}}` - (list) A list of {{getResourceNameAsDescription .ResourceName $.Definitions}} (ACI object {{getDevnetDocForClass .PkgName}}) pointing to {{range $index, $value := .RelationshipResourceNames}}{{- if or (eq $length 1) (eq $.PkgName (index $RelationshipClasses $index))}}{{getResourceNameAsDescription $value $.Definitions}} (ACI Object {{getDevnetDocForClass (index $RelationshipClasses $index)}}){{end}}{{end}}.{{if and (ne $parentVersion .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
       {{- end}}
       {{- end}}
     {{- else}}
       {{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
-* `{{- overwriteProperty .PkgName .ResourceName $.Definitions}}` - (map) A map of {{getResourceNameAsDescription .ResourceName $.Definitions}} (ACI object {{getDevnetDocForClass .PkgName}}).{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
+{{ $indent }}* `{{- overwriteProperty .PkgName .ResourceName $.Definitions}}` - (map) A map of {{getResourceNameAsDescription .ResourceName $.Definitions}} (ACI object {{getDevnetDocForClass .PkgName}}).{{if and (ne $parentVersion .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
       {{- else}}
-* `{{- overwriteProperty .PkgName .ResourceName $.Definitions}}` - (list) A list of {{getResourceNameAsDescription .ResourceName $.Definitions}} (ACI object {{getDevnetDocForClass .PkgName}}).{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
+{{ $indent }}* `{{- overwriteProperty .PkgName .ResourceName $.Definitions}}` - (list) A list of {{getResourceNameAsDescription .ResourceName $.Definitions}} (ACI object {{getDevnetDocForClass .PkgName}}).{{if and (ne $parentVersion .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
       {{- end}}
     {{- end}}
 
   {{- range .Properties}}
-    {{- if eq .ValueType "bitmask"}}
-  * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (list) {{.Comment}}{{if ne $childVersion .Versions}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
-    {{- else}}
-  * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}}{{if ne $childVersion .Versions}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
-    {{- end}}  
+        {{- if eq .ValueType "bitmask"}}
+    {{ $indent }}* `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (list) {{.Comment}}{{if ne $childVersion .Versions}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
+        {{- else}}
+    {{ $indent }}* `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}}{{if ne $childVersion .Versions}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
+        {{- end}}  
   {{- end}}
-{{ end}}
+{{- range .Children }}
+  {{- $newCtx := addToTemplateProperties . "Indent" (print $indent "    ") "Versions" $parentVersion }}
+  {{- template "childResourcesAndProperties" $newCtx }}
+{{- end }}
+{{- end }}

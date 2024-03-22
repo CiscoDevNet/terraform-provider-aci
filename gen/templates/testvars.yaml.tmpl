@@ -197,88 +197,10 @@ all:
   {{- end}}
 {{ if .Children}}
 children:
-  {{- range $key, $value := .Children}}{{$name := .ResourceName}}{{$child_deletable := .AllowDelete}}{{$childVersionMismatched := .VersionMismatched}}
-  {{overwriteProperty .PkgName .ResourceName $.Definitions}}:
-  {{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
-  {{- $versionMismatchExists = false}}
-    - {{ range .Properties}}{{- if keyExists $childVersionMismatched .RawVersion}}{{$versionMismatchExists = true}}{{- end}}{{$overwritePropertyName := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}{{- if and (not (keyExists $childVersionMismatched .RawVersion)) (not .IgnoreInTest) (not .ReadOnly)}}{{$overwritePropertyName}}: {{$length := len .ValidValues}}{{if ne $length 0}}"{{ index .ValidValues 0 }}"{{else if not .IsNaming}}"{{overwritePropertyValue .PkgName $overwritePropertyName $overwritePropertyName "all" 0 $.Definitions }}"{{- else}}"{{lookupChildTestValue .PkgName $.ResourceName .SnakeCaseName $.TestVars 0 $.Definitions}}"{{- end}}
-      {{ end}}{{ end}}
-      {{- if $child_deletable -}}
-      deletable_child: true
-      {{- else -}}
-      deletable_child: false
-      {{ end}}
-    {{- if $versionMismatchExists}}
-      {{- $properties := .Properties }}
-      version_mismatch:
-      {{- range $versionMismatchNumber, $propertyNames := $versionMismatch }}
-      {{- $printedVersionMismatchNumberChildOne := false }}
-        {{- range $propertyNames }}
-          {{- $propertyInMismatch := .}}
-          {{- range $properties}}
-            {{- if eq .PropertyName $propertyInMismatch}}
-             {{- if not $printedVersionMismatchNumberChildOne }}
-              {{- $printedVersionMismatchNumberChildOne = true }}
-        {{ $versionMismatchNumber }}:
-              {{- end }}
-          {{- $overwritePropertyName := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
-          {{$overwritePropertyName}}: {{$length := len .ValidValues}}{{if ne $length 0}}"{{ index .ValidValues 0 }}"{{else if not .IsNaming}}"{{overwritePropertyValue .PkgName $overwritePropertyName $overwritePropertyName "all" 0 $.Definitions }}"{{- else}}"{{lookupChildTestValue .PkgName $.ResourceName .SnakeCaseName $.TestVars 0 $.Definitions}}"
-            {{- end}}
-          {{- end}}
-        {{- end}}
-      {{- end}}
-    {{- end}}
-    {{- end}}
-  {{- else}}
-  {{- $versionMismatchExists = false}}
-    - {{ range .Properties}}{{- if keyExists $versionMismatch .RawVersion}}{{$versionMismatchExists = true}}{{- end}}{{$overwritePropertyName := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}{{- if and (not (keyExists $versionMismatch .RawVersion)) (not .IgnoreInTest) (not .ReadOnly)}}{{$overwritePropertyName}}: {{$length := len .ValidValues}}{{if ne $length 0}}"{{ index .ValidValues 0 }}"{{else if not .IsNaming}}"{{overwritePropertyValue .PkgName $overwritePropertyName $overwritePropertyName "all" 0 $.Definitions }}"{{- else}}"{{lookupChildTestValue .PkgName $.ResourceName .SnakeCaseName $.TestVars 0 $.Definitions}}"{{- end}}
-      {{ end}}{{ end}}
-      {{- if $versionMismatchExists}}
-      {{- $properties := .Properties }}
-      version_mismatch:
-      {{- range $versionMismatchNumber, $propertyNames := $versionMismatch }}
-      {{- $printedVersionMismatchNumberChildTwo := false }}
-        {{- range $propertyNames }}
-          {{- $propertyInMismatch := .}}
-          {{- range $properties}}
-            {{- if eq .PropertyName $propertyInMismatch}}
-             {{- if not $printedVersionMismatchNumberChildTwo }}
-              {{- $printedVersionMismatchNumberChildTwo = true }}
-        {{ $versionMismatchNumber }}:
-              {{- end }}
-          {{- $overwritePropertyName := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
-          {{$overwritePropertyName}}: {{$length := len .ValidValues}}{{if ne $length 0}}"{{ index .ValidValues 0 }}"{{else if not .IsNaming}}"{{overwritePropertyValue .PkgName $overwritePropertyName $overwritePropertyName "all" 0 $.Definitions }}"{{- else}}"{{lookupChildTestValue .PkgName $.ResourceName .SnakeCaseName $.TestVars 0 $.Definitions}}"
-            {{- end}}
-          {{- end}}
-        {{- end}}
-      {{- end}}
-    {{- end}}
-    {{- end}}
-    {{- $versionMismatchExists = false}}
-    - {{ range .Properties}}{{- if keyExists $versionMismatch .RawVersion}}{{$versionMismatchExists = true}}{{- end}}{{$overwritePropertyName := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}{{- if and (not (keyExists $versionMismatch .RawVersion)) (not .IgnoreInTest) (not .ReadOnly)}}{{$overwritePropertyName}}: {{$length := len .ValidValues}}{{if ge $length 2}}"{{ index .ValidValues 1 }}"{{else if not .IsNaming}}"{{overwritePropertyValue .PkgName $overwritePropertyName $overwritePropertyName "default" 0 $.Definitions }}"{{- else}}"{{lookupChildTestValue .PkgName $.ResourceName .SnakeCaseName $.TestVars 1 $.Definitions}}"{{- end}}
-      {{ end}}{{- end}}
-      {{- if $versionMismatchExists}}
-      {{- $properties := .Properties }}
-      version_mismatch:
-      {{- range $versionMismatchNumber, $propertyNames := $versionMismatch }}
-      {{- $printedVersionMismatchNumberChildThree := false }}
-        {{- range $propertyNames }}
-          {{- $propertyInMismatch := .}}
-          {{- range $properties}}
-            {{- if eq .PropertyName $propertyInMismatch}}
-            {{- if not $printedVersionMismatchNumberChildThree }}
-              {{- $printedVersionMismatchNumberChildThree = true }}
-        {{ $versionMismatchNumber }}:
-              {{- end }}
-          {{- $overwritePropertyName := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
-          {{$overwritePropertyName}}: {{$length := len .ValidValues}}{{if ge $length 2}}"{{ index .ValidValues 1 }}"{{else if not .IsNaming}}"{{overwritePropertyValue .PkgName $overwritePropertyName $overwritePropertyName "default" 0 $.Definitions }}"{{- else}}"{{lookupChildTestValue .PkgName $.ResourceName .SnakeCaseName $.TestVars 1 $.Definitions}}"
-            {{- end}}
-          {{- end}}
-        {{- end}}
-      {{- end}}
-    {{- end}}
-    {{- end}}
-    {{- end}}{{- end}}{{ end}}
+  {{- range $key, $value := .Children}}
+    {{- $newCtx := addToTemplateProperties . "Indent" "" -}}
+    {{- template "nestedChildren" $newCtx }}
+  {{- end}}{{- end}}
 {{- if and .ContainedBy (not .MultiParentFormats)}}
 parents:
     {{- $index := 0}}{{- range $key := .DocumentationExamples}}{{$parentDependency := getParentTestDependencies $.PkgName $index $.Definitions}}{{$index = add $index 1}}
@@ -383,10 +305,34 @@ targets:
 {{- end }}
 
 {{- if or (and (not .ContainedBy) (not .MultiParentFormats)) (and (.ContainedBy) (not .DocumentationExamples) (not .MultiParentFormats))  }}
+{{- if .ChildTestDependencies}}
+child_targets:
+        {{- range .ChildTestDependencies }}
+  - class_name: "{{ .ClassName }}"
+    target_dn: "{{ .TargetDn }}"
+          {{- if .TargetDnOverwriteDocs}}
+    target_dn_overwrite_docs: "{{ .TargetDnOverwriteDocs }}"
+          {{- end}}
+    relation_resource_name: "{{ .RelationResourceName }}"
+    static: {{ .Static }}
+    {{- if not .Static}}
+    target_dn_ref: "{{ .TargetDnRef }}"
+    parent_dependency: "{{ .ParentDependency}}"
+    parent_dependency_dn_ref: "{{.ParentDependencyDnRef}}"
+    target_resource_name: "{{ .TargetResourceName }}"
+    parent_dn_key: "{{ .ParentDnKey }}"
+    properties:
+            {{- range $key, $value := .Properties}}
+        {{ $key }}: "{{ $value }}"
+            {{- end }}
+        {{- end }}
+    {{- end }}
+    {{- end}}
+
 test_type: {{ .TestType }}
 {{- end }}
 class_version: {{.ClassVersion}}
-{{ $exists_exclude := false -}}
+{{- $exists_exclude := false -}}
 {{- range .Properties }}
   {{- if eq .ValueType "password" }}
     {{- $exists_exclude = true -}}
@@ -403,3 +349,127 @@ exclude_attributes:
 {{- if gt (len $versionMismatch) 0 }}
 version_mismatch: true
 {{- end }}
+
+{{- /* A sub template for including vars in nested children. */}}
+{{- define "nestedChildren" -}}
+{{ $versionMismatch := .VersionMismatched}}
+{{- $indent := .TemplateProperties.Indent -}}
+{{$name := .ResourceName}}{{$child_deletable := .AllowDelete}}
+  {{ $indent }}{{overwriteProperty $.PkgName .ResourceName $.Definitions}}:
+  {{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+  {{- $versionMismatchExists := false}}
+  {{- $enteredPropertiesZone := false }}
+    {{ $indent }}- {{ range .Properties}}{{- if $enteredPropertiesZone }}{{ $indent }}{{- else}}{{- $enteredPropertiesZone = true }}{{- end}}{{- if keyExists $versionMismatch .RawVersion}}{{$versionMismatchExists = true}}{{- end}}{{- if and (not (keyExists $versionMismatch .RawVersion)) (not .IgnoreInTest) (not .ReadOnly)}}{{$overwritePropertyName := overwriteProperty $.PkgName .SnakeCaseName $.Definitions}}{{$overwritePropertyName}}: {{$length := len .ValidValues}}{{- if eq .ValueType "bitmask"}}{{- if lt 0 (len (overwritePropertyValue $.PkgName $overwritePropertyName $overwritePropertyName "all" 0 $.Definitions))}}[{{range $index, $value := (overwritePropertyValue $.PkgName $overwritePropertyName $overwritePropertyName "all" 0 $.Definitions)}}"{{ $value}}"{{- if ne (add $index 1) (len (overwritePropertyValue $.PkgName $overwritePropertyName $overwritePropertyName "all" 0 $.Definitions))}},{{- end}}{{- end}}]{{- else}}[]{{- end}}{{else if ne $length 0}}"{{ index .ValidValues 0 }}"{{else if not .IsNaming}}"{{overwritePropertyValue $.PkgName $overwritePropertyName $overwritePropertyName "all" 0 $.Definitions }}"{{- else}}{{lookupChildTestValue $.PkgName $.ResourceName .SnakeCaseName $.TestVars 0 $.Definitions}}{{- end}}
+      {{ end}}{{ end}}
+      {{- if $child_deletable -}}
+    {{ $indent }}deletable_child: true
+      {{- else -}}
+    {{ $indent }}deletable_child: false
+      {{ end}}
+    {{- if $versionMismatchExists}}
+      {{- $properties := .Properties }}
+      {{ $indent }}version_mismatch:
+      {{- range $versionMismatchNumber, $propertyNames := $versionMismatch }}
+      {{- $printedVersionMismatchNumberChildOne := false }}
+        {{- range $propertyNames }}
+          {{- $propertyInMismatch := .}}
+          {{- range $properties}}
+            {{- if eq .PropertyName $propertyInMismatch}}
+             {{- if not $printedVersionMismatchNumberChildOne }}
+              {{- $printedVersionMismatchNumberChildOne = true }}
+        {{ $indent }}{{ $versionMismatchNumber }}:
+              {{- end }}
+          {{- $overwritePropertyName := overwriteProperty $.PkgName .SnakeCaseName $.Definitions}}
+          {{ $indent }}{{$overwritePropertyName}}: {{$length := len .ValidValues}}{{- if eq .ValueType "bitmask"}}{{- if lt 0 (len (overwritePropertyValue $.PkgName $overwritePropertyName $overwritePropertyName "all" 0 $.Definitions))}}[{{range $index, $value := (overwritePropertyValue $.PkgName $overwritePropertyName $overwritePropertyName "all" 0 $.Definitions)}}"{{ $value}}"{{- if ne (add $index 1) (len (overwritePropertyValue $.PkgName $overwritePropertyName $overwritePropertyName "all" 0 $.Definitions))}},{{- end}}{{- end}}]{{- else}}[]{{- end}}{{else if ne $length 0}}"{{ index .ValidValues 0 }}"{{else if not .IsNaming}}"{{overwritePropertyValue $.PkgName $overwritePropertyName $overwritePropertyName "all" 0 $.Definitions }}"{{- else}}{{lookupChildTestValue $.PkgName $.ResourceName .SnakeCaseName $.TestVars 0 $.Definitions}}
+            {{- end}}
+          {{- end}}
+        {{- end}}
+      {{- end}}
+    {{- end}}
+    {{- end}}
+    {{- $enteredGrandChildZone := false }}
+   {{- range .Children}}
+      {{- if not $enteredGrandChildZone }}
+        {{- $enteredGrandChildZone = true }}
+      {{ $indent }}children:
+      {{- end }}
+   {{- end }}
+      {{- range $key, $value := .Children}}
+        {{- $newCtx := addToTemplateProperties . "Indent" (print $indent "      ") -}}
+        {{- template "nestedChildren" $newCtx }}
+      {{- end}}
+  {{- else}}
+  {{- $enteredPropertiesZone1 := false }}
+   {{- $versionMismatchExists := false}}
+    {{ $indent }}- {{ range .Properties}}{{- if $enteredPropertiesZone1 }}{{ $indent }}{{- else}}{{- $enteredPropertiesZone1 = true }}{{- end}}{{- if keyExists $versionMismatch .RawVersion}}{{$versionMismatchExists = true}}{{- end}}{{- if and (not (keyExists $versionMismatch .RawVersion)) (not .IgnoreInTest) (not .ReadOnly)}}{{$overwritePropertyName := overwriteProperty $.PkgName .SnakeCaseName $.Definitions}}{{$overwritePropertyName}}: {{$length := len .ValidValues}}{{- if eq .ValueType "bitmask"}}{{- if lt 0 (len (overwritePropertyValue $.PkgName $overwritePropertyName $overwritePropertyName "all" 0 $.Definitions))}}[{{range $index, $value := (overwritePropertyValue $.PkgName $overwritePropertyName $overwritePropertyName "all" 0 $.Definitions)}}"{{ $value}}"{{- if ne (add $index 1) (len (overwritePropertyValue $.PkgName $overwritePropertyName $overwritePropertyName "all" 0 $.Definitions))}},{{- end}}{{- end}}]{{- else}}[]{{- end}}{{else if ne $length 0}}"{{ index .ValidValues 0 }}"{{else if not .IsNaming}}"{{overwritePropertyValue $.PkgName $overwritePropertyName $overwritePropertyName "all" 0 $.Definitions }}"{{- else}}{{lookupChildTestValue $.PkgName $.ResourceName .SnakeCaseName $.TestVars 0 $.Definitions}}{{- end}}
+      {{ end}}{{ end}}
+      {{- if $versionMismatchExists}}
+      {{- $properties := .Properties }}
+      {{ $indent }}version_mismatch:
+      {{- range $versionMismatchNumber, $propertyNames := $versionMismatch }}
+      {{- $printedVersionMismatchNumberChildTwo := false }}
+        {{- range $propertyNames }}
+          {{- $propertyInMismatch := .}}
+          {{- range $properties}}
+            {{- if eq .PropertyName $propertyInMismatch}}
+             {{- if not $printedVersionMismatchNumberChildTwo }}
+              {{- $printedVersionMismatchNumberChildTwo = true }}
+        {{ $indent }}{{ $versionMismatchNumber }}:
+              {{- end }}
+          {{- $overwritePropertyName := overwriteProperty $.PkgName .SnakeCaseName $.Definitions}}
+          {{ $indent }}{{$overwritePropertyName}}: {{$length := len .ValidValues}}{{- if eq .ValueType "bitmask"}}{{- if lt 0 (len (overwritePropertyValue $.PkgName $overwritePropertyName $overwritePropertyName "all" 0 $.Definitions))}}[{{range $index, $value := (overwritePropertyValue $.PkgName $overwritePropertyName $overwritePropertyName "all" 0 $.Definitions)}}"{{ $value}}"{{- if ne (add $index 1) (len (overwritePropertyValue $.PkgName $overwritePropertyName $overwritePropertyName "all" 0 $.Definitions))}},{{- end}}{{- end}}]{{- else}}[]{{- end}}{{else if ne $length 0}}"{{ index .ValidValues 0 }}"{{else if not .IsNaming}}"{{overwritePropertyValue $.PkgName $overwritePropertyName $overwritePropertyName "all" 0 $.Definitions }}"{{- else}}{{lookupChildTestValue $.PkgName $.ResourceName .SnakeCaseName $.TestVars 0 $.Definitions}}
+            {{- end}}
+          {{- end}}
+        {{- end}}
+      {{- end}}
+    {{- end}}
+    {{- end}}
+    {{- $enteredGrandChildZone := false }}
+   {{- range .Children}}
+      {{- if not $enteredGrandChildZone }}
+        {{- $enteredGrandChildZone = true }}
+      {{ $indent }}children:
+      {{- end }}
+   {{- end }}
+      {{- range $key, $value := .Children}}
+        {{- $newCtx := addToTemplateProperties . "Indent" (print $indent "      ") -}}
+        {{- template "nestedChildren" $newCtx }}
+      {{- end}}
+  {{- $enteredPropertiesZone2 := false }}
+  {{- $versionMismatchExists := false}}
+    {{ $indent }}- {{ range .Properties}}{{- if $enteredPropertiesZone2 }}{{ $indent }}{{- else}}{{- $enteredPropertiesZone2 = true }}{{- end}}{{- if keyExists $versionMismatch .RawVersion}}{{$versionMismatchExists = true}}{{- end}}{{- if and (not (keyExists $versionMismatch .RawVersion)) (not .IgnoreInTest) (not .ReadOnly)}}{{$overwritePropertyName := overwriteProperty $.PkgName .SnakeCaseName $.Definitions}}{{$overwritePropertyName}}: {{$length := len .ValidValues}}{{- if eq .ValueType "bitmask"}}{{- if lt 0 (len (overwritePropertyValue $.PkgName $overwritePropertyName $overwritePropertyName "default" 0 $.Definitions))}}[{{range $index, $value := (overwritePropertyValue $.PkgName $overwritePropertyName $overwritePropertyName "default" 0 $.Definitions)}}"{{ $value}}"{{- if ne (add $index 1) (len (overwritePropertyValue $.PkgName $overwritePropertyName $overwritePropertyName "default" 0 $.Definitions))}},{{- end}}{{- end}}]{{- else}}[]{{- end}}{{else if ge $length 2}}"{{ index .ValidValues 1 }}"{{else if not .IsNaming}}"{{overwritePropertyValue $.PkgName $overwritePropertyName $overwritePropertyName "default" 0 $.Definitions }}"{{- else}}{{lookupChildTestValue $.PkgName $.ResourceName .SnakeCaseName $.TestVars 1 $.Definitions}}{{- end}}
+      {{ end}}{{- end}}
+    {{- if $versionMismatchExists}}
+      {{- $properties := .Properties }}
+      {{ $indent }}version_mismatch:
+      {{- range $versionMismatchNumber, $propertyNames := $versionMismatch }}
+      {{- $printedVersionMismatchNumberChildThree := false }}
+        {{- range $propertyNames }}
+          {{- $propertyInMismatch := .}}
+          {{- range $properties}}
+            {{- if eq .PropertyName $propertyInMismatch}}
+            {{- if not $printedVersionMismatchNumberChildThree }}
+              {{- $printedVersionMismatchNumberChildThree = true }}
+        {{ $indent }}{{ $versionMismatchNumber }}:
+              {{- end }}
+          {{- $overwritePropertyName := overwriteProperty $.PkgName .SnakeCaseName $.Definitions}}
+          {{ $indent }}{{$overwritePropertyName}}: {{$length := len .ValidValues}}{{- if eq .ValueType "bitmask"}}{{- if lt 0 (len (overwritePropertyValue $.PkgName $overwritePropertyName $overwritePropertyName "default" 0 $.Definitions))}}[{{range $index, $value := (overwritePropertyValue $.PkgName $overwritePropertyName $overwritePropertyName "default" 0 $.Definitions)}}"{{ $value}}"{{- if ne (add $index 1) (len (overwritePropertyValue $.PkgName $overwritePropertyName $overwritePropertyName "default" 0 $.Definitions))}},{{- end}}{{- end}}]{{- else}}[]{{- end}}{{else if ge $length 2}}"{{ index .ValidValues 1 }}"{{else if not .IsNaming}}"{{overwritePropertyValue $.PkgName $overwritePropertyName $overwritePropertyName "default" 0 $.Definitions }}"{{- else}}{{lookupChildTestValue $.PkgName $.ResourceName .SnakeCaseName $.TestVars 1 $.Definitions}}
+      {{- end}}
+      {{- end}}
+        {{- end}}
+      {{- end}}
+    {{- end}}
+    {{- end}}
+    {{- $enteredGrandChildZone := false }}
+   {{- range .Children}}
+      {{- if not $enteredGrandChildZone }}
+        {{- $enteredGrandChildZone = true }}
+      {{ $indent }}children:
+      {{- end }}
+   {{- end }}
+      {{- range $key, $value := .Children}}
+        {{- $newCtx := addToTemplateProperties . "Indent" (print $indent "      ") -}}
+        {{- template "nestedChildren" $newCtx }}
+      {{- end}}
+    {{- end}}
+      {{- end}}

@@ -28,7 +28,7 @@ func TestAccDataSourceVzOOBBrCP(t *testing.T) {
 					resource.TestCheckResourceAttr("data.aci_out_of_band_contract.test", "priority", "level1"),
 					resource.TestCheckResourceAttr("data.aci_out_of_band_contract.test", "scope", "application-profile"),
 					resource.TestCheckResourceAttr("data.aci_out_of_band_contract.test", "target_dscp", "AF11"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)", ">",
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)", ">=",
 						resource.TestCheckResourceAttr("data.aci_out_of_band_contract.test", "intent", "estimate_add")),
 				),
 			},

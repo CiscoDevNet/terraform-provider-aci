@@ -118,6 +118,13 @@ func getEmptyTagAnnotationNdIfPolResourceModel() TagAnnotationNdIfPolResourceMod
 	}
 }
 
+var TagAnnotationNdIfPolType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
+}
+
 // TagTagNdIfPolResourceModel describes the resource data model for the children without relation ships.
 type TagTagNdIfPolResourceModel struct {
 	Key   types.String `tfsdk:"key"`
@@ -129,6 +136,13 @@ func getEmptyTagTagNdIfPolResourceModel() TagTagNdIfPolResourceModel {
 		Key:   basetypes.NewStringNull(),
 		Value: basetypes.NewStringNull(),
 	}
+}
+
+var TagTagNdIfPolType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
 }
 
 type NdIfPolIdentifier struct {
@@ -595,7 +609,7 @@ func (r *NdIfPolResource) ImportState(ctx context.Context, req resource.ImportSt
 }
 
 func getAndSetNdIfPolAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *NdIfPolResourceModel) {
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "ndIfPol,tagAnnotation,tagTag"), "GET", nil)
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "ndIfPol,tagAnnotation,tagTag"), "GET", nil)
 
 	readData := getEmptyNdIfPolResourceModel()
 
@@ -688,6 +702,7 @@ func getAndSetNdIfPolAttributes(ctx context.Context, diags *diag.Diagnostics, cl
 								if childAttributeName == "value" {
 									TagAnnotationNdIfPol.Value = basetypes.NewStringValue(childAttributeValue.(string))
 								}
+
 							}
 							TagAnnotationNdIfPolList = append(TagAnnotationNdIfPolList, TagAnnotationNdIfPol)
 						}
@@ -700,6 +715,7 @@ func getAndSetNdIfPolAttributes(ctx context.Context, diags *diag.Diagnostics, cl
 								if childAttributeName == "value" {
 									TagTagNdIfPol.Value = basetypes.NewStringValue(childAttributeValue.(string))
 								}
+
 							}
 							TagTagNdIfPolList = append(TagTagNdIfPolList, TagTagNdIfPol)
 						}
@@ -747,25 +763,24 @@ func setNdIfPolId(ctx context.Context, data *NdIfPolResourceModel) {
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
 
-func getNdIfPolTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *NdIfPolResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationNdIfPolResourceModel) []map[string]interface{} {
-
+func getNdIfPolTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *NdIfPolResourceModel, tagAnnotationNdIfPolPlan, tagAnnotationNdIfPolState []TagAnnotationNdIfPolResourceModel) []map[string]interface{} {
 	childPayloads := []map[string]interface{}{}
-	if !data.TagAnnotation.IsUnknown() {
+	if !data.TagAnnotation.IsNull() && !data.TagAnnotation.IsUnknown() {
 		tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
-		for _, tagAnnotation := range tagAnnotationPlan {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagAnnotation.Key.IsUnknown() && !tagAnnotation.Key.IsNull() {
-				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
+		for _, tagAnnotationNdIfPol := range tagAnnotationNdIfPolPlan {
+			childMap := NewAciObject()
+			if !tagAnnotationNdIfPol.Key.IsNull() && !tagAnnotationNdIfPol.Key.IsUnknown() {
+				childMap.Attributes["key"] = tagAnnotationNdIfPol.Key.ValueString()
 			}
-			if !tagAnnotation.Value.IsUnknown() && !tagAnnotation.Value.IsNull() {
-				childMap["attributes"]["value"] = tagAnnotation.Value.ValueString()
+			if !tagAnnotationNdIfPol.Value.IsNull() && !tagAnnotationNdIfPol.Value.IsUnknown() {
+				childMap.Attributes["value"] = tagAnnotationNdIfPol.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
 			tagAnnotationIdentifier := TagAnnotationIdentifier{}
-			tagAnnotationIdentifier.Key = tagAnnotation.Key
+			tagAnnotationIdentifier.Key = tagAnnotationNdIfPol.Key
 			tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
 		}
-		for _, tagAnnotation := range tagAnnotationState {
+		for _, tagAnnotation := range tagAnnotationNdIfPolState {
 			delete := true
 			for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
 				if tagAnnotationIdentifier.Key == tagAnnotation.Key {
@@ -774,10 +789,10 @@ func getNdIfPolTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagn
 				}
 			}
 			if delete {
-				childMap := map[string]map[string]interface{}{"attributes": {}}
-				childMap["attributes"]["status"] = "deleted"
-				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
+				tagAnnotationChildMapForDelete := NewAciObject()
+				tagAnnotationChildMapForDelete.Attributes["status"] = "deleted"
+				tagAnnotationChildMapForDelete.Attributes["key"] = tagAnnotation.Key.ValueString()
+				childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": tagAnnotationChildMapForDelete})
 			}
 		}
 	} else {
@@ -786,25 +801,25 @@ func getNdIfPolTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagn
 
 	return childPayloads
 }
-func getNdIfPolTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *NdIfPolResourceModel, tagTagPlan, tagTagState []TagTagNdIfPolResourceModel) []map[string]interface{} {
 
+func getNdIfPolTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *NdIfPolResourceModel, tagTagNdIfPolPlan, tagTagNdIfPolState []TagTagNdIfPolResourceModel) []map[string]interface{} {
 	childPayloads := []map[string]interface{}{}
-	if !data.TagTag.IsUnknown() {
+	if !data.TagTag.IsNull() && !data.TagTag.IsUnknown() {
 		tagTagIdentifiers := []TagTagIdentifier{}
-		for _, tagTag := range tagTagPlan {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagTag.Key.IsUnknown() && !tagTag.Key.IsNull() {
-				childMap["attributes"]["key"] = tagTag.Key.ValueString()
+		for _, tagTagNdIfPol := range tagTagNdIfPolPlan {
+			childMap := NewAciObject()
+			if !tagTagNdIfPol.Key.IsNull() && !tagTagNdIfPol.Key.IsUnknown() {
+				childMap.Attributes["key"] = tagTagNdIfPol.Key.ValueString()
 			}
-			if !tagTag.Value.IsUnknown() && !tagTag.Value.IsNull() {
-				childMap["attributes"]["value"] = tagTag.Value.ValueString()
+			if !tagTagNdIfPol.Value.IsNull() && !tagTagNdIfPol.Value.IsUnknown() {
+				childMap.Attributes["value"] = tagTagNdIfPol.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})
 			tagTagIdentifier := TagTagIdentifier{}
-			tagTagIdentifier.Key = tagTag.Key
+			tagTagIdentifier.Key = tagTagNdIfPol.Key
 			tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
 		}
-		for _, tagTag := range tagTagState {
+		for _, tagTag := range tagTagNdIfPolState {
 			delete := true
 			for _, tagTagIdentifier := range tagTagIdentifiers {
 				if tagTagIdentifier.Key == tagTag.Key {
@@ -813,10 +828,10 @@ func getNdIfPolTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics,
 				}
 			}
 			if delete {
-				childMap := map[string]map[string]interface{}{"attributes": {}}
-				childMap["attributes"]["status"] = "deleted"
-				childMap["attributes"]["key"] = tagTag.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})
+				tagTagChildMapForDelete := NewAciObject()
+				tagTagChildMapForDelete.Attributes["status"] = "deleted"
+				tagTagChildMapForDelete.Attributes["key"] = tagTag.Key.ValueString()
+				childPayloads = append(childPayloads, map[string]interface{}{"tagTag": tagTagChildMapForDelete})
 			}
 		}
 	} else {

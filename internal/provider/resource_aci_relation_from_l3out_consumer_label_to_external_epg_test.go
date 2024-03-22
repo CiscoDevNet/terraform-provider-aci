@@ -222,24 +222,24 @@ resource "aci_relation_from_l3out_consumer_label_to_external_epg" "test" {
   parent_dn = aci_l3out_consumer_label.test.id
   target_dn = "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile_1"
   annotations = [
-	{
-	  key = "key_0"
-	  value = "value_1"
-	},
-	{
-	  key = "key_1"
-	  value = "test_value"
-	},
+    {
+      key = "key_0"
+      value = "value_1"
+    },
+    {
+      key = "key_1"
+      value = "test_value"
+    },
   ]
   tags = [
-	{
-	  key = "key_0"
-	  value = "value_1"
-	},
-	{
-	  key = "key_1"
-	  value = "test_value"
-	},
+    {
+      key = "key_0"
+      value = "value_1"
+    },
+    {
+      key = "key_1"
+      value = "test_value"
+    },
   ]
 }
 `

@@ -44,7 +44,7 @@ func TestAccResourcePkiKeyRing(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_key_ring.allow_test_2", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_key_ring.allow_test", "regenerate", "no"),
 					resource.TestCheckResourceAttr("aci_key_ring.allow_test_2", "regenerate", "no"),
-					composeAggregateTestCheckFuncWithVersion(t, "6.0(2h)", ">",
+					composeAggregateTestCheckFuncWithVersion(t, "6.0(2h)", ">=",
 						resource.TestCheckResourceAttr("aci_key_ring.allow_test", "elliptic_curve", "none"),
 						resource.TestCheckResourceAttr("aci_key_ring.allow_test_2", "elliptic_curve", "none"),
 						resource.TestCheckResourceAttr("aci_key_ring.allow_test", "key_type", "RSA"),
@@ -99,7 +99,7 @@ func TestAccResourcePkiKeyRing(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_key_ring.allow_test_2", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_key_ring.allow_test", "regenerate", "no"),
 					resource.TestCheckResourceAttr("aci_key_ring.allow_test_2", "regenerate", "no"),
-					composeAggregateTestCheckFuncWithVersion(t, "6.0(2h)", ">",
+					composeAggregateTestCheckFuncWithVersion(t, "6.0(2h)", ">=",
 						resource.TestCheckResourceAttr("aci_key_ring.allow_test", "elliptic_curve", "none"),
 						resource.TestCheckResourceAttr("aci_key_ring.allow_test_2", "elliptic_curve", "none"),
 						resource.TestCheckResourceAttr("aci_key_ring.allow_test", "key_type", "RSA"),
@@ -129,7 +129,7 @@ func TestAccResourcePkiKeyRing(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_key_ring.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "regenerate", "no"),
-					composeAggregateTestCheckFuncWithVersion(t, "6.0(2h)", ">",
+					composeAggregateTestCheckFuncWithVersion(t, "6.0(2h)", ">=",
 						resource.TestCheckResourceAttr("aci_key_ring.test", "elliptic_curve", "none"),
 						resource.TestCheckResourceAttr("aci_key_ring.test", "key_type", "RSA")),
 				),
@@ -150,7 +150,7 @@ func TestAccResourcePkiKeyRing(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_key_ring.test", "owner_key", "owner_key_1"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "owner_tag", "owner_tag_1"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "regenerate", "no"),
-					composeAggregateTestCheckFuncWithVersion(t, "6.0(2h)", ">",
+					composeAggregateTestCheckFuncWithVersion(t, "6.0(2h)", ">=",
 						resource.TestCheckResourceAttr("aci_key_ring.test", "elliptic_curve", "none"),
 						resource.TestCheckResourceAttr("aci_key_ring.test", "key_type", "RSA")),
 				),
@@ -179,7 +179,7 @@ func TestAccResourcePkiKeyRing(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_key_ring.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "regenerate", "no"),
-					composeAggregateTestCheckFuncWithVersion(t, "6.0(2h)", ">",
+					composeAggregateTestCheckFuncWithVersion(t, "6.0(2h)", ">=",
 						resource.TestCheckResourceAttr("aci_key_ring.test", "elliptic_curve", "none"),
 						resource.TestCheckResourceAttr("aci_key_ring.test", "key_type", "RSA")),
 				),
@@ -207,7 +207,7 @@ func TestAccResourcePkiKeyRing(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_key_ring.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "regenerate", "no"),
-					composeAggregateTestCheckFuncWithVersion(t, "6.0(2h)", ">",
+					composeAggregateTestCheckFuncWithVersion(t, "6.0(2h)", ">=",
 						resource.TestCheckResourceAttr("aci_key_ring.test", "elliptic_curve", "none"),
 						resource.TestCheckResourceAttr("aci_key_ring.test", "key_type", "RSA")),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.key", "key_0"),
@@ -308,7 +308,7 @@ func TestAccResourcePkiKeyRingWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_key_ring.allow_test_2", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_key_ring.allow_test", "regenerate", "no"),
 					resource.TestCheckResourceAttr("aci_key_ring.allow_test_2", "regenerate", "no"),
-					composeAggregateTestCheckFuncWithVersion(t, "6.0(2h)", ">",
+					composeAggregateTestCheckFuncWithVersion(t, "6.0(2h)", ">=",
 						resource.TestCheckResourceAttr("aci_key_ring.allow_test", "elliptic_curve", "none"),
 						resource.TestCheckResourceAttr("aci_key_ring.allow_test_2", "elliptic_curve", "none"),
 						resource.TestCheckResourceAttr("aci_key_ring.allow_test", "key_type", "RSA"),
@@ -363,7 +363,7 @@ func TestAccResourcePkiKeyRingWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_key_ring.allow_test_2", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_key_ring.allow_test", "regenerate", "no"),
 					resource.TestCheckResourceAttr("aci_key_ring.allow_test_2", "regenerate", "no"),
-					composeAggregateTestCheckFuncWithVersion(t, "6.0(2h)", ">",
+					composeAggregateTestCheckFuncWithVersion(t, "6.0(2h)", ">=",
 						resource.TestCheckResourceAttr("aci_key_ring.allow_test", "elliptic_curve", "none"),
 						resource.TestCheckResourceAttr("aci_key_ring.allow_test_2", "elliptic_curve", "none"),
 						resource.TestCheckResourceAttr("aci_key_ring.allow_test", "key_type", "RSA"),
@@ -393,7 +393,7 @@ func TestAccResourcePkiKeyRingWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_key_ring.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "regenerate", "no"),
-					composeAggregateTestCheckFuncWithVersion(t, "6.0(2h)", ">",
+					composeAggregateTestCheckFuncWithVersion(t, "6.0(2h)", ">=",
 						resource.TestCheckResourceAttr("aci_key_ring.test", "elliptic_curve", "none"),
 						resource.TestCheckResourceAttr("aci_key_ring.test", "key_type", "RSA")),
 				),
@@ -414,7 +414,7 @@ func TestAccResourcePkiKeyRingWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_key_ring.test", "owner_key", "owner_key_1"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "owner_tag", "owner_tag_1"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "regenerate", "no"),
-					composeAggregateTestCheckFuncWithVersion(t, "6.0(2h)", ">",
+					composeAggregateTestCheckFuncWithVersion(t, "6.0(2h)", ">=",
 						resource.TestCheckResourceAttr("aci_key_ring.test", "elliptic_curve", "none"),
 						resource.TestCheckResourceAttr("aci_key_ring.test", "key_type", "RSA")),
 				),
@@ -443,7 +443,7 @@ func TestAccResourcePkiKeyRingWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_key_ring.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "regenerate", "no"),
-					composeAggregateTestCheckFuncWithVersion(t, "6.0(2h)", ">",
+					composeAggregateTestCheckFuncWithVersion(t, "6.0(2h)", ">=",
 						resource.TestCheckResourceAttr("aci_key_ring.test", "elliptic_curve", "none"),
 						resource.TestCheckResourceAttr("aci_key_ring.test", "key_type", "RSA")),
 				),
@@ -471,7 +471,7 @@ func TestAccResourcePkiKeyRingWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_key_ring.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "regenerate", "no"),
-					composeAggregateTestCheckFuncWithVersion(t, "6.0(2h)", ">",
+					composeAggregateTestCheckFuncWithVersion(t, "6.0(2h)", ">=",
 						resource.TestCheckResourceAttr("aci_key_ring.test", "elliptic_curve", "none"),
 						resource.TestCheckResourceAttr("aci_key_ring.test", "key_type", "RSA")),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.key", "key_0"),
@@ -604,24 +604,24 @@ const testConfigPkiKeyRingChildren = testDependencyConfigPkiKeyRing + `
 resource "aci_key_ring" "test" {
   name = "test_name"
   annotations = [
-	{
-	  key = "key_0"
-	  value = "value_1"
-	},
-	{
-	  key = "key_1"
-	  value = "test_value"
-	},
+    {
+      key = "key_0"
+      value = "value_1"
+    },
+    {
+      key = "key_1"
+      value = "test_value"
+    },
   ]
   tags = [
-	{
-	  key = "key_0"
-	  value = "value_1"
-	},
-	{
-	  key = "key_1"
-	  value = "test_value"
-	},
+    {
+      key = "key_0"
+      value = "value_1"
+    },
+    {
+      key = "key_1"
+      value = "test_value"
+    },
   ]
 }
 `
@@ -721,24 +721,24 @@ resource "aci_key_ring" "test" {
   parent_dn = aci_tenant.test.id
   name = "test_name"
   annotations = [
-	{
-	  key = "key_0"
-	  value = "value_1"
-	},
-	{
-	  key = "key_1"
-	  value = "test_value"
-	},
+    {
+      key = "key_0"
+      value = "value_1"
+    },
+    {
+      key = "key_1"
+      value = "test_value"
+    },
   ]
   tags = [
-	{
-	  key = "key_0"
-	  value = "value_1"
-	},
-	{
-	  key = "key_1"
-	  value = "test_value"
-	},
+    {
+      key = "key_0"
+      value = "value_1"
+    },
+    {
+      key = "key_1"
+      value = "test_value"
+    },
   ]
 }
 `

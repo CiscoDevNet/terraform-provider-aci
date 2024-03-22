@@ -98,6 +98,13 @@ func getEmptyTagAnnotationPkiTPResourceModel() TagAnnotationPkiTPResourceModel {
 	}
 }
 
+var TagAnnotationPkiTPType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
+}
+
 // TagTagPkiTPResourceModel describes the resource data model for the children without relation ships.
 type TagTagPkiTPResourceModel struct {
 	Key   types.String `tfsdk:"key"`
@@ -109,6 +116,13 @@ func getEmptyTagTagPkiTPResourceModel() TagTagPkiTPResourceModel {
 		Key:   basetypes.NewStringNull(),
 		Value: basetypes.NewStringNull(),
 	}
+}
+
+var TagTagPkiTPType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
 }
 
 type PkiTPIdentifier struct {
@@ -507,7 +521,7 @@ func (r *PkiTPResource) ImportState(ctx context.Context, req resource.ImportStat
 }
 
 func getAndSetPkiTPAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *PkiTPResourceModel) {
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "pkiTP,tagAnnotation,tagTag"), "GET", nil)
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "pkiTP,tagAnnotation,tagTag"), "GET", nil)
 
 	readData := getEmptyPkiTPResourceModel()
 
@@ -570,6 +584,7 @@ func getAndSetPkiTPAttributes(ctx context.Context, diags *diag.Diagnostics, clie
 								if childAttributeName == "value" {
 									TagAnnotationPkiTP.Value = basetypes.NewStringValue(childAttributeValue.(string))
 								}
+
 							}
 							TagAnnotationPkiTPList = append(TagAnnotationPkiTPList, TagAnnotationPkiTP)
 						}
@@ -582,6 +597,7 @@ func getAndSetPkiTPAttributes(ctx context.Context, diags *diag.Diagnostics, clie
 								if childAttributeName == "value" {
 									TagTagPkiTP.Value = basetypes.NewStringValue(childAttributeValue.(string))
 								}
+
 							}
 							TagTagPkiTPList = append(TagTagPkiTPList, TagTagPkiTP)
 						}
@@ -650,25 +666,24 @@ func setPkiTPId(ctx context.Context, data *PkiTPResourceModel) {
 	data.Id = types.StringValue(id)
 }
 
-func getPkiTPTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *PkiTPResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationPkiTPResourceModel) []map[string]interface{} {
-
+func getPkiTPTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *PkiTPResourceModel, tagAnnotationPkiTPPlan, tagAnnotationPkiTPState []TagAnnotationPkiTPResourceModel) []map[string]interface{} {
 	childPayloads := []map[string]interface{}{}
-	if !data.TagAnnotation.IsUnknown() {
+	if !data.TagAnnotation.IsNull() && !data.TagAnnotation.IsUnknown() {
 		tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
-		for _, tagAnnotation := range tagAnnotationPlan {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagAnnotation.Key.IsUnknown() && !tagAnnotation.Key.IsNull() {
-				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
+		for _, tagAnnotationPkiTP := range tagAnnotationPkiTPPlan {
+			childMap := NewAciObject()
+			if !tagAnnotationPkiTP.Key.IsNull() && !tagAnnotationPkiTP.Key.IsUnknown() {
+				childMap.Attributes["key"] = tagAnnotationPkiTP.Key.ValueString()
 			}
-			if !tagAnnotation.Value.IsUnknown() && !tagAnnotation.Value.IsNull() {
-				childMap["attributes"]["value"] = tagAnnotation.Value.ValueString()
+			if !tagAnnotationPkiTP.Value.IsNull() && !tagAnnotationPkiTP.Value.IsUnknown() {
+				childMap.Attributes["value"] = tagAnnotationPkiTP.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
 			tagAnnotationIdentifier := TagAnnotationIdentifier{}
-			tagAnnotationIdentifier.Key = tagAnnotation.Key
+			tagAnnotationIdentifier.Key = tagAnnotationPkiTP.Key
 			tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
 		}
-		for _, tagAnnotation := range tagAnnotationState {
+		for _, tagAnnotation := range tagAnnotationPkiTPState {
 			delete := true
 			for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
 				if tagAnnotationIdentifier.Key == tagAnnotation.Key {
@@ -677,10 +692,10 @@ func getPkiTPTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnos
 				}
 			}
 			if delete {
-				childMap := map[string]map[string]interface{}{"attributes": {}}
-				childMap["attributes"]["status"] = "deleted"
-				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
+				tagAnnotationChildMapForDelete := NewAciObject()
+				tagAnnotationChildMapForDelete.Attributes["status"] = "deleted"
+				tagAnnotationChildMapForDelete.Attributes["key"] = tagAnnotation.Key.ValueString()
+				childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": tagAnnotationChildMapForDelete})
 			}
 		}
 	} else {
@@ -689,25 +704,25 @@ func getPkiTPTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnos
 
 	return childPayloads
 }
-func getPkiTPTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *PkiTPResourceModel, tagTagPlan, tagTagState []TagTagPkiTPResourceModel) []map[string]interface{} {
 
+func getPkiTPTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *PkiTPResourceModel, tagTagPkiTPPlan, tagTagPkiTPState []TagTagPkiTPResourceModel) []map[string]interface{} {
 	childPayloads := []map[string]interface{}{}
-	if !data.TagTag.IsUnknown() {
+	if !data.TagTag.IsNull() && !data.TagTag.IsUnknown() {
 		tagTagIdentifiers := []TagTagIdentifier{}
-		for _, tagTag := range tagTagPlan {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagTag.Key.IsUnknown() && !tagTag.Key.IsNull() {
-				childMap["attributes"]["key"] = tagTag.Key.ValueString()
+		for _, tagTagPkiTP := range tagTagPkiTPPlan {
+			childMap := NewAciObject()
+			if !tagTagPkiTP.Key.IsNull() && !tagTagPkiTP.Key.IsUnknown() {
+				childMap.Attributes["key"] = tagTagPkiTP.Key.ValueString()
 			}
-			if !tagTag.Value.IsUnknown() && !tagTag.Value.IsNull() {
-				childMap["attributes"]["value"] = tagTag.Value.ValueString()
+			if !tagTagPkiTP.Value.IsNull() && !tagTagPkiTP.Value.IsUnknown() {
+				childMap.Attributes["value"] = tagTagPkiTP.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})
 			tagTagIdentifier := TagTagIdentifier{}
-			tagTagIdentifier.Key = tagTag.Key
+			tagTagIdentifier.Key = tagTagPkiTP.Key
 			tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
 		}
-		for _, tagTag := range tagTagState {
+		for _, tagTag := range tagTagPkiTPState {
 			delete := true
 			for _, tagTagIdentifier := range tagTagIdentifiers {
 				if tagTagIdentifier.Key == tagTag.Key {
@@ -716,10 +731,10 @@ func getPkiTPTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, d
 				}
 			}
 			if delete {
-				childMap := map[string]map[string]interface{}{"attributes": {}}
-				childMap["attributes"]["status"] = "deleted"
-				childMap["attributes"]["key"] = tagTag.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})
+				tagTagChildMapForDelete := NewAciObject()
+				tagTagChildMapForDelete.Attributes["status"] = "deleted"
+				tagTagChildMapForDelete.Attributes["key"] = tagTag.Key.ValueString()
+				childPayloads = append(childPayloads, map[string]interface{}{"tagTag": tagTagChildMapForDelete})
 			}
 		}
 	} else {

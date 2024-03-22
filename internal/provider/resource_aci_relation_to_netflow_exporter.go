@@ -82,6 +82,13 @@ func getEmptyTagAnnotationNetflowRsMonitorToExporterResourceModel() TagAnnotatio
 	}
 }
 
+var TagAnnotationNetflowRsMonitorToExporterType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
+}
+
 // TagTagNetflowRsMonitorToExporterResourceModel describes the resource data model for the children without relation ships.
 type TagTagNetflowRsMonitorToExporterResourceModel struct {
 	Key   types.String `tfsdk:"key"`
@@ -93,6 +100,13 @@ func getEmptyTagTagNetflowRsMonitorToExporterResourceModel() TagTagNetflowRsMoni
 		Key:   basetypes.NewStringNull(),
 		Value: basetypes.NewStringNull(),
 	}
+}
+
+var TagTagNetflowRsMonitorToExporterType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
 }
 
 type NetflowRsMonitorToExporterIdentifier struct {
@@ -408,7 +422,7 @@ func (r *NetflowRsMonitorToExporterResource) ImportState(ctx context.Context, re
 }
 
 func getAndSetNetflowRsMonitorToExporterAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *NetflowRsMonitorToExporterResourceModel) {
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "netflowRsMonitorToExporter,tagAnnotation,tagTag"), "GET", nil)
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "netflowRsMonitorToExporter,tagAnnotation,tagTag"), "GET", nil)
 
 	readData := getEmptyNetflowRsMonitorToExporterResourceModel()
 
@@ -448,6 +462,7 @@ func getAndSetNetflowRsMonitorToExporterAttributes(ctx context.Context, diags *d
 								if childAttributeName == "value" {
 									TagAnnotationNetflowRsMonitorToExporter.Value = basetypes.NewStringValue(childAttributeValue.(string))
 								}
+
 							}
 							TagAnnotationNetflowRsMonitorToExporterList = append(TagAnnotationNetflowRsMonitorToExporterList, TagAnnotationNetflowRsMonitorToExporter)
 						}
@@ -460,6 +475,7 @@ func getAndSetNetflowRsMonitorToExporterAttributes(ctx context.Context, diags *d
 								if childAttributeName == "value" {
 									TagTagNetflowRsMonitorToExporter.Value = basetypes.NewStringValue(childAttributeValue.(string))
 								}
+
 							}
 							TagTagNetflowRsMonitorToExporterList = append(TagTagNetflowRsMonitorToExporterList, TagTagNetflowRsMonitorToExporter)
 						}
@@ -507,25 +523,24 @@ func setNetflowRsMonitorToExporterId(ctx context.Context, data *NetflowRsMonitor
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
 
-func getNetflowRsMonitorToExporterTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *NetflowRsMonitorToExporterResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationNetflowRsMonitorToExporterResourceModel) []map[string]interface{} {
-
+func getNetflowRsMonitorToExporterTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *NetflowRsMonitorToExporterResourceModel, tagAnnotationNetflowRsMonitorToExporterPlan, tagAnnotationNetflowRsMonitorToExporterState []TagAnnotationNetflowRsMonitorToExporterResourceModel) []map[string]interface{} {
 	childPayloads := []map[string]interface{}{}
-	if !data.TagAnnotation.IsUnknown() {
+	if !data.TagAnnotation.IsNull() && !data.TagAnnotation.IsUnknown() {
 		tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
-		for _, tagAnnotation := range tagAnnotationPlan {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagAnnotation.Key.IsUnknown() && !tagAnnotation.Key.IsNull() {
-				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
+		for _, tagAnnotationNetflowRsMonitorToExporter := range tagAnnotationNetflowRsMonitorToExporterPlan {
+			childMap := NewAciObject()
+			if !tagAnnotationNetflowRsMonitorToExporter.Key.IsNull() && !tagAnnotationNetflowRsMonitorToExporter.Key.IsUnknown() {
+				childMap.Attributes["key"] = tagAnnotationNetflowRsMonitorToExporter.Key.ValueString()
 			}
-			if !tagAnnotation.Value.IsUnknown() && !tagAnnotation.Value.IsNull() {
-				childMap["attributes"]["value"] = tagAnnotation.Value.ValueString()
+			if !tagAnnotationNetflowRsMonitorToExporter.Value.IsNull() && !tagAnnotationNetflowRsMonitorToExporter.Value.IsUnknown() {
+				childMap.Attributes["value"] = tagAnnotationNetflowRsMonitorToExporter.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
 			tagAnnotationIdentifier := TagAnnotationIdentifier{}
-			tagAnnotationIdentifier.Key = tagAnnotation.Key
+			tagAnnotationIdentifier.Key = tagAnnotationNetflowRsMonitorToExporter.Key
 			tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
 		}
-		for _, tagAnnotation := range tagAnnotationState {
+		for _, tagAnnotation := range tagAnnotationNetflowRsMonitorToExporterState {
 			delete := true
 			for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
 				if tagAnnotationIdentifier.Key == tagAnnotation.Key {
@@ -534,10 +549,10 @@ func getNetflowRsMonitorToExporterTagAnnotationChildPayloads(ctx context.Context
 				}
 			}
 			if delete {
-				childMap := map[string]map[string]interface{}{"attributes": {}}
-				childMap["attributes"]["status"] = "deleted"
-				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
+				tagAnnotationChildMapForDelete := NewAciObject()
+				tagAnnotationChildMapForDelete.Attributes["status"] = "deleted"
+				tagAnnotationChildMapForDelete.Attributes["key"] = tagAnnotation.Key.ValueString()
+				childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": tagAnnotationChildMapForDelete})
 			}
 		}
 	} else {
@@ -546,25 +561,25 @@ func getNetflowRsMonitorToExporterTagAnnotationChildPayloads(ctx context.Context
 
 	return childPayloads
 }
-func getNetflowRsMonitorToExporterTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *NetflowRsMonitorToExporterResourceModel, tagTagPlan, tagTagState []TagTagNetflowRsMonitorToExporterResourceModel) []map[string]interface{} {
 
+func getNetflowRsMonitorToExporterTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *NetflowRsMonitorToExporterResourceModel, tagTagNetflowRsMonitorToExporterPlan, tagTagNetflowRsMonitorToExporterState []TagTagNetflowRsMonitorToExporterResourceModel) []map[string]interface{} {
 	childPayloads := []map[string]interface{}{}
-	if !data.TagTag.IsUnknown() {
+	if !data.TagTag.IsNull() && !data.TagTag.IsUnknown() {
 		tagTagIdentifiers := []TagTagIdentifier{}
-		for _, tagTag := range tagTagPlan {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagTag.Key.IsUnknown() && !tagTag.Key.IsNull() {
-				childMap["attributes"]["key"] = tagTag.Key.ValueString()
+		for _, tagTagNetflowRsMonitorToExporter := range tagTagNetflowRsMonitorToExporterPlan {
+			childMap := NewAciObject()
+			if !tagTagNetflowRsMonitorToExporter.Key.IsNull() && !tagTagNetflowRsMonitorToExporter.Key.IsUnknown() {
+				childMap.Attributes["key"] = tagTagNetflowRsMonitorToExporter.Key.ValueString()
 			}
-			if !tagTag.Value.IsUnknown() && !tagTag.Value.IsNull() {
-				childMap["attributes"]["value"] = tagTag.Value.ValueString()
+			if !tagTagNetflowRsMonitorToExporter.Value.IsNull() && !tagTagNetflowRsMonitorToExporter.Value.IsUnknown() {
+				childMap.Attributes["value"] = tagTagNetflowRsMonitorToExporter.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})
 			tagTagIdentifier := TagTagIdentifier{}
-			tagTagIdentifier.Key = tagTag.Key
+			tagTagIdentifier.Key = tagTagNetflowRsMonitorToExporter.Key
 			tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
 		}
-		for _, tagTag := range tagTagState {
+		for _, tagTag := range tagTagNetflowRsMonitorToExporterState {
 			delete := true
 			for _, tagTagIdentifier := range tagTagIdentifiers {
 				if tagTagIdentifier.Key == tagTag.Key {
@@ -573,10 +588,10 @@ func getNetflowRsMonitorToExporterTagTagChildPayloads(ctx context.Context, diags
 				}
 			}
 			if delete {
-				childMap := map[string]map[string]interface{}{"attributes": {}}
-				childMap["attributes"]["status"] = "deleted"
-				childMap["attributes"]["key"] = tagTag.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})
+				tagTagChildMapForDelete := NewAciObject()
+				tagTagChildMapForDelete.Attributes["status"] = "deleted"
+				tagTagChildMapForDelete.Attributes["key"] = tagTag.Key.ValueString()
+				childPayloads = append(childPayloads, map[string]interface{}{"tagTag": tagTagChildMapForDelete})
 			}
 		}
 	} else {

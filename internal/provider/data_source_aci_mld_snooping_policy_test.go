@@ -34,7 +34,7 @@ func TestAccDataSourceMldSnoopPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("data.aci_mld_snooping_policy.test", "response_interval", "10"),
 					resource.TestCheckResourceAttr("data.aci_mld_snooping_policy.test", "start_query_count", "2"),
 					resource.TestCheckResourceAttr("data.aci_mld_snooping_policy.test", "start_query_interval", "31"),
-					composeAggregateTestCheckFuncWithVersion(t, "5.1(1h)", ">",
+					composeAggregateTestCheckFuncWithVersion(t, "5.1(1h)", ">=",
 						resource.TestCheckResourceAttr("data.aci_mld_snooping_policy.test", "version", "v2")),
 				),
 			},

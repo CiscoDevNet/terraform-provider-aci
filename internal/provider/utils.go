@@ -35,6 +35,18 @@ func SingleNestedAttributeRequiredAttributesNotProvided(attributes map[string]at
 	return false
 }
 
+type AciObject struct {
+	Attributes map[string]interface{}   `json:"attributes"`
+	Children   []map[string]interface{} `json:"children"`
+}
+
+func NewAciObject() AciObject {
+	return AciObject{
+		Attributes: make(map[string]interface{}),
+		Children:   []map[string]interface{}{},
+	}
+}
+
 func ContainsString(strings []string, matchString string) bool {
 	for _, stringValue := range strings {
 		if stringValue == matchString {

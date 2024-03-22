@@ -70,5 +70,4 @@ parents:
     class_in_parent: false
     test_type: both
 class_version: 4.1(1i)-
-
 version_mismatch: true

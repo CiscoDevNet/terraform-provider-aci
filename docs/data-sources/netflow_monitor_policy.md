@@ -64,19 +64,27 @@ data "aci_netflow_monitor_policy" "example_tenant" {
 * `name_alias` (nameAlias) - (string) The name alias of the NetFlow Monitor Policy object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
-
 * `relation_to_netflow_exporters` - (list) A list of Relation To NetFlow Exporters (ACI object [netflowRsMonitorToExporter](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRsMonitorToExporter/overview)) pointing to NetFlow Exporter Policy (ACI Object [netflowExporterPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowExporterPol/overview)).
-  * `annotation` (annotation) - (string) The annotation of the Relation To NetFlow Exporter object.
-  * `netflow_exporter_policy_name` (tnNetflowExporterPolName) - (string) Name.
-
+    * `annotation` (annotation) - (string) The annotation of the Relation To NetFlow Exporter object.
+    * `netflow_exporter_policy_name` (tnNetflowExporterPolName) - (string) Name.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
 * `relation_to_netflow_record` - (map) A map of Relation To NetFlow Record (ACI object [netflowRsMonitorToRecord](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRsMonitorToRecord/overview)) pointing to NetFlow Record Policy (ACI Object [netflowRecordPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRecordPol/overview)).
-  * `annotation` (annotation) - (string) The annotation of the Relation To NetFlow Record object.
-  * `netflow_record_policy_name` (tnNetflowRecordPolName) - (string) Name.
-
+    * `annotation` (annotation) - (string) The annotation of the Relation To NetFlow Record object.
+    * `netflow_record_policy_name` (tnNetflowRecordPolName) - (string) Name.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
-  * `key` (key) - (string) The key used to uniquely identify this configuration object.
-  * `value` (value) - (string) The value of the property.
-
+    * `key` (key) - (string) The key used to uniquely identify this configuration object.
+    * `value` (value) - (string) The value of the property.
 * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
-  * `key` (key) - (string) The key used to uniquely identify this configuration object.
-  * `value` (value) - (string) The value of the property.
+    * `key` (key) - (string) The key used to uniquely identify this configuration object.
+    * `value` (value) - (string) The value of the property.

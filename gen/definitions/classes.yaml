@@ -661,6 +661,7 @@ pkiTP:
       test_type: "cloud"
 
 pkiKeyRing:
+  resource_name: "key_ring"
   sub_category: "AAA"
   ui_locations:
     - "Admin -> AAA -> Security -> Key Rings"
@@ -707,15 +708,15 @@ fvBD:
     fvRsBDToNdP:
       relation_fv_rs_bd_to_nd_p: relation_to_neighbor_discovery_interface_policy.neighbor_discovery_interface_policy_name
     fvRsBDToNetflowMonitorPol:
-      relation_fv_rs_bd_to_netflow_monitor_pol: relation_to_netflow_monitor_policy
-      tn_netflow_monitor_pol_name: relation_to_netflow_monitor_policy.netflow_monitor_policy_name
-      flt_type: relation_to_netflow_monitor_policy.filter_type
+      relation_fv_rs_bd_to_netflow_monitor_pol: relation_to_netflow_monitor_policies
+      tn_netflow_monitor_pol_name: relation_to_netflow_monitor_policies.netflow_monitor_policy_name
+      flt_type: relation_to_netflow_monitor_policies.filter_type
     fvRsBDToOut:
       relation_fv_rs_bd_to_out: relation_to_l3_outsides.l3_outside_name
     fvRsBDToProfile:
       relation_fv_rs_bd_to_profile: relation_to_route_control_profile.route_control_profile_name
     fvRsBDToRelayP:
-      relation_fv_rs_bd_to_relay_p: relation_to_relay_policy.dhcp_relay_policy_name
+      relation_fv_rs_bd_to_relay_p: relation_to_dhcp_relay_policy.dhcp_relay_policy_name
     fvRsCtx:
       relation_fv_rs_ctx: relation_to_vrf.vrf_name
     fvRsIgmpsn:
@@ -806,3 +807,13 @@ fvRogueExceptionMac:
 
 fhsRaGuardPol:
   resource_name: "route_advertisement_guard_policy"
+
+commPol:
+  resource_name: "management_access_policy"
+  sub_category: "Fabric Policies"
+  ui_locations:
+    - "Fabric -> Fabric Policies -> Policies -> Pod -> Management Access"
+  class_version: "6.0(2h)"
+  contained_by:
+      - "polUni"
+  rn_prepend: "fabric"

@@ -88,6 +88,13 @@ func getEmptyTagAnnotationFvRsConsIfResourceModel() TagAnnotationFvRsConsIfResou
 	}
 }
 
+var TagAnnotationFvRsConsIfType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
+}
+
 // TagTagFvRsConsIfResourceModel describes the resource data model for the children without relation ships.
 type TagTagFvRsConsIfResourceModel struct {
 	Key   types.String `tfsdk:"key"`
@@ -99,6 +106,13 @@ func getEmptyTagTagFvRsConsIfResourceModel() TagTagFvRsConsIfResourceModel {
 		Key:   basetypes.NewStringNull(),
 		Value: basetypes.NewStringNull(),
 	}
+}
+
+var TagTagFvRsConsIfType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
 }
 
 type FvRsConsIfIdentifier struct {
@@ -430,7 +444,7 @@ func (r *FvRsConsIfResource) ImportState(ctx context.Context, req resource.Impor
 }
 
 func getAndSetFvRsConsIfAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvRsConsIfResourceModel) {
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "fvRsConsIf,tagAnnotation,tagTag"), "GET", nil)
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "fvRsConsIf,tagAnnotation,tagTag"), "GET", nil)
 
 	readData := getEmptyFvRsConsIfResourceModel()
 
@@ -473,6 +487,7 @@ func getAndSetFvRsConsIfAttributes(ctx context.Context, diags *diag.Diagnostics,
 								if childAttributeName == "value" {
 									TagAnnotationFvRsConsIf.Value = basetypes.NewStringValue(childAttributeValue.(string))
 								}
+
 							}
 							TagAnnotationFvRsConsIfList = append(TagAnnotationFvRsConsIfList, TagAnnotationFvRsConsIf)
 						}
@@ -485,6 +500,7 @@ func getAndSetFvRsConsIfAttributes(ctx context.Context, diags *diag.Diagnostics,
 								if childAttributeName == "value" {
 									TagTagFvRsConsIf.Value = basetypes.NewStringValue(childAttributeValue.(string))
 								}
+
 							}
 							TagTagFvRsConsIfList = append(TagTagFvRsConsIfList, TagTagFvRsConsIf)
 						}
@@ -532,25 +548,24 @@ func setFvRsConsIfId(ctx context.Context, data *FvRsConsIfResourceModel) {
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
 
-func getFvRsConsIfTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvRsConsIfResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvRsConsIfResourceModel) []map[string]interface{} {
-
+func getFvRsConsIfTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvRsConsIfResourceModel, tagAnnotationFvRsConsIfPlan, tagAnnotationFvRsConsIfState []TagAnnotationFvRsConsIfResourceModel) []map[string]interface{} {
 	childPayloads := []map[string]interface{}{}
-	if !data.TagAnnotation.IsUnknown() {
+	if !data.TagAnnotation.IsNull() && !data.TagAnnotation.IsUnknown() {
 		tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
-		for _, tagAnnotation := range tagAnnotationPlan {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagAnnotation.Key.IsUnknown() && !tagAnnotation.Key.IsNull() {
-				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
+		for _, tagAnnotationFvRsConsIf := range tagAnnotationFvRsConsIfPlan {
+			childMap := NewAciObject()
+			if !tagAnnotationFvRsConsIf.Key.IsNull() && !tagAnnotationFvRsConsIf.Key.IsUnknown() {
+				childMap.Attributes["key"] = tagAnnotationFvRsConsIf.Key.ValueString()
 			}
-			if !tagAnnotation.Value.IsUnknown() && !tagAnnotation.Value.IsNull() {
-				childMap["attributes"]["value"] = tagAnnotation.Value.ValueString()
+			if !tagAnnotationFvRsConsIf.Value.IsNull() && !tagAnnotationFvRsConsIf.Value.IsUnknown() {
+				childMap.Attributes["value"] = tagAnnotationFvRsConsIf.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
 			tagAnnotationIdentifier := TagAnnotationIdentifier{}
-			tagAnnotationIdentifier.Key = tagAnnotation.Key
+			tagAnnotationIdentifier.Key = tagAnnotationFvRsConsIf.Key
 			tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
 		}
-		for _, tagAnnotation := range tagAnnotationState {
+		for _, tagAnnotation := range tagAnnotationFvRsConsIfState {
 			delete := true
 			for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
 				if tagAnnotationIdentifier.Key == tagAnnotation.Key {
@@ -559,10 +574,10 @@ func getFvRsConsIfTagAnnotationChildPayloads(ctx context.Context, diags *diag.Di
 				}
 			}
 			if delete {
-				childMap := map[string]map[string]interface{}{"attributes": {}}
-				childMap["attributes"]["status"] = "deleted"
-				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
+				tagAnnotationChildMapForDelete := NewAciObject()
+				tagAnnotationChildMapForDelete.Attributes["status"] = "deleted"
+				tagAnnotationChildMapForDelete.Attributes["key"] = tagAnnotation.Key.ValueString()
+				childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": tagAnnotationChildMapForDelete})
 			}
 		}
 	} else {
@@ -571,25 +586,25 @@ func getFvRsConsIfTagAnnotationChildPayloads(ctx context.Context, diags *diag.Di
 
 	return childPayloads
 }
-func getFvRsConsIfTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvRsConsIfResourceModel, tagTagPlan, tagTagState []TagTagFvRsConsIfResourceModel) []map[string]interface{} {
 
+func getFvRsConsIfTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvRsConsIfResourceModel, tagTagFvRsConsIfPlan, tagTagFvRsConsIfState []TagTagFvRsConsIfResourceModel) []map[string]interface{} {
 	childPayloads := []map[string]interface{}{}
-	if !data.TagTag.IsUnknown() {
+	if !data.TagTag.IsNull() && !data.TagTag.IsUnknown() {
 		tagTagIdentifiers := []TagTagIdentifier{}
-		for _, tagTag := range tagTagPlan {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagTag.Key.IsUnknown() && !tagTag.Key.IsNull() {
-				childMap["attributes"]["key"] = tagTag.Key.ValueString()
+		for _, tagTagFvRsConsIf := range tagTagFvRsConsIfPlan {
+			childMap := NewAciObject()
+			if !tagTagFvRsConsIf.Key.IsNull() && !tagTagFvRsConsIf.Key.IsUnknown() {
+				childMap.Attributes["key"] = tagTagFvRsConsIf.Key.ValueString()
 			}
-			if !tagTag.Value.IsUnknown() && !tagTag.Value.IsNull() {
-				childMap["attributes"]["value"] = tagTag.Value.ValueString()
+			if !tagTagFvRsConsIf.Value.IsNull() && !tagTagFvRsConsIf.Value.IsUnknown() {
+				childMap.Attributes["value"] = tagTagFvRsConsIf.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})
 			tagTagIdentifier := TagTagIdentifier{}
-			tagTagIdentifier.Key = tagTag.Key
+			tagTagIdentifier.Key = tagTagFvRsConsIf.Key
 			tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
 		}
-		for _, tagTag := range tagTagState {
+		for _, tagTag := range tagTagFvRsConsIfState {
 			delete := true
 			for _, tagTagIdentifier := range tagTagIdentifiers {
 				if tagTagIdentifier.Key == tagTag.Key {
@@ -598,10 +613,10 @@ func getFvRsConsIfTagTagChildPayloads(ctx context.Context, diags *diag.Diagnosti
 				}
 			}
 			if delete {
-				childMap := map[string]map[string]interface{}{"attributes": {}}
-				childMap["attributes"]["status"] = "deleted"
-				childMap["attributes"]["key"] = tagTag.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})
+				tagTagChildMapForDelete := NewAciObject()
+				tagTagChildMapForDelete.Attributes["status"] = "deleted"
+				tagTagChildMapForDelete.Attributes["key"] = tagTag.Key.ValueString()
+				childPayloads = append(childPayloads, map[string]interface{}{"tagTag": tagTagChildMapForDelete})
 			}
 		}
 	} else {

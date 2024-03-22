@@ -48,6 +48,21 @@ children:
       owner_key: "owner_key_1"
       owner_tag: "owner_tag_1"
       deletable_child: true
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
   annotations:
     - key: "key_0"
       value: "value_1"

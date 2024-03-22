@@ -48,7 +48,7 @@ func TestAccResourceIgmpSnoopPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_igmp_snooping_policy.allow_test_2", "start_query_count", "2"),
 					resource.TestCheckResourceAttr("aci_igmp_snooping_policy.allow_test", "start_query_interval", "31"),
 					resource.TestCheckResourceAttr("aci_igmp_snooping_policy.allow_test_2", "start_query_interval", "31"),
-					composeAggregateTestCheckFuncWithVersion(t, "5.1(1h)", ">",
+					composeAggregateTestCheckFuncWithVersion(t, "5.1(1h)", ">=",
 						resource.TestCheckResourceAttr("aci_igmp_snooping_policy.allow_test", "querier_version", "v3"),
 						resource.TestCheckResourceAttr("aci_igmp_snooping_policy.allow_test_2", "querier_version", "v3")),
 				),
@@ -105,7 +105,7 @@ func TestAccResourceIgmpSnoopPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_igmp_snooping_policy.allow_test_2", "start_query_count", "2"),
 					resource.TestCheckResourceAttr("aci_igmp_snooping_policy.allow_test", "start_query_interval", "31"),
 					resource.TestCheckResourceAttr("aci_igmp_snooping_policy.allow_test_2", "start_query_interval", "31"),
-					composeAggregateTestCheckFuncWithVersion(t, "5.1(1h)", ">",
+					composeAggregateTestCheckFuncWithVersion(t, "5.1(1h)", ">=",
 						resource.TestCheckResourceAttr("aci_igmp_snooping_policy.allow_test", "querier_version", "v3"),
 						resource.TestCheckResourceAttr("aci_igmp_snooping_policy.allow_test_2", "querier_version", "v3")),
 				),
@@ -135,7 +135,7 @@ func TestAccResourceIgmpSnoopPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "response_interval", "10"),
 					resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "start_query_count", "2"),
 					resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "start_query_interval", "31"),
-					composeAggregateTestCheckFuncWithVersion(t, "5.1(1h)", ">",
+					composeAggregateTestCheckFuncWithVersion(t, "5.1(1h)", ">=",
 						resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "querier_version", "v3")),
 				),
 			},
@@ -159,7 +159,7 @@ func TestAccResourceIgmpSnoopPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "response_interval", "11"),
 					resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "start_query_count", "9"),
 					resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "start_query_interval", "2"),
-					composeAggregateTestCheckFuncWithVersion(t, "5.1(1h)", ">",
+					composeAggregateTestCheckFuncWithVersion(t, "5.1(1h)", ">=",
 						resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "querier_version", "v2")),
 				),
 			},
@@ -189,7 +189,7 @@ func TestAccResourceIgmpSnoopPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "response_interval", "10"),
 					resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "start_query_count", "2"),
 					resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "start_query_interval", "31"),
-					composeAggregateTestCheckFuncWithVersion(t, "5.1(1h)", ">",
+					composeAggregateTestCheckFuncWithVersion(t, "5.1(1h)", ">=",
 						resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "querier_version", "v3")),
 				),
 			},
@@ -217,7 +217,7 @@ func TestAccResourceIgmpSnoopPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "response_interval", "10"),
 					resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "start_query_count", "2"),
 					resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "start_query_interval", "31"),
-					composeAggregateTestCheckFuncWithVersion(t, "5.1(1h)", ">",
+					composeAggregateTestCheckFuncWithVersion(t, "5.1(1h)", ">=",
 						resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "querier_version", "v3")),
 					resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "annotations.0.value", "value_1"),
@@ -347,24 +347,24 @@ resource "aci_igmp_snooping_policy" "test" {
   parent_dn = aci_tenant.test.id
   name = "test_name"
   annotations = [
-	{
-	  key = "key_0"
-	  value = "value_1"
-	},
-	{
-	  key = "key_1"
-	  value = "test_value"
-	},
+    {
+      key = "key_0"
+      value = "value_1"
+    },
+    {
+      key = "key_1"
+      value = "test_value"
+    },
   ]
   tags = [
-	{
-	  key = "key_0"
-	  value = "value_1"
-	},
-	{
-	  key = "key_1"
-	  value = "test_value"
-	},
+    {
+      key = "key_0"
+      value = "value_1"
+    },
+    {
+      key = "key_1"
+      value = "test_value"
+    },
   ]
 }
 `

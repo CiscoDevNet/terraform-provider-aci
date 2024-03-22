@@ -37,6 +37,18 @@ resource "aci_bridge_domain" "full_example_tenant" {
     name_alias    = "name_alias_1"
     owner_key     = "owner_key_1"
     owner_tag     = "owner_tag_1"
+    annotations = [
+      {
+        key   = "key_0"
+        value = "value_1"
+      }
+    ]
+    tags = [
+      {
+        key   = "key_0"
+        value = "value_1"
+      }
+    ]
   }
   rogue_coop_exceptions = [
     {
@@ -45,58 +57,202 @@ resource "aci_bridge_domain" "full_example_tenant" {
       mac         = "00:00:00:00:00:00"
       name        = "name_1"
       name_alias  = "name_alias_1"
+      annotations = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
+      tags = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
     }
   ]
   relation_to_monitor_policy = {
     annotation             = "annotation_1"
     monitoring_policy_name = aci_monitoring_policy.example.name
+    annotations = [
+      {
+        key   = "key_0"
+        value = "value_1"
+      }
+    ]
+    tags = [
+      {
+        key   = "key_0"
+        value = "value_1"
+      }
+    ]
   }
   relation_to_first_hop_security_policy = {
     annotation                     = "annotation_1"
     first_hop_security_policy_name = aci_first_hop_security_policy.example.name
+    annotations = [
+      {
+        key   = "key_0"
+        value = "value_1"
+      }
+    ]
+    tags = [
+      {
+        key   = "key_0"
+        value = "value_1"
+      }
+    ]
   }
   relation_to_neighbor_discovery_interface_policy = {
     annotation                               = "annotation_1"
     neighbor_discovery_interface_policy_name = aci_neighbor_discovery_interface_policy.example.name
+    annotations = [
+      {
+        key   = "key_0"
+        value = "value_1"
+      }
+    ]
+    tags = [
+      {
+        key   = "key_0"
+        value = "value_1"
+      }
+    ]
   }
   relation_to_netflow_monitor_policies = [
     {
       annotation                  = "annotation_1"
       filter_type                 = "ce"
       netflow_monitor_policy_name = aci_netflow_monitor_policy.example.name
+      annotations = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
+      tags = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
     }
   ]
   relation_to_l3_outsides = [
     {
       annotation      = "annotation_1"
       l3_outside_name = aci_l3_outside.example.name
+      annotations = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
+      tags = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
     }
   ]
   relation_to_route_control_profile = {
     annotation                 = "annotation_1"
     l3_outside_name            = aci_l3_outside.example.name
     route_control_profile_name = aci_route_control_profile.example.name
+    annotations = [
+      {
+        key   = "key_0"
+        value = "value_1"
+      }
+    ]
+    tags = [
+      {
+        key   = "key_0"
+        value = "value_1"
+      }
+    ]
   }
   relation_to_dhcp_relay_policy = {
     annotation             = "annotation_1"
     dhcp_relay_policy_name = aci_dhcp_relay_policy.example.name
+    annotations = [
+      {
+        key   = "key_0"
+        value = "value_1"
+      }
+    ]
+    tags = [
+      {
+        key   = "key_0"
+        value = "value_1"
+      }
+    ]
   }
   relation_to_end_point_retention_policy = {
     annotation                      = "annotation_1"
     resolve_action                  = "inherit"
     end_point_retention_policy_name = aci_end_point_retention_policy.example.name
+    annotations = [
+      {
+        key   = "key_0"
+        value = "value_1"
+      }
+    ]
+    tags = [
+      {
+        key   = "key_0"
+        value = "value_1"
+      }
+    ]
   }
   relation_to_vrf = {
     annotation = "annotation_1"
     vrf_name   = aci_vrf.example.name
+    annotations = [
+      {
+        key   = "key_0"
+        value = "value_1"
+      }
+    ]
+    tags = [
+      {
+        key   = "key_0"
+        value = "value_1"
+      }
+    ]
   }
   relation_to_igmp_snooping_policy = {
     annotation                = "annotation_1"
     igmp_snooping_policy_name = aci_igmp_snooping_policy.example.name
+    annotations = [
+      {
+        key   = "key_0"
+        value = "value_1"
+      }
+    ]
+    tags = [
+      {
+        key   = "key_0"
+        value = "value_1"
+      }
+    ]
   }
   relation_to_mld_snooping_policy = {
     annotation               = "annotation_1"
     mld_snooping_policy_name = aci_mld_snooping_policy.example.name
+    annotations = [
+      {
+        key   = "key_0"
+        value = "value_1"
+      }
+    ]
+    tags = [
+      {
+        key   = "key_0"
+        value = "value_1"
+      }
+    ]
   }
   annotations = [
     {
