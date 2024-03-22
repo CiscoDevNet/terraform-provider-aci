@@ -56,7 +56,7 @@ func (d *PkiKeyRingDataSource) Schema(ctx context.Context, req datasource.Schema
 				Computed:            true,
 				MarkdownDescription: `The annotation of the Key Ring object.`,
 			},
-			"cert": schema.StringAttribute{
+			"certificate": schema.StringAttribute{
 				Computed:            true,
 				MarkdownDescription: `A certificate is a file containing a device's public key along with signed information verifying the identity of the device.`,
 			},
@@ -64,7 +64,7 @@ func (d *PkiKeyRingDataSource) Schema(ctx context.Context, req datasource.Schema
 				Computed:            true,
 				MarkdownDescription: `The description of the Key Ring object.`,
 			},
-			"ecc_curve": schema.StringAttribute{
+			"elliptic_curve": schema.StringAttribute{
 				Computed:            true,
 				MarkdownDescription: `ECC Curve.`,
 			},
@@ -96,11 +96,11 @@ func (d *PkiKeyRingDataSource) Schema(ctx context.Context, req datasource.Schema
 				Computed:            true,
 				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
 			},
-			"regen": schema.StringAttribute{
+			"regenerate": schema.StringAttribute{
 				Computed:            true,
 				MarkdownDescription: `Forces regeneration of the keypair. Each PKI device holds a pair of asymmetric Rivest-Shamir-Adleman (RSA) or Elliptic Curve Cryptography (ECC) encryption keys, one kept private and one made public, stored in an internal key ring.`,
 			},
-			"tp": schema.StringAttribute{
+			"certificate_authority": schema.StringAttribute{
 				Computed:            true,
 				MarkdownDescription: `A third-party certificate from a trusted source, or trusted point, that affirms the identity of your device. The third-party certificate is signed by the issuing certificate authority (CA or trustpoint), which can be a root CA, an intermediate CA, or a trust anchor that is part of a trust chain that leads to a root CA.`,
 			},

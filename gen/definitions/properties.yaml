@@ -140,11 +140,13 @@ tagAnnotation:
       value: "test_value"
 
 pkiTP:
+  overwrites:
+    cert_chain: "certificate_chain"
   resource_required:
     - "certChain"
   test_values:
     resource_required: 
-      cert_chain: <<EOT
+      certificate_chain: <<EOT
         -----BEGIN_CERTIFICATE-----
         MIICODCCAaGgAwIBAgIJAIt8XMntue0VMA0GCSqGSIb3DQEBCwUAMDQxDjAMBgNV
         BAMMBUFkbWluMRUwEwYDVQQKDAxZb3VyIENvbXBhbnkxCzAJBgNVBAYTAlVTMCAX
@@ -161,7 +163,7 @@ pkiTP:
         -----END_CERTIFICATE-----
         EOT
     default:
-      cert_chain: <<EOT
+      certificate_chain: <<EOT
         -----BEGIN_CERTIFICATE-----
         MIICODCCAaGgAwIBAgIJAIt8XMntue0VMA0GCSqGSIb3DQEBCwUAMDQxDjAMBgNV
         BAMMBUFkbWluMRUwEwYDVQQKDAxZb3VyIENvbXBhbnkxCzAJBgNVBAYTAlVTMCAX
@@ -178,7 +180,7 @@ pkiTP:
         -----END_CERTIFICATE-----
         EOT
     all:
-      cert_chain: <<EOT
+      certificate_chain: <<EOT
         -----BEGIN_CERTIFICATE-----
         MIICODCCAaGgAwIBAgIJAIt8XMntue0VMA0GCSqGSIb3DQEBCwUAMDQxDjAMBgNV
         BAMMBUFkbWluMRUwEwYDVQQKDAxZb3VyIENvbXBhbnkxCzAJBgNVBAYTAlVTMCAX
@@ -220,18 +222,23 @@ tagTag:
       parent_dn: "aci_tenant.test.id"
       class_in_parent: false
 pkiKeyRing:
+  overwrites:
+    cert: "certificate"
+    regen: "regenerate"
+    ecc_curve: "elliptic_curve"
+    tp: "certificate_authority"
   parents:
     - parent_dependency: "pkiTP"
   test_values:
     default:
-      regen : "no"
-      ecc_curve: "none"
+      regenerate : "no"
+      elliptic_curve: "none"
       key_type: "RSA"
     all:
-      regen : "no"
-      ecc_curve: "none"
+      regenerate : "no"
+      elliptic_curve: "none"
       key_type: "RSA"
-      cert: <<EOT
+      certificate: <<EOT
         -----BEGIN_CERTIFICATE-----
         MIICODCCAaGgAwIBAgIJAIt8XMntue0VMA0GCSqGSIb3DQEBCwUAMDQxDjAMBgNV
         BAMMBUFkbWluMRUwEwYDVQQKDAxZb3VyIENvbXBhbnkxCzAJBgNVBAYTAlVTMCAX
@@ -265,4 +272,4 @@ pkiKeyRing:
         0V4ltlTuu2mTMaw=
         -----END_PRIVATE_KEY-----
         EOT
-      tp: "test_name"
+      certificate_authority: "test_name"

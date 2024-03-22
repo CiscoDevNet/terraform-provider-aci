@@ -44,7 +44,7 @@ type PkiTPResourceModel struct {
 	Id            types.String `tfsdk:"id"`
 	ParentDn      types.String `tfsdk:"parent_dn"`
 	Annotation    types.String `tfsdk:"annotation"`
-	CertChain     types.String `tfsdk:"cert_chain"`
+	CertChain     types.String `tfsdk:"certificate_chain"`
 	Descr         types.String `tfsdk:"description"`
 	Name          types.String `tfsdk:"name"`
 	NameAlias     types.String `tfsdk:"name_alias"`
@@ -101,7 +101,7 @@ func (r *PkiTPResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Default:             stringdefault.StaticString(globalAnnotation),
 				MarkdownDescription: `The annotation of the Certificate Authority object.`,
 			},
-			"cert_chain": schema.StringAttribute{
+			"certificate_chain": schema.StringAttribute{
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),

@@ -47,9 +47,9 @@ type PkiKeyRingResourceModel struct {
 	ParentDn      types.String `tfsdk:"parent_dn"`
 	AdminState    types.String `tfsdk:"admin_state"`
 	Annotation    types.String `tfsdk:"annotation"`
-	Cert          types.String `tfsdk:"cert"`
+	Cert          types.String `tfsdk:"certificate"`
 	Descr         types.String `tfsdk:"description"`
-	EccCurve      types.String `tfsdk:"ecc_curve"`
+	EccCurve      types.String `tfsdk:"elliptic_curve"`
 	Key           types.String `tfsdk:"key"`
 	KeyType       types.String `tfsdk:"key_type"`
 	Modulus       types.String `tfsdk:"modulus"`
@@ -57,8 +57,8 @@ type PkiKeyRingResourceModel struct {
 	NameAlias     types.String `tfsdk:"name_alias"`
 	OwnerKey      types.String `tfsdk:"owner_key"`
 	OwnerTag      types.String `tfsdk:"owner_tag"`
-	Regen         types.String `tfsdk:"regen"`
-	Tp            types.String `tfsdk:"tp"`
+	Regen         types.String `tfsdk:"regenerate"`
+	Tp            types.String `tfsdk:"certificate_authority"`
 	TagAnnotation types.Set    `tfsdk:"annotations"`
 }
 
@@ -122,7 +122,7 @@ func (r *PkiKeyRingResource) Schema(ctx context.Context, req resource.SchemaRequ
 				Default:             stringdefault.StaticString(globalAnnotation),
 				MarkdownDescription: `The annotation of the Key Ring object.`,
 			},
-			"cert": schema.StringAttribute{
+			"certificate": schema.StringAttribute{
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
@@ -140,7 +140,7 @@ func (r *PkiKeyRingResource) Schema(ctx context.Context, req resource.SchemaRequ
 				},
 				MarkdownDescription: `The description of the Key Ring object.`,
 			},
-			"ecc_curve": schema.StringAttribute{
+			"elliptic_curve": schema.StringAttribute{
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
@@ -220,7 +220,7 @@ func (r *PkiKeyRingResource) Schema(ctx context.Context, req resource.SchemaRequ
 				},
 				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
 			},
-			"regen": schema.StringAttribute{
+			"regenerate": schema.StringAttribute{
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
@@ -232,7 +232,7 @@ func (r *PkiKeyRingResource) Schema(ctx context.Context, req resource.SchemaRequ
 				},
 				MarkdownDescription: `Forces regeneration of the keypair. Each PKI device holds a pair of asymmetric Rivest-Shamir-Adleman (RSA) or Elliptic Curve Cryptography (ECC) encryption keys, one kept private and one made public, stored in an internal key ring.`,
 			},
-			"tp": schema.StringAttribute{
+			"certificate_authority": schema.StringAttribute{
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{

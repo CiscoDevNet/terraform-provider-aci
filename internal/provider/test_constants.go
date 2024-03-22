@@ -49,7 +49,7 @@ const testConfigPolUniMin = ``
 const testConfigFvTenantMinDependencyWithPkiTP = testConfigFvTenantMin + `
 resource "aci_certificate_authority" "test" {
   parent_dn = aci_tenant.test.id
-  cert_chain = <<EOT
+  certificate_chain = <<EOT
 -----BEGIN CERTIFICATE-----
 MIICODCCAaGgAwIBAgIJAIt8XMntue0VMA0GCSqGSIb3DQEBCwUAMDQxDjAMBgNV
 BAMMBUFkbWluMRUwEwYDVQQKDAxZb3VyIENvbXBhbnkxCzAJBgNVBAYTAlVTMCAX
@@ -71,7 +71,7 @@ EOT
 
 const testConfigPolUniMinDependencyWithPkiTP = `
 resource "aci_certificate_authority" "test" {
-cert_chain = <<EOT
+certificate_chain = <<EOT
 -----BEGIN CERTIFICATE-----
 MIICODCCAaGgAwIBAgIJAIt8XMntue0VMA0GCSqGSIb3DQEBCwUAMDQxDjAMBgNV
 BAMMBUFkbWluMRUwEwYDVQQKDAxZb3VyIENvbXBhbnkxCzAJBgNVBAYTAlVTMCAX

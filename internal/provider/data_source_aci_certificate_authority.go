@@ -52,7 +52,7 @@ func (d *PkiTPDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 				Computed:            true,
 				MarkdownDescription: `The annotation of the Certificate Authority object.`,
 			},
-			"cert_chain": schema.StringAttribute{
+			"certificate_chain": schema.StringAttribute{
 				Computed:            true,
 				MarkdownDescription: `The PEM-encoded chain of trust from the trustpoint to a trusted root authority.`,
 			},
