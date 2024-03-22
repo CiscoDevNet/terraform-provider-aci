@@ -69,11 +69,15 @@ func getEmptyNetflowMonitorPolResourceModel() *NetflowMonitorPolResourceModel {
 			AttrTypes: map[string]attr.Type{
 				"annotation":                   types.StringType,
 				"netflow_exporter_policy_name": types.StringType,
+				"annotations":                  types.SetType{ElemType: TagAnnotationNetflowRsMonitorToExporterNetflowMonitorPolType},
+				"tags":                         types.SetType{ElemType: TagTagNetflowRsMonitorToExporterNetflowMonitorPolType},
 			},
 		}),
 		NetflowRsMonitorToRecord: types.ObjectNull(map[string]attr.Type{
 			"annotation":                 types.StringType,
 			"netflow_record_policy_name": types.StringType,
+			"annotations":                types.SetType{ElemType: TagAnnotationNetflowRsMonitorToRecordNetflowMonitorPolType},
+			"tags":                       types.SetType{ElemType: TagTagNetflowRsMonitorToRecordNetflowMonitorPolType},
 		}),
 		TagAnnotation: types.SetNull(types.ObjectType{
 			AttrTypes: map[string]attr.Type{
@@ -94,31 +98,150 @@ func getEmptyNetflowMonitorPolResourceModel() *NetflowMonitorPolResourceModel {
 type NetflowRsMonitorToExporterNetflowMonitorPolResourceModel struct {
 	Annotation               types.String `tfsdk:"annotation"`
 	TnNetflowExporterPolName types.String `tfsdk:"netflow_exporter_policy_name"`
+	TagAnnotation            types.Set    `tfsdk:"annotations"`
+	TagTag                   types.Set    `tfsdk:"tags"`
 }
 
 func getEmptyNetflowRsMonitorToExporterNetflowMonitorPolResourceModel() NetflowRsMonitorToExporterNetflowMonitorPolResourceModel {
 	return NetflowRsMonitorToExporterNetflowMonitorPolResourceModel{
 		Annotation:               basetypes.NewStringNull(),
 		TnNetflowExporterPolName: basetypes.NewStringNull(),
+		TagAnnotation: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"key":   types.StringType,
+				"value": types.StringType,
+			},
+		}),
+		TagTag: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"key":   types.StringType,
+				"value": types.StringType,
+			},
+		}),
 	}
+}
+
+var NetflowRsMonitorToExporterNetflowMonitorPolType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"annotation":                   types.StringType,
+		"netflow_exporter_policy_name": types.StringType,
+		"annotations":                  types.SetType{ElemType: TagAnnotationNetflowRsMonitorToExporterNetflowMonitorPolType},
+		"tags":                         types.SetType{ElemType: TagTagNetflowRsMonitorToExporterNetflowMonitorPolType},
+	},
+}
+
+// TagAnnotationNetflowRsMonitorToExporterNetflowMonitorPolResourceModel describes the resource data model for the children without relation ships.
+type TagAnnotationNetflowRsMonitorToExporterNetflowMonitorPolResourceModel struct {
+	Key   types.String `tfsdk:"key"`
+	Value types.String `tfsdk:"value"`
+}
+
+func getEmptyTagAnnotationNetflowRsMonitorToExporterNetflowMonitorPolResourceModel() TagAnnotationNetflowRsMonitorToExporterNetflowMonitorPolResourceModel {
+	return TagAnnotationNetflowRsMonitorToExporterNetflowMonitorPolResourceModel{
+		Key:   basetypes.NewStringNull(),
+		Value: basetypes.NewStringNull(),
+	}
+}
+
+var TagAnnotationNetflowRsMonitorToExporterNetflowMonitorPolType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
+}
+
+// TagTagNetflowRsMonitorToExporterNetflowMonitorPolResourceModel describes the resource data model for the children without relation ships.
+type TagTagNetflowRsMonitorToExporterNetflowMonitorPolResourceModel struct {
+	Key   types.String `tfsdk:"key"`
+	Value types.String `tfsdk:"value"`
+}
+
+func getEmptyTagTagNetflowRsMonitorToExporterNetflowMonitorPolResourceModel() TagTagNetflowRsMonitorToExporterNetflowMonitorPolResourceModel {
+	return TagTagNetflowRsMonitorToExporterNetflowMonitorPolResourceModel{
+		Key:   basetypes.NewStringNull(),
+		Value: basetypes.NewStringNull(),
+	}
+}
+
+var TagTagNetflowRsMonitorToExporterNetflowMonitorPolType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
 }
 
 // NetflowRsMonitorToRecordNetflowMonitorPolResourceModel describes the resource data model for the children without relation ships.
 type NetflowRsMonitorToRecordNetflowMonitorPolResourceModel struct {
 	Annotation             types.String `tfsdk:"annotation"`
 	TnNetflowRecordPolName types.String `tfsdk:"netflow_record_policy_name"`
+	TagAnnotation          types.Set    `tfsdk:"annotations"`
+	TagTag                 types.Set    `tfsdk:"tags"`
 }
 
 func getEmptyNetflowRsMonitorToRecordNetflowMonitorPolResourceModel() NetflowRsMonitorToRecordNetflowMonitorPolResourceModel {
 	return NetflowRsMonitorToRecordNetflowMonitorPolResourceModel{
 		Annotation:             basetypes.NewStringNull(),
 		TnNetflowRecordPolName: basetypes.NewStringNull(),
+		TagAnnotation: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"key":   types.StringType,
+				"value": types.StringType,
+			},
+		}),
+		TagTag: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"key":   types.StringType,
+				"value": types.StringType,
+			},
+		}),
 	}
 }
 
 var NetflowRsMonitorToRecordNetflowMonitorPolType = map[string]attr.Type{
 	"annotation":                 types.StringType,
 	"netflow_record_policy_name": types.StringType,
+	"annotations":                types.SetType{ElemType: TagAnnotationNetflowRsMonitorToRecordNetflowMonitorPolType},
+	"tags":                       types.SetType{ElemType: TagTagNetflowRsMonitorToRecordNetflowMonitorPolType},
+}
+
+// TagAnnotationNetflowRsMonitorToRecordNetflowMonitorPolResourceModel describes the resource data model for the children without relation ships.
+type TagAnnotationNetflowRsMonitorToRecordNetflowMonitorPolResourceModel struct {
+	Key   types.String `tfsdk:"key"`
+	Value types.String `tfsdk:"value"`
+}
+
+func getEmptyTagAnnotationNetflowRsMonitorToRecordNetflowMonitorPolResourceModel() TagAnnotationNetflowRsMonitorToRecordNetflowMonitorPolResourceModel {
+	return TagAnnotationNetflowRsMonitorToRecordNetflowMonitorPolResourceModel{
+		Key:   basetypes.NewStringNull(),
+		Value: basetypes.NewStringNull(),
+	}
+}
+
+var TagAnnotationNetflowRsMonitorToRecordNetflowMonitorPolType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
+}
+
+// TagTagNetflowRsMonitorToRecordNetflowMonitorPolResourceModel describes the resource data model for the children without relation ships.
+type TagTagNetflowRsMonitorToRecordNetflowMonitorPolResourceModel struct {
+	Key   types.String `tfsdk:"key"`
+	Value types.String `tfsdk:"value"`
+}
+
+func getEmptyTagTagNetflowRsMonitorToRecordNetflowMonitorPolResourceModel() TagTagNetflowRsMonitorToRecordNetflowMonitorPolResourceModel {
+	return TagTagNetflowRsMonitorToRecordNetflowMonitorPolResourceModel{
+		Key:   basetypes.NewStringNull(),
+		Value: basetypes.NewStringNull(),
+	}
+}
+
+var TagTagNetflowRsMonitorToRecordNetflowMonitorPolType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
 }
 
 // TagAnnotationNetflowMonitorPolResourceModel describes the resource data model for the children without relation ships.
@@ -134,6 +257,13 @@ func getEmptyTagAnnotationNetflowMonitorPolResourceModel() TagAnnotationNetflowM
 	}
 }
 
+var TagAnnotationNetflowMonitorPolType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
+}
+
 // TagTagNetflowMonitorPolResourceModel describes the resource data model for the children without relation ships.
 type TagTagNetflowMonitorPolResourceModel struct {
 	Key   types.String `tfsdk:"key"`
@@ -145,6 +275,13 @@ func getEmptyTagTagNetflowMonitorPolResourceModel() TagTagNetflowMonitorPolResou
 		Key:   basetypes.NewStringNull(),
 		Value: basetypes.NewStringNull(),
 	}
+}
+
+var TagTagNetflowMonitorPolType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
 }
 
 type NetflowMonitorPolIdentifier struct {
@@ -469,6 +606,58 @@ func (r *NetflowMonitorPolResource) Schema(ctx context.Context, req resource.Sch
 							},
 							MarkdownDescription: `Name.`,
 						},
+						"annotations": schema.SetNestedAttribute{
+							MarkdownDescription: ``,
+							Optional:            true,
+							Computed:            true,
+							PlanModifiers: []planmodifier.Set{
+								setplanmodifier.UseStateForUnknown(),
+							},
+							NestedObject: schema.NestedAttributeObject{
+								Attributes: map[string]schema.Attribute{
+									"key": schema.StringAttribute{
+										Required: true,
+										PlanModifiers: []planmodifier.String{
+											stringplanmodifier.UseStateForUnknown(),
+										},
+										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+									},
+									"value": schema.StringAttribute{
+										Required: true,
+										PlanModifiers: []planmodifier.String{
+											stringplanmodifier.UseStateForUnknown(),
+										},
+										MarkdownDescription: `The value of the property.`,
+									},
+								},
+							},
+						},
+						"tags": schema.SetNestedAttribute{
+							MarkdownDescription: ``,
+							Optional:            true,
+							Computed:            true,
+							PlanModifiers: []planmodifier.Set{
+								setplanmodifier.UseStateForUnknown(),
+							},
+							NestedObject: schema.NestedAttributeObject{
+								Attributes: map[string]schema.Attribute{
+									"key": schema.StringAttribute{
+										Required: true,
+										PlanModifiers: []planmodifier.String{
+											stringplanmodifier.UseStateForUnknown(),
+										},
+										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+									},
+									"value": schema.StringAttribute{
+										Required: true,
+										PlanModifiers: []planmodifier.String{
+											stringplanmodifier.UseStateForUnknown(),
+										},
+										MarkdownDescription: `The value of the property.`,
+									},
+								},
+							},
+						},
 					},
 				},
 			},
@@ -495,6 +684,58 @@ func (r *NetflowMonitorPolResource) Schema(ctx context.Context, req resource.Sch
 							stringplanmodifier.UseStateForUnknown(),
 						},
 						MarkdownDescription: `Name.`,
+					},
+					"annotations": schema.SetNestedAttribute{
+						MarkdownDescription: ``,
+						Optional:            true,
+						Computed:            true,
+						PlanModifiers: []planmodifier.Set{
+							setplanmodifier.UseStateForUnknown(),
+						},
+						NestedObject: schema.NestedAttributeObject{
+							Attributes: map[string]schema.Attribute{
+								"key": schema.StringAttribute{
+									Required: true,
+									PlanModifiers: []planmodifier.String{
+										stringplanmodifier.UseStateForUnknown(),
+									},
+									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+								},
+								"value": schema.StringAttribute{
+									Required: true,
+									PlanModifiers: []planmodifier.String{
+										stringplanmodifier.UseStateForUnknown(),
+									},
+									MarkdownDescription: `The value of the property.`,
+								},
+							},
+						},
+					},
+					"tags": schema.SetNestedAttribute{
+						MarkdownDescription: ``,
+						Optional:            true,
+						Computed:            true,
+						PlanModifiers: []planmodifier.Set{
+							setplanmodifier.UseStateForUnknown(),
+						},
+						NestedObject: schema.NestedAttributeObject{
+							Attributes: map[string]schema.Attribute{
+								"key": schema.StringAttribute{
+									Required: true,
+									PlanModifiers: []planmodifier.String{
+										stringplanmodifier.UseStateForUnknown(),
+									},
+									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+								},
+								"value": schema.StringAttribute{
+									Required: true,
+									PlanModifiers: []planmodifier.String{
+										stringplanmodifier.UseStateForUnknown(),
+									},
+									MarkdownDescription: `The value of the property.`,
+								},
+							},
+						},
 					},
 				},
 			},
@@ -754,7 +995,7 @@ func (r *NetflowMonitorPolResource) ImportState(ctx context.Context, req resourc
 }
 
 func getAndSetNetflowMonitorPolAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *NetflowMonitorPolResourceModel) {
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "netflowMonitorPol,netflowRsMonitorToExporter,netflowRsMonitorToRecord,tagAnnotation,tagTag"), "GET", nil)
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "netflowMonitorPol,netflowRsMonitorToExporter,netflowRsMonitorToRecord,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag"), "GET", nil)
 
 	readData := getEmptyNetflowMonitorPolResourceModel()
 
@@ -808,7 +1049,47 @@ func getAndSetNetflowMonitorPolAttributes(ctx context.Context, diags *diag.Diagn
 								if childAttributeName == "tnNetflowExporterPolName" {
 									NetflowRsMonitorToExporterNetflowMonitorPol.TnNetflowExporterPolName = basetypes.NewStringValue(childAttributeValue.(string))
 								}
+
 							}
+							TagAnnotationNetflowRsMonitorToExporterNetflowMonitorPolList := make([]TagAnnotationNetflowRsMonitorToExporterNetflowMonitorPolResourceModel, 0)
+							TagTagNetflowRsMonitorToExporterNetflowMonitorPolList := make([]TagTagNetflowRsMonitorToExporterNetflowMonitorPolResourceModel, 0)
+							childrenOfNetflowRsMonitorToExporterNetflowMonitorPol, childrenOfNetflowRsMonitorToExporterNetflowMonitorPolExist := childClassDetails.(map[string]interface{})["children"]
+							if childrenOfNetflowRsMonitorToExporterNetflowMonitorPolExist {
+								for _, childNetflowRsMonitorToExporterNetflowMonitorPol := range childrenOfNetflowRsMonitorToExporterNetflowMonitorPol.([]interface{}) {
+									for childClassNameNetflowRsMonitorToExporterNetflowMonitorPol, childClassDetailsNetflowRsMonitorToExporterNetflowMonitorPol := range childNetflowRsMonitorToExporterNetflowMonitorPol.(map[string]interface{}) {
+										if childClassNameNetflowRsMonitorToExporterNetflowMonitorPol == "tagAnnotation" {
+											TagAnnotationNetflowRsMonitorToExporterNetflowMonitorPol := getEmptyTagAnnotationNetflowRsMonitorToExporterNetflowMonitorPolResourceModel()
+											tagAnnotationchildAttributeValue := childClassDetailsNetflowRsMonitorToExporterNetflowMonitorPol.(map[string]interface{})["attributes"].(map[string]interface{})
+											for childAttributeName, childAttributeValue := range tagAnnotationchildAttributeValue {
+												if childAttributeName == "key" {
+													TagAnnotationNetflowRsMonitorToExporterNetflowMonitorPol.Key = basetypes.NewStringValue(childAttributeValue.(string))
+												}
+												if childAttributeName == "value" {
+													TagAnnotationNetflowRsMonitorToExporterNetflowMonitorPol.Value = basetypes.NewStringValue(childAttributeValue.(string))
+												}
+											}
+											TagAnnotationNetflowRsMonitorToExporterNetflowMonitorPolList = append(TagAnnotationNetflowRsMonitorToExporterNetflowMonitorPolList, TagAnnotationNetflowRsMonitorToExporterNetflowMonitorPol)
+										}
+										if childClassNameNetflowRsMonitorToExporterNetflowMonitorPol == "tagTag" {
+											TagTagNetflowRsMonitorToExporterNetflowMonitorPol := getEmptyTagTagNetflowRsMonitorToExporterNetflowMonitorPolResourceModel()
+											tagTagchildAttributeValue := childClassDetailsNetflowRsMonitorToExporterNetflowMonitorPol.(map[string]interface{})["attributes"].(map[string]interface{})
+											for childAttributeName, childAttributeValue := range tagTagchildAttributeValue {
+												if childAttributeName == "key" {
+													TagTagNetflowRsMonitorToExporterNetflowMonitorPol.Key = basetypes.NewStringValue(childAttributeValue.(string))
+												}
+												if childAttributeName == "value" {
+													TagTagNetflowRsMonitorToExporterNetflowMonitorPol.Value = basetypes.NewStringValue(childAttributeValue.(string))
+												}
+											}
+											TagTagNetflowRsMonitorToExporterNetflowMonitorPolList = append(TagTagNetflowRsMonitorToExporterNetflowMonitorPolList, TagTagNetflowRsMonitorToExporterNetflowMonitorPol)
+										}
+									}
+								}
+							}
+							TagAnnotationNetflowRsMonitorToExporterNetflowMonitorPolSet, _ := types.SetValueFrom(ctx, TagAnnotationNetflowRsMonitorToExporterNetflowMonitorPolType, TagAnnotationNetflowRsMonitorToExporterNetflowMonitorPolList)
+							NetflowRsMonitorToExporterNetflowMonitorPol.TagAnnotation = TagAnnotationNetflowRsMonitorToExporterNetflowMonitorPolSet
+							TagTagNetflowRsMonitorToExporterNetflowMonitorPolSet, _ := types.SetValueFrom(ctx, TagTagNetflowRsMonitorToExporterNetflowMonitorPolType, TagTagNetflowRsMonitorToExporterNetflowMonitorPolList)
+							NetflowRsMonitorToExporterNetflowMonitorPol.TagTag = TagTagNetflowRsMonitorToExporterNetflowMonitorPolSet
 							NetflowRsMonitorToExporterNetflowMonitorPolList = append(NetflowRsMonitorToExporterNetflowMonitorPolList, NetflowRsMonitorToExporterNetflowMonitorPol)
 						}
 						if childClassName == "netflowRsMonitorToRecord" {
@@ -820,7 +1101,47 @@ func getAndSetNetflowMonitorPolAttributes(ctx context.Context, diags *diag.Diagn
 								if childAttributeName == "tnNetflowRecordPolName" {
 									NetflowRsMonitorToRecordNetflowMonitorPol.TnNetflowRecordPolName = basetypes.NewStringValue(childAttributeValue.(string))
 								}
+
 							}
+							TagAnnotationNetflowRsMonitorToRecordNetflowMonitorPolList := make([]TagAnnotationNetflowRsMonitorToRecordNetflowMonitorPolResourceModel, 0)
+							TagTagNetflowRsMonitorToRecordNetflowMonitorPolList := make([]TagTagNetflowRsMonitorToRecordNetflowMonitorPolResourceModel, 0)
+							childrenOfNetflowRsMonitorToRecordNetflowMonitorPol, childrenOfNetflowRsMonitorToRecordNetflowMonitorPolExist := childClassDetails.(map[string]interface{})["children"]
+							if childrenOfNetflowRsMonitorToRecordNetflowMonitorPolExist {
+								for _, childNetflowRsMonitorToRecordNetflowMonitorPol := range childrenOfNetflowRsMonitorToRecordNetflowMonitorPol.([]interface{}) {
+									for childClassNameNetflowRsMonitorToRecordNetflowMonitorPol, childClassDetailsNetflowRsMonitorToRecordNetflowMonitorPol := range childNetflowRsMonitorToRecordNetflowMonitorPol.(map[string]interface{}) {
+										if childClassNameNetflowRsMonitorToRecordNetflowMonitorPol == "tagAnnotation" {
+											TagAnnotationNetflowRsMonitorToRecordNetflowMonitorPol := getEmptyTagAnnotationNetflowRsMonitorToRecordNetflowMonitorPolResourceModel()
+											tagAnnotationchildAttributeValue := childClassDetailsNetflowRsMonitorToRecordNetflowMonitorPol.(map[string]interface{})["attributes"].(map[string]interface{})
+											for childAttributeName, childAttributeValue := range tagAnnotationchildAttributeValue {
+												if childAttributeName == "key" {
+													TagAnnotationNetflowRsMonitorToRecordNetflowMonitorPol.Key = basetypes.NewStringValue(childAttributeValue.(string))
+												}
+												if childAttributeName == "value" {
+													TagAnnotationNetflowRsMonitorToRecordNetflowMonitorPol.Value = basetypes.NewStringValue(childAttributeValue.(string))
+												}
+											}
+											TagAnnotationNetflowRsMonitorToRecordNetflowMonitorPolList = append(TagAnnotationNetflowRsMonitorToRecordNetflowMonitorPolList, TagAnnotationNetflowRsMonitorToRecordNetflowMonitorPol)
+										}
+										if childClassNameNetflowRsMonitorToRecordNetflowMonitorPol == "tagTag" {
+											TagTagNetflowRsMonitorToRecordNetflowMonitorPol := getEmptyTagTagNetflowRsMonitorToRecordNetflowMonitorPolResourceModel()
+											tagTagchildAttributeValue := childClassDetailsNetflowRsMonitorToRecordNetflowMonitorPol.(map[string]interface{})["attributes"].(map[string]interface{})
+											for childAttributeName, childAttributeValue := range tagTagchildAttributeValue {
+												if childAttributeName == "key" {
+													TagTagNetflowRsMonitorToRecordNetflowMonitorPol.Key = basetypes.NewStringValue(childAttributeValue.(string))
+												}
+												if childAttributeName == "value" {
+													TagTagNetflowRsMonitorToRecordNetflowMonitorPol.Value = basetypes.NewStringValue(childAttributeValue.(string))
+												}
+											}
+											TagTagNetflowRsMonitorToRecordNetflowMonitorPolList = append(TagTagNetflowRsMonitorToRecordNetflowMonitorPolList, TagTagNetflowRsMonitorToRecordNetflowMonitorPol)
+										}
+									}
+								}
+							}
+							TagAnnotationNetflowRsMonitorToRecordNetflowMonitorPolSet, _ := types.SetValueFrom(ctx, TagAnnotationNetflowRsMonitorToRecordNetflowMonitorPolType, TagAnnotationNetflowRsMonitorToRecordNetflowMonitorPolList)
+							NetflowRsMonitorToRecordNetflowMonitorPol.TagAnnotation = TagAnnotationNetflowRsMonitorToRecordNetflowMonitorPolSet
+							TagTagNetflowRsMonitorToRecordNetflowMonitorPolSet, _ := types.SetValueFrom(ctx, TagTagNetflowRsMonitorToRecordNetflowMonitorPolType, TagTagNetflowRsMonitorToRecordNetflowMonitorPolList)
+							NetflowRsMonitorToRecordNetflowMonitorPol.TagTag = TagTagNetflowRsMonitorToRecordNetflowMonitorPolSet
 							NetflowRsMonitorToRecordNetflowMonitorPolList = append(NetflowRsMonitorToRecordNetflowMonitorPolList, NetflowRsMonitorToRecordNetflowMonitorPol)
 						}
 						if childClassName == "tagAnnotation" {
@@ -832,6 +1153,7 @@ func getAndSetNetflowMonitorPolAttributes(ctx context.Context, diags *diag.Diagn
 								if childAttributeName == "value" {
 									TagAnnotationNetflowMonitorPol.Value = basetypes.NewStringValue(childAttributeValue.(string))
 								}
+
 							}
 							TagAnnotationNetflowMonitorPolList = append(TagAnnotationNetflowMonitorPolList, TagAnnotationNetflowMonitorPol)
 						}
@@ -844,6 +1166,7 @@ func getAndSetNetflowMonitorPolAttributes(ctx context.Context, diags *diag.Diagn
 								if childAttributeName == "value" {
 									TagTagNetflowMonitorPol.Value = basetypes.NewStringValue(childAttributeValue.(string))
 								}
+
 							}
 							TagTagNetflowMonitorPolList = append(TagTagNetflowMonitorPolList, TagTagNetflowMonitorPol)
 						}
@@ -900,27 +1223,102 @@ func setNetflowMonitorPolId(ctx context.Context, data *NetflowMonitorPolResource
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
 
-func getNetflowMonitorPolNetflowRsMonitorToExporterChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *NetflowMonitorPolResourceModel, netflowRsMonitorToExporterPlan, netflowRsMonitorToExporterState []NetflowRsMonitorToExporterNetflowMonitorPolResourceModel) []map[string]interface{} {
-
+func getNetflowMonitorPolNetflowRsMonitorToExporterChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *NetflowMonitorPolResourceModel, netflowRsMonitorToExporterNetflowMonitorPolPlan, netflowRsMonitorToExporterNetflowMonitorPolState []NetflowRsMonitorToExporterNetflowMonitorPolResourceModel) []map[string]interface{} {
 	childPayloads := []map[string]interface{}{}
-	if !data.NetflowRsMonitorToExporter.IsUnknown() {
+	if !data.NetflowRsMonitorToExporter.IsNull() && !data.NetflowRsMonitorToExporter.IsUnknown() {
 		netflowRsMonitorToExporterIdentifiers := []NetflowRsMonitorToExporterIdentifier{}
-		for _, netflowRsMonitorToExporter := range netflowRsMonitorToExporterPlan {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !netflowRsMonitorToExporter.Annotation.IsUnknown() && !netflowRsMonitorToExporter.Annotation.IsNull() {
-				childMap["attributes"]["annotation"] = netflowRsMonitorToExporter.Annotation.ValueString()
+		for _, netflowRsMonitorToExporterNetflowMonitorPol := range netflowRsMonitorToExporterNetflowMonitorPolPlan {
+			NetflowRsMonitorToExporterNetflowMonitorPolChildren := make([]map[string]interface{}, 0)
+			childMap := NewAciObject()
+			if !netflowRsMonitorToExporterNetflowMonitorPol.Annotation.IsNull() && !netflowRsMonitorToExporterNetflowMonitorPol.Annotation.IsUnknown() {
+				childMap.Attributes["annotation"] = netflowRsMonitorToExporterNetflowMonitorPol.Annotation.ValueString()
 			} else {
-				childMap["attributes"]["annotation"] = globalAnnotation
+				childMap.Attributes["annotation"] = globalAnnotation
 			}
-			if !netflowRsMonitorToExporter.TnNetflowExporterPolName.IsUnknown() && !netflowRsMonitorToExporter.TnNetflowExporterPolName.IsNull() {
-				childMap["attributes"]["tnNetflowExporterPolName"] = netflowRsMonitorToExporter.TnNetflowExporterPolName.ValueString()
+			if !netflowRsMonitorToExporterNetflowMonitorPol.TnNetflowExporterPolName.IsNull() && !netflowRsMonitorToExporterNetflowMonitorPol.TnNetflowExporterPolName.IsUnknown() {
+				childMap.Attributes["tnNetflowExporterPolName"] = netflowRsMonitorToExporterNetflowMonitorPol.TnNetflowExporterPolName.ValueString()
 			}
+
+			var tagAnnotationNetflowRsMonitorToExporterNetflowMonitorPolPlan, tagAnnotationNetflowRsMonitorToExporterNetflowMonitorPolState []TagAnnotationNetflowRsMonitorToExporterNetflowMonitorPolResourceModel
+			netflowRsMonitorToExporterNetflowMonitorPol.TagAnnotation.ElementsAs(ctx, &tagAnnotationNetflowRsMonitorToExporterNetflowMonitorPolPlan, false)
+			for _, tagAnnotationNetflowRsMonitorToExporterNetflowMonitorPolstate := range netflowRsMonitorToExporterNetflowMonitorPolState {
+				tagAnnotationNetflowRsMonitorToExporterNetflowMonitorPolstate.TagAnnotation.ElementsAs(ctx, &tagAnnotationNetflowRsMonitorToExporterNetflowMonitorPolState, false)
+			}
+			if !netflowRsMonitorToExporterNetflowMonitorPol.TagAnnotation.IsNull() && !netflowRsMonitorToExporterNetflowMonitorPol.TagAnnotation.IsUnknown() {
+				tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
+				for _, tagAnnotationNetflowRsMonitorToExporterNetflowMonitorPol := range tagAnnotationNetflowRsMonitorToExporterNetflowMonitorPolPlan {
+					tagAnnotationNetflowRsMonitorToExporterNetflowMonitorPolChildMap := NewAciObject()
+					if !tagAnnotationNetflowRsMonitorToExporterNetflowMonitorPol.Key.IsNull() && !tagAnnotationNetflowRsMonitorToExporterNetflowMonitorPol.Key.IsUnknown() {
+						tagAnnotationNetflowRsMonitorToExporterNetflowMonitorPolChildMap.Attributes["key"] = tagAnnotationNetflowRsMonitorToExporterNetflowMonitorPol.Key.ValueString()
+					}
+					if !tagAnnotationNetflowRsMonitorToExporterNetflowMonitorPol.Value.IsNull() && !tagAnnotationNetflowRsMonitorToExporterNetflowMonitorPol.Value.IsUnknown() {
+						tagAnnotationNetflowRsMonitorToExporterNetflowMonitorPolChildMap.Attributes["value"] = tagAnnotationNetflowRsMonitorToExporterNetflowMonitorPol.Value.ValueString()
+					}
+					NetflowRsMonitorToExporterNetflowMonitorPolChildren = append(NetflowRsMonitorToExporterNetflowMonitorPolChildren, map[string]interface{}{"tagAnnotation": tagAnnotationNetflowRsMonitorToExporterNetflowMonitorPolChildMap})
+					tagAnnotationIdentifier := TagAnnotationIdentifier{}
+					tagAnnotationIdentifier.Key = tagAnnotationNetflowRsMonitorToExporterNetflowMonitorPol.Key
+					tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
+				}
+				for _, tagAnnotationNetflowRsMonitorToExporterNetflowMonitorPol := range tagAnnotationNetflowRsMonitorToExporterNetflowMonitorPolState {
+					delete := true
+					for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
+						if tagAnnotationIdentifier.Key == tagAnnotationNetflowRsMonitorToExporterNetflowMonitorPol.Key {
+							delete = false
+							break
+						}
+					}
+					if delete {
+						tagAnnotationNetflowRsMonitorToExporterNetflowMonitorPolChildMapForDelete := NewAciObject()
+						tagAnnotationNetflowRsMonitorToExporterNetflowMonitorPolChildMapForDelete.Attributes["status"] = "deleted"
+						tagAnnotationNetflowRsMonitorToExporterNetflowMonitorPolChildMapForDelete.Attributes["key"] = tagAnnotationNetflowRsMonitorToExporterNetflowMonitorPol.Key.ValueString()
+						NetflowRsMonitorToExporterNetflowMonitorPolChildren = append(NetflowRsMonitorToExporterNetflowMonitorPolChildren, map[string]interface{}{"tagAnnotation": tagAnnotationNetflowRsMonitorToExporterNetflowMonitorPolChildMapForDelete})
+					}
+				}
+			}
+
+			var tagTagNetflowRsMonitorToExporterNetflowMonitorPolPlan, tagTagNetflowRsMonitorToExporterNetflowMonitorPolState []TagTagNetflowRsMonitorToExporterNetflowMonitorPolResourceModel
+			netflowRsMonitorToExporterNetflowMonitorPol.TagTag.ElementsAs(ctx, &tagTagNetflowRsMonitorToExporterNetflowMonitorPolPlan, false)
+			for _, tagTagNetflowRsMonitorToExporterNetflowMonitorPolstate := range netflowRsMonitorToExporterNetflowMonitorPolState {
+				tagTagNetflowRsMonitorToExporterNetflowMonitorPolstate.TagTag.ElementsAs(ctx, &tagTagNetflowRsMonitorToExporterNetflowMonitorPolState, false)
+			}
+			if !netflowRsMonitorToExporterNetflowMonitorPol.TagTag.IsNull() && !netflowRsMonitorToExporterNetflowMonitorPol.TagTag.IsUnknown() {
+				tagTagIdentifiers := []TagTagIdentifier{}
+				for _, tagTagNetflowRsMonitorToExporterNetflowMonitorPol := range tagTagNetflowRsMonitorToExporterNetflowMonitorPolPlan {
+					tagTagNetflowRsMonitorToExporterNetflowMonitorPolChildMap := NewAciObject()
+					if !tagTagNetflowRsMonitorToExporterNetflowMonitorPol.Key.IsNull() && !tagTagNetflowRsMonitorToExporterNetflowMonitorPol.Key.IsUnknown() {
+						tagTagNetflowRsMonitorToExporterNetflowMonitorPolChildMap.Attributes["key"] = tagTagNetflowRsMonitorToExporterNetflowMonitorPol.Key.ValueString()
+					}
+					if !tagTagNetflowRsMonitorToExporterNetflowMonitorPol.Value.IsNull() && !tagTagNetflowRsMonitorToExporterNetflowMonitorPol.Value.IsUnknown() {
+						tagTagNetflowRsMonitorToExporterNetflowMonitorPolChildMap.Attributes["value"] = tagTagNetflowRsMonitorToExporterNetflowMonitorPol.Value.ValueString()
+					}
+					NetflowRsMonitorToExporterNetflowMonitorPolChildren = append(NetflowRsMonitorToExporterNetflowMonitorPolChildren, map[string]interface{}{"tagTag": tagTagNetflowRsMonitorToExporterNetflowMonitorPolChildMap})
+					tagTagIdentifier := TagTagIdentifier{}
+					tagTagIdentifier.Key = tagTagNetflowRsMonitorToExporterNetflowMonitorPol.Key
+					tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
+				}
+				for _, tagTagNetflowRsMonitorToExporterNetflowMonitorPol := range tagTagNetflowRsMonitorToExporterNetflowMonitorPolState {
+					delete := true
+					for _, tagTagIdentifier := range tagTagIdentifiers {
+						if tagTagIdentifier.Key == tagTagNetflowRsMonitorToExporterNetflowMonitorPol.Key {
+							delete = false
+							break
+						}
+					}
+					if delete {
+						tagTagNetflowRsMonitorToExporterNetflowMonitorPolChildMapForDelete := NewAciObject()
+						tagTagNetflowRsMonitorToExporterNetflowMonitorPolChildMapForDelete.Attributes["status"] = "deleted"
+						tagTagNetflowRsMonitorToExporterNetflowMonitorPolChildMapForDelete.Attributes["key"] = tagTagNetflowRsMonitorToExporterNetflowMonitorPol.Key.ValueString()
+						NetflowRsMonitorToExporterNetflowMonitorPolChildren = append(NetflowRsMonitorToExporterNetflowMonitorPolChildren, map[string]interface{}{"tagTag": tagTagNetflowRsMonitorToExporterNetflowMonitorPolChildMapForDelete})
+					}
+				}
+			}
+			childMap.Children = NetflowRsMonitorToExporterNetflowMonitorPolChildren
 			childPayloads = append(childPayloads, map[string]interface{}{"netflowRsMonitorToExporter": childMap})
 			netflowRsMonitorToExporterIdentifier := NetflowRsMonitorToExporterIdentifier{}
-			netflowRsMonitorToExporterIdentifier.TnNetflowExporterPolName = netflowRsMonitorToExporter.TnNetflowExporterPolName
+			netflowRsMonitorToExporterIdentifier.TnNetflowExporterPolName = netflowRsMonitorToExporterNetflowMonitorPol.TnNetflowExporterPolName
 			netflowRsMonitorToExporterIdentifiers = append(netflowRsMonitorToExporterIdentifiers, netflowRsMonitorToExporterIdentifier)
 		}
-		for _, netflowRsMonitorToExporter := range netflowRsMonitorToExporterState {
+		for _, netflowRsMonitorToExporter := range netflowRsMonitorToExporterNetflowMonitorPolState {
 			delete := true
 			for _, netflowRsMonitorToExporterIdentifier := range netflowRsMonitorToExporterIdentifiers {
 				if netflowRsMonitorToExporterIdentifier.TnNetflowExporterPolName == netflowRsMonitorToExporter.TnNetflowExporterPolName {
@@ -929,10 +1327,10 @@ func getNetflowMonitorPolNetflowRsMonitorToExporterChildPayloads(ctx context.Con
 				}
 			}
 			if delete {
-				childMap := map[string]map[string]interface{}{"attributes": {}}
-				childMap["attributes"]["status"] = "deleted"
-				childMap["attributes"]["tnNetflowExporterPolName"] = netflowRsMonitorToExporter.TnNetflowExporterPolName.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"netflowRsMonitorToExporter": childMap})
+				netflowRsMonitorToExporterChildMapForDelete := NewAciObject()
+				netflowRsMonitorToExporterChildMapForDelete.Attributes["status"] = "deleted"
+				netflowRsMonitorToExporterChildMapForDelete.Attributes["tnNetflowExporterPolName"] = netflowRsMonitorToExporter.TnNetflowExporterPolName.ValueString()
+				childPayloads = append(childPayloads, map[string]interface{}{"netflowRsMonitorToExporter": netflowRsMonitorToExporterChildMapForDelete})
 			}
 		}
 	} else {
@@ -941,21 +1339,97 @@ func getNetflowMonitorPolNetflowRsMonitorToExporterChildPayloads(ctx context.Con
 
 	return childPayloads
 }
-func getNetflowMonitorPolNetflowRsMonitorToRecordChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *NetflowMonitorPolResourceModel, netflowRsMonitorToRecordPlan, netflowRsMonitorToRecordState NetflowRsMonitorToRecordNetflowMonitorPolResourceModel) []map[string]interface{} {
 
+func getNetflowMonitorPolNetflowRsMonitorToRecordChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *NetflowMonitorPolResourceModel, netflowRsMonitorToRecordNetflowMonitorPolPlan, netflowRsMonitorToRecordNetflowMonitorPolState NetflowRsMonitorToRecordNetflowMonitorPolResourceModel) []map[string]interface{} {
 	childPayloads := []map[string]interface{}{}
-	if !data.NetflowRsMonitorToRecord.IsUnknown() {
-		childMap := map[string]map[string]interface{}{"attributes": {}}
+	if !data.NetflowRsMonitorToRecord.IsNull() && !data.NetflowRsMonitorToRecord.IsUnknown() {
+		NetflowRsMonitorToRecordNetflowMonitorPolChildren := make([]map[string]interface{}, 0)
+		childMap := NewAciObject()
 		if !IsEmptySingleNestedAttribute(data.NetflowRsMonitorToRecord.Attributes()) {
-			if !netflowRsMonitorToRecordPlan.Annotation.IsUnknown() && !netflowRsMonitorToRecordPlan.Annotation.IsNull() {
-				childMap["attributes"]["annotation"] = netflowRsMonitorToRecordPlan.Annotation.ValueString()
+			if !netflowRsMonitorToRecordNetflowMonitorPolPlan.Annotation.IsUnknown() && !netflowRsMonitorToRecordNetflowMonitorPolPlan.Annotation.IsNull() {
+				childMap.Attributes["annotation"] = netflowRsMonitorToRecordNetflowMonitorPolPlan.Annotation.ValueString()
 			} else {
-				childMap["attributes"]["annotation"] = globalAnnotation
+				childMap.Attributes["annotation"] = globalAnnotation
 			}
-			if !netflowRsMonitorToRecordPlan.TnNetflowRecordPolName.IsUnknown() && !netflowRsMonitorToRecordPlan.TnNetflowRecordPolName.IsNull() {
-				childMap["attributes"]["tnNetflowRecordPolName"] = netflowRsMonitorToRecordPlan.TnNetflowRecordPolName.ValueString()
+			if !netflowRsMonitorToRecordNetflowMonitorPolPlan.TnNetflowRecordPolName.IsUnknown() && !netflowRsMonitorToRecordNetflowMonitorPolPlan.TnNetflowRecordPolName.IsNull() {
+				childMap.Attributes["tnNetflowRecordPolName"] = netflowRsMonitorToRecordNetflowMonitorPolPlan.TnNetflowRecordPolName.ValueString()
 			}
 		}
+
+		var tagAnnotationNetflowRsMonitorToRecordNetflowMonitorPolPlan, tagAnnotationNetflowRsMonitorToRecordNetflowMonitorPolState []TagAnnotationNetflowRsMonitorToRecordNetflowMonitorPolResourceModel
+		netflowRsMonitorToRecordNetflowMonitorPolPlan.TagAnnotation.ElementsAs(ctx, &tagAnnotationNetflowRsMonitorToRecordNetflowMonitorPolPlan, false)
+		if !netflowRsMonitorToRecordNetflowMonitorPolState.TagAnnotation.IsNull() {
+			netflowRsMonitorToRecordNetflowMonitorPolState.TagAnnotation.ElementsAs(ctx, &tagAnnotationNetflowRsMonitorToRecordNetflowMonitorPolState, false)
+		}
+		if !netflowRsMonitorToRecordNetflowMonitorPolPlan.TagAnnotation.IsNull() && !netflowRsMonitorToRecordNetflowMonitorPolPlan.TagAnnotation.IsUnknown() {
+			tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
+			for _, tagAnnotationNetflowRsMonitorToRecordNetflowMonitorPol := range tagAnnotationNetflowRsMonitorToRecordNetflowMonitorPolPlan {
+				tagAnnotationNetflowRsMonitorToRecordNetflowMonitorPolChildMap := NewAciObject()
+				if !tagAnnotationNetflowRsMonitorToRecordNetflowMonitorPol.Key.IsNull() && !tagAnnotationNetflowRsMonitorToRecordNetflowMonitorPol.Key.IsUnknown() {
+					tagAnnotationNetflowRsMonitorToRecordNetflowMonitorPolChildMap.Attributes["key"] = tagAnnotationNetflowRsMonitorToRecordNetflowMonitorPol.Key.ValueString()
+				}
+				if !tagAnnotationNetflowRsMonitorToRecordNetflowMonitorPol.Value.IsNull() && !tagAnnotationNetflowRsMonitorToRecordNetflowMonitorPol.Value.IsUnknown() {
+					tagAnnotationNetflowRsMonitorToRecordNetflowMonitorPolChildMap.Attributes["value"] = tagAnnotationNetflowRsMonitorToRecordNetflowMonitorPol.Value.ValueString()
+				}
+				NetflowRsMonitorToRecordNetflowMonitorPolChildren = append(NetflowRsMonitorToRecordNetflowMonitorPolChildren, map[string]interface{}{"tagAnnotation": tagAnnotationNetflowRsMonitorToRecordNetflowMonitorPolChildMap})
+				tagAnnotationIdentifier := TagAnnotationIdentifier{}
+				tagAnnotationIdentifier.Key = tagAnnotationNetflowRsMonitorToRecordNetflowMonitorPol.Key
+				tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
+			}
+			for _, tagAnnotationNetflowRsMonitorToRecordNetflowMonitorPol := range tagAnnotationNetflowRsMonitorToRecordNetflowMonitorPolState {
+				delete := true
+				for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
+					if tagAnnotationIdentifier.Key == tagAnnotationNetflowRsMonitorToRecordNetflowMonitorPol.Key {
+						delete = false
+						break
+					}
+				}
+				if delete {
+					tagAnnotationNetflowRsMonitorToRecordNetflowMonitorPolChildMapForDelete := NewAciObject()
+					tagAnnotationNetflowRsMonitorToRecordNetflowMonitorPolChildMapForDelete.Attributes["status"] = "deleted"
+					tagAnnotationNetflowRsMonitorToRecordNetflowMonitorPolChildMapForDelete.Attributes["key"] = tagAnnotationNetflowRsMonitorToRecordNetflowMonitorPol.Key.ValueString()
+					NetflowRsMonitorToRecordNetflowMonitorPolChildren = append(NetflowRsMonitorToRecordNetflowMonitorPolChildren, map[string]interface{}{"tagAnnotation": tagAnnotationNetflowRsMonitorToRecordNetflowMonitorPolChildMapForDelete})
+				}
+			}
+		}
+
+		var tagTagNetflowRsMonitorToRecordNetflowMonitorPolPlan, tagTagNetflowRsMonitorToRecordNetflowMonitorPolState []TagTagNetflowRsMonitorToRecordNetflowMonitorPolResourceModel
+		netflowRsMonitorToRecordNetflowMonitorPolPlan.TagTag.ElementsAs(ctx, &tagTagNetflowRsMonitorToRecordNetflowMonitorPolPlan, false)
+		if !netflowRsMonitorToRecordNetflowMonitorPolState.TagTag.IsNull() {
+			netflowRsMonitorToRecordNetflowMonitorPolState.TagTag.ElementsAs(ctx, &tagTagNetflowRsMonitorToRecordNetflowMonitorPolState, false)
+		}
+		if !netflowRsMonitorToRecordNetflowMonitorPolPlan.TagTag.IsNull() && !netflowRsMonitorToRecordNetflowMonitorPolPlan.TagTag.IsUnknown() {
+			tagTagIdentifiers := []TagTagIdentifier{}
+			for _, tagTagNetflowRsMonitorToRecordNetflowMonitorPol := range tagTagNetflowRsMonitorToRecordNetflowMonitorPolPlan {
+				tagTagNetflowRsMonitorToRecordNetflowMonitorPolChildMap := NewAciObject()
+				if !tagTagNetflowRsMonitorToRecordNetflowMonitorPol.Key.IsNull() && !tagTagNetflowRsMonitorToRecordNetflowMonitorPol.Key.IsUnknown() {
+					tagTagNetflowRsMonitorToRecordNetflowMonitorPolChildMap.Attributes["key"] = tagTagNetflowRsMonitorToRecordNetflowMonitorPol.Key.ValueString()
+				}
+				if !tagTagNetflowRsMonitorToRecordNetflowMonitorPol.Value.IsNull() && !tagTagNetflowRsMonitorToRecordNetflowMonitorPol.Value.IsUnknown() {
+					tagTagNetflowRsMonitorToRecordNetflowMonitorPolChildMap.Attributes["value"] = tagTagNetflowRsMonitorToRecordNetflowMonitorPol.Value.ValueString()
+				}
+				NetflowRsMonitorToRecordNetflowMonitorPolChildren = append(NetflowRsMonitorToRecordNetflowMonitorPolChildren, map[string]interface{}{"tagTag": tagTagNetflowRsMonitorToRecordNetflowMonitorPolChildMap})
+				tagTagIdentifier := TagTagIdentifier{}
+				tagTagIdentifier.Key = tagTagNetflowRsMonitorToRecordNetflowMonitorPol.Key
+				tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
+			}
+			for _, tagTagNetflowRsMonitorToRecordNetflowMonitorPol := range tagTagNetflowRsMonitorToRecordNetflowMonitorPolState {
+				delete := true
+				for _, tagTagIdentifier := range tagTagIdentifiers {
+					if tagTagIdentifier.Key == tagTagNetflowRsMonitorToRecordNetflowMonitorPol.Key {
+						delete = false
+						break
+					}
+				}
+				if delete {
+					tagTagNetflowRsMonitorToRecordNetflowMonitorPolChildMapForDelete := NewAciObject()
+					tagTagNetflowRsMonitorToRecordNetflowMonitorPolChildMapForDelete.Attributes["status"] = "deleted"
+					tagTagNetflowRsMonitorToRecordNetflowMonitorPolChildMapForDelete.Attributes["key"] = tagTagNetflowRsMonitorToRecordNetflowMonitorPol.Key.ValueString()
+					NetflowRsMonitorToRecordNetflowMonitorPolChildren = append(NetflowRsMonitorToRecordNetflowMonitorPolChildren, map[string]interface{}{"tagTag": tagTagNetflowRsMonitorToRecordNetflowMonitorPolChildMapForDelete})
+				}
+			}
+		}
+		childMap.Children = NetflowRsMonitorToRecordNetflowMonitorPolChildren
 		childPayloads = append(childPayloads, map[string]interface{}{"netflowRsMonitorToRecord": childMap})
 	} else {
 		NetflowRsMonitorToRecordObject, _ := types.ObjectValueFrom(ctx, NetflowRsMonitorToRecordNetflowMonitorPolType, getEmptyNetflowRsMonitorToRecordNetflowMonitorPolResourceModel())
@@ -964,25 +1438,25 @@ func getNetflowMonitorPolNetflowRsMonitorToRecordChildPayloads(ctx context.Conte
 
 	return childPayloads
 }
-func getNetflowMonitorPolTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *NetflowMonitorPolResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationNetflowMonitorPolResourceModel) []map[string]interface{} {
 
+func getNetflowMonitorPolTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *NetflowMonitorPolResourceModel, tagAnnotationNetflowMonitorPolPlan, tagAnnotationNetflowMonitorPolState []TagAnnotationNetflowMonitorPolResourceModel) []map[string]interface{} {
 	childPayloads := []map[string]interface{}{}
-	if !data.TagAnnotation.IsUnknown() {
+	if !data.TagAnnotation.IsNull() && !data.TagAnnotation.IsUnknown() {
 		tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
-		for _, tagAnnotation := range tagAnnotationPlan {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagAnnotation.Key.IsUnknown() && !tagAnnotation.Key.IsNull() {
-				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
+		for _, tagAnnotationNetflowMonitorPol := range tagAnnotationNetflowMonitorPolPlan {
+			childMap := NewAciObject()
+			if !tagAnnotationNetflowMonitorPol.Key.IsNull() && !tagAnnotationNetflowMonitorPol.Key.IsUnknown() {
+				childMap.Attributes["key"] = tagAnnotationNetflowMonitorPol.Key.ValueString()
 			}
-			if !tagAnnotation.Value.IsUnknown() && !tagAnnotation.Value.IsNull() {
-				childMap["attributes"]["value"] = tagAnnotation.Value.ValueString()
+			if !tagAnnotationNetflowMonitorPol.Value.IsNull() && !tagAnnotationNetflowMonitorPol.Value.IsUnknown() {
+				childMap.Attributes["value"] = tagAnnotationNetflowMonitorPol.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
 			tagAnnotationIdentifier := TagAnnotationIdentifier{}
-			tagAnnotationIdentifier.Key = tagAnnotation.Key
+			tagAnnotationIdentifier.Key = tagAnnotationNetflowMonitorPol.Key
 			tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
 		}
-		for _, tagAnnotation := range tagAnnotationState {
+		for _, tagAnnotation := range tagAnnotationNetflowMonitorPolState {
 			delete := true
 			for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
 				if tagAnnotationIdentifier.Key == tagAnnotation.Key {
@@ -991,10 +1465,10 @@ func getNetflowMonitorPolTagAnnotationChildPayloads(ctx context.Context, diags *
 				}
 			}
 			if delete {
-				childMap := map[string]map[string]interface{}{"attributes": {}}
-				childMap["attributes"]["status"] = "deleted"
-				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
+				tagAnnotationChildMapForDelete := NewAciObject()
+				tagAnnotationChildMapForDelete.Attributes["status"] = "deleted"
+				tagAnnotationChildMapForDelete.Attributes["key"] = tagAnnotation.Key.ValueString()
+				childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": tagAnnotationChildMapForDelete})
 			}
 		}
 	} else {
@@ -1003,25 +1477,25 @@ func getNetflowMonitorPolTagAnnotationChildPayloads(ctx context.Context, diags *
 
 	return childPayloads
 }
-func getNetflowMonitorPolTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *NetflowMonitorPolResourceModel, tagTagPlan, tagTagState []TagTagNetflowMonitorPolResourceModel) []map[string]interface{} {
 
+func getNetflowMonitorPolTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *NetflowMonitorPolResourceModel, tagTagNetflowMonitorPolPlan, tagTagNetflowMonitorPolState []TagTagNetflowMonitorPolResourceModel) []map[string]interface{} {
 	childPayloads := []map[string]interface{}{}
-	if !data.TagTag.IsUnknown() {
+	if !data.TagTag.IsNull() && !data.TagTag.IsUnknown() {
 		tagTagIdentifiers := []TagTagIdentifier{}
-		for _, tagTag := range tagTagPlan {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagTag.Key.IsUnknown() && !tagTag.Key.IsNull() {
-				childMap["attributes"]["key"] = tagTag.Key.ValueString()
+		for _, tagTagNetflowMonitorPol := range tagTagNetflowMonitorPolPlan {
+			childMap := NewAciObject()
+			if !tagTagNetflowMonitorPol.Key.IsNull() && !tagTagNetflowMonitorPol.Key.IsUnknown() {
+				childMap.Attributes["key"] = tagTagNetflowMonitorPol.Key.ValueString()
 			}
-			if !tagTag.Value.IsUnknown() && !tagTag.Value.IsNull() {
-				childMap["attributes"]["value"] = tagTag.Value.ValueString()
+			if !tagTagNetflowMonitorPol.Value.IsNull() && !tagTagNetflowMonitorPol.Value.IsUnknown() {
+				childMap.Attributes["value"] = tagTagNetflowMonitorPol.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})
 			tagTagIdentifier := TagTagIdentifier{}
-			tagTagIdentifier.Key = tagTag.Key
+			tagTagIdentifier.Key = tagTagNetflowMonitorPol.Key
 			tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
 		}
-		for _, tagTag := range tagTagState {
+		for _, tagTag := range tagTagNetflowMonitorPolState {
 			delete := true
 			for _, tagTagIdentifier := range tagTagIdentifiers {
 				if tagTagIdentifier.Key == tagTag.Key {
@@ -1030,10 +1504,10 @@ func getNetflowMonitorPolTagTagChildPayloads(ctx context.Context, diags *diag.Di
 				}
 			}
 			if delete {
-				childMap := map[string]map[string]interface{}{"attributes": {}}
-				childMap["attributes"]["status"] = "deleted"
-				childMap["attributes"]["key"] = tagTag.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})
+				tagTagChildMapForDelete := NewAciObject()
+				tagTagChildMapForDelete.Attributes["status"] = "deleted"
+				tagTagChildMapForDelete.Attributes["key"] = tagTag.Key.ValueString()
+				childPayloads = append(childPayloads, map[string]interface{}{"tagTag": tagTagChildMapForDelete})
 			}
 		}
 	} else {

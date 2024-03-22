@@ -12,6 +12,18 @@ resource "aci_vrf_fallback_route_group" "full_example_vrf" {
       name            = "name_1"
       name_alias      = "name_alias_1"
       fallback_member = "2.2.2.2"
+      annotations = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
+      tags = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
     }
   ]
   vrf_fallback_route = {
@@ -20,6 +32,18 @@ resource "aci_vrf_fallback_route_group" "full_example_vrf" {
     prefix_address = "2.2.2.2/24"
     name           = "name_1"
     name_alias     = "name_alias_1"
+    annotations = [
+      {
+        key   = "key_0"
+        value = "value_1"
+      }
+    ]
+    tags = [
+      {
+        key   = "key_0"
+        value = "value_1"
+      }
+    ]
   }
   annotations = [
     {

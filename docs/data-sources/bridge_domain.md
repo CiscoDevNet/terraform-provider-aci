@@ -75,74 +75,137 @@ data "aci_bridge_domain" "example_tenant" {
 * `l3_unknown_multicast_flooding` (unkMcastAct) - (string) The forwarding method for unknown layer 3 multicast destinations.
 * `ipv6_l3_unknown_multicast_flooding` (v6unkMcastAct) - (string) The forwarding method for unknown IPv6 multicast destinations.
 * `virtual_mac_address` (vmac) - (string) The virtual MAC address of the Bridge Domain object. This is used when the the BD/SVI is extended to multiple sites using a L2 Outside.
-
 * `legacy_mode` - (map) A map of Legacy Mode (ACI object [fvAccP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvAccP/overview)).
-  * `annotation` (annotation) - (string) The annotation of the Legacy Mode object.
-  * `description` (descr) - (string) The description of the Legacy Mode object.
-  * `encapsulation` (encap) - (string) The VLAN or VXLAN encapsulation of the Legacy Mode object.
-  * `name` (name) - (string) The name of the Legacy Mode object.
-  * `name_alias` (nameAlias) - (string) The name alias of the Legacy Mode object.
-  * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
-  * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
-
+    * `annotation` (annotation) - (string) The annotation of the Legacy Mode object.
+    * `description` (descr) - (string) The description of the Legacy Mode object.
+    * `encapsulation` (encap) - (string) The VLAN or VXLAN encapsulation of the Legacy Mode object.
+    * `name` (name) - (string) The name of the Legacy Mode object.
+    * `name_alias` (nameAlias) - (string) The name alias of the Legacy Mode object.
+    * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
+    * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
 * `rogue_coop_exceptions` - (list) A list of Rogue Coop Exceptions (ACI object [fvRogueExceptionMac](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRogueExceptionMac/overview)). This attribute is supported in ACI versions: 5.2(3e) and later.
-  * `annotation` (annotation) - (string) The annotation of the Rogue Coop Exception object.
-  * `description` (descr) - (string) The description of the Rogue Coop Exception object.
-  * `mac` (mac) - (string) The MAC address of the Rogue Coop Exception object.
-  * `name` (name) - (string) The name of the Rogue Coop Exception object.
-  * `name_alias` (nameAlias) - (string) The name alias of the Rogue Coop Exception object.
-
+    * `annotation` (annotation) - (string) The annotation of the Rogue Coop Exception object.
+    * `description` (descr) - (string) The description of the Rogue Coop Exception object.
+    * `mac` (mac) - (string) The MAC address of the Rogue Coop Exception object.
+    * `name` (name) - (string) The name of the Rogue Coop Exception object.
+    * `name_alias` (nameAlias) - (string) The name alias of the Rogue Coop Exception object.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
 * `relation_to_monitor_policy` - (map) A map of Relation From Bridge Domain To Monitoring Policy (ACI object [fvRsABDPolMonPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsABDPolMonPol/overview)) pointing to Monitoring Policy (ACI Object [monEPGPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/monEPGPol/overview)).
-  * `annotation` (annotation) - (string) The annotation of the Relation From Bridge Domain To Monitoring Policy object.
-  * `monitoring_policy_name` (tnMonEPGPolName) - (string) The name of the Monitoring Policy object.
-
+    * `annotation` (annotation) - (string) The annotation of the Relation From Bridge Domain To Monitoring Policy object.
+    * `monitoring_policy_name` (tnMonEPGPolName) - (string) The name of the Monitoring Policy object.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
 * `relation_to_first_hop_security_policy` - (map) A map of Relation From Bridge Domain To First Hop Security Policy (ACI object [fvRsBDToFhs](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsBDToFhs/overview)) pointing to First Hop Security Policy (ACI Object [fhsBDPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fhsBDPol/overview)). This attribute is supported in ACI versions: 3.0(1k) and later.
-  * `annotation` (annotation) - (string) The annotation of the Relation From Bridge Domain To First Hop Security Policy object.
-  * `first_hop_security_policy_name` (tnFhsBDPolName) - (string) The name of the First Hop Security Policy object.
-
+    * `annotation` (annotation) - (string) The annotation of the Relation From Bridge Domain To First Hop Security Policy object.
+    * `first_hop_security_policy_name` (tnFhsBDPolName) - (string) The name of the First Hop Security Policy object.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
 * `relation_to_neighbor_discovery_interface_policy` - (map) A map of Relation From Bridge Domain To Neighbor Discovery Interface Policy (ACI object [fvRsBDToNdP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsBDToNdP/overview)) pointing to Neighbor Discovery Interface Policy (ACI Object [ndIfPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/ndIfPol/overview)). This attribute is supported in ACI versions: 1.1(1j) and later.
-  * `annotation` (annotation) - (string) The annotation of the Relation From Bridge Domain To Neighbor Discovery Interface Policy object.
-  * `neighbor_discovery_interface_policy_name` (tnNdIfPolName) - (string) The name of the Neighbor Discovery Interface Policy object.
-
+    * `annotation` (annotation) - (string) The annotation of the Relation From Bridge Domain To Neighbor Discovery Interface Policy object.
+    * `neighbor_discovery_interface_policy_name` (tnNdIfPolName) - (string) The name of the Neighbor Discovery Interface Policy object.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
 * `relation_to_netflow_monitor_policies` - (list) A list of Relation From Bridge Domain To NetFlow Monitor Policys (ACI object [fvRsBDToNetflowMonitorPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsBDToNetflowMonitorPol/overview)) pointing to NetFlow Monitor Policy (ACI Object [netflowMonitorPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowMonitorPol/overview)). This attribute is supported in ACI versions: 2.2(1k) and later.
-  * `annotation` (annotation) - (string) The annotation of the Relation From Bridge Domain To NetFlow Monitor Policy object.
-  * `filter_type` (fltType) - (string) The filter type of the NetFlow Monitor Policy object.
-  * `netflow_monitor_policy_name` (tnNetflowMonitorPolName) - (string) The name of the NetFlow Monitor Policy object.
-
+    * `annotation` (annotation) - (string) The annotation of the Relation From Bridge Domain To NetFlow Monitor Policy object.
+    * `filter_type` (fltType) - (string) The filter type of the NetFlow Monitor Policy object.
+    * `netflow_monitor_policy_name` (tnNetflowMonitorPolName) - (string) The name of the NetFlow Monitor Policy object.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
 * `relation_to_l3_outsides` - (list) A list of Relation From Bridge Domain To L3 Outsides (ACI object [fvRsBDToOut](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsBDToOut/overview)) pointing to L3 Outside (ACI Object [l3extOut](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extOut/overview)).
-  * `annotation` (annotation) - (string) The annotation of the Relation From Bridge Domain To L3 Outside object.
-  * `l3_outside_name` (tnL3extOutName) - (string) The name of the L3 Outside object.
-
+    * `annotation` (annotation) - (string) The annotation of the Relation From Bridge Domain To L3 Outside object.
+    * `l3_outside_name` (tnL3extOutName) - (string) The name of the L3 Outside object.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
 * `relation_to_route_control_profile` - (map) A map of Relation From Bridge Domain To Route Control Profile (ACI object [fvRsBDToProfile](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsBDToProfile/overview)) pointing to Route Control Profile (ACI Object [rtctrlProfile](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/rtctrlProfile/overview)).
-  * `annotation` (annotation) - (string) The annotation of the Relation From Bridge Domain To Route Control Profile object.
-  * `l3_outside_name` (tnL3extOutName) - (string) The name of the L3 Outside object.
-  * `route_control_profile_name` (tnRtctrlProfileName) - (string) The name of the Route Control Profile object.
-
+    * `annotation` (annotation) - (string) The annotation of the Relation From Bridge Domain To Route Control Profile object.
+    * `l3_outside_name` (tnL3extOutName) - (string) The name of the L3 Outside object.
+    * `route_control_profile_name` (tnRtctrlProfileName) - (string) The name of the Route Control Profile object.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
 * `relation_to_dhcp_relay_policy` - (map) A map of Relation From Bridge Domain To Dhcp Relay Policy (ACI object [fvRsBDToRelayP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsBDToRelayP/overview)) pointing to Dhcp Relay Policy (ACI Object [dhcpRelayP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/dhcpRelayP/overview)).
-  * `annotation` (annotation) - (string) The annotation of the Relation From Bridge Domain To Dhcp Relay Policy object.
-  * `dhcp_relay_policy_name` (tnDhcpRelayPName) - (string) The name of the DHCP Relay Policy object.
-
+    * `annotation` (annotation) - (string) The annotation of the Relation From Bridge Domain To Dhcp Relay Policy object.
+    * `dhcp_relay_policy_name` (tnDhcpRelayPName) - (string) The name of the DHCP Relay Policy object.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
 * `relation_to_end_point_retention_policy` - (map) A map of Relation From Bridge Domain To End Point Retention Policy (ACI object [fvRsBdToEpRet](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsBdToEpRet/overview)) pointing to End Point Retention Policy (ACI Object [fvEpRetPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvEpRetPol/overview)).
-  * `annotation` (annotation) - (string) The annotation of the Relation From Bridge Domain To End Point Retention Policy object.
-  * `resolve_action` (resolveAct) - (string) The action to take for resolving the Endpoint Retention Policy object.
-  * `end_point_retention_policy_name` (tnFvEpRetPolName) - (string) The name of the Endpoint Retention Policy object.
-
+    * `annotation` (annotation) - (string) The annotation of the Relation From Bridge Domain To End Point Retention Policy object.
+    * `resolve_action` (resolveAct) - (string) The action to take for resolving the Endpoint Retention Policy object.
+    * `end_point_retention_policy_name` (tnFvEpRetPolName) - (string) The name of the Endpoint Retention Policy object.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
 * `relation_to_vrf` - (map) A map of Relation To VRF (ACI object [fvRsCtx](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsCtx/overview)) pointing to VRF (ACI Object [fvCtx](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvCtx/overview)).
-  * `annotation` (annotation) - (string) The annotation of the Relation To VRF object.
-  * `vrf_name` (tnFvCtxName) - (string) The name of the VRF object.
-
+    * `annotation` (annotation) - (string) The annotation of the Relation To VRF object.
+    * `vrf_name` (tnFvCtxName) - (string) The name of the VRF object.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
 * `relation_to_igmp_snooping_policy` - (map) A map of Relation To IGMP Snooping Policy (ACI object [fvRsIgmpsn](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsIgmpsn/overview)) pointing to IGMP Snooping Policy (ACI Object [igmpSnoopPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/igmpSnoopPol/overview)).
-  * `annotation` (annotation) - (string) The annotation of the Relation To IGMP Snooping Policy object.
-  * `igmp_snooping_policy_name` (tnIgmpSnoopPolName) - (string) The name of the IGMP Snooping Policy object.
-
+    * `annotation` (annotation) - (string) The annotation of the Relation To IGMP Snooping Policy object.
+    * `igmp_snooping_policy_name` (tnIgmpSnoopPolName) - (string) The name of the IGMP Snooping Policy object.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
 * `relation_to_mld_snooping_policy` - (map) A map of Relation To MLD Snooping Policy (ACI object [fvRsMldsn](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsMldsn/overview)) pointing to MLD Snooping Policy (ACI Object [mldSnoopPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/mldSnoopPol/overview)). This attribute is supported in ACI versions: 4.1(1i) and later.
-  * `annotation` (annotation) - (string) The annotation of the Relation To MLD Snooping Policy object.
-  * `mld_snooping_policy_name` (tnMldSnoopPolName) - (string) The name of the MLD Snooping Policy object.
-
+    * `annotation` (annotation) - (string) The annotation of the Relation To MLD Snooping Policy object.
+    * `mld_snooping_policy_name` (tnMldSnoopPolName) - (string) The name of the MLD Snooping Policy object.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
-  * `key` (key) - (string) The key used to uniquely identify this configuration object.
-  * `value` (value) - (string) The value of the property.
-
+    * `key` (key) - (string) The key used to uniquely identify this configuration object.
+    * `value` (value) - (string) The value of the property.
 * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
-  * `key` (key) - (string) The key used to uniquely identify this configuration object.
-  * `value` (value) - (string) The value of the property.
+    * `key` (key) - (string) The key used to uniquely identify this configuration object.
+    * `value` (value) - (string) The value of the property.

@@ -81,61 +81,67 @@ const pubhupDevnetBaseUrl = "https://pubhub.devnetcloud.com/media/model-doc-late
 // The map contains a key which is the name of the function used in the template and a value which is the function itself
 // The functions itself are defined in the current file
 var templateFuncs = template.FuncMap{
-	"snakeCase":                         Underscore,
-	"validatorString":                   ValidatorString,
-	"validatorStringCustomType":         ValidatorStringCustomType,
-	"containsString":                    ContainsString,
-	"listToString":                      ListToString,
-	"overwriteProperty":                 GetOverwriteAttributeName,
-	"overwritePropertyValue":            GetOverwriteAttributeValue,
-	"createTestValue":                   func(val string) string { return fmt.Sprintf("test_%s", val) },
-	"createNonExistingValue":            func(val string) string { return fmt.Sprintf("non_existing_%s", val) },
-	"getParentTestDependencies":         GetParentTestDependencies,
-	"getTestTargetDn":                   GetTestTargetDn,
-	"getDefaultValues":                  GetDefaultValues,
-	"fromInterfacesToString":            FromInterfacesToString,
-	"containsNoneAttributeValue":        ContainsNoneAttributeValue,
-	"legacyAttributeContainsNoneValue":  LegacyAttributeContainsNoneAttributeValue,
-	"definedInMap":                      DefinedInMap,
-	"getValueFromMap":                   GetValueFromMap,
-	"add":                               func(val1, val2 int) int { return val1 + val2 },
-	"subtract":                          func(val1, val2 int) int { return val1 - val2 },
-	"mod":                               func(val1, val2 int) int { return val1 % val2 },
-	"isInterfaceSlice":                  IsInterfaceSlice,
-	"replace":                           Replace,
-	"lookupTestValue":                   LookupTestValue,
-	"lookupChildTestValue":              LookupChildTestValue,
-	"createParentDnValue":               CreateParentDnValue,
-	"getResourceName":                   GetResourceName,
-	"getResourceNameAsDescription":      GetResourceNameAsDescription,
-	"capitalize":                        Capitalize,
-	"decapitalize":                      Decapitalize,
-	"getTestConfigVariableName":         GetTestConfigVariableName,
-	"getDevnetDocForClass":              GetDevnetDocForClass,
-	"getMigrationType":                  GetMigrationType,
-	"isLegacyAttribute":                 IsLegacyAttribute,
-	"isLegacyChild":                     IsLegacyChild,
-	"getLegacyChildAttribute":           GetLegacyChildAttribute,
-	"getConflictingAttributeName":       GetConflictingAttributeName,
-	"getPropertyNameForLegacyAttribute": GetPropertyNameForLegacyAttribute,
-	"isNewAttributeStringType":          IsNewAttributeStringType,
-	"isNewNamedClassAttribute":          IsNewNamedClassAttribute,
-	"isRequiredInTestValue":             IsRequiredInTestValue,
-	"getChildAttributesFromBlocks":      GetChildAttributesFromBlocks,
-	"getNewChildAttributes":             GetNewChildAttributes,
-	"containsRequired":                  ContainsRequired,
-	"hasPrefix":                         strings.HasPrefix,
-	"hasCustomTypeDocs":                 HasCustomTypeDocs,
-	"containsSingleNestedChildren":      ContainsSingleNestedChildren,
-	"isResourceClass":                   IsResourceClass,
-	"getOldType":                        GetOldType,
-	"contains":                          strings.Contains,
-	"hasKey":                            HasKey,
-	"definedInList":                     DefinedInList,
-	"keyExists":                         KeyExists,
-	"isNewNamedClassAttributeMatch":     IsNewNamedClassAttributeMatch,
-	"getRnFormat":                       GetRnFormat,
-	"identifierIsCustomType":            IdentifierIsCustomType,
+	"snakeCase":                             Underscore,
+	"validatorString":                       ValidatorString,
+	"validatorStringCustomType":             ValidatorStringCustomType,
+	"containsString":                        ContainsString,
+	"listToString":                          ListToString,
+	"overwriteProperty":                     GetOverwriteAttributeName,
+	"overwritePropertyValue":                GetOverwriteAttributeValue,
+	"createTestValue":                       func(val string) string { return fmt.Sprintf("test_%s", val) },
+	"createNonExistingValue":                func(val string) string { return fmt.Sprintf("non_existing_%s", val) },
+	"getParentTestDependencies":             GetParentTestDependencies,
+	"getTestTargetDn":                       GetTestTargetDn,
+	"getDefaultValues":                      GetDefaultValues,
+	"fromInterfacesToString":                FromInterfacesToString,
+	"containsNoneAttributeValue":            ContainsNoneAttributeValue,
+	"legacyAttributeContainsNoneValue":      LegacyAttributeContainsNoneAttributeValue,
+	"definedInMap":                          DefinedInMap,
+	"getValueFromMap":                       GetValueFromMap,
+	"add":                                   func(val1, val2 int) int { return val1 + val2 },
+	"subtract":                              func(val1, val2 int) int { return val1 - val2 },
+	"mod":                                   func(val1, val2 int) int { return val1 % val2 },
+	"isInterfaceSlice":                      IsInterfaceSlice,
+	"replace":                               Replace,
+	"lookupTestValue":                       LookupTestValue,
+	"lookupChildTestValue":                  LookupChildTestValue,
+	"createParentDnValue":                   CreateParentDnValue,
+	"getResourceName":                       GetResourceName,
+	"getResourceNameAsDescription":          GetResourceNameAsDescription,
+	"capitalize":                            Capitalize,
+	"decapitalize":                          Decapitalize,
+	"getTestConfigVariableName":             GetTestConfigVariableName,
+	"getDevnetDocForClass":                  GetDevnetDocForClass,
+	"getMigrationType":                      GetMigrationType,
+	"isLegacyAttribute":                     IsLegacyAttribute,
+	"isLegacyChild":                         IsLegacyChild,
+	"getLegacyChildAttribute":               GetLegacyChildAttribute,
+	"getConflictingAttributeName":           GetConflictingAttributeName,
+	"getPropertyNameForLegacyAttribute":     GetPropertyNameForLegacyAttribute,
+	"isNewAttributeStringType":              IsNewAttributeStringType,
+	"isNewNamedClassAttribute":              IsNewNamedClassAttribute,
+	"isRequiredInTestValue":                 IsRequiredInTestValue,
+	"getChildAttributesFromBlocks":          GetChildAttributesFromBlocks,
+	"getNewChildAttributes":                 GetNewChildAttributes,
+	"containsRequired":                      ContainsRequired,
+	"hasPrefix":                             strings.HasPrefix,
+	"hasCustomTypeDocs":                     HasCustomTypeDocs,
+	"containsSingleNestedChildren":          ContainsSingleNestedChildren,
+	"containsDeletableSingleNestedChildren": ContainsDeletableSingleNestedChildren,
+	"isResourceClass":                       IsResourceClass,
+	"getOldType":                            GetOldType,
+	"contains":                              strings.Contains,
+	"hasKey":                                HasKey,
+	"definedInList":                         DefinedInList,
+	"keyExists":                             KeyExists,
+	"isNewNamedClassAttributeMatch":         IsNewNamedClassAttributeMatch,
+	"getRnFormat":                           GetRnFormat,
+	"identifierIsCustomType":                IdentifierIsCustomType,
+	"isListEmpty":                           func(stringList []string) bool { return len(stringList) == 0 },
+	"addToTemplateProperties":               AddToTemplateProperties,
+	"addToChild":                            AddToChildInTestTemplate,
+	"checkDeletableChild":                   CheckDeletableChild,
+	"emptyChild":                            EmptyChild,
 }
 
 func ContainsRequired(properties map[string]Property) bool {
@@ -152,8 +158,49 @@ func ContainsSingleNestedChildren(children map[string]Model) bool {
 		if len(child.IdentifiedBy) == 0 || child.MaxOneClassAllowed {
 			return true
 		}
+		if child.Children != nil && ContainsSingleNestedChildren(child.Children) {
+			return true
+		}
 	}
 	return false
+}
+
+func ContainsDeletableSingleNestedChildren(children map[string]Model) bool {
+	for _, child := range children {
+		if (len(child.IdentifiedBy) == 0 || child.MaxOneClassAllowed) && child.AllowDelete {
+			return true
+		}
+		if child.Children != nil && ContainsDeletableSingleNestedChildren(child.Children) {
+			return true
+		}
+	}
+	return false
+}
+
+func CheckDeletableChild(children map[interface{}]interface{}) bool {
+	for _, value := range children {
+		if val, ok := value.([]interface{}); ok {
+			for _, item := range val {
+				if child, ok := item.(map[interface{}]interface{}); ok {
+					if deletable, exists := child["deletable_child"]; exists && deletable == true {
+						return true
+					}
+					if nestedChildren, exists := child["children"]; exists {
+						if nestedChildrenMap, ok := nestedChildren.(map[interface{}]interface{}); ok {
+							if CheckDeletableChild(nestedChildrenMap) {
+								return true
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return false
+}
+
+func EmptyChild() map[interface{}]interface{} {
+	return make(map[interface{}]interface{})
 }
 
 func Replace(oldValue, newValue, inputString string) string {
@@ -337,6 +384,9 @@ func Capitalize(s string) string {
 }
 
 func Decapitalize(s string) string {
+	if s == "" {
+		return ""
+	}
 	return fmt.Sprintf("%s%s", strings.ToLower(s[:1]), s[1:])
 }
 
@@ -524,30 +574,68 @@ func LookupChildTestValue(classPkgName, childResourceName, propertyName string, 
 
 	overwritePropertyValue := GetOverwriteAttributeValue(classPkgName, propertyName, "", "test_values_for_parent", testValueIndex, definitions)
 	if overwritePropertyValue != "" {
-		return overwritePropertyValue
+		return fmt.Sprintf(`"%s"`, overwritePropertyValue)
 	}
+
 	if children, ok := testVars["children"].(map[interface{}]interface{}); ok {
-		if childResources, ok := children[childResourceName].([]interface{}); ok && len(childResources) > 0 {
-			childResource := childResources[0].(map[interface{}]interface{})
+		result := searchChildResources(children, childResourceName, propertyName)
+		if result != nil {
+			return result
+		} else {
+			return fmt.Sprintf(`"%s"`, "test_value_for_child")
+		}
+	}
 
-			if val, ok := childResource[propertyName]; ok {
-				return val.(string)
-			}
+	return fmt.Sprintf(`"%s_%d"`, propertyName, testValueIndex)
+}
 
-			if versionMismatch, ok := childResource["version_mismatch"].(map[interface{}]interface{}); ok {
-				for _, versionVars := range versionMismatch {
-					if versionVarsMap, ok := versionVars.(map[interface{}]interface{}); ok {
-						if val, ok := versionVarsMap[propertyName]; ok {
-							return val.(string)
+func searchChildResources(children map[interface{}]interface{}, childResourceName, propertyName string) interface{} {
+	childResources, ok := children[childResourceName].([]interface{})
+	if ok && len(childResources) > 0 {
+		for _, childResourceInterface := range childResources {
+			if childResource, ok := childResourceInterface.(map[interface{}]interface{}); ok {
+				if val, ok := childResource[propertyName]; ok {
+					switch val := val.(type) {
+					case string:
+						return fmt.Sprintf(`"%s"`, val)
+					case []interface{}:
+						return formatSlice(val)
+					}
+				}
+
+				if versionMismatch, ok := childResource["version_mismatch"].(map[interface{}]interface{}); ok {
+					for _, versionVars := range versionMismatch {
+						if versionVarsMap, ok := versionVars.(map[interface{}]interface{}); ok {
+							if val, ok := versionVarsMap[propertyName]; ok {
+								switch val := val.(type) {
+								case string:
+									return fmt.Sprintf(`"%s"`, val)
+								case []interface{}:
+									return formatSlice(val)
+								}
+							}
 						}
 					}
 				}
 			}
 		}
 	} else {
-		return fmt.Sprintf("%s_%d", propertyName, testValueIndex)
+		for _, childResourcesInterfaces := range children {
+			if childResources, ok := childResourcesInterfaces.([]interface{}); ok {
+				for _, childResourceInterface := range childResources {
+					if childResource, ok := childResourceInterface.(map[interface{}]interface{}); ok {
+						if nestedChildren, ok := childResource["children"].(map[interface{}]interface{}); ok {
+							result := searchChildResources(nestedChildren, childResourceName, propertyName)
+							if result != nil {
+								return result
+							}
+						}
+					}
+				}
+			}
+		}
 	}
-	return "test_value_for_child"
+	return nil
 }
 
 func LegacyAttributeContainsNoneAttributeValue(legacyAttribute LegacyAttribute, properties map[string]Property) bool {
@@ -574,6 +662,67 @@ func FromInterfacesToString(identifiedBy []interface{}) string {
 		identifiers = append(identifiers, identifier.(string))
 	}
 	return fmt.Sprintf("\"%s\"", strings.Join(identifiers, "\", \""))
+}
+
+func DictForTemplates(values ...interface{}) (map[string]interface{}, error) {
+	if len(values)%2 != 0 {
+		return nil, fmt.Errorf("invalid number of arguments passed to the dict")
+	}
+	dict := make(map[string]interface{})
+	for i := 0; i < len(values); i += 2 {
+		key, ok := values[i].(string)
+		if !ok {
+			return nil, fmt.Errorf("dict keys must be strings")
+		}
+		dict[key] = values[i+1]
+	}
+	return dict, nil
+}
+
+// AddToTemplateProperties creates a copy of the model and updates it with the new fields provided in the form of key value pairs
+func AddToTemplateProperties(model Model, values ...interface{}) (*Model, error) {
+	// Create a copy of the model
+	newModel := model
+	updates, err := DictForTemplates(values...)
+	if err != nil {
+		return nil, err
+	}
+
+	if newModel.TemplateProperties == nil {
+		newModel.TemplateProperties = make(map[string]interface{})
+	}
+
+	for k, v := range updates {
+		newModel.TemplateProperties[k] = v
+	}
+
+	return &newModel, nil
+}
+
+// AddToChildInTestTemplate is used within the test templates for applying indentation in the test config
+func AddToChildInTestTemplate(child map[interface{}]interface{}, values ...interface{}) (map[interface{}]interface{}, error) {
+
+	newChild := make(map[interface{}]interface{})
+	childValue := make(map[interface{}]interface{})
+	for k, v := range child {
+		childValue[k] = v
+	}
+	newChild["childValue"] = childValue
+
+	updates, err := DictForTemplates(values...)
+	if err != nil {
+		return nil, err
+	}
+
+	if _, ok := newChild["TemplateProperties"]; !ok {
+		newChild["TemplateProperties"] = make(map[string]interface{})
+	}
+
+	for k, v := range updates {
+		newChild["TemplateProperties"].(map[string]interface{})[k] = v
+	}
+
+	return newChild, nil
 }
 
 // Renders the templates and writes a file to the output directory
@@ -642,7 +791,7 @@ func getClassModels(definitions Definitions) map[string]Model {
 	}
 	for _, pkgName := range pkgNames {
 		classModel := Model{PkgName: pkgName}
-		classModel.setClassModel(metaPath, false, definitions, []string{}, pkgNames)
+		classModel.setClassModel(metaPath, false, definitions, []string{}, pkgNames, nil, nil)
 		classModels[pkgName] = classModel
 
 		rnName := make(map[string]string)
@@ -928,31 +1077,10 @@ func main() {
 			// All classmodels have been read, thus now the model, child and relational resources names can be set
 			// When done before additional files would need to be opened and read which would slow down the generation process
 			model.ResourceName = GetResourceName(model.PkgName, definitions)
-
 			for _, relationshipClass := range model.RelationshipClasses {
 				model.RelationshipResourceNames = append(model.RelationshipResourceNames, GetResourceName(relationshipClass, definitions))
 			}
-			childMap := make(map[string]Model, 0)
-			for childName, childModel := range model.Children {
-				childModel.ChildResourceName = GetResourceName(childModel.PkgName, definitions)
-				childModel.ResourceNameDocReference = childModel.ChildResourceName
-				if len(childModel.IdentifiedBy) > 0 && !childModel.MaxOneClassAllowed {
-					// TODO add logic to determine the naming for plural child resources
-					childModel.ResourceName = fmt.Sprintf("%ss", childModel.ChildResourceName)
-				} else {
-					childModel.ResourceName = childModel.ChildResourceName
-				}
-				for _, relationshipClass := range childModel.RelationshipClasses {
-					childModel.RelationshipResourceNames = append(childModel.RelationshipResourceNames, GetResourceName(relationshipClass, definitions))
-				}
-
-				if len(childModel.VersionMismatched) > 0 {
-					updateVersionMismatchedWithChildren(&model, childModel.VersionMismatched)
-				}
-
-				childMap[childName] = childModel
-			}
-			model.Children = childMap
+			model.Children = SetChildClassNames(definitions, &model, model.Children)
 
 			if model.VersionMismatched != nil {
 				sortVersionMismatched(model.VersionMismatched)
@@ -1035,8 +1163,10 @@ type Model struct {
 	ExampleResourceFull         string
 	SubCategory                 string
 	RelationshipClasses         []string
+	RelationshipClass           string
 	MultiRelationshipClass      bool
 	RelationshipResourceNames   []string
+	RelationshipResourceName    string
 	Versions                    string
 	ChildClasses                []string
 	ContainedBy                 []string
@@ -1075,6 +1205,14 @@ type Model struct {
 	MultiParentFormats          map[string]MultiParentFormat
 	MultiParentFormatsTestTypes map[string]string
 	ClassVersion                string
+	ParentName                  string
+	ParentHierarchy             string
+	TargetResourceClassName     string
+	TargetResourceName          string
+	TargetDn                    string
+	TargetProperties            map[string]Property
+	TargetNamedProperties       map[string]Property
+	DirectParent                *Model
 	// Below booleans are used during template rendering to determine correct rendering the go code
 	AllowDelete               bool
 	AllowChildDelete          bool
@@ -1094,6 +1232,7 @@ type Model struct {
 	HasCustomTypeProperties   bool
 	Exclude                   bool
 	VersionMismatched         map[string][]string
+	TemplateProperties        map[string]interface{}
 }
 
 type TypeChange struct {
@@ -1152,7 +1291,7 @@ type Property struct {
 	DefaultValue             string
 	Versions                 string
 	NamedPropertyClass       string
-	IgnoreInTestExampleValue string
+	IgnoreInTestExampleValue interface{}
 	ValidValuesMap           map[string]string
 	RawVersion               string
 	ModelType                string
@@ -1177,7 +1316,7 @@ type Definitions struct {
 }
 
 // Reads the class details from the meta file and sets all details to the Model
-func (m *Model) setClassModel(metaPath string, child bool, definitions Definitions, parents, pkgNames []string) {
+func (m *Model) setClassModel(metaPath string, isChildIteration bool, definitions Definitions, parents, pkgNames, mainParentChildren, parentHierarchyList []string) {
 	fileContent, err := os.ReadFile(fmt.Sprintf("%s/%s.json", metaPath, m.PkgName))
 	if err != nil {
 		log.Fatal("Error when opening file: ", err)
@@ -1194,7 +1333,7 @@ func (m *Model) setClassModel(metaPath string, child bool, definitions Definitio
 	m.Configuration = GetClassConfiguration(m.PkgName, definitions)
 
 	for _, classDetails := range classInfo {
-		m.SetClassLabel(classDetails, child)
+		m.SetClassLabel(classDetails)
 		m.SetClassName(classDetails)
 		m.SetRelationshipClasses(definitions)
 		m.SetClassRnFormat(classDetails)
@@ -1209,7 +1348,10 @@ func (m *Model) setClassModel(metaPath string, child bool, definitions Definitio
 		m.SetClassComment(classDetails)
 		m.SetClassVersions(classDetails)
 		m.SetClassProperties(classDetails)
-		m.SetClassChildren(classDetails, pkgNames)
+		m.SetClassChildren(classDetails, pkgNames, mainParentChildren)
+		if len(parents) != 0 {
+			m.SetParentName(parents)
+		}
 		m.SetResourceNotesAndWarnigns(m.PkgName, definitions)
 		m.SetResourceNameAsDescription(m.PkgName, definitions)
 		m.SetTestType(classDetails, definitions)
@@ -1222,34 +1364,42 @@ func (m *Model) setClassModel(metaPath string, child bool, definitions Definitio
 			- Incorrect: Parent -> Child -> Grandchild
 		// TODO add grandchild logic
 	*/
-	if !child {
-		if len(m.ChildClasses) > 0 {
-			m.HasChild = true
-			m.Children = make(map[string]Model)
-			for _, child := range m.ChildClasses {
-				childModel := Model{PkgName: child}
-				childModel.setClassModel(metaPath, true, definitions, []string{m.PkgName}, pkgNames)
-				m.Children[child] = childModel
-				if childModel.HasValidValues {
-					m.HasValidValues = true
-				}
-				if len(childModel.IdentifiedBy) == 0 {
-					m.HasChildWithoutIdentifier = true
-				}
-				if childModel.AllowDelete {
-					m.AllowChildDelete = true
-				}
-				if childModel.HasBitmask {
-					m.HasBitmask = true
-				}
-				if childModel.HasNamedProperties {
-					m.HasNamedProperties = true
-					m.HasChildNamedProperties = true
-				}
+	m.ParentHierarchy = fmt.Sprintf("%s", strings.Join(reverseList(parentHierarchyList), ""))
+
+	if len(parentHierarchyList) == 0 {
+		parentHierarchyList = []string{m.ResourceClassName}
+	} else {
+		parentHierarchyList = append(parentHierarchyList, m.ResourceClassName)
+	}
+
+	if len(m.ChildClasses) > 0 {
+		mainParentChildren := append(mainParentChildren, m.ChildClasses...)
+		m.HasChild = true
+		m.Children = make(map[string]Model)
+		for _, child := range m.ChildClasses {
+			childModel := Model{PkgName: child}
+			childModel.setDirectParent(m)
+			childModel.setClassModel(metaPath, true, definitions, []string{m.PkgName}, pkgNames, mainParentChildren, parentHierarchyList)
+			m.Children[child] = childModel
+			if childModel.HasValidValues {
+				m.HasValidValues = true
 			}
-		} else {
-			m.HasChild = false
+			if len(childModel.IdentifiedBy) == 0 {
+				m.HasChildWithoutIdentifier = true
+			}
+			if childModel.AllowDelete {
+				m.AllowChildDelete = true
+			}
+			if childModel.HasBitmask {
+				m.HasBitmask = true
+			}
+			if childModel.HasNamedProperties {
+				m.HasNamedProperties = true
+				m.HasChildNamedProperties = true
+			}
 		}
+	} else {
+		m.HasChild = false
 	}
 
 	version, changes := isMigrationResource(m.PkgName, definitions)
@@ -1304,7 +1454,7 @@ func GetOldType(attributeName string, typeChanges []TypeChange) string {
 	return ""
 }
 
-func (m *Model) SetClassLabel(classDetails interface{}, child bool) {
+func (m *Model) SetClassLabel(classDetails interface{}) {
 	m.Label = cleanLabel(classDetails.(map[string]interface{})["label"].(string))
 	if slices.Contains(labels, m.Label) || m.Label == "" {
 		if !slices.Contains(duplicateLabels, m.Label) {
@@ -1419,7 +1569,7 @@ func (m *Model) setMax1Entry() {
 	}
 }
 
-func (m *Model) SetClassChildren(classDetails interface{}, pkgNames []string) {
+func (m *Model) SetClassChildren(classDetails interface{}, pkgNames, mainParentChildren []string) {
 	childClasses := []string{}
 	excludeChildClasses := []string{}
 	if classDetails, ok := m.Definitions.Classes[m.PkgName]; ok {
@@ -1458,11 +1608,49 @@ func (m *Model) SetClassChildren(classDetails interface{}, pkgNames []string) {
 	m.ChildClasses = uniqueStringSlice(childClasses)
 }
 
+func SetChildClassNames(definitions Definitions, model *Model, children map[string]Model) map[string]Model {
+	childMap := make(map[string]Model, 0)
+	for childName, childModel := range children {
+		childModel.ChildResourceName = GetResourceName(childModel.PkgName, definitions)
+		childModel.ResourceNameDocReference = childModel.ChildResourceName
+		if len(childModel.IdentifiedBy) > 0 && !childModel.MaxOneClassAllowed {
+			// TODO add logic to determine the naming for plural child resources
+			childModel.ResourceName = fmt.Sprintf("%ss", childModel.ChildResourceName)
+		} else {
+			childModel.ResourceName = childModel.ChildResourceName
+		}
+		for _, relationshipClass := range childModel.RelationshipClasses {
+			childModel.RelationshipResourceNames = append(childModel.RelationshipResourceNames, GetResourceName(relationshipClass, definitions))
+		}
+
+		if len(childModel.VersionMismatched) > 0 {
+			sortVersionMismatched(childModel.VersionMismatched)
+			updateVersionMismatchedWithChildren(model, childModel.VersionMismatched)
+		}
+		childModel.Children = SetChildClassNames(definitions, model, childModel.Children)
+
+		childMap[childName] = childModel
+	}
+	return childMap
+}
+
 func (m *Model) SetClassInclude() {
 	if classDetails, ok := m.Definitions.Classes[m.PkgName]; ok {
 		for key, value := range classDetails.(map[interface{}]interface{}) {
 			if key.(string) == "include" {
 				m.Include = value.(bool)
+			}
+		}
+	}
+}
+
+func (m *Model) SetClassExclude() {
+	if classDetails, ok := m.Definitions.Classes[m.PkgName]; ok {
+		for key, value := range classDetails.(map[interface{}]interface{}) {
+			if key.(string) == "exclude" {
+				m.Exclude = value.(bool)
+			} else {
+				m.Exclude = false
 			}
 		}
 	}
@@ -1474,6 +1662,22 @@ func (m *Model) SetClassAllowDelete(classDetails interface{}) {
 	} else {
 		m.AllowDelete = true
 	}
+}
+
+func (m *Model) SetParentName(classPkgName []string) {
+	m.ParentName = classPkgName[0]
+}
+
+func (m *Model) setDirectParent(parentModel *Model) {
+	m.DirectParent = parentModel
+}
+
+func reverseList(items []string) []string {
+	reversedList := make([]string, len(items))
+	for i, item := range items {
+		reversedList[len(items)-1-i] = item
+	}
+	return reversedList
 }
 
 // Determine if a class is allowed to be deleted as defined in the classes.yaml file
@@ -1522,16 +1726,6 @@ func (m *Model) SetTestType(classDetails interface{}, definitions Definitions) {
 			}
 			if m.TestType == "" {
 				m.TestType = "both"
-			}
-		}
-	}
-}
-
-func (m *Model) SetClassExclude() {
-	if classDetails, ok := m.Definitions.Classes[m.PkgName]; ok {
-		for key, value := range classDetails.(map[interface{}]interface{}) {
-			if key.(string) == "exclude" {
-				m.Exclude = value.(bool)
 			}
 		}
 	}
@@ -1600,11 +1794,14 @@ func (m *Model) SetClassVersions(classDetails interface{}) {
 }
 
 func (m *Model) SetTestApplicableFromVersion(classDetails interface{}) {
-	versions, ok := classDetails.(map[string]interface{})["versions"]
-	if ok {
-		m.ClassVersion = versions.(string)
-	} else {
-		m.ClassVersion = "unknown"
+	m.ClassVersion = GetOverwriteClassVersion(m.PkgName, m.Definitions)
+	if m.ClassVersion == "" {
+		versions, ok := classDetails.(map[string]interface{})["versions"]
+		if ok {
+			m.ClassVersion = versions.(string)
+		} else {
+			m.ClassVersion = "unknown"
+		}
 	}
 }
 
@@ -1636,7 +1833,6 @@ func (m *Model) SetClassProperties(classDetails interface{}) {
 			if ignoreProperty(propertyName, m.PkgName, m.Definitions) {
 				continue
 			}
-
 			ignoreInTest, ignoreInTestExampleValue := ignoreTestProperty(propertyName, m.PkgName, m.Definitions)
 
 			property := Property{
@@ -1739,7 +1935,7 @@ func (m *Model) SetClassProperties(classDetails interface{}) {
 					if reflect.TypeOf(val).String() == "string" {
 						property.DefaultValue = val.(string)
 					} else if reflect.TypeOf(val).String() == "float64" {
-						property.DefaultValue = fmt.Sprintf("%f", val.(float64))
+						property.DefaultValue = fmt.Sprintf("%g", val.(float64))
 					} else {
 						log.Fatal(fmt.Sprintf("Reflect type %s not defined. Define in SetClassProperties function.", reflect.TypeOf(val).String()))
 					}
@@ -1796,7 +1992,7 @@ func (m *Model) SetClassProperties(classDetails interface{}) {
 	}
 }
 
-func ignoreTestProperty(propertyName, classPkgName string, definitions Definitions) (bool, string) {
+func ignoreTestProperty(propertyName, classPkgName string, definitions Definitions) (bool, interface{}) {
 
 	precedenceList := []string{classPkgName, "global"}
 	for _, precedence := range precedenceList {
@@ -2300,6 +2496,17 @@ func GetOverwriteTestType(classPkgName string, definitions Definitions) string {
 	return ""
 }
 
+func GetOverwriteClassVersion(classPkgName string, definitions Definitions) string {
+	if v, ok := definitions.Classes[classPkgName]; ok {
+		for key, value := range v.(map[interface{}]interface{}) {
+			if key.(string) == "class_version" {
+				return value.(string)
+			}
+		}
+	}
+	return ""
+}
+
 type MultiParentFormat struct {
 	RnPrepend    string
 	WrapperClass string
@@ -2701,15 +2908,6 @@ func isMigrationResource(classPkgName string, definitions Definitions) (bool, bo
 		}
 	}
 	return version, changes
-}
-
-func resourcesExcluded(excludeResources []interface{}, containedClassName string) bool {
-	for _, item := range excludeResources {
-		if s, ok := item.(string); ok && s == containedClassName {
-			return true
-		}
-	}
-	return false
 }
 
 // Set variables that are used during the rendering of the example and documentation templates
