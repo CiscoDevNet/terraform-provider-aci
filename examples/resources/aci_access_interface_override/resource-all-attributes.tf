@@ -7,23 +7,27 @@ resource "aci_access_interface_override" "full_example" {
   owner_key   = "owner_key_1"
   owner_tag   = "owner_tag_1"
   relation_to_host_path = {
-    annotation = "annotation_1"
-    target_dn  = "topology/pod-1/paths-101/pathep-[eth1/1]"
+    annotation = "annotation_0"
+    target_dn  = "target_dn_0"
   }
   relation_to_access_interface_policy_group = {
-    annotation = "annotation_1"
-    target_dn  = "uni/infra/funcprof/accportgrp-access_interface_policy_group"
+    annotation = "annotation_0"
+    target_dn  = "target_dn_0"
   }
   annotations = [
     {
       key   = "key_0"
-      value = "value_1"
+      value = "value_0"
     }
   ]
   tags = [
     {
       key   = "key_0"
-      value = "value_1"
+      value = "value_0"
     }
   ]
 }
+
+
+
+

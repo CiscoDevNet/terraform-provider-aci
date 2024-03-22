@@ -99,6 +99,13 @@ func getEmptyTagAnnotationNetflowRecordPolResourceModel() TagAnnotationNetflowRe
 	}
 }
 
+var TagAnnotationNetflowRecordPolType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
+}
+
 // TagTagNetflowRecordPolResourceModel describes the resource data model for the children without relation ships.
 type TagTagNetflowRecordPolResourceModel struct {
 	Key   types.String `tfsdk:"key"`
@@ -110,6 +117,13 @@ func getEmptyTagTagNetflowRecordPolResourceModel() TagTagNetflowRecordPolResourc
 		Key:   basetypes.NewStringNull(),
 		Value: basetypes.NewStringNull(),
 	}
+}
+
+var TagTagNetflowRecordPolType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
 }
 
 type NetflowRecordPolIdentifier struct {
@@ -495,7 +509,7 @@ func (r *NetflowRecordPolResource) ImportState(ctx context.Context, req resource
 }
 
 func getAndSetNetflowRecordPolAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *NetflowRecordPolResourceModel) {
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "netflowRecordPol,tagAnnotation,tagTag"), "GET", nil)
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "netflowRecordPol,tagAnnotation,tagTag"), "GET", nil)
 
 	readData := getEmptyNetflowRecordPolResourceModel()
 
@@ -546,7 +560,9 @@ func getAndSetNetflowRecordPolAttributes(ctx context.Context, diags *diag.Diagno
 					readData.OwnerTag = basetypes.NewStringValue(attributeValue.(string))
 				}
 			}
+			TagAnnotationNetflowRecordPol := getEmptyTagAnnotationNetflowRecordPolResourceModel()
 			TagAnnotationNetflowRecordPolList := make([]TagAnnotationNetflowRecordPolResourceModel, 0)
+			TagTagNetflowRecordPol := getEmptyTagTagNetflowRecordPolResourceModel()
 			TagTagNetflowRecordPolList := make([]TagTagNetflowRecordPolResourceModel, 0)
 			_, ok := classReadInfo[0].(map[string]interface{})["children"]
 			if ok {
@@ -555,7 +571,6 @@ func getAndSetNetflowRecordPolAttributes(ctx context.Context, diags *diag.Diagno
 					for childClassName, childClassDetails := range child.(map[string]interface{}) {
 						childAttributes := childClassDetails.(map[string]interface{})["attributes"].(map[string]interface{})
 						if childClassName == "tagAnnotation" {
-							TagAnnotationNetflowRecordPol := getEmptyTagAnnotationNetflowRecordPolResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "key" {
 									TagAnnotationNetflowRecordPol.Key = basetypes.NewStringValue(childAttributeValue.(string))
@@ -563,11 +578,11 @@ func getAndSetNetflowRecordPolAttributes(ctx context.Context, diags *diag.Diagno
 								if childAttributeName == "value" {
 									TagAnnotationNetflowRecordPol.Value = basetypes.NewStringValue(childAttributeValue.(string))
 								}
+
 							}
 							TagAnnotationNetflowRecordPolList = append(TagAnnotationNetflowRecordPolList, TagAnnotationNetflowRecordPol)
 						}
 						if childClassName == "tagTag" {
-							TagTagNetflowRecordPol := getEmptyTagTagNetflowRecordPolResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "key" {
 									TagTagNetflowRecordPol.Key = basetypes.NewStringValue(childAttributeValue.(string))
@@ -575,6 +590,7 @@ func getAndSetNetflowRecordPolAttributes(ctx context.Context, diags *diag.Diagno
 								if childAttributeName == "value" {
 									TagTagNetflowRecordPol.Value = basetypes.NewStringValue(childAttributeValue.(string))
 								}
+
 							}
 							TagTagNetflowRecordPolList = append(TagTagNetflowRecordPolList, TagTagNetflowRecordPol)
 						}
@@ -628,25 +644,24 @@ func setNetflowRecordPolId(ctx context.Context, data *NetflowRecordPolResourceMo
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
 
-func getNetflowRecordPolTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *NetflowRecordPolResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationNetflowRecordPolResourceModel) []map[string]interface{} {
-
+func getNetflowRecordPolTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *NetflowRecordPolResourceModel, tagAnnotationNetflowRecordPolPlan, tagAnnotationNetflowRecordPolState []TagAnnotationNetflowRecordPolResourceModel) []map[string]interface{} {
 	childPayloads := []map[string]interface{}{}
-	if !data.TagAnnotation.IsUnknown() {
+	if !data.TagAnnotation.IsNull() && !data.TagAnnotation.IsUnknown() {
 		tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
-		for _, tagAnnotation := range tagAnnotationPlan {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagAnnotation.Key.IsUnknown() && !tagAnnotation.Key.IsNull() {
-				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
+		for _, tagAnnotationNetflowRecordPol := range tagAnnotationNetflowRecordPolPlan {
+			childMap := NewAciObject()
+			if !tagAnnotationNetflowRecordPol.Key.IsNull() && !tagAnnotationNetflowRecordPol.Key.IsUnknown() {
+				childMap.Attributes["key"] = tagAnnotationNetflowRecordPol.Key.ValueString()
 			}
-			if !tagAnnotation.Value.IsUnknown() && !tagAnnotation.Value.IsNull() {
-				childMap["attributes"]["value"] = tagAnnotation.Value.ValueString()
+			if !tagAnnotationNetflowRecordPol.Value.IsNull() && !tagAnnotationNetflowRecordPol.Value.IsUnknown() {
+				childMap.Attributes["value"] = tagAnnotationNetflowRecordPol.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
 			tagAnnotationIdentifier := TagAnnotationIdentifier{}
-			tagAnnotationIdentifier.Key = tagAnnotation.Key
+			tagAnnotationIdentifier.Key = tagAnnotationNetflowRecordPol.Key
 			tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
 		}
-		for _, tagAnnotation := range tagAnnotationState {
+		for _, tagAnnotation := range tagAnnotationNetflowRecordPolState {
 			delete := true
 			for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
 				if tagAnnotationIdentifier.Key == tagAnnotation.Key {
@@ -655,10 +670,10 @@ func getNetflowRecordPolTagAnnotationChildPayloads(ctx context.Context, diags *d
 				}
 			}
 			if delete {
-				childMap := map[string]map[string]interface{}{"attributes": {}}
-				childMap["attributes"]["status"] = "deleted"
-				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
+				tagAnnotationChildMapForDelete := NewAciObject()
+				tagAnnotationChildMapForDelete.Attributes["status"] = "deleted"
+				tagAnnotationChildMapForDelete.Attributes["key"] = tagAnnotation.Key.ValueString()
+				childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": tagAnnotationChildMapForDelete})
 			}
 		}
 	} else {
@@ -667,25 +682,25 @@ func getNetflowRecordPolTagAnnotationChildPayloads(ctx context.Context, diags *d
 
 	return childPayloads
 }
-func getNetflowRecordPolTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *NetflowRecordPolResourceModel, tagTagPlan, tagTagState []TagTagNetflowRecordPolResourceModel) []map[string]interface{} {
 
+func getNetflowRecordPolTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *NetflowRecordPolResourceModel, tagTagNetflowRecordPolPlan, tagTagNetflowRecordPolState []TagTagNetflowRecordPolResourceModel) []map[string]interface{} {
 	childPayloads := []map[string]interface{}{}
-	if !data.TagTag.IsUnknown() {
+	if !data.TagTag.IsNull() && !data.TagTag.IsUnknown() {
 		tagTagIdentifiers := []TagTagIdentifier{}
-		for _, tagTag := range tagTagPlan {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagTag.Key.IsUnknown() && !tagTag.Key.IsNull() {
-				childMap["attributes"]["key"] = tagTag.Key.ValueString()
+		for _, tagTagNetflowRecordPol := range tagTagNetflowRecordPolPlan {
+			childMap := NewAciObject()
+			if !tagTagNetflowRecordPol.Key.IsNull() && !tagTagNetflowRecordPol.Key.IsUnknown() {
+				childMap.Attributes["key"] = tagTagNetflowRecordPol.Key.ValueString()
 			}
-			if !tagTag.Value.IsUnknown() && !tagTag.Value.IsNull() {
-				childMap["attributes"]["value"] = tagTag.Value.ValueString()
+			if !tagTagNetflowRecordPol.Value.IsNull() && !tagTagNetflowRecordPol.Value.IsUnknown() {
+				childMap.Attributes["value"] = tagTagNetflowRecordPol.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})
 			tagTagIdentifier := TagTagIdentifier{}
-			tagTagIdentifier.Key = tagTag.Key
+			tagTagIdentifier.Key = tagTagNetflowRecordPol.Key
 			tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
 		}
-		for _, tagTag := range tagTagState {
+		for _, tagTag := range tagTagNetflowRecordPolState {
 			delete := true
 			for _, tagTagIdentifier := range tagTagIdentifiers {
 				if tagTagIdentifier.Key == tagTag.Key {
@@ -694,10 +709,10 @@ func getNetflowRecordPolTagTagChildPayloads(ctx context.Context, diags *diag.Dia
 				}
 			}
 			if delete {
-				childMap := map[string]map[string]interface{}{"attributes": {}}
-				childMap["attributes"]["status"] = "deleted"
-				childMap["attributes"]["key"] = tagTag.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})
+				tagTagChildMapForDelete := NewAciObject()
+				tagTagChildMapForDelete.Attributes["status"] = "deleted"
+				tagTagChildMapForDelete.Attributes["key"] = tagTag.Key.ValueString()
+				childPayloads = append(childPayloads, map[string]interface{}{"tagTag": tagTagChildMapForDelete})
 			}
 		}
 	} else {

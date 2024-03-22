@@ -36,13 +36,44 @@ children:
       name_alias: "name_alias_2"
       fallback_member: "2.2.2.3"
       
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
   vrf_fallback_route:
+  
     - annotation: "annotation_1"
       description: "description_1"
       prefix_address: "2.2.2.2/24"
       name: "name_1"
       name_alias: "name_alias_1"
       deletable_child: true
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
   annotations:
     - key: "key_0"
       value: "value_1"
@@ -64,3 +95,6 @@ parents:
     class_in_parent: false
     test_type: both
 class_version: 5.2(4d)-
+
+
+

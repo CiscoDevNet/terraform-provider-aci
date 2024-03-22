@@ -7,13 +7,13 @@ resource "aci_relation_to_consumed_contract" "full_example_application_epg" {
   annotations = [
     {
       key   = "key_0"
-      value = "value_1"
+      value = "value_0"
     }
   ]
   tags = [
     {
       key   = "key_0"
-      value = "value_1"
+      value = "value_0"
     }
   ]
 }
@@ -26,13 +26,17 @@ resource "aci_relation_to_consumed_contract" "full_example_endpoint_security_gro
   annotations = [
     {
       key   = "key_0"
-      value = "value_1"
+      value = "value_0"
     }
   ]
   tags = [
     {
       key   = "key_0"
-      value = "value_1"
+      value = "value_0"
     }
   ]
 }
+
+
+
+

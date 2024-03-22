@@ -35,6 +35,18 @@ func SingleNestedAttributeRequiredAttributesNotProvided(attributes map[string]at
 	return false
 }
 
+type AciObjectType struct {
+	Attributes map[string]interface{}   `json:"attributes"`
+	Children   []map[string]interface{} `json:"children"`
+}
+
+func NewAciObject() AciObjectType {
+	return AciObjectType{
+		Attributes: make(map[string]interface{}),
+		Children:   []map[string]interface{}{},
+	}
+}
+
 func ContainsString(strings []string, matchString string) bool {
 	for _, stringValue := range strings {
 		if stringValue == matchString {
@@ -156,6 +168,7 @@ func (m setToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate) PlanModifyStrin
 	if !req.State.Raw.IsNull() && req.StateValue.IsNull() && req.PlanValue.IsUnknown() {
 		resp.PlanValue = types.StringNull()
 	}
+	return
 }
 
 type setToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate struct{}

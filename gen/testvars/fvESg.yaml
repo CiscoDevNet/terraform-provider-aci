@@ -49,6 +49,21 @@ children:
       priority: "level2"
       contract_name: "contract_name_1"
       
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
   relation_to_imported_contracts:
     - annotation: "annotation_1"
       priority: "level1"
@@ -58,12 +73,42 @@ children:
       priority: "level2"
       imported_contract_name: "imported_contract_name_1"
       
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
   relation_to_intra_epg_contracts:
     - annotation: "annotation_1"
       contract_name: "contract_name_0"
       
     - annotation: "annotation_2"
       contract_name: "contract_name_1"
+      
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
       
   relation_to_provided_contracts:
     - annotation: "annotation_1"
@@ -76,10 +121,41 @@ children:
       priority: "level2"
       contract_name: "contract_name_1"
       
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
   relation_to_vrf:
+  
     - annotation: "annotation_1"
       vrf_name: "vrf_name_1"
       deletable_child: false
+      
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
       
   relation_to_contract_masters:
     - annotation: "annotation_1"
@@ -87,6 +163,21 @@ children:
       
     - annotation: "annotation_2"
       target_dn: "target_dn_1"
+      
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
       
   annotations:
     - key: "key_0"
@@ -134,3 +225,5 @@ child_targets:
 class_version: 5.0(1k)-
 
 version_mismatch: true
+
+

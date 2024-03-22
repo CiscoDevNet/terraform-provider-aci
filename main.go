@@ -17,7 +17,7 @@ import (
 // Run "go generate" to format example terraform files and generate the docs for the registry/website
 
 // Run the resource and datasource generation tool.
-//go:generate go run gen/generator.go
+//go:generate go run -tags=generate gen/generator.go
 
 // Format code and cleanup imports
 //go:generate go run golang.org/x/tools/cmd/goimports -w internal/provider/

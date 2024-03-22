@@ -7,13 +7,17 @@ resource "aci_relation_from_l3out_consumer_label_to_route_control_profile" "full
   annotations = [
     {
       key   = "key_0"
-      value = "value_1"
+      value = "value_0"
     }
   ]
   tags = [
     {
       key   = "key_0"
-      value = "value_1"
+      value = "value_0"
     }
   ]
 }
+
+
+
+

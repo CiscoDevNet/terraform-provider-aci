@@ -66,6 +66,7 @@ All examples for the Annotation resource can be found in the [examples](https://
   - [aci_cloud_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/cloud_epg) ([cloudEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/cloudEPg/overview))
   - [aci_cloud_external_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/cloud_external_epg) ([cloudExtEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/cloudExtEPg/overview))
   - [aci_cloud_service_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/cloud_service_epg) ([cloudSvcEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/cloudSvcEPg/overview))
+  - [aci_communication_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/communication_policy) ([commPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/commPol/overview))
   - [aci_trust_control_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/trust_control_policy) ([fhsTrustCtrlPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fhsTrustCtrlPol/overview))
   - [aci_application_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/application_epg) ([fvAEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvAEPg/overview))
   - [aci_application_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/application_profile) ([fvAp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvAp/overview))
@@ -82,7 +83,6 @@ All examples for the Annotation resource can be found in the [examples](https://
   - [aci_epg_useg_ad_group_attribute](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/epg_useg_ad_group_attribute) ([fvIdGroupAttr](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvIdGroupAttr/overview))
   - [aci_epg_useg_ip_attribute](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/epg_useg_ip_attribute) ([fvIpAttr](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvIpAttr/overview))
   - [aci_epg_useg_mac_attribute](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/epg_useg_mac_attribute) ([fvMacAttr](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvMacAttr/overview))
-  - [aci_relation_to_consumed_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/relation_to_consumed_contract) ([fvRsCons](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsCons/overview))
 * `key` (key) - (string) The key used to uniquely identify this configuration object.
 * `value` (value) - (string) The value of the property.
 
@@ -107,3 +107,5 @@ import {
   to = aci_annotation.example_tenant
 }
 ```
+
+

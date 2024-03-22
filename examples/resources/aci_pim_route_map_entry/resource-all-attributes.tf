@@ -13,13 +13,17 @@ resource "aci_pim_route_map_entry" "full_example_pim_route_map_policy" {
   annotations = [
     {
       key   = "key_0"
-      value = "value_1"
+      value = "value_0"
     }
   ]
   tags = [
     {
       key   = "key_0"
-      value = "value_1"
+      value = "value_0"
     }
   ]
 }
+
+
+
+

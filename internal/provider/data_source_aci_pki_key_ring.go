@@ -29,21 +29,21 @@ type PkiKeyRingDataSource struct {
 }
 
 func (d *PkiKeyRingDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
-	tflog.Debug(ctx, "Start metadata of datasource: aci_key_ring")
-	resp.TypeName = req.ProviderTypeName + "_key_ring"
-	tflog.Debug(ctx, "End metadata of datasource: aci_key_ring")
+	tflog.Debug(ctx, "Start metadata of datasource: aci_pki_key_ring")
+	resp.TypeName = req.ProviderTypeName + "_pki_key_ring"
+	tflog.Debug(ctx, "End metadata of datasource: aci_pki_key_ring")
 }
 
 func (d *PkiKeyRingDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
-	tflog.Debug(ctx, "Start schema of datasource: aci_key_ring")
+	tflog.Debug(ctx, "Start schema of datasource: aci_pki_key_ring")
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "The key_ring datasource for the 'pkiKeyRing' class",
+		MarkdownDescription: "The pki_key_ring datasource for the 'pkiKeyRing' class",
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Key Ring object.",
+				MarkdownDescription: "The distinguished name (DN) of the Pki Key Ring object.",
 			},
 			"parent_dn": schema.StringAttribute{
 				Optional:            true,
@@ -55,7 +55,7 @@ func (d *PkiKeyRingDataSource) Schema(ctx context.Context, req datasource.Schema
 			},
 			"annotation": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The annotation of the Key Ring object.`,
+				MarkdownDescription: `The annotation of the Pki Key Ring object.`,
 			},
 			"certificate": schema.StringAttribute{
 				Computed:            true,
@@ -63,7 +63,7 @@ func (d *PkiKeyRingDataSource) Schema(ctx context.Context, req datasource.Schema
 			},
 			"description": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The description of the Key Ring object.`,
+				MarkdownDescription: `The description of the Pki Key Ring object.`,
 			},
 			"elliptic_curve": schema.StringAttribute{
 				Computed:            true,
@@ -83,11 +83,11 @@ func (d *PkiKeyRingDataSource) Schema(ctx context.Context, req datasource.Schema
 			},
 			"name": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: `The name of the Key Ring object.`,
+				MarkdownDescription: `The name of the Pki Key Ring object.`,
 			},
 			"name_alias": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The name alias of the Key Ring object.`,
+				MarkdownDescription: `The name alias of the Pki Key Ring object.`,
 			},
 			"owner_key": schema.StringAttribute{
 				Computed:            true,
@@ -139,11 +139,11 @@ func (d *PkiKeyRingDataSource) Schema(ctx context.Context, req datasource.Schema
 			},
 		},
 	}
-	tflog.Debug(ctx, "End schema of datasource: aci_key_ring")
+	tflog.Debug(ctx, "End schema of datasource: aci_pki_key_ring")
 }
 
 func (d *PkiKeyRingDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	tflog.Debug(ctx, "Start configure of datasource: aci_key_ring")
+	tflog.Debug(ctx, "Start configure of datasource: aci_pki_key_ring")
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
 		return
@@ -161,11 +161,11 @@ func (d *PkiKeyRingDataSource) Configure(ctx context.Context, req datasource.Con
 	}
 
 	d.client = client
-	tflog.Debug(ctx, "End configure of datasource: aci_key_ring")
+	tflog.Debug(ctx, "End configure of datasource: aci_pki_key_ring")
 }
 
 func (d *PkiKeyRingDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	tflog.Debug(ctx, "Start read of datasource: aci_key_ring")
+	tflog.Debug(ctx, "Start read of datasource: aci_pki_key_ring")
 	var data *PkiKeyRingResourceModel
 
 	// Read Terraform configuration data into the model
@@ -184,19 +184,19 @@ func (d *PkiKeyRingDataSource) Read(ctx context.Context, req datasource.ReadRequ
 	// Create a copy of the Id for when not found during getAndSetPkiKeyRingAttributes
 	cachedId := data.Id.ValueString()
 
-	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_key_ring with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_pki_key_ring with id '%s'", data.Id.ValueString()))
 
 	getAndSetPkiKeyRingAttributes(ctx, &resp.Diagnostics, d.client, data)
 
 	if data.Id.IsNull() {
 		resp.Diagnostics.AddError(
-			"Failed to read aci_key_ring data source",
-			fmt.Sprintf("The aci_key_ring data source with id '%s' has not been found", cachedId),
+			"Failed to read aci_pki_key_ring data source",
+			fmt.Sprintf("The aci_pki_key_ring data source with id '%s' has not been found", cachedId),
 		)
 		return
 	}
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_key_ring with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_pki_key_ring with id '%s'", data.Id.ValueString()))
 }
