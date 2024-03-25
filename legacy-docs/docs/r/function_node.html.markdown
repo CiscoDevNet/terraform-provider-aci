@@ -73,6 +73,7 @@ resource "aci_function_node" "example" {
 ## Attribute Reference
 - `conn_consumer_dn` - (Read-Only) Distinguished name of the Function Node consumer connector. Type: String.
 - `conn_provider_dn` - (Read-Only) Distinguished name of the Function Node provider connector. Type: String.
+- `conn_copy_dn` - (Read-Only) Distinguished name of the Function Node copy connector. Type: String.
 
 ## Importing
 
