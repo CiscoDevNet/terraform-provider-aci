@@ -77,4 +77,11 @@ resource "aci_l3_outside" "foo_l3_outside" {
     target_dn = data.aci_route_control_profile.shared_route_control_profile.id
     source    = "direct"
   }
+  default_route_leak_policy {
+    always     = "no"
+    annotation = "orchestrator:terraform"
+    criteria   = "only"
+    scope      = ["l3-out", "ctx"]
+  }
+
 }

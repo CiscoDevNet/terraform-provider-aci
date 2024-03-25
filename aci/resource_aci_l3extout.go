@@ -173,6 +173,45 @@ func resourceAciL3Outside() *schema.Resource {
 					},
 				},
 			},
+			"default_route_leak_policy": &schema.Schema{
+				Type:     schema.TypeSet,
+				Optional: true,
+				MaxItems: 1,
+				Elem: &schema.Resource{
+					Schema: AppendAttrSchemas(map[string]*schema.Schema{
+						"always": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+							ValidateFunc: validation.StringInSlice([]string{
+								"yes",
+								"no",
+							}, false),
+						},
+						"criteria": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+							ValidateFunc: validation.StringInSlice([]string{
+								"in-addition",
+								"only",
+							}, false),
+						},
+						"scope": {
+							Type:     schema.TypeSet,
+							Optional: true,
+							Computed: true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+								ValidateFunc: validation.StringInSlice([]string{
+									"ctx",
+									"l3-out",
+								}, false),
+							},
+						},
+					}, GetAnnotationAttrSchema()),
+				},
+			},
 		})),
 	}
 }
@@ -295,6 +334,36 @@ func getAndSetReadRelationl3extRsDampeningPolFromL3Outside(client *client.Client
 	return d, nil
 }
 
+func getAndSetDefaultRouteLeakPolicyAttributes(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	l3extDefaultRouteLeakP, err := client.ReadDefaultRouteLeakPolicy(dn)
+
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading l3extDefaultRouteLeakP %v", err)
+		d.Set("default_route_leak_policy", nil)
+		return nil, err
+	} else {
+		l3extDefaultRouteLeakPMap, err := l3extDefaultRouteLeakP.ToMap()
+		if err != nil {
+			return d, err
+		}
+		scopeList := make([]string, 0, 1)
+		for _, val := range strings.Split(l3extDefaultRouteLeakPMap["scope"], ",") {
+			scopeList = append(scopeList, strings.Trim(val, " "))
+		}
+
+		l3extDefaultRouteLeakPList := make([]map[string]interface{}, 0)
+		l3extDefaultRouteLeakPList = append(l3extDefaultRouteLeakPList, map[string]interface{}{
+			"always":     l3extDefaultRouteLeakPMap["always"],
+			"criteria":   l3extDefaultRouteLeakPMap["criteria"],
+			"scope":      scopeList,
+			"annotation": l3extDefaultRouteLeakPMap["annotation"],
+		})
+		d.Set("default_route_leak_policy", l3extDefaultRouteLeakPList)
+		log.Printf("[DEBUG]: l3extDefaultRouteLeakP: %v reading finished successfully", l3extDefaultRouteLeakPList)
+	}
+	return d, nil
+}
+
 func getAndSetReadRelationl3extRsEctxFromL3Outside(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
 	l3extRsEctxData, err := client.ReadRelationl3extRsEctxFromL3Outside(dn)
 	if err != nil {
@@ -402,6 +471,9 @@ func resourceAciL3OutsideImport(d *schema.ResourceData, m interface{}) ([]*schem
 
 	// Importing l3extRsRedistributePol object
 	getAndSetReadRelationl3extRsRedistributePol(aciClient, dn, d)
+
+	// Importing l3extDefaultRouteLeakP object
+	getAndSetDefaultRouteLeakPolicyAttributes(aciClient, dn, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
@@ -554,6 +626,30 @@ func resourceAciL3OutsideCreate(ctx context.Context, d *schema.ResourceData, m i
 			if err != nil {
 				return diag.FromErr(err)
 			}
+		}
+	}
+
+	if defaultRouteLeakPolicy, ok := d.GetOk("default_route_leak_policy"); ok {
+
+		newObj := defaultRouteLeakPolicy.(*schema.Set).List()[0].(map[string]interface{})
+
+		l3extDefaultRouteLeakPAttr := models.DefaultRouteLeakPolicyAttributes{}
+		l3extDefaultRouteLeakPAttr.Annotation = newObj["annotation"].(string)
+		l3extDefaultRouteLeakPAttr.Always = newObj["always"].(string)
+		l3extDefaultRouteLeakPAttr.Criteria = newObj["criteria"].(string)
+
+		scopeList := make([]string, 0, 1)
+		for _, val := range newObj["scope"].(*schema.Set).List() {
+			scopeList = append(scopeList, val.(string))
+		}
+		Scope := strings.Join(scopeList, ",")
+		l3extDefaultRouteLeakPAttr.Scope = Scope
+
+		l3extDefaultRouteLeakP := models.NewDefaultRouteLeakPolicy(fmt.Sprintf(models.RnL3extDefaultRouteLeakP), l3extOut.DistinguishedName, l3extDefaultRouteLeakPAttr)
+
+		err := aciClient.Save(l3extDefaultRouteLeakP)
+		if err != nil {
+			return diag.FromErr(err)
 		}
 	}
 
@@ -744,6 +840,35 @@ func resourceAciL3OutsideUpdate(ctx context.Context, d *schema.ResourceData, m i
 		}
 	}
 
+	if d.HasChange("default_route_leak_policy") || d.HasChange("annotation") {
+		_, newRel := d.GetChange("default_route_leak_policy")
+		newObj := newRel.(*schema.Set).List()[0].(map[string]interface{})
+
+		err := aciClient.DeleteByDn(fmt.Sprintf("%s/%s", l3extOut.DistinguishedName, models.RnL3extDefaultRouteLeakP), models.L3extDefaultRouteLeakPClassName)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+
+		l3extDefaultRouteLeakPAttr := models.DefaultRouteLeakPolicyAttributes{}
+		l3extDefaultRouteLeakPAttr.Annotation = newObj["annotation"].(string)
+		l3extDefaultRouteLeakPAttr.Always = newObj["always"].(string)
+		l3extDefaultRouteLeakPAttr.Criteria = newObj["criteria"].(string)
+
+		scopeList := make([]string, 0, 1)
+		for _, val := range newObj["scope"].(*schema.Set).List() {
+			scopeList = append(scopeList, val.(string))
+		}
+		Scope := strings.Join(scopeList, ",")
+		l3extDefaultRouteLeakPAttr.Scope = Scope
+
+		l3extDefaultRouteLeakP := models.NewDefaultRouteLeakPolicy(fmt.Sprintf(models.RnL3extDefaultRouteLeakP), l3extOut.DistinguishedName, l3extDefaultRouteLeakPAttr)
+
+		err = aciClient.Save(l3extDefaultRouteLeakP)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+	}
+
 	d.SetId(l3extOut.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
@@ -793,6 +918,9 @@ func resourceAciL3OutsideRead(ctx context.Context, d *schema.ResourceData, m int
 
 	// Importing l3extRsRedistributePol object
 	getAndSetReadRelationl3extRsRedistributePol(aciClient, dn, d)
+
+	// Importing l3extDefaultRouteLeakP object
+	getAndSetDefaultRouteLeakPolicyAttributes(aciClient, dn, d)
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 

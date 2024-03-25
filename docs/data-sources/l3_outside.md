@@ -52,3 +52,8 @@ data "aci_l3_outside" "foo_l3_outside" {
 * `relation_l3extrs_redistribute_pol` - (Read-Only) A block representing the relation to a Route Profile for Redistribution (class rtctrlProfile). Cardinality - N_TO_M. Type: Block.
   * `source` - (Read-Only) Route Map Source for the Route Profile for Redistribution.
   * `target_dn` - (Read-Only) Distinguished name of the Route Control Profile for the Route Profile for Redistribution.
+* `default_route_leak_policy` - (Read-Only) A block representing the Default Route Leak Policy of the L3 Outside object. Type: Block.
+  * `annotation` - (Read-Only) Annotation of the Default Route Leak Policy object. Type: String.
+  * `always` - (Read-Only) A property to indicate whether or not to always advertise the default route leak (OSPF specific). Type: String.
+  * `criteria` - (Read-Only) A property that specifies an exact or subset matching of communities. Type: String.
+  * `scope` - (Read-Only) The scope of the Default Route Leak Policy object. Type: List.
