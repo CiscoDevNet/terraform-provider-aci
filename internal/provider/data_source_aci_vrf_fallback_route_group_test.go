@@ -21,32 +21,32 @@ func TestAccDataSourceFvFBRGroupWithFvCtx(t *testing.T) {
 				Config:             testConfigFvFBRGroupDataSourceDependencyWithFvCtx,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.aci_fallback_route_group.test", "name", "fallback_route_group"),
-					resource.TestCheckResourceAttr("data.aci_fallback_route_group.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("data.aci_fallback_route_group.test", "description", ""),
-					resource.TestCheckResourceAttr("data.aci_fallback_route_group.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("data.aci_vrf_fallback_route_group.test", "name", "fallback_route_group"),
+					resource.TestCheckResourceAttr("data.aci_vrf_fallback_route_group.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("data.aci_vrf_fallback_route_group.test", "description", ""),
+					resource.TestCheckResourceAttr("data.aci_vrf_fallback_route_group.test", "name_alias", ""),
 				),
 			},
 			{
 				Config:      testConfigFvFBRGroupNotExistingFvCtx,
-				ExpectError: regexp.MustCompile("Failed to read aci_fallback_route_group data source"),
+				ExpectError: regexp.MustCompile("Failed to read aci_vrf_fallback_route_group data source"),
 			},
 		},
 	})
 }
 
 const testConfigFvFBRGroupDataSourceDependencyWithFvCtx = testConfigFvFBRGroupMinDependencyWithFvCtx + `
-data "aci_fallback_route_group" "test" {
+data "aci_vrf_fallback_route_group" "test" {
   parent_dn = aci_vrf.test.id
   name = "fallback_route_group"
-  depends_on = [aci_fallback_route_group.test]
+  depends_on = [aci_vrf_fallback_route_group.test]
 }
 `
 
 const testConfigFvFBRGroupNotExistingFvCtx = testConfigFvFBRGroupMinDependencyWithFvCtx + `
-data "aci_fallback_route_group" "test_non_existing" {
+data "aci_vrf_fallback_route_group" "test_non_existing" {
   parent_dn = aci_vrf.test.id
   name = "fallback_route_group_non_existing"
-  depends_on = [aci_fallback_route_group.test]
+  depends_on = [aci_vrf_fallback_route_group.test]
 }
 `

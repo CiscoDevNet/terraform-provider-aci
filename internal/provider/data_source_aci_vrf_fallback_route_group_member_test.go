@@ -21,33 +21,33 @@ func TestAccDataSourceFvFBRMemberWithFvFBRGroup(t *testing.T) {
 				Config:             testConfigFvFBRMemberDataSourceDependencyWithFvFBRGroup,
 				ExpectNonEmptyPlan: true,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.aci_fallback_member.test", "fallback_member_addr", "2.2.2.3"),
-					resource.TestCheckResourceAttr("data.aci_fallback_member.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("data.aci_fallback_member.test", "description", ""),
-					resource.TestCheckResourceAttr("data.aci_fallback_member.test", "name", ""),
-					resource.TestCheckResourceAttr("data.aci_fallback_member.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("data.aci_vrf_fallback_route_group_member.test", "fallback_member", "2.2.2.3"),
+					resource.TestCheckResourceAttr("data.aci_vrf_fallback_route_group_member.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("data.aci_vrf_fallback_route_group_member.test", "description", ""),
+					resource.TestCheckResourceAttr("data.aci_vrf_fallback_route_group_member.test", "name", ""),
+					resource.TestCheckResourceAttr("data.aci_vrf_fallback_route_group_member.test", "name_alias", ""),
 				),
 			},
 			{
 				Config:      testConfigFvFBRMemberNotExistingFvFBRGroup,
-				ExpectError: regexp.MustCompile("Failed to read aci_fallback_member data source"),
+				ExpectError: regexp.MustCompile("Failed to read aci_vrf_fallback_route_group_member data source"),
 			},
 		},
 	})
 }
 
 const testConfigFvFBRMemberDataSourceDependencyWithFvFBRGroup = testConfigFvFBRMemberMinDependencyWithFvFBRGroup + `
-data "aci_fallback_member" "test" {
-  parent_dn = aci_fallback_route_group.test.id
-  fallback_member_addr = "2.2.2.3"
-  depends_on = [aci_fallback_member.test]
+data "aci_vrf_fallback_route_group_member" "test" {
+  parent_dn = aci_vrf_fallback_route_group.test.id
+  fallback_member = "2.2.2.3"
+  depends_on = [aci_vrf_fallback_route_group_member.test]
 }
 `
 
 const testConfigFvFBRMemberNotExistingFvFBRGroup = testConfigFvFBRMemberMinDependencyWithFvFBRGroup + `
-data "aci_fallback_member" "test_non_existing" {
-  parent_dn = aci_fallback_route_group.test.id
-  fallback_member_addr = "2.2.2.4"
-  depends_on = [aci_fallback_member.test]
+data "aci_vrf_fallback_route_group_member" "test_non_existing" {
+  parent_dn = aci_vrf_fallback_route_group.test.id
+  fallback_member = "2.2.2.4"
+  depends_on = [aci_vrf_fallback_route_group_member.test]
 }
 `
