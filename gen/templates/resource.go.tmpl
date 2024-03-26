@@ -2,6 +2,68 @@
 // In order to regenerate this file execute `go generate` from the repository root.
 // More details can be found in the [README](https://github.com/CiscoDevNet/terraform-provider-aci/blob/master/README.md).
 
+{{- define "child_attributes" }}
+			"{{- .ResourceName}}": schema.SetNestedAttribute{
+				MarkdownDescription: `{{.Comment}}`,
+				Optional:            true,
+				Computed:            true,
+				PlanModifiers: []planmodifier.Set{
+					setplanmodifier.UseStateForUnknown(),
+				},
+				{{- if not .IdentifiedBy}}
+				Validators: []validator.Set{
+					setvalidator.SizeAtMost(1),
+				},
+				{{- end}}
+				NestedObject: schema.NestedAttributeObject{
+				Attributes: map[string]schema.Attribute{
+					{{- range .Properties}}
+					{{- if eq .ValueType "bitmask"}}
+					"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": schema.SetAttribute{
+						MarkdownDescription: `{{.Comment}}`,
+						Optional:            true,
+						Computed:            true,
+						PlanModifiers: []planmodifier.Set{
+							setplanmodifier.UseStateForUnknown(),
+						},
+						{{- if .ValidValues}}
+						Validators: []validator.Set{
+							setvalidator.SizeAtMost({{ len .ValidValues }}),
+							setvalidator.ValueStringsAre(
+								stringvalidator.OneOf({{- validatorString .ValidValues}}),
+							),
+						},
+						{{- end}}
+						ElementType: types.StringType,
+					},
+					{{- else}}
+					"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": schema.StringAttribute{
+						{{- if or .IsNaming .IsRequired}}
+						Required:            true,
+						{{- else }}
+						Optional:            true,
+						Computed:            true,
+						{{- end}}
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.UseStateForUnknown(),
+						},
+						{{- if .ValidValues}}
+						Validators: []validator.String{
+							stringvalidator.OneOf({{- validatorString .ValidValues}}),
+						},
+						{{- end}}
+						MarkdownDescription: `{{.Comment}}`,
+					},
+					{{- end}}
+				{{- end}}
+				{{- range .Children}}
+				{{- template "child_attributes" . }}
+				},
+				},
+				},
+				{{- end}}
+				{{- end}}
+
 package provider
 
 import (
@@ -74,9 +136,9 @@ type {{.ResourceClassName}}ResourceModel struct {
 	{{- end}}
 }
 
-{{- range .Children}}
-// {{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel describes the resource data model for the children without relation ships.
-type {{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel struct {
+{{ define "child_structs" }}
+// {{.ResourceClassName}}{{.ParentName}}ResourceModel describes the resource data model for the children without relation ships.
+type {{.ResourceClassName}}{{.ParentName}}ResourceModel struct {
 	{{- range .Properties}}
 		{{- if eq .ValueType "bitmask"}}
 	{{ .Name }} types.Set `tfsdk:"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}"`
@@ -86,8 +148,19 @@ type {{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel struct {
 	{{ .Name }} types.String `tfsdk:"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}"`
 		{{- end}}
 	{{- end}}
+	{{- range .Children}}
+	{{ .ResourceClassName }} types.Set `tfsdk:"{{- .ResourceName}}"`
+	{{- end}}
 }
+{{- range .Children}}
+{{- template "child_structs" . }}
 {{- end}}
+{{- end}}
+
+{{- range .Children}}
+{{- template "child_structs" . }}
+{{- end}}
+
 
 {{if .IdentifiedBy}}
 type {{.ResourceClassName}}Identifier struct {
@@ -175,64 +248,14 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 				{{- end}}
 			{{- end}}
 			{{- range .Children}}
-			"{{- .ResourceName}}": schema.SetNestedAttribute{
-				MarkdownDescription: `{{.Comment}}`,
-				Optional:            true,
-				Computed:            true,
-				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
-				},
-				{{- if not .IdentifiedBy}}
-				Validators: []validator.Set{
-					setvalidator.SizeAtMost(1),
-				},
-				{{- end}}
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-					{{- range .Properties}}
-						{{- if eq .ValueType "bitmask"}}
-						"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": schema.SetAttribute{
-							MarkdownDescription: `{{.Comment}}`,
-							Optional:            true,
-							Computed:            true,
-							PlanModifiers: []planmodifier.Set{
-								setplanmodifier.UseStateForUnknown(),
-							},
-							{{- if .ValidValues}}
-							Validators: []validator.Set{
-								setvalidator.SizeAtMost({{ len .ValidValues }}),
-								setvalidator.ValueStringsAre(
-									stringvalidator.OneOf({{- validatorString .ValidValues}}),
-								),
-							},
-							{{- end}}
-							ElementType: types.StringType,
-						},
-						{{- else}}
-						"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": schema.StringAttribute{
-							{{- if or .IsNaming .IsRequired}}
-							Required:            true,
-							{{- else }}
-							Optional:            true,
-							Computed:            true,
-							{{- end}}
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
-							},
-							{{- if .ValidValues}}
-							Validators: []validator.String{
-								stringvalidator.OneOf({{- validatorString .ValidValues}}),
-							},
-							{{- end}}
-							MarkdownDescription: `{{.Comment}}`,
-						},
-						{{- end}}
+				{{- template "child_attributes" . }}
+				
+					},
+					},
+					},
+				
 					{{- end}}
 					},
-				},
-			},
-			{{- end}}
-		},
 	}
 	tflog.Debug(ctx, "End schema of resource: aci_{{.ResourceName}}")
 }
@@ -284,7 +307,7 @@ func (r *{{.ResourceClassName}}Resource) Create(ctx context.Context, req resourc
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_{{.ResourceName}} with id '%s'", data.Id.ValueString()))
 
 	{{ if .HasChild}}
-		{{- range .Children}}
+	{{- range .Children}}
 	var {{.PkgName}}Plan, {{.PkgName}}State []{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel
 	data.{{ .ResourceClassName }}.ElementsAs(ctx, &{{.PkgName}}Plan, false)
 	stateData.{{ .ResourceClassName }}.ElementsAs(ctx, &{{.PkgName}}State, false)
@@ -302,7 +325,8 @@ func (r *{{.ResourceClassName}}Resource) Create(ctx context.Context, req resourc
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	
+
+
 	getAndSet{{.ResourceClassName}}Attributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save data into Terraform state
@@ -355,6 +379,8 @@ func (r *{{.ResourceClassName}}Resource) Update(ctx context.Context, req resourc
 
 	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_{{.ResourceName}} with id '%s'", data.Id.ValueString()))
 	
+	
+
 	{{ if .HasChild}}
 		{{- range .Children}}
 	var {{.PkgName}}Plan, {{.PkgName}}State []{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel
@@ -371,7 +397,7 @@ func (r *{{.ResourceClassName}}Resource) Update(ctx context.Context, req resourc
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
-	
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -611,6 +637,7 @@ func set{{.ResourceClassName}}Id(ctx context.Context, data *{{.ResourceClassName
 	data.Id =  types.StringValue(fmt.Sprintf("%s/%s", strings.Split([]string{ {{- fromInterfacesToString .DnFormats}} }[0], "/")[0], rn))
 	{{- end}}
 }
+
 
 {{ range .Children}}
 func get{{$.ResourceClassName}}{{ .ResourceClassName }}ChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *{{$.ResourceClassName}}ResourceModel, {{.PkgName}}Plan, {{.PkgName}}State []{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel) []map[string]interface{} {

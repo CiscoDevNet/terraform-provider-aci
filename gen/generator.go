@@ -280,7 +280,7 @@ func getClassModels(definitions Definitions) map[string]Model {
 	for _, pkgName := range pkgNames {
 
 		classModel := Model{PkgName: pkgName}
-		classModel.setClassModel(metaPath, false, definitions, []string{}, pkgNames)
+		classModel.setClassModel(metaPath, false, definitions, []string{}, pkgNames, nil)
 		classModels[pkgName] = classModel
 	}
 	return classModels
@@ -531,20 +531,10 @@ func main() {
 			// When done before additional files would need to be opened and read which would slow down the generation process
 			model.ResourceName = GetResourceName(model.PkgName, definitions)
 			model.RelationshipResourceName = GetResourceName(model.RelationshipClass, definitions)
-			childMap := make(map[string]Model, 0)
-			for childName, childModel := range model.Children {
-				childModel.ChildResourceName = GetResourceName(childModel.PkgName, definitions)
-				if len(childModel.IdentifiedBy) > 0 {
-					// TODO add logic to determine the naming for plural child resources
-					childModel.ResourceNameDocReference = childModel.ChildResourceName
-					childModel.ResourceName = fmt.Sprintf("%ss", childModel.ChildResourceName)
-				} else {
-					childModel.ResourceName = childModel.ChildResourceName
-				}
-				childModel.RelationshipResourceName = GetResourceName(childModel.RelationshipClass, definitions)
-				childMap[childName] = childModel
-			}
-			model.Children = childMap
+			model.Children = SetChildClassNames(definitions, model.Children)
+			// for key, val := range model.Children {
+			// 	log.Printf("HERE %v %v", key, val.Children)
+			// }
 
 			// Set the documentation specific information for the resource
 			// This is done to ensure references can be made to parent/child resources and output amounts can be restricted
@@ -623,6 +613,7 @@ type Model struct {
 	RelationshipClass        string
 	RelationshipResourceName string
 	Versions                 string
+	ParentName               string
 	ChildClasses             []string
 	ContainedBy              []string
 	Contains                 []string
@@ -692,7 +683,7 @@ type Definitions struct {
 }
 
 // Reads the class details from the meta file and sets all details to the Model
-func (m *Model) setClassModel(metaPath string, child bool, definitions Definitions, parents, pkgNames []string) {
+func (m *Model) setClassModel(metaPath string, isChildIteration bool, definitions Definitions, parents, pkgNames, mainParentChildren []string) {
 	fileContent, err := os.ReadFile(fmt.Sprintf("%s/%s.json", metaPath, m.PkgName))
 	if err != nil {
 		log.Fatal("Error when opening file: ", err)
@@ -709,7 +700,7 @@ func (m *Model) setClassModel(metaPath string, child bool, definitions Definitio
 	m.Configuration = GetClassConfiguration(m.PkgName, definitions)
 
 	for _, classDetails := range classInfo {
-		m.SetClassLabel(classDetails, child)
+		m.SetClassLabel(classDetails)
 		m.SetClassName(classDetails)
 		m.SetClassRnFormat(classDetails)
 		m.SetClassDnFormats(classDetails)
@@ -721,7 +712,10 @@ func (m *Model) setClassModel(metaPath string, child bool, definitions Definitio
 		m.SetClassComment(classDetails)
 		m.SetClassVersions(classDetails)
 		m.SetClassProperties(classDetails)
-		m.SetClassChildren(classDetails, pkgNames)
+		m.SetClassChildren(classDetails, pkgNames, mainParentChildren)
+		if len(parents) != 0 {
+			m.SetParentName(parents)
+		}
 		m.SetResourceNotesAndWarnigns(m.PkgName, definitions)
 	}
 
@@ -731,38 +725,38 @@ func (m *Model) setClassModel(metaPath string, child bool, definitions Definitio
 			- Incorrect: Parent -> Child -> Grandchild
 		// TODO add grandchild logic
 	*/
-	if !child {
-		if len(m.ChildClasses) > 0 {
-			m.HasChild = true
-			m.Children = make(map[string]Model)
-			for _, child := range m.ChildClasses {
-				childModel := Model{PkgName: child}
-				childModel.setClassModel(metaPath, true, definitions, []string{m.PkgName}, pkgNames)
-				m.Children[child] = childModel
-				if childModel.HasValidValues {
-					m.HasValidValues = true
-				}
-				if len(childModel.IdentifiedBy) == 0 {
-					m.HasChildWithoutIdentifier = true
-				}
-				if childModel.AllowDelete {
-					m.AllowChildDelete = true
-				}
-				if childModel.HasBitmask {
-					m.HasBitmask = true
-				}
-				if childModel.HasNamedProperties {
-					m.HasNamedProperties = true
-					m.HasChildNamedProperties = true
-				}
+
+	if len(m.ChildClasses) > 0 {
+		mainParentChildren := append(mainParentChildren, m.ChildClasses...)
+		m.HasChild = true
+		m.Children = make(map[string]Model)
+		for _, child := range m.ChildClasses {
+			childModel := Model{PkgName: child}
+			childModel.setClassModel(metaPath, true, definitions, []string{m.ResourceClassName}, pkgNames, mainParentChildren)
+			m.Children[child] = childModel
+			if childModel.HasValidValues {
+				m.HasValidValues = true
 			}
-		} else {
-			m.HasChild = false
+			if len(childModel.IdentifiedBy) == 0 {
+				m.HasChildWithoutIdentifier = true
+			}
+			if childModel.AllowDelete {
+				m.AllowChildDelete = true
+			}
+			if childModel.HasBitmask {
+				m.HasBitmask = true
+			}
+			if childModel.HasNamedProperties {
+				m.HasNamedProperties = true
+				m.HasChildNamedProperties = true
+			}
 		}
+	} else {
+		m.HasChild = false
 	}
 }
 
-func (m *Model) SetClassLabel(classDetails interface{}, child bool) {
+func (m *Model) SetClassLabel(classDetails interface{}) {
 	m.Label = cleanLabel(classDetails.(map[string]interface{})["label"].(string))
 	if slices.Contains(labels, m.Label) || m.Label == "" {
 		if !slices.Contains(duplicateLabels, m.Label) {
@@ -846,14 +840,14 @@ func (m *Model) SetClassIdentifiers(classDetails interface{}) {
 	m.IdentifiedBy = uniqueInterfaceSlice(classDetails.(map[string]interface{})["identifiedBy"].([]interface{}))
 }
 
-func (m *Model) SetClassChildren(classDetails interface{}, pkgNames []string) {
+func (m *Model) SetClassChildren(classDetails interface{}, pkgNames, mainParentChildren []string) {
 	childClasses := []string{}
 	rnMap := classDetails.(map[string]interface{})["rnMap"].(map[string]interface{})
 	for rn, className := range rnMap {
 		// TODO check if this condition is correct since there might be cases where that we should exclude
 		if !strings.HasSuffix(rn, "-") || strings.HasPrefix(rn, "rs") || slices.Contains(alwaysIncludeChildren, className.(string)) {
 			pkgName := strings.ReplaceAll(className.(string), ":", "")
-			if slices.Contains(pkgNames, pkgName) {
+			if slices.Contains(pkgNames, pkgName) && !slices.Contains(mainParentChildren, pkgName) {
 				childClasses = append(childClasses, pkgName)
 			}
 		}
@@ -870,6 +864,25 @@ func (m *Model) SetClassChildren(classDetails interface{}, pkgNames []string) {
 		}
 	}
 	m.ChildClasses = uniqueStringSlice(childClasses)
+}
+
+func SetChildClassNames(definitions Definitions, children map[string]Model) map[string]Model {
+	childMap := make(map[string]Model, 0)
+	for childName, childModel := range children {
+		childModel.ChildResourceName = GetResourceName(childModel.PkgName, definitions)
+		if len(childModel.IdentifiedBy) > 0 {
+			// TODO add logic to determine the naming for plural child resources
+			childModel.ResourceNameDocReference = childModel.ChildResourceName
+			childModel.ResourceName = fmt.Sprintf("%ss", childModel.ChildResourceName)
+		} else {
+			childModel.ResourceName = childModel.ChildResourceName
+		}
+		childModel.RelationshipResourceName = GetResourceName(childModel.RelationshipClass, definitions)
+		childModel.Children = SetChildClassNames(definitions, childModel.Children)
+
+		childMap[childName] = childModel
+	}
+	return childMap
 }
 
 func (m *Model) SetClassInclude() {
@@ -890,6 +903,10 @@ func (m *Model) SetClassAllowDelete(classDetails interface{}) {
 	} else {
 		m.AllowDelete = true
 	}
+}
+
+func (m *Model) SetParentName(classPkgName []string) {
+	m.ParentName = classPkgName[0]
 }
 
 // Determine if a class is allowed to be deleted as defined in the classes.yaml file
