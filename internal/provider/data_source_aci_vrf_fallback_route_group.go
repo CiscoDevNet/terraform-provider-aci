@@ -42,7 +42,7 @@ func (d *FvFBRGroupDataSource) Schema(ctx context.Context, req datasource.Schema
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Vrf Fallback Route Group object.",
+				MarkdownDescription: "The distinguished name (DN) of the VRF Fallback Route Group object.",
 			},
 			"parent_dn": schema.StringAttribute{
 				Required:            true,
@@ -50,19 +50,19 @@ func (d *FvFBRGroupDataSource) Schema(ctx context.Context, req datasource.Schema
 			},
 			"annotation": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The annotation of the Vrf Fallback Route Group object.`,
+				MarkdownDescription: `The annotation of the VRF Fallback Route Group object.`,
 			},
 			"description": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The description of the Vrf Fallback Route Group object.`,
+				MarkdownDescription: `The description of the VRF Fallback Route Group object.`,
 			},
 			"name": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: `The name of the Vrf Fallback Route Group object.`,
+				MarkdownDescription: `The name of the VRF Fallback Route Group object.`,
 			},
 			"name_alias": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The name alias of the Vrf Fallback Route Group object.`,
+				MarkdownDescription: `The name alias of the VRF Fallback Route Group object.`,
 			},
 			"vrf_fallback_route_group_members": schema.SetNestedAttribute{
 				MarkdownDescription: ``,
@@ -71,23 +71,23 @@ func (d *FvFBRGroupDataSource) Schema(ctx context.Context, req datasource.Schema
 					Attributes: map[string]schema.Attribute{
 						"annotation": schema.StringAttribute{
 							Computed:            true,
-							MarkdownDescription: `The annotation of the Vrf Fallback Route Group Member object.`,
+							MarkdownDescription: `The annotation of the VRF Fallback Route Group Member object.`,
 						},
 						"description": schema.StringAttribute{
 							Computed:            true,
-							MarkdownDescription: `The description of the Vrf Fallback Route Group Member object.`,
+							MarkdownDescription: `The description of the VRF Fallback Route Group Member object.`,
 						},
 						"name": schema.StringAttribute{
 							Computed:            true,
-							MarkdownDescription: `The name of the Vrf Fallback Route Group Member object.`,
+							MarkdownDescription: `The name of the VRF Fallback Route Group Member object.`,
 						},
 						"name_alias": schema.StringAttribute{
 							Computed:            true,
-							MarkdownDescription: `The name alias of the Vrf Fallback Route Group Member object.`,
+							MarkdownDescription: `The name alias of the VRF Fallback Route Group Member object.`,
 						},
 						"fallback_member": schema.StringAttribute{
 							Computed:            true,
-							MarkdownDescription: `The address of the Vrf Fallback Route Group Member object.`,
+							MarkdownDescription: `The address of the VRF Fallback Route Group Member object.`,
 						},
 					},
 				},

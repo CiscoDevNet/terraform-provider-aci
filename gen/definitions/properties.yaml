@@ -20,6 +20,8 @@ global:
     id: "id_attribute" # id is a terraform reserved schema entry and needed in struct
     prio: "priority"
     descr: "description"
+  resource_name_doc_overwrite:
+    Vrf: VRF
   ignores:
     - "userdom"
 

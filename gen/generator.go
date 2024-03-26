@@ -111,8 +111,12 @@ var targetRelationalPropertyClasses = map[string]string{}
 var alwaysIncludeChildren = []string{"tag:Annotation", "tag:Tag"}
 var excludeChildResourceNamesFromDocs = []string{"", "annotation", "tag"}
 
-func GetResourceNameAsDescription(s string) string {
-	return cases.Title(language.English).String(strings.ReplaceAll(s, "_", " "))
+func GetResourceNameAsDescription(s string, definitions Definitions) string {
+	resourceName := cases.Title(language.English).String(strings.ReplaceAll(s, "_", " "))
+	for k, v := range definitions.Properties["global"].(map[interface{}]interface{})["resource_name_doc_overwrite"].(map[interface{}]interface{}) {
+		resourceName = strings.ReplaceAll(resourceName, k.(string), v.(string))
+	}
+	return resourceName
 }
 
 func GetDevnetDocForClass(className string) string {
@@ -611,44 +615,45 @@ type Metadata struct {
 // A Model represents a ACI class
 // All information is retrieved directly or deduced from the metadata
 type Model struct {
-	PkgName                  string
-	Label                    string
-	Name                     string
-	RnFormat                 string
-	RnPrepend                string
-	Comment                  string
-	ResourceClassName        string
-	ResourceName             string
-	ResourceNameDocReference string
-	ChildResourceName        string
-	ExampleDataSource        string
-	ExampleResource          string
-	ExampleResourceFull      string
-	SubCategory              string
-	RelationshipClass        string
-	RelationshipResourceName string
-	Versions                 string
-	ChildClasses             []string
-	ContainedBy              []string
-	Contains                 []string
-	DocumentationDnFormats   []string
-	DocumentationParentDns   []string
-	DocumentationExamples    []string
-	DocumentationChildren    []string
-	ResourceNotes            []string
-	ResourceWarnings         []string
-	DatasourceNotes          []string
-	DatasourceWarnings       []string
-	Parents                  []string
-	UiLocations              []string
-	IdentifiedBy             []interface{}
-	DnFormats                []interface{}
-	Properties               map[string]Property
-	NamedProperties          map[string]Property
-	Children                 map[string]Model
-	Configuration            map[string]interface{}
-	TestVars                 map[string]interface{}
-	Definitions              Definitions
+	PkgName                   string
+	Label                     string
+	Name                      string
+	RnFormat                  string
+	RnPrepend                 string
+	Comment                   string
+	ResourceClassName         string
+	ResourceName              string
+	ResourceNameDocReference  string
+	ChildResourceName         string
+	ExampleDataSource         string
+	ExampleResource           string
+	ExampleResourceFull       string
+	SubCategory               string
+	RelationshipClass         string
+	RelationshipResourceName  string
+	Versions                  string
+	ChildClasses              []string
+	ContainedBy               []string
+	Contains                  []string
+	DocumentationDnFormats    []string
+	DocumentationParentDns    []string
+	DocumentationExamples     []string
+	DocumentationChildren     []string
+	ResourceNotes             []string
+	ResourceWarnings          []string
+	DatasourceNotes           []string
+	DatasourceWarnings        []string
+	Parents                   []string
+	UiLocations               []string
+	IdentifiedBy              []interface{}
+	DnFormats                 []interface{}
+	Properties                map[string]Property
+	NamedProperties           map[string]Property
+	Children                  map[string]Model
+	Configuration             map[string]interface{}
+	TestVars                  map[string]interface{}
+	Definitions               Definitions
+	ResourceNameAsDescription string
 	// Below booleans are used during template rendering to determine correct rendering the go code
 	AllowDelete               bool
 	AllowChildDelete          bool
@@ -728,6 +733,7 @@ func (m *Model) setClassModel(metaPath string, child bool, definitions Definitio
 		m.SetClassProperties(classDetails)
 		m.SetClassChildren(classDetails, pkgNames)
 		m.SetResourceNotesAndWarnigns(m.PkgName, definitions)
+		m.SetResourceNameAsDescription(m.PkgName, definitions)
 	}
 
 	/*
@@ -924,6 +930,10 @@ func (m *Model) SetResourceNotesAndWarnigns(classPkgName string, definitions Def
 			}
 		}
 	}
+}
+
+func (m *Model) SetResourceNameAsDescription(classPkgName string, definitions Definitions) {
+	m.ResourceNameAsDescription = GetResourceNameAsDescription(GetResourceName(classPkgName, definitions), definitions)
 }
 
 // Determine if a class is allowed to be deleted as defined in the classes.yaml file
@@ -1145,7 +1155,7 @@ func getOverwritePropertyComment(propertyName, classPkgName string, definitions 
 					for k, v := range value.(map[interface{}]interface{}) {
 						if k.(string) == propertyName {
 							if strings.Contains(v.(string), "%s") {
-								return fmt.Sprintf(v.(string), GetResourceNameAsDescription(GetResourceName(classPkgName, definitions)))
+								return fmt.Sprintf(v.(string), GetResourceNameAsDescription(GetResourceName(classPkgName, definitions), definitions))
 							}
 							return v.(string)
 						}

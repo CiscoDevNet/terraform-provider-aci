@@ -83,7 +83,7 @@ func (r *FvFBRMemberResource) Schema(ctx context.Context, req resource.SchemaReq
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Vrf Fallback Route Group Member object.",
+				MarkdownDescription: "The distinguished name (DN) of the VRF Fallback Route Group Member object.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
@@ -103,7 +103,7 @@ func (r *FvFBRMemberResource) Schema(ctx context.Context, req resource.SchemaReq
 					stringplanmodifier.UseStateForUnknown(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
-				MarkdownDescription: `The annotation of the Vrf Fallback Route Group Member object.`,
+				MarkdownDescription: `The annotation of the VRF Fallback Route Group Member object.`,
 			},
 			"description": schema.StringAttribute{
 				Optional: true,
@@ -111,7 +111,7 @@ func (r *FvFBRMemberResource) Schema(ctx context.Context, req resource.SchemaReq
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
-				MarkdownDescription: `The description of the Vrf Fallback Route Group Member object.`,
+				MarkdownDescription: `The description of the VRF Fallback Route Group Member object.`,
 			},
 			"name": schema.StringAttribute{
 				Optional: true,
@@ -119,7 +119,7 @@ func (r *FvFBRMemberResource) Schema(ctx context.Context, req resource.SchemaReq
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
-				MarkdownDescription: `The name of the Vrf Fallback Route Group Member object.`,
+				MarkdownDescription: `The name of the VRF Fallback Route Group Member object.`,
 			},
 			"name_alias": schema.StringAttribute{
 				Optional: true,
@@ -127,7 +127,7 @@ func (r *FvFBRMemberResource) Schema(ctx context.Context, req resource.SchemaReq
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
-				MarkdownDescription: `The name alias of the Vrf Fallback Route Group Member object.`,
+				MarkdownDescription: `The name alias of the VRF Fallback Route Group Member object.`,
 			},
 			"fallback_member": schema.StringAttribute{
 				Required: true,
@@ -135,7 +135,7 @@ func (r *FvFBRMemberResource) Schema(ctx context.Context, req resource.SchemaReq
 					stringplanmodifier.UseStateForUnknown(),
 					stringplanmodifier.RequiresReplace(),
 				},
-				MarkdownDescription: `The address of the Vrf Fallback Route Group Member object.`,
+				MarkdownDescription: `The address of the VRF Fallback Route Group Member object.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,

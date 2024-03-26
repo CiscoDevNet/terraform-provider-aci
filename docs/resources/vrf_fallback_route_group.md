@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_vrf_fallback_route_group"
 sidebar_current: "docs-aci-resource-aci_vrf_fallback_route_group"
 description: |-
-  Manages ACI Vrf Fallback Route Group
+  Manages ACI VRF Fallback Route Group
 ---
 
 # aci_vrf_fallback_route_group #
 
-Manages ACI Vrf Fallback Route Group
+Manages ACI VRF Fallback Route Group
 
 
 
@@ -30,7 +30,7 @@ Manages ACI Vrf Fallback Route Group
 
 ## Example Usage ##
 
-The configuration snippet below creates a Vrf Fallback Route Group with only required attributes.
+The configuration snippet below creates a VRF Fallback Route Group with only required attributes.
 
 ```hcl
 
@@ -40,7 +40,7 @@ resource "aci_vrf_fallback_route_group" "example_vrf" {
 }
 
 ```
-The configuration snippet below shows all possible attributes of the Vrf Fallback Route Group.
+The configuration snippet below shows all possible attributes of the VRF Fallback Route Group.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
@@ -77,7 +77,7 @@ resource "aci_vrf_fallback_route_group" "full_example_vrf" {
 
 ```
 
-All examples for the Vrf Fallback Route Group resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/resources/aci_vrf_fallback_route_group) folder.
+All examples for the VRF Fallback Route Group resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/resources/aci_vrf_fallback_route_group) folder.
 
 ## Schema ##
 
@@ -85,41 +85,41 @@ All examples for the Vrf Fallback Route Group resource can be found in the [exam
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_vrf](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vrf) ([fvCtx](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvCtx/overview))
-* `name` (name) - (string) The name of the Vrf Fallback Route Group object.
+* `name` (name) - (string) The name of the VRF Fallback Route Group object.
 
 ### Read-Only ###
 
-* `id` - (string) The distinguished name (DN) of the Vrf Fallback Route Group object.
+* `id` - (string) The distinguished name (DN) of the VRF Fallback Route Group object.
 
 ### Optional ###
   
-* `annotation` (annotation) - (string) The annotation of the Vrf Fallback Route Group object.
+* `annotation` (annotation) - (string) The annotation of the VRF Fallback Route Group object.
   - Default: `orchestrator:terraform`
-* `description` (descr) - (string) The description of the Vrf Fallback Route Group object.
-* `name_alias` (nameAlias) - (string) The name alias of the Vrf Fallback Route Group object.
+* `description` (descr) - (string) The description of the VRF Fallback Route Group object.
+* `name_alias` (nameAlias) - (string) The name alias of the VRF Fallback Route Group object.
 
-* `vrf_fallback_route_group_members` - (list) A list of Vrf Fallback Route Group Members objects ([fvFBRMember](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvFBRMember/overview)). Vrf Fallback Route Group Members can also be configured using a separate [aci_vrf_fallback_route_group_member](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vrf_fallback_route_group_member) resource.
+* `vrf_fallback_route_group_members` - (list) A list of VRF Fallback Route Group Members (ACI object [fvFBRMember](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvFBRMember/overview)). VRF Fallback Route Group Members can also be configured using a separate [aci_vrf_fallback_route_group_member](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vrf_fallback_route_group_member) resource.
   
   #### Required ####
   
-  * `fallback_member` (rnhAddr) - (string) The address of the Vrf Fallback Route Group Member object.
+  * `fallback_member` (rnhAddr) - (string) The address of the VRF Fallback Route Group Member object.
 
   #### Optional ####
     
-  * `annotation` (annotation) - (string) The annotation of the Vrf Fallback Route Group Member object.
+  * `annotation` (annotation) - (string) The annotation of the VRF Fallback Route Group Member object.
       - Default: `orchestrator:terraform`
-  * `description` (descr) - (string) The description of the Vrf Fallback Route Group Member object.
-  * `name` (name) - (string) The name of the Vrf Fallback Route Group Member object.
-  * `name_alias` (nameAlias) - (string) The name alias of the Vrf Fallback Route Group Member object.
+  * `description` (descr) - (string) The description of the VRF Fallback Route Group Member object.
+  * `name` (name) - (string) The name of the VRF Fallback Route Group Member object.
+  * `name_alias` (nameAlias) - (string) The name alias of the VRF Fallback Route Group Member object.
 
-* `annotations` - (list) A list of Annotations objects ([tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   
   #### Required ####
   
   * `key` (key) - (string) The key used to uniquely identify this configuration object.
   * `value` (value) - (string) The value of the property.
 
-* `tags` - (list) A list of Tags objects ([tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   
   #### Required ####
   
@@ -128,13 +128,13 @@ All examples for the Vrf Fallback Route Group resource can be found in the [exam
 
 ## Importing
 
-An existing Vrf Fallback Route Group can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
+An existing VRF Fallback Route Group can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
 terraform import aci_vrf_fallback_route_group.example_vrf uni/tn-{name}/ctx-{name}/fbrg-{name}
 ```
 
-Starting in Terraform version 1.5, an existing Vrf Fallback Route Group can be imported 
+Starting in Terraform version 1.5, an existing VRF Fallback Route Group can be imported
 using [import blocks](https://developer.hashicorp.com/terraform/language/import) via the following configuration:
 
 ```
