@@ -96,7 +96,7 @@ All examples for the External Management Network Instance Profile resource can b
   - Default: `unspecified`
   - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
 
-* `relation_to_consumed_out_of_band_contracts` - (list) A list of Relation To Consumed Out Of Band Contracts (ACI object [mgmtRsOoBCons](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/mgmtRsOoBCons/overview)) pointing to the Out Of Band Contract ([vzOOBBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzOOBBrCP/overview)) which can be configured using the [aci_out_of_band_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/out_of_band_contract) resource.
+* `relation_to_consumed_out_of_band_contracts` - (list) A list of Relation To Consumed Out Of Band Contracts (ACI object [mgmtRsOoBCons](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/mgmtRsOoBCons/overview)) pointing to Out Of Band Contract (ACI Object [vzOOBBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzOOBBrCP/overview)) which can be configured using the [aci_out_of_band_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/out_of_band_contract) resource.
   
   #### Required ####
   

@@ -77,7 +77,7 @@ Data source for {{.ResourceNameAsDescription}}
 {{- end}}
 {{ range .Children }}{{$childVersion := .Versions}}
     {{- if ne .RelationshipClass ""}}
-* `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName $.Definitions}} (ACI object {{getDevnetDocForClass .PkgName}}) pointing to the {{getResourceNameAsDescription .RelationshipResourceName $.Definitions}} ({{getDevnetDocForClass .RelationshipClass}}) object.{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
+* `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName $.Definitions}} (ACI object {{getDevnetDocForClass .PkgName}}) pointing to {{getResourceNameAsDescription .RelationshipResourceName $.Definitions}} (ACI Object {{getDevnetDocForClass .RelationshipClass}}).{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
     {{- else}}
 * `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName $.Definitions}} (ACI object {{getDevnetDocForClass .PkgName}}).{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
     {{- end}}
