@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_{{ .ResourceName}}"
 sidebar_current: "docs-aci-resource-aci_{{ .ResourceName}}"
 description: |-
-  Manages ACI {{getResourceNameAsDescription .ResourceName}}
+  Manages ACI {{.ResourceNameAsDescription}}
 ---
 
 # aci_{{ .ResourceName}} #
 
-Manages ACI {{getResourceNameAsDescription .ResourceName}}
+Manages ACI {{.ResourceNameAsDescription}}
 {{ range .ResourceNotes}}
   -> {{ . }}
 {{- end}}
@@ -47,14 +47,14 @@ Manages ACI {{getResourceNameAsDescription .ResourceName}}
 
 ## Example Usage ##
 
-The configuration snippet below creates a {{getResourceNameAsDescription .ResourceName}} with only required attributes.
+The configuration snippet below creates a {{.ResourceNameAsDescription}} with only required attributes.
 
 ```hcl
 {{ .ExampleResource }}
 ```
 
 {{- if not .HasOnlyRequiredProperties}}
-The configuration snippet below shows all possible attributes of the {{getResourceNameAsDescription .ResourceName}}.
+The configuration snippet below shows all possible attributes of the {{.ResourceNameAsDescription}}.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
@@ -63,7 +63,7 @@ The configuration snippet below shows all possible attributes of the {{getResour
 ```
 {{- end}}
 
-All examples for the {{getResourceNameAsDescription .ResourceName}} resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/resources/aci_{{.ResourceName}}) folder.
+All examples for the {{.ResourceNameAsDescription}} resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/resources/aci_{{.ResourceName}}) folder.
 
 ## Schema ##
 
@@ -85,7 +85,7 @@ All examples for the {{getResourceNameAsDescription .ResourceName}} resource can
 
 ### Read-Only ###
 
-* `id` - (string) The distinguished name (DN) of the {{getResourceNameAsDescription .ResourceName}} object.
+* `id` - (string) The distinguished name (DN) of the {{.ResourceNameAsDescription}} object.
 {{- if .HasOptionalProperties}}
 
 ### Optional ###
@@ -110,9 +110,9 @@ All examples for the {{getResourceNameAsDescription .ResourceName}} resource can
 {{- end}}
 {{ range .Children }}{{$childVersion := .Versions}}
     {{- if ne .RelationshipClass ""}}
-* `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName}} objects ({{getDevnetDocForClass .PkgName}}) pointing to the {{getResourceNameAsDescription .RelationshipResourceName}} ({{getDevnetDocForClass .RelationshipClass}}) which can be configured using the [aci_{{.RelationshipResourceName}}](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{.RelationshipResourceName}}) resource.{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
+* `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName $.Definitions}} (ACI object {{getDevnetDocForClass .PkgName}}) pointing to the {{getResourceNameAsDescription .RelationshipResourceName $.Definitions}} ({{getDevnetDocForClass .RelationshipClass}}) which can be configured using the [aci_{{.RelationshipResourceName}}](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{.RelationshipResourceName}}) resource.{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
     {{- else}}
-* `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName}} objects ({{getDevnetDocForClass .PkgName}}). {{getResourceNameAsDescription .ResourceName}} can also be configured using a separate [aci_{{.ResourceNameDocReference}}](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{.ResourceNameDocReference}}) resource.{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
+* `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName $.Definitions}} (ACI object {{getDevnetDocForClass .PkgName}}). {{getResourceNameAsDescription .ResourceName $.Definitions}} can also be configured using a separate [aci_{{.ResourceNameDocReference}}](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{.ResourceNameDocReference}}) resource.{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
     {{- end}}
   
   #### Required ####
@@ -147,13 +147,13 @@ All examples for the {{getResourceNameAsDescription .ResourceName}} resource can
 {{ end}}
 ## Importing
 
-An existing {{getResourceNameAsDescription .ResourceName}} can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
+An existing {{.ResourceNameAsDescription}} can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
 terraform import aci_{{- .ResourceName}}.example{{- if .DocumentationExamples}}_{{- $key :=  index .DocumentationExamples 0 }}{{getResourceName $key $.Definitions}}{{- end}} {{ index .DnFormats 0 }}
 ```
 
-Starting in Terraform version 1.5, an existing {{getResourceNameAsDescription .ResourceName}} can be imported 
+Starting in Terraform version 1.5, an existing {{.ResourceNameAsDescription}} can be imported
 using [import blocks](https://developer.hashicorp.com/terraform/language/import) via the following configuration:
 
 ```

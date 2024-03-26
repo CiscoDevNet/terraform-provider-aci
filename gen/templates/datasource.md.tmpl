@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_{{ .ResourceName}}"
 sidebar_current: "docs-aci-data-source-aci_{{ .ResourceName}}"
 description: |-
-  Data source for {{getResourceNameAsDescription .ResourceName}}
+  Data source for {{.ResourceNameAsDescription}}
 ---
 
 # aci_{{ .ResourceName}} #
 
-Data source for {{getResourceNameAsDescription .ResourceName}}
+Data source for {{.ResourceNameAsDescription}}
 
 ## API Information ##
 
@@ -65,7 +65,7 @@ Data source for {{getResourceNameAsDescription .ResourceName}}
 
 ### Read-Only ###
 
-* `id` - (string) The distinguished name (DN) of the {{getResourceNameAsDescription .ResourceName}} object.
+* `id` - (string) The distinguished name (DN) of the {{.ResourceNameAsDescription}} object.
 {{- range .Properties}}
     {{- if not .IsNaming}}
         {{- if eq .ValueType "bitmask"}}
@@ -77,9 +77,9 @@ Data source for {{getResourceNameAsDescription .ResourceName}}
 {{- end}}
 {{ range .Children }}{{$childVersion := .Versions}}
     {{- if ne .RelationshipClass ""}}
-* `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName}} objects ({{getDevnetDocForClass .PkgName}}) pointing to the {{getResourceNameAsDescription .RelationshipResourceName}} ({{getDevnetDocForClass .RelationshipClass}}) object.{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
+* `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName $.Definitions}} (ACI object {{getDevnetDocForClass .PkgName}}) pointing to the {{getResourceNameAsDescription .RelationshipResourceName $.Definitions}} ({{getDevnetDocForClass .RelationshipClass}}) object.{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
     {{- else}}
-* `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName}} objects ({{getDevnetDocForClass .PkgName}}).{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
+* `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName $.Definitions}} (ACI object {{getDevnetDocForClass .PkgName}}).{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
     {{- end}}
 
   {{- range .Properties}}

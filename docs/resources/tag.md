@@ -96,7 +96,7 @@ An existing Tag can be [imported](https://www.terraform.io/docs/import/index.htm
 terraform import aci_tag.example_tenant uni/tn-{name}/tagKey-{key}
 ```
 
-Starting in Terraform version 1.5, an existing Tag can be imported 
+Starting in Terraform version 1.5, an existing Tag can be imported
 using [import blocks](https://developer.hashicorp.com/terraform/language/import) via the following configuration:
 
 ```

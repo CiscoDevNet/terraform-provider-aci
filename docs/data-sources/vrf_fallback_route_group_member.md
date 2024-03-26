@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_vrf_fallback_route_group_member"
 sidebar_current: "docs-aci-data-source-aci_vrf_fallback_route_group_member"
 description: |-
-  Data source for Vrf Fallback Route Group Member
+  Data source for VRF Fallback Route Group Member
 ---
 
 # aci_vrf_fallback_route_group_member #
 
-Data source for Vrf Fallback Route Group Member
+Data source for VRF Fallback Route Group Member
 
 ## API Information ##
 
@@ -43,20 +43,20 @@ data "aci_vrf_fallback_route_group_member" "example_vrf_fallback_route_group" {
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_vrf_fallback_route_group](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vrf_fallback_route_group) ([fvFBRGroup](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvFBRGroup/overview))
-* `fallback_member` (rnhAddr) - (string) The address of the Vrf Fallback Route Group Member object.
+* `fallback_member` (rnhAddr) - (string) The address of the VRF Fallback Route Group Member object.
 
 ### Read-Only ###
 
-* `id` - (string) The distinguished name (DN) of the Vrf Fallback Route Group Member object.
-* `annotation` (annotation) - (string) The annotation of the Vrf Fallback Route Group Member object.
-* `description` (descr) - (string) The description of the Vrf Fallback Route Group Member object.
-* `name` (name) - (string) The name of the Vrf Fallback Route Group Member object.
-* `name_alias` (nameAlias) - (string) The name alias of the Vrf Fallback Route Group Member object.
+* `id` - (string) The distinguished name (DN) of the VRF Fallback Route Group Member object.
+* `annotation` (annotation) - (string) The annotation of the VRF Fallback Route Group Member object.
+* `description` (descr) - (string) The description of the VRF Fallback Route Group Member object.
+* `name` (name) - (string) The name of the VRF Fallback Route Group Member object.
+* `name_alias` (nameAlias) - (string) The name alias of the VRF Fallback Route Group Member object.
 
-* `annotations` - (list) A list of Annotations objects ([tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
   * `key` (key) - (string) The key used to uniquely identify this configuration object.
   * `value` (value) - (string) The value of the property.
 
-* `tags` - (list) A list of Tags objects ([tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
   * `key` (key) - (string) The key used to uniquely identify this configuration object.
   * `value` (value) - (string) The value of the property.
