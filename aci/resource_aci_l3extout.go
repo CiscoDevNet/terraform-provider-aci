@@ -642,8 +642,7 @@ func resourceAciL3OutsideCreate(ctx context.Context, d *schema.ResourceData, m i
 		for _, val := range newObj["scope"].(*schema.Set).List() {
 			scopeList = append(scopeList, val.(string))
 		}
-		Scope := strings.Join(scopeList, ",")
-		l3extDefaultRouteLeakPAttr.Scope = Scope
+		l3extDefaultRouteLeakPAttr.Scope = strings.Join(scopeList, ",")
 
 		l3extDefaultRouteLeakP := models.NewDefaultRouteLeakPolicy(fmt.Sprintf(models.RnL3extDefaultRouteLeakP), l3extOut.DistinguishedName, l3extDefaultRouteLeakPAttr)
 
@@ -844,11 +843,6 @@ func resourceAciL3OutsideUpdate(ctx context.Context, d *schema.ResourceData, m i
 		_, newRel := d.GetChange("default_route_leak_policy")
 		newObj := newRel.(*schema.Set).List()[0].(map[string]interface{})
 
-		err := aciClient.DeleteByDn(fmt.Sprintf("%s/%s", l3extOut.DistinguishedName, models.RnL3extDefaultRouteLeakP), models.L3extDefaultRouteLeakPClassName)
-		if err != nil {
-			return diag.FromErr(err)
-		}
-
 		l3extDefaultRouteLeakPAttr := models.DefaultRouteLeakPolicyAttributes{}
 		l3extDefaultRouteLeakPAttr.Annotation = newObj["annotation"].(string)
 		l3extDefaultRouteLeakPAttr.Always = newObj["always"].(string)
@@ -858,10 +852,11 @@ func resourceAciL3OutsideUpdate(ctx context.Context, d *schema.ResourceData, m i
 		for _, val := range newObj["scope"].(*schema.Set).List() {
 			scopeList = append(scopeList, val.(string))
 		}
-		Scope := strings.Join(scopeList, ",")
-		l3extDefaultRouteLeakPAttr.Scope = Scope
+		l3extDefaultRouteLeakPAttr.Scope = strings.Join(scopeList, ",")
 
 		l3extDefaultRouteLeakP := models.NewDefaultRouteLeakPolicy(fmt.Sprintf(models.RnL3extDefaultRouteLeakP), l3extOut.DistinguishedName, l3extDefaultRouteLeakPAttr)
+
+		l3extDefaultRouteLeakP.Status = "modified"
 
 		err = aciClient.Save(l3extDefaultRouteLeakP)
 		if err != nil {
