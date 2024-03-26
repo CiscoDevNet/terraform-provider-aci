@@ -97,6 +97,33 @@ func dataSourceAciL3Outside() *schema.Resource {
 					},
 				},
 			},
+			"default_route_leak_policy": &schema.Schema{
+				Type:     schema.TypeSet,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"annotation": {
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+						"always": {
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+						"criteria": {
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+						"scope": {
+							Type:     schema.TypeSet,
+							Computed: true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+					},
+				},
+			},
 		})),
 	}
 }
@@ -147,6 +174,9 @@ func dataSourceAciL3OutsideRead(ctx context.Context, d *schema.ResourceData, m i
 
 	// Importing l3extRsRedistributePol object
 	getAndSetReadRelationl3extRsRedistributePol(aciClient, dn, d)
+
+	// Importing l3extDefaultRouteLeakP object
+	getAndSetDefaultRouteLeakPolicyAttributes(aciClient, dn, d)
 
 	return nil
 }

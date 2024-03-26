@@ -60,6 +60,14 @@ resource "aci_l3_outside" "foo_l3_outside" {
     target_dn = data.aci_route_control_profile.shared_route_control_profile.id
     source    = "direct"
   }
+
+  default_route_leak_policy {
+    always     = "no"
+    annotation = "orchestrator:terraform"
+    criteria   = "only"
+    scope      = ["l3-out", "ctx"]
+  }
+
 }
 ```
 
@@ -84,6 +92,12 @@ resource "aci_l3_outside" "foo_l3_outside" {
 * `relation_l3extrs_redistribute_pol` - (Optional) A block representing the relation to a Route Profile for Redistribution (class rtctrlProfile). Cardinality - N_TO_M. Type: Block.
   * `source` - (Optional) Route Map Source for the Route Profile for Redistribution. Allowed values are "attached-host", "direct", "static". Default value is "static".
   * `target_dn` - (Required) Distinguished name of the Route Control Profile for the Route Profile for Redistribution.
+* `default_route_leak_policy` - (Optional) A block representing the Default Route Leak Policy of the L3 Outside object. Type: Block.
+  * `annotation` - (Optional) Annotation of the Default Route Leak Policy object. Type: String.
+  * `always` - (Optional) A property to indicate whether or not to always advertise the default route leak (OSPF specific). Allowed values are "yes", "no". Default value is "no". Type: String.
+  * `criteria` - (Optional) A property that specifies an exact or subset matching of communities. Allowed values are "in-addition", "only". Default value is "only". Type: String.
+  * `scope` - (Optional) The scope of the Default Route Leak Policy object. Allowed values are "ctx", "l3-out". Default value is "l3-out". Type: List.
+
 ## Attribute Reference
 
 The only attribute that this resource exports is the `id`, which is set to the
