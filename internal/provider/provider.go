@@ -198,6 +198,8 @@ func (p *AciProvider) Resources(ctx context.Context) []func() resource.Resource 
 	return []func() resource.Resource{
 		NewFvEpIpTagResource,
 		NewFvEpMacTagResource,
+		NewFvFBRGroupResource,
+		NewFvFBRMemberResource,
 		NewL3extConsLblResource,
 		NewL3extRsRedistributePolResource,
 		NewMgmtInstPResource,
@@ -216,6 +218,8 @@ func (p *AciProvider) DataSources(ctx context.Context) []func() datasource.DataS
 	return []func() datasource.DataSource{
 		NewFvEpIpTagDataSource,
 		NewFvEpMacTagDataSource,
+		NewFvFBRGroupDataSource,
+		NewFvFBRMemberDataSource,
 		NewL3extConsLblDataSource,
 		NewL3extRsRedistributePolDataSource,
 		NewMgmtInstPDataSource,

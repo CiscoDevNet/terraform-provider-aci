@@ -111,8 +111,12 @@ var targetRelationalPropertyClasses = map[string]string{}
 var alwaysIncludeChildren = []string{"tag:Annotation", "tag:Tag"}
 var excludeChildResourceNamesFromDocs = []string{"", "annotation", "tag"}
 
-func GetResourceNameAsDescription(s string) string {
-	return cases.Title(language.English).String(strings.ReplaceAll(s, "_", " "))
+func GetResourceNameAsDescription(s string, definitions Definitions) string {
+	resourceName := cases.Title(language.English).String(strings.ReplaceAll(s, "_", " "))
+	for k, v := range definitions.Properties["global"].(map[interface{}]interface{})["resource_name_doc_overwrite"].(map[interface{}]interface{}) {
+		resourceName = strings.ReplaceAll(resourceName, k.(string), v.(string))
+	}
+	return resourceName
 }
 
 func GetDevnetDocForClass(className string) string {
@@ -179,17 +183,22 @@ func LookupTestValue(classPkgName, propertyName string, testVars map[string]inte
 
 // Retrieves a value for a attribute of a aci class when defined in the testVars YAML file of the class
 // Returns "test_value_for_child" if no value is defined in the testVars YAML file
-func LookupChildTestValue(classPkgName, childResourceName, propertyName string, testVars map[string]interface{}, definitions Definitions) string {
-	lookupValue := "test_value_for_child"
+func LookupChildTestValue(classPkgName, childResourceName, propertyName string, testVars map[string]interface{}, testValueIndex int, definitions Definitions) string {
 	propertyName = GetOverwriteAttributeName(classPkgName, propertyName, definitions)
+	overwritePropertyValue := GetOverwriteAttributeValue(classPkgName, propertyName, "", "test_values_for_parent", testValueIndex, definitions)
+	if overwritePropertyValue != "" {
+		return overwritePropertyValue
+	}
 	_, ok := testVars["children"]
 	if ok {
 		val, ok := testVars["children"].(map[interface{}]interface{})[childResourceName].([]interface{})[0].(map[interface{}]interface{})[propertyName]
 		if ok {
-			lookupValue = val.(string)
+			return val.(string)
 		}
+	} else {
+		return fmt.Sprintf("%s_%d", propertyName, testValueIndex)
 	}
-	return lookupValue
+	return "test_value_for_child"
 }
 
 func ContainsNoneAttributeValue(values []string) bool {
@@ -606,44 +615,45 @@ type Metadata struct {
 // A Model represents a ACI class
 // All information is retrieved directly or deduced from the metadata
 type Model struct {
-	PkgName                  string
-	Label                    string
-	Name                     string
-	RnFormat                 string
-	RnPrepend                string
-	Comment                  string
-	ResourceClassName        string
-	ResourceName             string
-	ResourceNameDocReference string
-	ChildResourceName        string
-	ExampleDataSource        string
-	ExampleResource          string
-	ExampleResourceFull      string
-	SubCategory              string
-	RelationshipClass        string
-	RelationshipResourceName string
-	Versions                 string
-	ChildClasses             []string
-	ContainedBy              []string
-	Contains                 []string
-	DocumentationDnFormats   []string
-	DocumentationParentDns   []string
-	DocumentationExamples    []string
-	DocumentationChildren    []string
-	ResourceNotes            []string
-	ResourceWarnings         []string
-	DatasourceNotes          []string
-	DatasourceWarnings       []string
-	Parents                  []string
-	UiLocations              []string
-	IdentifiedBy             []interface{}
-	DnFormats                []interface{}
-	Properties               map[string]Property
-	NamedProperties          map[string]Property
-	Children                 map[string]Model
-	Configuration            map[string]interface{}
-	TestVars                 map[string]interface{}
-	Definitions              Definitions
+	PkgName                   string
+	Label                     string
+	Name                      string
+	RnFormat                  string
+	RnPrepend                 string
+	Comment                   string
+	ResourceClassName         string
+	ResourceName              string
+	ResourceNameDocReference  string
+	ChildResourceName         string
+	ExampleDataSource         string
+	ExampleResource           string
+	ExampleResourceFull       string
+	SubCategory               string
+	RelationshipClass         string
+	RelationshipResourceName  string
+	Versions                  string
+	ChildClasses              []string
+	ContainedBy               []string
+	Contains                  []string
+	DocumentationDnFormats    []string
+	DocumentationParentDns    []string
+	DocumentationExamples     []string
+	DocumentationChildren     []string
+	ResourceNotes             []string
+	ResourceWarnings          []string
+	DatasourceNotes           []string
+	DatasourceWarnings        []string
+	Parents                   []string
+	UiLocations               []string
+	IdentifiedBy              []interface{}
+	DnFormats                 []interface{}
+	Properties                map[string]Property
+	NamedProperties           map[string]Property
+	Children                  map[string]Model
+	Configuration             map[string]interface{}
+	TestVars                  map[string]interface{}
+	Definitions               Definitions
+	ResourceNameAsDescription string
 	// Below booleans are used during template rendering to determine correct rendering the go code
 	AllowDelete               bool
 	AllowChildDelete          bool
@@ -723,6 +733,7 @@ func (m *Model) setClassModel(metaPath string, child bool, definitions Definitio
 		m.SetClassProperties(classDetails)
 		m.SetClassChildren(classDetails, pkgNames)
 		m.SetResourceNotesAndWarnigns(m.PkgName, definitions)
+		m.SetResourceNameAsDescription(m.PkgName, definitions)
 	}
 
 	/*
@@ -919,6 +930,10 @@ func (m *Model) SetResourceNotesAndWarnigns(classPkgName string, definitions Def
 			}
 		}
 	}
+}
+
+func (m *Model) SetResourceNameAsDescription(classPkgName string, definitions Definitions) {
+	m.ResourceNameAsDescription = GetResourceNameAsDescription(GetResourceName(classPkgName, definitions), definitions)
 }
 
 // Determine if a class is allowed to be deleted as defined in the classes.yaml file
@@ -1140,7 +1155,7 @@ func getOverwritePropertyComment(propertyName, classPkgName string, definitions 
 					for k, v := range value.(map[interface{}]interface{}) {
 						if k.(string) == propertyName {
 							if strings.Contains(v.(string), "%s") {
-								return fmt.Sprintf(v.(string), GetResourceNameAsDescription(GetResourceName(classPkgName, definitions)))
+								return fmt.Sprintf(v.(string), GetResourceNameAsDescription(GetResourceName(classPkgName, definitions), definitions))
 							}
 							return v.(string)
 						}
@@ -1240,18 +1255,23 @@ Determine if a attribute value in testvars should be overwritten by a attribute 
 Precendence order is:
  1. class level from properties.yaml
 */
-func GetOverwriteAttributeValue(classPkgName, propertyName, propertyValue, testType string, definitions Definitions) string {
+func GetOverwriteAttributeValue(classPkgName, propertyName, propertyValue, testType string, valueIndex int, definitions Definitions) string {
 	if classDetails, ok := definitions.Properties[classPkgName]; ok {
 		for key, value := range classDetails.(map[interface{}]interface{}) {
 			if key.(string) == "test_values" {
 				for test_type, test_type_values := range value.(map[interface{}]interface{}) {
-					if test_type.(string) == testType {
-						for k, v := range test_type_values.(map[interface{}]interface{}) {
-							if k.(string) == propertyName {
-								return v.(string)
-							}
+					test_type_value := make(map[interface{}]interface{})
+					if test_type.(string) == "test_values_for_parent" && testType == "test_values_for_parent" {
+						test_type_value = test_type_values.([]interface{})[valueIndex].(map[interface{}]interface{})
+					} else if test_type.(string) == testType {
+						test_type_value = test_type_values.(map[interface{}]interface{})
+					}
+					for k, v := range test_type_value {
+						if k.(string) == propertyName {
+							return v.(string)
 						}
 					}
+
 				}
 			}
 		}

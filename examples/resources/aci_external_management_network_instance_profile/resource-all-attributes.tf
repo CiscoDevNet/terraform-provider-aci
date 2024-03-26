@@ -14,13 +14,13 @@ resource "aci_external_management_network_instance_profile" "full_example" {
   ]
   annotations = [
     {
-      key   = "annotations_1"
+      key   = "key_0"
       value = "value_1"
     }
   ]
   tags = [
     {
-      key   = "tags_1"
+      key   = "key_0"
       value = "value_1"
     }
   ]

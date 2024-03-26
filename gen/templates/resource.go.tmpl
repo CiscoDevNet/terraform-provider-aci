@@ -114,7 +114,7 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the {{getResourceNameAsDescription .ResourceName}} object.",
+				MarkdownDescription: "The distinguished name (DN) of the {{getResourceNameAsDescription .ResourceName $.Definitions}} object.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},

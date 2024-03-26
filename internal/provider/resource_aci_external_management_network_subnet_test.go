@@ -83,13 +83,13 @@ func TestAccResourceMgmtSubnetWithMgmtInstP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "name", ""),
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.0.key", "annotations_1"),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.1.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.1.value", "value_2"),
-					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.0.key", "tags_1"),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.1.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.1.value", "value_2"),
 				),
 			},
@@ -104,13 +104,13 @@ func TestAccResourceMgmtSubnetWithMgmtInstP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "name", ""),
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.0.key", "annotations_1"),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.1.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.1.value", "value_2"),
-					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.0.key", "tags_1"),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.1.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.1.value", "value_2"),
 				),
 			},
@@ -119,14 +119,14 @@ func TestAccResourceMgmtSubnetWithMgmtInstP(t *testing.T) {
 				Config:             testConfigMgmtSubnetChildrenRemoveFromConfigDependencyWithMgmtInstP,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.0.key", "annotations_1"),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.1.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.1.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.0.key", "tags_1"),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.1.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.1.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.#", "2"),
 				),
@@ -136,10 +136,10 @@ func TestAccResourceMgmtSubnetWithMgmtInstP(t *testing.T) {
 				Config:             testConfigMgmtSubnetChildrenRemoveOneDependencyWithMgmtInstP,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.0.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.0.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.0.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.0.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.0.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.0.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.#", "1"),
 				),
@@ -191,21 +191,21 @@ resource "aci_external_management_network_subnet" "test" {
   ip = "1.1.1.0/24"
   annotations = [
 	{
-	  key = "annotations_1"
+	  key = "key_0"
 	  value = "value_1"
 	},
 	{
-	  key = "annotations_2"
+	  key = "key_1"
 	  value = "value_2"
 	},
   ]
   tags = [
 	{
-	  key = "tags_1"
+	  key = "key_0"
 	  value = "value_1"
 	},
 	{
-	  key = "tags_2"
+	  key = "key_1"
 	  value = "value_2"
 	},
   ]
@@ -225,13 +225,13 @@ resource "aci_external_management_network_subnet" "test" {
   ip = "1.1.1.0/24"
   annotations = [ 
 	{
-	  key = "annotations_2"
+	  key = "key_1"
 	  value = "value_2"
 	},
   ]
   tags = [ 
 	{
-	  key = "tags_2"
+	  key = "key_1"
 	  value = "value_2"
 	},
   ]

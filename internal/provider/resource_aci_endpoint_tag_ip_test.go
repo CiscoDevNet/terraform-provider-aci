@@ -89,13 +89,13 @@ func TestAccResourceFvEpIpTagWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "id_attribute", "0"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "name", ""),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.0.key", "annotations_1"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.1.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.1.value", "value_2"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.0.key", "tags_1"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.1.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.1.value", "value_2"),
 				),
 			},
@@ -111,13 +111,13 @@ func TestAccResourceFvEpIpTagWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "id_attribute", "0"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "name", ""),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.0.key", "annotations_1"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.1.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.1.value", "value_2"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.0.key", "tags_1"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.1.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.1.value", "value_2"),
 				),
 			},
@@ -126,14 +126,14 @@ func TestAccResourceFvEpIpTagWithFvTenant(t *testing.T) {
 				Config:             testConfigFvEpIpTagChildrenRemoveFromConfigDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.0.key", "annotations_1"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.1.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.1.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.0.key", "tags_1"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.1.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.1.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.#", "2"),
 				),
@@ -143,10 +143,10 @@ func TestAccResourceFvEpIpTagWithFvTenant(t *testing.T) {
 				Config:             testConfigFvEpIpTagChildrenRemoveOneDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.0.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.0.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.0.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.0.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.0.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.0.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.#", "1"),
 				),
@@ -202,21 +202,21 @@ resource "aci_endpoint_tag_ip" "test" {
   vrf_name = "test_ctx_name"
   annotations = [
 	{
-	  key = "annotations_1"
+	  key = "key_0"
 	  value = "value_1"
 	},
 	{
-	  key = "annotations_2"
+	  key = "key_1"
 	  value = "value_2"
 	},
   ]
   tags = [
 	{
-	  key = "tags_1"
+	  key = "key_0"
 	  value = "value_1"
 	},
 	{
-	  key = "tags_2"
+	  key = "key_1"
 	  value = "value_2"
 	},
   ]
@@ -238,13 +238,13 @@ resource "aci_endpoint_tag_ip" "test" {
   vrf_name = "test_ctx_name"
   annotations = [ 
 	{
-	  key = "annotations_2"
+	  key = "key_1"
 	  value = "value_2"
 	},
   ]
   tags = [ 
 	{
-	  key = "tags_2"
+	  key = "key_1"
 	  value = "value_2"
 	},
   ]
