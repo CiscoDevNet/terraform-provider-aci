@@ -4,15 +4,15 @@
 # More details can be found in the [README](https://github.com/CiscoDevNet/terraform-provider-aci/blob/master/README.md).
 subcategory: "Networking"
 layout: "aci"
-page_title: "ACI: aci_fallback_member"
-sidebar_current: "docs-aci-data-source-aci_fallback_member"
+page_title: "ACI: aci_vrf_fallback_route_group_member"
+sidebar_current: "docs-aci-data-source-aci_vrf_fallback_route_group_member"
 description: |-
-  Data source for Fallback Member
+  Data source for Vrf Fallback Route Group Member
 ---
 
-# aci_fallback_member #
+# aci_vrf_fallback_route_group_member #
 
-Data source for Fallback Member
+Data source for Vrf Fallback Route Group Member
 
 ## API Information ##
 
@@ -24,15 +24,15 @@ Data source for Fallback Member
 
 ## GUI Information ##
 
-* Location: `Tenants -> Networking -> VRFs -> Policy -> Fallback Route Group -> Next Hop Address`
+* Location: `Tenants -> Networking -> VRFs -> Policy -> Fallback Route Group -> Fallback Members`
 
 ## Example Usage ##
 
 ```hcl
 
-data "aci_fallback_member" "example_fallback_route_group" {
-  parent_dn            = aci_fallback_route_group.example.id
-  fallback_member_addr = "2.2.2.3"
+data "aci_vrf_fallback_route_group_member" "example_vrf_fallback_route_group" {
+  parent_dn       = aci_vrf_fallback_route_group.example.id
+  fallback_member = "2.2.2.3"
 }
 
 ```
@@ -42,16 +42,16 @@ data "aci_fallback_member" "example_fallback_route_group" {
 ### Required ###
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
-  - [aci_fallback_route_group](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/fallback_route_group) ([fvFBRGroup](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvFBRGroup/overview))
-* `fallback_member_addr` (rnhAddr) - (string) The Fallback Member Address of the Fallback Member object.
+  - [aci_vrf_fallback_route_group](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vrf_fallback_route_group) ([fvFBRGroup](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvFBRGroup/overview))
+* `fallback_member` (rnhAddr) - (string) The address of the Vrf Fallback Route Group Member object.
 
 ### Read-Only ###
 
-* `id` - (string) The distinguished name (DN) of the Fallback Member object.
-* `annotation` (annotation) - (string) The annotation of the Fallback Member object.
-* `description` (descr) - (string) The description of the Fallback Member object.
-* `name` (name) - (string) The name of the Fallback Member object.
-* `name_alias` (nameAlias) - (string) The name alias of the Fallback Member object.
+* `id` - (string) The distinguished name (DN) of the Vrf Fallback Route Group Member object.
+* `annotation` (annotation) - (string) The annotation of the Vrf Fallback Route Group Member object.
+* `description` (descr) - (string) The description of the Vrf Fallback Route Group Member object.
+* `name` (name) - (string) The name of the Vrf Fallback Route Group Member object.
+* `name_alias` (nameAlias) - (string) The name alias of the Vrf Fallback Route Group Member object.
 
 * `annotations` - (list) A list of Annotations objects ([tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
   * `key` (key) - (string) The key used to uniquely identify this configuration object.

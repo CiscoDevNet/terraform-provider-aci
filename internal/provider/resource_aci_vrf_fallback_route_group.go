@@ -47,7 +47,7 @@ type FvFBRGroupResourceModel struct {
 	Descr         types.String `tfsdk:"description"`
 	Name          types.String `tfsdk:"name"`
 	NameAlias     types.String `tfsdk:"name_alias"`
-	FvFBRMember   types.Set    `tfsdk:"fallback_members"`
+	FvFBRMember   types.Set    `tfsdk:"vrf_fallback_route_group_members"`
 	TagAnnotation types.Set    `tfsdk:"annotations"`
 	TagTag        types.Set    `tfsdk:"tags"`
 }
@@ -58,7 +58,7 @@ type FvFBRMemberFvFBRGroupResourceModel struct {
 	Descr      types.String `tfsdk:"description"`
 	Name       types.String `tfsdk:"name"`
 	NameAlias  types.String `tfsdk:"name_alias"`
-	RnhAddr    types.String `tfsdk:"fallback_member_addr"`
+	RnhAddr    types.String `tfsdk:"fallback_member"`
 }
 
 // TagAnnotationFvFBRGroupResourceModel describes the resource data model for the children without relation ships.
@@ -78,21 +78,21 @@ type FvFBRGroupIdentifier struct {
 }
 
 func (r *FvFBRGroupResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	tflog.Debug(ctx, "Start metadata of resource: aci_fallback_route_group")
-	resp.TypeName = req.ProviderTypeName + "_fallback_route_group"
-	tflog.Debug(ctx, "End metadata of resource: aci_fallback_route_group")
+	tflog.Debug(ctx, "Start metadata of resource: aci_vrf_fallback_route_group")
+	resp.TypeName = req.ProviderTypeName + "_vrf_fallback_route_group"
+	tflog.Debug(ctx, "End metadata of resource: aci_vrf_fallback_route_group")
 }
 
 func (r *FvFBRGroupResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
-	tflog.Debug(ctx, "Start schema of resource: aci_fallback_route_group")
+	tflog.Debug(ctx, "Start schema of resource: aci_vrf_fallback_route_group")
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "The fallback_route_group resource for the 'fvFBRGroup' class",
+		MarkdownDescription: "The vrf_fallback_route_group resource for the 'fvFBRGroup' class",
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Fallback Route Group object.",
+				MarkdownDescription: "The distinguished name (DN) of the Vrf Fallback Route Group object.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
@@ -112,7 +112,7 @@ func (r *FvFBRGroupResource) Schema(ctx context.Context, req resource.SchemaRequ
 					stringplanmodifier.UseStateForUnknown(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
-				MarkdownDescription: `The annotation of the Fallback Route Group object.`,
+				MarkdownDescription: `The annotation of the Vrf Fallback Route Group object.`,
 			},
 			"description": schema.StringAttribute{
 				Optional: true,
@@ -120,7 +120,7 @@ func (r *FvFBRGroupResource) Schema(ctx context.Context, req resource.SchemaRequ
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
-				MarkdownDescription: `The description of the Fallback Route Group object.`,
+				MarkdownDescription: `The description of the Vrf Fallback Route Group object.`,
 			},
 			"name": schema.StringAttribute{
 				Required: true,
@@ -128,7 +128,7 @@ func (r *FvFBRGroupResource) Schema(ctx context.Context, req resource.SchemaRequ
 					stringplanmodifier.UseStateForUnknown(),
 					stringplanmodifier.RequiresReplace(),
 				},
-				MarkdownDescription: `The name of the Fallback Route Group object.`,
+				MarkdownDescription: `The name of the Vrf Fallback Route Group object.`,
 			},
 			"name_alias": schema.StringAttribute{
 				Optional: true,
@@ -136,9 +136,9 @@ func (r *FvFBRGroupResource) Schema(ctx context.Context, req resource.SchemaRequ
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
-				MarkdownDescription: `The name alias of the Fallback Route Group object.`,
+				MarkdownDescription: `The name alias of the Vrf Fallback Route Group object.`,
 			},
-			"fallback_members": schema.SetNestedAttribute{
+			"vrf_fallback_route_group_members": schema.SetNestedAttribute{
 				MarkdownDescription: ``,
 				Optional:            true,
 				Computed:            true,
@@ -153,7 +153,7 @@ func (r *FvFBRGroupResource) Schema(ctx context.Context, req resource.SchemaRequ
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
-							MarkdownDescription: `The annotation of the Fallback Member object.`,
+							MarkdownDescription: `The annotation of the Vrf Fallback Route Group Member object.`,
 						},
 						"description": schema.StringAttribute{
 							Optional: true,
@@ -161,7 +161,7 @@ func (r *FvFBRGroupResource) Schema(ctx context.Context, req resource.SchemaRequ
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
-							MarkdownDescription: `The description of the Fallback Member object.`,
+							MarkdownDescription: `The description of the Vrf Fallback Route Group Member object.`,
 						},
 						"name": schema.StringAttribute{
 							Optional: true,
@@ -169,7 +169,7 @@ func (r *FvFBRGroupResource) Schema(ctx context.Context, req resource.SchemaRequ
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
-							MarkdownDescription: `The name of the Fallback Member object.`,
+							MarkdownDescription: `The name of the Vrf Fallback Route Group Member object.`,
 						},
 						"name_alias": schema.StringAttribute{
 							Optional: true,
@@ -177,14 +177,14 @@ func (r *FvFBRGroupResource) Schema(ctx context.Context, req resource.SchemaRequ
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
-							MarkdownDescription: `The name alias of the Fallback Member object.`,
+							MarkdownDescription: `The name alias of the Vrf Fallback Route Group Member object.`,
 						},
-						"fallback_member_addr": schema.StringAttribute{
+						"fallback_member": schema.StringAttribute{
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
-							MarkdownDescription: `The Fallback Member Address of the Fallback Member object.`,
+							MarkdownDescription: `The address of the Vrf Fallback Route Group Member object.`,
 						},
 					},
 				},
@@ -243,11 +243,11 @@ func (r *FvFBRGroupResource) Schema(ctx context.Context, req resource.SchemaRequ
 			},
 		},
 	}
-	tflog.Debug(ctx, "End schema of resource: aci_fallback_route_group")
+	tflog.Debug(ctx, "End schema of resource: aci_vrf_fallback_route_group")
 }
 
 func (r *FvFBRGroupResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	tflog.Debug(ctx, "Start configure of resource: aci_fallback_route_group")
+	tflog.Debug(ctx, "Start configure of resource: aci_vrf_fallback_route_group")
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
 		return
@@ -265,11 +265,11 @@ func (r *FvFBRGroupResource) Configure(ctx context.Context, req resource.Configu
 	}
 
 	r.client = client
-	tflog.Debug(ctx, "End configure of resource: aci_fallback_route_group")
+	tflog.Debug(ctx, "End configure of resource: aci_vrf_fallback_route_group")
 }
 
 func (r *FvFBRGroupResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	tflog.Debug(ctx, "Start create of resource: aci_fallback_route_group")
+	tflog.Debug(ctx, "Start create of resource: aci_vrf_fallback_route_group")
 	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
 	var stateData *FvFBRGroupResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
@@ -287,7 +287,7 @@ func (r *FvFBRGroupResource) Create(ctx context.Context, req resource.CreateRequ
 
 	setFvFBRGroupId(ctx, data)
 
-	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_fallback_route_group with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_vrf_fallback_route_group with id '%s'", data.Id.ValueString()))
 
 	var fvFBRMemberPlan, fvFBRMemberState []FvFBRMemberFvFBRGroupResourceModel
 	data.FvFBRMember.ElementsAs(ctx, &fvFBRMemberPlan, false)
@@ -313,11 +313,11 @@ func (r *FvFBRGroupResource) Create(ctx context.Context, req resource.CreateRequ
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_fallback_route_group with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_vrf_fallback_route_group with id '%s'", data.Id.ValueString()))
 }
 
 func (r *FvFBRGroupResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
-	tflog.Debug(ctx, "Start read of resource: aci_fallback_route_group")
+	tflog.Debug(ctx, "Start read of resource: aci_vrf_fallback_route_group")
 	var data *FvFBRGroupResourceModel
 
 	// Read Terraform prior state data into the model
@@ -327,7 +327,7 @@ func (r *FvFBRGroupResource) Read(ctx context.Context, req resource.ReadRequest,
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Read of resource aci_fallback_route_group with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Read of resource aci_vrf_fallback_route_group with id '%s'", data.Id.ValueString()))
 
 	getAndSetFvFBRGroupAttributes(ctx, &resp.Diagnostics, r.client, data)
 
@@ -339,11 +339,11 @@ func (r *FvFBRGroupResource) Read(ctx context.Context, req resource.ReadRequest,
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_fallback_route_group with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_vrf_fallback_route_group with id '%s'", data.Id.ValueString()))
 }
 
 func (r *FvFBRGroupResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	tflog.Debug(ctx, "Start update of resource: aci_fallback_route_group")
+	tflog.Debug(ctx, "Start update of resource: aci_vrf_fallback_route_group")
 	var data *FvFBRGroupResourceModel
 	var stateData *FvFBRGroupResourceModel
 
@@ -355,7 +355,7 @@ func (r *FvFBRGroupResource) Update(ctx context.Context, req resource.UpdateRequ
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_fallback_route_group with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_vrf_fallback_route_group with id '%s'", data.Id.ValueString()))
 
 	var fvFBRMemberPlan, fvFBRMemberState []FvFBRMemberFvFBRGroupResourceModel
 	data.FvFBRMember.ElementsAs(ctx, &fvFBRMemberPlan, false)
@@ -382,11 +382,11 @@ func (r *FvFBRGroupResource) Update(ctx context.Context, req resource.UpdateRequ
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_fallback_route_group with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_vrf_fallback_route_group with id '%s'", data.Id.ValueString()))
 }
 
 func (r *FvFBRGroupResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	tflog.Debug(ctx, "Start delete of resource: aci_fallback_route_group")
+	tflog.Debug(ctx, "Start delete of resource: aci_vrf_fallback_route_group")
 	var data *FvFBRGroupResourceModel
 
 	// Read Terraform prior state data into the model
@@ -396,7 +396,7 @@ func (r *FvFBRGroupResource) Delete(ctx context.Context, req resource.DeleteRequ
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Delete of resource aci_fallback_route_group with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Delete of resource aci_vrf_fallback_route_group with id '%s'", data.Id.ValueString()))
 	jsonPayload := GetDeleteJsonPayload(ctx, &resp.Diagnostics, "fvFBRGroup", data.Id.ValueString())
 	if resp.Diagnostics.HasError() {
 		return
@@ -405,18 +405,18 @@ func (r *FvFBRGroupResource) Delete(ctx context.Context, req resource.DeleteRequ
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_fallback_route_group with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_vrf_fallback_route_group with id '%s'", data.Id.ValueString()))
 }
 
 func (r *FvFBRGroupResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	tflog.Debug(ctx, "Start import state of resource: aci_fallback_route_group")
+	tflog.Debug(ctx, "Start import state of resource: aci_vrf_fallback_route_group")
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 
 	var stateData *FvFBRGroupResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
-	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_fallback_route_group with id '%s'", stateData.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_vrf_fallback_route_group with id '%s'", stateData.Id.ValueString()))
 
-	tflog.Debug(ctx, "End import of state resource: aci_fallback_route_group")
+	tflog.Debug(ctx, "End import of state resource: aci_vrf_fallback_route_group")
 }
 
 func getAndSetFvFBRGroupAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvFBRGroupResourceModel) {

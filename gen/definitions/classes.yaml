@@ -134,7 +134,7 @@ fvEpIpTag:
   sub_category: "Tenant Policies"
 
 fvFBRGroup:
-  resource_name: "fallback_route_group"
+  resource_name: "vrf_fallback_route_group"
   children:
     - "fvFBRMember"
   contained_by:
@@ -144,11 +144,11 @@ fvFBRGroup:
   sub_category: "Networking"
 
 fvFBRMember:
-  resource_name: "fallback_member"
+  resource_name: "vrf_fallback_route_group_member"
   contained_by:
     - "fvFBRGroup"
   ui_locations:
-    - "Tenants -> Networking -> VRFs -> Policy -> Fallback Route Group -> Next Hop Address"
+    - "Tenants -> Networking -> VRFs -> Policy -> Fallback Route Group -> Fallback Members"
   sub_category: "Networking"
   resource_notes:
-    - "This resource should not be used in combination with the `fallback_route_group` nested attributes of other resources for the same object. Doing so will result in unexpected behaviour."
+    - "This resource should not be used in combination with the `vrf_fallback_route_group` nested attributes of other resources for the same object. Doing so will result in unexpected behaviour."

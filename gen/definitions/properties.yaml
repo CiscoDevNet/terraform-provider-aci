@@ -179,25 +179,25 @@ fvFBRGroup:
 
 fvFBRMember:
   overwrites:
-    rnh_addr: "fallback_member_addr"
+    rnh_addr: "fallback_member"
   documentation:
-    rnhAddr: "The Fallback Member Address of the %s object."
+    rnhAddr: "The address of the %s object."
   resource_required:
-    - "fallback_member_addr"
+    - "fallback_member"
   datasource_required:
-    - "fallback_member_addr"
+    - "fallback_member"
   test_values:
     default:
-      fallback_member_addr: "2.2.2.2"
+      fallback_member: "2.2.2.2"
     resource_required:
-      fallback_member_addr: "2.2.2.3"
+      fallback_member: "2.2.2.3"
     datasource_required:
-      fallback_member_addr: "2.2.2.3"
+      fallback_member: "2.2.2.3"
     datasource_non_existing:
-      fallback_member_addr: "2.2.2.4"
+      fallback_member: "2.2.2.4"
     test_values_for_parent:
-      - fallback_member_addr: "2.2.2.2"
-      - fallback_member_addr: "2.2.2.3"
+      - fallback_member: "2.2.2.2"
+      - fallback_member: "2.2.2.3"
   parents:
     - class_name: "fvFBRGroup"
       parent_dependency: "fvCtx"

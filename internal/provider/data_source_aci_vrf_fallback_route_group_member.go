@@ -28,21 +28,21 @@ type FvFBRMemberDataSource struct {
 }
 
 func (d *FvFBRMemberDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
-	tflog.Debug(ctx, "Start metadata of datasource: aci_fallback_member")
-	resp.TypeName = req.ProviderTypeName + "_fallback_member"
-	tflog.Debug(ctx, "End metadata of datasource: aci_fallback_member")
+	tflog.Debug(ctx, "Start metadata of datasource: aci_vrf_fallback_route_group_member")
+	resp.TypeName = req.ProviderTypeName + "_vrf_fallback_route_group_member"
+	tflog.Debug(ctx, "End metadata of datasource: aci_vrf_fallback_route_group_member")
 }
 
 func (d *FvFBRMemberDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
-	tflog.Debug(ctx, "Start schema of datasource: aci_fallback_member")
+	tflog.Debug(ctx, "Start schema of datasource: aci_vrf_fallback_route_group_member")
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "The fallback_member datasource for the 'fvFBRMember' class",
+		MarkdownDescription: "The vrf_fallback_route_group_member datasource for the 'fvFBRMember' class",
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Fallback Member object.",
+				MarkdownDescription: "The distinguished name (DN) of the Vrf Fallback Route Group Member object.",
 			},
 			"parent_dn": schema.StringAttribute{
 				Required:            true,
@@ -50,23 +50,23 @@ func (d *FvFBRMemberDataSource) Schema(ctx context.Context, req datasource.Schem
 			},
 			"annotation": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The annotation of the Fallback Member object.`,
+				MarkdownDescription: `The annotation of the Vrf Fallback Route Group Member object.`,
 			},
 			"description": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The description of the Fallback Member object.`,
+				MarkdownDescription: `The description of the Vrf Fallback Route Group Member object.`,
 			},
 			"name": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The name of the Fallback Member object.`,
+				MarkdownDescription: `The name of the Vrf Fallback Route Group Member object.`,
 			},
 			"name_alias": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The name alias of the Fallback Member object.`,
+				MarkdownDescription: `The name alias of the Vrf Fallback Route Group Member object.`,
 			},
-			"fallback_member_addr": schema.StringAttribute{
+			"fallback_member": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: `The Fallback Member Address of the Fallback Member object.`,
+				MarkdownDescription: `The address of the Vrf Fallback Route Group Member object.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,
@@ -102,11 +102,11 @@ func (d *FvFBRMemberDataSource) Schema(ctx context.Context, req datasource.Schem
 			},
 		},
 	}
-	tflog.Debug(ctx, "End schema of datasource: aci_fallback_member")
+	tflog.Debug(ctx, "End schema of datasource: aci_vrf_fallback_route_group_member")
 }
 
 func (d *FvFBRMemberDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	tflog.Debug(ctx, "Start configure of datasource: aci_fallback_member")
+	tflog.Debug(ctx, "Start configure of datasource: aci_vrf_fallback_route_group_member")
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
 		return
@@ -124,11 +124,11 @@ func (d *FvFBRMemberDataSource) Configure(ctx context.Context, req datasource.Co
 	}
 
 	d.client = client
-	tflog.Debug(ctx, "End configure of datasource: aci_fallback_member")
+	tflog.Debug(ctx, "End configure of datasource: aci_vrf_fallback_route_group_member")
 }
 
 func (d *FvFBRMemberDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	tflog.Debug(ctx, "Start read of datasource: aci_fallback_member")
+	tflog.Debug(ctx, "Start read of datasource: aci_vrf_fallback_route_group_member")
 	var data *FvFBRMemberResourceModel
 
 	// Read Terraform configuration data into the model
@@ -143,19 +143,19 @@ func (d *FvFBRMemberDataSource) Read(ctx context.Context, req datasource.ReadReq
 	// Create a copy of the Id for when not found during getAndSetFvFBRMemberAttributes
 	cachedId := data.Id.ValueString()
 
-	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_fallback_member with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_vrf_fallback_route_group_member with id '%s'", data.Id.ValueString()))
 
 	getAndSetFvFBRMemberAttributes(ctx, &resp.Diagnostics, d.client, data)
 
 	if data.Id.IsNull() {
 		resp.Diagnostics.AddError(
-			"Failed to read aci_fallback_member data source",
-			fmt.Sprintf("The aci_fallback_member data source with id '%s' has not been found", cachedId),
+			"Failed to read aci_vrf_fallback_route_group_member data source",
+			fmt.Sprintf("The aci_vrf_fallback_route_group_member data source with id '%s' has not been found", cachedId),
 		)
 		return
 	}
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_fallback_member with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_vrf_fallback_route_group_member with id '%s'", data.Id.ValueString()))
 }
