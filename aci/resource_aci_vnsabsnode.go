@@ -73,6 +73,7 @@ func resourceAciFunctionNode() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ForceNew: true,
 				ValidateFunc: validation.StringInSlice([]string{
 					"yes",
 					"no",
@@ -80,7 +81,6 @@ func resourceAciFunctionNode() *schema.Resource {
 			},
 			"conn_copy_dn": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
 			"managed": &schema.Schema{
@@ -147,7 +147,6 @@ func resourceAciFunctionNode() *schema.Resource {
 			},
 			"conn_consumer_dn": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
 			"l4_l7_device_interface_consumer_connector_type": &schema.Schema{
@@ -175,7 +174,6 @@ func resourceAciFunctionNode() *schema.Resource {
 			},
 			"conn_provider_dn": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
 			"l4_l7_device_interface_provider_connector_type": &schema.Schema{
