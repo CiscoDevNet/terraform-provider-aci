@@ -60,3 +60,4 @@ data "aci_function_node" "example" {
 - `l4_l7_device_interface_provider_attachment_notification` - (Read-Only) Represents the provider attachment notification. Type: String.
 - `conn_consumer_dn` - (Read-Only) Distinguished name of the Function Node consumer connector. Type: String.
 - `conn_provider_dn` - (Read-Only) Distinguished name of the Function Node provider connector. Type: String.
+- `conn_copy_dn` - (Read-Only) Distinguished name of the Function Node copy connector. Type: String.

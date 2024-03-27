@@ -41,6 +41,10 @@ func dataSourceAciFunctionNode() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"conn_copy_dn": &schema.Schema{
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 			"managed": &schema.Schema{
 				Type:     schema.TypeString,
 				Computed: true,
