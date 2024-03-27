@@ -24,7 +24,11 @@ func TestAccDataSource{{$.resourceClassName}}With{{capitalize .class_name}} (t *
 				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
 					{{- range $key, $value := $.datasource_required}}
+						{{- if eq $key "target_dn" }}
+					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$key}}", "{{$.targetDn}}"),
+						{{- else }}
 					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+						{{- end }}
 					{{- end}}
 					{{- range $key, $value := $.default}}
 					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
@@ -72,7 +76,11 @@ const testConfig{{$.resourceClassName}}DataSourceDependencyWith{{capitalize .cla
 data "aci_{{$.resourceName}}" "test" {
   parent_dn = {{.parent_dn}}
   {{- range $key, $value := $.datasource_required}}
+		{{- if eq $key "target_dn" }}
+  {{$key}} = {{$value}}
+		{{- else }}
   {{$key}} = "{{$value}}"
+		{{- end }}
   {{- end}}
   depends_on = [aci_{{$.resourceName}}.test]
 }
@@ -82,7 +90,11 @@ const testConfig{{$.resourceClassName}}NotExisting{{capitalize .class_name}}  = 
 data "aci_{{$.resourceName}}" "test_non_existing" {
   parent_dn = {{.parent_dn}}
   {{- range $key, $value := $.datasource_non_existing}}
+		{{- if eq $key "target_dn" }}
+  {{$key}} = "{{$.targetDn}}_not_existing"
+		{{- else }}
   {{$key}} = "{{$value}}"
+		{{- end }}
   {{- end}}
   depends_on = [aci_{{$.resourceName}}.test]
 }
@@ -92,7 +104,11 @@ data "aci_{{$.resourceName}}" "test_non_existing" {
 const testConfig{{.resourceClassName}}DataSource = testConfig{{.resourceClassName}}All + `
 data "aci_{{$.resourceName}}" "test" {
   {{- range $key, $value := $.datasource_required}}
+		{{- if eq $key "target_dn" }}
+  {{$key}} = {{$value}}
+		{{- else }}
   {{$key}} = "{{$value}}"
+		{{- end }}
   {{- end}}
   depends_on = [aci_{{$.resourceName}}.test]
 }
@@ -101,7 +117,11 @@ data "aci_{{$.resourceName}}" "test" {
 const testConfig{{$.resourceClassName}}NotExisting = testConfig{{.resourceClassName}}All + `
 data "aci_{{$.resourceName}}" "test" {
   {{- range $key, $value := $.datasource_non_existing}}
+		{{- if eq $key "target_dn" }}
+  {{$key}} = "{{$.targetDn}}_not_existing"
+		{{- else }}
   {{$key}} = "{{$value}}"
+		{{- end }}
   {{- end}}
   depends_on = [aci_{{$.resourceName}}.test]
 }

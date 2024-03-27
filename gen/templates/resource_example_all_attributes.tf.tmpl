@@ -5,6 +5,8 @@ resource "aci_{{$.ResourceName}}" "full_example_{{getResourceName $key $.Definit
   {{- end}}
   {{- range $.Properties}}{{- if ne .NamedPropertyClass ""}}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = aci_{{getResourceName .NamedPropertyClass $.Definitions}}.example.name
+    {{- else if eq .SnakeCaseName "t_dn" }}
+  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = {{lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions}}
     {{- else}}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = "{{lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions}}"
   {{- end}}{{- end}}
@@ -23,6 +25,8 @@ resource "aci_{{$.ResourceName}}" "full_example_{{getResourceName $key $.Definit
 resource "aci_{{$.ResourceName}}" "full_example" {
   {{- range $.Properties}}{{- if ne .NamedPropertyClass ""}}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = aci_{{getResourceName .NamedPropertyClass $.Definitions}}.example.name
+    {{- else if eq .SnakeCaseName "t_dn" }}
+  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = {{lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions}}
     {{- else}}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = "{{lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions}}"
   {{- end}}{{- end}}

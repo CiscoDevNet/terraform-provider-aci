@@ -196,4 +196,27 @@ fvFBRMember:
   parents:
     - class_name: "fvFBRGroup"
       parent_dependency: "fvCtx"
-      parent_dn: "aci_fallback_route_group.test.id"
+      parent_dn: "aci_vrf_fallback_route_group.test.id"
+      class_in_parent: true
+
+l3extRsOutToFBRGroup:
+  documentation:
+    tDn: "The distinguished name of the VRF Fallback Route Group object."
+  test_values:
+    resource_required:
+      target_dn: aci_vrf_fallback_route_group.test.id
+    datasource_required:
+      target_dn: aci_vrf_fallback_route_group.test.id
+    datasource_non_existing:
+      target_dn: aci_vrf_fallback_route_group.test.id
+  parents:
+    - class_name: "l3extOut"
+      parent_dependency: "fvTenant"
+      parent_dn: "aci_l3_outside.test.id"
+      class_in_parent: false
+  targets:
+    - class_name: "fvFBRGroup"
+      parent_dependency: "fvCtx"
+      parent_dependency_dn: "aci_vrf.test.id"
+      parent_dn: "aci_vrf_fallback_route_group.test.id"
+      target_dn: "uni/tn-test_tenant/ctx-test_vrf/fbrg-fallback_route_group"

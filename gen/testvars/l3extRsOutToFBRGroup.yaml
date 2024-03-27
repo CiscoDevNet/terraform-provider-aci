@@ -4,24 +4,18 @@
 
 default:
   annotation: "orchestrator:terraform"
-  description: ""
-  name: ""
-  name_alias: ""
 
 datasource_non_existing:
-  ip: "2.2.2.0/24"
+  target_dn: aci_vrf_fallback_route_group.test.id
 
 datasource_required:
-  ip: "1.1.1.0/24"
+  target_dn: aci_vrf_fallback_route_group.test.id
 
 resource_required:
-  ip: "1.1.1.0/24"
+  target_dn: aci_vrf_fallback_route_group.test.id
 
 all:
   annotation: "annotation"
-  description: "description"
-  name: "name"
-  name_alias: "name_alias"
 
 children:
   annotations:
@@ -39,9 +33,17 @@ children:
       value: "value_2"
       
 parents:
-  - class_name: "mgmtInstP"
-    parent_dependency: ""
-    parent_dn: "aci_external_management_network_instance_profile.test.id"
+  - class_name: "l3extOut"
+    parent_dependency: "fvTenant"
+    parent_dn: "aci_l3_outside.test.id"
     class_in_parent: false
 
 targets:
+  - class_name: "fvFBRGroup"
+    target_dn: "uni/tn-test_tenant/ctx-test_vrf/fbrg-fallback_route_group"
+    parent_dn: "aci_vrf_fallback_route_group.test.id"
+    parent_dependency: "fvCtx"
+    parent_dependency_dn: "aci_vrf.test.id"
+    resource_required:
+      name: "fallback_route_group"
+    grandparent_class_name: ""
