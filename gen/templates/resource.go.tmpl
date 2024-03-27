@@ -142,6 +142,8 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 				Optional:            true,
 				{{- if ne .ValueType "password"}}
 				Computed:            true,
+				{{- else}}
+				Sensitive:           true,
 				{{- end}}
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
@@ -165,6 +167,8 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 				Optional:            true,
 				{{- if ne .ValueType "password"}}
 				Computed:            true,
+				{{- else}}
+				Sensitive:            true,
 				{{- end}}
 					{{- end}}
 				PlanModifiers: []planmodifier.String{
@@ -208,6 +212,8 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 							Optional:            true,
 							{{- if ne .ValueType "password"}}
 							Computed:            true,
+							{{- else}}
+							Sensitive:            true,
 							{{- end}}
 							PlanModifiers: []planmodifier.Set{
 								setplanmodifier.UseStateForUnknown(),
@@ -230,6 +236,8 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 							Optional:            true,
 							{{- if ne .ValueType "password"}}
 							Computed:            true,
+							{{- else}}
+							Sensitive:            true,
 							{{- end}}
 							{{- end}}
 							PlanModifiers: []planmodifier.String{

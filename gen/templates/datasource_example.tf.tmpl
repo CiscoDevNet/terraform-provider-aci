@@ -1,6 +1,10 @@
 {{- $topContext := . }}
 {{- if .MultiParentFormats }}
 {{- range $formatKey, $formatValue := $topContext.MultiParentFormats }}
+{{- $testType := $formatValue.TestType }}
+{{- if eq $testType "cloud"}}
+// This example is only applicable to the Cloud Network Controller
+{{- end}}
 data "aci_{{ $topContext.ResourceName }}" {{- if ne $formatValue.ContainedBy "polUni"}}"example_{{ getResourceName $formatValue.ContainedBy $topContext.Definitions }}"{{- else}}"example"{{- end }} {
 {{- if ne $formatValue.ContainedBy "polUni"}}
     parent_dn = {{createParentDnValue $formatValue.ContainedBy "example" $topContext.Definitions}}
@@ -19,6 +23,10 @@ data "aci_{{ $topContext.ResourceName }}" {{- if ne $formatValue.ContainedBy "po
 {{- end -}}
 {{- else}}
 {{- if .DocumentationExamples}}{{- range $key := .DocumentationExamples}}
+{{- $testType := getTestType $.PkgName }}
+{{- if eq $testType "cloud"}}
+// This example is only applicable to the Cloud Network Controller
+{{- end}}
 data "aci_{{$.ResourceName}}" "example_{{getResourceName $key $.Definitions}}" {
   {{- if $.HasParent}}
   parent_dn = {{createParentDnValue $key "example" $.Definitions}}
@@ -33,6 +41,10 @@ data "aci_{{$.ResourceName}}" "example_{{getResourceName $key $.Definitions}}" {
 }
 {{ end}}
 {{- else}}
+{{- $testType := getTestType $.PkgName }}
+{{- if eq $testType "cloud"}}
+// This example is only applicable to the Cloud Network Controller
+{{- end}}
 data "aci_{{$.ResourceName}}" "example" {
   {{- range $.Properties}}{{- if .IsNaming}}{{- if ne .NamedPropertyClass ""}}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = aci_{{getResourceName .NamedPropertyClass $.Definitions}}.example.name

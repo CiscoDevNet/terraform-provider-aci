@@ -14,12 +14,8 @@ package provider
 import (
 	"testing"
 	"regexp"
-	"time"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
-	{{- if $found_cert }}
-	"github.com/hashicorp/terraform-plugin-testing/terraform"
-	{{- end}}
 )
 
 {{- if .parents}}
@@ -28,7 +24,6 @@ func TestAccDataSource{{$.resourceClassName}}With{{capitalize .class_name}} (t *
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { 
-		time.Sleep(10 * time.Second)
 		testAccPreCheck(t, "{{.test_type}}") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
@@ -37,18 +32,7 @@ func TestAccDataSource{{$.resourceClassName}}With{{capitalize .class_name}} (t *
 				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
 					{{- if $found_cert }}
-					func(s *terraform.State) error {
-							stateRefreshFunc := func() (interface{}, string, error) {
-								time.Sleep(15 * time.Second)
-								return nil, "", nil
-							}
-							conf := &resource.StateChangeConf{
-								Refresh: stateRefreshFunc,
-								Timeout: 1 * time.Second,
-							}
-							conf.WaitForState()
-							return nil
-						},
+					waitForApicBeforeRefresh,
 					{{- end}}
 					{{- range $key, $value := $.datasource_required}}
 						{{- if eq $key "target_dn" }}
@@ -71,6 +55,11 @@ func TestAccDataSource{{$.resourceClassName}}With{{capitalize .class_name}} (t *
 				ExpectError: regexp.MustCompile("Failed to read aci_{{$.resourceName}} data source"),
 			},
 		},
+		{{- if $found_cert }}
+		CheckDestroy: resource.ComposeAggregateTestCheckFunc(
+			waitForApicBeforeRefresh,
+			),
+		{{- end}}
 	})
 }
 	{{- end}}
@@ -79,7 +68,6 @@ func TestAccDataSource{{.resourceClassName}}(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { 
-		time.Sleep(10 * time.Second)
 		testAccPreCheck(t, "{{.test_type}}") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
@@ -87,18 +75,7 @@ func TestAccDataSource{{.resourceClassName}}(t *testing.T) {
 				Config: testConfig{{.resourceClassName}}DataSource,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					{{- if $found_cert }}
-					func(s *terraform.State) error {
-							stateRefreshFunc := func() (interface{}, string, error) {
-								time.Sleep(15 * time.Second)
-								return nil, "", nil
-							}
-							conf := &resource.StateChangeConf{
-								Refresh: stateRefreshFunc,
-								Timeout: 1 * time.Second,
-							}
-							conf.WaitForState()
-							return nil
-						},
+					waitForApicBeforeRefresh,
 					{{- end}}
 					{{- range $key, $value := .min}}
 					{{- if contains $value "<<EOT -----BEGIN_CERTIFICATE-----" }}
@@ -125,6 +102,11 @@ func TestAccDataSource{{.resourceClassName}}(t *testing.T) {
 				ExpectError: regexp.MustCompile("Failed to read aci_{{$.resourceName}} data source"),
 			},
 		},
+		{{- if $found_cert }}
+		CheckDestroy: resource.ComposeAggregateTestCheckFunc(
+			waitForApicBeforeRefresh,
+			),
+		{{- end}}
 	})
 }
 {{- end}}

@@ -13,12 +13,8 @@ package provider
 
 import (
 	"testing"
-	"time"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
-	{{- if $found_cert }}
-	"github.com/hashicorp/terraform-plugin-testing/terraform"
-	{{- end}}
 )
 
 {{- if .parents}}
@@ -27,7 +23,6 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 
 	resource.Test(t, resource.TestCase{
 PreCheck: func() { 
-  time.Sleep(10 * time.Second)
   testAccPreCheck(t, "{{.test_type}}")
 },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -38,18 +33,7 @@ PreCheck: func() {
 				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
 				{{- if $found_cert }}
-				func(s *terraform.State) error {
-                        stateRefreshFunc := func() (interface{}, string, error) {
-                            time.Sleep(15 * time.Second)
-                            return nil, "", nil
-                        }
-                        conf := &resource.StateChangeConf{
-                            Refresh: stateRefreshFunc,
-							Timeout: 1 * time.Second,
-                        }
-                        conf.WaitForState()
-                        return nil
-                    },
+				waitForApicBeforeRefresh,
 				{{- end}}
 		{{- range $key, $value := $.resource_required}}{{$contains := definedInMap $key $.default}}
 			{{- if not $contains}}
@@ -79,18 +63,7 @@ PreCheck: func() {
 				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
 				{{- if $found_cert }}
-				func(s *terraform.State) error {
-                        stateRefreshFunc := func() (interface{}, string, error) {
-                            time.Sleep(15 * time.Second)
-                            return nil, "", nil
-                        }
-                        conf := &resource.StateChangeConf{
-                            Refresh: stateRefreshFunc,
-							Timeout: 1 * time.Second,
-                        }
-                        conf.WaitForState()
-                        return nil
-                    },
+				waitForApicBeforeRefresh,
 				{{- end}}
 		{{- range $key, $value := $.resource_required}}{{$contains := definedInMap $key $.all}}
 			{{- if not $contains}}
@@ -120,18 +93,7 @@ PreCheck: func() {
 				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
 				{{- if $found_cert }}
-				func(s *terraform.State) error {
-                        stateRefreshFunc := func() (interface{}, string, error) {
-                            time.Sleep(15 * time.Second)
-                            return nil, "", nil
-                        }
-                        conf := &resource.StateChangeConf{
-                            Refresh: stateRefreshFunc,
-							Timeout: 1 * time.Second,
-                        }
-                        conf.WaitForState()
-                        return nil
-                    },
+				waitForApicBeforeRefresh,
 				{{- end}}
 		{{- range $key, $value := $.resource_required}}
 			{{- if eq $key "target_dn" }}
@@ -164,18 +126,7 @@ PreCheck: func() {
 				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
 				{{- if $found_cert }}
-				func(s *terraform.State) error {
-                        stateRefreshFunc := func() (interface{}, string, error) {
-                            time.Sleep(15 * time.Second)
-                            return nil, "", nil
-                        }
-                        conf := &resource.StateChangeConf{
-                            Refresh: stateRefreshFunc,
-							Timeout: 1 * time.Second,
-                        }
-                        conf.WaitForState()
-                        return nil
-                    },
+				waitForApicBeforeRefresh,
 				{{- end}}
 		{{- range $key, $value := $.resource_required}}
 			{{- if eq $key "target_dn" }}
@@ -217,18 +168,7 @@ PreCheck: func() {
 				{{- end}}
 				Check: resource.ComposeAggregateTestCheckFunc(
 				{{- if $found_cert }}
-				func(s *terraform.State) error {
-                        stateRefreshFunc := func() (interface{}, string, error) {
-                            time.Sleep(15 * time.Second)
-                            return nil, "", nil
-                        }
-                        conf := &resource.StateChangeConf{
-                            Refresh: stateRefreshFunc,
-							Timeout: 1 * time.Second,
-                        }
-                        conf.WaitForState()
-                        return nil
-                    },
+				waitForApicBeforeRefresh,
 				{{- end}}
 		{{- range $key, $value := $.resource_required}}
 			{{- if eq $key "target_dn" }}
@@ -255,18 +195,7 @@ PreCheck: func() {
 				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
 				{{- if $found_cert }}
-				func(s *terraform.State) error {
-                        stateRefreshFunc := func() (interface{}, string, error) {
-                            time.Sleep(15 * time.Second)
-                            return nil, "", nil
-                        }
-                        conf := &resource.StateChangeConf{
-                            Refresh: stateRefreshFunc,
-							Timeout: 1 * time.Second,
-                        }
-                        conf.WaitForState()
-                        return nil
-                    },
+				waitForApicBeforeRefresh,
 				{{- end}}
 		{{- range $key, $value := $.resource_required}}
 			{{- if eq $key "target_dn" }}
@@ -345,18 +274,7 @@ PreCheck: func() {
 				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
 				{{- if $found_cert }}
-				func(s *terraform.State) error {
-                        stateRefreshFunc := func() (interface{}, string, error) {
-                            time.Sleep(15 * time.Second)
-                            return nil, "", nil
-                        }
-                        conf := &resource.StateChangeConf{
-                            Refresh: stateRefreshFunc,
-							Timeout: 1 * time.Second,
-                        }
-                        conf.WaitForState()
-                        return nil
-                    },
+				waitForApicBeforeRefresh,
 				{{- end}}
 		{{- range $key, $value := .min}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
@@ -390,18 +308,7 @@ PreCheck: func() {
 				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
 				{{- if $found_cert }}
-				func(s *terraform.State) error {
-                        stateRefreshFunc := func() (interface{}, string, error) {
-                            time.Sleep(15 * time.Second)
-                            return nil, "", nil
-                        }
-                        conf := &resource.StateChangeConf{
-                            Refresh: stateRefreshFunc,
-							Timeout: 1 * time.Second,
-                        }
-                        conf.WaitForState()
-                        return nil
-                    },
+				waitForApicBeforeRefresh,
 				{{- end}}
 		{{- range $key, $value := .min}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
@@ -439,18 +346,7 @@ PreCheck: func() {
 				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
 				{{- if $found_cert }}
-				func(s *terraform.State) error {
-                        stateRefreshFunc := func() (interface{}, string, error) {
-                            time.Sleep(15 * time.Second)
-                            return nil, "", nil
-                        }
-                        conf := &resource.StateChangeConf{
-                            Refresh: stateRefreshFunc,
-							Timeout: 1 * time.Second,
-                        }
-                        conf.WaitForState()
-                        return nil
-                    },
+				waitForApicBeforeRefresh,
 				{{- end}}
 		{{- range $key, $value := .min}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
@@ -480,6 +376,12 @@ PreCheck: func() {
 			},
 		{{- end}}
 		},
+		CheckDestroy: resource.ComposeAggregateTestCheckFunc(
+			{{- if $found_cert }}
+			waitForApicBeforeRefresh,
+			{{- end}}
+			testCheckResourceDestroy,
+		),
 	})
 }	{{- end}}
 
@@ -488,7 +390,6 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { 
-		time.Sleep(10 * time.Second)
 		testAccPreCheck(t, "{{.test_type}}") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
@@ -497,18 +398,7 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 				Config: testConfig{{.resourceClassName}}Min,
 				Check: resource.ComposeAggregateTestCheckFunc(
 				{{- if $found_cert }}
-				func(s *terraform.State) error {
-                        stateRefreshFunc := func() (interface{}, string, error) {
-                            time.Sleep(15 * time.Second)
-                            return nil, "", nil
-                        }
-                        conf := &resource.StateChangeConf{
-                            Refresh: stateRefreshFunc,
-							Timeout: 1 * time.Second,
-                        }
-                        conf.WaitForState()
-                        return nil
-                    },
+				waitForApicBeforeRefresh,
 				{{- end}}
 	{{- range $key, $value := .resource_required}}{{$contains := definedInMap $key $.default}}
 		{{- if not $contains}}
@@ -529,18 +419,7 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 				Config: testConfig{{.resourceClassName}}All,
 				Check: resource.ComposeAggregateTestCheckFunc(
 				{{- if $found_cert }}
-				func(s *terraform.State) error {
-                        stateRefreshFunc := func() (interface{}, string, error) {
-                            time.Sleep(15 * time.Second)
-                            return nil, "", nil
-                        }
-                        conf := &resource.StateChangeConf{
-                            Refresh: stateRefreshFunc,
-							Timeout: 1 * time.Second,
-                        }
-                        conf.WaitForState()
-                        return nil
-                    },
+				waitForApicBeforeRefresh,
 				{{- end}}
 	{{- range $key, $value := .resource_required}}{{$contains := definedInMap $key $.all}}
 		{{- if not $contains}}
@@ -561,18 +440,7 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 				Config: testConfig{{.resourceClassName}}Min,
 				Check: resource.ComposeAggregateTestCheckFunc(
 				{{- if $found_cert }}
-				func(s *terraform.State) error {
-                        stateRefreshFunc := func() (interface{}, string, error) {
-                            time.Sleep(15 * time.Second)
-                            return nil, "", nil
-                        }
-                        conf := &resource.StateChangeConf{
-                            Refresh: stateRefreshFunc,
-							Timeout: 1 * time.Second,
-                        }
-                        conf.WaitForState()
-                        return nil
-                    },
+				waitForApicBeforeRefresh,
 				{{- end}}
 	{{- range $key, $value := .resource_required}}{{$contains := definedInMap $key $.all}}
 		{{- if not $contains}}
@@ -601,18 +469,7 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 				Config: testConfig{{.resourceClassName}}Reset,
 				Check: resource.ComposeAggregateTestCheckFunc(
 				{{- if $found_cert }}
-				func(s *terraform.State) error {
-                        stateRefreshFunc := func() (interface{}, string, error) {
-                            time.Sleep(15 * time.Second)
-                            return nil, "", nil
-                        }
-                        conf := &resource.StateChangeConf{
-                            Refresh: stateRefreshFunc,
-							Timeout: 1 * time.Second,
-                        }
-                        conf.WaitForState()
-                        return nil
-                    },
+				waitForApicBeforeRefresh,
 				{{- end}}
 	{{- range $key, $value := $.resource_required}}
 			{{- if eq $key "target_dn" }}
@@ -714,18 +571,7 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 				Config: testConfig{{.resourceClassName}}ChildrenRemoveOne,
 				Check: resource.ComposeAggregateTestCheckFunc(
 				{{- if $found_cert }}
-				func(s *terraform.State) error {
-                        stateRefreshFunc := func() (interface{}, string, error) {
-                            time.Sleep(15 * time.Second)
-                            return nil, "", nil
-                        }
-                        conf := &resource.StateChangeConf{
-                            Refresh: stateRefreshFunc,
-							Timeout: 1 * time.Second,
-                        }
-                        conf.WaitForState()
-                        return nil
-                    },
+				waitForApicBeforeRefresh,
 				{{- end}}
 		{{- range $key, $value := .min}}
 			{{- if eq $key "target_dn" }}
@@ -766,18 +612,7 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 				Config: testConfig{{.resourceClassName}}ChildrenRemoveAll,
 				Check: resource.ComposeAggregateTestCheckFunc(
 				{{- if $found_cert }}
-				func(s *terraform.State) error {
-                        stateRefreshFunc := func() (interface{}, string, error) {
-                            time.Sleep(15 * time.Second)
-                            return nil, "", nil
-                        }
-                        conf := &resource.StateChangeConf{
-                            Refresh: stateRefreshFunc,
-							Timeout: 1 * time.Second,
-                        }
-                        conf.WaitForState()
-                        return nil
-                    },
+				waitForApicBeforeRefresh,
 				{{- end}}
 		{{- range $key, $value := .min}}
 			{{- if eq $key "target_dn" }}
@@ -811,6 +646,12 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 			},
 	{{- end}}
 		},
+		CheckDestroy: resource.ComposeAggregateTestCheckFunc(
+			{{- if $found_cert }}
+			waitForApicBeforeRefresh,
+			{{- end}}
+			testCheckResourceDestroy,
+		),
 	})
 }
 {{end}}

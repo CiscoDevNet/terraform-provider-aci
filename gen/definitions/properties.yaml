@@ -354,6 +354,10 @@ pkiKeyRing:
     regen: "regenerate"
     ecc_curve: "elliptic_curve"
     tp: "certificate_authority"
+  documentation:
+    key: "The private key of the certificate. This sensitive value is excluded from the resource's lifecycle configuration and is not tracked by Terraform."
+    eccCurve: "The elliptic curve used by the provided key."
+    keyType: "The type of key used by the provided key."
   parents:
     - parent_dependency: "pkiTP"
   test_values:

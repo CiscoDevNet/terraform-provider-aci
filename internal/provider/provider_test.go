@@ -5,7 +5,10 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
+	"sync"
 	"testing"
+	"time"
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/aci"
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
@@ -48,35 +51,49 @@ var testAccProtoV6ProviderFactories = map[string]func() (tfprotov6.ProviderServe
 	},
 }
 
-func testAccPreCheck(t *testing.T, testType string) {
-	if v := os.Getenv("ACI_USERNAME"); v == "" {
-		t.Fatal("ACI_USERNAME must be set for acceptance tests")
-	}
-	if v := os.Getenv("ACI_PASSWORD"); v == "" {
-		t.Fatal("ACI_PASSWORD must be set for acceptance tests")
-	}
-	if v := os.Getenv("ACI_URL"); v == "" {
-		t.Fatal("ACI_URL must be set for acceptance tests")
-	}
-	if v := os.Getenv("ACI_VAL_REL_DN"); v == "" {
-		t.Fatal("ACI_VAL_REL_DN must be set for acceptance tests")
-		boolValue, err := strconv.ParseBool(v)
-		if err != nil || boolValue == true {
-			t.Fatal("ACI_VAL_REL_DN must be a 'false' boolean value")
-		}
-	}
-	aci_url := os.Getenv("ACI_URL")
-	aci_username := os.Getenv("ACI_USERNAME")
-	aci_password := os.Getenv("ACI_PASSWORD")
-	aciClient := client.NewClient(aci_url, aci_username, client.Password(aci_password), client.Insecure(true))
+var (
+	aciClientTest     *client.Client
+	aciClientTestOnce sync.Once
+)
 
-	cloudProviderUrl := "/api/node/class/cloudProvP.json"
-	infoCloud, _ := aciClient.GetViaURL(cloudProviderUrl)
+func getACIClientTest(t *testing.T) *client.Client {
+	aciClientTestOnce.Do(func() {
+		var aci_url, aci_username, aci_password string
+		if v := os.Getenv("ACI_USERNAME"); v == "" {
+			t.Fatal("ACI_USERNAME must be set for acceptance tests")
+		} else {
+			aci_username = v
+		}
+		if v := os.Getenv("ACI_PASSWORD"); v == "" {
+			t.Fatal("ACI_PASSWORD must be set for acceptance tests")
+		} else {
+			aci_password = v
+		}
+		if v := os.Getenv("ACI_URL"); v == "" {
+			t.Fatal("ACI_URL must be set for acceptance tests")
+		} else {
+			aci_url = v
+		}
+		if v := os.Getenv("ACI_VAL_REL_DN"); v == "" {
+			t.Fatal("ACI_VAL_REL_DN must be set for acceptance tests")
+			boolValue, err := strconv.ParseBool(v)
+			if err != nil || boolValue == true {
+				t.Fatal("ACI_VAL_REL_DN must be a 'false' boolean value")
+			}
+		}
+
+		aciClientTest = client.NewClient(aci_url, aci_username, client.Password(aci_password), client.Insecure(true))
+	})
+	return aciClientTest
+}
+
+func testAccPreCheck(t *testing.T, testType string) {
+	infoCloud, _ := getACIClientTest(t).GetViaURL("/api/node/class/cloudProvP.json")
 	environment, _ := extractEnvironmentValue(infoCloud)
 	if environment == "public-cloud" && testType == "apic" {
-		t.Skip("[WARNING] Skipping test because the test cannot be run on a cloud APIC")
+		t.Skip("[WARNING] Skipping the test because the test cannot be run on a cloud APIC")
 	} else if environment != "public-cloud" && testType == "cloud" {
-		t.Skip("[WARNING] Skipping test because the test cannot be run on an on-prem APIC")
+		t.Skip("[WARNING] Skipping the test because the test cannot be run on an on-prem APIC")
 	}
 }
 
@@ -94,6 +111,26 @@ func extractEnvironmentValue(requestData *container.Container) (string, error) {
 	}
 	return "", fmt.Errorf("no cloudProvP instances found in the response")
 
+}
+
+// waitForApicBeforeRefresh ensures the APIC is available by polling the API until it responds or times out before Terraform refresh is applied in the test.
+func waitForApicBeforeRefresh(s *terraform.State) error {
+	aciClient := getACIClientTest(nil)
+	conf := &resource.StateChangeConf{
+		Refresh: func() (interface{}, string, error) {
+			_, err := aciClient.GetViaURL("/api/aaaListDomains.json")
+			if err != nil {
+				return nil, "pending", nil
+			}
+			return nil, "available", nil
+		},
+		Timeout: 20 * time.Second,
+		Pending: []string{"pending"},
+		Target:  []string{"available"},
+	}
+
+	conf.WaitForState()
+	return nil
 }
 
 func testCheckResourceAttr(resourceName, attribute, value1 string) resource.TestCheckFunc {
@@ -115,6 +152,22 @@ func testCheckResourceAttr(resourceName, attribute, value1 string) resource.Test
 
 		return nil
 	}
+}
+
+func testCheckResourceDestroy(s *terraform.State) error {
+	aciClient := getACIClientTest(nil)
+	for _, rs := range s.RootModule().Resources {
+		_, err := aciClient.Get(rs.Primary.ID)
+		if err != nil {
+			if strings.Contains(err.Error(), "Error retrieving Object: Object may not exist") {
+				continue
+			} else {
+				return fmt.Errorf("error checking if resource '%s' with ID '%s' still exists: %s", rs.Type, rs.Primary.ID, err)
+			}
+		}
+		return fmt.Errorf("terraform destroy was unsuccessful. The resource '%s' with ID '%s' still exists", rs.Type, rs.Primary.ID)
+	}
+	return nil
 }
 
 func setGlobalAnnotationEnvVariable(t *testing.T, annotation string) {
