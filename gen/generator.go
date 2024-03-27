@@ -1302,6 +1302,7 @@ func GetOverwriteAttributeValue(classPkgName, propertyName, propertyValue, testT
 func GetParentTestDependencies(classPkgName string, index int, definitions Definitions) map[string]interface{} {
 	parentDependency := ""
 	classInParent := false
+	parentDependencyName := ""
 	if classDetails, ok := definitions.Properties[classPkgName]; ok {
 		for key, value := range classDetails.(map[interface{}]interface{}) {
 			if key.(string) == "parents" {
@@ -1313,11 +1314,14 @@ func GetParentTestDependencies(classPkgName string, index int, definitions Defin
 					if cip, ok := parentMap["class_in_parent"]; ok {
 						classInParent = cip.(bool)
 					}
+					if pdn, ok := parentMap["parent_dependency_name"]; ok {
+						parentDependencyName = pdn.(string)
+					}
 				}
 			}
 		}
 	}
-	return map[string]interface{}{"parent_dependency": parentDependency, "class_in_parent": classInParent}
+	return map[string]interface{}{"parent_dependency": parentDependency, "class_in_parent": classInParent, "parent_dependency_name": parentDependencyName}
 }
 
 func GetTargetTestDependencies(classPkgName string, index int, definitions Definitions) map[string]interface{} {

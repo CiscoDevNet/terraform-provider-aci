@@ -158,3 +158,9 @@ l3extRsOutToFBRGroup:
   ui_locations:
     - "Tenants -> Networking -> L3Outs -> Policy -> Main -> Fallback Route Group"
   sub_category: "L3Out"
+
+l3extProvLbl:
+  resource_name: "l3out_provider_label"
+  ui_locations:
+    - "Tenants (infra) -> Networking -> L3Outs -> Policy -> Main -> Provider Label"
+  sub_category: "L3Out"

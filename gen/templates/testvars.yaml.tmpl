@@ -65,7 +65,10 @@ parents:
   - class_name: "{{ $key }}"
     parent_dependency: "{{$parentDependency.parent_dependency}}"
     parent_dn: "{{createParentDnValue $key "test" $.Definitions}}"
-    class_in_parent: {{$parentDependency.class_in_parent}}{{$index = add $index 1}}
+    class_in_parent: {{$parentDependency.class_in_parent}}
+      {{- if ne $parentDependency.parent_dependency_name "" }}
+    parent_dependency_name: "{{$parentDependency.parent_dependency_name}}"{{$index = add $index 1}}
+      {{- end }}
     {{- end}}
 
   {{- $index := 0}}{{- $key := .TargetResourceClassName}}
