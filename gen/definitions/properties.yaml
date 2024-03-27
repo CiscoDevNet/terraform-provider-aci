@@ -196,13 +196,6 @@ pkiTP:
         KU0Td2OpVyo0eLqjoX5u2G90IBWzhyjFbo+CcKMrSVKj1YOdG0E3OuiJf00=
         -----END_CERTIFICATE-----
         EOT
-
-# pkiKeyRing:
-#   test_values:
-#     default:
-#       regen: "no"
-#     all:
-#       regen: "no"
   
 tagTag:
   documentation:
@@ -221,6 +214,7 @@ tagTag:
       parent_dependency: ""
       parent_dn: "aci_tenant.test.id"
       class_in_parent: false
+
 pkiKeyRing:
   overwrites:
     cert: "certificate"

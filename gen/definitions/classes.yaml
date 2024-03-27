@@ -114,7 +114,6 @@ tagTag:
     - "uni/tn-{name}/BD-{name}/tagKey-{key}"
     - "Too many DN formats to display, see model documentation for all possible parents of [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)."
 
-
 fvEpMacTag:
   resource_name: "endpoint_tag_mac"
   rn_prepend: "eptags"
