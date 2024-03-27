@@ -1,6 +1,10 @@
 {{- $topContext := . }}
   {{- if .MultiParentFormats }}
     {{- range $formatKey, $formatValue := $topContext.MultiParentFormats }}
+{{- $testType := $formatValue.TestType }}
+{{- if eq $testType "cloud"}}
+// This example is only applicable to the Cloud Network Controller
+{{- end}}
 resource "aci_{{$topContext.ResourceName}}" {{- if ne $formatValue.ContainedBy "polUni"}}"full_example_{{ getResourceName $formatValue.ContainedBy $topContext.Definitions }}"{{- else}}"full_example"{{- end }} { 
     {{- if ne $formatValue.ContainedBy "polUni"}}
     parent_dn = {{createParentDnValue $formatValue.ContainedBy "example" $topContext.Definitions}}
@@ -10,7 +14,7 @@ resource "aci_{{$topContext.ResourceName}}" {{- if ne $formatValue.ContainedBy "
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = aci_{{getResourceName .NamedPropertyClass $.Definitions}}.example.name
     {{- else}}
     {{- if or (contains (lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions) "<<EOT -----BEGIN_CERTIFICATE-----") (contains (lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions) "<<EOT -----BEGIN_PRIVATE_KEY-----")}}
-    {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = "{{(lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions) | appendNewLine}}"
+    {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = {{(lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions) | spaceToNewLine }}
   {{- else}}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = "{{lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions }}"
   {{- end }}
@@ -30,6 +34,10 @@ resource "aci_{{$topContext.ResourceName}}" {{- if ne $formatValue.ContainedBy "
 {{- end -}}
 {{- else -}}
 {{- if .DocumentationExamples}}{{- range $key := .DocumentationExamples}}
+{{- $testType := getTestType $.PkgName }}
+{{- if eq $testType "cloud"}}
+// This example is only applicable to the Cloud Network Controller
+{{- end}}
 resource "aci_{{$.ResourceName}}" "full_example_{{getResourceName $key $.Definitions}}" { 
   {{- if $.HasParent}}
   parent_dn = {{createParentDnValue $key "example" $.Definitions}}
@@ -51,6 +59,10 @@ resource "aci_{{$.ResourceName}}" "full_example_{{getResourceName $key $.Definit
 }
 {{ end}}
 {{- else}}
+{{- $testType := getTestType $.PkgName }}
+{{- if eq $testType "cloud"}}
+// This example is only applicable to the Cloud Network Controller
+{{- end}}
 resource "aci_{{$.ResourceName}}" "full_example" {
   {{- range $.Properties}}{{- if ne .NamedPropertyClass ""}}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = aci_{{getResourceName .NamedPropertyClass $.Definitions}}.example.name

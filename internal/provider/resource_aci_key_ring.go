@@ -150,15 +150,16 @@ func (r *PkiKeyRingResource) Schema(ctx context.Context, req resource.SchemaRequ
 				Validators: []validator.String{
 					stringvalidator.OneOf("none", "prime256v1", "secp384r1", "secp521r1"),
 				},
-				MarkdownDescription: `ECC Curve.`,
+				MarkdownDescription: `The elliptic curve used by the provided key.`,
 			},
 			"key": schema.StringAttribute{
-				Optional: true,
+				Optional:  true,
+				Sensitive: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The private key of the certificate.`,
+				MarkdownDescription: `The private key of the certificate. This sensitive value is excluded from the resource's lifecycle configuration and is not tracked by Terraform.`,
 			},
 			"key_type": schema.StringAttribute{
 				Optional: true,
@@ -170,7 +171,7 @@ func (r *PkiKeyRingResource) Schema(ctx context.Context, req resource.SchemaRequ
 				Validators: []validator.String{
 					stringvalidator.OneOf("ECC", "RSA", "indeterminate"),
 				},
-				MarkdownDescription: `Key Type.`,
+				MarkdownDescription: `The type of key used by the provided key.`,
 			},
 			"modulus": schema.StringAttribute{
 				Optional: true,

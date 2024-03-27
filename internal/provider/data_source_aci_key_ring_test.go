@@ -7,17 +7,14 @@ package provider
 import (
 	"regexp"
 	"testing"
-	"time"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
-	"github.com/hashicorp/terraform-plugin-testing/terraform"
 )
 
 func TestAccDataSourcePkiKeyRingWithPolUni(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
 		PreCheck: func() {
-			time.Sleep(10 * time.Second)
 			testAccPreCheck(t, "both")
 		},
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -26,18 +23,7 @@ func TestAccDataSourcePkiKeyRingWithPolUni(t *testing.T) {
 				Config:             testConfigPkiKeyRingDataSourceDependencyWithPolUni,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					func(s *terraform.State) error {
-						stateRefreshFunc := func() (interface{}, string, error) {
-							time.Sleep(15 * time.Second)
-							return nil, "", nil
-						}
-						conf := &resource.StateChangeConf{
-							Refresh: stateRefreshFunc,
-							Timeout: 1 * time.Second,
-						}
-						conf.WaitForState()
-						return nil
-					},
+					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("data.aci_key_ring.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("data.aci_key_ring.test", "admin_state", "started"),
 					resource.TestCheckResourceAttr("data.aci_key_ring.test", "annotation", "orchestrator:terraform"),
@@ -58,13 +44,15 @@ func TestAccDataSourcePkiKeyRingWithPolUni(t *testing.T) {
 				ExpectError: regexp.MustCompile("Failed to read aci_key_ring data source"),
 			},
 		},
+		CheckDestroy: resource.ComposeAggregateTestCheckFunc(
+			waitForApicBeforeRefresh,
+		),
 	})
 }
 func TestAccDataSourcePkiKeyRingWithFvTenant(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
 		PreCheck: func() {
-			time.Sleep(10 * time.Second)
 			testAccPreCheck(t, "cloud")
 		},
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -73,18 +61,7 @@ func TestAccDataSourcePkiKeyRingWithFvTenant(t *testing.T) {
 				Config:             testConfigPkiKeyRingDataSourceDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					func(s *terraform.State) error {
-						stateRefreshFunc := func() (interface{}, string, error) {
-							time.Sleep(15 * time.Second)
-							return nil, "", nil
-						}
-						conf := &resource.StateChangeConf{
-							Refresh: stateRefreshFunc,
-							Timeout: 1 * time.Second,
-						}
-						conf.WaitForState()
-						return nil
-					},
+					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("data.aci_key_ring.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("data.aci_key_ring.test", "admin_state", "started"),
 					resource.TestCheckResourceAttr("data.aci_key_ring.test", "annotation", "orchestrator:terraform"),
@@ -105,6 +82,9 @@ func TestAccDataSourcePkiKeyRingWithFvTenant(t *testing.T) {
 				ExpectError: regexp.MustCompile("Failed to read aci_key_ring data source"),
 			},
 		},
+		CheckDestroy: resource.ComposeAggregateTestCheckFunc(
+			waitForApicBeforeRefresh,
+		),
 	})
 }
 

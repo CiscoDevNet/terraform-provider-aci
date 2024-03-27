@@ -7,7 +7,6 @@ package provider
 import (
 	"regexp"
 	"testing"
-	"time"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
@@ -16,7 +15,6 @@ func TestAccDataSourceVzOOBBrCP(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
 		PreCheck: func() {
-			time.Sleep(10 * time.Second)
 			testAccPreCheck(t, "both")
 		},
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,

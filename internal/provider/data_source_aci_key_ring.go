@@ -66,15 +66,15 @@ func (d *PkiKeyRingDataSource) Schema(ctx context.Context, req datasource.Schema
 			},
 			"elliptic_curve": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `ECC Curve.`,
+				MarkdownDescription: `The elliptic curve used by the provided key.`,
 			},
 			"key": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The private key of the certificate.`,
+				MarkdownDescription: `The private key of the certificate. This sensitive value is excluded from the resource's lifecycle configuration and is not tracked by Terraform.`,
 			},
 			"key_type": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `Key Type.`,
+				MarkdownDescription: `The type of key used by the provided key.`,
 			},
 			"modulus": schema.StringAttribute{
 				Computed:            true,
