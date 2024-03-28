@@ -66,7 +66,7 @@ data "aci_key_ring" "example_tenant" {
 * `description` (descr) - (string) The description of the Key Ring object.
 * `elliptic_curve` (eccCurve) - (string) The elliptic curve used by the provided key.
 * `key` (key) - (string) The private key of the certificate. This sensitive value is excluded from the resource's lifecycle configuration and is not tracked by Terraform.
-* `key_type` (keyType) - (string) The type of key used by the provided key.
+* `key_type` (keyType) - (string) The type used by the provided key.
 * `modulus` (modulus) - (string) The length of the encryption keys. A longer key length increases the difficulty of breaking the key.
 * `name_alias` (nameAlias) - (string) The name alias of the Key Ring object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.

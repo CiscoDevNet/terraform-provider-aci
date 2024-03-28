@@ -610,7 +610,7 @@ resource "aci_{{$.resourceName}}" "test" {
   parent_dn = {{.parent_dn}}
 {{- end}}
 {{- range $key, $value := $.resource_required}}
-  {{- if or (contains $value "<<EOT -----BEGIN CERTIFICATE-----") (contains $value "<<EOT -----BEGIN PRIVATE_KEY-----")}}
+  {{- if or (contains $value "<<EOT -----BEGIN_CERTIFICATE-----") (contains $value "<<EOT -----BEGIN_PRIVATE_KEY-----")}}
   {{$key}} = {{ $value | spaceToNewLine }}
   {{- else}}
     {{- if not (definedInList $.exclude_attributes $key)}}
@@ -638,7 +638,7 @@ resource "aci_{{$.resourceName}}" "test" {
   parent_dn = {{.parent_dn}}
 {{- end}}
 {{- range $key, $value := $.resource_required}}
-  {{- if or (contains $value "<<EOT -----BEGIN CERTIFICATE-----") (contains $value "<<EOT -----BEGIN PRIVATE_KEY-----")}}
+  {{- if or (contains $value "<<EOT -----BEGIN_CERTIFICATE-----") (contains $value "<<EOT -----BEGIN_PRIVATE_KEY-----")}}
   {{$key}} = {{ $value | spaceToNewLine }}
   {{- else}}
     {{- if not (definedInList $.exclude_attributes $key)}}
@@ -655,7 +655,7 @@ resource "aci_{{$.resourceName}}" "test" {
   parent_dn = {{.parent_dn}}
 {{- end}}
 {{- range $key, $value := $.resource_required}}
-  {{- if or (contains $value "<<EOT -----BEGIN CERTIFICATE-----") (contains $value "<<EOT -----BEGIN PRIVATE_KEY-----")}}
+  {{- if or (contains $value "<<EOT -----BEGIN_CERTIFICATE-----") (contains $value "<<EOT -----BEGIN_PRIVATE_KEY-----")}}
   {{$key}} = {{ $value | spaceToNewLine }}
   {{- else}}
     {{- if not (definedInList $.exclude_attributes $key)}}
@@ -682,7 +682,7 @@ resource "aci_{{$.resourceName}}" "test" {
   parent_dn = {{.parent_dn}}
 {{- end}}
 {{- range $key, $value := $.resource_required}}
-  {{- if or (contains $value "<<EOT -----BEGIN CERTIFICATE-----") (contains $value "<<EOT -----BEGIN PRIVATE_KEY-----")}}
+  {{- if or (contains $value "<<EOT -----BEGIN_CERTIFICATE-----") (contains $value "<<EOT -----BEGIN_PRIVATE_KEY-----")}}
   {{$key}} = {{ $value | spaceToNewLine }}
   {{- else}}
     {{- if not (definedInList $.exclude_attributes $key)}}
@@ -738,7 +738,7 @@ resource "aci_{{$.resourceName}}" "test" {
 const testConfig{{.resourceClassName}}Children = `
 resource "aci_{{$.resourceName}}" "test" {
 {{- range $key, $value := $.resource_required}}
-  {{- if or (contains $value "<<EOT -----BEGIN CERTIFICATE-----") (contains $value "<<EOT -----BEGIN PRIVATE_KEY-----")}}
+  {{- if or (contains $value "<<EOT -----BEGIN_CERTIFICATE-----") (contains $value "<<EOT -----BEGIN_PRIVATE_KEY-----")}}
   {{$key}} = {{ $value | spaceToNewLine }}
   {{- else}}
   {{$key}} = "{{$value}}"
@@ -761,7 +761,7 @@ resource "aci_{{$.resourceName}}" "test" {
 const testConfig{{.resourceClassName}}ChildrenRemoveFromConfig = `
 resource "aci_{{$.resourceName}}" "test" {
 {{- range $key, $value := $.resource_required}}
-  {{- if or (contains $value "<<EOT -----BEGIN CERTIFICATE-----") (contains $value "<<EOT -----BEGIN PRIVATE_KEY-----")}}
+  {{- if or (contains $value "<<EOT -----BEGIN_CERTIFICATE-----") (contains $value "<<EOT -----BEGIN_PRIVATE_KEY-----")}}
   {{$key}} = {{ $value | spaceToNewLine }}
   {{- else}}
   {{$key}} = "{{$value}}"
@@ -773,7 +773,7 @@ resource "aci_{{$.resourceName}}" "test" {
 const testConfig{{.resourceClassName}}ChildrenRemoveOne = `
 resource "aci_{{$.resourceName}}" "test" {
 {{- range $key, $value := $.resource_required}}
-  {{- if or (contains $value "<<EOT -----BEGIN CERTIFICATE-----") (contains $value "<<EOT -----BEGIN PRIVATE_KEY-----")}}
+  {{- if or (contains $value "<<EOT -----BEGIN_CERTIFICATE-----") (contains $value "<<EOT -----BEGIN_PRIVATE_KEY-----")}}
   {{$key}} = {{ $value | spaceToNewLine }}
   {{- else}}
   {{$key}} = "{{$value}}"
@@ -795,7 +795,7 @@ resource "aci_{{$.resourceName}}" "test" {
 const testConfig{{.resourceClassName}}ChildrenRemoveAll = `
 resource "aci_{{$.resourceName}}" "test" {
 {{- range $key, $value := $.resource_required}}
-  {{- if or (contains $value "<<EOT -----BEGIN CERTIFICATE-----") (contains $value "<<EOT -----BEGIN PRIVATE_KEY-----")}}
+  {{- if or (contains $value "<<EOT -----BEGIN_CERTIFICATE-----") (contains $value "<<EOT -----BEGIN_PRIVATE_KEY-----")}}
   {{$key}} = {{ $value | spaceToNewLine }}
   {{- else}}
   {{$key}} = "{{$value}}"

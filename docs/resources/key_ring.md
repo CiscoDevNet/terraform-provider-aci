@@ -207,7 +207,7 @@ All examples for the Key Ring resource can be found in the [examples](https://gi
 * `elliptic_curve` (eccCurve) - (string) The elliptic curve used by the provided key.
   - Valid Values: `none`, `prime256v1`, `secp384r1`, `secp521r1`.
 * `key` (key) - (string) The private key of the certificate. This sensitive value is excluded from the resource's lifecycle configuration and is not tracked by Terraform.
-* `key_type` (keyType) - (string) The type of key used by the provided key.
+* `key_type` (keyType) - (string) The type used by the provided key.
   - Default: `RSA`
   - Valid Values: `ECC`, `RSA`, `indeterminate`.
 * `modulus` (modulus) - (string) The length of the encryption keys. A longer key length increases the difficulty of breaking the key.

@@ -74,7 +74,7 @@ func (d *PkiKeyRingDataSource) Schema(ctx context.Context, req datasource.Schema
 			},
 			"key_type": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The type of key used by the provided key.`,
+				MarkdownDescription: `The type used by the provided key.`,
 			},
 			"modulus": schema.StringAttribute{
 				Computed:            true,
