@@ -49,10 +49,12 @@ Data source for {{getResourceNameAsDescription .ResourceName}}
 
 ### Required ###
 {{ if .HasParent}}
+{{- if not .ParentDnOptional}}
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   {{- range .DocumentationParentDns}}
   - {{ . }}
   {{- end}}
+{{- end}}
 {{- end}}
 {{- range .Properties}}
     {{- if .IsNaming}}
@@ -62,7 +64,16 @@ Data source for {{getResourceNameAsDescription .ResourceName}}
       {{- end}}
     {{- end}}
 {{- end}}
+{{ if .ParentDnOptional }}
+### Optional ###
 
+* `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
+  {{- if .MultiParentFormats }}
+    {{- range .DocumentationParentDns }}
+      - {{ . }}
+    {{- end }}
+  {{- end }}
+{{ end }}
 ### Read-Only ###
 
 * `id` - (string) The distinguished name (DN) of the {{getResourceNameAsDescription .ResourceName}} object.

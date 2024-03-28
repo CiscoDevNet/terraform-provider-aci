@@ -101,6 +101,7 @@ func (r *MgmtRsOoBConsResource) Schema(ctx context.Context, req resource.SchemaR
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
 				MarkdownDescription: `The annotation of the Relation To Consumed Out Of Band Contract object.`,
@@ -110,6 +111,7 @@ func (r *MgmtRsOoBConsResource) Schema(ctx context.Context, req resource.SchemaR
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
 					stringvalidator.OneOf("level1", "level2", "level3", "level4", "level5", "level6", "unspecified"),
@@ -120,6 +122,7 @@ func (r *MgmtRsOoBConsResource) Schema(ctx context.Context, req resource.SchemaR
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
 				MarkdownDescription: `The name of the Out Of Band Contract object.`,
@@ -372,6 +375,15 @@ func getAndSetMgmtRsOoBConsAttributes(ctx context.Context, diags *diag.Diagnosti
 				if attributeName == "tnVzOOBBrCPName" {
 					data.TnVzOOBBrCPName = basetypes.NewStringValue(attributeValue.(string))
 				}
+			}
+			if data.Annotation.IsUnknown() {
+				data.Annotation = types.StringNull()
+			}
+			if data.Prio.IsUnknown() {
+				data.Prio = types.StringNull()
+			}
+			if data.TnVzOOBBrCPName.IsUnknown() {
+				data.TnVzOOBBrCPName = types.StringNull()
 			}
 			TagAnnotationMgmtRsOoBConsList := make([]TagAnnotationMgmtRsOoBConsResourceModel, 0)
 			TagTagMgmtRsOoBConsList := make([]TagTagMgmtRsOoBConsResourceModel, 0)

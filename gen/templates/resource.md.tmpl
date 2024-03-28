@@ -69,10 +69,12 @@ All examples for the {{getResourceNameAsDescription .ResourceName}} resource can
 
 ### Required ###
 {{ if .HasParent}}
+{{- if not .ParentDnOptional}}
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   {{- range .DocumentationParentDns}}
   - {{ . }}
   {{- end}}
+{{- end}}
 {{- end}}
 {{- range .Properties}}
     {{- if or .IsNaming .IsRequired}}
@@ -89,6 +91,14 @@ All examples for the {{getResourceNameAsDescription .ResourceName}} resource can
 {{- if .HasOptionalProperties}}
 
 ### Optional ###
+{{ if .ParentDnOptional }}
+* `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
+  {{- if .MultiParentFormats }}
+    {{- range .DocumentationParentDns}}
+      - {{ . }}
+    {{- end}}
+  {{- end}}
+{{- end -}}
   {{ range .Properties}}
     {{- if and (not .IsNaming) (not .IsRequired)}}
       {{- if eq .ValueType "bitmask"}}

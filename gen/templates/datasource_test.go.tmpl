@@ -4,6 +4,13 @@
 
 package provider
 
+{{- $found_cert := false -}}
+{{- range $key, $value := $.all}}
+  {{- if contains $key "cert" }}
+    {{- $found_cert = true -}}
+  {{- end}}
+{{- end}}
+
 import (
 	"testing"
 	"regexp"
@@ -16,18 +23,34 @@ import (
 func TestAccDataSource{{$.resourceClassName}}With{{capitalize .class_name}} (t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { 
+		testAccPreCheck(t, "{{.test_type}}") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
 				Config: testConfig{{$.resourceClassName}}DataSourceDependencyWith{{capitalize .class_name}} ,
 				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
+					{{- if $found_cert }}
+					waitForApicBeforeRefresh,
+					{{- end}}
 					{{- range $key, $value := $.datasource_required}}
+					{{- if contains $value "<<EOT -----BEGIN_CERTIFICATE-----" }}
+  					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$key}}", "{{ $value | appendNewLine }}" ),
+					{{- else}}
+					{{- if not (definedInList $.exclude_attributes $key) }}
 					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
 					{{- end}}
+					{{- end}}
+					{{- end}}
 					{{- range $key, $value := $.default}}
+					{{- if or (contains $value "<<EOT -----BEGIN_CERTIFICATE-----") (contains $value "<<EOT -----BEGIN_PRIVATE_KEY-----") }}
+  					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$key}}", "{{ $value | appendNewLine }}" ),
+					{{- else}}
+					{{- if not (definedInList $.exclude_attributes $key) }}
 					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+					{{- end}}
+					{{- end}}
 					{{- end}}
 				),
 			},
@@ -36,6 +59,11 @@ func TestAccDataSource{{$.resourceClassName}}With{{capitalize .class_name}} (t *
 				ExpectError: regexp.MustCompile("Failed to read aci_{{$.resourceName}} data source"),
 			},
 		},
+		{{- if $found_cert }}
+		CheckDestroy: resource.ComposeAggregateTestCheckFunc(
+			waitForApicBeforeRefresh,
+			),
+		{{- end}}
 	})
 }
 	{{- end}}
@@ -43,17 +71,33 @@ func TestAccDataSource{{$.resourceClassName}}With{{capitalize .class_name}} (t *
 func TestAccDataSource{{.resourceClassName}}(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { 
+		testAccPreCheck(t, "{{.test_type}}") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
 				Config: testConfig{{.resourceClassName}}DataSource,
 				Check: resource.ComposeAggregateTestCheckFunc(
+					{{- if $found_cert }}
+					waitForApicBeforeRefresh,
+					{{- end}}
 					{{- range $key, $value := .min}}
+					{{- if contains $value "<<EOT -----BEGIN_CERTIFICATE-----" }}
+  					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$key}}", "{{ $value | appendNewLine }}" ),
+					{{- else}}
+					{{- if not (definedInList $.exclude_attributes $key) }}
 					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
 					{{- end}}
+					{{- end}}
+					{{- end}}
 					{{- range $key, $value := .all}}
+					{{- if contains $value "<<EOT -----BEGIN_CERTIFICATE-----" }}
+  					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$key}}", "{{ $value | appendNewLine }}" ),
+					{{- else}}
+					{{- if not (definedInList $.exclude_attributes $key) }}
 					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+					{{- end}}
+					{{- end}}
 					{{- end}}
 				),
 			},
@@ -62,6 +106,11 @@ func TestAccDataSource{{.resourceClassName}}(t *testing.T) {
 				ExpectError: regexp.MustCompile("Failed to read aci_{{$.resourceName}} data source"),
 			},
 		},
+		{{- if $found_cert }}
+		CheckDestroy: resource.ComposeAggregateTestCheckFunc(
+			waitForApicBeforeRefresh,
+			),
+		{{- end}}
 	})
 }
 {{- end}}
@@ -70,7 +119,9 @@ func TestAccDataSource{{.resourceClassName}}(t *testing.T) {
 	{{- range .parents}}
 const testConfig{{$.resourceClassName}}DataSourceDependencyWith{{capitalize .class_name}}  = testConfig{{$.resourceClassName}}MinDependencyWith{{capitalize .class_name}}  + `
 data "aci_{{$.resourceName}}" "test" {
+  {{- if ne .class_name "polUni"}}
   parent_dn = {{.parent_dn}}
+  {{- end}}
   {{- range $key, $value := $.datasource_required}}
   {{$key}} = "{{$value}}"
   {{- end}}
@@ -80,7 +131,9 @@ data "aci_{{$.resourceName}}" "test" {
 
 const testConfig{{$.resourceClassName}}NotExisting{{capitalize .class_name}}  = testConfig{{$.resourceClassName}}MinDependencyWith{{capitalize .class_name}}  + `
 data "aci_{{$.resourceName}}" "test_non_existing" {
+  {{- if ne .class_name "polUni"}}
   parent_dn = {{.parent_dn}}
+  {{- end}}
   {{- range $key, $value := $.datasource_non_existing}}
   {{$key}} = "{{$value}}"
   {{- end}}

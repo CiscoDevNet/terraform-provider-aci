@@ -47,3 +47,4 @@ children:
     - key: "tags_2"
       value: "value_2"
       
+test_type: both

@@ -102,6 +102,7 @@ func (r *MgmtInstPResource) Schema(ctx context.Context, req resource.SchemaReque
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
 				MarkdownDescription: `The annotation of the External Management Network Instance Profile object.`,
@@ -111,6 +112,7 @@ func (r *MgmtInstPResource) Schema(ctx context.Context, req resource.SchemaReque
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The description of the External Management Network Instance Profile object.`,
 			},
@@ -118,6 +120,7 @@ func (r *MgmtInstPResource) Schema(ctx context.Context, req resource.SchemaReque
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
 				MarkdownDescription: `The name of the External Management Network Instance Profile object.`,
@@ -127,6 +130,7 @@ func (r *MgmtInstPResource) Schema(ctx context.Context, req resource.SchemaReque
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The name alias of the External Management Network Instance Profile object.`,
 			},
@@ -135,6 +139,7 @@ func (r *MgmtInstPResource) Schema(ctx context.Context, req resource.SchemaReque
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
 					stringvalidator.OneOf("level1", "level2", "level3", "level4", "level5", "level6", "unspecified"),
@@ -438,6 +443,21 @@ func getAndSetMgmtInstPAttributes(ctx context.Context, diags *diag.Diagnostics, 
 				if attributeName == "prio" {
 					data.Prio = basetypes.NewStringValue(attributeValue.(string))
 				}
+			}
+			if data.Annotation.IsUnknown() {
+				data.Annotation = types.StringNull()
+			}
+			if data.Descr.IsUnknown() {
+				data.Descr = types.StringNull()
+			}
+			if data.Name.IsUnknown() {
+				data.Name = types.StringNull()
+			}
+			if data.NameAlias.IsUnknown() {
+				data.NameAlias = types.StringNull()
+			}
+			if data.Prio.IsUnknown() {
+				data.Prio = types.StringNull()
 			}
 			MgmtRsOoBConsMgmtInstPList := make([]MgmtRsOoBConsMgmtInstPResourceModel, 0)
 			TagAnnotationMgmtInstPList := make([]TagAnnotationMgmtInstPResourceModel, 0)

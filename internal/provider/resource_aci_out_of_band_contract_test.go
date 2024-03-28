@@ -13,7 +13,9 @@ import (
 func TestAccResourceVzOOBBrCP(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck: func() {
+			testAccPreCheck(t, "both")
+		},
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -187,6 +189,9 @@ func TestAccResourceVzOOBBrCP(t *testing.T) {
 				),
 			},
 		},
+		CheckDestroy: resource.ComposeAggregateTestCheckFunc(
+			testCheckResourceDestroy,
+		),
 	})
 }
 
@@ -229,25 +234,25 @@ const testConfigVzOOBBrCPChildren = `
 resource "aci_out_of_band_contract" "test" {
   name = "test_name"
   annotations = [
-	{
-	  key = "annotations_1"
-	  value = "value_1"
-	},
-	{
-	  key = "annotations_2"
-	  value = "value_2"
-	},
-  ]
+  {
+	 key = "annotations_1"
+	 value = "value_1"
+  },
+  {
+	 key = "annotations_2"
+	 value = "value_2"
+  },
+ ]
   tags = [
-	{
-	  key = "tags_1"
-	  value = "value_1"
-	},
-	{
-	  key = "tags_2"
-	  value = "value_2"
-	},
-  ]
+  {
+	 key = "tags_1"
+	 value = "value_1"
+  },
+  {
+	 key = "tags_2"
+	 value = "value_2"
+  },
+ ]
 }
 `
 
@@ -260,17 +265,17 @@ resource "aci_out_of_band_contract" "test" {
 const testConfigVzOOBBrCPChildrenRemoveOne = `
 resource "aci_out_of_band_contract" "test" {
   name = "test_name"
-  annotations = [ 
-	{
-	  key = "annotations_2"
-	  value = "value_2"
-	},
+  annotations = [
+    {
+      key = "annotations_2"
+      value = "value_2"
+    },
   ]
-  tags = [ 
-	{
-	  key = "tags_2"
-	  value = "value_2"
-	},
+  tags = [
+    {
+      key = "tags_2"
+      value = "value_2"
+    },
   ]
 }
 `

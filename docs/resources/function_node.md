@@ -74,7 +74,6 @@ resource "aci_function_node" "example" {
 - `conn_consumer_dn` - (Read-Only) Distinguished name of the Function Node consumer connector. Type: String.
 - `conn_provider_dn` - (Read-Only) Distinguished name of the Function Node provider connector. Type: String.
 
-
 ## Importing
 
 An existing Function Node can be [imported][docs-import] into this resource via its Dn, via the following command:

@@ -13,7 +13,9 @@ import (
 func TestAccResourceL3extConsLblWithL3extOut(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck: func() {
+			testAccPreCheck(t, "apic")
+		},
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -172,6 +174,9 @@ func TestAccResourceL3extConsLblWithL3extOut(t *testing.T) {
 				),
 			},
 		},
+		CheckDestroy: resource.ComposeAggregateTestCheckFunc(
+			testCheckResourceDestroy,
+		),
 	})
 }
 
@@ -214,24 +219,24 @@ resource "aci_l3out_consumer_label" "test" {
   parent_dn = aci_l3_outside.test.id
   name = "test_name"
   annotations = [
-	{
-	  key = "annotations_1"
-	  value = "value_1"
-	},
-	{
-	  key = "annotations_2"
-	  value = "value_2"
-	},
+    {
+      key = "annotations_1"
+      value = "value_1"
+    },
+    {
+      key = "annotations_2"
+      value = "value_2"
+    },
   ]
   tags = [
-	{
-	  key = "tags_1"
-	  value = "value_1"
-	},
-	{
-	  key = "tags_2"
-	  value = "value_2"
-	},
+    {
+      key = "tags_1"
+      value = "value_1"
+    },
+    {
+      key = "tags_2"
+      value = "value_2"
+    },
   ]
 }
 `
@@ -247,17 +252,17 @@ const testConfigL3extConsLblChildrenRemoveOneDependencyWithL3extOut = testConfig
 resource "aci_l3out_consumer_label" "test" {
   parent_dn = aci_l3_outside.test.id
   name = "test_name"
-  annotations = [ 
-	{
-	  key = "annotations_2"
-	  value = "value_2"
-	},
+  annotations = [
+  {
+	key = "annotations_2"
+	value = "value_2"
+  },
   ]
-  tags = [ 
-	{
-	  key = "tags_2"
-	  value = "value_2"
-	},
+  tags = [
+  {
+	key = "tags_2"
+	value = "value_2"
+  },
   ]
 }
 `

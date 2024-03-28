@@ -7,6 +7,7 @@ global:
 
 fvTenant:
   resource_name: "tenant"
+  resource_identifier: "tn"
 
 fvAEPg:
   resource_name: "application_epg"
@@ -95,6 +96,7 @@ tagAnnotation:
     - "uni/tn-{name}/BD-{name}/annotationKey-[{key}]"
     - "uni/tn-{name}/ctx-{name}/annotationKey-[{key}]"
     - "Too many DN formats to display, see model documentation for all possible parents of [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)."
+  test_type: "apic"
 
 tagTag:
   ui_locations:
@@ -111,7 +113,6 @@ tagTag:
     - "uni/tn-{name}/ap-{name}/tagKey-{key}"
     - "uni/tn-{name}/BD-{name}/tagKey-{key}"
     - "Too many DN formats to display, see model documentation for all possible parents of [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)."
-
 
 fvEpMacTag:
   resource_name: "endpoint_tag_mac"
@@ -130,3 +131,32 @@ fvEpIpTag:
   ui_locations:
     - "Tenants -> Policies -> Protocol -> Endpoint Tags -> Endpoint IP"
   sub_category: "Tenant Policies"
+
+pkiTP:
+  sub_category: "AAA"
+  ui_locations:
+    - "Admin -> AAA -> Security -> Certificate Authorities"
+    - "Cloud Network Controller -> Administrative -> Security -> Certificate Authorities"
+  multi_parents: 
+    - rn_prepend: "certstore"
+      contained_by: "fvTenant"
+      wrapper_class: "cloudCertStore"
+      test_type: "cloud"
+    - rn_prepend: "uni/userext/pkiext"
+      contained_by: "polUni"
+      test_type: "both"
+
+pkiKeyRing:
+  sub_category: "AAA"
+  ui_locations:
+    - "Admin -> AAA -> Security -> Key Rings"
+    - "Cloud Network Controller -> Administrative -> Security -> Key Rings"
+  multi_parents: 
+    - rn_prepend: "certstore"
+      contained_by: "fvTenant"
+      wrapper_class: "cloudCertStore"
+      test_type: "cloud"
+    - rn_prepend: "uni/userext/pkiext"
+      contained_by: "polUni"
+      test_type: "both"
+ 
