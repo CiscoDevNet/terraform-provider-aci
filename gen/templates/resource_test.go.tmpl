@@ -96,7 +96,6 @@ PreCheck: func() {
 					{{- end}}
 			{{- end }}
 		{{- end}}
-		{{- end}}
 		{{- range $key, $value := $.all}}{{$contains := definedInMap $key $.all}}
 			{{- if not $contains}}
 				{{- if ne $key "annotation"}}
@@ -133,7 +132,6 @@ PreCheck: func() {
 			{{- if not $contains}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
 				{{- end}}
-		{{- end}}
 		{{- end}}
 	{{- if $.resource_required }}
 		{{- range $key, $value := $.default}}{{$contains := definedInMap $key $.resource_required}}
@@ -879,7 +877,7 @@ resource "aci_{{$.resourceName}}" "test" {
 const testConfig{{.resourceClassName}}Children = `
 resource "aci_{{$.resourceName}}" "test" {
 {{- range $key, $value := $.resource_required}}
-  {{- if or (contains $value "<<EOT -----BEGIN CERTIFICATE-----") (contains $value "<<EOT -----BEGIN PRIVATE_KEY-----")}}
+  {{- if or (contains $value "<<EOT -----BEGIN_CERTIFICATE-----") (contains $value "<<EOT -----BEGIN_PRIVATE_KEY-----")}}
   {{$key}} = {{ $value | spaceToNewLine }}
   {{- else}}
   {{$key}} = "{{$value}}"
@@ -902,7 +900,7 @@ resource "aci_{{$.resourceName}}" "test" {
 const testConfig{{.resourceClassName}}ChildrenRemoveFromConfig = `
 resource "aci_{{$.resourceName}}" "test" {
 {{- range $key, $value := $.resource_required}}
-  {{- if or (contains $value "<<EOT -----BEGIN CERTIFICATE-----") (contains $value "<<EOT -----BEGIN PRIVATE_KEY-----")}}
+  {{- if or (contains $value "<<EOT -----BEGIN_CERTIFICATE-----") (contains $value "<<EOT -----BEGIN_PRIVATE_KEY-----")}}
   {{$key}} = {{ $value | spaceToNewLine }}
   {{- else}}
   {{$key}} = "{{$value}}"
@@ -914,7 +912,7 @@ resource "aci_{{$.resourceName}}" "test" {
 const testConfig{{.resourceClassName}}ChildrenRemoveOne = `
 resource "aci_{{$.resourceName}}" "test" {
 {{- range $key, $value := $.resource_required}}
-  {{- if or (contains $value "<<EOT -----BEGIN CERTIFICATE-----") (contains $value "<<EOT -----BEGIN PRIVATE_KEY-----")}}
+  {{- if or (contains $value "<<EOT -----BEGIN_CERTIFICATE-----") (contains $value "<<EOT -----BEGIN_PRIVATE_KEY-----")}}
   {{$key}} = {{ $value | spaceToNewLine }}
   {{- else}}
   {{$key}} = "{{$value}}"
@@ -936,7 +934,7 @@ resource "aci_{{$.resourceName}}" "test" {
 const testConfig{{.resourceClassName}}ChildrenRemoveAll = `
 resource "aci_{{$.resourceName}}" "test" {
 {{- range $key, $value := $.resource_required}}
-  {{- if or (contains $value "<<EOT -----BEGIN CERTIFICATE-----") (contains $value "<<EOT -----BEGIN PRIVATE_KEY-----")}}
+  {{- if or (contains $value "<<EOT -----BEGIN_CERTIFICATE-----") (contains $value "<<EOT -----BEGIN_PRIVATE_KEY-----")}}
   {{$key}} = {{ $value | spaceToNewLine }}
   {{- else}}
   {{$key}} = "{{$value}}"

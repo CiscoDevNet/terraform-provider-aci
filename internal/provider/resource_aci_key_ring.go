@@ -178,7 +178,7 @@ func (r *PkiKeyRingResource) Schema(ctx context.Context, req resource.SchemaRequ
 				Validators: []validator.String{
 					stringvalidator.OneOf("ECC", "RSA", "indeterminate"),
 				},
-				MarkdownDescription: `The type of key used by the provided key.`,
+				MarkdownDescription: `The type used by the provided key.`,
 			},
 			"modulus": schema.StringAttribute{
 				Optional: true,
