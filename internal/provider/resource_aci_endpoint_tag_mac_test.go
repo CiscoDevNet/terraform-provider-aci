@@ -206,24 +206,24 @@ resource "aci_endpoint_tag_mac" "test" {
   bd_name = "test_bd_name"
   mac = "00:00:00:00:00:01"
   annotations = [
-	{
-	  key = "annotations_1"
-	  value = "value_1"
-	},
-	{
-	  key = "annotations_2"
-	  value = "value_2"
-	},
+    {
+      key = "annotations_1"
+      value = "value_1"
+    },
+    {
+      key = "annotations_2"
+      value = "value_2"
+    },
   ]
   tags = [
-	{
-	  key = "tags_1"
-	  value = "value_1"
-	},
-	{
-	  key = "tags_2"
-	  value = "value_2"
-	},
+    {
+      key = "tags_1"
+      value = "value_1"
+    },
+    {
+      key = "tags_2"
+      value = "value_2"
+    },
   ]
 }
 `
@@ -241,17 +241,17 @@ resource "aci_endpoint_tag_mac" "test" {
   parent_dn = aci_tenant.test.id
   bd_name = "test_bd_name"
   mac = "00:00:00:00:00:01"
-  annotations = [ 
-	{
-	  key = "annotations_2"
-	  value = "value_2"
-	},
+  annotations = [
+  {
+	key = "annotations_2"
+	value = "value_2"
+  },
   ]
-  tags = [ 
-	{
-	  key = "tags_2"
-	  value = "value_2"
-	},
+  tags = [
+  {
+	key = "tags_2"
+	value = "value_2"
+  },
   ]
 }
 `

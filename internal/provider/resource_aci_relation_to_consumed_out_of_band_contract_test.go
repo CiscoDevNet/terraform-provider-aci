@@ -179,24 +179,24 @@ resource "aci_relation_to_consumed_out_of_band_contract" "test" {
   parent_dn = aci_external_management_network_instance_profile.test.id
   out_of_band_contract_name = "test_tn_vz_oob_br_cp_name"
   annotations = [
-	{
-	  key = "annotations_1"
-	  value = "value_1"
-	},
-	{
-	  key = "annotations_2"
-	  value = "value_2"
-	},
+    {
+      key = "annotations_1"
+      value = "value_1"
+    },
+    {
+      key = "annotations_2"
+      value = "value_2"
+    },
   ]
   tags = [
-	{
-	  key = "tags_1"
-	  value = "value_1"
-	},
-	{
-	  key = "tags_2"
-	  value = "value_2"
-	},
+    {
+      key = "tags_1"
+      value = "value_1"
+    },
+    {
+      key = "tags_2"
+      value = "value_2"
+    },
   ]
 }
 `
@@ -212,17 +212,17 @@ const testConfigMgmtRsOoBConsChildrenRemoveOneDependencyWithMgmtInstP = testConf
 resource "aci_relation_to_consumed_out_of_band_contract" "test" {
   parent_dn = aci_external_management_network_instance_profile.test.id
   out_of_band_contract_name = "test_tn_vz_oob_br_cp_name"
-  annotations = [ 
-	{
-	  key = "annotations_2"
-	  value = "value_2"
-	},
+  annotations = [
+  {
+	key = "annotations_2"
+	value = "value_2"
+  },
   ]
-  tags = [ 
-	{
-	  key = "tags_2"
-	  value = "value_2"
-	},
+  tags = [
+  {
+	key = "tags_2"
+	value = "value_2"
+  },
   ]
 }
 `

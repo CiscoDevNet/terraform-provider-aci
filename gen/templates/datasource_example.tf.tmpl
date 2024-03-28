@@ -3,7 +3,7 @@
 {{- range $formatKey, $formatValue := $topContext.MultiParentFormats }}
 {{- $testType := $formatValue.TestType }}
 {{- if eq $testType "cloud"}}
-// This example is only applicable to the Cloud Network Controller
+// This example is only applicable to Cisco Cloud Network Controller
 {{- end}}
 data "aci_{{ $topContext.ResourceName }}" {{- if ne $formatValue.ContainedBy "polUni"}}"example_{{ getResourceName $formatValue.ContainedBy $topContext.Definitions }}"{{- else}}"example"{{- end }} {
 {{- if ne $formatValue.ContainedBy "polUni"}}
@@ -25,7 +25,7 @@ data "aci_{{ $topContext.ResourceName }}" {{- if ne $formatValue.ContainedBy "po
 {{- if .DocumentationExamples}}{{- range $key := .DocumentationExamples}}
 {{- $testType := getTestType $.PkgName }}
 {{- if eq $testType "cloud"}}
-// This example is only applicable to the Cloud Network Controller
+// This example is only applicable to Cisco Cloud Network Controller
 {{- end}}
 data "aci_{{$.ResourceName}}" "example_{{getResourceName $key $.Definitions}}" {
   {{- if $.HasParent}}
@@ -41,7 +41,7 @@ data "aci_{{$.ResourceName}}" "example_{{getResourceName $key $.Definitions}}" {
 {{- else}}
 {{- $testType := getTestType $.PkgName }}
 {{- if eq $testType "cloud"}}
-// This example is only applicable to the Cloud Network Controller
+// This example is only applicable to Cisco Cloud Network Controller
 {{- end}}
 data "aci_{{$.ResourceName}}" "example" {
   {{- range $.Properties}}{{- if .IsNaming}}{{- if ne .NamedPropertyClass ""}}

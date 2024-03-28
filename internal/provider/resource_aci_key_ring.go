@@ -60,10 +60,17 @@ type PkiKeyRingResourceModel struct {
 	Regen         types.String `tfsdk:"regenerate"`
 	Tp            types.String `tfsdk:"certificate_authority"`
 	TagAnnotation types.Set    `tfsdk:"annotations"`
+	TagTag        types.Set    `tfsdk:"tags"`
 }
 
 // TagAnnotationPkiKeyRingResourceModel describes the resource data model for the children without relation ships.
 type TagAnnotationPkiKeyRingResourceModel struct {
+	Key   types.String `tfsdk:"key"`
+	Value types.String `tfsdk:"value"`
+}
+
+// TagTagPkiKeyRingResourceModel describes the resource data model for the children without relation ships.
+type TagTagPkiKeyRingResourceModel struct {
 	Key   types.String `tfsdk:"key"`
 	Value types.String `tfsdk:"value"`
 }
@@ -268,6 +275,32 @@ func (r *PkiKeyRingResource) Schema(ctx context.Context, req resource.SchemaRequ
 					},
 				},
 			},
+			"tags": schema.SetNestedAttribute{
+				MarkdownDescription: ``,
+				Optional:            true,
+				Computed:            true,
+				PlanModifiers: []planmodifier.Set{
+					setplanmodifier.UseStateForUnknown(),
+				},
+				NestedObject: schema.NestedAttributeObject{
+					Attributes: map[string]schema.Attribute{
+						"key": schema.StringAttribute{
+							Required: true,
+							PlanModifiers: []planmodifier.String{
+								stringplanmodifier.UseStateForUnknown(),
+							},
+							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+						},
+						"value": schema.StringAttribute{
+							Required: true,
+							PlanModifiers: []planmodifier.String{
+								stringplanmodifier.UseStateForUnknown(),
+							},
+							MarkdownDescription: `The value of the property.`,
+						},
+					},
+				},
+			},
 		},
 	}
 	tflog.Debug(ctx, "End schema of resource: aci_key_ring")
@@ -319,7 +352,10 @@ func (r *PkiKeyRingResource) Create(ctx context.Context, req resource.CreateRequ
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationPkiKeyRingResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
 	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
-	jsonPayload := getPkiKeyRingCreateJsonPayload(ctx, &resp.Diagnostics, data, stateData, tagAnnotationPlan, tagAnnotationState)
+	var tagTagPlan, tagTagState []TagTagPkiKeyRingResourceModel
+	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
+	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
+	jsonPayload := getPkiKeyRingCreateJsonPayload(ctx, &resp.Diagnostics, data, stateData, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -385,13 +421,19 @@ func (r *PkiKeyRingResource) Update(ctx context.Context, req resource.UpdateRequ
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationPkiKeyRingResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
 	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
-	jsonPayload := getPkiKeyRingCreateJsonPayload(ctx, &resp.Diagnostics, data, stateData, tagAnnotationPlan, tagAnnotationState)
+	var tagTagPlan, tagTagState []TagTagPkiKeyRingResourceModel
+	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
+	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
+	jsonPayload := getPkiKeyRingCreateJsonPayload(ctx, &resp.Diagnostics, data, stateData, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	wrapperClassMap := map[string]string{"uni/userext/pkiext": "", "certstore": "cloudCertStore"}
+	wrapperClassMap := map[string]string{
+		"uni/userext/pkiext": "",
+		"certstore":          "cloudCertStore",
+	}
 	for rnPrepend, wrapperClass := range wrapperClassMap {
 		if strings.Contains(data.Id.ValueString(), rnPrepend) && wrapperClass != "" {
 			DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s%s.json", strings.Split(data.Id.ValueString(), rnPrepend)[0], rnPrepend), "POST", jsonPayload)
@@ -442,7 +484,7 @@ func (r *PkiKeyRingResource) ImportState(ctx context.Context, req resource.Impor
 }
 
 func getAndSetPkiKeyRingAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *PkiKeyRingResourceModel) {
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "pkiKeyRing,tagAnnotation"), "GET", nil)
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "pkiKeyRing,tagAnnotation,tagTag"), "GET", nil)
 
 	if diags.HasError() {
 		return
@@ -546,6 +588,7 @@ func getAndSetPkiKeyRingAttributes(ctx context.Context, diags *diag.Diagnostics,
 				data.Tp = types.StringNull()
 			}
 			TagAnnotationPkiKeyRingList := make([]TagAnnotationPkiKeyRingResourceModel, 0)
+			TagTagPkiKeyRingList := make([]TagTagPkiKeyRingResourceModel, 0)
 			_, ok := classReadInfo[0].(map[string]interface{})["children"]
 			if ok {
 				children := classReadInfo[0].(map[string]interface{})["children"].([]interface{})
@@ -564,12 +607,28 @@ func getAndSetPkiKeyRingAttributes(ctx context.Context, diags *diag.Diagnostics,
 							}
 							TagAnnotationPkiKeyRingList = append(TagAnnotationPkiKeyRingList, TagAnnotationPkiKeyRing)
 						}
+						if childClassName == "tagTag" {
+							TagTagPkiKeyRing := TagTagPkiKeyRingResourceModel{}
+							for childAttributeName, childAttributeValue := range childAttributes {
+								if childAttributeName == "key" {
+									TagTagPkiKeyRing.Key = basetypes.NewStringValue(childAttributeValue.(string))
+								}
+								if childAttributeName == "value" {
+									TagTagPkiKeyRing.Value = basetypes.NewStringValue(childAttributeValue.(string))
+								}
+							}
+							TagTagPkiKeyRingList = append(TagTagPkiKeyRingList, TagTagPkiKeyRing)
+						}
 					}
 				}
 			}
 			if len(TagAnnotationPkiKeyRingList) > 0 {
 				tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationPkiKeyRingList)
 				data.TagAnnotation = tagAnnotationSet
+			}
+			if len(TagTagPkiKeyRingList) > 0 {
+				tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagPkiKeyRingList)
+				data.TagTag = tagTagSet
 			}
 		} else {
 			diags.AddError(
@@ -597,16 +656,18 @@ func setPkiKeyRingParentDn(ctx context.Context, dn string, data *PkiKeyRingResou
 	rnIndex := 0
 	for i := len(dn) - 1; i >= 0; i-- {
 		if string(dn[i]) == "]" {
-			bracketIndex = bracketIndex + 1
+			bracketIndex++
 		} else if string(dn[i]) == "[" {
-			bracketIndex = bracketIndex - 1
+			bracketIndex--
 		} else if string(dn[i]) == "/" && bracketIndex == 0 {
 			rnIndex = i
 			break
 		}
 	}
 	parentDn := dn[:rnIndex]
-	rnMap := map[string]string{"tn": "certstore"}
+	rnMap := map[string]string{
+		"tn": "certstore",
+	}
 	for parent_identifier, rn_prepend := range rnMap {
 		if strings.Contains(parentDn, parent_identifier) {
 			parentDn = parentDn[:strings.Index(parentDn, fmt.Sprintf("/%s", rn_prepend))]
@@ -617,7 +678,10 @@ func setPkiKeyRingParentDn(ctx context.Context, dn string, data *PkiKeyRingResou
 
 func setPkiKeyRingId(ctx context.Context, data *PkiKeyRingResourceModel) {
 	rn := getPkiKeyRingRn(ctx, data)
-	rnMap := map[string]string{"": "uni/userext/pkiext", "tn": "certstore"}
+	rnMap := map[string]string{
+		"":   "uni/userext/pkiext",
+		"tn": "certstore",
+	}
 	for parent_identifier, rn_prepend := range rnMap {
 		if data.ParentDn.ValueString() == "" && parent_identifier == "" {
 			data.Id = types.StringValue(fmt.Sprintf("%s/%s", rn_prepend, rn))
@@ -666,18 +730,61 @@ func getPkiKeyRingTagAnnotationChildPayloads(ctx context.Context, diags *diag.Di
 
 	return childPayloads
 }
+func getPkiKeyRingTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *PkiKeyRingResourceModel, tagTagPlan, tagTagState []TagTagPkiKeyRingResourceModel) []map[string]interface{} {
 
-func getPkiKeyRingCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data, stateData *PkiKeyRingResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationPkiKeyRingResourceModel) *container.Container {
-	payloadMap := map[string]interface{}{}
-	payloadMap["attributes"] = map[string]string{}
 	childPayloads := []map[string]interface{}{}
+	if !data.TagTag.IsUnknown() {
+		tagTagIdentifiers := []TagTagIdentifier{}
+		for _, tagTag := range tagTagPlan {
+			childMap := map[string]map[string]interface{}{"attributes": {}}
+			if !tagTag.Key.IsUnknown() {
+				childMap["attributes"]["key"] = tagTag.Key.ValueString()
+			}
+			if !tagTag.Value.IsUnknown() {
+				childMap["attributes"]["value"] = tagTag.Value.ValueString()
+			}
+			childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})
+			tagTagIdentifier := TagTagIdentifier{}
+			tagTagIdentifier.Key = tagTag.Key
+			tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
+		}
+		for _, tagTag := range tagTagState {
+			delete := true
+			for _, tagTagIdentifier := range tagTagIdentifiers {
+				if tagTagIdentifier.Key == tagTag.Key {
+					delete = false
+					break
+				}
+			}
+			if delete {
+				childMap := map[string]map[string]interface{}{"attributes": {}}
+				childMap["attributes"]["status"] = "deleted"
+				childMap["attributes"]["key"] = tagTag.Key.ValueString()
+				childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})
+			}
+		}
+	} else {
+		data.TagTag = types.SetNull(data.TagTag.ElementType(ctx))
+	}
 
+	return childPayloads
+}
+
+func getPkiKeyRingCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data, stateData *PkiKeyRingResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationPkiKeyRingResourceModel, tagTagPlan, tagTagState []TagTagPkiKeyRingResourceModel) *container.Container {
+	payloadMap := map[string]interface{}{
+		"attributes": map[string]string{},
+	}
+	childPayloads := []map[string]interface{}{}
 	TagAnnotationchildPayloads := getPkiKeyRingTagAnnotationChildPayloads(ctx, diags, data, tagAnnotationPlan, tagAnnotationState)
 	if TagAnnotationchildPayloads == nil {
 		return nil
 	}
 	childPayloads = append(childPayloads, TagAnnotationchildPayloads...)
-
+	TagTagchildPayloads := getPkiKeyRingTagTagChildPayloads(ctx, diags, data, tagTagPlan, tagTagState)
+	if TagTagchildPayloads == nil {
+		return nil
+	}
+	childPayloads = append(childPayloads, TagTagchildPayloads...)
 	payloadMap["children"] = childPayloads
 	if !data.AdminState.IsNull() && !data.AdminState.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["adminState"] = data.AdminState.ValueString()
@@ -721,7 +828,12 @@ func getPkiKeyRingCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics
 	if !data.Tp.IsNull() && !data.Tp.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["tp"] = data.Tp.ValueString()
 	}
-	wrapperClassMap := map[string]string{"uni/userext/pkiext": "", "certstore": "cloudCertStore"}
+
+	wrapperClassMap := map[string]string{
+		"uni/userext/pkiext": "",
+		"certstore":          "cloudCertStore",
+	}
+
 	var payload []byte
 	var err error
 	for rnPrepend, wrapperClass := range wrapperClassMap {
@@ -737,6 +849,7 @@ func getPkiKeyRingCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics
 			payload, err = json.Marshal(map[string]interface{}{"pkiKeyRing": payloadMap})
 		}
 	}
+
 	if err != nil {
 		diags.AddError(
 			"Marshalling of json payload failed",
@@ -744,8 +857,8 @@ func getPkiKeyRingCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics
 		)
 		return nil
 	}
-	jsonPayload, err := container.ParseJSON(payload)
 
+	jsonPayload, err := container.ParseJSON(payload)
 	if err != nil {
 		diags.AddError(
 			"Construction of json payload failed",
@@ -753,5 +866,6 @@ func getPkiKeyRingCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics
 		)
 		return nil
 	}
+
 	return jsonPayload
 }

@@ -203,24 +203,24 @@ resource "aci_pim_route_map_policy" "test" {
   parent_dn = aci_tenant.test.id
   name = "test_name"
   annotations = [
-	{
-	  key = "annotations_1"
-	  value = "value_1"
-	},
-	{
-	  key = "annotations_2"
-	  value = "value_2"
-	},
+    {
+      key = "annotations_1"
+      value = "value_1"
+    },
+    {
+      key = "annotations_2"
+      value = "value_2"
+    },
   ]
   tags = [
-	{
-	  key = "tags_1"
-	  value = "value_1"
-	},
-	{
-	  key = "tags_2"
-	  value = "value_2"
-	},
+    {
+      key = "tags_1"
+      value = "value_1"
+    },
+    {
+      key = "tags_2"
+      value = "value_2"
+    },
   ]
 }
 `
@@ -236,17 +236,17 @@ const testConfigPimRouteMapPolChildrenRemoveOneDependencyWithFvTenant = testConf
 resource "aci_pim_route_map_policy" "test" {
   parent_dn = aci_tenant.test.id
   name = "test_name"
-  annotations = [ 
-	{
-	  key = "annotations_2"
-	  value = "value_2"
-	},
+  annotations = [
+  {
+	key = "annotations_2"
+	value = "value_2"
+  },
   ]
-  tags = [ 
-	{
-	  key = "tags_2"
-	  value = "value_2"
-	},
+  tags = [
+  {
+	key = "tags_2"
+	value = "value_2"
+  },
   ]
 }
 `

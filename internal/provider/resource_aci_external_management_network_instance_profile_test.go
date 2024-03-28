@@ -198,37 +198,37 @@ const testConfigMgmtInstPChildren = `
 resource "aci_external_management_network_instance_profile" "test" {
   name = "test_name"
   annotations = [
-	{
-	  key = "annotations_1"
-	  value = "value_1"
-	},
-	{
-	  key = "annotations_2"
-	  value = "value_2"
-	},
-  ]
+  {
+	 key = "annotations_1"
+	 value = "value_1"
+  },
+  {
+	 key = "annotations_2"
+	 value = "value_2"
+  },
+ ]
   relation_to_consumed_out_of_band_contracts = [
-	{
-	  annotation = "annotation_1"
-	  out_of_band_contract_name = "relation_to_consumed_out_of_band_contracts_1"
-	  priority = "level1"
-	},
-	{
-	  annotation = "annotation_2"
-	  out_of_band_contract_name = "relation_to_consumed_out_of_band_contracts_2"
-	  priority = "level2"
-	},
-  ]
+  {
+	 annotation = "annotation_1"
+	 out_of_band_contract_name = "relation_to_consumed_out_of_band_contracts_1"
+	 priority = "level1"
+  },
+  {
+	 annotation = "annotation_2"
+	 out_of_band_contract_name = "relation_to_consumed_out_of_band_contracts_2"
+	 priority = "level2"
+  },
+ ]
   tags = [
-	{
-	  key = "tags_1"
-	  value = "value_1"
-	},
-	{
-	  key = "tags_2"
-	  value = "value_2"
-	},
-  ]
+  {
+	 key = "tags_1"
+	 value = "value_1"
+  },
+  {
+	 key = "tags_2"
+	 value = "value_2"
+  },
+ ]
 }
 `
 
@@ -241,24 +241,24 @@ resource "aci_external_management_network_instance_profile" "test" {
 const testConfigMgmtInstPChildrenRemoveOne = `
 resource "aci_external_management_network_instance_profile" "test" {
   name = "test_name"
-  annotations = [ 
-	{
-	  key = "annotations_2"
-	  value = "value_2"
-	},
+  annotations = [
+    {
+      key = "annotations_2"
+      value = "value_2"
+    },
   ]
-  relation_to_consumed_out_of_band_contracts = [ 
-	{
-	  annotation = "annotation_2"
-	  out_of_band_contract_name = "relation_to_consumed_out_of_band_contracts_2"
-	  priority = "level2"
-	},
+  relation_to_consumed_out_of_band_contracts = [
+    {
+      annotation = "annotation_2"
+      out_of_band_contract_name = "relation_to_consumed_out_of_band_contracts_2"
+      priority = "level2"
+    },
   ]
-  tags = [ 
-	{
-	  key = "tags_2"
-	  value = "value_2"
-	},
+  tags = [
+    {
+      key = "tags_2"
+      value = "value_2"
+    },
   ]
 }
 `

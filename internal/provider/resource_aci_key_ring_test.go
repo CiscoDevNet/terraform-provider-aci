@@ -139,6 +139,10 @@ func TestAccResourcePkiKeyRingWithPolUni(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.key", "annotations_2"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.key", "tags_1"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.1.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.1.value", "value_2"),
 				),
 			},
 			// Import testing with children
@@ -167,6 +171,10 @@ func TestAccResourcePkiKeyRingWithPolUni(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.key", "annotations_2"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.key", "tags_1"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.1.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.1.value", "value_2"),
 				),
 			},
 			// Update with children removed from config
@@ -180,6 +188,11 @@ func TestAccResourcePkiKeyRingWithPolUni(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.key", "annotations_2"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.#", "2"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.key", "tags_1"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.1.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.#", "2"),
 				),
 			},
 			// Update with children first child removed
@@ -191,6 +204,9 @@ func TestAccResourcePkiKeyRingWithPolUni(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.key", "annotations_2"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.#", "1"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.#", "1"),
 				),
 			},
 			// Update with all children removed
@@ -200,6 +216,7 @@ func TestAccResourcePkiKeyRingWithPolUni(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.#", "0"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.#", "0"),
 				),
 			},
 		},
@@ -338,6 +355,10 @@ func TestAccResourcePkiKeyRingWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.key", "annotations_2"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.key", "tags_1"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.1.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.1.value", "value_2"),
 				),
 			},
 			// Import testing with children
@@ -366,6 +387,10 @@ func TestAccResourcePkiKeyRingWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.key", "annotations_2"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.key", "tags_1"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.1.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.1.value", "value_2"),
 				),
 			},
 			// Update with children removed from config
@@ -379,6 +404,11 @@ func TestAccResourcePkiKeyRingWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.key", "annotations_2"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.#", "2"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.key", "tags_1"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.1.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.#", "2"),
 				),
 			},
 			// Update with children first child removed
@@ -390,6 +420,9 @@ func TestAccResourcePkiKeyRingWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.key", "annotations_2"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.#", "1"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.#", "1"),
 				),
 			},
 			// Update with all children removed
@@ -399,6 +432,7 @@ func TestAccResourcePkiKeyRingWithFvTenant(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.#", "0"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.#", "0"),
 				),
 			},
 		},
@@ -487,14 +521,24 @@ const testConfigPkiKeyRingChildrenDependencyWithPolUni = testConfigPolUniMinDepe
 resource "aci_key_ring" "test" {
   name = "test_name"
   annotations = [
-	{
-	  key = "annotations_1"
-	  value = "value_1"
-	},
-	{
-	  key = "annotations_2"
-	  value = "value_2"
-	},
+    {
+      key = "annotations_1"
+      value = "value_1"
+    },
+    {
+      key = "annotations_2"
+      value = "value_2"
+    },
+  ]
+  tags = [
+    {
+      key = "tags_1"
+      value = "value_1"
+    },
+    {
+      key = "tags_2"
+      value = "value_2"
+    },
   ]
 }
 `
@@ -508,11 +552,17 @@ resource "aci_key_ring" "test" {
 const testConfigPkiKeyRingChildrenRemoveOneDependencyWithPolUni = testConfigPolUniMinDependencyWithPkiTP + `
 resource "aci_key_ring" "test" {
   name = "test_name"
-  annotations = [ 
-	{
-	  key = "annotations_2"
-	  value = "value_2"
-	},
+  annotations = [
+  {
+	key = "annotations_2"
+	value = "value_2"
+  },
+  ]
+  tags = [
+  {
+	key = "tags_2"
+	value = "value_2"
+  },
   ]
 }
 `
@@ -521,6 +571,7 @@ const testConfigPkiKeyRingChildrenRemoveAllDependencyWithPolUni = testConfigPolU
 resource "aci_key_ring" "test" {
   name = "test_name"
   annotations = []
+  tags = []
 }
 `
 
@@ -606,14 +657,24 @@ resource "aci_key_ring" "test" {
   parent_dn = aci_tenant.test.id
   name = "test_name"
   annotations = [
-	{
-	  key = "annotations_1"
-	  value = "value_1"
-	},
-	{
-	  key = "annotations_2"
-	  value = "value_2"
-	},
+    {
+      key = "annotations_1"
+      value = "value_1"
+    },
+    {
+      key = "annotations_2"
+      value = "value_2"
+    },
+  ]
+  tags = [
+    {
+      key = "tags_1"
+      value = "value_1"
+    },
+    {
+      key = "tags_2"
+      value = "value_2"
+    },
   ]
 }
 `
@@ -629,11 +690,17 @@ const testConfigPkiKeyRingChildrenRemoveOneDependencyWithFvTenant = testConfigFv
 resource "aci_key_ring" "test" {
   parent_dn = aci_tenant.test.id
   name = "test_name"
-  annotations = [ 
-	{
-	  key = "annotations_2"
-	  value = "value_2"
-	},
+  annotations = [
+  {
+	key = "annotations_2"
+	value = "value_2"
+  },
+  ]
+  tags = [
+  {
+	key = "tags_2"
+	value = "value_2"
+  },
   ]
 }
 `
@@ -643,5 +710,6 @@ resource "aci_key_ring" "test" {
   parent_dn = aci_tenant.test.id
   name = "test_name"
   annotations = []
+  tags = []
 }
 `

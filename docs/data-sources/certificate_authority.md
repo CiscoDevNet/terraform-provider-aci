@@ -38,7 +38,7 @@ data "aci_certificate_authority" "example" {
   name = "test_name"
 }
 
-// This example is only applicable to the Cloud Network Controller
+// This example is only applicable to Cisco Cloud Network Controller
 data "aci_certificate_authority" "example_tenant" {
   parent_dn = aci_tenant.example.id
   name      = "test_name"
@@ -55,7 +55,7 @@ data "aci_certificate_authority" "example_tenant" {
 ### Optional ###
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
-  - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/fvTenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
+      - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/fvTenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
 
 ### Read-Only ###
 
@@ -68,5 +68,9 @@ data "aci_certificate_authority" "example_tenant" {
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 
 * `annotations` - (list) A list of Annotations objects ([tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+  * `key` (key) - (string) The key used to uniquely identify this configuration object.
+  * `value` (value) - (string) The value of the property.
+
+* `tags` - (list) A list of Tags objects ([tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
   * `key` (key) - (string) The key used to uniquely identify this configuration object.
   * `value` (value) - (string) The value of the property.

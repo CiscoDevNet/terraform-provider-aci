@@ -28,6 +28,7 @@ children:
     - annotation: "annotation_1"
       priority: "level1"
       out_of_band_contract_name: "relation_to_consumed_out_of_band_contracts_1"
+      
     - annotation: "annotation_2"
       priority: "level2"
       out_of_band_contract_name: "relation_to_consumed_out_of_band_contracts_2"
@@ -35,6 +36,7 @@ children:
   annotations:
     - key: "annotations_1"
       value: "value_1"
+      
     - key: "annotations_2"
       value: "value_2"
       
@@ -45,5 +47,4 @@ children:
     - key: "tags_2"
       value: "value_2"
       
-
 test_type: both

@@ -73,36 +73,36 @@ parents:
 {{- $topContext := . -}}
 {{- range $key, $value := .MultiParentFormats }}{{$parentDependency := getParentTestDependencies $topContext.PkgName 0 $topContext.Definitions}}
   - class_name: "{{ $value.ContainedBy }}"
-    parent_dependency: "{{$parentDependency.parent_dependency}}"
-    parent_dn: {{ if eq $value.ContainedBy "polUni"}}""{{else}}"{{createParentDnValue $value.ContainedBy "test" $topContext.Definitions}}"{{- end}}
+    parent_dependency: "{{ $parentDependency.parent_dependency }}"
+    parent_dn: {{ if eq $value.ContainedBy "polUni" }}""{{ else }}"{{ createParentDnValue $value.ContainedBy "test" $topContext.Definitions }}"{{ end }}
     class_in_parent: false
     {{- $testType := $value.TestType }}
     {{- if $testType }}
-    test_type: {{$testType}}
+    test_type: {{ $testType }}
     {{- else -}}
     test_type: both
-    {{- end}}
-{{- end}}
-{{- end}}
+    {{- end }}
+{{- end }}
+{{- end }}
 {{- if and (not .ContainedBy) (not .MultiParentFormats) -}}
-{{$testType := getTestType $.PkgName}}
-{{- if $testType }}
-test_type: {{$testType}}
-{{- else }}
+  {{$testType := getTestType $.PkgName}}
+  {{- if $testType }}
+test_type: {{ $testType }}
+  {{- else }}
 test_type: both
-{{- end}}
-{{- end}}
+  {{- end }}
+{{- end }}
 {{ $exists_exclude := false -}}
-{{- range .Properties}}
-{{- if eq .ValueType "password"}}
-{{- $exists_exclude = true -}}
-{{- end}}
-{{- end}}
+{{- range .Properties }}
+  {{- if eq .ValueType "password" }}
+    {{- $exists_exclude = true -}}
+  {{- end }}
+{{- end }}
 {{- if $exists_exclude }}
 exclude_attributes:
-  {{- range .Properties}}
-		{{- if eq .ValueType "password"}}
-  - "{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}"
-{{- end}}
-{{- end}}
-{{- end}}
+  {{- range .Properties }}
+    {{- if eq .ValueType "password" }}
+  - "{{ overwriteProperty .PkgName .SnakeCaseName $.Definitions }}"
+    {{- end }}
+  {{- end }}
+{{- end }}
