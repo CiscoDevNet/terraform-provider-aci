@@ -81,6 +81,7 @@ func (r *TagTagResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
 				MarkdownDescription: `The key used to uniquely identify this configuration object.`,
@@ -89,6 +90,7 @@ func (r *TagTagResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The value of the property.`,
 			},
@@ -266,6 +268,12 @@ func getAndSetTagTagAttributes(ctx context.Context, diags *diag.Diagnostics, cli
 				if attributeName == "value" {
 					data.Value = basetypes.NewStringValue(attributeValue.(string))
 				}
+			}
+			if data.Key.IsUnknown() {
+				data.Key = types.StringNull()
+			}
+			if data.Value.IsUnknown() {
+				data.Value = types.StringNull()
 			}
 		} else {
 			diags.AddError(

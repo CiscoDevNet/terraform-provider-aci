@@ -67,15 +67,15 @@ Data source for {{.ResourceNameAsDescription}}
       {{- end}}
     {{- end}}
 {{- end}}
-{{ if .ParentDnOptional}}
+{{ if .ParentDnOptional }}
 ### Optional ###
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
-{{- if .MultiParentFormats }}
-{{- range .DocumentationParentDns}}
-  - {{ . }}
-{{- end}}
-{{- end}}
+  {{- if .MultiParentFormats }}
+    {{- range .DocumentationParentDns }}
+      - {{ . }}
+    {{- end }}
+  {{- end }}
 {{ end }}
 ### Read-Only ###
 

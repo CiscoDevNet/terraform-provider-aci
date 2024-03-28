@@ -42,7 +42,7 @@ resource "aci_key_ring" "example" {
   name = "test_name"
 }
 
-// This example is only applicable to the Cloud Network Controller
+// This example is only applicable to Cisco Cloud Network Controller
 resource "aci_key_ring" "example_tenant" {
   parent_dn = aci_tenant.example.id
   name      = "test_name"
@@ -108,9 +108,15 @@ EOT
       value = "value_1"
     }
   ]
+  tags = [
+    {
+      key   = "tags_1"
+      value = "value_1"
+    }
+  ]
 }
 
-// This example is only applicable to the Cloud Network Controller
+// This example is only applicable to Cisco Cloud Network Controller
 resource "aci_key_ring" "full_example_tenant" {
   parent_dn             = aci_tenant.example.id
   admin_state           = "completed"
@@ -165,6 +171,12 @@ EOT
       value = "value_1"
     }
   ]
+  tags = [
+    {
+      key   = "tags_1"
+      value = "value_1"
+    }
+  ]
 }
 
 ```
@@ -184,7 +196,7 @@ All examples for the Key Ring resource can be found in the [examples](https://gi
 ### Optional ###
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
-  - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/fvTenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
+      - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/fvTenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
 * `admin_state` (adminState) - (string) The current administrative state of the certificate request process.
   - Default: `started`
   - Valid Values: `completed`, `created`, `reqCreated`, `started`, `tpSet`.
@@ -210,6 +222,13 @@ All examples for the Key Ring resource can be found in the [examples](https://gi
 * `certificate_authority` (tp) - (string) A third-party certificate from a trusted source, or trusted point, that affirms the identity of your device. The third-party certificate is signed by the issuing certificate authority (CA or trustpoint), which can be a root CA, an intermediate CA, or a trust anchor that is part of a trust chain that leads to a root CA.
 
 * `annotations` - (list) A list of Annotations objects ([tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+  
+  #### Required ####
+  
+  * `key` (key) - (string) The key used to uniquely identify this configuration object.
+  * `value` (value) - (string) The value of the property.
+
+* `tags` - (list) A list of Tags objects ([tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   
   #### Required ####
   

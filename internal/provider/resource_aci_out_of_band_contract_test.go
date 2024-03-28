@@ -234,6 +234,7 @@ const testConfigVzOOBBrCPChildren = `
 resource "aci_out_of_band_contract" "test" {
   name = "test_name"
   annotations = [
+<<<<<<< HEAD
 	{
 	  key = "key_0"
 	  value = "value_1"
@@ -253,6 +254,27 @@ resource "aci_out_of_band_contract" "test" {
 	  value = "value_2"
 	},
   ]
+=======
+  {
+	 key = "annotations_1"
+	 value = "value_1"
+  },
+  {
+	 key = "annotations_2"
+	 value = "value_2"
+  },
+ ]
+  tags = [
+  {
+	 key = "tags_1"
+	 value = "value_1"
+  },
+  {
+	 key = "tags_2"
+	 value = "value_2"
+  },
+ ]
+>>>>>>> bee83e0f ([ignore] Changed comment pertaining to the cloud network controller examples)
 }
 `
 
@@ -265,6 +287,7 @@ resource "aci_out_of_band_contract" "test" {
 const testConfigVzOOBBrCPChildrenRemoveOne = `
 resource "aci_out_of_band_contract" "test" {
   name = "test_name"
+<<<<<<< HEAD
   annotations = [ 
 	{
 	  key = "key_1"
@@ -276,6 +299,19 @@ resource "aci_out_of_band_contract" "test" {
 	  key = "key_1"
 	  value = "value_2"
 	},
+=======
+  annotations = [
+    {
+      key = "annotations_2"
+      value = "value_2"
+    },
+  ]
+  tags = [
+    {
+      key = "tags_2"
+      value = "value_2"
+    },
+>>>>>>> bee83e0f ([ignore] Changed comment pertaining to the cloud network controller examples)
   ]
 }
 `

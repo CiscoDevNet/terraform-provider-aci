@@ -28,9 +28,15 @@ EOT
       value = "value_1"
     }
   ]
+  tags = [
+    {
+      key   = "tags_1"
+      value = "value_1"
+    }
+  ]
 }
 
-// This example is only applicable to the Cloud Network Controller
+// This example is only applicable to Cisco Cloud Network Controller
 resource "aci_certificate_authority" "full_example_tenant" {
   parent_dn         = aci_tenant.example.id
   annotation        = "annotation"
@@ -58,6 +64,12 @@ EOT
   annotations = [
     {
       key   = "annotations_1"
+      value = "value_1"
+    }
+  ]
+  tags = [
+    {
+      key   = "tags_1"
       value = "value_1"
     }
   ]

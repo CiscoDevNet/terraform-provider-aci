@@ -58,7 +58,7 @@ EOT
   name              = "test_name"
 }
 
-// This example is only applicable to the Cloud Network Controller
+// This example is only applicable to Cisco Cloud Network Controller
 resource "aci_certificate_authority" "example_tenant" {
   parent_dn         = aci_tenant.example.id
   certificate_chain = <<EOT
@@ -116,9 +116,15 @@ EOT
       value = "value_1"
     }
   ]
+  tags = [
+    {
+      key   = "tags_1"
+      value = "value_1"
+    }
+  ]
 }
 
-// This example is only applicable to the Cloud Network Controller
+// This example is only applicable to Cisco Cloud Network Controller
 resource "aci_certificate_authority" "full_example_tenant" {
   parent_dn         = aci_tenant.example.id
   annotation        = "annotation"
@@ -149,6 +155,12 @@ EOT
       value = "value_1"
     }
   ]
+  tags = [
+    {
+      key   = "tags_1"
+      value = "value_1"
+    }
+  ]
 }
 
 ```
@@ -169,7 +181,7 @@ All examples for the Certificate Authority resource can be found in the [example
 ### Optional ###
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
-  - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/fvTenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
+      - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/fvTenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
 * `annotation` (annotation) - (string) The annotation of the Certificate Authority object.
   - Default: `orchestrator:terraform`
 * `description` (descr) - (string) The description of the Certificate Authority object.
@@ -178,6 +190,13 @@ All examples for the Certificate Authority resource can be found in the [example
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 
 * `annotations` - (list) A list of Annotations objects ([tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+  
+  #### Required ####
+  
+  * `key` (key) - (string) The key used to uniquely identify this configuration object.
+  * `value` (value) - (string) The value of the property.
+
+* `tags` - (list) A list of Tags objects ([tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   
   #### Required ####
   

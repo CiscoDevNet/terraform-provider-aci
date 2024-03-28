@@ -195,6 +195,7 @@ resource "aci_external_management_network_subnet" "test" {
   parent_dn = aci_external_management_network_instance_profile.test.id
   ip = "1.1.1.0/24"
   annotations = [
+<<<<<<< HEAD
 	{
 	  key = "key_0"
 	  value = "value_1"
@@ -213,6 +214,26 @@ resource "aci_external_management_network_subnet" "test" {
 	  key = "key_1"
 	  value = "value_2"
 	},
+=======
+    {
+      key = "annotations_1"
+      value = "value_1"
+    },
+    {
+      key = "annotations_2"
+      value = "value_2"
+    },
+  ]
+  tags = [
+    {
+      key = "tags_1"
+      value = "value_1"
+    },
+    {
+      key = "tags_2"
+      value = "value_2"
+    },
+>>>>>>> bee83e0f ([ignore] Changed comment pertaining to the cloud network controller examples)
   ]
 }
 `
@@ -228,6 +249,7 @@ const testConfigMgmtSubnetChildrenRemoveOneDependencyWithMgmtInstP = testConfigM
 resource "aci_external_management_network_subnet" "test" {
   parent_dn = aci_external_management_network_instance_profile.test.id
   ip = "1.1.1.0/24"
+<<<<<<< HEAD
   annotations = [ 
 	{
 	  key = "key_1"
@@ -239,6 +261,19 @@ resource "aci_external_management_network_subnet" "test" {
 	  key = "key_1"
 	  value = "value_2"
 	},
+=======
+  annotations = [
+  {
+	key = "annotations_2"
+	value = "value_2"
+  },
+  ]
+  tags = [
+  {
+	key = "tags_2"
+	value = "value_2"
+  },
+>>>>>>> bee83e0f ([ignore] Changed comment pertaining to the cloud network controller examples)
   ]
 }
 `
