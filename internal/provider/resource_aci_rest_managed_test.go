@@ -292,6 +292,45 @@ func TestAccAciRestManaged_import(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_rest_managed.import", "child.#", "2"),
 				),
 			},
+			{
+				Config: testAccAciRestManagedConfig_importWithIpv6(name, "import", "2001:1:2::5/28"),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_rest_managed.tenant_import", "content.name", name),
+					resource.TestCheckResourceAttr("aci_rest_managed.tenant_import", "dn", "uni/tn-"+name),
+					resource.TestCheckResourceAttr("aci_rest_managed.tenant_import", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_rest_managed.tenant_import", "class_name", "fvTenant"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bd_import", "content.name", name),
+					resource.TestCheckResourceAttr("aci_rest_managed.bd_import", "dn", "uni/tn-"+name+"/BD-"+name),
+					resource.TestCheckResourceAttr("aci_rest_managed.bd_import", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bd_import", "class_name", "fvBD"),
+					resource.TestCheckResourceAttr("aci_rest_managed.subnet_import", "content.ip", "2001:1:2::5/28"),
+					resource.TestCheckResourceAttr("aci_rest_managed.subnet_import", "dn", "uni/tn-"+name+"/BD-"+name+"/subnet-[2001:1:2::5/28]"),
+					resource.TestCheckResourceAttr("aci_rest_managed.subnet_import", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_rest_managed.subnet_import", "class_name", "fvSubnet"),
+				),
+			},
+			{
+				ImportState:   true,
+				ImportStateId: fmt.Sprintf("fvSubnet:uni/tn-%s/BD-%s/subnet-[2001:1:2::5/28]", name, name),
+				ResourceName:  "aci_rest_managed.bd_import",
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_rest_managed.subnet_import", "content.ip", "2001:1:2::5/28"),
+					resource.TestCheckResourceAttr("aci_rest_managed.subnet_import", "dn", "uni/tn-"+name+"/BD-"+name+"/subnet-[2001:1:2::5/28]"),
+					resource.TestCheckResourceAttr("aci_rest_managed.subnet_import", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_rest_managed.subnet_import", "class_name", "fvSubnet"),
+				),
+			},
+			{
+				ImportState:   true,
+				ImportStateId: fmt.Sprintf("uni/tn-%s/BD-%s/subnet-[2001:1:2::5/28]", name, name),
+				ResourceName:  "aci_rest_managed.bd_import",
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_rest_managed.subnet_import", "content.ip", "2001:1:2::5/28"),
+					resource.TestCheckResourceAttr("aci_rest_managed.subnet_import", "dn", "uni/tn-"+name+"/BD-"+name+"/subnet-[2001:1:2::5/28]"),
+					resource.TestCheckResourceAttr("aci_rest_managed.subnet_import", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_rest_managed.subnet_import", "class_name", "fvSubnet"),
+				),
+			},
 		},
 	})
 }
@@ -672,6 +711,37 @@ func testAccAciRestManagedConfig_importWithMultipleChildren(name string, resourc
 		}
 	}
 	`, name, resource)
+}
+
+func testAccAciRestManagedConfig_importWithIpv6(name string, resource string, ip string) string {
+	return fmt.Sprintf(`
+	resource "aci_rest_managed" "tenant_%[2]s" {
+		dn = "uni/tn-%[1]s"
+		class_name = "fvTenant"
+		content = {
+			name = "%[1]s"
+		}
+	}
+
+	resource "aci_rest_managed" "bd_%[2]s" {
+		dn = "${aci_rest_managed.tenant_%[2]s.id}/BD-%[1]s"
+		class_name = "fvBD"
+		content = {
+			name  = "%[1]s"
+		}
+	}
+
+	resource "aci_rest_managed" "subnet_%[2]s" {
+		dn         = "${aci_rest_managed.bd_%[2]s.id}/subnet-[%[3]s]"
+		class_name = "fvSubnet"
+		content = {
+		  ip           = "%[3]s"
+		  scope        = "private"
+		  ipDPLearning = "enabled"
+		  ctrl         = "nd"
+		}
+	  }
+	`, name, resource, ip)
 }
 
 func testAccAciRestManagedConfig_tagTag(name string) string {

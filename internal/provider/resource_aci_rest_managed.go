@@ -352,10 +352,50 @@ func (r *AciRestManagedResource) Delete(ctx context.Context, req resource.Delete
 	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_rest_managed with id '%s'", data.Id.ValueString()))
 }
 
+func splitImportId(importId string) []string {
+
+	if !strings.Contains(importId, "[") {
+		return strings.Split(importId, ":")
+	}
+
+	var semi_colon_counter, open_brackets, start_index int
+	semi_colon_skipped := []int{}
+
+	for _, runeCharacter := range importId {
+		character := string(runeCharacter)
+		if character == "[" {
+			open_brackets += 1
+		} else if character == "]" {
+			open_brackets -= 1
+		}
+
+		if open_brackets > 0 && character == ":" {
+			semi_colon_counter += 1
+		} else if open_brackets == 0 && character == ":" {
+			semi_colon_skipped = append(semi_colon_skipped, semi_colon_counter+1)
+			semi_colon_counter = 0
+		}
+	}
+
+	if semi_colon_counter != 0 {
+		semi_colon_skipped = append(semi_colon_skipped, semi_colon_counter+1)
+	}
+
+	idParts := []string{}
+	importSplit := strings.Split(importId, ":")
+	for _, count := range semi_colon_skipped {
+		idParts = append(idParts, strings.Join(importSplit[start_index:start_index+count], ":"))
+		start_index += count
+	}
+
+	return idParts
+
+}
+
 func (r *AciRestManagedResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_rest_managed")
 
-	idParts := strings.Split(req.ID, ":")
+	idParts := splitImportId(req.ID)
 
 	if len(idParts) == 0 || len(idParts) > 3 {
 		resp.Diagnostics.AddError(
