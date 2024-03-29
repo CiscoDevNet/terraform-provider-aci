@@ -146,7 +146,7 @@ pkiTP:
   test_values:
     resource_required: 
       certificate_chain: <<EOT
-        -----BEGIN_CERTIFICATE-----
+        -----BEGIN CERTIFICATE-----
         MIICODCCAaGgAwIBAgIJAIt8XMntue0VMA0GCSqGSIb3DQEBCwUAMDQxDjAMBgNV
         BAMMBUFkbWluMRUwEwYDVQQKDAxZb3VyIENvbXBhbnkxCzAJBgNVBAYTAlVTMCAX
         DTE4MDEwOTAwNTk0NFoYDzIxMTcxMjE2MDA1OTQ0WjA0MQ4wDAYDVQQDDAVBZG1p
@@ -159,11 +159,11 @@ pkiTP:
         hvcNAQELBQADgYEAOmvre+5tgZ0+F3DgsfxNQqLTrGiBgGCIymPkP/cBXXkNuJyl
         3ac7tArHQc7WEA4U2R2rZbEq8FC3UJJm4nUVtCPvEh3G9OhN2xwYev79yt6pIn/l
         KU0Td2OpVyo0eLqjoX5u2G90IBWzhyjFbo+CcKMrSVKj1YOdG0E3OuiJf00=
-        -----END_CERTIFICATE-----
+        -----END CERTIFICATE-----
         EOT
     default:
       certificate_chain: <<EOT
-        -----BEGIN_CERTIFICATE-----
+        -----BEGIN CERTIFICATE-----
         MIICODCCAaGgAwIBAgIJAIt8XMntue0VMA0GCSqGSIb3DQEBCwUAMDQxDjAMBgNV
         BAMMBUFkbWluMRUwEwYDVQQKDAxZb3VyIENvbXBhbnkxCzAJBgNVBAYTAlVTMCAX
         DTE4MDEwOTAwNTk0NFoYDzIxMTcxMjE2MDA1OTQ0WjA0MQ4wDAYDVQQDDAVBZG1p
@@ -176,11 +176,11 @@ pkiTP:
         hvcNAQELBQADgYEAOmvre+5tgZ0+F3DgsfxNQqLTrGiBgGCIymPkP/cBXXkNuJyl
         3ac7tArHQc7WEA4U2R2rZbEq8FC3UJJm4nUVtCPvEh3G9OhN2xwYev79yt6pIn/l
         KU0Td2OpVyo0eLqjoX5u2G90IBWzhyjFbo+CcKMrSVKj1YOdG0E3OuiJf00=
-        -----END_CERTIFICATE-----
+        -----END CERTIFICATE-----
         EOT
     all:
       certificate_chain: <<EOT
-        -----BEGIN_CERTIFICATE-----
+        -----BEGIN CERTIFICATE-----
         MIICODCCAaGgAwIBAgIJAIt8XMntue0VMA0GCSqGSIb3DQEBCwUAMDQxDjAMBgNV
         BAMMBUFkbWluMRUwEwYDVQQKDAxZb3VyIENvbXBhbnkxCzAJBgNVBAYTAlVTMCAX
         DTE4MDEwOTAwNTk0NFoYDzIxMTcxMjE2MDA1OTQ0WjA0MQ4wDAYDVQQDDAVBZG1p
@@ -193,7 +193,7 @@ pkiTP:
         hvcNAQELBQADgYEAOmvre+5tgZ0+F3DgsfxNQqLTrGiBgGCIymPkP/cBXXkNuJyl
         3ac7tArHQc7WEA4U2R2rZbEq8FC3UJJm4nUVtCPvEh3G9OhN2xwYev79yt6pIn/l
         KU0Td2OpVyo0eLqjoX5u2G90IBWzhyjFbo+CcKMrSVKj1YOdG0E3OuiJf00=
-        -----END_CERTIFICATE-----
+        -----END CERTIFICATE-----
         EOT
   
 tagTag:
@@ -370,7 +370,7 @@ pkiKeyRing:
       elliptic_curve: "none"
       key_type: "RSA"
       certificate: <<EOT
-        -----BEGIN_CERTIFICATE-----
+        -----BEGIN CERTIFICATE-----
         MIICODCCAaGgAwIBAgIJAIt8XMntue0VMA0GCSqGSIb3DQEBCwUAMDQxDjAMBgNV
         BAMMBUFkbWluMRUwEwYDVQQKDAxZb3VyIENvbXBhbnkxCzAJBgNVBAYTAlVTMCAX
         DTE4MDEwOTAwNTk0NFoYDzIxMTcxMjE2MDA1OTQ0WjA0MQ4wDAYDVQQDDAVBZG1p
@@ -383,10 +383,10 @@ pkiKeyRing:
         hvcNAQELBQADgYEAOmvre+5tgZ0+F3DgsfxNQqLTrGiBgGCIymPkP/cBXXkNuJyl
         3ac7tArHQc7WEA4U2R2rZbEq8FC3UJJm4nUVtCPvEh3G9OhN2xwYev79yt6pIn/l
         KU0Td2OpVyo0eLqjoX5u2G90IBWzhyjFbo+CcKMrSVKj1YOdG0E3OuiJf00=
-        -----END_CERTIFICATE-----
+        -----END CERTIFICATE-----
         EOT
       key: <<EOT
-        -----BEGIN_PRIVATE_KEY-----
+        -----BEGIN PRIVATE KEY-----
         MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAKIRv+2sbbewm0mj
         D+6/tpoUymzYIdFsN+gu02teIr/lZi8ipEB514pyhoaerstzboPteWvniLuwq4KQ
         VTEHgoln7J8EaHCnECViGA61pVx8RkJ99cmCkepspROw3I96zBcm58oXs6+Q/BnD
@@ -401,6 +401,6 @@ pkiKeyRing:
         sA0T1OQYqQnFppWwqrxIL+d9pZdiA1ITnNqyvUFBNETqDSOrUHwwb2cCQGArE+vu
         ffPUWQ0j+fiK+covFG8NL7H+26NSGB5+Xsn9uwOGLj7K/YT6CbBtr9hJiuWjM1Al
         0V4ltlTuu2mTMaw=
-        -----END_PRIVATE_KEY-----
+        -----END PRIVATE KEY-----
         EOT
       certificate_authority: "test_name"

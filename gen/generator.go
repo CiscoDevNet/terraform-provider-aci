@@ -132,29 +132,39 @@ func GetDevnetDocForClass(className string) string {
 	return fmt.Sprintf("[%s](%s/app/index.html#/objects/%s/overview)", className, pubhupDevnetBaseUrl, className)
 }
 
+// This template function parses the certificate from properties.yaml for formatted inclusion in resource configs contained in the test files.
 func SpaceToNewline(s string) string {
+	exceptions := []string{"BEGIN CERTIFICATE", "BEGIN PRIVATE KEY", "END CERTIFICATE", "END PRIVATE KEY"}
+	placeholder := "&&PLACEHOLDER&&"
+	for _, e := range exceptions {
+		s = strings.ReplaceAll(s, e, strings.ReplaceAll(e, " ", placeholder))
+	}
 	s = strings.ReplaceAll(s, " ", "\n")
-	s = strings.ReplaceAll(s, "_", " ")
+	s = strings.ReplaceAll(s, placeholder, " ")
+
 	return s
 }
 
+// This template function parses certificate from properties.yaml by removing EOT markers, converting spaces to newline escapes, and formatting for APIC test equivalence.
 func AppendNewline(s string) string {
 	s = strings.ReplaceAll(s, "<<EOT", "")
 	s = strings.ReplaceAll(s, "EOT", "")
-
+	exceptions := []string{"BEGIN CERTIFICATE", "BEGIN PRIVATE KEY", "END CERTIFICATE", "END PRIVATE KEY"}
+	placeholder := "&&PLACEHOLDER&&"
+	for _, e := range exceptions {
+		s = strings.ReplaceAll(s, e, strings.ReplaceAll(e, " ", placeholder))
+	}
 	trimmed := strings.TrimSpace(s)
 	words := strings.Split(trimmed, " ")
 	replaced := strings.Join(words, "\\n")
-
 	if strings.HasPrefix(s, " ") {
 		replaced = "" + replaced
 	}
-
 	if strings.HasSuffix(s, " ") {
 		replaced = replaced + "\\n"
 	}
+	s = strings.ReplaceAll(replaced, placeholder, " ")
 
-	s = strings.ReplaceAll(replaced, "_", " ")
 	return s
 }
 
@@ -746,9 +756,9 @@ func classifyTests(classPkgName string, paths [][]string, cloudApic []interface{
 				if contains(cloudApic, item) {
 					foundInCloud = true
 					break
-				}
-				if contains(apic, item) {
+				} else if contains(apic, item) {
 					foundInApic = true
+					break
 				}
 			}
 		}
@@ -1404,6 +1414,7 @@ func (m *Model) SetClassProperties(classDetails interface{}) {
 				m.HasNamedProperties = true
 			}
 
+			/* The piece of code below modifies the documentation by adding the version of APIC in which the attributes were introduced. */
 			// if propertyValue.(map[string]interface{})["versions"] != nil {
 			// 	property.Versions = formatVersion(propertyValue.(map[string]interface{})["versions"].(string))
 			// }
@@ -1777,6 +1788,7 @@ func (m *Model) SetClassRnFormatList(classDetails interface{}) {
 	m.MultiParentFormats = getMultiParentFormats
 }
 
+// TODO Make the function generic based on future cases
 func setParentDnOptional(m *Model) {
 	getMultiParentFormats := GetMultiParentFormats(m.PkgName, m.Definitions)
 	for _, format := range getMultiParentFormats {
@@ -1830,9 +1842,9 @@ func SetModelTargetValues(PkgName string, model *Model, classModels map[string]M
 	model.TargetResourceName = GetResourceName(model.TargetResourceClassName, definitions)
 }
 
-func resourcesExcluded(slice []interface{}, str string) bool {
-	for _, item := range slice {
-		if s, ok := item.(string); ok && s == str {
+func resourcesExcluded(excludeResources []interface{}, containedClassName string) bool {
+	for _, item := range excludeResources {
+		if s, ok := item.(string); ok && s == containedClassName {
 			return true
 		}
 	}

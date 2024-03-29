@@ -13,7 +13,7 @@ resource "aci_{{$topContext.ResourceName}}" {{- if ne $formatValue.ContainedBy "
         {{- if ne .NamedPropertyClass ""}}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = aci_{{getResourceName .NamedPropertyClass $.Definitions}}.example.name
     {{- else}}
-    {{- if or (contains (lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions) "<<EOT -----BEGIN_CERTIFICATE-----") (contains (lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions) "<<EOT -----BEGIN_PRIVATE_KEY-----")}}
+    {{- if or (contains (lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions) "<<EOT -----BEGIN CERTIFICATE-----") (contains (lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions) "<<EOT -----BEGIN PRIVATE KEY-----")}}
     {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = {{(lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions) | spaceToNewLine }}
   {{- else}}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = "{{lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions }}"
