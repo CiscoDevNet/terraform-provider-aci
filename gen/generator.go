@@ -103,9 +103,7 @@ var templateFuncs = template.FuncMap{
 	"capitalize":                   Capitalize,
 	"getTestConfigVariableName":    GetTestConfigVariableName,
 	"getDevnetDocForClass":         GetDevnetDocForClass,
-	"spaceToNewLine":               SpaceToNewline,
 	"contains":                     strings.Contains,
-	"appendNewLine":                AppendNewline,
 	"hasKey":                       HasKey,
 	"definedInList":                DefinedInList,
 }
@@ -130,42 +128,6 @@ func GetResourceNameAsDescription(s string, definitions Definitions) string {
 
 func GetDevnetDocForClass(className string) string {
 	return fmt.Sprintf("[%s](%s/app/index.html#/objects/%s/overview)", className, pubhupDevnetBaseUrl, className)
-}
-
-// This template function parses the certificate from properties.yaml for formatted inclusion in resource configs contained in the test files.
-func SpaceToNewline(s string) string {
-	exceptions := []string{"BEGIN CERTIFICATE", "BEGIN PRIVATE KEY", "END CERTIFICATE", "END PRIVATE KEY"}
-	placeholder := "&&PLACEHOLDER&&"
-	for _, e := range exceptions {
-		s = strings.ReplaceAll(s, e, strings.ReplaceAll(e, " ", placeholder))
-	}
-	s = strings.ReplaceAll(s, " ", "\n")
-	s = strings.ReplaceAll(s, placeholder, " ")
-
-	return s
-}
-
-// This template function parses certificate from properties.yaml by removing EOT markers, converting spaces to newline escapes, and formatting for APIC test equivalence.
-func AppendNewline(s string) string {
-	s = strings.ReplaceAll(s, "<<EOT", "")
-	s = strings.ReplaceAll(s, "EOT", "")
-	exceptions := []string{"BEGIN CERTIFICATE", "BEGIN PRIVATE KEY", "END CERTIFICATE", "END PRIVATE KEY"}
-	placeholder := "&&PLACEHOLDER&&"
-	for _, e := range exceptions {
-		s = strings.ReplaceAll(s, e, strings.ReplaceAll(e, " ", placeholder))
-	}
-	trimmed := strings.TrimSpace(s)
-	words := strings.Split(trimmed, " ")
-	replaced := strings.Join(words, "\\n")
-	if strings.HasPrefix(s, " ") {
-		replaced = "" + replaced
-	}
-	if strings.HasSuffix(s, " ") {
-		replaced = replaced + "\\n"
-	}
-	s = strings.ReplaceAll(replaced, placeholder, " ")
-
-	return s
 }
 
 func HasKey(dict map[interface{}]interface{}, key string) bool {
@@ -218,6 +180,32 @@ func ListToString(stringList []string) string {
 	return fmt.Sprintf("%s", strings.Join(stringList, ","))
 }
 
+func isMultiLine(propertyName, classPkgName string, definitions Definitions) bool {
+	precedenceList := []string{classPkgName, "global"}
+	for _, precedence := range precedenceList {
+		if classDetails, ok := definitions.Properties[precedence]; ok {
+			for key, value := range classDetails.(map[interface{}]interface{}) {
+				if key.(string) == "multi_line" {
+					for _, v := range value.([]interface{}) {
+						if v.(string) == propertyName {
+							return true
+						}
+					}
+				}
+			}
+		}
+	}
+	return false
+}
+
+func processMultiLine(multiLineValue string) string {
+	cert := strings.ReplaceAll(multiLineValue, "\\n", "\n")
+	return fmt.Sprintf(
+		`<<EOT
+%s
+EOT`, cert)
+}
+
 // Creates a parent dn value for the resources and datasources in the example files
 func CreateParentDnValue(className, caller string, definitions Definitions) string {
 	resourceName := GetResourceName(className, definitions)
@@ -233,7 +221,11 @@ func LookupTestValue(classPkgName, propertyName string, testVars map[string]inte
 	if allVars, ok := testVars["all"].(map[interface{}]interface{}); ok {
 		if val, ok := allVars[propertyName]; ok {
 			if strVal, ok := val.(string); ok {
-				lookupValue = strVal
+				if isMultiLine(propertyName, classPkgName, definitions) {
+					lookupValue = processMultiLine(strVal)
+				} else {
+					lookupValue = fmt.Sprintf(`"%s"`, strVal)
+				}
 			}
 		}
 	}
@@ -241,7 +233,11 @@ func LookupTestValue(classPkgName, propertyName string, testVars map[string]inte
 	if resourceVars, ok := testVars["resource_required"].(map[interface{}]interface{}); ok {
 		if val, ok := resourceVars[propertyName]; ok {
 			if strVal, ok := val.(string); ok {
-				lookupValue = strVal
+				if isMultiLine(propertyName, classPkgName, definitions) {
+					lookupValue = processMultiLine(strVal)
+				} else {
+					lookupValue = fmt.Sprintf(`"%s"`, strVal)
+				}
 			}
 		}
 	}

@@ -13,13 +13,9 @@ resource "aci_{{$topContext.ResourceName}}" {{- if ne $formatValue.ContainedBy "
         {{- if ne .NamedPropertyClass ""}}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = aci_{{getResourceName .NamedPropertyClass $.Definitions}}.example.name
     {{- else}}
-    {{- if or (contains (lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions) "<<EOT -----BEGIN CERTIFICATE-----") (contains (lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions) "<<EOT -----BEGIN PRIVATE KEY-----")}}
-    {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = {{(lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions) | spaceToNewLine }}
-  {{- else}}
-  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = "{{lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions }}"
+  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = {{lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions }}
   {{- end }}
       {{- end }}
-  {{- end }}
   {{- range $key, $value := $.Children}}{{$ChildResourceName := .ResourceName}}
   {{$ChildResourceName}} = [
     { {{- range .Properties}}{{- if ne .NamedPropertyClass ""}}
@@ -47,7 +43,7 @@ resource "aci_{{$.ResourceName}}" "full_example_{{getResourceName $key $.Definit
     {{- else if eq .SnakeCaseName "t_dn" }}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = {{lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions}}
     {{- else}}
-  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = "{{lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions}}"
+  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = {{lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions}}
   {{- end}}{{- end}}
   {{- range $key, $value := $.Children}}{{$ChildResourceName := .ResourceName}}
   {{$ChildResourceName}} = [
@@ -71,7 +67,7 @@ resource "aci_{{$.ResourceName}}" "full_example" {
     {{- else if eq .SnakeCaseName "t_dn" }}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = {{lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions}}
     {{- else}}
-  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = "{{lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions}}"
+  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = {{lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions}}
   {{- end}}{{- end}}
   {{- range $key, $value := $.Children}}{{$ChildResourceName := .ResourceName}}
   {{$ChildResourceName}} = [

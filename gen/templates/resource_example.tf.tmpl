@@ -14,11 +14,7 @@ resource "aci_{{$topContext.ResourceName}}" {{- if ne $formatValue.ContainedBy "
 {{- if ne .NamedPropertyClass ""}}
   {{ overwriteProperty .PkgName .SnakeCaseName $.Definitions }} = aci_{{ getResourceName .NamedPropertyClass $.Definitions }}.example.name
 {{- else }}
-{{- if or (contains (lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions) "<<EOT -----BEGIN CERTIFICATE-----") (contains (lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions) "<<EOT -----BEGIN_PRIVATE_KEY-----") }}
-  {{ overwriteProperty .PkgName .SnakeCaseName $.Definitions }} = {{ (lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions) | spaceToNewLine }}
-{{- else }}
-  {{ overwriteProperty .PkgName .SnakeCaseName $.Definitions }} = "{{ lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions }}"
-{{- end }}
+  {{ overwriteProperty .PkgName .SnakeCaseName $.Definitions }} = {{ lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions }}
 {{- end }}
 {{- end }}
 {{- end }}
@@ -40,7 +36,7 @@ resource "aci_{{$.ResourceName}}" "example_{{getResourceName $key $.Definitions}
     {{- else if eq .SnakeCaseName "t_dn" }}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = {{lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions}}
     {{- else}}
-  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = "{{lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions}}"{{- end}}{{- end}}
+  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = {{lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions}}{{- end}}{{- end}}
     {{- end}}
 }
 {{ end}}
@@ -53,7 +49,7 @@ resource "aci_{{$.ResourceName}}" "example" {
   {{- range $.Properties}}{{- if .IsRequired}}{{- if ne .NamedPropertyClass ""}}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = aci_{{getResourceName .NamedPropertyClass $.Definitions}}.example.name
     {{- else}}
-  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = "{{lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions}}"{{- end}}{{- end}}
+  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = {{lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions}}{{- end}}{{- end}}
   {{- end}}
 }
 {{ end}}

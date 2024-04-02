@@ -78,21 +78,13 @@ func TestAccDataSource{{.resourceClassName}}(t *testing.T) {
 					waitForApicBeforeRefresh,
 					{{- end}}
 					{{- range $key, $value := .min}}
-					{{- if contains $value "<<EOT -----BEGIN CERTIFICATE-----" }}
-  					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$key}}", "{{ $value | appendNewLine }}" ),
-					{{- else}}
 					{{- if not (definedInList $.exclude_attributes $key) }}
 					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
-					{{- end}}
 					{{- end}}
 					{{- end}}
 					{{- range $key, $value := .all}}
-					{{- if contains $value "<<EOT -----BEGIN CERTIFICATE-----" }}
-  					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$key}}", "{{ $value | appendNewLine }}" ),
-					{{- else}}
 					{{- if not (definedInList $.exclude_attributes $key) }}
 					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
-					{{- end}}
 					{{- end}}
 					{{- end}}
 				),

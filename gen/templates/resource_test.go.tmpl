@@ -48,7 +48,7 @@ PreCheck: func() {
 		{{- end}}
 		{{- range $key, $value := $.default}}
 			{{- if not (definedInList $.exclude_attributes $key) }}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+				resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
 			{{- end}}
 		{{- end}}
 				),
@@ -136,9 +136,9 @@ PreCheck: func() {
 	{{- if $.resource_required }}
 		{{- range $key, $value := $.default}}{{$contains := definedInMap $key $.resource_required}}
 			{{- if not $contains}}
-					{{- if not (definedInList $.exclude_attributes $key) }}
+				{{- if not (definedInList $.exclude_attributes $key) }}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
-			{{- end}}
+				{{- end}}
 			{{- end}}
 		{{- end}}
 		{{- end}}
@@ -703,7 +703,6 @@ resource "aci_{{$.resourceName}}" "test" {
   {{- else}}
     {{- if not (definedInList $.exclude_attributes $key) }}
   {{$key}} = "{{$value}}"
-    {{- end}}
   {{- end}}
 {{- end}}
 }
@@ -729,7 +728,6 @@ resource "aci_{{$.resourceName}}" "test" {
   {{- else}}
     {{- if not (definedInList $.exclude_attributes $key) }}
   {{$key}} = "{{$value}}"
-    {{- end}}
   {{- end}}
 {{- end}}
 }
@@ -877,11 +875,7 @@ resource "aci_{{$.resourceName}}" "test" {
 const testConfig{{.resourceClassName}}Children = `
 resource "aci_{{$.resourceName}}" "test" {
 {{- range $key, $value := $.resource_required}}
-  {{- if or (contains $value "<<EOT -----BEGIN CERTIFICATE-----") (contains $value "<<EOT -----BEGIN PRIVATE KEY-----")}}
-  {{$key}} = {{ $value | spaceToNewLine }}
-  {{- else}}
   {{$key}} = "{{$value}}"
-  {{- end}}
 {{- end}}
 {{- range $key, $value := $.children}}
   {{$key}} = [
@@ -900,11 +894,7 @@ resource "aci_{{$.resourceName}}" "test" {
 const testConfig{{.resourceClassName}}ChildrenRemoveFromConfig = `
 resource "aci_{{$.resourceName}}" "test" {
 {{- range $key, $value := $.resource_required}}
-  {{- if or (contains $value "<<EOT -----BEGIN CERTIFICATE-----") (contains $value "<<EOT -----BEGIN PRIVATE KEY-----")}}
-  {{$key}} = {{ $value | spaceToNewLine }}
-  {{- else}}
   {{$key}} = "{{$value}}"
-  {{- end}}
 {{- end}}
 }
 `
@@ -912,11 +902,7 @@ resource "aci_{{$.resourceName}}" "test" {
 const testConfig{{.resourceClassName}}ChildrenRemoveOne = `
 resource "aci_{{$.resourceName}}" "test" {
 {{- range $key, $value := $.resource_required}}
-  {{- if or (contains $value "<<EOT -----BEGIN CERTIFICATE-----") (contains $value "<<EOT -----BEGIN PRIVATE KEY-----")}}
-  {{$key}} = {{ $value | spaceToNewLine }}
-  {{- else}}
   {{$key}} = "{{$value}}"
-  {{- end}}
 {{- end}}
 {{- range $key, $value := $.children}}
   {{$key}} = [
@@ -934,11 +920,7 @@ resource "aci_{{$.resourceName}}" "test" {
 const testConfig{{.resourceClassName}}ChildrenRemoveAll = `
 resource "aci_{{$.resourceName}}" "test" {
 {{- range $key, $value := $.resource_required}}
-  {{- if or (contains $value "<<EOT -----BEGIN CERTIFICATE-----") (contains $value "<<EOT -----BEGIN PRIVATE KEY-----")}}
-  {{$key}} = {{ $value | spaceToNewLine }}
-  {{- else}}
   {{$key}} = "{{$value}}"
-  {{- end}}
 {{- end}}
 {{- range $key, $value := $.children}}
   {{$key}} = []
