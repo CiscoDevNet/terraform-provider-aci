@@ -358,34 +358,34 @@ func splitImportId(importId string) []string {
 		return strings.Split(importId, ":")
 	}
 
-	var semi_colon_counter, open_brackets, start_index int
-	semi_colon_skipped := []int{}
+	var semiColonCounter, openBrackets, startIndex int
+	semiColonSkipped := []int{}
 
 	for _, runeCharacter := range importId {
 		character := string(runeCharacter)
 		if character == "[" {
-			open_brackets += 1
+			openBrackets += 1
 		} else if character == "]" {
-			open_brackets -= 1
+			openBrackets -= 1
 		}
 
-		if open_brackets > 0 && character == ":" {
-			semi_colon_counter += 1
-		} else if open_brackets == 0 && character == ":" {
-			semi_colon_skipped = append(semi_colon_skipped, semi_colon_counter+1)
-			semi_colon_counter = 0
+		if openBrackets > 0 && character == ":" {
+			semiColonCounter += 1
+		} else if openBrackets == 0 && character == ":" {
+			semiColonSkipped = append(semiColonSkipped, semiColonCounter+1)
+			semiColonCounter = 0
 		}
 	}
 
-	if semi_colon_counter != 0 {
-		semi_colon_skipped = append(semi_colon_skipped, semi_colon_counter+1)
+	if semiColonCounter != 0 {
+		semiColonSkipped = append(semiColonSkipped, semiColonCounter+1)
 	}
 
 	idParts := []string{}
 	importSplit := strings.Split(importId, ":")
-	for _, count := range semi_colon_skipped {
-		idParts = append(idParts, strings.Join(importSplit[start_index:start_index+count], ":"))
-		start_index += count
+	for _, count := range semiColonSkipped {
+		idParts = append(idParts, strings.Join(importSplit[startIndex:startIndex+count], ":"))
+		startIndex += count
 	}
 
 	return idParts
