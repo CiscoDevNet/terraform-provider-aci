@@ -182,25 +182,25 @@ resource "aci_l3out_redistribute_policy" "test" {
   route_control_profile_name = "test_tn_rtctrl_profile_name"
   source = "direct"
   annotations = [
-	{
-	  key = "key_0"
-	  value = "value_1"
-	},
-	{
-	  key = "key_1"
-	  value = "value_2"
-	},
-  ]
+    {
+      key = "key_0"
+      value = "value_1"
+    },
+    {
+      key = "key_1"
+      value = "value_2"
+    },
+   ]
   tags = [
-	{
-	  key = "key_0"
-	  value = "value_1"
-	},
-	{
-	  key = "key_1"
-	  value = "value_2"
-	},
-  ]
+    {
+      key = "key_0"
+      value = "value_1"
+    },
+    {
+      key = "key_1"
+      value = "value_2"
+    },
+   ]
 }
 `
 
@@ -217,18 +217,18 @@ resource "aci_l3out_redistribute_policy" "test" {
   parent_dn = aci_l3_outside.test.id
   route_control_profile_name = "test_tn_rtctrl_profile_name"
   source = "direct"
-  annotations = [ 
-	{
-	  key = "key_1"
-	  value = "value_2"
-	},
-  ]
-  tags = [ 
-	{
-	  key = "key_1"
-	  value = "value_2"
-	},
-  ]
+  annotations = [
+  {
+	key = "key_1"
+	value = "value_2"
+  },
+ ]
+  tags = [
+  {
+	key = "key_1"
+	value = "value_2"
+  },
+ ]
 }
 `
 

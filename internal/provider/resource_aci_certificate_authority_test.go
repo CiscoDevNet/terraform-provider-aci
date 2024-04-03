@@ -102,13 +102,13 @@ func TestAccResourcePkiTPWithPolUni(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.key", "annotations_1"),
+					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.value", "value_2"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.key", "tags_1"),
+					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.1.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.1.value", "value_2"),
 				),
 			},
@@ -125,13 +125,13 @@ func TestAccResourcePkiTPWithPolUni(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.key", "annotations_1"),
+					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.value", "value_2"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.key", "tags_1"),
+					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.1.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.1.value", "value_2"),
 				),
 			},
@@ -141,14 +141,14 @@ func TestAccResourcePkiTPWithPolUni(t *testing.T) {
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					waitForApicBeforeRefresh,
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.key", "annotations_1"),
+					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.key", "tags_1"),
+					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.1.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.1.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.#", "2"),
 				),
@@ -159,10 +159,10 @@ func TestAccResourcePkiTPWithPolUni(t *testing.T) {
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					waitForApicBeforeRefresh,
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.#", "1"),
 				),
@@ -276,13 +276,13 @@ func TestAccResourcePkiTPWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.key", "annotations_1"),
+					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.value", "value_2"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.key", "tags_1"),
+					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.1.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.1.value", "value_2"),
 				),
 			},
@@ -299,13 +299,13 @@ func TestAccResourcePkiTPWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.key", "annotations_1"),
+					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.value", "value_2"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.key", "tags_1"),
+					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.1.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.1.value", "value_2"),
 				),
 			},
@@ -315,14 +315,14 @@ func TestAccResourcePkiTPWithFvTenant(t *testing.T) {
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					waitForApicBeforeRefresh,
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.key", "annotations_1"),
+					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.key", "tags_1"),
+					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.1.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.1.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.#", "2"),
 				),
@@ -333,10 +333,10 @@ func TestAccResourcePkiTPWithFvTenant(t *testing.T) {
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					waitForApicBeforeRefresh,
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.#", "1"),
 				),
@@ -395,24 +395,24 @@ resource "aci_certificate_authority" "test" {
   name = "test_name"
   annotations = [
     {
-      key = "annotations_1"
+      key = "key_0"
       value = "value_1"
     },
     {
-      key = "annotations_2"
+      key = "key_1"
       value = "value_2"
     },
-  ]
+   ]
   tags = [
     {
-      key = "tags_1"
+      key = "key_0"
       value = "value_1"
     },
     {
-      key = "tags_2"
+      key = "key_1"
       value = "value_2"
     },
-  ]
+   ]
 }
 `
 
@@ -429,16 +429,16 @@ resource "aci_certificate_authority" "test" {
   name = "test_name"
   annotations = [
   {
-	key = "annotations_2"
+	key = "key_1"
 	value = "value_2"
   },
-  ]
+ ]
   tags = [
   {
-	key = "tags_2"
+	key = "key_1"
 	value = "value_2"
   },
-  ]
+ ]
 }
 `
 
@@ -491,24 +491,24 @@ resource "aci_certificate_authority" "test" {
   name = "test_name"
   annotations = [
     {
-      key = "annotations_1"
+      key = "key_0"
       value = "value_1"
     },
     {
-      key = "annotations_2"
+      key = "key_1"
       value = "value_2"
     },
-  ]
+   ]
   tags = [
     {
-      key = "tags_1"
+      key = "key_0"
       value = "value_1"
     },
     {
-      key = "tags_2"
+      key = "key_1"
       value = "value_2"
     },
-  ]
+   ]
 }
 `
 
@@ -527,16 +527,16 @@ resource "aci_certificate_authority" "test" {
   name = "test_name"
   annotations = [
   {
-	key = "annotations_2"
+	key = "key_1"
 	value = "value_2"
   },
-  ]
+ ]
   tags = [
   {
-	key = "tags_2"
+	key = "key_1"
 	value = "value_2"
   },
-  ]
+ ]
 }
 `
 

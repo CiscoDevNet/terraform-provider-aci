@@ -8,9 +8,6 @@ default:
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName .DefaultValue "default" 0 $.Definitions}}"
     {{- else if not .IsNaming}}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName "" "default" 0 $.Definitions}}"
-  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName .DefaultValue "default" $.Definitions}}"
-    {{- else if not .IsNaming}}
-  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName "" "default" $.Definitions}}"
     {{- end}}
   {{- end}}
 

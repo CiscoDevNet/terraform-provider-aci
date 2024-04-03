@@ -149,12 +149,10 @@ PreCheck: func() {
 				ResourceName:      "aci_{{$.resourceName}}.test",
 				ImportState:       true,
         		ImportStateVerify: true,
-				{{- range $key, $value := $.all}}
-				{{- if eq $key "key" }}
+				{{- if $.exclude_attributes }}
 				ImportStateVerifyIgnore: []string{
-                "{{$key}}",
+                {{- range $.exclude_attributes }}"{{.}}",{{- end}}
             	},
-				{{- end}}
 				{{- end}}
 				Check: resource.ComposeAggregateTestCheckFunc(
 				{{- if $found_cert }}
@@ -221,12 +219,10 @@ PreCheck: func() {
 				ResourceName:      "aci_{{$.resourceName}}.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				{{- range $key, $value := $.all}}
-				{{- if eq $key "key" }}
+				{{- if $.exclude_attributes }}
 				ImportStateVerifyIgnore: []string{
-                "{{$key}}",
+                {{- range $.exclude_attributes }}"{{.}}",{{- end}}
             	},
-				{{- end}}
 				{{- end}}
 				Check: resource.ComposeAggregateTestCheckFunc(
 		{{- range $key, $value := $.resource_required}}
@@ -728,7 +724,6 @@ resource "aci_{{$.resourceName}}" "test" {
   {{- else}}
     {{- if not (definedInList $.exclude_attributes $key) }}
   {{$key}} = "{{$value}}"
-  {{- end}}
 {{- end}}
 }
 `
@@ -912,7 +907,7 @@ resource "aci_{{$.resourceName}}" "test" {
       {{$child_key}} = "{{$child_value}}"
       {{- end}}
     },
-  ]
+   ]
 {{- end}}
 }
 `

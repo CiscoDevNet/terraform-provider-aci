@@ -206,25 +206,25 @@ resource "aci_endpoint_tag_ip" "test" {
   ip = "10.0.0.2"
   vrf_name = "test_ctx_name"
   annotations = [
-	{
-	  key = "key_0"
-	  value = "value_1"
-	},
-	{
-	  key = "key_1"
-	  value = "value_2"
-	},
-  ]
+    {
+      key = "key_0"
+      value = "value_1"
+    },
+    {
+      key = "key_1"
+      value = "value_2"
+    },
+   ]
   tags = [
-	{
-	  key = "key_0"
-	  value = "value_1"
-	},
-	{
-	  key = "key_1"
-	  value = "value_2"
-	},
-  ]
+    {
+      key = "key_0"
+      value = "value_1"
+    },
+    {
+      key = "key_1"
+      value = "value_2"
+    },
+   ]
 }
 `
 
@@ -241,18 +241,18 @@ resource "aci_endpoint_tag_ip" "test" {
   parent_dn = aci_tenant.test.id
   ip = "10.0.0.2"
   vrf_name = "test_ctx_name"
-  annotations = [ 
-	{
-	  key = "key_1"
-	  value = "value_2"
-	},
-  ]
-  tags = [ 
-	{
-	  key = "key_1"
-	  value = "value_2"
-	},
-  ]
+  annotations = [
+  {
+	key = "key_1"
+	value = "value_2"
+  },
+ ]
+  tags = [
+  {
+	key = "key_1"
+	value = "value_2"
+  },
+ ]
 }
 `
 

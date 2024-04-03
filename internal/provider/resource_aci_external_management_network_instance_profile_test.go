@@ -198,37 +198,37 @@ const testConfigMgmtInstPChildren = `
 resource "aci_external_management_network_instance_profile" "test" {
   name = "test_name"
   annotations = [
-	{
-	  key = "key_0"
-	  value = "value_1"
-	},
-	{
-	  key = "key_1"
-	  value = "value_2"
-	},
-  ]
+  {
+	 key = "key_0"
+	 value = "value_1"
+  },
+  {
+	 key = "key_1"
+	 value = "value_2"
+  },
+ ]
   relation_to_consumed_out_of_band_contracts = [
-	{
-	  annotation = "annotation_1"
-	  out_of_band_contract_name = "out_of_band_contract_name_0"
-	  priority = "level1"
-	},
-	{
-	  annotation = "annotation_2"
-	  out_of_band_contract_name = "out_of_band_contract_name_1"
-	  priority = "level2"
-	},
-  ]
+  {
+	 annotation = "annotation_1"
+	 out_of_band_contract_name = "out_of_band_contract_name_0"
+	 priority = "level1"
+  },
+  {
+	 annotation = "annotation_2"
+	 out_of_band_contract_name = "out_of_band_contract_name_1"
+	 priority = "level2"
+  },
+ ]
   tags = [
-	{
-	  key = "key_0"
-	  value = "value_1"
-	},
-	{
-	  key = "key_1"
-	  value = "value_2"
-	},
-  ]
+  {
+	 key = "key_0"
+	 value = "value_1"
+  },
+  {
+	 key = "key_1"
+	 value = "value_2"
+  },
+ ]
 }
 `
 
@@ -241,25 +241,25 @@ resource "aci_external_management_network_instance_profile" "test" {
 const testConfigMgmtInstPChildrenRemoveOne = `
 resource "aci_external_management_network_instance_profile" "test" {
   name = "test_name"
-  annotations = [ 
-	{
-	  key = "key_1"
-	  value = "value_2"
-	},
-  ]
-  relation_to_consumed_out_of_band_contracts = [ 
-	{
-	  annotation = "annotation_2"
-	  out_of_band_contract_name = "out_of_band_contract_name_1"
-	  priority = "level2"
-	},
-  ]
-  tags = [ 
-	{
-	  key = "key_1"
-	  value = "value_2"
-	},
-  ]
+  annotations = [
+    {
+      key = "key_1"
+      value = "value_2"
+    },
+   ]
+  relation_to_consumed_out_of_band_contracts = [
+    {
+      annotation = "annotation_2"
+      out_of_band_contract_name = "out_of_band_contract_name_1"
+      priority = "level2"
+    },
+   ]
+  tags = [
+    {
+      key = "key_1"
+      value = "value_2"
+    },
+   ]
 }
 `
 

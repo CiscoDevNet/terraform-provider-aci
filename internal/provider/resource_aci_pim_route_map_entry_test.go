@@ -227,25 +227,25 @@ resource "aci_pim_route_map_entry" "test" {
   parent_dn = aci_pim_route_map_policy.test.id
   order = "1"
   annotations = [
-	{
-	  key = "key_0"
-	  value = "value_1"
-	},
-	{
-	  key = "key_1"
-	  value = "value_2"
-	},
-  ]
+    {
+      key = "key_0"
+      value = "value_1"
+    },
+    {
+      key = "key_1"
+      value = "value_2"
+    },
+   ]
   tags = [
-	{
-	  key = "key_0"
-	  value = "value_1"
-	},
-	{
-	  key = "key_1"
-	  value = "value_2"
-	},
-  ]
+    {
+      key = "key_0"
+      value = "value_1"
+    },
+    {
+      key = "key_1"
+      value = "value_2"
+    },
+   ]
 }
 `
 
@@ -260,18 +260,18 @@ const testConfigPimRouteMapEntryChildrenRemoveOneDependencyWithPimRouteMapPol = 
 resource "aci_pim_route_map_entry" "test" {
   parent_dn = aci_pim_route_map_policy.test.id
   order = "1"
-  annotations = [ 
-	{
-	  key = "key_1"
-	  value = "value_2"
-	},
-  ]
-  tags = [ 
-	{
-	  key = "key_1"
-	  value = "value_2"
-	},
-  ]
+  annotations = [
+  {
+	key = "key_1"
+	value = "value_2"
+  },
+ ]
+  tags = [
+  {
+	key = "key_1"
+	value = "value_2"
+  },
+ ]
 }
 `
 

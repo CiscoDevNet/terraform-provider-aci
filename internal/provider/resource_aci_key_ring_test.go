@@ -92,12 +92,10 @@ func TestAccResourcePkiKeyRingWithPolUni(t *testing.T) {
 			},
 			// Import testing
 			{
-				ResourceName:      "aci_key_ring.test",
-				ImportState:       true,
-				ImportStateVerify: true,
-				ImportStateVerifyIgnore: []string{
-					"key",
-				},
+				ResourceName:            "aci_key_ring.test",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"key"},
 				Check: resource.ComposeAggregateTestCheckFunc(
 					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("aci_key_ring.test", "name", "test_name"),
@@ -135,24 +133,22 @@ func TestAccResourcePkiKeyRingWithPolUni(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_key_ring.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "regenerate", "no"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.key", "annotations_1"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.value", "value_2"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.key", "tags_1"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.1.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.1.value", "value_2"),
 				),
 			},
 			// Import testing with children
 			{
-				ResourceName:      "aci_key_ring.test",
-				ImportState:       true,
-				ImportStateVerify: true,
-				ImportStateVerifyIgnore: []string{
-					"key",
-				},
+				ResourceName:            "aci_key_ring.test",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"key"},
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_key_ring.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "admin_state", "started"),
@@ -167,13 +163,13 @@ func TestAccResourcePkiKeyRingWithPolUni(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_key_ring.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "regenerate", "no"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.key", "annotations_1"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.value", "value_2"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.key", "tags_1"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.1.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.1.value", "value_2"),
 				),
 			},
@@ -183,14 +179,14 @@ func TestAccResourcePkiKeyRingWithPolUni(t *testing.T) {
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					waitForApicBeforeRefresh,
-					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.key", "annotations_1"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.key", "tags_1"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.1.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.1.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.#", "2"),
 				),
@@ -201,10 +197,10 @@ func TestAccResourcePkiKeyRingWithPolUni(t *testing.T) {
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					waitForApicBeforeRefresh,
-					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.#", "1"),
 				),
@@ -308,12 +304,10 @@ func TestAccResourcePkiKeyRingWithFvTenant(t *testing.T) {
 			},
 			// Import testing
 			{
-				ResourceName:      "aci_key_ring.test",
-				ImportState:       true,
-				ImportStateVerify: true,
-				ImportStateVerifyIgnore: []string{
-					"key",
-				},
+				ResourceName:            "aci_key_ring.test",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"key"},
 				Check: resource.ComposeAggregateTestCheckFunc(
 					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("aci_key_ring.test", "name", "test_name"),
@@ -351,24 +345,22 @@ func TestAccResourcePkiKeyRingWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_key_ring.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "regenerate", "no"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.key", "annotations_1"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.value", "value_2"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.key", "tags_1"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.1.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.1.value", "value_2"),
 				),
 			},
 			// Import testing with children
 			{
-				ResourceName:      "aci_key_ring.test",
-				ImportState:       true,
-				ImportStateVerify: true,
-				ImportStateVerifyIgnore: []string{
-					"key",
-				},
+				ResourceName:            "aci_key_ring.test",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"key"},
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_key_ring.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "admin_state", "started"),
@@ -383,13 +375,13 @@ func TestAccResourcePkiKeyRingWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_key_ring.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "regenerate", "no"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.key", "annotations_1"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.value", "value_2"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.key", "tags_1"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.1.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.1.value", "value_2"),
 				),
 			},
@@ -399,14 +391,14 @@ func TestAccResourcePkiKeyRingWithFvTenant(t *testing.T) {
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					waitForApicBeforeRefresh,
-					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.key", "annotations_1"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.key", "tags_1"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.1.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.1.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.#", "2"),
 				),
@@ -417,10 +409,10 @@ func TestAccResourcePkiKeyRingWithFvTenant(t *testing.T) {
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					waitForApicBeforeRefresh,
-					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.key", "tags_2"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.#", "1"),
 				),
@@ -458,6 +450,7 @@ resource "aci_key_ring" "test" {
   certificate_authority = "test_name"
   description = "description"
   elliptic_curve = "none"
+  key = "-----BEGIN PRIVATE KEY-----\nMIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAKIRv+2sbbewm0mj\nD+6/tpoUymzYIdFsN+gu02teIr/lZi8ipEB514pyhoaerstzboPteWvniLuwq4KQ\nVTEHgoln7J8EaHCnECViGA61pVx8RkJ99cmCkepspROw3I96zBcm58oXs6+Q/BnD\n/OWET5sBvR9oTv9GNRVJ1rvSMAEJAgMBAAECgYByu3QO0qF9h7X3JEu0Ld4cKBnB\ngiQ2uJC/et7KxIJ/LOvw9GopBthyt27KwG1ntBkJpkTuAaQHkyNns7vLkNB0S0IR\n+owVFEcKYq9VCHTaiQU8TDp24gN+yPTrpRuH8YhDVq5SfVdVuTMgHVQdj4ya4VlF\nGj+a7+ipxtGiLsVGrQJBAM7p0Fm0xmzi+tBOASUAcVrPLcteFIaTBFwfq16dm/ON\n00Khla8Et5kMBttTbqbukl8mxFjBEEBlhQqb6EdQQ0sCQQDIhHx1a9diG7y/4DQA\n4KvR3FCYwP8PBORlSamegzCo+P1OzxiEo0amX7yQMA5UyiP/kUsZrme2JBZgna8S\np4R7AkEAr7rMhSOPUnMD6V4WgsJ5g1Jp5kqkzBaYoVUUSms5RASz4+cwJVCwTX91\nY1jcpVIBZmaaY3a0wrx13ajEAa0dOQJBAIpjnb4wqpsEh7VpmJqOdSdGxb1XXfFQ\nsA0T1OQYqQnFppWwqrxIL+d9pZdiA1ITnNqyvUFBNETqDSOrUHwwb2cCQGArE+vu\nffPUWQ0j+fiK+covFG8NL7H+26NSGB5+Xsn9uwOGLj7K/YT6CbBtr9hJiuWjM1Al\n0V4ltlTuu2mTMaw=\n-----END PRIVATE KEY-----"
   key_type = "RSA"
   modulus = "mod1024"
   name_alias = "name_alias"
@@ -476,6 +469,7 @@ resource "aci_key_ring" "test" {
   certificate_authority = ""
   description = ""
   elliptic_curve = "none"
+  key = ""
   key_type = "RSA"
   modulus = "mod2048"
   name_alias = ""
@@ -489,24 +483,24 @@ resource "aci_key_ring" "test" {
   name = "test_name"
   annotations = [
     {
-      key = "annotations_1"
+      key = "key_0"
       value = "value_1"
     },
     {
-      key = "annotations_2"
+      key = "key_1"
       value = "value_2"
     },
-  ]
+   ]
   tags = [
     {
-      key = "tags_1"
+      key = "key_0"
       value = "value_1"
     },
     {
-      key = "tags_2"
+      key = "key_1"
       value = "value_2"
     },
-  ]
+   ]
 }
 `
 
@@ -521,16 +515,16 @@ resource "aci_key_ring" "test" {
   name = "test_name"
   annotations = [
   {
-	key = "annotations_2"
+	key = "key_1"
 	value = "value_2"
   },
-  ]
+ ]
   tags = [
   {
-	key = "tags_2"
+	key = "key_1"
 	value = "value_2"
   },
-  ]
+ ]
 }
 `
 
@@ -559,6 +553,7 @@ resource "aci_key_ring" "test" {
   certificate_authority = "test_name"
   description = "description"
   elliptic_curve = "none"
+  key = "-----BEGIN PRIVATE KEY-----\nMIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAKIRv+2sbbewm0mj\nD+6/tpoUymzYIdFsN+gu02teIr/lZi8ipEB514pyhoaerstzboPteWvniLuwq4KQ\nVTEHgoln7J8EaHCnECViGA61pVx8RkJ99cmCkepspROw3I96zBcm58oXs6+Q/BnD\n/OWET5sBvR9oTv9GNRVJ1rvSMAEJAgMBAAECgYByu3QO0qF9h7X3JEu0Ld4cKBnB\ngiQ2uJC/et7KxIJ/LOvw9GopBthyt27KwG1ntBkJpkTuAaQHkyNns7vLkNB0S0IR\n+owVFEcKYq9VCHTaiQU8TDp24gN+yPTrpRuH8YhDVq5SfVdVuTMgHVQdj4ya4VlF\nGj+a7+ipxtGiLsVGrQJBAM7p0Fm0xmzi+tBOASUAcVrPLcteFIaTBFwfq16dm/ON\n00Khla8Et5kMBttTbqbukl8mxFjBEEBlhQqb6EdQQ0sCQQDIhHx1a9diG7y/4DQA\n4KvR3FCYwP8PBORlSamegzCo+P1OzxiEo0amX7yQMA5UyiP/kUsZrme2JBZgna8S\np4R7AkEAr7rMhSOPUnMD6V4WgsJ5g1Jp5kqkzBaYoVUUSms5RASz4+cwJVCwTX91\nY1jcpVIBZmaaY3a0wrx13ajEAa0dOQJBAIpjnb4wqpsEh7VpmJqOdSdGxb1XXfFQ\nsA0T1OQYqQnFppWwqrxIL+d9pZdiA1ITnNqyvUFBNETqDSOrUHwwb2cCQGArE+vu\nffPUWQ0j+fiK+covFG8NL7H+26NSGB5+Xsn9uwOGLj7K/YT6CbBtr9hJiuWjM1Al\n0V4ltlTuu2mTMaw=\n-----END PRIVATE KEY-----"
   key_type = "RSA"
   modulus = "mod1024"
   name_alias = "name_alias"
@@ -578,6 +573,7 @@ resource "aci_key_ring" "test" {
   certificate_authority = ""
   description = ""
   elliptic_curve = "none"
+  key = ""
   key_type = "RSA"
   modulus = "mod2048"
   name_alias = ""
@@ -592,24 +588,24 @@ resource "aci_key_ring" "test" {
   name = "test_name"
   annotations = [
     {
-      key = "annotations_1"
+      key = "key_0"
       value = "value_1"
     },
     {
-      key = "annotations_2"
+      key = "key_1"
       value = "value_2"
     },
-  ]
+   ]
   tags = [
     {
-      key = "tags_1"
+      key = "key_0"
       value = "value_1"
     },
     {
-      key = "tags_2"
+      key = "key_1"
       value = "value_2"
     },
-  ]
+   ]
 }
 `
 
@@ -626,16 +622,16 @@ resource "aci_key_ring" "test" {
   name = "test_name"
   annotations = [
   {
-	key = "annotations_2"
+	key = "key_1"
 	value = "value_2"
   },
-  ]
+ ]
   tags = [
   {
-	key = "tags_2"
+	key = "key_1"
 	value = "value_2"
   },
-  ]
+ ]
 }
 `
 

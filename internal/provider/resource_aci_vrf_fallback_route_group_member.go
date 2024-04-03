@@ -101,6 +101,7 @@ func (r *FvFBRMemberResource) Schema(ctx context.Context, req resource.SchemaReq
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
 				MarkdownDescription: `The annotation of the VRF Fallback Route Group Member object.`,
@@ -110,6 +111,7 @@ func (r *FvFBRMemberResource) Schema(ctx context.Context, req resource.SchemaReq
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The description of the VRF Fallback Route Group Member object.`,
 			},
@@ -118,6 +120,7 @@ func (r *FvFBRMemberResource) Schema(ctx context.Context, req resource.SchemaReq
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The name of the VRF Fallback Route Group Member object.`,
 			},
@@ -126,6 +129,7 @@ func (r *FvFBRMemberResource) Schema(ctx context.Context, req resource.SchemaReq
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The name alias of the VRF Fallback Route Group Member object.`,
 			},
@@ -133,6 +137,7 @@ func (r *FvFBRMemberResource) Schema(ctx context.Context, req resource.SchemaReq
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
 				MarkdownDescription: `The address of the VRF Fallback Route Group Member object.`,
@@ -391,6 +396,21 @@ func getAndSetFvFBRMemberAttributes(ctx context.Context, diags *diag.Diagnostics
 				if attributeName == "rnhAddr" {
 					data.RnhAddr = basetypes.NewStringValue(attributeValue.(string))
 				}
+			}
+			if data.Annotation.IsUnknown() {
+				data.Annotation = types.StringNull()
+			}
+			if data.Descr.IsUnknown() {
+				data.Descr = types.StringNull()
+			}
+			if data.Name.IsUnknown() {
+				data.Name = types.StringNull()
+			}
+			if data.NameAlias.IsUnknown() {
+				data.NameAlias = types.StringNull()
+			}
+			if data.RnhAddr.IsUnknown() {
+				data.RnhAddr = types.StringNull()
 			}
 			TagAnnotationFvFBRMemberList := make([]TagAnnotationFvFBRMemberResourceModel, 0)
 			TagTagFvFBRMemberList := make([]TagTagFvFBRMemberResourceModel, 0)
