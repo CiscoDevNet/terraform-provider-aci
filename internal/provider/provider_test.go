@@ -116,21 +116,26 @@ func extractEnvironmentValue(requestData *container.Container) (string, error) {
 // waitForApicBeforeRefresh ensures the APIC is available by polling the API until it responds or times out before Terraform refresh is applied in the test.
 func waitForApicBeforeRefresh(s *terraform.State) error {
 	aciClient := getACIClientTest(nil)
-	conf := &resource.StateChangeConf{
-		Refresh: func() (interface{}, string, error) {
+
+	timeoutTimer := time.NewTimer(50 * time.Second)
+	defer timeoutTimer.Stop()
+
+	pollTimer := time.NewTimer(5 * time.Second)
+	defer pollTimer.Stop()
+
+	for {
+		select {
+		case <-timeoutTimer.C:
+			return fmt.Errorf("timeout reached while waiting for APIC to become available")
+		case <-pollTimer.C:
 			_, err := aciClient.GetViaURL("/api/aaaListDomains.json")
 			if err != nil {
-				return nil, "pending", nil
+				pollTimer.Reset(5 * time.Second)
+			} else {
+				return nil
 			}
-			return nil, "available", nil
-		},
-		Timeout: 20 * time.Second,
-		Pending: []string{"pending"},
-		Target:  []string{"available"},
+		}
 	}
-
-	conf.WaitForState()
-	return nil
 }
 
 func testCheckResourceAttr(resourceName, attribute, value1 string) resource.TestCheckFunc {
