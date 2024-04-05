@@ -443,6 +443,7 @@ func (c *Client) Authenticate() error {
 	// (2) escapes out the password to support scenarios where the user password includes backslashes
 	escUserName := strings.ReplaceAll(c.username, `\`, `\\`)
 	escPwd := strings.ReplaceAll(c.password, `\`, `\\`)
+	escPwd = strings.ReplaceAll(escPwd, `"`, `\"`)
 	body := []byte(fmt.Sprintf(authPayload, escUserName, escPwd))
 	if c.appUserName != "" {
 		path = "/api/requestAppToken.json"
