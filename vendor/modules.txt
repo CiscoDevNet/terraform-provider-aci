@@ -28,8 +28,8 @@ github.com/agext/levenshtein
 # github.com/apparentlymart/go-textseg/v15 v15.0.0
 ## explicit; go 1.16
 github.com/apparentlymart/go-textseg/v15/textseg
-# github.com/ciscoecosystem/aci-go-client/v2 v2.28.0
-## explicit; go 1.12
+# github.com/ciscoecosystem/aci-go-client/v2 v2.28.1
+## explicit; go 1.21
 github.com/ciscoecosystem/aci-go-client/v2/client
 github.com/ciscoecosystem/aci-go-client/v2/container
 github.com/ciscoecosystem/aci-go-client/v2/models
@@ -261,8 +261,8 @@ github.com/hashicorp/terraform-svchost
 # github.com/hashicorp/yamux v0.1.1
 ## explicit; go 1.15
 github.com/hashicorp/yamux
-# github.com/kr/pretty v0.3.0
-## explicit; go 1.12
+# github.com/kr/text v0.2.0
+## explicit
 # github.com/mattn/go-colorable v0.1.13
 ## explicit; go 1.15
 github.com/mattn/go-colorable
