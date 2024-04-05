@@ -1,3 +1,22 @@
+## 2.14.0 (April 5, 2024)
+BUG FIXES:
+- Fix support for double quotes in login password.
+- Fix documentation for aci_function_node and and aci_connection to have a particular format for names.
+- Allow setting an empty string as default provider level annotation
+- Allow import where a semicolon is part of the dn for ipv6 address
+- Changed is_copy to ForceNew, so that when changed the resource is recreated.
+- Error when object not found for datasources aci_interface_config, aci_cloud_l4_l7_third_party_device, and aci_cloud_l4_l7_native_load_balancer
+
+IMPROVEMENTS:
+- Add support for ip endpoint tags in aci_endpoint_tag_ip resource and datasource
+- Add support for mac endpoint tags in aci_endpoint_tag_mac resource and datasource
+- Add aci_fallback_route_group and aci_fallback_member resource
+- Add Default Route Leak Policy to the aci_l3_outside resource
+- Add connector_type and att_notify parameters to 'aci_function_node'
+- Add support for copy-function node in on-prem APICs
+- Add ip parameter to fix resource creation when is_static_ip parameter is set in aci_cloud_l4_l7_native_load_balancer resource/datasource.
+- Migration of aci_tag into plugin framework
+
 ## 2.13.2 (January 30, 2024)
 BUG FIXES:
 - Fix path for signature calculation for private_key authentication in plugin framework provider resources
