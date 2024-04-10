@@ -49,5 +49,3 @@ parents:
     parent_dependency: ""
     parent_dn: "aci_l3_outside.test.id"
     class_in_parent: false
-
-targets:

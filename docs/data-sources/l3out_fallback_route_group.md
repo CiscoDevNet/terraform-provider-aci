@@ -4,15 +4,15 @@
 # More details can be found in the [README](https://github.com/CiscoDevNet/terraform-provider-aci/blob/master/README.md).
 subcategory: "L3Out"
 layout: "aci"
-page_title: "ACI: aci_l3out_to_fallback_route_group"
-sidebar_current: "docs-aci-data-source-aci_l3out_to_fallback_route_group"
+page_title: "ACI: aci_l3out_fallback_route_group"
+sidebar_current: "docs-aci-data-source-aci_l3out_fallback_route_group"
 description: |-
-  Data source for L3out To Fallback Route Group
+  Data source for L3out Fallback Route Group
 ---
 
-# aci_l3out_to_fallback_route_group #
+# aci_l3out_fallback_route_group #
 
-Data source for L3out To Fallback Route Group
+Data source for L3out Fallback Route Group
 
 ## API Information ##
 
@@ -30,7 +30,7 @@ Data source for L3out To Fallback Route Group
 
 ```hcl
 
-data "aci_l3out_to_fallback_route_group" "example_l3_outside" {
+data "aci_l3out_fallback_route_group" "example_l3_outside" {
   parent_dn = aci_l3_outside.example.id
   target_dn = aci_vrf_fallback_route_group.test.id
 }
@@ -47,8 +47,8 @@ data "aci_l3out_to_fallback_route_group" "example_l3_outside" {
 
 ### Read-Only ###
 
-* `id` - (string) The distinguished name (DN) of the L3out To Fallback Route Group object.
-* `annotation` (annotation) - (string) The annotation of the L3out To Fallback Route Group object.
+* `id` - (string) The distinguished name (DN) of the L3out Fallback Route Group object.
+* `annotation` (annotation) - (string) The annotation of the L3out Fallback Route Group object.
 
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
   * `key` (key) - (string) The key used to uniquely identify this configuration object.

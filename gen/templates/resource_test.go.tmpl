@@ -457,7 +457,7 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 {{- if ne .targets nil }}
 	{{- range .targets}}
 		{{- if ne .parent_dependency "" }}
-const testConfig{{.class_name}}MinDependencyWith{{capitalize .parent_dependency}} = {{- if ne .grandparent_class_name "" }} testConfig{{capitalize .parent_dependency}}MinDependencyWith{{capitalize .grandparent_class_name}} + {{- end }} `
+const testConfig{{.class_name}}MinDependencyWith{{capitalize .parent_dependency}} = `
 resource "aci_{{$.targetResourceName}}" "test" {
   parent_dn = {{.parent_dependency_dn}}
   {{- range $key, $value := .resource_required}}

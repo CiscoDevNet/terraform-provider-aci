@@ -66,21 +66,21 @@ type L3extRsOutToFBRGroupIdentifier struct {
 }
 
 func (r *L3extRsOutToFBRGroupResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	tflog.Debug(ctx, "Start metadata of resource: aci_l3out_to_fallback_route_group")
-	resp.TypeName = req.ProviderTypeName + "_l3out_to_fallback_route_group"
-	tflog.Debug(ctx, "End metadata of resource: aci_l3out_to_fallback_route_group")
+	tflog.Debug(ctx, "Start metadata of resource: aci_l3out_fallback_route_group")
+	resp.TypeName = req.ProviderTypeName + "_l3out_fallback_route_group"
+	tflog.Debug(ctx, "End metadata of resource: aci_l3out_fallback_route_group")
 }
 
 func (r *L3extRsOutToFBRGroupResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
-	tflog.Debug(ctx, "Start schema of resource: aci_l3out_to_fallback_route_group")
+	tflog.Debug(ctx, "Start schema of resource: aci_l3out_fallback_route_group")
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "The l3out_to_fallback_route_group resource for the 'l3extRsOutToFBRGroup' class",
+		MarkdownDescription: "The l3out_fallback_route_group resource for the 'l3extRsOutToFBRGroup' class",
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the L3out To Fallback Route Group object.",
+				MarkdownDescription: "The distinguished name (DN) of the L3out Fallback Route Group object.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
@@ -100,7 +100,7 @@ func (r *L3extRsOutToFBRGroupResource) Schema(ctx context.Context, req resource.
 					stringplanmodifier.UseStateForUnknown(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
-				MarkdownDescription: `The annotation of the L3out To Fallback Route Group object.`,
+				MarkdownDescription: `The annotation of the L3out Fallback Route Group object.`,
 			},
 			"target_dn": schema.StringAttribute{
 				Required: true,
@@ -164,11 +164,11 @@ func (r *L3extRsOutToFBRGroupResource) Schema(ctx context.Context, req resource.
 			},
 		},
 	}
-	tflog.Debug(ctx, "End schema of resource: aci_l3out_to_fallback_route_group")
+	tflog.Debug(ctx, "End schema of resource: aci_l3out_fallback_route_group")
 }
 
 func (r *L3extRsOutToFBRGroupResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	tflog.Debug(ctx, "Start configure of resource: aci_l3out_to_fallback_route_group")
+	tflog.Debug(ctx, "Start configure of resource: aci_l3out_fallback_route_group")
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
 		return
@@ -186,11 +186,11 @@ func (r *L3extRsOutToFBRGroupResource) Configure(ctx context.Context, req resour
 	}
 
 	r.client = client
-	tflog.Debug(ctx, "End configure of resource: aci_l3out_to_fallback_route_group")
+	tflog.Debug(ctx, "End configure of resource: aci_l3out_fallback_route_group")
 }
 
 func (r *L3extRsOutToFBRGroupResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	tflog.Debug(ctx, "Start create of resource: aci_l3out_to_fallback_route_group")
+	tflog.Debug(ctx, "Start create of resource: aci_l3out_fallback_route_group")
 	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
 	var stateData *L3extRsOutToFBRGroupResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
@@ -208,7 +208,7 @@ func (r *L3extRsOutToFBRGroupResource) Create(ctx context.Context, req resource.
 
 	setL3extRsOutToFBRGroupId(ctx, data)
 
-	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_l3out_to_fallback_route_group with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_l3out_fallback_route_group with id '%s'", data.Id.ValueString()))
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationL3extRsOutToFBRGroupResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
@@ -231,11 +231,11 @@ func (r *L3extRsOutToFBRGroupResource) Create(ctx context.Context, req resource.
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_l3out_to_fallback_route_group with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_l3out_fallback_route_group with id '%s'", data.Id.ValueString()))
 }
 
 func (r *L3extRsOutToFBRGroupResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
-	tflog.Debug(ctx, "Start read of resource: aci_l3out_to_fallback_route_group")
+	tflog.Debug(ctx, "Start read of resource: aci_l3out_fallback_route_group")
 	var data *L3extRsOutToFBRGroupResourceModel
 
 	// Read Terraform prior state data into the model
@@ -245,7 +245,7 @@ func (r *L3extRsOutToFBRGroupResource) Read(ctx context.Context, req resource.Re
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Read of resource aci_l3out_to_fallback_route_group with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Read of resource aci_l3out_fallback_route_group with id '%s'", data.Id.ValueString()))
 
 	getAndSetL3extRsOutToFBRGroupAttributes(ctx, &resp.Diagnostics, r.client, data)
 
@@ -257,11 +257,11 @@ func (r *L3extRsOutToFBRGroupResource) Read(ctx context.Context, req resource.Re
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_l3out_to_fallback_route_group with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_l3out_fallback_route_group with id '%s'", data.Id.ValueString()))
 }
 
 func (r *L3extRsOutToFBRGroupResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	tflog.Debug(ctx, "Start update of resource: aci_l3out_to_fallback_route_group")
+	tflog.Debug(ctx, "Start update of resource: aci_l3out_fallback_route_group")
 	var data *L3extRsOutToFBRGroupResourceModel
 	var stateData *L3extRsOutToFBRGroupResourceModel
 
@@ -273,7 +273,7 @@ func (r *L3extRsOutToFBRGroupResource) Update(ctx context.Context, req resource.
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_l3out_to_fallback_route_group with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_l3out_fallback_route_group with id '%s'", data.Id.ValueString()))
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationL3extRsOutToFBRGroupResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
@@ -297,11 +297,11 @@ func (r *L3extRsOutToFBRGroupResource) Update(ctx context.Context, req resource.
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_l3out_to_fallback_route_group with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_l3out_fallback_route_group with id '%s'", data.Id.ValueString()))
 }
 
 func (r *L3extRsOutToFBRGroupResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	tflog.Debug(ctx, "Start delete of resource: aci_l3out_to_fallback_route_group")
+	tflog.Debug(ctx, "Start delete of resource: aci_l3out_fallback_route_group")
 	var data *L3extRsOutToFBRGroupResourceModel
 
 	// Read Terraform prior state data into the model
@@ -311,7 +311,7 @@ func (r *L3extRsOutToFBRGroupResource) Delete(ctx context.Context, req resource.
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Delete of resource aci_l3out_to_fallback_route_group with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Delete of resource aci_l3out_fallback_route_group with id '%s'", data.Id.ValueString()))
 	jsonPayload := GetDeleteJsonPayload(ctx, &resp.Diagnostics, "l3extRsOutToFBRGroup", data.Id.ValueString())
 	if resp.Diagnostics.HasError() {
 		return
@@ -320,18 +320,18 @@ func (r *L3extRsOutToFBRGroupResource) Delete(ctx context.Context, req resource.
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_l3out_to_fallback_route_group with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_l3out_fallback_route_group with id '%s'", data.Id.ValueString()))
 }
 
 func (r *L3extRsOutToFBRGroupResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	tflog.Debug(ctx, "Start import state of resource: aci_l3out_to_fallback_route_group")
+	tflog.Debug(ctx, "Start import state of resource: aci_l3out_fallback_route_group")
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 
 	var stateData *L3extRsOutToFBRGroupResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
-	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_l3out_to_fallback_route_group with id '%s'", stateData.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_l3out_fallback_route_group with id '%s'", stateData.Id.ValueString()))
 
-	tflog.Debug(ctx, "End import of state resource: aci_l3out_to_fallback_route_group")
+	tflog.Debug(ctx, "End import of state resource: aci_l3out_fallback_route_group")
 }
 
 func getAndSetL3extRsOutToFBRGroupAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *L3extRsOutToFBRGroupResourceModel) {

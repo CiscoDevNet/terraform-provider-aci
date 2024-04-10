@@ -68,9 +68,10 @@ parents:
     class_in_parent: {{$parentDependency.class_in_parent}}{{$index = add $index 1}}
     {{- end}}
 
-targets:
   {{- $index := 0}}{{- $key := .TargetResourceClassName}}
     {{- if ne $key "" }}
+
+targets:
       {{- $targetDependency := getTargetTestDependencies $.PkgName $index $.Definitions}}
   - class_name: "{{ $key }}"
           {{- if ne $targetDependency.target_dn "" }}
@@ -88,7 +89,6 @@ targets:
           {{- else if or .IsNaming .IsRequired}}
       {{overwriteProperty $key .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue $key $overwritePropertyName $testValue "resource_required" 0 $.Definitions}}"
           {{- end}}
-        {{- end}}
-    grandparent_class_name: "{{$targetDependency.grandparent_class_name}}"{{$index = add $index 1}}
+        {{- end}}{{$index = add $index 1}}
     {{- end }}
   {{- end}}

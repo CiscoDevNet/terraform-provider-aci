@@ -315,13 +315,14 @@ func getTestVars(model Model) (map[string]interface{}, error) {
 	testVarsMap["targetResourceClassName"] = model.TargetResourceClassName
 	testVarsMap["targetResourceParentClassName"] = ""
 	testVarsMap["targetDn"] = model.TargetDn
-	if testVarsMap["targets"] != nil {
-		if testVarsMap["targets"].([]interface{})[0].(map[interface{}]interface{})["parent_dependency"] != nil {
-			testVarsMap["targetResourceParentClassName"] = testVarsMap["targets"].([]interface{})[0].(map[interface{}]interface{})["parent_dependency"].(string)
+	targets, targetsOk := testVarsMap["targets"]
+	if targetsOk && targets != nil {
+		if targets.([]interface{})[0].(map[interface{}]interface{})["parent_dependency"] != nil {
+			testVarsMap["targetResourceParentClassName"] = targets.([]interface{})[0].(map[interface{}]interface{})["parent_dependency"].(string)
 		}
 
-		if testVarsMap["targets"].([]interface{})[0].(map[interface{}]interface{})["target_dn"] != "" {
-			testVarsMap["targetDn"] = testVarsMap["targets"].([]interface{})[0].(map[interface{}]interface{})["target_dn"].(string)
+		if targets.([]interface{})[0].(map[interface{}]interface{})["target_dn"] != "" {
+			testVarsMap["targetDn"] = targets.([]interface{})[0].(map[interface{}]interface{})["target_dn"].(string)
 		}
 	}
 	return testVarsMap, nil
