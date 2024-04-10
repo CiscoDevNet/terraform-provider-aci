@@ -460,9 +460,9 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 const testConfig{{.class_name}}MinDependencyWith{{capitalize .parent_dependency}} = `
 resource "aci_{{$.targetResourceName}}" "test" {
   parent_dn = {{.parent_dependency_dn}}
-  {{- range $key, $value := .resource_required}}
+  			{{- range $key, $value := .resource_required}}
   {{$key}} = "{{$value}}"
-  {{- end}}
+  			{{- end}}
 }
 `
 		{{- end }}

@@ -74,21 +74,21 @@ parents:
 targets:
       {{- $targetDependency := getTargetTestDependencies $.PkgName $index $.Definitions}}
   - class_name: "{{ $key }}"
-          {{- if ne $targetDependency.target_dn "" }}
+      {{- if ne $targetDependency.target_dn "" }}
     target_dn: "{{ $targetDependency.target_dn }}"
-          {{- else }} 
+      {{- else }} 
     target_dn: "{{ .TargetDn }}"
-          {{- end }}
+      {{- end }}
     parent_dn: "{{createParentDnValue $key "test" $.Definitions}}"
     parent_dependency: "{{$targetDependency.parent_dependency}}"
     parent_dependency_dn: "{{$targetDependency.parent_dependency_dn}}"
     resource_required:
-        {{- range $.TargetProperties}}{{$testValue := createTestValue .SnakeCaseName}}{{$overwritePropertyName := overwriteProperty $key .SnakeCaseName $.Definitions}}
-          {{- if eq .SnakeCaseName "t_dn" }}
+      {{- range $.TargetProperties}}{{$testValue := createTestValue .SnakeCaseName}}{{$overwritePropertyName := overwriteProperty $key .SnakeCaseName $.Definitions}}
+        {{- if eq .SnakeCaseName "t_dn" }}
       {{overwriteProperty $key .SnakeCaseName $.Definitions}}: {{overwritePropertyValue $key $overwritePropertyName $testValue "resource_required" 0 $.Definitions}}
-          {{- else if or .IsNaming .IsRequired}}
+        {{- else if or .IsNaming .IsRequired}}
       {{overwriteProperty $key .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue $key $overwritePropertyName $testValue "resource_required" 0 $.Definitions}}"
-          {{- end}}
-        {{- end}}{{$index = add $index 1}}
+        {{- end}}
+      {{- end}}{{$index = add $index 1}}
     {{- end }}
   {{- end}}
