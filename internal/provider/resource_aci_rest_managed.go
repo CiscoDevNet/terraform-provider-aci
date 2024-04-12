@@ -358,34 +358,23 @@ func splitImportId(importId string) []string {
 		return strings.Split(importId, ":")
 	}
 
-	var semiColonCounter, openBrackets, startIndex int
-	semiColonSkipped := []int{}
+	idParts := []string{}
+	var openBrackets, startIndex int
 
-	for _, runeCharacter := range importId {
-		character := string(runeCharacter)
-		if character == "[" {
+	for index, character := range importId {
+		if string(character) == "[" {
 			openBrackets += 1
-		} else if character == "]" {
+		} else if string(character) == "]" {
 			openBrackets -= 1
 		}
-
-		if openBrackets > 0 && character == ":" {
-			semiColonCounter += 1
-		} else if openBrackets == 0 && character == ":" {
-			semiColonSkipped = append(semiColonSkipped, semiColonCounter+1)
-			semiColonCounter = 0
+		if openBrackets == 0 && string(character) == ":" {
+			idParts = append(idParts, importId[startIndex:index])
+			startIndex = index + 1
 		}
 	}
 
-	if semiColonCounter != 0 {
-		semiColonSkipped = append(semiColonSkipped, semiColonCounter+1)
-	}
-
-	idParts := []string{}
-	importSplit := strings.Split(importId, ":")
-	for _, count := range semiColonSkipped {
-		idParts = append(idParts, strings.Join(importSplit[startIndex:startIndex+count], ":"))
-		startIndex += count
+	if startIndex < len(importId) {
+		idParts = append(idParts, importId[startIndex:])
 	}
 
 	return idParts

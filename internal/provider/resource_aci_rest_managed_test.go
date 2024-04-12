@@ -293,7 +293,7 @@ func TestAccAciRestManaged_import(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccAciRestManagedConfig_importWithIpv6(name, "import", "2001:1:2::5/28"),
+				Config: testAccAciRestManagedConfig_importWithIpv6(name, "import", "2001:1:2::5/28", "2001:1:2::5/28"),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_rest_managed.tenant_import", "content.name", name),
 					resource.TestCheckResourceAttr("aci_rest_managed.tenant_import", "dn", "uni/tn-"+name),
@@ -307,6 +307,10 @@ func TestAccAciRestManaged_import(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_rest_managed.subnet_import", "dn", "uni/tn-"+name+"/BD-"+name+"/subnet-[2001:1:2::5/28]"),
 					resource.TestCheckResourceAttr("aci_rest_managed.subnet_import", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_rest_managed.subnet_import", "class_name", "fvSubnet"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bd_import_2", "content.name", name+"_2"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bd_import_2", "dn", "uni/tn-"+name+"/BD-"+name+"_2"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bd_import_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bd_import_2", "class_name", "fvBD"),
 				),
 			},
 			{
@@ -329,6 +333,106 @@ func TestAccAciRestManaged_import(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_rest_managed.subnet_import", "dn", "uni/tn-"+name+"/BD-"+name+"/subnet-[2001:1:2::5/28]"),
 					resource.TestCheckResourceAttr("aci_rest_managed.subnet_import", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_rest_managed.subnet_import", "class_name", "fvSubnet"),
+				),
+			},
+			{
+				ImportState:   true,
+				ImportStateId: fmt.Sprintf("fvBD:uni/tn-%s/BD-%s:rsctx,subnet-[2001:1:2::5/28]", name, name),
+				ResourceName:  "aci_rest_managed.bd_import_2",
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_rest_managed.bd_import_2", "content.name", name+"_2"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bd_import_2", "dn", "uni/tn-"+name+"/BD-"+name+"_2"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bd_import_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bd_import_2", "class_name", "fvBD"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bd_import_2", "child.0.class_name", "fvRsCtx"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bd_import_2", "child.0.rn", "rsctx"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bd_import_2", "child.0.content.tnFvCtxName", "VRF2"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bd_import_2", "child.1.class_name", "fvSubnet"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bd_import_2", "child.1.rn", "subnet-[2001:1:2::5/28]"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bd_import_2", "child.1.content.ip", "2001:1:2::5/28"),
+				),
+			},
+			{
+				ImportState:   true,
+				ImportStateId: fmt.Sprintf("uni/tn-%s/BD-%s:subnet-[2001:1:2::5/28],rsctx", name, name),
+				ResourceName:  "aci_rest_managed.bd_import_2",
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_rest_managed.bd_import_2", "content.name", name+"_2"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bd_import_2", "dn", "uni/tn-"+name+"/BD-"+name+"_2"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bd_import_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bd_import_2", "class_name", "fvBD"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bd_import_2", "child.0.class_name", "fvSubnet"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bd_import_2", "child.0.rn", "subnet-[2001:1:2::5/28]"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bd_import_2", "child.0.content.ip", "2001:1:2::5/28"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bd_import_2", "child.1.class_name", "fvRsCtx"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bd_import_2", "child.1.rn", "rsctx"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bd_import_2", "child.1.content.tnFvCtxName", "VRF2"),
+				),
+			},
+			{
+				Config: testAccAciRestManagedConfig_importWithBracket(name),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_rest_managed.bracket", "content.name", name),
+					resource.TestCheckResourceAttr("aci_rest_managed.bracket", "content.allocMode", "static"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bracket", "dn", "uni/infra/vlanns-["+name+"]-static"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bracket", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bracket", "class_name", "fvnsVlanInstP"),
+				),
+			},
+			{
+				ImportState:   true,
+				ImportStateId: fmt.Sprintf("fvnsVlanInstP:uni/infra/vlanns-[%s]-static", name),
+				ResourceName:  "aci_rest_managed.bracket",
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_rest_managed.bracket", "content.name", name),
+					resource.TestCheckResourceAttr("aci_rest_managed.bracket", "content.allocMode", "static"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bracket", "dn", "uni/infra/vlanns-["+name+"]-static"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bracket", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bracket", "class_name", "fvnsVlanInstP"),
+				),
+			},
+			{
+				ImportState:   true,
+				ImportStateId: fmt.Sprintf("uni/infra/vlanns-[%s]-static", name),
+				ResourceName:  "aci_rest_managed.bracket",
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_rest_managed.bracket", "content.name", name),
+					resource.TestCheckResourceAttr("aci_rest_managed.bracket", "content.allocMode", "static"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bracket", "dn", "uni/infra/vlanns-["+name+"]-static"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bracket", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bracket", "class_name", "fvnsVlanInstP"),
+				),
+			},
+			{
+				ImportState:   true,
+				ImportStateId: fmt.Sprintf("fvnsVlanInstP:uni/infra/vlanns-[%s]-static:from-[vlan-200]-to-[vlan-2200]", name),
+				ResourceName:  "aci_rest_managed.bracket",
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_rest_managed.bracket", "content.name", name),
+					resource.TestCheckResourceAttr("aci_rest_managed.bracket", "content.allocMode", "static"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bracket", "dn", "uni/infra/vlanns-["+name+"]-static"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bracket", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bracket", "class_name", "fvnsVlanInstP"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bracket", "child.0.class_name", "fvnsEncapBlk"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bracket", "child.0.rn", "from-[vlan-200]-to-[vlan-2200]"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bracket", "child.0.content.from", "vlan-200"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bracket", "child.0.content.to", "vlan-2200"),
+				),
+			},
+			{
+				ImportState:   true,
+				ImportStateId: fmt.Sprintf("uni/infra/vlanns-[%s]-static:from-[vlan-200]-to-[vlan-2200]", name),
+				ResourceName:  "aci_rest_managed.bracket",
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_rest_managed.bracket", "content.name", name),
+					resource.TestCheckResourceAttr("aci_rest_managed.bracket", "content.allocMode", "static"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bracket", "dn", "uni/infra/vlanns-["+name+"]-static"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bracket", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bracket", "class_name", "fvnsVlanInstP"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bracket", "child.0.class_name", "fvnsEncapBlk"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bracket", "child.0.rn", "from-[vlan-200]-to-[vlan-2200]"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bracket", "child.0.content.from", "vlan-200"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bracket", "child.0.content.to", "vlan-2200"),
 				),
 			},
 		},
@@ -713,13 +817,27 @@ func testAccAciRestManagedConfig_importWithMultipleChildren(name string, resourc
 	`, name, resource)
 }
 
-func testAccAciRestManagedConfig_importWithIpv6(name string, resource string, ip string) string {
+func testAccAciRestManagedConfig_importWithIpv6(name string, resource string, ip string, ip2 string) string {
 	return fmt.Sprintf(`
 	resource "aci_rest_managed" "tenant_%[2]s" {
 		dn = "uni/tn-%[1]s"
 		class_name = "fvTenant"
 		content = {
 			name = "%[1]s"
+		}
+		child {
+			rn         = "ctx-VRF1"
+			class_name = "fvCtx"
+			content = {
+				name = "VRF1"
+			}
+		}
+		child {
+			rn         = "ctx-VRF2"
+			class_name = "fvCtx"
+			content = {
+				name = "VRF2"
+			}
 		}
 	}
 
@@ -728,6 +846,13 @@ func testAccAciRestManagedConfig_importWithIpv6(name string, resource string, ip
 		class_name = "fvBD"
 		content = {
 			name  = "%[1]s"
+		}
+		child {
+			rn         = "rsctx"
+			class_name = "fvRsCtx"
+			content = {
+				tnFvCtxName = "VRF1"
+			}
 		}
 	}
 
@@ -740,8 +865,55 @@ func testAccAciRestManagedConfig_importWithIpv6(name string, resource string, ip
 		  ipDPLearning = "enabled"
 		  ctrl         = "nd"
 		}
-	  }
-	`, name, resource, ip)
+	}
+
+	resource "aci_rest_managed" "bd_%[2]s_2" {
+		dn = "${aci_rest_managed.tenant_%[2]s.id}/BD-%[1]s_2"
+		class_name = "fvBD"
+		content = {
+			name  = "%[1]s_2"
+		}
+		child {
+			rn         = "rsctx"
+			class_name = "fvRsCtx"
+			content = {
+				tnFvCtxName = "VRF2"
+			}
+		}
+		child {
+			rn         = "subnet-[%[4]s]"
+			class_name = "fvSubnet"
+			content = {
+				ip = "%[4]s"
+				scope        = "private"
+				ipDPLearning = "enabled"
+				ctrl         = "nd"
+			}
+		}
+	}
+
+	`, name, resource, ip, ip2)
+}
+
+func testAccAciRestManagedConfig_importWithBracket(name string) string {
+	return fmt.Sprintf(`
+	resource "aci_rest_managed" "bracket" {
+		dn         = "uni/infra/vlanns-[%[1]s]-static"
+		class_name = "fvnsVlanInstP"
+		content = {
+			name      = "%[1]s"
+			allocMode = "static"
+		}
+		child {
+			rn         = "from-[vlan-200]-to-[vlan-2200]"
+			class_name = "fvnsEncapBlk"
+			content = {
+				from = "vlan-200"
+				to   = "vlan-2200"
+			}
+		}
+	}
+	`, name)
 }
 
 func testAccAciRestManagedConfig_tagTag(name string) string {
