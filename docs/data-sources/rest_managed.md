@@ -34,7 +34,6 @@ data "aci_rest_managed" "example" {
 * `id` - (string) The Distinguished Name of the object.
 * `annotation` - (string) Annotation for the class object that is being created. When annotation is provided in content this will take precedence.
 * `content` - (map) Map of key-value pairs those needed to be passed to the Model object as parameters. Make sure the key name matches the name with the object parameter in ACI.
-* `escape_html` - (Boolean) Enable escaping of HTML characters when encoding the JSON payload.
 
 * `child` - (list) A list of child objects.
   * `rn` - (string) The Relative Name of the child object.
