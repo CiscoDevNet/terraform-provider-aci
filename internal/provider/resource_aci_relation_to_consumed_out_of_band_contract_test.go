@@ -19,7 +19,7 @@ func TestAccResourceMgmtRsOoBConsWithMgmtInstP(t *testing.T) {
 			// Create with minimum config and verify default APIC values
 			{
 				Config:             testConfigMgmtRsOoBConsMinDependencyWithMgmtInstP,
-				ExpectNonEmptyPlan: true,
+				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "out_of_band_contract_name", "test_tn_vz_oob_br_cp_name"),
 					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "annotation", "orchestrator:terraform"),
@@ -29,7 +29,7 @@ func TestAccResourceMgmtRsOoBConsWithMgmtInstP(t *testing.T) {
 			// Update with all config and verify default APIC values
 			{
 				Config:             testConfigMgmtRsOoBConsAllDependencyWithMgmtInstP,
-				ExpectNonEmptyPlan: true,
+				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "out_of_band_contract_name", "test_tn_vz_oob_br_cp_name"),
 					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "annotation", "annotation"),
@@ -39,7 +39,7 @@ func TestAccResourceMgmtRsOoBConsWithMgmtInstP(t *testing.T) {
 			// Update with minimum config and verify config is unchanged
 			{
 				Config:             testConfigMgmtRsOoBConsMinDependencyWithMgmtInstP,
-				ExpectNonEmptyPlan: true,
+				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "out_of_band_contract_name", "test_tn_vz_oob_br_cp_name"),
 				),
@@ -47,7 +47,7 @@ func TestAccResourceMgmtRsOoBConsWithMgmtInstP(t *testing.T) {
 			// Update with empty strings config or default value
 			{
 				Config:             testConfigMgmtRsOoBConsResetDependencyWithMgmtInstP,
-				ExpectNonEmptyPlan: true,
+				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "out_of_band_contract_name", "test_tn_vz_oob_br_cp_name"),
 					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "annotation", "orchestrator:terraform"),
@@ -68,7 +68,7 @@ func TestAccResourceMgmtRsOoBConsWithMgmtInstP(t *testing.T) {
 			// Update with children
 			{
 				Config:             testConfigMgmtRsOoBConsChildrenDependencyWithMgmtInstP,
-				ExpectNonEmptyPlan: true,
+				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "out_of_band_contract_name", "test_tn_vz_oob_br_cp_name"),
 					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "annotation", "orchestrator:terraform"),
@@ -105,7 +105,7 @@ func TestAccResourceMgmtRsOoBConsWithMgmtInstP(t *testing.T) {
 			// Update with children removed from config
 			{
 				Config:             testConfigMgmtRsOoBConsChildrenRemoveFromConfigDependencyWithMgmtInstP,
-				ExpectNonEmptyPlan: true,
+				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "annotations.0.value", "value_1"),
@@ -122,7 +122,7 @@ func TestAccResourceMgmtRsOoBConsWithMgmtInstP(t *testing.T) {
 			// Update with children first child removed
 			{
 				Config:             testConfigMgmtRsOoBConsChildrenRemoveOneDependencyWithMgmtInstP,
-				ExpectNonEmptyPlan: true,
+				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "annotations.0.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "annotations.0.value", "value_2"),
@@ -135,7 +135,7 @@ func TestAccResourceMgmtRsOoBConsWithMgmtInstP(t *testing.T) {
 			// Update with all children removed
 			{
 				Config:             testConfigMgmtRsOoBConsChildrenRemoveAllDependencyWithMgmtInstP,
-				ExpectNonEmptyPlan: true,
+				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "annotations.#", "0"),
 					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "tags.#", "0"),

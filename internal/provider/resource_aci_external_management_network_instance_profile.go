@@ -490,18 +490,12 @@ func getAndSetMgmtInstPAttributes(ctx context.Context, diags *diag.Diagnostics, 
 					}
 				}
 			}
-			if len(MgmtRsOoBConsMgmtInstPList) > 0 {
-				mgmtRsOoBConsSet, _ := types.SetValueFrom(ctx, data.MgmtRsOoBCons.ElementType(ctx), MgmtRsOoBConsMgmtInstPList)
-				data.MgmtRsOoBCons = mgmtRsOoBConsSet
-			}
-			if len(TagAnnotationMgmtInstPList) > 0 {
-				tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationMgmtInstPList)
-				data.TagAnnotation = tagAnnotationSet
-			}
-			if len(TagTagMgmtInstPList) > 0 {
-				tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagMgmtInstPList)
-				data.TagTag = tagTagSet
-			}
+			mgmtRsOoBConsSet, _ := types.SetValueFrom(ctx, data.MgmtRsOoBCons.ElementType(ctx), MgmtRsOoBConsMgmtInstPList)
+			data.MgmtRsOoBCons = mgmtRsOoBConsSet
+			tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationMgmtInstPList)
+			data.TagAnnotation = tagAnnotationSet
+			tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagMgmtInstPList)
+			data.TagTag = tagTagSet
 		} else {
 			diags.AddError(
 				"too many results in response",

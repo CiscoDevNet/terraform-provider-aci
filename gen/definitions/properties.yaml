@@ -43,17 +43,13 @@ l3extRsRedistributePol:
       source: "direct"
   parents:
     - parent_dependency: "fvTenant"
-      class_in_parent: true
+      class_in_parent: true # required to be set to true because l3ext is a legacy resource that has this class as configuration which results in non-empty state on refresh
 
 vzOOBBrCP:
   documentation:
     prio: "The priority of the %s object."
     targetDscp: "The target DSCP value of the %s object."
     intent: "The Install Rules or Estimate Number of Rules"
-
-mgmtRsOoBCons:
-  parents:
-    - class_in_parent: true
 
 mgmtSubnet:
   test_values:
@@ -153,11 +149,9 @@ tagTag:
     - class_name: "fvAEPg"
       parent_dependency: ""
       parent_dn: "aci_application_epg.test.id"
-      class_in_parent: false
     - class_name: "fvTenant"
       parent_dependency: ""
       parent_dn: "aci_tenant.test.id"
-      class_in_parent: false
 
 fvFBRGroup:
   resource_required:
@@ -177,7 +171,6 @@ fvFBRGroup:
     - class_name: "fvCtx"
       parent_dependency: "fvTenant"
       parent_dn: "aci_vrf.test.id"
-      class_in_parent: false
 
 fvFBRMember:
   overwrites:
@@ -204,4 +197,3 @@ fvFBRMember:
     - class_name: "fvFBRGroup"
       parent_dependency: "fvCtx"
       parent_dn: "aci_fallback_route_group.test.id"
-      class_in_parent: true

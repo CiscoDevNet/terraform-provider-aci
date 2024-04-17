@@ -409,14 +409,10 @@ func getAndSetL3extRsRedistributePolAttributes(ctx context.Context, diags *diag.
 					}
 				}
 			}
-			if len(TagAnnotationL3extRsRedistributePolList) > 0 {
-				tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationL3extRsRedistributePolList)
-				data.TagAnnotation = tagAnnotationSet
-			}
-			if len(TagTagL3extRsRedistributePolList) > 0 {
-				tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagL3extRsRedistributePolList)
-				data.TagTag = tagTagSet
-			}
+			tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationL3extRsRedistributePolList)
+			data.TagAnnotation = tagAnnotationSet
+			tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagL3extRsRedistributePolList)
+			data.TagTag = tagTagSet
 		} else {
 			diags.AddError(
 				"too many results in response",

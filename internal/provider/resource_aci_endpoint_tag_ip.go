@@ -440,14 +440,10 @@ func getAndSetFvEpIpTagAttributes(ctx context.Context, diags *diag.Diagnostics, 
 					}
 				}
 			}
-			if len(TagAnnotationFvEpIpTagList) > 0 {
-				tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationFvEpIpTagList)
-				data.TagAnnotation = tagAnnotationSet
-			}
-			if len(TagTagFvEpIpTagList) > 0 {
-				tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagFvEpIpTagList)
-				data.TagTag = tagTagSet
-			}
+			tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationFvEpIpTagList)
+			data.TagAnnotation = tagAnnotationSet
+			tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagFvEpIpTagList)
+			data.TagTag = tagTagSet
 		} else {
 			diags.AddError(
 				"too many results in response",

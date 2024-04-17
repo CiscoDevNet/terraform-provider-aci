@@ -19,7 +19,7 @@ func TestAccDataSourceFvFBRMemberWithFvFBRGroup(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				Config:             testConfigFvFBRMemberDataSourceDependencyWithFvFBRGroup,
-				ExpectNonEmptyPlan: true,
+				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("data.aci_vrf_fallback_route_group_member.test", "fallback_member", "2.2.2.3"),
 					resource.TestCheckResourceAttr("data.aci_vrf_fallback_route_group_member.test", "annotation", "orchestrator:terraform"),

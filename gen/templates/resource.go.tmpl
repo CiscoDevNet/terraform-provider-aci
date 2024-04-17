@@ -548,10 +548,8 @@ func getAndSet{{.ResourceClassName}}Attributes(ctx context.Context, diags *diag.
 				}
 			}
 				{{- range .Children}}
-			if len({{.ResourceClassName}}{{$.ResourceClassName}}List) > 0 {
-				{{ .PkgName }}Set, _ := types.SetValueFrom(ctx, data.{{ .ResourceClassName }}.ElementType(ctx), {{ .ResourceClassName }}{{$.ResourceClassName}}List)
-				data.{{ .ResourceClassName }} = {{ .PkgName }}Set
-			}
+			{{ .PkgName }}Set, _ := types.SetValueFrom(ctx, data.{{ .ResourceClassName }}.ElementType(ctx), {{ .ResourceClassName }}{{$.ResourceClassName}}List)
+			data.{{ .ResourceClassName }} = {{ .PkgName }}Set
 				{{- end}}
 			{{- end}}
 		} else {

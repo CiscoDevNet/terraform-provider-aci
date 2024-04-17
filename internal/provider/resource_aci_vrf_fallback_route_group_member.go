@@ -427,14 +427,10 @@ func getAndSetFvFBRMemberAttributes(ctx context.Context, diags *diag.Diagnostics
 					}
 				}
 			}
-			if len(TagAnnotationFvFBRMemberList) > 0 {
-				tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationFvFBRMemberList)
-				data.TagAnnotation = tagAnnotationSet
-			}
-			if len(TagTagFvFBRMemberList) > 0 {
-				tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagFvFBRMemberList)
-				data.TagTag = tagTagSet
-			}
+			tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationFvFBRMemberList)
+			data.TagAnnotation = tagAnnotationSet
+			tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagFvFBRMemberList)
+			data.TagTag = tagTagSet
 		} else {
 			diags.AddError(
 				"too many results in response",
