@@ -37,3 +37,18 @@ resource "aci_rest_managed" "fvTenant2" {
     }
   }
 }
+
+resource "aci_rest_managed" "aaaPreLoginBanner" {
+  dn          = "uni/userext/preloginbanner"
+  class_name  = "aaaPreLoginBanner"
+  escape_html = false
+  content = {
+    message = <<-EOT
+<<< WARNING >>>  THE PROGRAMS AND DATA HELD ON THIS SYSTEM
+ARE THE PROPERTY OF, OR LICENCED BY, XXXXXXXX. IF THE COMPANY HAS NOT
+AUTHORISED YOUR ACCESS TO THIS SYSTEM YOU WILL COMMIT A CRIMINAL OFFENCE IF
+YOU DO NOT IMMEDIATELY DISCONNECT. UNAUTHORISED ACCESS IS STRICTLY FORBIDDEN
+AND IS A DISCIPLINARY OFFENCE.
+      EOT
+  }
+}

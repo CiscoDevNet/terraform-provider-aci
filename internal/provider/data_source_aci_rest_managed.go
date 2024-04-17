@@ -60,6 +60,10 @@ func (d *AciRestManagedDataSource) Schema(ctx context.Context, req datasource.Sc
 				Computed:            true,
 				MarkdownDescription: `The annotation of the ACI object.`,
 			},
+			"escape_html": schema.BoolAttribute{
+				Computed:            true,
+				MarkdownDescription: "Enable escaping of HTML characters when encoding the JSON payload.",
+			},
 		},
 		Blocks: map[string]schema.Block{
 			"child": schema.SetNestedBlock{
@@ -119,7 +123,7 @@ func (d *AciRestManagedDataSource) Read(ctx context.Context, req datasource.Read
 		return
 	}
 
-	requestData := DoRestRequest(ctx, &resp.Diagnostics, d.client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children", data.Dn.ValueString()), "GET", nil)
+	requestData := DoRestRequestEscapeHtml(ctx, &resp.Diagnostics, d.client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children", data.Dn.ValueString()), "GET", nil, data.EscapeHtml.ValueBool())
 
 	if resp.Diagnostics.HasError() {
 		return

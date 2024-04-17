@@ -3,6 +3,7 @@ package provider
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
@@ -41,14 +42,19 @@ func CheckDn(ctx context.Context, client *client.Client, dn string, diags *diag.
 	}
 }
 
-func DoRestRequest(ctx context.Context, diags *diag.Diagnostics, client *client.Client, path, method string, payload *container.Container) *container.Container {
+func DoRestRequestEscapeHtml(ctx context.Context, diags *diag.Diagnostics, client *client.Client, path, method string, payload *container.Container, escapeHtml bool) *container.Container {
 
 	// Ensure path starts with a slash to assure signature is created correctly
 	if !strings.HasPrefix("/", path) {
 		path = fmt.Sprintf("/%s", path)
 	}
-
-	restRequest, err := client.MakeRestRequest(method, path, payload, true)
+	var restRequest *http.Request
+	var err error
+	if escapeHtml {
+		restRequest, err = client.MakeRestRequest(method, path, payload, true)
+	} else {
+		restRequest, err = client.MakeRestRequestRaw(method, path, payload.EncodeJSON(), true)
+	}
 	if err != nil {
 		diags.AddError(
 			"Creation of rest request failed",
@@ -78,6 +84,10 @@ func DoRestRequest(ctx context.Context, diags *diag.Diagnostics, client *client.
 	}
 
 	return cont
+}
+
+func DoRestRequest(ctx context.Context, diags *diag.Diagnostics, client *client.Client, path, method string, payload *container.Container) *container.Container {
+	return DoRestRequestEscapeHtml(ctx, diags, client, path, method, payload, true)
 }
 
 func GetDeleteJsonPayload(ctx context.Context, diags *diag.Diagnostics, className, dn string) *container.Container {

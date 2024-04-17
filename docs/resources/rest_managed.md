@@ -81,9 +81,12 @@ resource "aci_rest_managed" "example_tenant_with_child" {
 
 * `annotation` - (string) Annotation for the class object that is being created.
   - Default: `orchestrator:terraform`
-* `content` (map) Map of key-value pairs those needed to be passed to the Model object as parameters. Make sure the key name matches the name with the object parameter in ACI.
+* `content` - (map) Map of key-value pairs those needed to be passed to the Model object as parameters. Make sure the key name matches the name with the object parameter in ACI.
 
   !> The annotation property is not allowed to be set in the content map of the resource.
+
+* `escape_html` - (Boolean) Enable escaping of HTML characters when encoding the JSON payload.
+  - Default: `true`
 
 * `child` - (list) A list of child objects.
 
@@ -94,7 +97,7 @@ resource "aci_rest_managed" "example_tenant_with_child" {
 
   #### Optional ###
 
-  * `content` (map) Map of key-value pairs which represents the attributes for the child object. When annotation is provided in the content of the child it will take precedence over the annotation set at the parent level.
+  * `content` - (map) Map of key-value pairs which represents the attributes for the child object. When annotation is provided in the content of the child it will take precedence over the annotation set at the parent level.
 
 ## Importing ##
 
