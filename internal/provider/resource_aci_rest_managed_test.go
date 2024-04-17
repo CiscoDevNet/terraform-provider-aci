@@ -77,7 +77,7 @@ func TestAccAciRestManaged_connPref(t *testing.T) {
 	})
 }
 
-func testAccAciRestManaged_escapeHtml(t *testing.T) {
+func TestAccAciRestManaged_escapeHtml(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -85,11 +85,11 @@ func testAccAciRestManaged_escapeHtml(t *testing.T) {
 			{
 				Config: testAccAciRestManagedConfig_escapeHtml(),
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_rest_managed.testConnPref", "content.message", "<<< WARNING >>>  VERIFYING THE CONVERSION OF HTML CHARACTERS."),
-					resource.TestCheckResourceAttr("aci_rest_managed.testConnPref", "escape_html", "false"),
-					resource.TestCheckResourceAttr("aci_rest_managed.testConnPref", "dn", "uni/userext/preloginbanner"),
-					resource.TestCheckResourceAttr("aci_rest_managed.testConnPref", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_rest_managed.testConnPref", "class_name", "aaaPreLoginBanner"),
+					resource.TestCheckResourceAttr("aci_rest_managed.aaaPreLoginBanner", "content.message", "<<< WARNING >>>  VERIFYING THE CONVERSION OF HTML CHARACTERS."),
+					resource.TestCheckResourceAttr("aci_rest_managed.aaaPreLoginBanner", "escape_html", "false"),
+					resource.TestCheckResourceAttr("aci_rest_managed.aaaPreLoginBanner", "dn", "uni/userext/preloginbanner"),
+					resource.TestCheckResourceAttr("aci_rest_managed.aaaPreLoginBanner", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_rest_managed.aaaPreLoginBanner", "class_name", "aaaPreLoginBanner"),
 				),
 			},
 		},
@@ -1102,9 +1102,7 @@ func testAccAciRestManagedConfig_escapeHtml() string {
 		class_name  = "aaaPreLoginBanner"
 		escape_html = false
 		content = {
-			message = <<-EOT
-		<<< WARNING >>>  VERIFYING THE CONVERSION OF HTML CHARACTERS.
-			EOT
+			message = "<<< WARNING >>>  VERIFYING THE CONVERSION OF HTML CHARACTERS."
 		}
 	}
 	`
