@@ -38,4 +38,4 @@ parents:
   - class_name: "mgmtInstP"
     parent_dependency: ""
     parent_dn: "aci_external_management_network_instance_profile.test.id"
-    class_in_parent: true
+    class_in_parent: false

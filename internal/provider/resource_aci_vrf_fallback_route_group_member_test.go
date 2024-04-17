@@ -19,7 +19,7 @@ func TestAccResourceFvFBRMemberWithFvFBRGroup(t *testing.T) {
 			// Create with minimum config and verify default APIC values
 			{
 				Config:             testConfigFvFBRMemberMinDependencyWithFvFBRGroup,
-				ExpectNonEmptyPlan: true,
+				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "fallback_member", "2.2.2.3"),
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "annotation", "orchestrator:terraform"),
@@ -31,7 +31,7 @@ func TestAccResourceFvFBRMemberWithFvFBRGroup(t *testing.T) {
 			// Update with all config and verify default APIC values
 			{
 				Config:             testConfigFvFBRMemberAllDependencyWithFvFBRGroup,
-				ExpectNonEmptyPlan: true,
+				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "fallback_member", "2.2.2.3"),
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "annotation", "annotation"),
@@ -43,7 +43,7 @@ func TestAccResourceFvFBRMemberWithFvFBRGroup(t *testing.T) {
 			// Update with minimum config and verify config is unchanged
 			{
 				Config:             testConfigFvFBRMemberMinDependencyWithFvFBRGroup,
-				ExpectNonEmptyPlan: true,
+				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "fallback_member", "2.2.2.3"),
 				),
@@ -51,7 +51,7 @@ func TestAccResourceFvFBRMemberWithFvFBRGroup(t *testing.T) {
 			// Update with empty strings config or default value
 			{
 				Config:             testConfigFvFBRMemberResetDependencyWithFvFBRGroup,
-				ExpectNonEmptyPlan: true,
+				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "fallback_member", "2.2.2.3"),
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "annotation", "orchestrator:terraform"),
@@ -76,7 +76,7 @@ func TestAccResourceFvFBRMemberWithFvFBRGroup(t *testing.T) {
 			// Update with children
 			{
 				Config:             testConfigFvFBRMemberChildrenDependencyWithFvFBRGroup,
-				ExpectNonEmptyPlan: true,
+				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "fallback_member", "2.2.2.3"),
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "annotation", "orchestrator:terraform"),
@@ -117,7 +117,7 @@ func TestAccResourceFvFBRMemberWithFvFBRGroup(t *testing.T) {
 			// Update with children removed from config
 			{
 				Config:             testConfigFvFBRMemberChildrenRemoveFromConfigDependencyWithFvFBRGroup,
-				ExpectNonEmptyPlan: true,
+				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "annotations.0.value", "value_1"),
@@ -134,7 +134,7 @@ func TestAccResourceFvFBRMemberWithFvFBRGroup(t *testing.T) {
 			// Update with children first child removed
 			{
 				Config:             testConfigFvFBRMemberChildrenRemoveOneDependencyWithFvFBRGroup,
-				ExpectNonEmptyPlan: true,
+				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "annotations.0.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "annotations.0.value", "value_2"),
@@ -147,7 +147,7 @@ func TestAccResourceFvFBRMemberWithFvFBRGroup(t *testing.T) {
 			// Update with all children removed
 			{
 				Config:             testConfigFvFBRMemberChildrenRemoveAllDependencyWithFvFBRGroup,
-				ExpectNonEmptyPlan: true,
+				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "annotations.#", "0"),
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "tags.#", "0"),
