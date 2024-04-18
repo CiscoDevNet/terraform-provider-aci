@@ -456,14 +456,10 @@ func getAndSetL3extProvLblAttributes(ctx context.Context, diags *diag.Diagnostic
 					}
 				}
 			}
-			if len(TagAnnotationL3extProvLblList) > 0 {
-				tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationL3extProvLblList)
-				data.TagAnnotation = tagAnnotationSet
-			}
-			if len(TagTagL3extProvLblList) > 0 {
-				tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagL3extProvLblList)
-				data.TagTag = tagTagSet
-			}
+			tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationL3extProvLblList)
+			data.TagAnnotation = tagAnnotationSet
+			tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagL3extProvLblList)
+			data.TagTag = tagTagSet
 		} else {
 			diags.AddError(
 				"too many results in response",
