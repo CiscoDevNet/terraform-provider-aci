@@ -4,15 +4,15 @@
 # More details can be found in the [README](https://github.com/CiscoDevNet/terraform-provider-aci/blob/master/README.md).
 subcategory: "L3Out"
 layout: "aci"
-page_title: "ACI: aci_l3out_fallback_route_group"
-sidebar_current: "docs-aci-resource-aci_l3out_fallback_route_group"
+page_title: "ACI: aci_relation_to_fallback_route_group"
+sidebar_current: "docs-aci-resource-aci_relation_to_fallback_route_group"
 description: |-
-  Manages ACI L3out Fallback Route Group
+  Manages ACI Relation To Fallback Route Group
 ---
 
-# aci_l3out_fallback_route_group #
+# aci_relation_to_fallback_route_group #
 
-Manages ACI L3out Fallback Route Group
+Manages ACI Relation To Fallback Route Group
 
 
 
@@ -30,23 +30,23 @@ Manages ACI L3out Fallback Route Group
 
 ## Example Usage ##
 
-The configuration snippet below creates a L3out Fallback Route Group with only required attributes.
+The configuration snippet below creates a Relation To Fallback Route Group with only required attributes.
 
 ```hcl
 
-resource "aci_l3out_fallback_route_group" "example_l3_outside" {
+resource "aci_relation_to_fallback_route_group" "example_l3_outside" {
   parent_dn = aci_l3_outside.example.id
   target_dn = aci_vrf_fallback_route_group.test.id
 }
 
 ```
-The configuration snippet below shows all possible attributes of the L3out Fallback Route Group.
+The configuration snippet below shows all possible attributes of the Relation To Fallback Route Group.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
 ```hcl
 
-resource "aci_l3out_fallback_route_group" "full_example_l3_outside" {
+resource "aci_relation_to_fallback_route_group" "full_example_l3_outside" {
   parent_dn  = aci_l3_outside.example.id
   annotation = "annotation"
   target_dn  = aci_vrf_fallback_route_group.test.id
@@ -66,7 +66,7 @@ resource "aci_l3out_fallback_route_group" "full_example_l3_outside" {
 
 ```
 
-All examples for the L3out Fallback Route Group resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/resources/aci_l3out_fallback_route_group) folder.
+All examples for the Relation To Fallback Route Group resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/resources/aci_relation_to_fallback_route_group) folder.
 
 ## Schema ##
 
@@ -78,11 +78,11 @@ All examples for the L3out Fallback Route Group resource can be found in the [ex
 
 ### Read-Only ###
 
-* `id` - (string) The distinguished name (DN) of the L3out Fallback Route Group object.
+* `id` - (string) The distinguished name (DN) of the Relation To Fallback Route Group object.
 
 ### Optional ###
   
-* `annotation` (annotation) - (string) The annotation of the L3out Fallback Route Group object.
+* `annotation` (annotation) - (string) The annotation of the Relation To Fallback Route Group object.
   - Default: `orchestrator:terraform`
 
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
@@ -101,18 +101,18 @@ All examples for the L3out Fallback Route Group resource can be found in the [ex
 
 ## Importing
 
-An existing L3out Fallback Route Group can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
+An existing Relation To Fallback Route Group can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_l3out_fallback_route_group.example_l3_outside uni/tn-{name}/out-{name}/rsoutToFBRGroup-[{tDn}]
+terraform import aci_relation_to_fallback_route_group.example_l3_outside uni/tn-{name}/out-{name}/rsoutToFBRGroup-[{tDn}]
 ```
 
-Starting in Terraform version 1.5, an existing L3out Fallback Route Group can be imported
+Starting in Terraform version 1.5, an existing Relation To Fallback Route Group can be imported
 using [import blocks](https://developer.hashicorp.com/terraform/language/import) via the following configuration:
 
 ```
 import {
   id = "uni/tn-{name}/out-{name}/rsoutToFBRGroup-[{tDn}]"
-  to = aci_l3out_fallback_route_group.example_l3_outside
+  to = aci_relation_to_fallback_route_group.example_l3_outside
 }
 ```

@@ -28,21 +28,21 @@ type L3extRsOutToFBRGroupDataSource struct {
 }
 
 func (d *L3extRsOutToFBRGroupDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
-	tflog.Debug(ctx, "Start metadata of datasource: aci_l3out_fallback_route_group")
-	resp.TypeName = req.ProviderTypeName + "_l3out_fallback_route_group"
-	tflog.Debug(ctx, "End metadata of datasource: aci_l3out_fallback_route_group")
+	tflog.Debug(ctx, "Start metadata of datasource: aci_relation_to_fallback_route_group")
+	resp.TypeName = req.ProviderTypeName + "_relation_to_fallback_route_group"
+	tflog.Debug(ctx, "End metadata of datasource: aci_relation_to_fallback_route_group")
 }
 
 func (d *L3extRsOutToFBRGroupDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
-	tflog.Debug(ctx, "Start schema of datasource: aci_l3out_fallback_route_group")
+	tflog.Debug(ctx, "Start schema of datasource: aci_relation_to_fallback_route_group")
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "The l3out_fallback_route_group datasource for the 'l3extRsOutToFBRGroup' class",
+		MarkdownDescription: "The relation_to_fallback_route_group datasource for the 'l3extRsOutToFBRGroup' class",
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the L3out Fallback Route Group object.",
+				MarkdownDescription: "The distinguished name (DN) of the Relation To Fallback Route Group object.",
 			},
 			"parent_dn": schema.StringAttribute{
 				Required:            true,
@@ -50,7 +50,7 @@ func (d *L3extRsOutToFBRGroupDataSource) Schema(ctx context.Context, req datasou
 			},
 			"annotation": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The annotation of the L3out Fallback Route Group object.`,
+				MarkdownDescription: `The annotation of the Relation To Fallback Route Group object.`,
 			},
 			"target_dn": schema.StringAttribute{
 				Required:            true,
@@ -90,11 +90,11 @@ func (d *L3extRsOutToFBRGroupDataSource) Schema(ctx context.Context, req datasou
 			},
 		},
 	}
-	tflog.Debug(ctx, "End schema of datasource: aci_l3out_fallback_route_group")
+	tflog.Debug(ctx, "End schema of datasource: aci_relation_to_fallback_route_group")
 }
 
 func (d *L3extRsOutToFBRGroupDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	tflog.Debug(ctx, "Start configure of datasource: aci_l3out_fallback_route_group")
+	tflog.Debug(ctx, "Start configure of datasource: aci_relation_to_fallback_route_group")
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
 		return
@@ -112,11 +112,11 @@ func (d *L3extRsOutToFBRGroupDataSource) Configure(ctx context.Context, req data
 	}
 
 	d.client = client
-	tflog.Debug(ctx, "End configure of datasource: aci_l3out_fallback_route_group")
+	tflog.Debug(ctx, "End configure of datasource: aci_relation_to_fallback_route_group")
 }
 
 func (d *L3extRsOutToFBRGroupDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	tflog.Debug(ctx, "Start read of datasource: aci_l3out_fallback_route_group")
+	tflog.Debug(ctx, "Start read of datasource: aci_relation_to_fallback_route_group")
 	var data *L3extRsOutToFBRGroupResourceModel
 
 	// Read Terraform configuration data into the model
@@ -131,19 +131,19 @@ func (d *L3extRsOutToFBRGroupDataSource) Read(ctx context.Context, req datasourc
 	// Create a copy of the Id for when not found during getAndSetL3extRsOutToFBRGroupAttributes
 	cachedId := data.Id.ValueString()
 
-	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_l3out_fallback_route_group with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_relation_to_fallback_route_group with id '%s'", data.Id.ValueString()))
 
 	getAndSetL3extRsOutToFBRGroupAttributes(ctx, &resp.Diagnostics, d.client, data)
 
 	if data.Id.IsNull() {
 		resp.Diagnostics.AddError(
-			"Failed to read aci_l3out_fallback_route_group data source",
-			fmt.Sprintf("The aci_l3out_fallback_route_group data source with id '%s' has not been found", cachedId),
+			"Failed to read aci_relation_to_fallback_route_group data source",
+			fmt.Sprintf("The aci_relation_to_fallback_route_group data source with id '%s' has not been found", cachedId),
 		)
 		return
 	}
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_l3out_fallback_route_group with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_relation_to_fallback_route_group with id '%s'", data.Id.ValueString()))
 }

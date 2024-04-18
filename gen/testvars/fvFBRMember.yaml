@@ -27,17 +27,17 @@ children:
   annotations:
     - key: "key_0"
       value: "value_1"
-
+      
     - key: "key_1"
       value: "value_2"
-
+      
   tags:
     - key: "key_0"
       value: "value_1"
-
+      
     - key: "key_1"
       value: "value_2"
-
+      
 parents:
   - class_name: "fvFBRGroup"
     parent_dependency: "fvCtx"
