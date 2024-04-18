@@ -89,6 +89,7 @@ var templateFuncs = template.FuncMap{
 	"createTestValue":              func(val string) string { return fmt.Sprintf("test_%s", val) },
 	"createNonExistingValue":       func(val string) string { return fmt.Sprintf("non_existing_%s", val) },
 	"getParentTestDependencies":    GetParentTestDependencies,
+	"getTargetTestDependencies":    GetTargetTestDependencies,
 	"fromInterfacesToString":       FromInterfacesToString,
 	"containsNoneAttributeValue":   ContainsNoneAttributeValue,
 	"definedInMap":                 DefinedInMap,
@@ -99,6 +100,7 @@ var templateFuncs = template.FuncMap{
 	"getResourceName":              GetResourceName,
 	"getResourceNameAsDescription": GetResourceNameAsDescription,
 	"capitalize":                   Capitalize,
+	"getTestConfigVariableName":    GetTestConfigVariableName,
 	"getDevnetDocForClass":         GetDevnetDocForClass,
 }
 
@@ -309,6 +311,20 @@ func getTestVars(model Model) (map[string]interface{}, error) {
 	// Adds the resource name and resource class name to the testVars map to be used in test template rendering
 	testVarsMap["resourceName"] = model.ResourceName
 	testVarsMap["resourceClassName"] = model.ResourceClassName
+	testVarsMap["targetResourceName"] = model.TargetResourceName
+	testVarsMap["targetResourceClassName"] = model.TargetResourceClassName
+	testVarsMap["targetResourceParentClassName"] = ""
+	testVarsMap["targetDn"] = model.TargetDn
+	targets, targetsOk := testVarsMap["targets"]
+	if targetsOk && targets != nil {
+		if targets.([]interface{})[0].(map[interface{}]interface{})["parent_dependency"] != nil {
+			testVarsMap["targetResourceParentClassName"] = targets.([]interface{})[0].(map[interface{}]interface{})["parent_dependency"].(string)
+		}
+
+		if targets.([]interface{})[0].(map[interface{}]interface{})["target_dn"] != "" {
+			testVarsMap["targetDn"] = targets.([]interface{})[0].(map[interface{}]interface{})["target_dn"].(string)
+		}
+	}
 	return testVarsMap, nil
 }
 
@@ -561,13 +577,13 @@ func main() {
 
 			// Render the testvars file for the resource
 			// First generate run would not mean the file is correct from beginning since some testvars would need to be manually overwritten in the properties definitions YAML file
+			SetModelTargetValues(model.PkgName, &model, classModels, definitions)
 			renderTemplate("testvars.yaml.tmpl", fmt.Sprintf("%s.yaml", model.PkgName), testVarsPath, model)
 			testVarsMap, err := getTestVars(model)
 			if err != nil {
 				panic(err)
 			}
 			model.TestVars = testVarsMap
-
 			renderTemplate("resource.go.tmpl", fmt.Sprintf("resource_%s_%s.go", providerName, model.ResourceName), providerPath, model)
 			renderTemplate("datasource.go.tmpl", fmt.Sprintf("data_source_%s_%s.go", providerName, model.ResourceName), providerPath, model)
 
@@ -588,7 +604,6 @@ func main() {
 			// Leverage the hclwrite package to format the example code
 			model.ExampleDataSource = string(hclwrite.Format(getExampleCode(fmt.Sprintf("%s/%s_%s/data-source.tf", datasourcesExamplesPath, providerName, model.ResourceName))))
 			renderTemplate("datasource.md.tmpl", fmt.Sprintf("%s.md", model.ResourceName), datasourcesDocsPath, model)
-
 			renderTemplate("resource_test.go.tmpl", fmt.Sprintf("resource_%s_%s_test.go", providerName, model.ResourceName), providerPath, model)
 			renderTemplate("datasource_test.go.tmpl", fmt.Sprintf("data_source_%s_%s_test.go", providerName, model.ResourceName), providerPath, model)
 
@@ -638,6 +653,11 @@ type Model struct {
 	DocumentationDnFormats    []string
 	DocumentationParentDns    []string
 	DocumentationExamples     []string
+	TargetResourceClassName   string
+	TargetResourceName        string
+	TargetDn                  string
+	TargetProperties          map[string]Property
+	TargetNamedProperties     map[string]Property
 	DocumentationChildren     []string
 	ResourceNotes             []string
 	ResourceWarnings          []string
@@ -1300,6 +1320,51 @@ func GetParentTestDependencies(classPkgName string, index int, definitions Defin
 	return map[string]interface{}{"parent_dependency": parentDependency, "class_in_parent": classInParent}
 }
 
+func GetTargetTestDependencies(classPkgName string, index int, definitions Definitions) map[string]interface{} {
+	parentDependency := ""
+	grandParentDependency := ""
+	parentDependencyDn := ""
+	targetDn := ""
+	parentClassName := ""
+	if classDetails, ok := definitions.Properties[classPkgName]; ok {
+		for key, value := range classDetails.(map[interface{}]interface{}) {
+			if key.(string) == "targets" {
+				if len(value.([]interface{})) > index {
+					targetMap := value.([]interface{})[index].(map[interface{}]interface{})
+
+					if pd, ok := targetMap["parent_dependency"]; ok {
+						parentDependency = pd.(string)
+					}
+
+					if gpd, ok := targetMap["grandparent_class_name"]; ok {
+						grandParentDependency = gpd.(string)
+					}
+
+					if pd_dn, ok := targetMap["parent_dependency_dn"]; ok {
+						parentDependencyDn = pd_dn.(string)
+					}
+
+					if doc_dn, ok := targetMap["target_dn"]; ok {
+						targetDn = doc_dn.(string)
+					}
+
+					if pcn, ok := targetMap["class_name"]; ok {
+						parentClassName = pcn.(string)
+					}
+				}
+			}
+		}
+	}
+
+	return map[string]interface{}{
+		"parent_dependency":      parentDependency,
+		"parent_dependency_dn":   parentDependencyDn,
+		"grandparent_class_name": grandParentDependency,
+		"target_dn":              targetDn,
+		"parent_class_name":      parentClassName,
+	}
+}
+
 // Determine if possible parent classes in terraform configuration should be overwritten by contained_by from the classes.yaml file
 func GetOverwriteContainedBy(classDetails interface{}, classPkgName string, definitions Definitions) map[string]interface{} {
 	containedBy := make(map[string]interface{})
@@ -1344,6 +1409,14 @@ func GetOverwriteDnFormats(dnFormats []interface{}, classPkgName string, definit
 	return dnFormats
 }
 
+// GetTestConfigVariableName generates a test configuration variable name based on the provided class name, middle string, and parent class name.
+func GetTestConfigVariableName(className string, midString string, parentClassName string) string {
+	if className != "" {
+		return fmt.Sprintf("testConfig%s%s%s", className, midString, Capitalize(parentClassName))
+	}
+	return ""
+}
+
 // Determine if possible dn formats in terraform documentation should be overwritten by dn formats from the classes.yaml file
 func GetOverwriteExampleClasses(classPkgName string, definitions Definitions) []interface{} {
 	overwriteExampleClasses := []interface{}{}
@@ -1355,6 +1428,16 @@ func GetOverwriteExampleClasses(classPkgName string, definitions Definitions) []
 		}
 	}
 	return overwriteExampleClasses
+}
+
+func SetModelTargetValues(PkgName string, model *Model, classModels map[string]Model, definitions Definitions) {
+	targetTestDependencies := GetTargetTestDependencies(model.PkgName, 0, definitions)
+	parentClassName := targetTestDependencies["parent_class_name"].(string)
+	model.TargetProperties = classModels[parentClassName].Properties
+	model.TargetNamedProperties = classModels[parentClassName].NamedProperties
+	model.TargetResourceClassName = classModels[parentClassName].PkgName
+	model.TargetDn = targetTestDependencies["target_dn"].(string)
+	model.TargetResourceName = GetResourceName(model.TargetResourceClassName, definitions)
 }
 
 // Set variables that are used during the rendering of the example and documentation templates

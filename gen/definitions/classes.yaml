@@ -152,3 +152,9 @@ fvFBRMember:
   sub_category: "Networking"
   resource_notes:
     - "This resource should not be used in combination with the `vrf_fallback_route_group` nested attributes of other resources for the same object. Doing so will result in unexpected behaviour."
+
+l3extRsOutToFBRGroup:
+  resource_name: "relation_to_fallback_route_group"
+  ui_locations:
+    - "Tenants -> Networking -> L3Outs -> Policy -> Main -> Fallback Route Group"
+  sub_category: "L3Out"
