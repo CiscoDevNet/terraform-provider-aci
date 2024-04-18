@@ -197,7 +197,7 @@ fvFBRMember:
     - class_name: "fvFBRGroup"
       parent_dependency: "fvCtx"
       parent_dn: "aci_vrf_fallback_route_group.test.id"
-      class_in_parent: true
+      class_in_parent: false
 
 l3extRsOutToFBRGroup:
   documentation:
