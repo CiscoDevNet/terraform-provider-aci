@@ -128,11 +128,6 @@ PreCheck: func() {
 				{{- end }}
 			{{- end }}
 		{{- end}}
-		{{- range $key, $value := $.default}}{{$contains := definedInMap $key $.resource_required}}
-			{{- if not $contains}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
-				{{- end}}
-		{{- end}}
 	{{- if $.resource_required }}
 		{{- range $key, $value := $.default}}{{$contains := definedInMap $key $.resource_required}}
 			{{- if not $contains}}
@@ -668,6 +663,7 @@ const testConfig{{$.resourceClassName}}MinDependencyWith{{capitalize .class_name
 resource "aci_{{$.resourceName}}" "test" {
   {{- if ne .parent_dn ""}}
   parent_dn = {{.parent_dn}}
+  {{- end}}
   		{{- range $key, $value := $.resource_required}}
   			{{- if eq $key "target_dn" }}
   {{$key}} = {{$value}}
@@ -675,7 +671,6 @@ resource "aci_{{$.resourceName}}" "test" {
   {{$key}} = "{{$value}}"
   			{{- end }}
   		{{- end}}
-		{{- end}}
 }
 `
 
@@ -694,13 +689,8 @@ resource "aci_{{$.resourceName}}" "test" {
 			{{- end}}
 		{{- end}}
 		{{- range $key, $value := $.all}}
-  {{- if or (contains $value "<<EOT -----BEGIN_CERTIFICATE-----") ( contains $value "<<EOT -----BEGIN_PRIVATE_KEY-----") }}
-  {{$key}} = {{ $value | spaceToNewLine }}
-  {{- else}}
-    {{- if not (definedInList $.exclude_attributes $key) }}
   {{$key}} = "{{$value}}"
   {{- end}}
-{{- end}}
 }
 `
 
@@ -719,10 +709,6 @@ resource "aci_{{$.resourceName}}" "test" {
 			{{- end}}
 		{{- end}}
 		{{- range $key, $value := $.default}}
-		{{- if or (contains $value "<<EOT -----BEGIN_CERTIFICATE-----") ( contains $value "<<EOT -----BEGIN_PRIVATE_KEY-----") }}
-  {{$key}} = {{ $value | spaceToNewLine }}
-  {{- else}}
-    {{- if not (definedInList $.exclude_attributes $key) }}
   {{$key}} = "{{$value}}"
 {{- end}}
 }
@@ -776,7 +762,7 @@ const testConfig{{$.resourceClassName}}ChildrenRemoveOneDependencyWith{{capitali
 resource "aci_{{$.resourceName}}" "test" {
 {{- if ne .parent_dn ""}}
   parent_dn = {{.parent_dn}}
-  {{- end}}
+{{- end}}
     	{{- range $key, $value := $.resource_required}}
   			{{- if eq $key "target_dn" }}
   {{$key}} = {{$value}}
@@ -792,11 +778,11 @@ resource "aci_{{$.resourceName}}" "test" {
 				{{- end}}
 			{{- else}}
   {{$key}} = [ {{$child := index $value 1 }}
-	{
+    {
 	  		{{- range $child_key, $child_value := $child}}
 	  {{$child_key}} = "{{$child_value}}"
 			{{- end}}
-	},
+    },
   ]
 			{{- end}}
 		{{- end}}
@@ -840,8 +826,7 @@ resource "aci_{{$.resourceName}}" "test" {
 
 const testConfig{{.resourceClassName}}All = `
 resource "aci_{{$.resourceName}}" "test" {
-{{- range $key, $value := $.resource_required}}
-  {{- $contains := definedInMap $key $.all}}
+{{- range $key, $value := $.resource_required}}{{$contains := definedInMap $key $.all}}
   {{- if not $contains}}
   {{$key}} = "{{$value}}"
   {{- end}}
@@ -854,8 +839,7 @@ resource "aci_{{$.resourceName}}" "test" {
 
 const testConfig{{.resourceClassName}}Reset = `
 resource "aci_{{$.resourceName}}" "test" {
-{{- range $key, $value := $.resource_required}}
-  {{- $contains := definedInMap $key $.default}}
+{{- range $key, $value := $.resource_required}}{{$contains := definedInMap $key $.default}}
   {{- if not $contains}}
   {{$key}} = "{{$value}}"
   {{- end}}
@@ -900,8 +884,7 @@ resource "aci_{{$.resourceName}}" "test" {
   {{$key}} = "{{$value}}"
 {{- end}}
 {{- range $key, $value := $.children}}
-  {{$key}} = [
-    {{- $child := index $value 1}}
+  {{$key}} = [ {{$child := index $value 1 }}
     {
       {{- range $child_key, $child_value := $child}}
       {{$child_key}} = "{{$child_value}}"

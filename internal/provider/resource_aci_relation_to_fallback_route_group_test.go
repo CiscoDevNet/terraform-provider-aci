@@ -13,7 +13,9 @@ import (
 func TestAccResourceL3extRsOutToFBRGroupWithL3extOut(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck: func() {
+			testAccPreCheck(t, "apic")
+		},
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -136,6 +138,9 @@ func TestAccResourceL3extRsOutToFBRGroupWithL3extOut(t *testing.T) {
 				),
 			},
 		},
+		CheckDestroy: resource.ComposeAggregateTestCheckFunc(
+			testCheckResourceDestroy,
+		),
 	})
 }
 
@@ -173,25 +178,25 @@ resource "aci_relation_to_fallback_route_group" "test" {
   parent_dn = aci_l3_outside.test.id
   target_dn = aci_vrf_fallback_route_group.test.id
   annotations = [
-	{
-	  key = "key_0"
-	  value = "value_1"
-	},
-	{
-	  key = "key_1"
-	  value = "value_2"
-	},
-  ]
+    {
+      key = "key_0"
+      value = "value_1"
+    },
+    {
+      key = "key_1"
+      value = "value_2"
+    },
+   ]
   tags = [
-	{
-	  key = "key_0"
-	  value = "value_1"
-	},
-	{
-	  key = "key_1"
-	  value = "value_2"
-	},
-  ]
+    {
+      key = "key_0"
+      value = "value_1"
+    },
+    {
+      key = "key_1"
+      value = "value_2"
+    },
+   ]
 }
 `
 
@@ -207,16 +212,16 @@ resource "aci_relation_to_fallback_route_group" "test" {
   parent_dn = aci_l3_outside.test.id
   target_dn = aci_vrf_fallback_route_group.test.id
   annotations = [ 
-	{
+    {
 	  key = "key_1"
 	  value = "value_2"
-	},
+    },
   ]
   tags = [ 
-	{
+    {
 	  key = "key_1"
 	  value = "value_2"
-	},
+    },
   ]
 }
 `

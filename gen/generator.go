@@ -222,6 +222,9 @@ func LookupTestValue(classPkgName, propertyName string, testVars map[string]inte
 			if strVal, ok := val.(string); ok {
 				if isMultiLine(propertyName, classPkgName, definitions) {
 					lookupValue = processMultiLine(strVal)
+				} else if strings.Contains(strVal, "_dn") {
+					fmt.Println(propertyName, strVal)
+					lookupValue = fmt.Sprintf(`%s`, strVal)
 				} else {
 					lookupValue = fmt.Sprintf(`"%s"`, strVal)
 				}
@@ -855,48 +858,8 @@ type Model struct {
 	DnFormats                   []interface{}
 	TargetProperties            map[string]Property
 	TargetNamedProperties       map[string]Property
-	Properties                  map[string]Property
-	NamedProperties             map[string]Property
-	Children                    map[string]Model
-	Configuration               map[string]interface{}
-	TestVars                    map[string]interface{}
-	Definitions                 Definitions
 	ResourceNameAsDescription   string
-	PkgName                     string
-	Label                       string
-	Name                        string
-	RnFormat                    string
-	RnPrepend                   string
-	Comment                     string
-	ResourceClassName           string
-	ResourceName                string
-	ResourceNameDocReference    string
-	ChildResourceName           string
-	ExampleDataSource           string
-	ExampleResource             string
-	ExampleResourceFull         string
-	SubCategory                 string
-	RelationshipClass           string
-	RelationshipResourceName    string
-	Versions                    string
 	TestType                    []TestClassification
-	ChildClasses                []string
-	ContainedBy                 []string
-	Contains                    []string
-	DocumentationDnFormats      []string
-	DocumentationParentDns      []string
-	DocumentationExamples       []string
-	DocumentationChildren       []string
-	ResourceNotes               []string
-	ResourceWarnings            []string
-	DatasourceNotes             []string
-	DatasourceWarnings          []string
-	Parents                     []string
-	UiLocations                 []string
-	RnFormatMap                 map[string]string
-	RnFormatMapWithWrapperClass map[string]string
-	IdentifiedBy                []interface{}
-	DnFormats                   []interface{}
 	PlatformFlavors             map[string][]interface{}
 	MultiParentFormats          map[string]MultiParentFormat
 	MultiParentFormatsTestTypes map[string]string

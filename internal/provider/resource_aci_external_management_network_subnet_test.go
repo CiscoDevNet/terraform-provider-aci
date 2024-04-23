@@ -228,18 +228,18 @@ const testConfigMgmtSubnetChildrenRemoveOneDependencyWithMgmtInstP = testConfigM
 resource "aci_external_management_network_subnet" "test" {
   parent_dn = aci_external_management_network_instance_profile.test.id
   ip = "1.1.1.0/24"
-  annotations = [
-  {
-	key = "key_1"
-	value = "value_2"
-  },
- ]
-  tags = [
-  {
-	key = "key_1"
-	value = "value_2"
-  },
- ]
+  annotations = [ 
+    {
+	  key = "key_1"
+	  value = "value_2"
+    },
+  ]
+  tags = [ 
+    {
+	  key = "key_1"
+	  value = "value_2"
+    },
+  ]
 }
 `
 

@@ -98,6 +98,7 @@ func (r *L3extRsOutToFBRGroupResource) Schema(ctx context.Context, req resource.
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
 				MarkdownDescription: `The annotation of the Relation To Fallback Route Group object.`,
@@ -106,6 +107,7 @@ func (r *L3extRsOutToFBRGroupResource) Schema(ctx context.Context, req resource.
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
 				MarkdownDescription: `The distinguished name of the VRF Fallback Route Group object.`,
@@ -355,6 +357,12 @@ func getAndSetL3extRsOutToFBRGroupAttributes(ctx context.Context, diags *diag.Di
 				if attributeName == "tDn" {
 					data.TDn = basetypes.NewStringValue(attributeValue.(string))
 				}
+			}
+			if data.Annotation.IsUnknown() {
+				data.Annotation = types.StringNull()
+			}
+			if data.TDn.IsUnknown() {
+				data.TDn = types.StringNull()
 			}
 			TagAnnotationL3extRsOutToFBRGroupList := make([]TagAnnotationL3extRsOutToFBRGroupResourceModel, 0)
 			TagTagL3extRsOutToFBRGroupList := make([]TagTagL3extRsOutToFBRGroupResourceModel, 0)

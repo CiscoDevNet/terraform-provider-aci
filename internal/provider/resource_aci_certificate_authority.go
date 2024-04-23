@@ -488,14 +488,10 @@ func getAndSetPkiTPAttributes(ctx context.Context, diags *diag.Diagnostics, clie
 					}
 				}
 			}
-			if len(TagAnnotationPkiTPList) > 0 {
-				tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationPkiTPList)
-				data.TagAnnotation = tagAnnotationSet
-			}
-			if len(TagTagPkiTPList) > 0 {
-				tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagPkiTPList)
-				data.TagTag = tagTagSet
-			}
+			tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationPkiTPList)
+			data.TagAnnotation = tagAnnotationSet
+			tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagPkiTPList)
+			data.TagTag = tagTagSet
 		} else {
 			diags.AddError(
 				"too many results in response",

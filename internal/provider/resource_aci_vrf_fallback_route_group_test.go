@@ -274,27 +274,27 @@ const testConfigFvFBRGroupChildrenRemoveOneDependencyWithFvCtx = testConfigFvCtx
 resource "aci_vrf_fallback_route_group" "test" {
   parent_dn = aci_vrf.test.id
   name = "fallback_route_group"
-  annotations = [
-  {
-	key = "key_1"
-	value = "value_2"
-  },
- ]
-  tags = [
-  {
-	key = "key_1"
-	value = "value_2"
-  },
- ]
-  vrf_fallback_route_group_members = [
-  {
-	annotation = "annotation_2"
-	description = "description_2"
-	fallback_member = "2.2.2.3"
-	name = "name_2"
-	name_alias = "name_alias_2"
-  },
- ]
+  annotations = [ 
+    {
+	  key = "key_1"
+	  value = "value_2"
+    },
+  ]
+  tags = [ 
+    {
+	  key = "key_1"
+	  value = "value_2"
+    },
+  ]
+  vrf_fallback_route_group_members = [ 
+    {
+	  annotation = "annotation_2"
+	  description = "description_2"
+	  fallback_member = "2.2.2.3"
+	  name = "name_2"
+	  name_alias = "name_alias_2"
+    },
+  ]
 }
 `
 

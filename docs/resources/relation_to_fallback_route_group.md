@@ -36,7 +36,7 @@ The configuration snippet below creates a Relation To Fallback Route Group with 
 
 resource "aci_relation_to_fallback_route_group" "example_l3_outside" {
   parent_dn = aci_l3_outside.example.id
-  target_dn = aci_vrf_fallback_route_group.test.id
+  target_dn = "aci_vrf_fallback_route_group.test.id"
 }
 
 ```
@@ -49,7 +49,7 @@ The configuration snippet below shows all possible attributes of the Relation To
 resource "aci_relation_to_fallback_route_group" "full_example_l3_outside" {
   parent_dn  = aci_l3_outside.example.id
   annotation = "annotation"
-  target_dn  = aci_vrf_fallback_route_group.test.id
+  target_dn  = "aci_vrf_fallback_route_group.test.id"
   annotations = [
     {
       key   = "key_0"
@@ -81,7 +81,7 @@ All examples for the Relation To Fallback Route Group resource can be found in t
 * `id` - (string) The distinguished name (DN) of the Relation To Fallback Route Group object.
 
 ### Optional ###
-  
+
 * `annotation` (annotation) - (string) The annotation of the Relation To Fallback Route Group object.
   - Default: `orchestrator:terraform`
 
