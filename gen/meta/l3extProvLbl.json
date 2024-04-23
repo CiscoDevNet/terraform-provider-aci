@@ -1,0 +1,1475 @@
+{
+        "l3ext:ProvLbl": {
+            "contains": {
+                "aaa:RbacAnnotation": "",
+                "fault:Delegate": "",
+                "tag:Annotation": "",
+                "tag:Tag": ""
+            },
+            "rnMap": {
+                "annotationKey-": "tag:Annotation",
+                "fd-": "fault:Delegate",
+                "rbacDom-": "aaa:RbacAnnotation",
+                "tagKey-": "tag:Tag"
+            },
+            "identifiedBy": [
+                "name"
+            ],
+            "rnFormat": "provlbl-{name}",
+            "containedBy": {
+                "l3ext:Out": ""
+            },
+            "superClasses": [
+                "l3ext:AProvLbl",
+                "pol:Lbl",
+                "pol:ConsElem",
+                "pol:Def",
+                "pol:Obj",
+                "naming:NamedObject"
+            ],
+            "subClasses": {
+
+            },
+            "relationFrom": {
+
+            },
+            "relationTo": {
+
+            },
+            "dnFormats": [
+                "uni/tn-{name}/out-{name}/provlbl-{name}"
+            ],
+            "writeAccess": [
+                "admin",
+                "tenant-ext-connectivity"
+            ],
+            "readAccess": [
+                "admin",
+                "tenant-ext-connectivity"
+            ],
+            "faults": {
+
+            },
+            "events": {
+                "E4212485": "creation||l3ext:ProvLbl",
+                "E4212486": "modification||l3ext:ProvLbl",
+                "E4212487": "deletion||l3ext:ProvLbl"
+            },
+            "stats": {
+
+            },
+            "versions": "2.0(1m)-",
+            "isAbstract": false,
+            "isConfigurable": true,
+            "isContextRoot": false,
+            "isNxosConverged": false,
+            "isDeprecated": false,
+            "isHidden": false,
+            "isEncrypted": false,
+            "isExportable": true,
+            "isPersistent": true,
+            "isSubjectToQuota": false,
+            "isObservable": false,
+            "hasStats": false,
+            "isStat": false,
+            "isFaultable": false,
+            "isDomainable": false,
+            "isHealthScorable": false,
+            "shouldCollectHealthStats": false,
+            "healthCollectionSource": "faults",
+            "hasEventRules": false,
+            "abstractionLayer": "logical",
+            "apicNxProcessing": false,
+            "monitoringPolicySource": "Parent",
+            "isCreatableDeletable": "always",
+            "platformFlavors": [
+                "apic"
+            ],
+            "classId": "7249",
+            "className": "ProvLbl",
+            "classPkg": "l3ext",
+            "featureTag": "",
+            "moCategory": "Regular",
+            "label": "External Connectivity Provider Label",
+            "comment": [
+                "Represents Logical Outside Profile Provider Label. Defines the characteristics that\n                 will be applied to Layer3 Outside that matches with the label name"
+            ],
+            "properties": {
+                "annotation": {
+                    "versions": "3.2(1l)-",
+                    "comment": [
+                         "User annotation. Suggested format orchestrator:value"
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "38318",
+                    "propLocalId": "8719",
+                    "label": "Annotation",
+                    "baseType": "string:Basic",
+                    "modelType": "mo:Annotation",
+                    "needsPropDelimiters": false,
+                    "uitype": "string",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validators": [
+                         {"min" : 0, "max": 128,
+                             "regexs": [
+                                 {"regex" : "^[a-zA-Z0-9_.:-]+$", "type": "include"}
+                             ]
+                         }
+                    ],
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "childAction": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "Delete or ignore. For internal use only."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "4",
+                    "propLocalId": "5",
+                    "label": "childAction",
+                    "baseType": "scalar:Bitmask32",
+                    "modelType": "mo:ModificationChildAction",
+                    "needsPropDelimiters": false,
+                    "uitype": "bitmask",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "16384", "localName": "deleteAll",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Delete All "},
+                         { "value": "8192", "localName": "deleteNonPresent",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Delete Non Present "},
+                         { "value": "4096", "localName": "ignore",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Ignore "}
+                    ],
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "descr": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "Specifies a description of the policy definition."
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "5579",
+                    "propLocalId": "28",
+                    "label": "Description",
+                    "baseType": "string:Basic",
+                    "modelType": "naming:Descr",
+                    "needsPropDelimiters": false,
+                    "uitype": "string",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": true,
+                    "likeProp": "naming:Described:descr",
+                    "validators": [
+                         {"min" : 0, "max": 128,
+                             "regexs": [
+                                 {"regex" : "^[a-zA-Z0-9\\\\!#$%()*,-./:;@ _{|}~?&+]+$", "type": "include"}
+                             ]
+                         }
+                    ],
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "dn": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "A tag or metadata is a non-hierarchical keyword or term assigned to the fabric module."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "1",
+                    "propLocalId": "2",
+                    "label": "dn",
+                    "baseType": "reference:BinRef",
+                    "modelType": "reference:BinRef",
+                    "needsPropDelimiters": true,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "extMngdBy": {
+                    "versions": "3.2(1l)-",
+                    "comment": [
+                         "Indicates which orchestrator is managing this MO"
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "40457",
+                    "propLocalId": "8023",
+                    "label": "Managed By",
+                    "baseType": "scalar:Bitmask32",
+                    "modelType": "mo:ExtMngdByType",
+                    "needsPropDelimiters": false,
+                    "uitype": "bitmask",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "undefined", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "1", "localName": "msc",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "MSC "},
+                         { "value": "0", "localName": "undefined",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Undefined "}
+                    ],
+                    "default": "undefined",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "lcOwn": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "A value that indicates how this object was created. For internal use only."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "9",
+                    "propLocalId": "9",
+                    "label": "lcOwn",
+                    "baseType": "scalar:Enum8",
+                    "modelType": "mo:Owner",
+                    "needsPropDelimiters": false,
+                    "uitype": "enum",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "local", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "4", "localName": "implicit",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Implicit "},
+                         { "value": "0", "localName": "local",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Local "},
+                         { "value": "1", "localName": "policy",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Policy "},
+                         { "value": "2", "localName": "replica",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Replica "},
+                         { "value": "3", "localName": "resolveOnBehalf",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Resolved On Behalf "}
+                    ],
+                    "default": "local",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "modTs": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "The time when this object was last modified."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "7",
+                    "propLocalId": "7",
+                    "label": "modTs",
+                    "baseType": "scalar:Date",
+                    "modelType": "mo:TStamp",
+                    "needsPropDelimiters": false,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "never", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "0", "localName": "never",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Never "}
+                    ],
+                    "default": "never",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "name": {
+                    "versions": "2.0(1m)-",
+                    "comment": [
+                         "The name of the object."
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "21429",
+                    "propLocalId": "13",
+                    "label": "Name",
+                    "baseType": "string:Basic",
+                    "modelType": "naming:Name",
+                    "needsPropDelimiters": false,
+                    "uitype": "string",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": false,
+                    "isNaming": true,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": true,
+                    "isLike": false,
+                    "validators": [
+                         {"min" : 1, "max": 64,
+                             "regexs": [
+                                 {"regex" : "^[a-zA-Z0-9_.:-]+$", "type": "include"}
+                             ]
+                         }
+                    ],
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "nameAlias": {
+                    "versions": "2.2(1k)-",
+                    "isConfigurable": true,
+                    "propGlobalId": "28417",
+                    "propLocalId": "6719",
+                    "label": "Display Name",
+                    "baseType": "string:Basic",
+                    "modelType": "naming:NameAlias",
+                    "needsPropDelimiters": false,
+                    "uitype": "string",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validators": [
+                         {"min" : 0, "max": 63,
+                             "regexs": [
+                                 {"regex" : "^[a-zA-Z0-9_.-]+$", "type": "include"}
+                             ]
+                         }
+                    ],
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "ownerKey": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "The key for enabling clients to own their data for entity correlation."
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "15230",
+                    "propLocalId": "4100",
+                    "label": "ownerKey",
+                    "baseType": "string:Basic",
+                    "modelType": "naming:Descr",
+                    "needsPropDelimiters": false,
+                    "uitype": "string",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validators": [
+                         {"min" : 0, "max": 128,
+                             "regexs": [
+                                 {"regex" : "^[a-zA-Z0-9\\\\!#$%()*,-./:;@ _{|}~?&+]+$", "type": "include"}
+                             ]
+                         }
+                    ],
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "ownerTag": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "A tag for enabling clients to add their own data. For example, to indicate who created this object."
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "15231",
+                    "propLocalId": "4101",
+                    "label": "ownerTag",
+                    "baseType": "string:Basic",
+                    "modelType": "naming:Descr",
+                    "needsPropDelimiters": false,
+                    "uitype": "string",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validators": [
+                         {"min" : 0, "max": 64,
+                             "regexs": [
+                                 {"regex" : "^[a-zA-Z0-9\\\\!#$%()*,-./:;@ _{|}~?&+]+$", "type": "include"}
+                             ]
+                         }
+                    ],
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "rn": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "Identifies an object from its siblings within the context of its parent object. The distinguished name contains a sequence of relative names."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "2",
+                    "propLocalId": "3",
+                    "label": "rn",
+                    "baseType": "reference:BinRN",
+                    "modelType": "reference:BinRN",
+                    "needsPropDelimiters": true,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "status": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "The upgrade status. This property is for internal use only."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "3",
+                    "propLocalId": "4",
+                    "label": "status",
+                    "baseType": "scalar:Bitmask32",
+                    "modelType": "mo:ModificationStatus",
+                    "needsPropDelimiters": false,
+                    "uitype": "bitmask",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "2", "localName": "created",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "In a setter method: specifies that an object should be created. An error is returned if the object already exists.  \nIn the return value of a setter method: indicates that an object has been created.  \n"
+                             ],
+                             "label": "Created "},
+                         { "value": "8", "localName": "deleted",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "In a setter method: specifies that an object should be deleted.  \nIn the return value of a setter method: indicates that an object has been deleted.\n"
+                             ],
+                             "label": "Deleted "},
+                         { "value": "4", "localName": "modified",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "In a setter method: specifies that an object should be modified  \nIn the return value of a setter method: indicates that an object has been modified.\n"
+                             ],
+                             "label": "Modified "}
+                    ],
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "tag": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "Specifies the color of a policy label."
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "4992",
+                    "propLocalId": "416",
+                    "label": "Tag",
+                    "baseType": "scalar:Enum32",
+                    "modelType": "pol:Color",
+                    "needsPropDelimiters": false,
+                    "uitype": "enum",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "0xF0F8FF", "localName": "alice-blue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Alice Blue "},
+                         { "value": "0xFAEBD7", "localName": "antique-white",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Antique White "},
+                         { "value": "0x00FFFF", "localName": "aqua",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Aqua "},
+                         { "value": "0x7FFFD4", "localName": "aquamarine",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Aquamarine "},
+                         { "value": "0xF0FFFF", "localName": "azure",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Azure "},
+                         { "value": "0xF5F5DC", "localName": "beige",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Beige "},
+                         { "value": "0xFFE4C4", "localName": "bisque",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Bisque "},
+                         { "value": "0x000000", "localName": "black",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Black "},
+                         { "value": "0xFFEBCD", "localName": "blanched-almond",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Blanched Almond "},
+                         { "value": "0x0000FF", "localName": "blue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Blue "},
+                         { "value": "0x8A2BE2", "localName": "blue-violet",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "BlueViolet "},
+                         { "value": "0xA52A2A", "localName": "brown",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Brown "},
+                         { "value": "0xDEB887", "localName": "burlywood",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Burlywood "},
+                         { "value": "0x5F9EA0", "localName": "cadet-blue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Cadet Blue "},
+                         { "value": "0x7FFF00", "localName": "chartreuse",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Chartreuse "},
+                         { "value": "0xD2691E", "localName": "chocolate",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Chocolate "},
+                         { "value": "0xFF7F50", "localName": "coral",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Coral "},
+                         { "value": "0x6495ED", "localName": "cornflower-blue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Cornflower Blue "},
+                         { "value": "0xFFF8DC", "localName": "cornsilk",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Cornsilk "},
+                         { "value": "0xDC143C", "localName": "crimson",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Crimson "},
+                         { "value": "0x00FFFF", "localName": "cyan",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Cyan "},
+                         { "value": "0x00008B", "localName": "dark-blue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Dark Blue "},
+                         { "value": "0x008B8B", "localName": "dark-cyan",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Dark Cyan "},
+                         { "value": "0xB8860B", "localName": "dark-goldenrod",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Dark Goldenrod "},
+                         { "value": "0xA9A9A9", "localName": "dark-gray",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Dark Gray "},
+                         { "value": "0x006400", "localName": "dark-green",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Dark Green "},
+                         { "value": "0xBDB76B", "localName": "dark-khaki",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Dark Khaki "},
+                         { "value": "0x8B008B", "localName": "dark-magenta",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Dark Magenta "},
+                         { "value": "0x556B2F", "localName": "dark-olive-green",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Dark Olive Green "},
+                         { "value": "0xFF8C00", "localName": "dark-orange",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Dark Orange "},
+                         { "value": "0x9932CC", "localName": "dark-orchid",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Dark Orchid "},
+                         { "value": "0x8B0000", "localName": "dark-red",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Dark Red "},
+                         { "value": "0xE9967A", "localName": "dark-salmon",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Dark Salmon "},
+                         { "value": "0x8FBC8F", "localName": "dark-sea-green",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Dark Sea Green "},
+                         { "value": "0x483D8B", "localName": "dark-slate-blue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Dark Slate Blue "},
+                         { "value": "0x2F4F4F", "localName": "dark-slate-gray",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Dark Slate Gray "},
+                         { "value": "0x00CED1", "localName": "dark-turquoise",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Dark Turquoise "},
+                         { "value": "0x9400D3", "localName": "dark-violet",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Dark Violet "},
+                         { "value": "0xFF1493", "localName": "deep-pink",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Deep Pink "},
+                         { "value": "0x00BFFF", "localName": "deep-sky-blue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Deep Sky Blue "},
+                         { "value": "0x696969", "localName": "dim-gray",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Dim Gray "},
+                         { "value": "0x1E90FF", "localName": "dodger-blue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Dodger Blue "},
+                         { "value": "0xB22222", "localName": "fire-brick",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Fire Brick "},
+                         { "value": "0xFFFAF0", "localName": "floral-white",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Floral White "},
+                         { "value": "0x228B22", "localName": "forest-green",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Forest Green "},
+                         { "value": "0xFF00FF", "localName": "fuchsia",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Fuchsia "},
+                         { "value": "0xDCDCDC", "localName": "gainsboro",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Gainsboro "},
+                         { "value": "0xF8F8FF", "localName": "ghost-white",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Ghost White "},
+                         { "value": "0xFFD700", "localName": "gold",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Gold "},
+                         { "value": "0xDAA520", "localName": "goldenrod",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Goldenrod "},
+                         { "value": "0x808080", "localName": "gray",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Gray "},
+                         { "value": "0x008000", "localName": "green",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Green "},
+                         { "value": "0xADFF2F", "localName": "green-yellow",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Green Yellow "},
+                         { "value": "0xF0FFF0", "localName": "honeydew",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Honeydew "},
+                         { "value": "0xFF69B4", "localName": "hot-pink",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Hot Pink "},
+                         { "value": "0xCD5C5C", "localName": "indian-red",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Indian Red "},
+                         { "value": "0x4B0082", "localName": "indigo",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Indigo "},
+                         { "value": "0xFFFFF0", "localName": "ivory",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Ivory "},
+                         { "value": "0xF0E68C", "localName": "khaki",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Khaki "},
+                         { "value": "0xE6E6FA", "localName": "lavender",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Lavender "},
+                         { "value": "0xFFF0F5", "localName": "lavender-blush",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Lavender Blush "},
+                         { "value": "0x7CFC00", "localName": "lawn-green",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Lawn Green "},
+                         { "value": "0xFFFACD", "localName": "lemon-chiffon",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Lemon Chiffon "},
+                         { "value": "0xADD8E6", "localName": "light-blue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Light Blue "},
+                         { "value": "0xF08080", "localName": "light-coral",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Light Coral "},
+                         { "value": "0xE0FFFF", "localName": "light-cyan",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Light Cyan "},
+                         { "value": "0xFAFAD2", "localName": "light-goldenrod-yellow",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Light Goldenrod Yellow "},
+                         { "value": "0xD3D3D3", "localName": "light-gray",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Light Gray "},
+                         { "value": "0x90EE90", "localName": "light-green",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Light Green "},
+                         { "value": "0xFFB6C1", "localName": "light-pink",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Light Pink "},
+                         { "value": "0xFFA07A", "localName": "light-salmon",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Light Salmon "},
+                         { "value": "0x20B2AA", "localName": "light-sea-green",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Light Sea Green "},
+                         { "value": "0x87CEFA", "localName": "light-sky-blue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Light Sky Blue "},
+                         { "value": "0x778899", "localName": "light-slate-gray",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Light Slate Gray "},
+                         { "value": "0xB0C4DE", "localName": "light-steel-blue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Light Steel Blue "},
+                         { "value": "0xFFFFE0", "localName": "light-yellow",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Light Yellow "},
+                         { "value": "0x00FF00", "localName": "lime",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Lime "},
+                         { "value": "0x32CD32", "localName": "lime-green",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Lime Green "},
+                         { "value": "0xFAF0E6", "localName": "linen",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Linen "},
+                         { "value": "0xFF00FF", "localName": "magenta",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Magenta "},
+                         { "value": "0x800000", "localName": "maroon",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Maroon "},
+                         { "value": "0x66CDAA", "localName": "medium-aquamarine",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Medium Aquamarine "},
+                         { "value": "0x0000CD", "localName": "medium-blue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Medium Blue "},
+                         { "value": "0xBA55D3", "localName": "medium-orchid",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Medium Orchid "},
+                         { "value": "0x9370DB", "localName": "medium-purple",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Medium Purple "},
+                         { "value": "0x3CB371", "localName": "medium-sea-green",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Medium Sea Green "},
+                         { "value": "0x7B68EE", "localName": "medium-slate-blue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Medium Slate Blue "},
+                         { "value": "0x00FA9A", "localName": "medium-spring-green",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Medium Spring Green "},
+                         { "value": "0x48D1CC", "localName": "medium-turquoise",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Medium Turquoise "},
+                         { "value": "0xC71585", "localName": "medium-violet-red",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Medium Violet Red "},
+                         { "value": "0x191970", "localName": "midnight-blue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Midnight Blue "},
+                         { "value": "0xF5FFFA", "localName": "mint-cream",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Mint Cream "},
+                         { "value": "0xFFE4E1", "localName": "misty-rose",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Misty Rose "},
+                         { "value": "0xFFE4B5", "localName": "moccasin",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Moccasin "},
+                         { "value": "0xFFDEAD", "localName": "navajo-white",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Navajo White "},
+                         { "value": "0x000080", "localName": "navy",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Navy "},
+                         { "value": "0xFDF5E6", "localName": "old-lace",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Old Lace "},
+                         { "value": "0x808000", "localName": "olive",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Olive "},
+                         { "value": "0x6B8E23", "localName": "olive-drab",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Olive Drab "},
+                         { "value": "0xFFA500", "localName": "orange",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Orange "},
+                         { "value": "0xFF4500", "localName": "orange-red",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Orange Red "},
+                         { "value": "0xDA70D6", "localName": "orchid",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Orchid "},
+                         { "value": "0xEEE8AA", "localName": "pale-goldenrod",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Pale Goldenrod "},
+                         { "value": "0x98FB98", "localName": "pale-green",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Pale Green "},
+                         { "value": "0xAFEEEE", "localName": "pale-turquoise",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Pale Turquoise "},
+                         { "value": "0xDB7093", "localName": "pale-violet-red",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Pale Violet Red "},
+                         { "value": "0xFFEFD5", "localName": "papaya-whip",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Papaya Whip "},
+                         { "value": "0xFFDAB9", "localName": "peachpuff",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Peachpuff "},
+                         { "value": "0xCD853F", "localName": "peru",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Peru "},
+                         { "value": "0xFFC0CB", "localName": "pink",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Pink "},
+                         { "value": "0xDDA0DD", "localName": "plum",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Plum "},
+                         { "value": "0xB0E0E6", "localName": "powder-blue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Powder Blue "},
+                         { "value": "0x800080", "localName": "purple",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Purple "},
+                         { "value": "0xFF0000", "localName": "red",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Red "},
+                         { "value": "0xBC8F8F", "localName": "rosy-brown",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Rosy Brown "},
+                         { "value": "0x4169E1", "localName": "royal-blue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Royal Blue "},
+                         { "value": "0x8B4513", "localName": "saddle-brown",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Saddle Brown "},
+                         { "value": "0xFA8072", "localName": "salmon",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Salmon "},
+                         { "value": "0xF4A460", "localName": "sandy-brown",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Sandy Brown "},
+                         { "value": "0x2E8B57", "localName": "sea-green",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Sea Green "},
+                         { "value": "0xFFF5EE", "localName": "seashell",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Seashell "},
+                         { "value": "0xA0522D", "localName": "sienna",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Sienna "},
+                         { "value": "0xC0C0C0", "localName": "silver",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Silver "},
+                         { "value": "0x87CEEB", "localName": "sky-blue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Sky Blue "},
+                         { "value": "0x6A5ACD", "localName": "slate-blue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Slate Blue "},
+                         { "value": "0x708090", "localName": "slate-gray",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Slate Gray "},
+                         { "value": "0xFFFAFA", "localName": "snow",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Snow "},
+                         { "value": "0x00FF7F", "localName": "spring-green",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Spring Green "},
+                         { "value": "0x4682B4", "localName": "steel-blue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Steel Blue "},
+                         { "value": "0xD2B48C", "localName": "tan",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Tan "},
+                         { "value": "0x008080", "localName": "teal",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Teal "},
+                         { "value": "0xD8BFD8", "localName": "thistle",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Thistle "},
+                         { "value": "0xFF6347", "localName": "tomato",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Tomato "},
+                         { "value": "0x40E0D0", "localName": "turquoise",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Turquoise "},
+                         { "value": "0xEE82EE", "localName": "violet",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Violet "},
+                         { "value": "0xF5DEB3", "localName": "wheat",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Wheat "},
+                         { "value": "0xFFFFFF", "localName": "white",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "White "},
+                         { "value": "0xF5F5F5", "localName": "white-smoke",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "White Smoke "},
+                         { "value": "0xFFFF00", "localName": "yellow",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Yellow "},
+                         { "value": "0x9ACD32", "localName": "yellow-green",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Yellow Green "}
+                    ],
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "uid": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "A unique identifier for this object."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "8",
+                    "propLocalId": "8",
+                    "label": "uid",
+                    "baseType": "scalar:Uint16",
+                    "modelType": "scalar:Uint16",
+                    "needsPropDelimiters": false,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "usedFor": {
+                    "versions": "5.0(1k)-",
+                    "isConfigurable": false,
+                    "propGlobalId": "57048",
+                    "propLocalId": "12870",
+                    "label": "Provider Label Usage",
+                    "baseType": "scalar:Bitmask8",
+                    "modelType": "l3ext:UsedFor",
+                    "needsPropDelimiters": false,
+                    "uitype": "bitmask",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "golf", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "1", "localName": "golf",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "Golf"
+                             ],
+                             "label": "Golf "},
+                         { "value": "2", "localName": "mpls",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "Mpls"
+                             ],
+                             "label": "Mpls "}
+                    ],
+                    "default": "golf",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "userdom": {
+                    "versions": "5.0(1k)-",
+                    "isConfigurable": true,
+                    "propGlobalId": "60657",
+                    "propLocalId": "13244",
+                    "label": "userdom",
+                    "baseType": "string:Basic",
+                    "modelType": "mo:UserDomType",
+                    "needsPropDelimiters": false,
+                    "uitype": "string",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validators": [
+                         {"min" : 0, "max": 1024,
+                             "regexs": [
+                                 {"regex" : "^[a-zA-Z0-9_.:-]+$", "type": "include"}
+                             ]
+                         }
+                    ],
+                    "validValues": [
+                         { "value": "all", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "}
+                    ],
+                    "default": "all",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                }
+            }
+        }
+}

@@ -51,3 +51,22 @@ resource "aci_vrf" "test" {
   name      = "test_vrf"
 }
 `
+
+const testConfigFvTenantInfraMin = `
+data "aci_tenant" "test" {
+  name = "infra"
+}
+`
+
+const testConfigL3extOutMinDependencyWithFvTenantInfra = testConfigFvTenantInfraMin + `
+resource "aci_vrf" "test" {
+  tenant_dn = data.aci_tenant.test.id
+  name      = "test_vrf"
+}
+
+resource "aci_l3_outside" "test" {
+  tenant_dn = data.aci_tenant.test.id
+  name      = "test_l3_outside"
+  relation_l3ext_rs_ectx = aci_vrf.test.id
+}
+`

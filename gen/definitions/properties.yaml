@@ -154,10 +154,6 @@ tagTag:
       parent_dn: "aci_tenant.test.id"
 
 fvFBRGroup:
-  resource_required:
-    - "name"
-  datasource_required:
-    - "name"
   test_values:
     default:
       name: "fallback_route_group"
@@ -177,10 +173,6 @@ fvFBRMember:
     rnh_addr: "fallback_member"
   documentation:
     rnhAddr: "The address of the %s object."
-  resource_required:
-    - "fallback_member"
-  datasource_required:
-    - "fallback_member"
   test_values:
     default:
       fallback_member: "2.2.2.2"
@@ -220,3 +212,24 @@ l3extRsOutToFBRGroup:
       parent_dependency_dn: "aci_vrf.test.id"
       parent_dn: "aci_vrf_fallback_route_group.test.id"
       target_dn: "uni/tn-test_tenant/ctx-test_vrf/fbrg-fallback_route_group"
+
+l3extProvLbl:
+  test_values:
+    default:
+      name: "default_prov_label"
+      tag: "yellow-green"
+    all:
+      name: "prov_label"
+      tag: "alice-blue"
+    resource_required:
+      name: "prov_label"
+    datasource_required:
+      name: "prov_label"
+    datasource_non_existing:
+      name: "prov_label_non_existing"
+  parents:
+    - class_name: "l3extOut"
+      parent_dependency: "fvTenant"
+      parent_dependency_name: "infra"
+      parent_dn: "aci_l3_outside.test.id"
+      class_in_parent: false
