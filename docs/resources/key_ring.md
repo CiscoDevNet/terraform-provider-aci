@@ -196,7 +196,7 @@ All examples for the Key Ring resource can be found in the [examples](https://gi
 ### Optional ###
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
-      - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/fvTenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
+  - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/fvTenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
 * `admin_state` (adminState) - (string) The current administrative state of the certificate request process.
   - Default: `started`
   - Valid Values: `completed`, `created`, `reqCreated`, `started`, `tpSet`.

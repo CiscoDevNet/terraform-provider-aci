@@ -37,7 +37,6 @@ import (
 	"go/format"
 	"io"
 	"log"
-	"math"
 	"net/http"
 	"os"
 	"path"
@@ -1902,7 +1901,7 @@ func setDocumentationData(m *Model, definitions Definitions) {
 	if len(resourcesNotFound) != 0 && len(resourcesFound) < docsParentDnAmount {
 		if len(resourcesNotFound) > docsParentDnAmount-len(resourcesFound) {
 			// TODO catch default classes and add to documentation
-			resourcesNotFound = resourcesNotFound[0:int(math.Abs(float64((docsParentDnAmount - len(resourcesFound)))))]
+			resourcesNotFound = resourcesNotFound[0:(docsParentDnAmount - len(resourcesFound))]
 			m.DocumentationParentDns = append(m.DocumentationParentDns, fmt.Sprintf("Too many classes to display, see model documentation for all possible classes of %s.", GetDevnetDocForClass(m.PkgName)))
 		} else {
 			var resourceDetails string
