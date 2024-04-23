@@ -33,9 +33,9 @@ data "aci_rest_managed" "example" {
 * `class_name` - (string) Which class object is being created.
 * `id` - (string) The Distinguished Name of the object.
 * `annotation` - (string) Annotation for the class object that is being created. When annotation is provided in content this will take precedence.
-* `content` - (map) Map of key-value pairs those needed to be passed to the Model object as parameters. Make sure the key name matches the name with the object parameter in ACI.
+* `content` - (map) A map of key-value pairs those needed to be passed to the Model object as parameters. Make sure the key name matches the name with the object parameter in ACI.
 
 * `child` - (list) A list of child objects.
   * `rn` - (string) The Relative Name of the child object.
   * `class_name` - (string) Class name of child object.
-  * `content` (map) Map of key-value pairs which represents the attributes for the child object.
+  * `content` - (map) A map of key-value pairs which represents the attributes for the child object.

@@ -55,7 +55,7 @@ resource "aci_rest" "rest_yaml" {
 
 - `path` - (Required) ACI path where object should be created. Starting with api/node/mo/{parent-dn}(if applicable)/{rn of object}.json
 - `class_name` - (Optional) Which class object is being created. (Make sure there is no colon in the classname )
-- `content` - (Optional) Map of key-value pairs those needed to be passed to the Model object as parameters. Make sure the key name matches the name with the object parameter in ACI.
+- `content` - (Optional) A map of key-value pairs those needed to be passed to the Model object as parameters. Make sure the key name matches the name with the object parameter in ACI.
 - `payload` - (Optional) Freestyle JSON or YAML payload which can directly be passed to the REST endpoint added in path. Either of content or payload is required.
 - `dn` - (Optional) Distinguished name of object being managed.
 
