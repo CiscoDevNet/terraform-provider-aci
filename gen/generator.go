@@ -205,6 +205,10 @@ func processMultiLine(multiLineValue string) string {
 EOT`, cert)
 }
 
+func isAnId(attributeValue string) bool {
+	return strings.Contains(attributeValue, ".id")
+}
+
 // Creates a parent dn value for the resources and datasources in the example files
 func CreateParentDnValue(className, caller string, definitions Definitions) string {
 	resourceName := GetResourceName(className, definitions)
@@ -222,8 +226,7 @@ func LookupTestValue(classPkgName, propertyName string, testVars map[string]inte
 			if strVal, ok := val.(string); ok {
 				if isMultiLine(propertyName, classPkgName, definitions) {
 					lookupValue = processMultiLine(strVal)
-				} else if strings.Contains(strVal, "_dn") {
-					fmt.Println(propertyName, strVal)
+				} else if isAnId(strVal) {
 					lookupValue = fmt.Sprintf(`%s`, strVal)
 				} else {
 					lookupValue = fmt.Sprintf(`"%s"`, strVal)
@@ -237,6 +240,8 @@ func LookupTestValue(classPkgName, propertyName string, testVars map[string]inte
 			if strVal, ok := val.(string); ok {
 				if isMultiLine(propertyName, classPkgName, definitions) {
 					lookupValue = processMultiLine(strVal)
+				} else if isAnId(strVal) {
+					lookupValue = fmt.Sprintf(`%s`, strVal)
 				} else {
 					lookupValue = fmt.Sprintf(`"%s"`, strVal)
 				}
@@ -377,7 +382,7 @@ func getClassModels(definitions Definitions) map[string]Model {
 			}
 		}
 
-		if len(classModel.IdentifiedBy) == 0 {
+		if len(classModel.IdentifiedBy) == 0 || classModel.Exclude {
 			excludeResources = append(excludeResources, pkgName)
 		}
 
@@ -653,9 +658,6 @@ func main() {
 			model.TestType = classifyTests(model.PkgName, predecessorPaths, testCloudApic, testApic)
 		}
 		addGetTestClassificationFunc(model.TestType)
-		if model.Exclude {
-			excludeResources = append(excludeResources, model.PkgName)
-		}
 		// Only render resources and datasources when the class has a unique identifier or is marked as include in the classes definitions YAML file
 		if (len(model.IdentifiedBy) > 0 && !model.Exclude) || model.Include {
 			// All classmodels have been read, thus now the model, child and relational resources names can be set
@@ -1861,10 +1863,9 @@ func setDocumentationData(m *Model, definitions Definitions) {
 		}
 	}
 
-	if len(resourcesNotFound) != 0 && len(resourcesFound) < docsParentDnAmount {
+	if len(resourcesNotFound) != 0 {
 		if len(resourcesNotFound) > docsParentDnAmount-len(resourcesFound) {
 			// TODO catch default classes and add to documentation
-			resourcesNotFound = resourcesNotFound[0:(docsParentDnAmount - len(resourcesFound))]
 			m.DocumentationParentDns = append(m.DocumentationParentDns, fmt.Sprintf("Too many classes to display, see model documentation for all possible classes of %s.", GetDevnetDocForClass(m.PkgName)))
 		} else {
 			var resourceDetails string

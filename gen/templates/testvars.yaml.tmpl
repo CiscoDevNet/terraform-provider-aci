@@ -77,13 +77,14 @@ parents:
     class_in_parent: {{$parentDependency.class_in_parent}}
       {{- if ne $parentDependency.parent_dependency_name "" }}
     parent_dependency_name: "{{$parentDependency.parent_dependency_name}}"{{$index = add $index 1}}
+      {{- end}}
     {{$test := getTestType $.PkgName}}
-    {{- if $test -}}
+      {{- if $test -}}
     test_type: {{$test}}
-    {{- else -}}
+      {{- else -}}
     test_type: {{$testType}}
+      {{- end}}
     {{- end}}
-{{- end}}
 
   {{- $index := 0}}{{- $key := .TargetResourceClassName}}
     {{- if ne $key "" }}
@@ -109,7 +110,6 @@ targets:
       {{- end}}{{$index = add $index 1}}
     {{- end }}
   {{- end}}
-{{- end}}
 
 {{- if .MultiParentFormats}}
 parents:

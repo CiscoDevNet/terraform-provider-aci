@@ -48,3 +48,4 @@ parents:
     parent_dn: "aci_l3_outside.test.id"
     class_in_parent: false
     parent_dependency_name: "infra"
+    test_type: apic

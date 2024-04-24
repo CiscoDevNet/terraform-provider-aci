@@ -13,7 +13,9 @@ import (
 func TestAccResourceL3extProvLblWithL3extOut(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck: func() {
+			testAccPreCheck(t, "apic")
+		},
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -166,6 +168,9 @@ func TestAccResourceL3extProvLblWithL3extOut(t *testing.T) {
 				),
 			},
 		},
+		CheckDestroy: resource.ComposeAggregateTestCheckFunc(
+			testCheckResourceDestroy,
+		),
 	})
 }
 
@@ -206,25 +211,25 @@ resource "aci_l3out_provider_label" "test" {
   parent_dn = aci_l3_outside.test.id
   name = "prov_label"
   annotations = [
-	{
-	  key = "key_0"
-	  value = "value_1"
-	},
-	{
-	  key = "key_1"
-	  value = "value_2"
-	},
-  ]
+    {
+      key = "key_0"
+      value = "value_1"
+    },
+    {
+      key = "key_1"
+      value = "value_2"
+    },
+   ]
   tags = [
-	{
-	  key = "key_0"
-	  value = "value_1"
-	},
-	{
-	  key = "key_1"
-	  value = "value_2"
-	},
-  ]
+    {
+      key = "key_0"
+      value = "value_1"
+    },
+    {
+      key = "key_1"
+      value = "value_2"
+    },
+   ]
 }
 `
 
@@ -240,16 +245,16 @@ resource "aci_l3out_provider_label" "test" {
   parent_dn = aci_l3_outside.test.id
   name = "prov_label"
   annotations = [ 
-	{
+    {
 	  key = "key_1"
 	  value = "value_2"
-	},
+    },
   ]
   tags = [ 
-	{
+    {
 	  key = "key_1"
 	  value = "value_2"
-	},
+    },
   ]
 }
 `
