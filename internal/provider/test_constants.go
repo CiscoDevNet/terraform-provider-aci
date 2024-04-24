@@ -70,7 +70,6 @@ resource "aci_l3_outside" "test" {
   relation_l3ext_rs_ectx = aci_vrf.test.id
 }
 `
-
 const testConfigL3extLoopBackIfPMinDependencyWithL3extRsNodeL3OutAtt = testConfigL3extOutMin + `
 resource "aci_logical_node_profile" "test" {
   l3_outside_dn = aci_l3_outside.test.id
@@ -86,5 +85,19 @@ resource "aci_logical_node_to_fabric_node" "test" {
 resource "aci_l3out_loopback_interface_profile" "test" {
   fabric_node_dn = aci_logical_node_to_fabric_node.test.id
   addr           = "1.2.3.5"
+}`
+
+const testConfigL3extConsLblMinDependencyWithFvTenant = testConfigL3extOutMin + `
+resource "aci_route_control_profile" "test" {
+  parent_dn   = aci_tenant.test.id
+  name        = "test_rctp"
+}
+resource "aci_external_network_instance_profile" "test" {
+  l3_outside_dn = aci_l3_outside.test.id
+  name          = "testInstP"
+}
+resource "aci_l3out_consumer_label" "test" {
+  parent_dn   = aci_l3_outside.test.id
+  name        = "test_name"
 }
 `

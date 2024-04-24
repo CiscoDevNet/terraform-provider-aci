@@ -79,29 +79,30 @@ const pubhupDevnetBaseUrl = "https://pubhub.devnetcloud.com/media/model-doc-late
 // The map contains a key which is the name of the function used in the template and a value which is the function itself
 // The functions itself are defined in the current file
 var templateFuncs = template.FuncMap{
-	"snakeCase":                    Underscore,
-	"validatorString":              ValidatorString,
-	"containsString":               ContainsString,
-	"listToString":                 ListToString,
-	"overwriteProperty":            GetOverwriteAttributeName,
-	"overwritePropertyValue":       GetOverwriteAttributeValue,
-	"createTestValue":              func(val string) string { return fmt.Sprintf("test_%s", val) },
-	"createNonExistingValue":       func(val string) string { return fmt.Sprintf("non_existing_%s", val) },
-	"getParentTestDependencies":    GetParentTestDependencies,
-	"getTargetTestDependencies":    GetTargetTestDependencies,
-	"getDefaultValues":             GetDefaultValues,
-	"fromInterfacesToString":       FromInterfacesToString,
-	"containsNoneAttributeValue":   ContainsNoneAttributeValue,
-	"definedInMap":                 DefinedInMap,
-	"add":                          func(val1, val2 int) int { return val1 + val2 },
-	"lookupTestValue":              LookupTestValue,
-	"lookupChildTestValue":         LookupChildTestValue,
-	"createParentDnValue":          CreateParentDnValue,
-	"getResourceName":              GetResourceName,
-	"getResourceNameAsDescription": GetResourceNameAsDescription,
-	"capitalize":                   Capitalize,
-	"getTestConfigVariableName":    GetTestConfigVariableName,
-	"getDevnetDocForClass":         GetDevnetDocForClass,
+	"snakeCase":                            Underscore,
+	"validatorString":                      ValidatorString,
+	"containsString":                       ContainsString,
+	"listToString":                         ListToString,
+	"overwriteProperty":                    GetOverwriteAttributeName,
+	"overwritePropertyValue":               GetOverwriteAttributeValue,
+	"createTestValue":                      func(val string) string { return fmt.Sprintf("test_%s", val) },
+	"createNonExistingValue":               func(val string) string { return fmt.Sprintf("non_existing_%s", val) },
+	"getParentTestDependencies":            GetParentTestDependencies,
+	"getTargetTestDependencies":            GetTargetTestDependencies,
+	"getDefaultValues":                     GetDefaultValues,
+	"fromInterfacesToString":               FromInterfacesToString,
+	"containsNoneAttributeValue":           ContainsNoneAttributeValue,
+	"definedInMap":                         DefinedInMap,
+	"add":                                  func(val1, val2 int) int { return val1 + val2 },
+	"lookupTestValue":                      LookupTestValue,
+	"lookupChildTestValue":                 LookupChildTestValue,
+	"lookupChildResourceRequiredTestValue": LookupChildResourceRequiredTestValue,
+	"createParentDnValue":                  CreateParentDnValue,
+	"getResourceName":                      GetResourceName,
+	"getResourceNameAsDescription":         GetResourceNameAsDescription,
+	"capitalize":                           Capitalize,
+	"getTestConfigVariableName":            GetTestConfigVariableName,
+	"getDevnetDocForClass":                 GetDevnetDocForClass,
 }
 
 // Global variables used for unique resource name setting based on label from meta data
@@ -201,6 +202,28 @@ func LookupChildTestValue(classPkgName, childResourceName, propertyName string, 
 		return fmt.Sprintf("%s_%d", propertyName, testValueIndex)
 	}
 	return "test_value_for_child"
+}
+
+// Retrieves resource_required attribute value from the properties.yaml file of the class.
+// This is used to lookup the target dn resource reference value when the resource is not part of the internal provider
+func LookupChildResourceRequiredTestValue(classPkgName, propertyName string, definitions Definitions) string {
+	if classDetails, ok := definitions.Properties[classPkgName]; ok {
+		for key, value := range classDetails.(map[interface{}]interface{}) {
+			if key.(string) == "test_values" {
+				for test_type, test_type_values := range value.(map[interface{}]interface{}) {
+					if test_type.(string) == "resource_required" {
+						for k, v := range test_type_values.(map[interface{}]interface{}) {
+							if k.(string) == propertyName {
+								return v.(string)
+							}
+						}
+					}
+
+				}
+			}
+		}
+	}
+	return ""
 }
 
 func ContainsNoneAttributeValue(values []string) bool {

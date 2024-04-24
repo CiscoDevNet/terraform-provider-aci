@@ -70,6 +70,9 @@ mgmtRsOoBCons:
 l3extOut:
   resource_name: "l3_outside"
 
+l3extInstP:
+  resource_name: "external_network_instance_profile"
+
 l3extConsLbl:
   resource_name: "l3out_consumer_label"
   ui_locations:
@@ -218,3 +221,27 @@ mplsNodeSidP:
     - "uni/tn-{name}/out-{name}/lnodep-{name}/rsnodeL3OutAtt-[{tDn}]/lbp-[{addr}]/nodesidp-{sidoffset}"
   contained_by:
     - "l3extLoopBackIfP"
+
+l3extRsLblToInstP:
+  resource_name: "relation_to_instance_profile"
+  ui_locations:
+    - "Tenants -> Networking -> L3Outs -> Policy -> Main -> Consumer Label"
+  sub_category: "L3Out"
+  dn_formats:
+    - "uni/tn-{name}/out-{name}/conslbl-{name}/rslblToInstP-[{tDn}]"
+  example_classes:
+    - "l3extConsLbl"
+  resource_notes:
+    - "This resource should not be used in combination with the `l3out_consumer_label` nested attributes of other resources for the same object. Doing so will result in unexpected behaviour."
+
+l3extRsLblToProfile:
+  resource_name: "relation_to_route_control_profile"
+  ui_locations:
+    - "Tenants -> Networking -> L3Outs -> Policy -> Main -> Consumer Label"
+  sub_category: "L3Out"
+  dn_formats:
+    - "uni/tn-{name}/out-{name}/conslbl-{name}/rslblToProfile-[{tDn}]-{direction}"
+  example_classes:
+    - "l3extConsLbl"
+  resource_notes:
+    - "This resource should not be used in combination with the `l3out_consumer_label` nested attributes of other resources for the same object. Doing so will result in unexpected behaviour."

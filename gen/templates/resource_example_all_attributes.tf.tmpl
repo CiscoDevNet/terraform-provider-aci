@@ -13,9 +13,15 @@ resource "aci_{{$.ResourceName}}" "full_example_{{getResourceName $key $.Definit
   {{- range $key, $value := $.Children}}{{$ChildResourceName := .ResourceName}}
   {{$ChildResourceName}} = [
     { {{- range .Properties}}{{- if ne .NamedPropertyClass ""}}
-      {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = aci_{{getResourceName .NamedPropertyClass $.Definitions}}.example.name
+      {{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = aci_{{getResourceName .NamedPropertyClass $.Definitions}}.example.name
         {{- else}}
-      {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = "{{lookupChildTestValue .PkgName $ChildResourceName .SnakeCaseName $.TestVars 0 $.Definitions}}"{{- end}}{{ end}}
+          {{- $overwritePropertyName := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
+          {{- if eq .SnakeCaseName "t_dn" }}
+      {{$overwritePropertyName}} = {{ lookupChildResourceRequiredTestValue .PkgName $overwritePropertyName $.Definitions }}
+          {{- else }}
+      {{$overwritePropertyName}} = "{{lookupChildTestValue .PkgName $ChildResourceName .SnakeCaseName $.TestVars 0 $.Definitions}}"
+          {{- end }}
+      {{- end}}{{- end}}
     }
   ]
   {{- end}}
