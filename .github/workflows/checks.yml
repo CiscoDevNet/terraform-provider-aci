@@ -27,10 +27,14 @@ jobs:
       #   run: git diff --exit-code
       - name: Build
         run: go build -v
+
   acceptance:
     name: Acceptance Tests
     needs: build
     runs-on: ubuntu-latest
+    env:
+      ACI_USERNAME: 'ansible_github_ci'
+      ACI_PASSWORD: 'sJ94G92#8dq2hx*K4qh'
     concurrency:
         group: tf-aci-ci-test-${{ matrix.apic_host.name }}
         cancel-in-progress: false
@@ -38,10 +42,16 @@ jobs:
       fail-fast: false
       matrix:
         apic_host:
+          - name: v4.2
+            url: 'https://173.36.219.68/'
           - name: v5.2
-            url: 'https://173.36.219.83/'
+            url: 'https://173.36.219.69/'
           - name: v6.0
-            url: 'https://173.36.219.84/'
+            url: 'https://173.36.219.70/'
+          - name: aws_cloud
+            url: 'https://52.52.20.121/'
+          - name: azure_cloud
+            url: 'https://20.245.236.136/'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
@@ -57,6 +67,4 @@ jobs:
           TF_ACC: '1'
           TF_ACC_STATE_LINEAGE: '1'
           ACI_VAL_REL_DN: false
-          ACI_USERNAME: ${{ secrets.TF_ACC_ACI_USERNAME }}
-          ACI_PASSWORD: ${{ secrets.TF_ACC_ACI_PASSWORD }}
           ACI_URL: ${{ matrix.apic_host.url }}
