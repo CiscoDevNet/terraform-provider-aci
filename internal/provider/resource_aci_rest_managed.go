@@ -14,6 +14,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/mapplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setplanmodifier"
@@ -45,6 +46,7 @@ type AciRestManagedResourceModel struct {
 	Content    types.Map    `tfsdk:"content"`
 	Child      types.Set    `tfsdk:"child"`
 	Annotation types.String `tfsdk:"annotation"`
+	EscapeHtml types.Bool   `tfsdk:"escape_html"`
 }
 
 // ChildAciRestManagedResourceModel describes the resource data model for the children without relationships.
@@ -149,6 +151,12 @@ func (r *AciRestManagedResource) Schema(ctx context.Context, req resource.Schema
 				Default:             stringdefault.StaticString(globalAnnotation),
 				MarkdownDescription: `The annotation of the ACI object.`,
 			},
+			"escape_html": schema.BoolAttribute{
+				Optional:            true,
+				Computed:            true,
+				Default:             booldefault.StaticBool(true),
+				MarkdownDescription: "Enable escaping of HTML characters when encoding the JSON payload.",
+			},
 		},
 		Blocks: map[string]schema.Block{
 			"child": schema.SetNestedBlock{
@@ -234,7 +242,7 @@ func (r *AciRestManagedResource) Create(ctx context.Context, req resource.Create
 		return
 	}
 
-	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+	DoRestRequestEscapeHtml(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload, data.EscapeHtml.ValueBool())
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -318,7 +326,7 @@ func (r *AciRestManagedResource) Update(ctx context.Context, req resource.Update
 		return
 	}
 
-	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+	DoRestRequestEscapeHtml(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload, data.EscapeHtml.ValueBool())
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -345,7 +353,7 @@ func (r *AciRestManagedResource) Delete(ctx context.Context, req resource.Delete
 		return
 	}
 
-	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+	DoRestRequestEscapeHtml(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload, data.EscapeHtml.ValueBool())
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -729,7 +737,6 @@ func getAciRestManagedCreateJsonPayload(ctx context.Context, diags *diag.Diagnos
 	}
 
 	payload, err := json.Marshal(map[string]interface{}{data.ClassName.ValueString(): payloadMap})
-
 	if err != nil {
 		diags.AddError(
 			"Marshalling of json payload failed",

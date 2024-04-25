@@ -77,6 +77,25 @@ func TestAccAciRestManaged_connPref(t *testing.T) {
 	})
 }
 
+func TestAccAciRestManaged_escapeHtml(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccAciRestManagedConfig_escapeHtml(),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_rest_managed.aaaPreLoginBanner", "content.message", "<<< WARNING >>>  VERIFYING THE CONVERSION OF HTML CHARACTERS."),
+					resource.TestCheckResourceAttr("aci_rest_managed.aaaPreLoginBanner", "escape_html", "false"),
+					resource.TestCheckResourceAttr("aci_rest_managed.aaaPreLoginBanner", "dn", "uni/userext/preloginbanner"),
+					resource.TestCheckResourceAttr("aci_rest_managed.aaaPreLoginBanner", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_rest_managed.aaaPreLoginBanner", "class_name", "aaaPreLoginBanner"),
+				),
+			},
+		},
+	})
+}
+
 func TestAccAciRestManaged_noContent(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -1074,4 +1093,17 @@ func testAccAciRestManagedConfig_notDefined(name string) string {
 		}
 	}
 	`, name)
+}
+
+func testAccAciRestManagedConfig_escapeHtml() string {
+	return `
+	resource "aci_rest_managed" "aaaPreLoginBanner" {
+		dn          = "uni/userext/preloginbanner"
+		class_name  = "aaaPreLoginBanner"
+		escape_html = false
+		content = {
+			message = "<<< WARNING >>>  VERIFYING THE CONVERSION OF HTML CHARACTERS."
+		}
+	}
+	`
 }
