@@ -205,8 +205,10 @@ func processMultiLine(multiLineValue string) string {
 EOT`, cert)
 }
 
-func isAnId(attributeValue string) bool {
-	return strings.Contains(attributeValue, ".id")
+func isAttributeATerraformReference(attributeValue string) bool {
+	referencePattern := `^(aci_|data\.aci_)\w*\.\w*\.\w*$`
+	re := regexp.MustCompile(referencePattern)
+	return re.MatchString(attributeValue)
 }
 
 // Creates a parent dn value for the resources and datasources in the example files
@@ -226,7 +228,7 @@ func LookupTestValue(classPkgName, propertyName string, testVars map[string]inte
 			if strVal, ok := val.(string); ok {
 				if isMultiLine(propertyName, classPkgName, definitions) {
 					lookupValue = processMultiLine(strVal)
-				} else if isAnId(strVal) {
+				} else if isAttributeATerraformReference(strVal) {
 					lookupValue = fmt.Sprintf(`%s`, strVal)
 				} else {
 					lookupValue = fmt.Sprintf(`"%s"`, strVal)
@@ -240,7 +242,7 @@ func LookupTestValue(classPkgName, propertyName string, testVars map[string]inte
 			if strVal, ok := val.(string); ok {
 				if isMultiLine(propertyName, classPkgName, definitions) {
 					lookupValue = processMultiLine(strVal)
-				} else if isAnId(strVal) {
+				} else if isAttributeATerraformReference(strVal) {
 					lookupValue = fmt.Sprintf(`%s`, strVal)
 				} else {
 					lookupValue = fmt.Sprintf(`"%s"`, strVal)
@@ -1866,6 +1868,7 @@ func setDocumentationData(m *Model, definitions Definitions) {
 	if len(resourcesNotFound) != 0 {
 		if len(resourcesNotFound) > docsParentDnAmount-len(resourcesFound) {
 			// TODO catch default classes and add to documentation
+			//resourcesNotFound = resourcesNotFound[0:(docsParentDnAmount - len(resourcesFound))]
 			m.DocumentationParentDns = append(m.DocumentationParentDns, fmt.Sprintf("Too many classes to display, see model documentation for all possible classes of %s.", GetDevnetDocForClass(m.PkgName)))
 		} else {
 			var resourceDetails string
