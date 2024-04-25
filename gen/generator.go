@@ -1491,7 +1491,7 @@ func setDocumentationData(m *Model, definitions Definitions) {
 		}
 	}
 
-	if len(resourcesNotFound) != 0 {
+	if len(resourcesNotFound) != 0 && len(resourcesFound) < docsParentDnAmount {
 		if len(resourcesNotFound) > docsParentDnAmount-len(resourcesFound) {
 			// TODO catch default classes and add to documentation
 			resourcesNotFound = resourcesNotFound[0:(docsParentDnAmount - len(resourcesFound))]
@@ -1507,7 +1507,7 @@ func setDocumentationData(m *Model, definitions Definitions) {
 
 	// TODO add overwrite to provide which documentation examples to be included
 	docsExampleAmount := m.Configuration["docs_examples_amount"].(int)
-	if len(m.ContainedBy) >= docsExampleAmount {
+	if len(m.ContainedBy) > docsExampleAmount {
 		overwriteExampleClasses := GetOverwriteExampleClasses(m.PkgName, definitions)
 		if len(overwriteExampleClasses) > 0 {
 			for _, exampleClass := range overwriteExampleClasses {

@@ -164,3 +164,9 @@ l3extProvLbl:
   ui_locations:
     - "Tenants (infra) -> Networking -> L3Outs -> Policy -> Main -> Provider Label"
   sub_category: "L3Out"
+
+netflowMonitorPol:
+  resource_name: "netflow_monitor_policy"
+  ui_locations:
+    - "Tenants -> Policies -> NetFlow -> NetFlow Monitors"
+  sub_category: "Tenant Policies"
