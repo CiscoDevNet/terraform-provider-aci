@@ -161,16 +161,19 @@ func testCheckResourceAttr(resourceName, attribute, value1 string) resource.Test
 
 func testCheckResourceDestroy(s *terraform.State) error {
 	aciClient := getACIClientTest(nil)
-	for _, rs := range s.RootModule().Resources {
-		_, err := aciClient.Get(rs.Primary.ID)
-		if err != nil {
-			if strings.Contains(err.Error(), "Error retrieving Object: Object may not exist") {
-				continue
-			} else {
-				return fmt.Errorf("error checking if resource '%s' with ID '%s' still exists: %s", rs.Type, rs.Primary.ID, err)
+
+	for name, rs := range s.RootModule().Resources {
+		if !strings.HasPrefix(name, "data.") {
+			_, err := aciClient.Get(rs.Primary.ID)
+			if err != nil {
+				if strings.Contains(err.Error(), "Error retrieving Object: Object may not exist") {
+					continue
+				} else {
+					return fmt.Errorf("error checking if resource '%s' with ID '%s' still exists: %s", rs.Type, rs.Primary.ID, err)
+				}
 			}
+			return fmt.Errorf("terraform destroy was unsuccessful. The resource '%s' with ID '%s' still exists", rs.Type, rs.Primary.ID)
 		}
-		return fmt.Errorf("terraform destroy was unsuccessful. The resource '%s' with ID '%s' still exists", rs.Type, rs.Primary.ID)
 	}
 	return nil
 }
