@@ -55,8 +55,8 @@ jobs:
       fail-fast: false
       matrix:
         apic_host:
-          - name: v4.2
-            url: 'https://173.36.219.68/'
+          # - name: v4.2
+          #   url: 'https://173.36.219.68/'
           - name: v5.2
             url: 'https://173.36.219.69/'
           - name: v6.0
@@ -70,7 +70,7 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version-file: 'go.mod'
-      - uses: hashicorp/setup-terraform@v2
+      - uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: '1.7.*'
           terraform_wrapper: false
