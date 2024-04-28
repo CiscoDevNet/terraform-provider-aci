@@ -21,6 +21,10 @@ jobs:
       - run: chmod +x ./scripts/gofmtcheck.sh
       - name: gofmt Check
         run: ./scripts/gofmtcheck.sh
+      - run: go mod tidy
+      - run: go mod vendor
+      - name: Check vendor for changes
+        run: git diff --exit-code
       - name: Build
         run: go build -v
 
