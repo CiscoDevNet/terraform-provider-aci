@@ -27,6 +27,16 @@ type AciRestManagedDataSource struct {
 	client *client.Client
 }
 
+// AciRestManagedDataSourceModel describes the data source model.
+type AciRestManagedDataSourceModel struct {
+	Id         types.String `tfsdk:"id"`
+	Dn         types.String `tfsdk:"dn"`
+	ClassName  types.String `tfsdk:"class_name"`
+	Content    types.Map    `tfsdk:"content"`
+	Child      types.Set    `tfsdk:"child"`
+	Annotation types.String `tfsdk:"annotation"`
+}
+
 func (d *AciRestManagedDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
 	tflog.Debug(ctx, "Start schema of datasource: aci_rest_managed")
 	resp.TypeName = req.ProviderTypeName + "_rest_managed"
@@ -110,7 +120,7 @@ func (d *AciRestManagedDataSource) Configure(ctx context.Context, req datasource
 
 func (d *AciRestManagedDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	tflog.Debug(ctx, "Start read of datasource: aci_rest_managed")
-	var data *AciRestManagedResourceModel
+	var data *AciRestManagedDataSourceModel
 
 	// Read Terraform configuration data into the model
 	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
@@ -202,7 +212,7 @@ func (d *AciRestManagedDataSource) Read(ctx context.Context, req datasource.Read
 
 }
 
-func dataSourceRestManagedNotFoundError(diags *diag.Diagnostics, data *AciRestManagedResourceModel) {
+func dataSourceRestManagedNotFoundError(diags *diag.Diagnostics, data *AciRestManagedDataSourceModel) {
 	diags.AddError(
 		"Failed to read aci_rest_managed data source",
 		fmt.Sprintf("The aci_rest_managed data source with dn '%s' has not been found", data.Dn),
