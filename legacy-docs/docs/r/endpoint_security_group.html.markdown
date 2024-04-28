@@ -84,7 +84,7 @@ resource "aci_endpoint_security_group" "example" {
   - `prio` - (Optional) The contract interface priority. Allowed values are "level1", "level2", "level3", "level4", "level5", "level6", "unspecified", and default value is "unspecified". Type: String.
   - `target_dn` - (Required) The distinguished name of the target contract. Type: String.
 
-- `relation_fv_rs_cust_qos_pol` - (Optional) Represents the relation to a Custom QOS Policy (class qosCustomPol). It is a source relation to a custom QoS policy that enables different levels of service to be assigned to network traffic, including specifications for the Differentiated Services Code Point (DSCP) value(s) and the 802.1p Dot1p priority. Type: String.
+- `relation_fv_rs_cust_qos_pol` - (Optional) **WARNING:** This attribute is deprecated and will be removed in the next major version. Represents the relation to a Custom QOS Policy (class qosCustomPol). It is a source relation to a custom QoS policy that enables different levels of service to be assigned to network traffic, including specifications for the Differentiated Services Code Point (DSCP) value(s) and the 802.1p Dot1p priority. Type: String.
 
 - `relation_fv_rs_intra_epg` - (Optional) Represents the relation to an Intra EPg Contract (class vzBrCP). Represents that the EPg is moving from "allow all within epg" mode to a "deny all within epg" mode. The only type of traffic allowed between EPs in this EPg is the one specified by contracts EPg associates to this relation. Type: List.
 
