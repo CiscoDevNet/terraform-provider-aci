@@ -77,6 +77,15 @@ l3extConsLbl:
     - "Tenants -> Networking -> SR MPLS VRF L3Outs -> SR-MPLS Infra L3Outs"
   sub_category: "L3Out"
 
+l3extLoopBackIfP:
+  resource_name: "l3out_loopback_interface_profile"
+
+l3extRsNodeL3OutAtt:
+  resource_name: "logical_node_to_fabric_node"
+
+l3extLNodeP:
+  resource_name: "logical_node_profile"
+
 l3extRsRedistributePol:
   resource_name: "l3out_redistribute_policy"
   ui_locations:
@@ -199,3 +208,13 @@ netflowRecordPol:
     - "Tenants -> Policies -> NetFlow -> NetFlow Records"
     - "Fabric -> Access Policies -> Policies -> Interface -> NetFlow -> NetFlow Records"
   sub_category: "Tenant Policies"
+
+mplsNodeSidP:
+  resource_name: "l3out_node_sid_profile"
+  ui_locations:
+    - "Tenants -> Networking -> L3Outs -> Logical Node Profiles -> Policy -> Nodes -> Policy -> Loopback Addresses"
+  sub_category: "L3Out"
+  dn_formats:
+    - "uni/tn-{name}/out-{name}/lnodep-{name}/rsnodeL3OutAtt-[{tDn}]/lbp-[{addr}]/nodesidp-{sidoffset}"
+  contained_by:
+    - "l3extLoopBackIfP"

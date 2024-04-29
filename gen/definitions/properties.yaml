@@ -259,3 +259,32 @@ netflowRsMonitorToExporter:
     - class_name: "netflowMonitorPol"
       parent_dependency: "fvTenant"
       parent_dn: "aci_netlfow_monitor_policy.test.id"
+
+mplsNodeSidP:
+  overwrites:
+    loopback_addr: "loopback_address"
+    sidoffset: "sid_offset"
+  documentation:
+    loopbackAddr: "The loopback address of the %s object."
+    sidoffset: "The offset ID of the %s object."
+  test_values:
+    default:
+      sid_offset: "1"
+      loopback_address: "0.0.0.0"
+      name: ""
+    all:
+      loopback_address: "1.1.1.1"
+      sid_offset: "1"
+      name: "node_sid_profile"
+    resource_required:
+      sid_offset: "1"
+      name: "node_sid_profile"
+      loopback_address: "1.1.1.1"
+    datasource_required:
+      sid_offset: "1"
+    datasource_non_existing:
+      sid_offset: "2"
+  parents:
+    - class_name: "l3extLoopBackIfP"
+      parent_dependency: "l3extRsNodeL3OutAtt"
+      parent_dn: "aci_logical_node_to_fabric_node.test.id"
