@@ -12,6 +12,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
@@ -45,7 +46,7 @@ func (d *NetflowMonitorPolDataSource) Schema(ctx context.Context, req datasource
 				MarkdownDescription: "The distinguished name (DN) of the Netflow Monitor Policy object.",
 			},
 			"parent_dn": schema.StringAttribute{
-				Required:            true,
+				Computed:            true,
 				MarkdownDescription: "The distinguished name (DN) of the parent object.",
 			},
 			"annotation": schema.StringAttribute{
@@ -72,14 +73,30 @@ func (d *NetflowMonitorPolDataSource) Schema(ctx context.Context, req datasource
 				Computed:            true,
 				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
 			},
-			"record_policy_attachment": schema.SetNestedAttribute{
+			"relation_to_netflow_exporters": schema.SetNestedAttribute{
 				MarkdownDescription: ``,
 				Computed:            true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"annotation": schema.StringAttribute{
 							Computed:            true,
-							MarkdownDescription: `The annotation of the Record Policy Attachment object.`,
+							MarkdownDescription: `The annotation of the Relation To Netflow Exporter object.`,
+						},
+						"tn_netflow_exporter_pol_name": schema.StringAttribute{
+							Computed:            true,
+							MarkdownDescription: `Name.`,
+						},
+					},
+				},
+			},
+			"relation_to_netflow_record": schema.SetNestedAttribute{
+				MarkdownDescription: ``,
+				Computed:            true,
+				NestedObject: schema.NestedAttributeObject{
+					Attributes: map[string]schema.Attribute{
+						"annotation": schema.StringAttribute{
+							Computed:            true,
+							MarkdownDescription: `The annotation of the Relation To Netflow Record object.`,
 						},
 						"tn_netflow_record_pol_name": schema.StringAttribute{
 							Computed:            true,
@@ -166,6 +183,10 @@ func (d *NetflowMonitorPolDataSource) Read(ctx context.Context, req datasource.R
 	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_netflow_monitor_policy with id '%s'", data.Id.ValueString()))
 
 	getAndSetNetflowMonitorPolAttributes(ctx, &resp.Diagnostics, d.client, data)
+
+	if data.ParentDn.IsNull() || data.ParentDn.IsUnknown() {
+		data.ParentDn = basetypes.NewStringValue("uni/infra")
+	}
 
 	if data.Id.IsNull() {
 		resp.Diagnostics.AddError(

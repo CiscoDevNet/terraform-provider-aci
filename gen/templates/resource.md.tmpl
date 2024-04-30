@@ -68,7 +68,7 @@ All examples for the {{.ResourceNameAsDescription}} resource can be found in the
 ## Schema ##
 
 ### Required ###
-{{ if .HasParent}}
+{{ if  and .HasParent (not (setDefault .PkgName "parent_dn" $.Definitions))}}
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   {{- range .DocumentationParentDns}}
   - {{ . }}
@@ -89,6 +89,13 @@ All examples for the {{.ResourceNameAsDescription}} resource can be found in the
 {{- if .HasOptionalProperties}}
 
 ### Optional ###
+{{- if  and .HasParent (setDefault .PkgName "parent_dn" $.Definitions)}}
+* `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
+  {{- range .DocumentationParentDns}}
+  - {{ . }}
+  {{- end}}
+  - Default: `{{ setDefault .PkgName "parent_dn" $.Definitions}}`
+{{- end}}
   {{ range .Properties}}
     {{- if and (not .IsNaming) (not .IsRequired)}}
       {{- if eq .ValueType "bitmask"}}

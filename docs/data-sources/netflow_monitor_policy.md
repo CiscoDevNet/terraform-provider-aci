@@ -47,6 +47,8 @@ data "aci_netflow_monitor_policy" "example_tenant" {
   - The distinquised name (DN) of classes below can be used but currently there is no available resource for it:
     - [infraInfra](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraInfra/overview)
 
+  - Default: `uni/infra`
+  
 * `name` (name) - (string) The name of the Netflow Monitor Policy object.
 
 ### Read-Only ###
@@ -58,8 +60,12 @@ data "aci_netflow_monitor_policy" "example_tenant" {
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 
-* `record_policy_attachment` - (list) A list of Record Policy Attachment (ACI object [netflowRsMonitorToRecord](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRsMonitorToRecord/overview)) pointing to  (ACI Object [netflowRecordPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRecordPol/overview)).
-  * `annotation` (annotation) - (string) The annotation of the Record Policy Attachment object.
+* `relation_to_netflow_exporters` - (list) A list of Relation To Netflow Exporters (ACI object [netflowRsMonitorToExporter](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRsMonitorToExporter/overview)) pointing to  (ACI Object [netflowExporterPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowExporterPol/overview)).
+  * `annotation` (annotation) - (string) The annotation of the Relation To Netflow Exporter object.
+  * `tn_netflow_exporter_pol_name` (tnNetflowExporterPolName) - (string) Name.
+
+* `relation_to_netflow_record` - (list) A list of Relation To Netflow Record (ACI object [netflowRsMonitorToRecord](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRsMonitorToRecord/overview)) pointing to  (ACI Object [netflowRecordPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRecordPol/overview)).
+  * `annotation` (annotation) - (string) The annotation of the Relation To Netflow Record object.
   * `tn_netflow_record_pol_name` (tnNetflowRecordPolName) - (string) Name.
 
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.

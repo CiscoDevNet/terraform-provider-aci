@@ -121,7 +121,13 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 			},
 			{{- if .HasParent}}
 			"parent_dn": schema.StringAttribute{
+				{{- if setDefault .PkgName "parent_dn" $.Definitions}}
+				Optional:            true,
+				Computed:            true,
+				Default: 			 stringdefault.StaticString("{{setDefault .PkgName "parent_dn" $.Definitions}}"),
+				{{- else}}
 				Required:            true,
+				{{- end}}
 				MarkdownDescription: "The distinguished name (DN) of the parent object.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),

@@ -7,7 +7,13 @@ resource "aci_netflow_monitor_policy" "full_example_tenant" {
   name_alias  = "name_alias"
   owner_key   = "owner_key"
   owner_tag   = "owner_tag"
-  record_policy_attachment = [
+  relation_to_netflow_exporters = [
+    {
+      annotation                   = "annotation_1"
+      tn_netflow_exporter_pol_name = aci_.example.name
+    }
+  ]
+  relation_to_netflow_record = [
     {
       annotation                 = "annotation_1"
       tn_netflow_record_pol_name = aci_.example.name

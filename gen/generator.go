@@ -44,6 +44,7 @@ import (
 	"reflect"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 	"text/template"
 	"unicode"
@@ -88,6 +89,7 @@ var templateFuncs = template.FuncMap{
 	"createNonExistingValue":       func(val string) string { return fmt.Sprintf("non_existing_%s", val) },
 	"getParentTestDependencies":    GetParentTestDependencies,
 	"getTargetTestDependencies":    GetTargetTestDependencies,
+	"setDefault":                   GetDefaultValues,
 	"fromInterfacesToString":       FromInterfacesToString,
 	"containsNoneAttributeValue":   ContainsNoneAttributeValue,
 	"definedInMap":                 DefinedInMap,
@@ -1114,14 +1116,19 @@ func (m *Model) SetClassProperties(classDetails interface{}) {
 				}
 			}
 
-			val, ok = propertyValue.(map[string]interface{})["default"]
-			if ok {
-				if reflect.TypeOf(val).String() == "string" {
-					property.DefaultValue = val.(string)
-				} else if reflect.TypeOf(val).String() == "float64" {
-					property.DefaultValue = fmt.Sprintf("%f", val.(float64))
-				} else {
-					log.Fatal(fmt.Sprintf("Reflect type %s not not defined. Define in SetClassProperties function.", reflect.TypeOf(val).String()))
+			DefaultValueOverwrite := GetDefaultValues(m.PkgName, propertyName, m.Definitions)
+			if DefaultValueOverwrite != "" {
+				property.DefaultValue = DefaultValueOverwrite
+			} else {
+				val, ok = propertyValue.(map[string]interface{})["default"]
+				if ok {
+					if reflect.TypeOf(val).String() == "string" {
+						property.DefaultValue = val.(string)
+					} else if reflect.TypeOf(val).String() == "float64" {
+						property.DefaultValue = fmt.Sprintf("%f", val.(float64))
+					} else {
+						log.Fatal(fmt.Sprintf("Reflect type %s not defined. Define in SetClassProperties function.", reflect.TypeOf(val).String()))
+					}
 				}
 			}
 
@@ -1573,4 +1580,35 @@ func GetClassConfiguration(classPkgName string, definitions Definitions) map[str
 		}
 	}
 	return classConfiguration
+}
+
+/*
+Determine if a attribute default value in terraform configuration should be overwritten/or defined by a attribute default value overwrite in the properties.yaml file.
+It can be assigned to "parent_dn".
+Precendence order is:
+ 1. class level from properties.yaml
+ 2. global level from properties.yaml
+ 3. meta data property default value
+*/
+func GetDefaultValues(classPkgName, propertyName string, definitions Definitions) string {
+	precedenceList := []string{classPkgName, "global"}
+	for _, precedence := range precedenceList {
+		if classDetails, ok := definitions.Properties[precedence]; ok {
+			for key, value := range classDetails.(map[interface{}]interface{}) {
+				if key.(string) == "default_values" {
+					for k, v := range value.(map[interface{}]interface{}) {
+						if k.(string) == propertyName {
+							switch v := v.(type) {
+							case string:
+								return v
+							case float64:
+								return strconv.FormatFloat(v, 'f', -1, 64)
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return ""
 }

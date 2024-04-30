@@ -170,3 +170,15 @@ netflowMonitorPol:
   ui_locations:
     - "Tenants -> Policies -> NetFlow -> NetFlow Monitors"
   sub_category: "Tenant Policies"
+
+netflowRsMonitorToRecord:
+  resource_name: "relation_to_netflow_record"
+  ui_locations:
+    - "Tenants -> Policies -> NetFlow -> NetFlow Monitors"
+  sub_category: "Tenant Policies"
+
+netflowRsMonitorToExporter:
+  resource_name: "relation_to_netflow_exporter"
+  ui_locations:
+    - "Tenants -> Policies -> NetFlow -> NetFlow Monitors"
+  sub_category: "Tenant Policies"

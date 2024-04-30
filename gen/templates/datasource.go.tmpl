@@ -15,6 +15,9 @@ import (
 	{{- if or .HasBitmask }}
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	{{- end}}
+	{{- if setDefault .PkgName "parent_dn" $.Definitions}}
+	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
+	{{- end}}
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
@@ -49,7 +52,11 @@ func (d *{{.ResourceClassName}}DataSource) Schema(ctx context.Context, req datas
 			},
 			{{- if .HasParent}}
 			"parent_dn": schema.StringAttribute{
+				{{- if setDefault .PkgName "parent_dn" $.Definitions}}
+				Computed: 			 true,
+				{{- else}}
 				Required:            true,
+				{{- end}}
 				MarkdownDescription: "The distinguished name (DN) of the parent object.",
 			},
 			{{- end}}
@@ -137,6 +144,12 @@ func (d *{{.ResourceClassName}}DataSource) Read(ctx context.Context, req datasou
 	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_{{.ResourceName}} with id '%s'", data.Id.ValueString()))
 
 	getAndSet{{.ResourceClassName}}Attributes(ctx, &resp.Diagnostics, d.client, data)
+
+ 	{{ if setDefault .PkgName "parent_dn" $.Definitions}}
+	if data.ParentDn.IsNull() || data.ParentDn.IsUnknown(){
+		data.ParentDn = basetypes.NewStringValue("{{setDefault .PkgName "parent_dn" $.Definitions}}")
+	}
+	{{- end}}
 
 	if data.Id.IsNull() {
 		resp.Diagnostics.AddError(

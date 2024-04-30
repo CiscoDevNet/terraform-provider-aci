@@ -26,12 +26,16 @@ all:
   owner_tag: "owner_tag"
 
 children:
-  record_policy_attachment:
+  relation_to_netflow_exporters:
     - annotation: "annotation_1"
-      tn_netflow_record_pol_name: "tn_netflow_record_pol_name_1"
+      tn_netflow_exporter_pol_name: "tn_netflow_exporter_pol_name_0"
       
     - annotation: "annotation_2"
-      tn_netflow_record_pol_name: "tn_netflow_record_pol_name_2"
+      tn_netflow_exporter_pol_name: "tn_netflow_exporter_pol_name_1"
+      
+  relation_to_netflow_record:
+    - annotation: "annotation_1"
+      tn_netflow_record_pol_name: "tn_netflow_record_pol_name_1"
       
   annotations:
     - key: "key_0"
