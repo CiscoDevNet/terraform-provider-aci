@@ -37,7 +37,7 @@ The configuration snippet below creates a Netflow Monitor Policy with only requi
 
 resource "aci_netflow_monitor_policy" "example_tenant" {
   parent_dn = aci_tenant.example.id
-  name      = "test_name"
+  name      = "netfow_monitor"
 }
 
 ```
@@ -51,7 +51,7 @@ resource "aci_netflow_monitor_policy" "full_example_tenant" {
   parent_dn   = aci_tenant.example.id
   annotation  = "annotation"
   description = "description"
-  name        = "test_name"
+  name        = "netfow_monitor"
   name_alias  = "name_alias"
   owner_key   = "owner_key"
   owner_tag   = "owner_tag"

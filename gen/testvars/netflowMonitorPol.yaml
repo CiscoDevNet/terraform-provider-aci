@@ -10,13 +10,13 @@ default:
   owner_tag: ""
 
 datasource_non_existing:
-  name: "non_existing_name"
+  name: "netfow_monitor_non_existing"
 
 datasource_required:
-  name: "test_name"
+  name: "netfow_monitor"
 
 resource_required:
-  name: "test_name"
+  name: "netfow_monitor"
 
 all:
   annotation: "annotation"

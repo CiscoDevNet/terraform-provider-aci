@@ -21,7 +21,7 @@ func TestAccDataSourceNetflowMonitorPolWithFvTenant(t *testing.T) {
 				Config:             testConfigNetflowMonitorPolDataSourceDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.aci_netflow_monitor_policy.test", "name", "test_name"),
+					resource.TestCheckResourceAttr("data.aci_netflow_monitor_policy.test", "name", "netfow_monitor"),
 					resource.TestCheckResourceAttr("data.aci_netflow_monitor_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("data.aci_netflow_monitor_policy.test", "description", ""),
 					resource.TestCheckResourceAttr("data.aci_netflow_monitor_policy.test", "name_alias", ""),
@@ -40,7 +40,7 @@ func TestAccDataSourceNetflowMonitorPolWithFvTenant(t *testing.T) {
 const testConfigNetflowMonitorPolDataSourceDependencyWithFvTenant = testConfigNetflowMonitorPolMinDependencyWithFvTenant + `
 data "aci_netflow_monitor_policy" "test" {
   parent_dn = aci_tenant.test.id
-  name = "test_name"
+  name = "netfow_monitor"
   depends_on = [aci_netflow_monitor_policy.test]
 }
 `
@@ -48,7 +48,7 @@ data "aci_netflow_monitor_policy" "test" {
 const testConfigNetflowMonitorPolNotExistingFvTenant = testConfigNetflowMonitorPolMinDependencyWithFvTenant + `
 data "aci_netflow_monitor_policy" "test_non_existing" {
   parent_dn = aci_tenant.test.id
-  name = "non_existing_name"
+  name = "netfow_monitor_non_existing"
   depends_on = [aci_netflow_monitor_policy.test]
 }
 `

@@ -21,7 +21,7 @@ func TestAccResourceNetflowMonitorPolWithFvTenant(t *testing.T) {
 				Config:             testConfigNetflowMonitorPolMinDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "name", "netfow_monitor"),
 					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "name_alias", ""),
@@ -34,7 +34,7 @@ func TestAccResourceNetflowMonitorPolWithFvTenant(t *testing.T) {
 				Config:             testConfigNetflowMonitorPolAllDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "name", "netfow_monitor"),
 					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "annotation", "annotation"),
 					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "description", "description"),
 					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "name_alias", "name_alias"),
@@ -47,7 +47,7 @@ func TestAccResourceNetflowMonitorPolWithFvTenant(t *testing.T) {
 				Config:             testConfigNetflowMonitorPolMinDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "name", "netfow_monitor"),
 				),
 			},
 			// Update with empty strings config or default value
@@ -55,7 +55,7 @@ func TestAccResourceNetflowMonitorPolWithFvTenant(t *testing.T) {
 				Config:             testConfigNetflowMonitorPolResetDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "name", "netfow_monitor"),
 					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "name_alias", ""),
@@ -69,7 +69,7 @@ func TestAccResourceNetflowMonitorPolWithFvTenant(t *testing.T) {
 				ImportState:       true,
 				ImportStateVerify: true,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "name", "netfow_monitor"),
 					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "name_alias", ""),
@@ -82,7 +82,7 @@ func TestAccResourceNetflowMonitorPolWithFvTenant(t *testing.T) {
 				Config:             testConfigNetflowMonitorPolChildrenDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "name", "netfow_monitor"),
 					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "name_alias", ""),
@@ -110,7 +110,7 @@ func TestAccResourceNetflowMonitorPolWithFvTenant(t *testing.T) {
 				ImportState:       true,
 				ImportStateVerify: true,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "name", "netfow_monitor"),
 					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "name_alias", ""),
@@ -192,14 +192,14 @@ func TestAccResourceNetflowMonitorPolWithFvTenant(t *testing.T) {
 const testConfigNetflowMonitorPolMinDependencyWithFvTenant = testConfigFvTenantMin + `
 resource "aci_netflow_monitor_policy" "test" {
   parent_dn = aci_tenant.test.id
-  name = "test_name"
+  name = "netfow_monitor"
 }
 `
 
 const testConfigNetflowMonitorPolAllDependencyWithFvTenant = testConfigFvTenantMin + `
 resource "aci_netflow_monitor_policy" "test" {
   parent_dn = aci_tenant.test.id
-  name = "test_name"
+  name = "netfow_monitor"
   annotation = "annotation"
   description = "description"
   name_alias = "name_alias"
@@ -211,7 +211,7 @@ resource "aci_netflow_monitor_policy" "test" {
 const testConfigNetflowMonitorPolResetDependencyWithFvTenant = testConfigFvTenantMin + `
 resource "aci_netflow_monitor_policy" "test" {
   parent_dn = aci_tenant.test.id
-  name = "test_name"
+  name = "netfow_monitor"
   annotation = "orchestrator:terraform"
   description = ""
   name_alias = ""
@@ -222,7 +222,7 @@ resource "aci_netflow_monitor_policy" "test" {
 const testConfigNetflowMonitorPolChildrenDependencyWithFvTenant = testConfigFvTenantMin + `
 resource "aci_netflow_monitor_policy" "test" {
   parent_dn = aci_tenant.test.id
-  name = "test_name"
+  name = "netfow_monitor"
   annotations = [
 	{
 	  key = "key_0"
@@ -265,14 +265,14 @@ resource "aci_netflow_monitor_policy" "test" {
 const testConfigNetflowMonitorPolChildrenRemoveFromConfigDependencyWithFvTenant = testConfigFvTenantMin + `
 resource "aci_netflow_monitor_policy" "test" {
   parent_dn = aci_tenant.test.id
-  name = "test_name"
+  name = "netfow_monitor"
 }
 `
 
 const testConfigNetflowMonitorPolChildrenRemoveOneDependencyWithFvTenant = testConfigFvTenantMin + `
 resource "aci_netflow_monitor_policy" "test" {
   parent_dn = aci_tenant.test.id
-  name = "test_name"
+  name = "netfow_monitor"
   annotations = [ 
 	{
 	  key = "key_1"
@@ -298,7 +298,7 @@ resource "aci_netflow_monitor_policy" "test" {
 const testConfigNetflowMonitorPolChildrenRemoveAllDependencyWithFvTenant = testConfigFvTenantMin + `
 resource "aci_netflow_monitor_policy" "test" {
   parent_dn = aci_tenant.test.id
-  name = "test_name"
+  name = "netfow_monitor"
   annotations = []
   relation_to_netflow_exporters = []
   relation_to_netflow_record = []

@@ -33,7 +33,7 @@ Data source for Netflow Monitor Policy
 
 data "aci_netflow_monitor_policy" "example_tenant" {
   parent_dn = aci_tenant.example.id
-  name      = "test_name"
+  name      = "netfow_monitor"
 }
 
 ```
