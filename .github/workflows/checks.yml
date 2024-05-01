@@ -28,22 +28,24 @@ jobs:
       - name: Build
         run: go build -v
 
-  # diff:
-  #   name: Check Generated Code Difference
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: actions/setup-go@v5
-  #       with:
-  #         go-version-file: 'go.mod'
-  #     - name: Generate provider code
-  #       run: go generate
-  #     - name: Check generated code for diffs
-  #       run: git diff --exit-code
+  diff:
+    name: Check Generated Code Difference
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
+      - name: Generate provider code
+        run: go generate
+        env: 
+          GOFLAGS: -mod=mod
+      - name: Check generated code for diffs
+        run: git diff --exit-code
 
   acceptance:
     name: Acceptance Tests
-    needs: [build]
+    needs: [build, diff]
     runs-on: ubuntu-latest
     env:
       ACI_USERNAME: 'ansible_github_ci'
