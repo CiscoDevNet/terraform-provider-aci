@@ -53,7 +53,7 @@ func (d *{{.ResourceClassName}}DataSource) Schema(ctx context.Context, req datas
 			{{- if .HasParent}}
 			"parent_dn": schema.StringAttribute{
 				{{- if setDefault .PkgName "parent_dn" $.Definitions}}
-				Computed: 			 true,
+				Optional: 			 true,
 				{{- else}}
 				Required:            true,
 				{{- end}}

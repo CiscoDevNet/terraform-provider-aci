@@ -46,7 +46,7 @@ func (d *NetflowMonitorPolDataSource) Schema(ctx context.Context, req datasource
 				MarkdownDescription: "The distinguished name (DN) of the Netflow Monitor Policy object.",
 			},
 			"parent_dn": schema.StringAttribute{
-				Computed:            true,
+				Optional:            true,
 				MarkdownDescription: "The distinguished name (DN) of the parent object.",
 			},
 			"annotation": schema.StringAttribute{
