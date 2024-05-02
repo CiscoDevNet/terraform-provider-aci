@@ -60,13 +60,13 @@ type NetflowMonitorPolResourceModel struct {
 // NetflowRsMonitorToExporterNetflowMonitorPolResourceModel describes the resource data model for the children without relation ships.
 type NetflowRsMonitorToExporterNetflowMonitorPolResourceModel struct {
 	Annotation               types.String `tfsdk:"annotation"`
-	TnNetflowExporterPolName types.String `tfsdk:"tn_netflow_exporter_pol_name"`
+	TnNetflowExporterPolName types.String `tfsdk:"netflow_exporter_policy_name"`
 }
 
 // NetflowRsMonitorToRecordNetflowMonitorPolResourceModel describes the resource data model for the children without relation ships.
 type NetflowRsMonitorToRecordNetflowMonitorPolResourceModel struct {
 	Annotation             types.String `tfsdk:"annotation"`
-	TnNetflowRecordPolName types.String `tfsdk:"tn_netflow_record_pol_name"`
+	TnNetflowRecordPolName types.String `tfsdk:"netflow_record_policy_name"`
 }
 
 // TagAnnotationNetflowMonitorPolResourceModel describes the resource data model for the children without relation ships.
@@ -181,7 +181,7 @@ func (r *NetflowMonitorPolResource) Schema(ctx context.Context, req resource.Sch
 							},
 							MarkdownDescription: `The annotation of the Relation To Netflow Exporter object.`,
 						},
-						"tn_netflow_exporter_pol_name": schema.StringAttribute{
+						"netflow_exporter_policy_name": schema.StringAttribute{
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
@@ -211,7 +211,7 @@ func (r *NetflowMonitorPolResource) Schema(ctx context.Context, req resource.Sch
 							},
 							MarkdownDescription: `The annotation of the Relation To Netflow Record object.`,
 						},
-						"tn_netflow_record_pol_name": schema.StringAttribute{
+						"netflow_record_policy_name": schema.StringAttribute{
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{

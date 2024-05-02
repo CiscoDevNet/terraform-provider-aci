@@ -44,7 +44,7 @@ type NetflowRsMonitorToExporterResourceModel struct {
 	Id                       types.String `tfsdk:"id"`
 	ParentDn                 types.String `tfsdk:"parent_dn"`
 	Annotation               types.String `tfsdk:"annotation"`
-	TnNetflowExporterPolName types.String `tfsdk:"tn_netflow_exporter_pol_name"`
+	TnNetflowExporterPolName types.String `tfsdk:"netflow_exporter_policy_name"`
 	TagAnnotation            types.Set    `tfsdk:"annotations"`
 	TagTag                   types.Set    `tfsdk:"tags"`
 }
@@ -102,7 +102,7 @@ func (r *NetflowRsMonitorToExporterResource) Schema(ctx context.Context, req res
 				Default:             stringdefault.StaticString(globalAnnotation),
 				MarkdownDescription: `The annotation of the Relation To Netflow Exporter object.`,
 			},
-			"tn_netflow_exporter_pol_name": schema.StringAttribute{
+			"netflow_exporter_policy_name": schema.StringAttribute{
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),

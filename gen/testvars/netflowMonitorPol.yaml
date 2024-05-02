@@ -28,14 +28,15 @@ all:
 children:
   relation_to_netflow_exporters:
     - annotation: "annotation_1"
-      tn_netflow_exporter_pol_name: "tn_netflow_exporter_pol_name_0"
+      netflow_exporter_policy_name: "netflow_exporter_policy_name_0"
       
     - annotation: "annotation_2"
-      tn_netflow_exporter_pol_name: "tn_netflow_exporter_pol_name_1"
+      netflow_exporter_policy_name: "netflow_exporter_policy_name_1"
       
   relation_to_netflow_record:
     - annotation: "annotation_1"
-      tn_netflow_record_pol_name: "tn_netflow_record_pol_name_1"
+      netflow_record_policy_name: "netflow_record_policy_name_1"
+      deletable_child: false
       
   annotations:
     - key: "key_0"

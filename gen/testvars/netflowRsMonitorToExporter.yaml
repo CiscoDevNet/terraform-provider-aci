@@ -6,13 +6,13 @@ default:
   annotation: "orchestrator:terraform"
 
 datasource_non_existing:
-  tn_netflow_exporter_pol_name: "non_existing_tn_netflow_exporter_pol_name"
+  netflow_exporter_policy_name: "non_existing_tn_netflow_exporter_pol_name"
 
 datasource_required:
-  tn_netflow_exporter_pol_name: "test_tn_netflow_exporter_pol_name"
+  netflow_exporter_policy_name: "test_tn_netflow_exporter_pol_name"
 
 resource_required:
-  tn_netflow_exporter_pol_name: "test_tn_netflow_exporter_pol_name"
+  netflow_exporter_policy_name: "test_tn_netflow_exporter_pol_name"
 
 all:
   annotation: "annotation"

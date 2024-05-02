@@ -21,7 +21,7 @@ func TestAccDataSourceNetflowRsMonitorToExporterWithNetflowMonitorPol(t *testing
 				Config:             testConfigNetflowRsMonitorToExporterDataSourceDependencyWithNetflowMonitorPol,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.aci_relation_to_netflow_exporter.test", "tn_netflow_exporter_pol_name", "test_tn_netflow_exporter_pol_name"),
+					resource.TestCheckResourceAttr("data.aci_relation_to_netflow_exporter.test", "netflow_exporter_policy_name", "test_tn_netflow_exporter_pol_name"),
 					resource.TestCheckResourceAttr("data.aci_relation_to_netflow_exporter.test", "annotation", "orchestrator:terraform"),
 				),
 			},
@@ -36,7 +36,7 @@ func TestAccDataSourceNetflowRsMonitorToExporterWithNetflowMonitorPol(t *testing
 const testConfigNetflowRsMonitorToExporterDataSourceDependencyWithNetflowMonitorPol = testConfigNetflowRsMonitorToExporterMinDependencyWithNetflowMonitorPol + `
 data "aci_relation_to_netflow_exporter" "test" {
   parent_dn = aci_netflow_monitor_policy.test.id
-  tn_netflow_exporter_pol_name = "test_tn_netflow_exporter_pol_name"
+  netflow_exporter_policy_name = "test_tn_netflow_exporter_pol_name"
   depends_on = [aci_relation_to_netflow_exporter.test]
 }
 `
@@ -44,7 +44,7 @@ data "aci_relation_to_netflow_exporter" "test" {
 const testConfigNetflowRsMonitorToExporterNotExistingNetflowMonitorPol = testConfigNetflowRsMonitorToExporterMinDependencyWithNetflowMonitorPol + `
 data "aci_relation_to_netflow_exporter" "test_non_existing" {
   parent_dn = aci_netflow_monitor_policy.test.id
-  tn_netflow_exporter_pol_name = "non_existing_tn_netflow_exporter_pol_name"
+  netflow_exporter_policy_name = "non_existing_tn_netflow_exporter_pol_name"
   depends_on = [aci_relation_to_netflow_exporter.test]
 }
 `

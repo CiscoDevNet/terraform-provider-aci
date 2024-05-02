@@ -21,7 +21,7 @@ func TestAccResourceNetflowRsMonitorToExporterWithNetflowMonitorPol(t *testing.T
 				Config:             testConfigNetflowRsMonitorToExporterMinDependencyWithNetflowMonitorPol,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_netflow_exporter.test", "tn_netflow_exporter_pol_name", "test_tn_netflow_exporter_pol_name"),
+					resource.TestCheckResourceAttr("aci_relation_to_netflow_exporter.test", "netflow_exporter_policy_name", "test_tn_netflow_exporter_pol_name"),
 					resource.TestCheckResourceAttr("aci_relation_to_netflow_exporter.test", "annotation", "orchestrator:terraform"),
 				),
 			},
@@ -30,7 +30,7 @@ func TestAccResourceNetflowRsMonitorToExporterWithNetflowMonitorPol(t *testing.T
 				Config:             testConfigNetflowRsMonitorToExporterAllDependencyWithNetflowMonitorPol,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_netflow_exporter.test", "tn_netflow_exporter_pol_name", "test_tn_netflow_exporter_pol_name"),
+					resource.TestCheckResourceAttr("aci_relation_to_netflow_exporter.test", "netflow_exporter_policy_name", "test_tn_netflow_exporter_pol_name"),
 					resource.TestCheckResourceAttr("aci_relation_to_netflow_exporter.test", "annotation", "annotation"),
 				),
 			},
@@ -39,7 +39,7 @@ func TestAccResourceNetflowRsMonitorToExporterWithNetflowMonitorPol(t *testing.T
 				Config:             testConfigNetflowRsMonitorToExporterMinDependencyWithNetflowMonitorPol,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_netflow_exporter.test", "tn_netflow_exporter_pol_name", "test_tn_netflow_exporter_pol_name"),
+					resource.TestCheckResourceAttr("aci_relation_to_netflow_exporter.test", "netflow_exporter_policy_name", "test_tn_netflow_exporter_pol_name"),
 				),
 			},
 			// Update with empty strings config or default value
@@ -47,7 +47,7 @@ func TestAccResourceNetflowRsMonitorToExporterWithNetflowMonitorPol(t *testing.T
 				Config:             testConfigNetflowRsMonitorToExporterResetDependencyWithNetflowMonitorPol,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_netflow_exporter.test", "tn_netflow_exporter_pol_name", "test_tn_netflow_exporter_pol_name"),
+					resource.TestCheckResourceAttr("aci_relation_to_netflow_exporter.test", "netflow_exporter_policy_name", "test_tn_netflow_exporter_pol_name"),
 					resource.TestCheckResourceAttr("aci_relation_to_netflow_exporter.test", "annotation", "orchestrator:terraform"),
 				),
 			},
@@ -57,7 +57,7 @@ func TestAccResourceNetflowRsMonitorToExporterWithNetflowMonitorPol(t *testing.T
 				ImportState:       true,
 				ImportStateVerify: true,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_netflow_exporter.test", "tn_netflow_exporter_pol_name", "test_tn_netflow_exporter_pol_name"),
+					resource.TestCheckResourceAttr("aci_relation_to_netflow_exporter.test", "netflow_exporter_policy_name", "test_tn_netflow_exporter_pol_name"),
 					resource.TestCheckResourceAttr("aci_relation_to_netflow_exporter.test", "annotation", "orchestrator:terraform"),
 				),
 			},
@@ -66,7 +66,7 @@ func TestAccResourceNetflowRsMonitorToExporterWithNetflowMonitorPol(t *testing.T
 				Config:             testConfigNetflowRsMonitorToExporterChildrenDependencyWithNetflowMonitorPol,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_netflow_exporter.test", "tn_netflow_exporter_pol_name", "test_tn_netflow_exporter_pol_name"),
+					resource.TestCheckResourceAttr("aci_relation_to_netflow_exporter.test", "netflow_exporter_policy_name", "test_tn_netflow_exporter_pol_name"),
 					resource.TestCheckResourceAttr("aci_relation_to_netflow_exporter.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_relation_to_netflow_exporter.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_relation_to_netflow_exporter.test", "annotations.0.value", "value_1"),
@@ -84,7 +84,7 @@ func TestAccResourceNetflowRsMonitorToExporterWithNetflowMonitorPol(t *testing.T
 				ImportState:       true,
 				ImportStateVerify: true,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_netflow_exporter.test", "tn_netflow_exporter_pol_name", "test_tn_netflow_exporter_pol_name"),
+					resource.TestCheckResourceAttr("aci_relation_to_netflow_exporter.test", "netflow_exporter_policy_name", "test_tn_netflow_exporter_pol_name"),
 					resource.TestCheckResourceAttr("aci_relation_to_netflow_exporter.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_relation_to_netflow_exporter.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_relation_to_netflow_exporter.test", "annotations.0.value", "value_1"),
@@ -142,14 +142,14 @@ func TestAccResourceNetflowRsMonitorToExporterWithNetflowMonitorPol(t *testing.T
 const testConfigNetflowRsMonitorToExporterMinDependencyWithNetflowMonitorPol = testConfigNetflowMonitorPolMinDependencyWithFvTenant + `
 resource "aci_relation_to_netflow_exporter" "test" {
   parent_dn = aci_netflow_monitor_policy.test.id
-  tn_netflow_exporter_pol_name = "test_tn_netflow_exporter_pol_name"
+  netflow_exporter_policy_name = "test_tn_netflow_exporter_pol_name"
 }
 `
 
 const testConfigNetflowRsMonitorToExporterAllDependencyWithNetflowMonitorPol = testConfigNetflowMonitorPolMinDependencyWithFvTenant + `
 resource "aci_relation_to_netflow_exporter" "test" {
   parent_dn = aci_netflow_monitor_policy.test.id
-  tn_netflow_exporter_pol_name = "test_tn_netflow_exporter_pol_name"
+  netflow_exporter_policy_name = "test_tn_netflow_exporter_pol_name"
   annotation = "annotation"
 }
 `
@@ -157,14 +157,14 @@ resource "aci_relation_to_netflow_exporter" "test" {
 const testConfigNetflowRsMonitorToExporterResetDependencyWithNetflowMonitorPol = testConfigNetflowMonitorPolMinDependencyWithFvTenant + `
 resource "aci_relation_to_netflow_exporter" "test" {
   parent_dn = aci_netflow_monitor_policy.test.id
-  tn_netflow_exporter_pol_name = "test_tn_netflow_exporter_pol_name"
+  netflow_exporter_policy_name = "test_tn_netflow_exporter_pol_name"
   annotation = "orchestrator:terraform"
 }
 `
 const testConfigNetflowRsMonitorToExporterChildrenDependencyWithNetflowMonitorPol = testConfigNetflowMonitorPolMinDependencyWithFvTenant + `
 resource "aci_relation_to_netflow_exporter" "test" {
   parent_dn = aci_netflow_monitor_policy.test.id
-  tn_netflow_exporter_pol_name = "test_tn_netflow_exporter_pol_name"
+  netflow_exporter_policy_name = "test_tn_netflow_exporter_pol_name"
   annotations = [
 	{
 	  key = "key_0"
@@ -191,14 +191,14 @@ resource "aci_relation_to_netflow_exporter" "test" {
 const testConfigNetflowRsMonitorToExporterChildrenRemoveFromConfigDependencyWithNetflowMonitorPol = testConfigNetflowMonitorPolMinDependencyWithFvTenant + `
 resource "aci_relation_to_netflow_exporter" "test" {
   parent_dn = aci_netflow_monitor_policy.test.id
-  tn_netflow_exporter_pol_name = "test_tn_netflow_exporter_pol_name"
+  netflow_exporter_policy_name = "test_tn_netflow_exporter_pol_name"
 }
 `
 
 const testConfigNetflowRsMonitorToExporterChildrenRemoveOneDependencyWithNetflowMonitorPol = testConfigNetflowMonitorPolMinDependencyWithFvTenant + `
 resource "aci_relation_to_netflow_exporter" "test" {
   parent_dn = aci_netflow_monitor_policy.test.id
-  tn_netflow_exporter_pol_name = "test_tn_netflow_exporter_pol_name"
+  netflow_exporter_policy_name = "test_tn_netflow_exporter_pol_name"
   annotations = [ 
 	{
 	  key = "key_1"
@@ -217,7 +217,7 @@ resource "aci_relation_to_netflow_exporter" "test" {
 const testConfigNetflowRsMonitorToExporterChildrenRemoveAllDependencyWithNetflowMonitorPol = testConfigNetflowMonitorPolMinDependencyWithFvTenant + `
 resource "aci_relation_to_netflow_exporter" "test" {
   parent_dn = aci_netflow_monitor_policy.test.id
-  tn_netflow_exporter_pol_name = "test_tn_netflow_exporter_pol_name"
+  netflow_exporter_policy_name = "test_tn_netflow_exporter_pol_name"
   annotations = []
   tags = []
 }

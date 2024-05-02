@@ -10,13 +10,13 @@ resource "aci_netflow_monitor_policy" "full_example_tenant" {
   relation_to_netflow_exporters = [
     {
       annotation                   = "annotation_1"
-      tn_netflow_exporter_pol_name = aci_.example.name
+      netflow_exporter_policy_name = aci_netflow_exporter_policy.example.name
     }
   ]
   relation_to_netflow_record = [
     {
       annotation                 = "annotation_1"
-      tn_netflow_record_pol_name = aci_.example.name
+      netflow_record_policy_name = aci_netflow_record_policy.example.name
     }
   ]
   annotations = [

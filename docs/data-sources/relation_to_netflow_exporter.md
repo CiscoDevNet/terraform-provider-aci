@@ -33,7 +33,7 @@ Data source for Relation To Netflow Exporter
 
 data "aci_relation_to_netflow_exporter" "example_netflow_monitor_policy" {
   parent_dn                    = aci_netflow_monitor_policy.example.id
-  tn_netflow_exporter_pol_name = aci_.example.name
+  netflow_exporter_policy_name = aci_netflow_exporter_policy.example.name
 }
 
 ```
@@ -44,7 +44,7 @@ data "aci_relation_to_netflow_exporter" "example_netflow_monitor_policy" {
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_netflow_monitor_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/netflow_monitor_policy) ([netflowMonitorPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowMonitorPol/overview))
-* `tn_netflow_exporter_pol_name` (tnNetflowExporterPolName) - (string) Name. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/) with `aci_.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/) with `data.aci_.example.name`.
+* `netflow_exporter_policy_name` (tnNetflowExporterPolName) - (string) Name. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/netflow_exporter_policy) with `aci_netflow_exporter_policy.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/netflow_exporter_policy) with `data.aci_netflow_exporter_policy.example.name`.
 
 ### Read-Only ###
 

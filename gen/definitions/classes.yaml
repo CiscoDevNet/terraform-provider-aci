@@ -182,3 +182,15 @@ netflowRsMonitorToExporter:
   ui_locations:
     - "Tenants -> Policies -> NetFlow -> NetFlow Monitors"
   sub_category: "Tenant Policies"
+
+netflowExporterPol:
+  resource_name: "netflow_exporter_policy"
+  ui_locations:
+    - "Tenants -> Policies -> NetFlow -> NetFlow Exporters"
+  sub_category: "Tenant Policies"
+
+netflowRecordPol:
+  resource_name: "netflow_record_policy"
+  ui_locations:
+    - "Tenants -> Policies -> NetFlow -> NetFlow Records"
+  sub_category: "Tenant Policies"

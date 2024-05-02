@@ -143,7 +143,9 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 			{{- range $key, $value := $.children}}
 				{{- range $child_index, $child := $value}}
 					{{- range $child_key, $child_value := $child}}
+						{{- if ne $child_key "deletable_child"}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$child_index}}.{{$child_key}}", "{{$child_value}}"),
+						{{- end}}
 					{{- end}}
 				{{- end}}
 			{{- end}}
@@ -170,7 +172,9 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 			{{- range $key, $value := $.children}}
 				{{- range $child_index, $child := $value}}
 					{{- range $child_key, $child_value := $child}}
+						{{- if ne $child_key "deletable_child"}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$child_index}}.{{$child_key}}", "{{$child_value}}"),
+						{{- end}}
 					{{- end}}
 				{{- end}}
 			{{- end}}
@@ -192,7 +196,9 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 		{{- range $key, $value := $.children}}
 			{{- range $child_index, $child := $value}}
 				{{- range $child_key, $child_value := $child}}
+					{{- if ne $child_key "deletable_child"}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$child_index}}.{{$child_key}}", "{{$child_value}}"),
+					{{- end}}
 				{{- end}}
 			{{- end}}
 			{{- if eq (len $value) 1}}
@@ -217,8 +223,17 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 			{{- end}}
 		{{- end}}
 		{{- range $key, $value := $.children}}
-			{{- if eq (len $value) 1}}
+			{{- if eq (len $value) 1}}{{- $child := index $value 0 }}
+				{{- if $child.deletable_child}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "0"),
+				{{- else}}
+					{{- range $child_key, $child_value := $child}}
+						{{- if ne $child_key "deletable_child"}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.0.{{$child_key}}", "{{$child_value}}"),
+						{{- end}}
+					{{- end}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "1"),
+				{{- end}}
 			{{- else}}
 				{{- $child := index $value 1 }}
 				{{- range $child_key, $child_value := $child}}
@@ -243,7 +258,20 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 			{{- end}}
 		{{- end}}
 		{{- range $key, $value := $.children}}
+			{{- if eq (len $value) 1}}{{- $child := index $value 0 }}
+				{{- if $child.deletable_child}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "0"),
+				{{- else}}
+					{{- range $child_key, $child_value := $child}}
+						{{- if ne $child_key "deletable_child"}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.0.{{$child_key}}", "{{$child_value}}"),
+						{{- end}}
+					{{- end}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "1"),
+				{{- end}}
+			{{- else}}
 				resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "0"),
+			{{- end}}
 		{{- end}}
 				),
 			},
@@ -379,7 +407,9 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 		{{- range $key, $value := $.children}}
 			{{- range $child_index, $child := $value}}
 				{{- range $child_key, $child_value := $child}}
+					{{- if ne $child_key "deletable_child"}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$child_index}}.{{$child_key}}", "{{$child_value}}"),
+					{{- end}}
 				{{- end}}
 			{{- end}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "2"),
@@ -405,7 +435,9 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 		{{- range $key, $value := $.children}}
 			{{- range $child_index, $child := $value}}
 				{{- range $child_key, $child_value := $child}}
+					{{- if ne $child_key "deletable_child"}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$child_index}}.{{$child_key}}", "{{$child_value}}"),
+					{{- end}}
 				{{- end}}
 			{{- end}}
 			{{- if eq (len $value) 1}}
@@ -433,8 +465,17 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 			{{- end}}
 		{{- end}}
 		{{- range $key, $value := $.children}}
-			{{- if eq (len $value) 1}}
+			{{- if eq (len $value) 1}}{{- $child := index $value 0 }}
+				{{- if $child.deletable_child}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "0"),
+				{{- else}}
+					{{- range $child_key, $child_value := $child}}
+						{{- if ne $child_key "deletable_child"}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.0.{{$child_key}}", "{{$child_value}}"),
+						{{- end}}
+					{{- end}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "1"),
+				{{- end}}
 			{{- else}}
 				{{- $child := index $value 1 }}
 				{{- range $child_key, $child_value := $child}}
@@ -462,7 +503,20 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 			{{- end}}
 		{{- end}}
 		{{- range $key, $value := $.children}}
+			{{- if eq (len $value) 1}}{{- $child := index $value 0 }}
+				{{- if $child.deletable_child}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "0"),
+				{{- else}}
+					{{- range $child_key, $child_value := $child}}
+						{{- if ne $child_key "deletable_child"}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.0.{{$child_key}}", "{{$child_value}}"),
+						{{- end}}
+					{{- end}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "1"),
+				{{- end}}
+			{{- else}}
 				resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "0"),
+			{{- end}}
 		{{- end}}
 				),
 			},
@@ -559,7 +613,9 @@ resource "aci_{{$.resourceName}}" "test" {
 				{{- range $child := $value}}
 	{
 					{{- range $child_key, $child_value := $child}}
+						{{- if ne $child_key "deletable_child"}}
 	  {{$child_key}} = "{{$child_value}}"
+	  					{{- end}}
 					{{- end}}
 	},
 				{{- end}}
@@ -593,7 +649,10 @@ resource "aci_{{$.resourceName}}" "test" {
   		{{- end}}
   		{{- range $key, $value := $.children}}
 			{{- if eq (len $value) 1}}
+				{{- $child := index $value 0}}
+				{{- if eq $child.deletable_child true}}
   {{$key}} = []
+				{{- end}}
 			{{- else}}
   {{$key}} = [ {{$child := index $value 1 }}
 	{
@@ -618,7 +677,14 @@ resource "aci_{{$.resourceName}}" "test" {
   			{{- end }}
   		{{- end}}
   		{{- range $key, $value := $.children}}
+			{{- if eq (len $value) 1}}
+				{{- $child := index $value 0}}
+				{{- if eq $child.deletable_child true}}
   {{$key}} = []
+				{{- end}}
+			{{- else}}
+  {{$key}} = []
+			{{- end}}
 		{{- end}}
 }
 `

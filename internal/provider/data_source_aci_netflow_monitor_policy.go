@@ -82,7 +82,7 @@ func (d *NetflowMonitorPolDataSource) Schema(ctx context.Context, req datasource
 							Computed:            true,
 							MarkdownDescription: `The annotation of the Relation To Netflow Exporter object.`,
 						},
-						"tn_netflow_exporter_pol_name": schema.StringAttribute{
+						"netflow_exporter_policy_name": schema.StringAttribute{
 							Computed:            true,
 							MarkdownDescription: `Name.`,
 						},
@@ -98,7 +98,7 @@ func (d *NetflowMonitorPolDataSource) Schema(ctx context.Context, req datasource
 							Computed:            true,
 							MarkdownDescription: `The annotation of the Relation To Netflow Record object.`,
 						},
-						"tn_netflow_record_pol_name": schema.StringAttribute{
+						"netflow_record_policy_name": schema.StringAttribute{
 							Computed:            true,
 							MarkdownDescription: `Name.`,
 						},
