@@ -20,17 +20,10 @@ func dataSourceAciEndpointSecurityGroup() *schema.Resource {
 			},
 			"annotation": {
 				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-			"flood_on_encap": {
-				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
 			"match_t": {
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
 			"name": {
@@ -39,17 +32,10 @@ func dataSourceAciEndpointSecurityGroup() *schema.Resource {
 			},
 			"pc_enf_pref": {
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
 			"pref_gr_memb": {
 				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-			"prio": {
-				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
 		})),
