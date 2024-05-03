@@ -116,10 +116,10 @@ func resourceAciEndpointSecurityGroup() *schema.Resource {
 				},
 			},
 			"relation_fv_rs_cust_qos_pol": {
-				Type: schema.TypeString,
-
+				Type:        schema.TypeString,
 				Optional:    true,
 				Description: "Create relation to qos:CustomPol",
+				Deprecated:  "Remove `relation_fv_rs_cust_qos_pol` configuration as it is not used by ESG configuration. The attribute will be removed in the next major version of the provider.",
 			},
 			"relation_fv_rs_intra_epg": {
 				Type:        schema.TypeSet,
