@@ -32,18 +32,14 @@ data "aci_endpoint_security_group" "example" {
 ## Argument Reference ##
 
 * `application_profile_dn` - (Required) Distinguished name of parent Application Profile object.
-* `name` - (Required) name of object Endpoint Security Group.
+* `name` - (Required) Name of object Endpoint Security Group.
 
 ## Attribute Reference ##
 
 * `id` - Attribute id set to the Dn of the Endpoint Security Group.
-* `annotation` - (Optional) Annotation of object Endpoint Security Group.
-* `description` - (Optional) Description of object Endpoint Security Group.
-* `name_alias` - (Optional) Name Alias of object Endpoint Security Group.
-* `flood_on_encap` - (Optional) Handles L2 Multicast/Broadcast and Link-Layer traffic at EPG level. It represents Control at EPG level and decides if the traffic L2 Multicast/Broadcast and Link Local Layer should be flooded only on ENCAP, or based on bridge-domain settings.
-* `match_t` - (Optional) The provider label match criteria.
-* `pc_enf_pref` - (Optional) The preferred policy control.
-* `pref_gr_memb` - (Optional) Represents parameter used to determine
-                    if EPg is part of a group that does not
-                    a contract for communication.
-* `prio` - (Optional) The QoS priority class identifier.
+* `annotation` - (Read-Only) Annotation of object Endpoint Security Group.
+* `description` - (Read-Only) Description of object Endpoint Security Group.
+* `name_alias` - (Read-Only) Name Alias of object Endpoint Security Group.
+* `match_t` - (Read-Only) The provider label match criteria.
+* `pc_enf_pref` - (Read-Only) The preferred policy control.
+* `pref_gr_memb` - (Read-Only) Represents parameter used to determine if EPg is part of a group that does not a contract for communication.
