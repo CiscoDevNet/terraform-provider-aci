@@ -121,10 +121,10 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 			},
 			{{- if .HasParent}}
 			"parent_dn": schema.StringAttribute{
-				{{- if GetDefaultValues .PkgName "parent_dn" $.Definitions}}
+				{{- if getDefaultValues .PkgName "parent_dn" $.Definitions}}
 				Optional:            true,
 				Computed:            true,
-				Default: 			 stringdefault.StaticString("{{GetDefaultValues .PkgName "parent_dn" $.Definitions}}"),
+				Default: 			 stringdefault.StaticString("{{getDefaultValues .PkgName "parent_dn" $.Definitions}}"),
 				{{- else}}
 				Required:            true,
 				{{- end}}
