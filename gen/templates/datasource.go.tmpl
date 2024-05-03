@@ -15,7 +15,7 @@ import (
 	{{- if or .HasBitmask }}
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	{{- end}}
-	{{- if setDefault .PkgName "parent_dn" $.Definitions}}
+	{{- if GetDefaultValues .PkgName "parent_dn" $.Definitions}}
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	{{- end}}
 	"github.com/hashicorp/terraform-plugin-log/tflog"
@@ -52,7 +52,7 @@ func (d *{{.ResourceClassName}}DataSource) Schema(ctx context.Context, req datas
 			},
 			{{- if .HasParent}}
 			"parent_dn": schema.StringAttribute{
-				{{- if setDefault .PkgName "parent_dn" $.Definitions}}
+				{{- if GetDefaultValues .PkgName "parent_dn" $.Definitions}}
 				Optional: 			 true,
 				{{- else}}
 				Required:            true,
@@ -145,9 +145,9 @@ func (d *{{.ResourceClassName}}DataSource) Read(ctx context.Context, req datasou
 
 	getAndSet{{.ResourceClassName}}Attributes(ctx, &resp.Diagnostics, d.client, data)
 
- 	{{ if setDefault .PkgName "parent_dn" $.Definitions}}
+ 	{{ if GetDefaultValues .PkgName "parent_dn" $.Definitions}}
 	if data.ParentDn.IsNull() || data.ParentDn.IsUnknown(){
-		data.ParentDn = basetypes.NewStringValue("{{setDefault .PkgName "parent_dn" $.Definitions}}")
+		data.ParentDn = basetypes.NewStringValue("{{GetDefaultValues .PkgName "parent_dn" $.Definitions}}")
 	}
 	{{- end}}
 

@@ -89,7 +89,7 @@ var templateFuncs = template.FuncMap{
 	"createNonExistingValue":       func(val string) string { return fmt.Sprintf("non_existing_%s", val) },
 	"getParentTestDependencies":    GetParentTestDependencies,
 	"getTargetTestDependencies":    GetTargetTestDependencies,
-	"setDefault":                   GetDefaultValues,
+	"GetDefaultValues":             GetDefaultValues,
 	"fromInterfacesToString":       FromInterfacesToString,
 	"containsNoneAttributeValue":   ContainsNoneAttributeValue,
 	"definedInMap":                 DefinedInMap,
