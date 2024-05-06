@@ -32,14 +32,14 @@ data "aci_endpoint_security_group" "example" {
 ## Argument Reference ##
 
 * `application_profile_dn` - (Required) Distinguished name of parent Application Profile object.
-* `name` - (Required) Name of object Endpoint Security Group.
+* `name` - (Required) Name of the object Endpoint Security Group.
 
 ## Attribute Reference ##
 
 * `id` - Attribute id set to the Dn of the Endpoint Security Group.
-* `annotation` - (Read-Only) Annotation of object Endpoint Security Group.
-* `description` - (Read-Only) Description of object Endpoint Security Group.
-* `name_alias` - (Read-Only) Name Alias of object Endpoint Security Group.
+* `annotation` - (Read-Only) Annotation of the object Endpoint Security Group.
+* `description` - (Read-Only) Description of the object Endpoint Security Group.
+* `name_alias` - (Read-Only) Name Alias of the object Endpoint Security Group.
 * `match_t` - (Read-Only) The provider label match criteria.
 * `pc_enf_pref` - (Read-Only) The preferred policy control.
-* `pref_gr_memb` - (Read-Only) Represents parameter used to determine if EPg is part of a group that does not a contract for communication.
+* `pref_gr_memb` - (Read-Only) Represents parameter used to determine if EPG is part of a group that does not a contract for communication.
