@@ -48,7 +48,7 @@ type MplsNodeSidPResourceModel struct {
 	LoopbackAddr  types.String `tfsdk:"loopback_address"`
 	Name          types.String `tfsdk:"name"`
 	NameAlias     types.String `tfsdk:"name_alias"`
-	Sidoffset     types.String `tfsdk:"sid_offset"`
+	Sidoffset     types.String `tfsdk:"segment_id"`
 	TagAnnotation types.Set    `tfsdk:"annotations"`
 	TagTag        types.Set    `tfsdk:"tags"`
 }
@@ -84,7 +84,7 @@ func (r *MplsNodeSidPResource) Schema(ctx context.Context, req resource.SchemaRe
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the L3out Node Sid Profile object.",
+				MarkdownDescription: "The distinguished name (DN) of the L3out Node SR-MPLS Segment ID Profile object.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
@@ -104,7 +104,7 @@ func (r *MplsNodeSidPResource) Schema(ctx context.Context, req resource.SchemaRe
 					stringplanmodifier.UseStateForUnknown(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
-				MarkdownDescription: `The annotation of the L3out Node Sid Profile object.`,
+				MarkdownDescription: `The annotation of the L3out Node SR-MPLS Segment ID Profile object.`,
 			},
 			"description": schema.StringAttribute{
 				Optional: true,
@@ -112,7 +112,7 @@ func (r *MplsNodeSidPResource) Schema(ctx context.Context, req resource.SchemaRe
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
-				MarkdownDescription: `The description of the L3out Node Sid Profile object.`,
+				MarkdownDescription: `The description of the L3out Node SR-MPLS Segment ID Profile object.`,
 			},
 			"loopback_address": schema.StringAttribute{
 				Optional: true,
@@ -120,7 +120,7 @@ func (r *MplsNodeSidPResource) Schema(ctx context.Context, req resource.SchemaRe
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
-				MarkdownDescription: `The loopback address of the L3out Node Sid Profile object.`,
+				MarkdownDescription: `The loopback address of the L3out Node SR-MPLS Segment ID Profile object.`,
 			},
 			"name": schema.StringAttribute{
 				Optional: true,
@@ -128,7 +128,7 @@ func (r *MplsNodeSidPResource) Schema(ctx context.Context, req resource.SchemaRe
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
-				MarkdownDescription: `The name of the L3out Node Sid Profile object.`,
+				MarkdownDescription: `The name of the L3out Node SR-MPLS Segment ID Profile object.`,
 			},
 			"name_alias": schema.StringAttribute{
 				Optional: true,
@@ -136,15 +136,15 @@ func (r *MplsNodeSidPResource) Schema(ctx context.Context, req resource.SchemaRe
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
-				MarkdownDescription: `The name alias of the L3out Node Sid Profile object.`,
+				MarkdownDescription: `The name alias of the L3out Node SR-MPLS Segment ID Profile object.`,
 			},
-			"sid_offset": schema.StringAttribute{
+			"segment_id": schema.StringAttribute{
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 					stringplanmodifier.RequiresReplace(),
 				},
-				MarkdownDescription: `The offset ID of the L3out Node Sid Profile object.`,
+				MarkdownDescription: `The segment ID of the L3out Node SR-MPLS Segment ID Profile object.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,

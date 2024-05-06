@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_l3out_node_sid_profile"
 sidebar_current: "docs-aci-resource-aci_l3out_node_sid_profile"
 description: |-
-  Manages ACI L3out Node Sid Profile
+  Manages ACI L3out Node SR-MPLS Segment ID Profile
 ---
 
 # aci_l3out_node_sid_profile #
 
-Manages ACI L3out Node Sid Profile
+Manages ACI L3out Node SR-MPLS Segment ID Profile
 
 
 
@@ -30,17 +30,17 @@ Manages ACI L3out Node Sid Profile
 
 ## Example Usage ##
 
-The configuration snippet below creates a L3out Node Sid Profile with only required attributes.
+The configuration snippet below creates a L3out Node SR-MPLS Segment ID Profile with only required attributes.
 
 ```hcl
 
 resource "aci_l3out_node_sid_profile" "example_l3out_loopback_interface_profile" {
   parent_dn  = aci_l3out_loopback_interface_profile.example.id
-  sid_offset = "1"
+  segment_id = "1"
 }
 
 ```
-The configuration snippet below shows all possible attributes of the L3out Node Sid Profile.
+The configuration snippet below shows all possible attributes of the L3out Node SR-MPLS Segment ID Profile.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
@@ -53,7 +53,7 @@ resource "aci_l3out_node_sid_profile" "full_example_l3out_loopback_interface_pro
   loopback_address = "1.1.1.1"
   name             = "node_sid_profile"
   name_alias       = "name_alias"
-  sid_offset       = "1"
+  segment_id       = "1"
   annotations = [
     {
       key   = "key_0"
@@ -70,7 +70,7 @@ resource "aci_l3out_node_sid_profile" "full_example_l3out_loopback_interface_pro
 
 ```
 
-All examples for the L3out Node Sid Profile resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/resources/aci_l3out_node_sid_profile) folder.
+All examples for the L3out Node SR-MPLS Segment ID Profile resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/resources/aci_l3out_node_sid_profile) folder.
 
 ## Schema ##
 
@@ -78,20 +78,20 @@ All examples for the L3out Node Sid Profile resource can be found in the [exampl
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_l3out_loopback_interface_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3out_loopback_interface_profile) ([l3extLoopBackIfP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extLoopBackIfP/overview))
-* `sid_offset` (sidoffset) - (string) The offset ID of the L3out Node Sid Profile object.
+* `segment_id` (sidoffset) - (string) The segment ID of the L3out Node SR-MPLS Segment ID Profile object.
 
 ### Read-Only ###
 
-* `id` - (string) The distinguished name (DN) of the L3out Node Sid Profile object.
+* `id` - (string) The distinguished name (DN) of the L3out Node SR-MPLS Segment ID Profile object.
 
 ### Optional ###
   
-* `annotation` (annotation) - (string) The annotation of the L3out Node Sid Profile object.
+* `annotation` (annotation) - (string) The annotation of the L3out Node SR-MPLS Segment ID Profile object.
   - Default: `orchestrator:terraform`
-* `description` (descr) - (string) The description of the L3out Node Sid Profile object.
-* `loopback_address` (loopbackAddr) - (string) The loopback address of the L3out Node Sid Profile object.
-* `name` (name) - (string) The name of the L3out Node Sid Profile object.
-* `name_alias` (nameAlias) - (string) The name alias of the L3out Node Sid Profile object.
+* `description` (descr) - (string) The description of the L3out Node SR-MPLS Segment ID Profile object.
+* `loopback_address` (loopbackAddr) - (string) The loopback address of the L3out Node SR-MPLS Segment ID Profile object.
+* `name` (name) - (string) The name of the L3out Node SR-MPLS Segment ID Profile object.
+* `name_alias` (nameAlias) - (string) The name alias of the L3out Node SR-MPLS Segment ID Profile object.
 
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   
@@ -109,13 +109,13 @@ All examples for the L3out Node Sid Profile resource can be found in the [exampl
 
 ## Importing
 
-An existing L3out Node Sid Profile can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
+An existing L3out Node SR-MPLS Segment ID Profile can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
 terraform import aci_l3out_node_sid_profile.example_l3out_loopback_interface_profile uni/tn-{name}/out-{name}/lnodep-{name}/rsnodeL3OutAtt-[{tDn}]/lbp-[{addr}]/nodesidp-{sidoffset}
 ```
 
-Starting in Terraform version 1.5, an existing L3out Node Sid Profile can be imported
+Starting in Terraform version 1.5, an existing L3out Node SR-MPLS Segment ID Profile can be imported
 using [import blocks](https://developer.hashicorp.com/terraform/language/import) via the following configuration:
 
 ```
