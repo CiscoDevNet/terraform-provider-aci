@@ -70,10 +70,6 @@ func (d *AciRestManagedDataSource) Schema(ctx context.Context, req datasource.Sc
 				Computed:            true,
 				MarkdownDescription: `The annotation of the ACI object.`,
 			},
-			"escape_html": schema.BoolAttribute{
-				Computed:            true,
-				MarkdownDescription: "Enable escaping of HTML characters when encoding the JSON payload.",
-			},
 		},
 		Blocks: map[string]schema.Block{
 			"child": schema.SetNestedBlock{
