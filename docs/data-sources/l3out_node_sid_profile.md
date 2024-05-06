@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_l3out_node_sid_profile"
 sidebar_current: "docs-aci-data-source-aci_l3out_node_sid_profile"
 description: |-
-  Data source for L3out Node Sid Profile
+  Data source for L3out Node SR-MPLS Segment ID Profile
 ---
 
 # aci_l3out_node_sid_profile #
 
-Data source for L3out Node Sid Profile
+Data source for L3out Node SR-MPLS Segment ID Profile
 
 ## API Information ##
 
@@ -32,7 +32,7 @@ Data source for L3out Node Sid Profile
 
 data "aci_l3out_node_sid_profile" "example_l3out_loopback_interface_profile" {
   parent_dn  = aci_l3out_loopback_interface_profile.example.id
-  sid_offset = "1"
+  segment_id = "1"
 }
 
 ```
@@ -43,16 +43,16 @@ data "aci_l3out_node_sid_profile" "example_l3out_loopback_interface_profile" {
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_l3out_loopback_interface_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3out_loopback_interface_profile) ([l3extLoopBackIfP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extLoopBackIfP/overview))
-* `sid_offset` (sidoffset) - (string) The offset ID of the L3out Node Sid Profile object.
+* `segment_id` (sidoffset) - (string) The segment ID of the L3out Node SR-MPLS Segment ID Profile object.
 
 ### Read-Only ###
 
-* `id` - (string) The distinguished name (DN) of the L3out Node Sid Profile object.
-* `annotation` (annotation) - (string) The annotation of the L3out Node Sid Profile object.
-* `description` (descr) - (string) The description of the L3out Node Sid Profile object.
-* `loopback_address` (loopbackAddr) - (string) The loopback address of the L3out Node Sid Profile object.
-* `name` (name) - (string) The name of the L3out Node Sid Profile object.
-* `name_alias` (nameAlias) - (string) The name alias of the L3out Node Sid Profile object.
+* `id` - (string) The distinguished name (DN) of the L3out Node SR-MPLS Segment ID Profile object.
+* `annotation` (annotation) - (string) The annotation of the L3out Node SR-MPLS Segment ID Profile object.
+* `description` (descr) - (string) The description of the L3out Node SR-MPLS Segment ID Profile object.
+* `loopback_address` (loopbackAddr) - (string) The loopback address of the L3out Node SR-MPLS Segment ID Profile object.
+* `name` (name) - (string) The name of the L3out Node SR-MPLS Segment ID Profile object.
+* `name_alias` (nameAlias) - (string) The name alias of the L3out Node SR-MPLS Segment ID Profile object.
 
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
   * `key` (key) - (string) The key used to uniquely identify this configuration object.

@@ -21,7 +21,7 @@ func TestAccDataSourceMplsNodeSidPWithL3extLoopBackIfP(t *testing.T) {
 				Config:             testConfigMplsNodeSidPDataSourceDependencyWithL3extLoopBackIfP,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.aci_l3out_node_sid_profile.test", "sid_offset", "1"),
+					resource.TestCheckResourceAttr("data.aci_l3out_node_sid_profile.test", "segment_id", "1"),
 					resource.TestCheckResourceAttr("data.aci_l3out_node_sid_profile.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("data.aci_l3out_node_sid_profile.test", "description", ""),
 					resource.TestCheckResourceAttr("data.aci_l3out_node_sid_profile.test", "loopback_address", "0.0.0.0"),
@@ -40,7 +40,7 @@ func TestAccDataSourceMplsNodeSidPWithL3extLoopBackIfP(t *testing.T) {
 const testConfigMplsNodeSidPDataSourceDependencyWithL3extLoopBackIfP = testConfigMplsNodeSidPMinDependencyWithL3extLoopBackIfP + `
 data "aci_l3out_node_sid_profile" "test" {
   parent_dn = aci_l3out_loopback_interface_profile.test.id
-  sid_offset = "1"
+  segment_id = "1"
   depends_on = [aci_l3out_node_sid_profile.test]
 }
 `
@@ -48,7 +48,7 @@ data "aci_l3out_node_sid_profile" "test" {
 const testConfigMplsNodeSidPNotExistingL3extLoopBackIfP = testConfigMplsNodeSidPMinDependencyWithL3extLoopBackIfP + `
 data "aci_l3out_node_sid_profile" "test_non_existing" {
   parent_dn = aci_l3out_loopback_interface_profile.test.id
-  sid_offset = "2"
+  segment_id = "2"
   depends_on = [aci_l3out_node_sid_profile.test]
 }
 `

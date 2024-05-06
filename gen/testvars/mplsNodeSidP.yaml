@@ -10,13 +10,13 @@ default:
   name_alias: ""
 
 datasource_non_existing:
-  sid_offset: "2"
+  segment_id: "2"
 
 datasource_required:
-  sid_offset: "1"
+  segment_id: "1"
 
 resource_required:
-  sid_offset: "1"
+  segment_id: "1"
 
 all:
   annotation: "annotation"
