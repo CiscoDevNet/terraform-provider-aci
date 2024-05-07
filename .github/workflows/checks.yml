@@ -38,8 +38,6 @@ jobs:
           go-version-file: 'go.mod'
       - name: Generate provider code
         run: go generate
-        env: 
-          GOFLAGS: -mod=mod
       - name: Check generated code for diffs
         run: git diff --exit-code
 
