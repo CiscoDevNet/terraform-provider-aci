@@ -1,5 +1,3 @@
-//go:build ignore
-
 /*
 Generates terraform provider code based on templates.
 
