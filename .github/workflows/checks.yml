@@ -43,6 +43,7 @@ jobs:
 
   acceptance:
     name: Acceptance Tests
+    if: github.repository_owner == 'CiscoDevNet'
     needs: [build, diff]
     runs-on: ubuntu-latest
     env:
