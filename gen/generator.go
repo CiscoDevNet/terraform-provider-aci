@@ -31,6 +31,7 @@ package main
 
 import (
 	"bytes"
+	"cmp"
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
@@ -79,31 +80,154 @@ const pubhupDevnetBaseUrl = "https://pubhub.devnetcloud.com/media/model-doc-late
 // The map contains a key which is the name of the function used in the template and a value which is the function itself
 // The functions itself are defined in the current file
 var templateFuncs = template.FuncMap{
-	"snakeCase":                    Underscore,
-	"validatorString":              ValidatorString,
-	"containsString":               ContainsString,
-	"listToString":                 ListToString,
-	"overwriteProperty":            GetOverwriteAttributeName,
-	"overwritePropertyValue":       GetOverwriteAttributeValue,
-	"createTestValue":              func(val string) string { return fmt.Sprintf("test_%s", val) },
-	"createNonExistingValue":       func(val string) string { return fmt.Sprintf("non_existing_%s", val) },
-	"getParentTestDependencies":    GetParentTestDependencies,
-	"getTargetTestDependencies":    GetTargetTestDependencies,
-	"getDefaultValues":             GetDefaultValues,
-	"fromInterfacesToString":       FromInterfacesToString,
-	"containsNoneAttributeValue":   ContainsNoneAttributeValue,
-	"definedInMap":                 DefinedInMap,
-	"add":                          func(val1, val2 int) int { return val1 + val2 },
-	"substract":                    func(val1, val2 int) int { return val1 - val2 },
-	"isInterfaceSlice":             IsInterfaceSlice,
-	"lookupTestValue":              LookupTestValue,
-	"lookupChildTestValue":         LookupChildTestValue,
-	"createParentDnValue":          CreateParentDnValue,
-	"getResourceName":              GetResourceName,
-	"getResourceNameAsDescription": GetResourceNameAsDescription,
-	"capitalize":                   Capitalize,
-	"getTestConfigVariableName":    GetTestConfigVariableName,
-	"getDevnetDocForClass":         GetDevnetDocForClass,
+	"snakeCase":                         Underscore,
+	"validatorString":                   ValidatorString,
+	"containsString":                    ContainsString,
+	"listToString":                      ListToString,
+	"overwriteProperty":                 GetOverwriteAttributeName,
+	"overwritePropertyValue":            GetOverwriteAttributeValue,
+	"createTestValue":                   func(val string) string { return fmt.Sprintf("test_%s", val) },
+	"createNonExistingValue":            func(val string) string { return fmt.Sprintf("non_existing_%s", val) },
+	"getParentTestDependencies":         GetParentTestDependencies,
+	"getTargetTestDependencies":         GetTargetTestDependencies,
+	"getDefaultValues":                  GetDefaultValues,
+	"fromInterfacesToString":            FromInterfacesToString,
+	"containsNoneAttributeValue":        ContainsNoneAttributeValue,
+	"definedInMap":                      DefinedInMap,
+	"getValueFromMap":                   GetValueFromMap,
+	"add":                               func(val1, val2 int) int { return val1 + val2 },
+	"substract":                         func(val1, val2 int) int { return val1 - val2 },
+	"isInterfaceSlice":                  IsInterfaceSlice,
+	"lookupTestValue":                   LookupTestValue,
+	"lookupChildTestValue":              LookupChildTestValue,
+	"createParentDnValue":               CreateParentDnValue,
+	"getResourceName":                   GetResourceName,
+	"getResourceNameAsDescription":      GetResourceNameAsDescription,
+	"capitalize":                        Capitalize,
+	"decapitalize":                      Decapitalize,
+	"getTestConfigVariableName":         GetTestConfigVariableName,
+	"getDevnetDocForClass":              GetDevnetDocForClass,
+	"getMigrationType":                  GetMigrationType,
+	"isLegacyAttribute":                 IsLegacyAttribute,
+	"isLegacyChild":                     IsLegacyChild,
+	"getLegacyChildAttribute":           GetLegacyChildAttribute,
+	"getConflictingAttributeName":       GetConflictingAttributeName,
+	"getPropertyNameForLegacyAttribute": GetPropertyNameForLegacyAttribute,
+	"isNewAttributeStringType":          IsNewAttributeStringType,
+	"isNewNamedClassAttribute":          IsNewNamedClassAttribute,
+	"getChildAttributesFromBlocks":      GetChildAttributesFromBlocks,
+	"getNewChildAttributes":             GetNewChildAttributes,
+}
+
+func GetMigrationType(valueType []string) string {
+	if len(valueType) == 2 && valueType[0] == "set" && valueType[1] == "string" {
+		return "Set"
+	} else if len(valueType) == 2 && valueType[0] == "list" && valueType[1] == "string" {
+		return "List"
+	}
+	return "String"
+}
+
+func GetValueFromMap(key string, searchMap map[string]string) string {
+	if value, ok := searchMap[key]; ok {
+		return value
+	}
+	return ""
+}
+
+func IsLegacyAttribute(name string, legacyAttributes map[string]LegacyAttribute) bool {
+	if _, ok := legacyAttributes[name]; ok {
+		return true
+	}
+	return false
+}
+
+func IsLegacyChild(child string, children []string) bool {
+	if slices.Contains(children, child) {
+		return true
+	}
+	return false
+}
+
+func IsNewAttributeStringType(attributeName string) bool {
+	if len(strings.Split(attributeName, ".")) == 1 {
+		return true
+	}
+	return false
+}
+
+func IsNewNamedClassAttribute(attributeName string) bool {
+	if strings.HasSuffix(attributeName, "_name") {
+		return true
+	}
+	return false
+}
+
+func GetConflictingAttributeName(attributeName string) string {
+	return strings.Split(attributeName, ".")[0]
+}
+
+func GetPropertyNameForLegacyAttribute(name string, legacyAttributes map[string]LegacyAttribute) string {
+	for _, legacyAttribute := range legacyAttributes {
+		if legacyAttribute.ReplacedBy.AttributeName == name {
+			return legacyAttribute.AttributeName
+		}
+	}
+	return ""
+}
+
+func GetLegacyChildAttribute(className, overwriteProperty string, property Property, legacyAttributes map[string]LegacyAttribute, legacyBlocks []LegacyBlock) string {
+
+	for _, legacyBlock := range legacyBlocks {
+		if legacyBlock.ClassName == className {
+			for _, legacyAttribute := range legacyBlock.Attributes {
+				if strings.Contains(legacyAttribute.ReplacedBy.AttributeName, overwriteProperty) {
+					return legacyAttribute.Name
+				}
+			}
+			return ""
+		}
+	}
+
+	for _, legacyAttribute := range legacyAttributes {
+		if strings.Contains(legacyAttribute.ReplacedBy.AttributeName, overwriteProperty) {
+			return Capitalize(className)
+		}
+	}
+	return ""
+}
+
+func GetChildAttributesFromBlocks(className string, legacyBlocks []LegacyBlock) map[string]LegacyAttribute {
+	legacyAttributes := map[string]LegacyAttribute{}
+	for _, legacyBlock := range legacyBlocks {
+		if legacyBlock.ClassName == className {
+			legacyAttributes = legacyBlock.Attributes
+		}
+	}
+	return legacyAttributes
+}
+
+func GetNewChildAttributes(legacyAttributes map[string]LegacyAttribute, properties map[string]Property) []Property {
+	result := []Property{}
+	for _, property := range properties {
+		found := false
+		for _, attribute := range legacyAttributes {
+			if property.Name == attribute.Name {
+				found = true
+				break
+			}
+		}
+		if !found && property.Name != "Annotation" {
+			result = append(result, property)
+		}
+	}
+
+	// return result sorted to guarantee consistent output
+	slices.SortFunc(result, func(a, b Property) int {
+		return cmp.Compare(a.Name, b.Name)
+	})
+
+	return result
 }
 
 // Global variables used for unique resource name setting based on label from meta data
@@ -129,6 +253,10 @@ func GetDevnetDocForClass(className string) string {
 
 func Capitalize(s string) string {
 	return fmt.Sprintf("%s%s", strings.ToUpper(s[:1]), s[1:])
+}
+
+func Decapitalize(s string) string {
+	return fmt.Sprintf("%s%s", strings.ToLower(s[:1]), s[1:])
 }
 
 func ContainsString(s, sub string) bool {
@@ -343,22 +471,32 @@ func getDefinitions() Definitions {
 		panic(err)
 	}
 	for _, file := range files {
-		if path.Ext(file.Name()) != ".yaml" {
-			continue
-		}
-		definitionMap := make(map[string]interface{})
-		definition, err := os.ReadFile(fmt.Sprintf("%s/%s", definitionsPath, file.Name()))
-		if err != nil {
-			panic(err)
-		}
-		err = yaml.Unmarshal([]byte(definition), &definitionMap)
-		if err != nil {
-			panic(err)
-		}
-		if file.Name() == "classes.yaml" {
-			definitions.Classes = definitionMap
-		} else if file.Name() == "properties.yaml" {
-			definitions.Properties = definitionMap
+		if path.Ext(file.Name()) == ".yaml" {
+			definitionMap := make(map[string]interface{})
+			definition, err := os.ReadFile(fmt.Sprintf("%s/%s", definitionsPath, file.Name()))
+			if err != nil {
+				panic(err)
+			}
+			err = yaml.Unmarshal([]byte(definition), &definitionMap)
+			if err != nil {
+				panic(err)
+			}
+			if file.Name() == "classes.yaml" {
+				definitions.Classes = definitionMap
+			} else if file.Name() == "properties.yaml" {
+				definitions.Properties = definitionMap
+			}
+		} else if path.Ext(file.Name()) == ".json" && strings.Contains(file.Name(), "schema-git-commit-") {
+			definitionMap := make(map[string]interface{})
+			definition, err := os.ReadFile(fmt.Sprintf("%s/%s", definitionsPath, file.Name()))
+			if err != nil {
+				panic(err)
+			}
+			err = json.Unmarshal([]byte(definition), &definitionMap)
+			if err != nil {
+				panic(err)
+			}
+			definitions.Migration = definitionMap
 		}
 	}
 	return definitions
@@ -676,6 +814,11 @@ type Model struct {
 	DnFormats                 []interface{}
 	Properties                map[string]Property
 	NamedProperties           map[string]Property
+	LegacyAttributes          map[string]LegacyAttribute
+	LegacyBlocks              []LegacyBlock
+	LegacySchemaVersion       int
+	LegacyChildren            []string
+	MigrationClassTypes       map[string]string
 	Children                  map[string]Model
 	Configuration             map[string]interface{}
 	TestVars                  map[string]interface{}
@@ -696,6 +839,28 @@ type Model struct {
 	HasNamedProperties        bool
 	HasChildNamedProperties   bool
 	Include                   bool
+}
+
+type LegacyBlock struct {
+	Name        string
+	NestingMode string
+	ClassName   string
+	Attributes  map[string]LegacyAttribute
+}
+
+type LegacyAttribute struct {
+	Name          string
+	AttributeName string
+	ValueType     []string
+	ReplacedBy    ReplacementAttribute
+	Optional      bool
+	Computed      bool
+	Required      bool
+}
+
+type ReplacementAttribute struct {
+	ClassName     string
+	AttributeName string
 }
 
 // A Property represents a ACI class property
@@ -726,6 +891,7 @@ type Property struct {
 type Definitions struct {
 	Classes    map[string]interface{}
 	Properties map[string]interface{}
+	Migration  map[string]interface{}
 }
 
 // Reads the class details from the meta file and sets all details to the Model
@@ -798,6 +964,14 @@ func (m *Model) setClassModel(metaPath string, child bool, definitions Definitio
 			m.HasChild = false
 		}
 	}
+
+	if isMigrationResource(m.PkgName, definitions) {
+		m.SetMigrationClassTypes(definitions)
+		m.SetLegacyChildren(definitions)
+		m.SetMigrationVersion(definitions)
+		m.SetLegacyAttributes(definitions)
+	}
+
 }
 
 func (m *Model) SetClassLabel(classDetails interface{}, child bool) {
@@ -1173,6 +1347,192 @@ func (m *Model) SetClassProperties(classDetails interface{}) {
 	}
 }
 
+func (m *Model) SetMigrationClassTypes(definitions Definitions) {
+
+	migrationClassTypes := map[string]string{}
+	resource_name := fmt.Sprintf("%s_%s", providerName, resourceNames[m.PkgName])
+	legacyResource := definitions.Migration["provider_schemas"].(map[string]interface{})["registry.terraform.io/ciscodevnet/aci"].(map[string]interface{})["resource_schemas"].(map[string]interface{})[resource_name]
+	blockTypes := legacyResource.(map[string]interface{})["block"].(map[string]interface{})["block_types"].(map[string]interface{})
+	for blockName, blockDetails := range blockTypes {
+		className := m.GetClassFromMigrationClassMapping(definitions, blockName, false)
+		attributeType := fmt.Sprintf("block,%s", blockDetails.(map[string]interface{})["nesting_mode"].(string))
+		migrationClassTypes[className] = attributeType
+	}
+
+	attributes := legacyResource.(map[string]interface{})["block"].(map[string]interface{})["attributes"].(map[string]interface{})
+	for attributeName, attributeValue := range attributes {
+		className := m.GetClassFromMigrationClassMapping(definitions, attributeName, true)
+		if className != m.PkgName {
+			switch v := attributeValue.(map[string]interface{})["type"].(type) {
+			case string:
+				migrationClassTypes[className] = v
+			case []interface{}:
+				attributeTypes := []string{}
+				for _, value := range v {
+					attributeTypes = append(attributeTypes, value.(string))
+				}
+				migrationClassTypes[className] = strings.Join(attributeTypes, ",")
+			}
+		}
+	}
+
+	m.MigrationClassTypes = migrationClassTypes
+}
+
+func (m *Model) SetLegacyChildren(definitions Definitions) {
+
+	legacyChildren := []string{}
+	if v, ok := definitions.Classes[m.PkgName]; ok {
+		for key, value := range v.(map[interface{}]interface{}) {
+			if key.(string) == "migration_blocks" {
+				for className := range value.(map[interface{}]interface{}) {
+					if className.(string) != m.PkgName {
+						legacyChildren = append(legacyChildren, className.(string))
+					}
+				}
+			}
+		}
+	}
+	m.LegacyChildren = legacyChildren
+}
+
+func (m *Model) SetMigrationVersion(definitions Definitions) {
+	m.LegacySchemaVersion = 1
+	if v, ok := definitions.Classes[m.PkgName]; ok {
+		for key, value := range v.(map[interface{}]interface{}) {
+			if key.(string) == "migration_version" {
+				m.LegacySchemaVersion = value.(int)
+			}
+		}
+	}
+}
+
+func (m *Model) SetLegacyAttributes(definitions Definitions) {
+
+	m.LegacyAttributes = make(map[string]LegacyAttribute)
+	resourceName := fmt.Sprintf("%s_%s", providerName, GetResourceName(m.PkgName, definitions))
+
+	legacyResource := definitions.Migration["provider_schemas"].(map[string]interface{})["registry.terraform.io/ciscodevnet/aci"].(map[string]interface{})["resource_schemas"].(map[string]interface{})[resourceName]
+
+	if legacyResource != nil {
+
+		attributeNames := []string{}
+		for _, property := range m.Properties {
+			attributeNames = append(attributeNames, property.SnakeCaseName)
+		}
+
+		blockTypes := legacyResource.(map[string]interface{})["block"].(map[string]interface{})["block_types"].(map[string]interface{})
+		for blockName, blockDetails := range blockTypes {
+			block := LegacyBlock{
+				Name:        blockName,
+				NestingMode: blockDetails.(map[string]interface{})["nesting_mode"].(string),
+				Attributes:  make(map[string]LegacyAttribute),
+			}
+			block.ClassName = m.GetClassForBlockName(definitions, block.Name)
+			attributes := blockDetails.(map[string]interface{})["block"].(map[string]interface{})["attributes"].(map[string]interface{})
+			for attributeName, attributeValue := range attributes {
+				legacyAttribute, propertyName := m.GetLegacyAttribute(attributeName, block.ClassName, attributeValue, definitions)
+
+				if legacyAttribute.AttributeName == "target_dn" {
+					legacyAttribute.Name = "TargetDn"
+				}
+
+				childClass := m.Children[block.ClassName]
+				for _, property := range childClass.Properties {
+					if legacyAttribute.AttributeName == property.SnakeCaseName {
+						legacyAttribute.Name = property.Name
+						break
+					}
+				}
+				block.Attributes[propertyName] = legacyAttribute
+			}
+			m.LegacyBlocks = append(m.LegacyBlocks, block)
+		}
+
+		// sort LegacyBlocks to guarantee consistent output
+		slices.SortFunc(m.LegacyBlocks, func(a, b LegacyBlock) int {
+			return cmp.Compare(a.ClassName, b.ClassName)
+		})
+
+		attributes := legacyResource.(map[string]interface{})["block"].(map[string]interface{})["attributes"].(map[string]interface{})
+		for attributeName, attributeValue := range attributes {
+			legacyAttribute, propertyName := m.GetLegacyAttribute(attributeName, m.GetClassFromMigrationClassMapping(definitions, attributeName, true), attributeValue, definitions)
+			if attributeName == propertyName {
+				legacyAttribute.Name = fmt.Sprintf("Deprecated_%s", legacyAttribute.Name)
+			}
+			if legacyAttribute.ReplacedBy.ClassName != "" && legacyAttribute.ReplacedBy.ClassName != m.PkgName {
+				legacyAttribute.Name = Capitalize(legacyAttribute.ReplacedBy.ClassName)
+			}
+			m.LegacyAttributes[propertyName] = legacyAttribute
+		}
+
+	}
+
+}
+
+func (m *Model) GetLegacyAttribute(attributeName, className string, attributeValue interface{}, definitions Definitions) (LegacyAttribute, string) {
+	optional := false
+	if attributeValue.(map[string]interface{})["optional"] != nil {
+		optional = attributeValue.(map[string]interface{})["optional"].(bool)
+	}
+
+	computed := false
+	if attributeValue.(map[string]interface{})["computed"] != nil {
+		computed = attributeValue.(map[string]interface{})["computed"].(bool)
+	}
+
+	required := false
+	if attributeValue.(map[string]interface{})["required"] != nil {
+		required = attributeValue.(map[string]interface{})["required"].(bool)
+	}
+
+	valueType := []string{}
+	if value, found := attributeValue.(map[string]interface{})["type"].(string); found {
+		valueType = []string{value}
+	} else {
+		for _, value := range attributeValue.(map[string]interface{})["type"].([]interface{}) {
+			valueType = append(valueType, value.(string))
+		}
+	}
+
+	replacedBy := m.GetOverwriteAttributeMigration(definitions, attributeName, className)
+
+	var propertyName string
+	if replacedBy != nil {
+		propertyName = GetOverwriteAttributeName(m.PkgName, replacedBy.(ReplacementAttribute).AttributeName, definitions)
+	} else {
+		propertyName = attributeName
+	}
+
+	if propertyName == "id_attribute" || propertyName == "id" {
+		propertyName = "Id"
+	} else if propertyName == "parent_dn" {
+		propertyName = "ParentDn"
+	} else {
+		for _, property := range m.Properties {
+			if GetOverwriteAttributeName(m.PkgName, property.SnakeCaseName, definitions) == propertyName {
+				propertyName = property.Name
+				break
+			}
+		}
+	}
+
+	legacyAttribute := LegacyAttribute{
+		Name:          propertyName,
+		AttributeName: attributeName,
+		ValueType:     valueType,
+		Optional:      optional,
+		Computed:      computed,
+		Required:      required,
+	}
+
+	if replacedBy != nil {
+		legacyAttribute.ReplacedBy = replacedBy.(ReplacementAttribute)
+	}
+
+	return legacyAttribute, propertyName
+}
+
 /*
 Determine if a property comment from meta data should be overwritten by a comment overwrite in the properties.yaml file
 Precendence order is:
@@ -1462,6 +1822,80 @@ func SetModelTargetValues(PkgName string, model *Model, classModels map[string]M
 	model.TargetResourceName = GetResourceName(model.TargetResourceClassName, definitions)
 }
 
+func (m *Model) GetClassForBlockName(definitions Definitions, blockName string) string {
+	if v, ok := definitions.Classes[m.PkgName]; ok {
+		for key, value := range v.(map[interface{}]interface{}) {
+			if key.(string) == "migration_blocks" {
+				for className, classValues := range value.(map[interface{}]interface{}) {
+					for migrationKey := range classValues.(map[interface{}]interface{}) {
+						if migrationKey.(string) == blockName {
+							return className.(string)
+						}
+					}
+				}
+			}
+		}
+	}
+	panic(fmt.Sprintf("Class name not found for block %s", blockName))
+}
+
+func (m *Model) GetClassFromMigrationClassMapping(definitions Definitions, attributeName string, set bool) string {
+	if v, ok := definitions.Classes[m.PkgName]; ok {
+		for key, value := range v.(map[interface{}]interface{}) {
+			if key.(string) == "migration_blocks" {
+				for className, attributes := range value.(map[interface{}]interface{}) {
+					if set {
+						if className.(string) != m.PkgName && len(attributes.(map[interface{}]interface{})) == 1 {
+							for name := range attributes.(map[interface{}]interface{}) {
+								if name.(string) == attributeName {
+									return className.(string)
+								}
+							}
+						}
+					} else {
+						for name := range attributes.(map[interface{}]interface{}) {
+							if name.(string) == attributeName {
+								return className.(string)
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return m.PkgName
+}
+
+func (m *Model) GetOverwriteAttributeMigration(definitions Definitions, attributeName, className string) interface{} {
+	if v, ok := definitions.Classes[m.PkgName]; ok {
+		for key, value := range v.(map[interface{}]interface{}) {
+			if key.(string) == "migration_blocks" {
+				for classNameDefinition, classValues := range value.(map[interface{}]interface{}) {
+					if classNameDefinition.(string) == className {
+						for migrationKey, migrationValue := range classValues.(map[interface{}]interface{}) {
+							if strings.Contains(migrationKey.(string), attributeName) {
+								return ReplacementAttribute{AttributeName: migrationValue.(string), ClassName: className}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return nil
+}
+
+func isMigrationResource(classPkgName string, definitions Definitions) bool {
+	if v, ok := definitions.Classes[classPkgName]; ok {
+		for key := range v.(map[interface{}]interface{}) {
+			if key.(string) == "migration_blocks" {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 // Set variables that are used during the rendering of the example and documentation templates
 func setDocumentationData(m *Model, definitions Definitions) {
 	UiLocations := []string{}
@@ -1513,7 +1947,6 @@ func setDocumentationData(m *Model, definitions Definitions) {
 
 	if len(resourcesNotFound) != 0 && len(resourcesFound) < docsParentDnAmount {
 		if len(resourcesNotFound) > docsParentDnAmount-len(resourcesFound) {
-			// TODO catch default classes and add to documentation
 			resourcesNotFound = resourcesNotFound[0:(docsParentDnAmount - len(resourcesFound))]
 			m.DocumentationParentDns = append(m.DocumentationParentDns, fmt.Sprintf("Too many classes to display, see model documentation for all possible classes of %s.", GetDevnetDocForClass(m.PkgName)))
 		} else {
