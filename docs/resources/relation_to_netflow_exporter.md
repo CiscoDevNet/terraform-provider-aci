@@ -27,7 +27,9 @@ Manages ACI Relation To Netflow Exporter
 
 ## GUI Information ##
 
-* Location: `Tenants -> Policies -> NetFlow -> NetFlow Monitors`
+* Locations:
+  - `Tenants -> Policies -> NetFlow -> NetFlow Monitors`
+  - `Fabric -> Access Policies -> Policies -> Interface -> NetFlow -> NetFlow Monitors`
 
 ## Example Usage ##
 

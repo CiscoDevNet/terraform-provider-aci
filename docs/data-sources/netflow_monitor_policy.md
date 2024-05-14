@@ -25,7 +25,9 @@ Data source for Netflow Monitor Policy
 
 ## GUI Information ##
 
-* Location: `Tenants -> Policies -> NetFlow -> NetFlow Monitors`
+* Locations:
+  - `Tenants -> Policies -> NetFlow -> NetFlow Monitors`
+  - `Fabric -> Access Policies -> Policies -> Interface -> NetFlow -> NetFlow Monitors`
 
 ## Example Usage ##
 

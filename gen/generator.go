@@ -1116,9 +1116,9 @@ func (m *Model) SetClassProperties(classDetails interface{}) {
 				}
 			}
 
-			DefaultValueOverwrite := GetDefaultValues(m.PkgName, propertyName, m.Definitions)
-			if DefaultValueOverwrite != "" {
-				property.DefaultValue = DefaultValueOverwrite
+			defaultValueOverwrite := GetDefaultValues(m.PkgName, propertyName, m.Definitions)
+			if defaultValueOverwrite != "" {
+				property.DefaultValue = defaultValueOverwrite
 			} else {
 				val, ok = propertyValue.(map[string]interface{})["default"]
 				if ok {
