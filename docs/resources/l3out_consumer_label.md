@@ -61,14 +61,14 @@ resource "aci_l3out_consumer_label" "full_example_l3_outside" {
   relation_to_instance_profiles = [
     {
       annotation = "annotation_1"
-      target_dn  = aci_external_network_instance_profile.test.id
+      target_dn  = aci_external_network_instance_profile.example.id
     }
   ]
   relation_to_route_control_profiles = [
     {
       annotation = "annotation_1"
       direction  = "export"
-      target_dn  = aci_route_control_profile.test.id
+      target_dn  = aci_route_control_profile.example.id
     }
   ]
   annotations = [
@@ -119,7 +119,7 @@ All examples for the L3out Consumer Label resource can be found in the [examples
   
   #### Required ####
   
-  * `target_dn` (tDn) - (string) The distinguished name of the External Network Instance Profile object.
+  * `target_dn` (tDn) - (string) The distinguished name (DN) of the External Network Instance Profile object.
 
   #### Optional ####
     
@@ -131,7 +131,7 @@ All examples for the L3out Consumer Label resource can be found in the [examples
   #### Required ####
   
   * `direction` (direction) - (string) The connector direction.
-  * `target_dn` (tDn) - (string) The distinguished name of the Route Control Profile object.
+  * `target_dn` (tDn) - (string) The distinguished name (DN) of the Route Control Profile object.
 
   #### Optional ####
     

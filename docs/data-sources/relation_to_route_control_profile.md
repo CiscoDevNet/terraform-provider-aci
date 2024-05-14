@@ -33,7 +33,7 @@ Data source for Relation To Route Control Profile
 data "aci_relation_to_route_control_profile" "example_l3out_consumer_label" {
   parent_dn = aci_l3out_consumer_label.example.id
   direction = "import"
-  target_dn = aci_route_control_profile.test.id
+  target_dn = aci_route_control_profile.example.id
 }
 
 ```
@@ -49,7 +49,7 @@ data "aci_relation_to_route_control_profile" "example_l3out_consumer_label" {
 
 * `direction` (direction) - (string) The connector direction.
   - Valid Values: `export`, `import`.
-* `target_dn` (tDn) - (string) The distinguished name of the Route Control Profile object.
+* `target_dn` (tDn) - (string) The distinguished name (DN) of the Route Control Profile object.
 
 ### Read-Only ###
 

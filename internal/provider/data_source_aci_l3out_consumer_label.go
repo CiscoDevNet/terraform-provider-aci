@@ -91,7 +91,7 @@ func (d *L3extConsLblDataSource) Schema(ctx context.Context, req datasource.Sche
 						},
 						"target_dn": schema.StringAttribute{
 							Computed:            true,
-							MarkdownDescription: `The distinguished name of the External Network Instance Profile object.`,
+							MarkdownDescription: `The distinguished name (DN) of the External Network Instance Profile object.`,
 						},
 					},
 				},
@@ -111,7 +111,7 @@ func (d *L3extConsLblDataSource) Schema(ctx context.Context, req datasource.Sche
 						},
 						"target_dn": schema.StringAttribute{
 							Computed:            true,
-							MarkdownDescription: `The distinguished name of the Route Control Profile object.`,
+							MarkdownDescription: `The distinguished name (DN) of the Route Control Profile object.`,
 						},
 					},
 				},

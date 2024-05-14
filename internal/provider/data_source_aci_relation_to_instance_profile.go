@@ -54,7 +54,7 @@ func (d *L3extRsLblToInstPDataSource) Schema(ctx context.Context, req datasource
 			},
 			"target_dn": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: `The distinguished name of the External Network Instance Profile object.`,
+				MarkdownDescription: `The distinguished name (DN) of the External Network Instance Profile object.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,

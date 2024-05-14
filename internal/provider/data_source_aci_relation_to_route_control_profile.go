@@ -58,7 +58,7 @@ func (d *L3extRsLblToProfileDataSource) Schema(ctx context.Context, req datasour
 			},
 			"target_dn": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: `The distinguished name of the Route Control Profile object.`,
+				MarkdownDescription: `The distinguished name (DN) of the Route Control Profile object.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,

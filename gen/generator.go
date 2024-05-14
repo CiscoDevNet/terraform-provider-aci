@@ -103,6 +103,7 @@ var templateFuncs = template.FuncMap{
 	"capitalize":                           Capitalize,
 	"getTestConfigVariableName":            GetTestConfigVariableName,
 	"getDevnetDocForClass":                 GetDevnetDocForClass,
+	"replace":                              Replace,
 }
 
 // Global variables used for unique resource name setting based on label from meta data
@@ -1634,4 +1635,9 @@ func GetDefaultValues(classPkgName, propertyName string, definitions Definitions
 		}
 	}
 	return ""
+}
+
+// Replace function to be used in the template
+func Replace(oldValue, newValue, inputString string) string {
+	return strings.Replace(inputString, oldValue, newValue, -1)
 }

@@ -108,7 +108,7 @@ func (r *L3extRsLblToInstPResource) Schema(ctx context.Context, req resource.Sch
 					stringplanmodifier.UseStateForUnknown(),
 					stringplanmodifier.RequiresReplace(),
 				},
-				MarkdownDescription: `The distinguished name of the External Network Instance Profile object.`,
+				MarkdownDescription: `The distinguished name (DN) of the External Network Instance Profile object.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,

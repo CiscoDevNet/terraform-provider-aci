@@ -209,7 +209,7 @@ func (r *L3extConsLblResource) Schema(ctx context.Context, req resource.SchemaRe
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
-							MarkdownDescription: `The distinguished name of the External Network Instance Profile object.`,
+							MarkdownDescription: `The distinguished name (DN) of the External Network Instance Profile object.`,
 						},
 					},
 				},
@@ -246,7 +246,7 @@ func (r *L3extConsLblResource) Schema(ctx context.Context, req resource.SchemaRe
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
-							MarkdownDescription: `The distinguished name of the Route Control Profile object.`,
+							MarkdownDescription: `The distinguished name (DN) of the Route Control Profile object.`,
 						},
 					},
 				},

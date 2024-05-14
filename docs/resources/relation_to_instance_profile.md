@@ -50,7 +50,7 @@ The configuration snippet below shows all possible attributes of the Relation To
 resource "aci_relation_to_instance_profile" "full_example_l3out_consumer_label" {
   parent_dn  = aci_l3out_consumer_label.example.id
   annotation = "annotation"
-  target_dn  = aci_external_network_instance_profile.test.id
+  target_dn  = aci_external_network_instance_profile.example.id
   annotations = [
     {
       key   = "key_0"
@@ -78,7 +78,7 @@ All examples for the Relation To Instance Profile resource can be found in the [
   - The distinquised name (DN) of classes below can be used but currently there is no available resource for it:
     - [l3extConsLblDef](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extConsLblDef/overview)
 
-* `target_dn` (tDn) - (string) The distinguished name of the External Network Instance Profile object.
+* `target_dn` (tDn) - (string) The distinguished name (DN) of the External Network Instance Profile object.
 
 ### Read-Only ###
 

@@ -123,7 +123,7 @@ func (r *L3extRsLblToProfileResource) Schema(ctx context.Context, req resource.S
 					stringplanmodifier.UseStateForUnknown(),
 					stringplanmodifier.RequiresReplace(),
 				},
-				MarkdownDescription: `The distinguished name of the Route Control Profile object.`,
+				MarkdownDescription: `The distinguished name (DN) of the Route Control Profile object.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,

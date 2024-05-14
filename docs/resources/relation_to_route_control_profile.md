@@ -52,7 +52,7 @@ resource "aci_relation_to_route_control_profile" "full_example_l3out_consumer_la
   parent_dn  = aci_l3out_consumer_label.example.id
   annotation = "annotation"
   direction  = "import"
-  target_dn  = aci_route_control_profile.test.id
+  target_dn  = aci_route_control_profile.example.id
   annotations = [
     {
       key   = "key_0"
@@ -82,7 +82,7 @@ All examples for the Relation To Route Control Profile resource can be found in 
 
 * `direction` (direction) - (string) The connector direction.
   - Valid Values: `export`, `import`.
-* `target_dn` (tDn) - (string) The distinguished name of the Route Control Profile object.
+* `target_dn` (tDn) - (string) The distinguished name (DN) of the Route Control Profile object.
 
 ### Read-Only ###
 

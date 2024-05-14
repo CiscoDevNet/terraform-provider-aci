@@ -6,7 +6,7 @@ resource "aci_{{$.ResourceName}}" "full_example_{{getResourceName $key $.Definit
   {{- range $.Properties}}{{- if ne .NamedPropertyClass ""}}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = aci_{{getResourceName .NamedPropertyClass $.Definitions}}.example.name
     {{- else if eq .SnakeCaseName "t_dn" }}
-  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = {{lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions}}
+  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = {{lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions | replace ".test.id" ".example.id" }}
     {{- else}}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = "{{lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions}}"
   {{- end}}{{- end}}
@@ -17,7 +17,7 @@ resource "aci_{{$.ResourceName}}" "full_example_{{getResourceName $key $.Definit
         {{- else}}
           {{- $overwritePropertyName := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
           {{- if eq .SnakeCaseName "t_dn" }}
-      {{$overwritePropertyName}} = {{ lookupChildResourceRequiredTestValue .PkgName $overwritePropertyName $.Definitions }}
+      {{$overwritePropertyName}} = {{ lookupChildResourceRequiredTestValue .PkgName $overwritePropertyName $.Definitions | replace ".test.id" ".example.id" }}
           {{- else }}
       {{$overwritePropertyName}} = "{{lookupChildTestValue .PkgName $ChildResourceName .SnakeCaseName $.TestVars 0 $.Definitions}}"
           {{- end }}
@@ -32,7 +32,7 @@ resource "aci_{{$.ResourceName}}" "full_example" {
   {{- range $.Properties}}{{- if ne .NamedPropertyClass ""}}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = aci_{{getResourceName .NamedPropertyClass $.Definitions}}.example.name
     {{- else if eq .SnakeCaseName "t_dn" }}
-  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = {{lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions}}
+  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = {{lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions | replace ".test.id" ".example.id" }}
     {{- else}}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = "{{lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions}}"
   {{- end}}{{- end}}
