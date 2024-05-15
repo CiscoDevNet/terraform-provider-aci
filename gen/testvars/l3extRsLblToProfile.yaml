@@ -7,11 +7,11 @@ default:
   direction: "import"
 
 datasource_non_existing:
-  direction: "export"
+  direction: "import"
   target_dn: aci_route_control_profile.test.id
 
 datasource_required:
-  direction: "export"
+  direction: "import"
   target_dn: aci_route_control_profile.test.id
 
 resource_required:
