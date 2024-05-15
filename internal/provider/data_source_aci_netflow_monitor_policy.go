@@ -175,6 +175,10 @@ func (d *NetflowMonitorPolDataSource) Read(ctx context.Context, req datasource.R
 		return
 	}
 
+	if data.ParentDn.IsNull() || data.ParentDn.IsUnknown() {
+		data.ParentDn = basetypes.NewStringValue("uni/infra")
+	}
+
 	setNetflowMonitorPolId(ctx, data)
 
 	// Create a copy of the Id for when not found during getAndSetNetflowMonitorPolAttributes
@@ -183,10 +187,6 @@ func (d *NetflowMonitorPolDataSource) Read(ctx context.Context, req datasource.R
 	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_netflow_monitor_policy with id '%s'", data.Id.ValueString()))
 
 	getAndSetNetflowMonitorPolAttributes(ctx, &resp.Diagnostics, d.client, data)
-
-	if data.ParentDn.IsNull() || data.ParentDn.IsUnknown() {
-		data.ParentDn = basetypes.NewStringValue("uni/infra")
-	}
 
 	if data.Id.IsNull() {
 		resp.Diagnostics.AddError(

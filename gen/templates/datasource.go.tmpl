@@ -136,6 +136,12 @@ func (d *{{.ResourceClassName}}DataSource) Read(ctx context.Context, req datasou
 		return
 	}
 
+	{{ if getDefaultValues .PkgName "parent_dn" $.Definitions}}
+	if data.ParentDn.IsNull() || data.ParentDn.IsUnknown(){
+		data.ParentDn = basetypes.NewStringValue("{{getDefaultValues .PkgName "parent_dn" $.Definitions}}")
+	}
+	{{- end}}
+
 	set{{.ResourceClassName}}Id(ctx, data)
 
 	// Create a copy of the Id for when not found during getAndSet{{.ResourceClassName}}Attributes
@@ -144,12 +150,6 @@ func (d *{{.ResourceClassName}}DataSource) Read(ctx context.Context, req datasou
 	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_{{.ResourceName}} with id '%s'", data.Id.ValueString()))
 
 	getAndSet{{.ResourceClassName}}Attributes(ctx, &resp.Diagnostics, d.client, data)
-
- 	{{ if getDefaultValues .PkgName "parent_dn" $.Definitions}}
-	if data.ParentDn.IsNull() || data.ParentDn.IsUnknown(){
-		data.ParentDn = basetypes.NewStringValue("{{getDefaultValues .PkgName "parent_dn" $.Definitions}}")
-	}
-	{{- end}}
 
 	if data.Id.IsNull() {
 		resp.Diagnostics.AddError(
