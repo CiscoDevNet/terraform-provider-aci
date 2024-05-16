@@ -650,7 +650,7 @@ resource "aci_{{$.resourceName}}" "test" {
   		{{- range $key, $value := $.children}}
 			{{- if eq (len $value) 1}}
 				{{- $child := index $value 0}}
-				{{- if eq $child.deletable_child true}}
+				{{- if $child.deletable_child}}
   {{$key}} = []
 				{{- end}}
 			{{- else}}
@@ -679,7 +679,7 @@ resource "aci_{{$.resourceName}}" "test" {
   		{{- range $key, $value := $.children}}
 			{{- if eq (len $value) 1}}
 				{{- $child := index $value 0}}
-				{{- if eq $child.deletable_child true}}
+				{{- if $child.deletable_child}}
   {{$key}} = []
 				{{- end}}
 			{{- else}}
