@@ -311,6 +311,17 @@ func TestAccAciRestManaged_import(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_rest_managed.import", "child.#", "2"),
 				),
 			},
+		},
+	})
+}
+
+func TestAccAciRestManaged_importWithIpv6(t *testing.T) {
+	name := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
 			{
 				Config: testAccAciRestManagedConfig_importWithIpv6(name, "import", "2001:1:2::5/28", "2001:1:2::5/28"),
 				Check: resource.ComposeTestCheckFunc(
@@ -388,6 +399,17 @@ func TestAccAciRestManaged_import(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_rest_managed.bd_import_2", "child.1.content.tnFvCtxName", "VRF2"),
 				),
 			},
+		},
+	})
+}
+
+func TestAccAciRestManaged_importWithBracket(t *testing.T) {
+	name := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
 			{
 				Config: testAccAciRestManagedConfig_importWithBracket(name),
 				Check: resource.ComposeTestCheckFunc(
