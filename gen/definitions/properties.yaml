@@ -233,3 +233,29 @@ l3extProvLbl:
       parent_dependency_name: "infra"
       parent_dn: "aci_l3_outside.test.id"
       class_in_parent: false
+
+netflowMonitorPol:
+  default_values:
+    parent_dn: "uni/infra"
+  test_values:
+    default:
+      name: "netfow_monitor_default"
+    resource_required:
+      name: "netfow_monitor"
+    datasource_required:
+      name: "netfow_monitor"
+    datasource_non_existing:
+      name: "netfow_monitor_non_existing"
+  parents:
+    - class_name: "infraInfra"
+      parent_dependency: ""
+      parent_dn: "uni/infra"
+    - class_name: "fvTenant"
+      parent_dependency: ""
+      parent_dn: "aci_tenant.test.id"
+
+netflowRsMonitorToExporter:
+  parents:
+    - class_name: "netflowMonitorPol"
+      parent_dependency: "fvTenant"
+      parent_dn: "aci_netlfow_monitor_policy.test.id"
