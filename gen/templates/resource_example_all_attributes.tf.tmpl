@@ -13,7 +13,7 @@ resource "aci_{{$.ResourceName}}" "full_example_{{getResourceName $key $.Definit
   {{- range $key, $value := $.Children}}{{$ChildResourceName := .ResourceName}}
   {{$ChildResourceName}} = [
     { {{- range .Properties}}{{- if ne .NamedPropertyClass ""}}
-      {{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = aci_{{getResourceName .NamedPropertyClass $.Definitions}}.example.name
+      {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = aci_{{getResourceName .NamedPropertyClass $.Definitions}}.example.name
         {{- else}}
           {{- $overwritePropertyName := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
           {{- if eq .SnakeCaseName "t_dn" }}
