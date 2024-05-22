@@ -88,10 +88,6 @@ resource "aci_l3out_loopback_interface_profile" "test" {
 }`
 
 const testConfigL3extConsLblMinDependencyWithFvTenant = testConfigL3extOutMin + `
-resource "aci_route_control_profile" "test" {
-  parent_dn   = aci_tenant.test.id
-  name        = "test_rctp"
-}
 resource "aci_external_network_instance_profile" "test" {
   l3_outside_dn = aci_l3_outside.test.id
   name          = "testInstP"

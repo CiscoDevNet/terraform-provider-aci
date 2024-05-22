@@ -21,7 +21,7 @@ func TestAccResourceL3extRsLblToProfileWithL3extConsLbl(t *testing.T) {
 				Config:             testConfigL3extRsLblToProfileMinDependencyWithL3extConsLbl,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_route_control_profile.test", "target_dn", "uni/tn-test_tenant/prof-test_rctp"),
+					resource.TestCheckResourceAttr("aci_relation_to_route_control_profile.test", "target_dn", "uni/tn-test_tenant/prof-test_name"),
 					resource.TestCheckResourceAttr("aci_relation_to_route_control_profile.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_relation_to_route_control_profile.test", "direction", "import"),
 				),
@@ -31,7 +31,7 @@ func TestAccResourceL3extRsLblToProfileWithL3extConsLbl(t *testing.T) {
 				Config:             testConfigL3extRsLblToProfileAllDependencyWithL3extConsLbl,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_route_control_profile.test", "target_dn", "uni/tn-test_tenant/prof-test_rctp"),
+					resource.TestCheckResourceAttr("aci_relation_to_route_control_profile.test", "target_dn", "uni/tn-test_tenant/prof-test_name"),
 					resource.TestCheckResourceAttr("aci_relation_to_route_control_profile.test", "annotation", "annotation"),
 					resource.TestCheckResourceAttr("aci_relation_to_route_control_profile.test", "direction", "export"),
 				),
@@ -42,7 +42,7 @@ func TestAccResourceL3extRsLblToProfileWithL3extConsLbl(t *testing.T) {
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_route_control_profile.test", "direction", "import"),
-					resource.TestCheckResourceAttr("aci_relation_to_route_control_profile.test", "target_dn", "uni/tn-test_tenant/prof-test_rctp"),
+					resource.TestCheckResourceAttr("aci_relation_to_route_control_profile.test", "target_dn", "uni/tn-test_tenant/prof-test_name"),
 				),
 			},
 			// Update with empty strings config or default value
@@ -51,7 +51,7 @@ func TestAccResourceL3extRsLblToProfileWithL3extConsLbl(t *testing.T) {
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_route_control_profile.test", "direction", "import"),
-					resource.TestCheckResourceAttr("aci_relation_to_route_control_profile.test", "target_dn", "uni/tn-test_tenant/prof-test_rctp"),
+					resource.TestCheckResourceAttr("aci_relation_to_route_control_profile.test", "target_dn", "uni/tn-test_tenant/prof-test_name"),
 					resource.TestCheckResourceAttr("aci_relation_to_route_control_profile.test", "annotation", "orchestrator:terraform"),
 				),
 			},
@@ -62,7 +62,7 @@ func TestAccResourceL3extRsLblToProfileWithL3extConsLbl(t *testing.T) {
 				ImportStateVerify: true,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_route_control_profile.test", "direction", "import"),
-					resource.TestCheckResourceAttr("aci_relation_to_route_control_profile.test", "target_dn", "uni/tn-test_tenant/prof-test_rctp"),
+					resource.TestCheckResourceAttr("aci_relation_to_route_control_profile.test", "target_dn", "uni/tn-test_tenant/prof-test_name"),
 					resource.TestCheckResourceAttr("aci_relation_to_route_control_profile.test", "annotation", "orchestrator:terraform"),
 				),
 			},
@@ -72,7 +72,7 @@ func TestAccResourceL3extRsLblToProfileWithL3extConsLbl(t *testing.T) {
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_route_control_profile.test", "direction", "import"),
-					resource.TestCheckResourceAttr("aci_relation_to_route_control_profile.test", "target_dn", "uni/tn-test_tenant/prof-test_rctp"),
+					resource.TestCheckResourceAttr("aci_relation_to_route_control_profile.test", "target_dn", "uni/tn-test_tenant/prof-test_name"),
 					resource.TestCheckResourceAttr("aci_relation_to_route_control_profile.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_relation_to_route_control_profile.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_relation_to_route_control_profile.test", "annotations.0.value", "value_1"),
@@ -91,7 +91,7 @@ func TestAccResourceL3extRsLblToProfileWithL3extConsLbl(t *testing.T) {
 				ImportStateVerify: true,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_route_control_profile.test", "direction", "import"),
-					resource.TestCheckResourceAttr("aci_relation_to_route_control_profile.test", "target_dn", "uni/tn-test_tenant/prof-test_rctp"),
+					resource.TestCheckResourceAttr("aci_relation_to_route_control_profile.test", "target_dn", "uni/tn-test_tenant/prof-test_name"),
 					resource.TestCheckResourceAttr("aci_relation_to_route_control_profile.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_relation_to_route_control_profile.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_relation_to_route_control_profile.test", "annotations.0.value", "value_1"),
@@ -146,7 +146,14 @@ func TestAccResourceL3extRsLblToProfileWithL3extConsLbl(t *testing.T) {
 	})
 }
 
-const testConfigL3extRsLblToProfileMinDependencyWithL3extConsLbl = testConfigL3extConsLblMinDependencyWithFvTenant + `
+const testConfigrtctrlProfileMinDependencyWithFvTenant = `
+resource "aci_route_control_profile" "test" {
+  parent_dn = aci_tenant.test.id
+  name = "test_name"
+}
+`
+
+const testConfigL3extRsLblToProfileMinDependencyWithL3extConsLbl = testConfigrtctrlProfileMinDependencyWithFvTenant + testConfigL3extConsLblMinDependencyWithFvTenant + `
 resource "aci_relation_to_route_control_profile" "test" {
   parent_dn = aci_l3out_consumer_label.test.id
   direction = "import"
@@ -154,7 +161,7 @@ resource "aci_relation_to_route_control_profile" "test" {
 }
 `
 
-const testConfigL3extRsLblToProfileAllDependencyWithL3extConsLbl = testConfigL3extConsLblMinDependencyWithFvTenant + `
+const testConfigL3extRsLblToProfileAllDependencyWithL3extConsLbl = testConfigrtctrlProfileMinDependencyWithFvTenant + testConfigL3extConsLblMinDependencyWithFvTenant + `
 resource "aci_relation_to_route_control_profile" "test" {
   parent_dn = aci_l3out_consumer_label.test.id
   target_dn = aci_route_control_profile.test.id
@@ -163,7 +170,7 @@ resource "aci_relation_to_route_control_profile" "test" {
 }
 `
 
-const testConfigL3extRsLblToProfileResetDependencyWithL3extConsLbl = testConfigL3extConsLblMinDependencyWithFvTenant + `
+const testConfigL3extRsLblToProfileResetDependencyWithL3extConsLbl = testConfigrtctrlProfileMinDependencyWithFvTenant + testConfigL3extConsLblMinDependencyWithFvTenant + `
 resource "aci_relation_to_route_control_profile" "test" {
   parent_dn = aci_l3out_consumer_label.test.id
   target_dn = aci_route_control_profile.test.id
@@ -171,7 +178,7 @@ resource "aci_relation_to_route_control_profile" "test" {
   direction = "import"
 }
 `
-const testConfigL3extRsLblToProfileChildrenDependencyWithL3extConsLbl = testConfigL3extConsLblMinDependencyWithFvTenant + `
+const testConfigL3extRsLblToProfileChildrenDependencyWithL3extConsLbl = testConfigrtctrlProfileMinDependencyWithFvTenant + testConfigL3extConsLblMinDependencyWithFvTenant + `
 resource "aci_relation_to_route_control_profile" "test" {
   parent_dn = aci_l3out_consumer_label.test.id
   direction = "import"
@@ -199,7 +206,7 @@ resource "aci_relation_to_route_control_profile" "test" {
 }
 `
 
-const testConfigL3extRsLblToProfileChildrenRemoveFromConfigDependencyWithL3extConsLbl = testConfigL3extConsLblMinDependencyWithFvTenant + `
+const testConfigL3extRsLblToProfileChildrenRemoveFromConfigDependencyWithL3extConsLbl = testConfigrtctrlProfileMinDependencyWithFvTenant + testConfigL3extConsLblMinDependencyWithFvTenant + `
 resource "aci_relation_to_route_control_profile" "test" {
   parent_dn = aci_l3out_consumer_label.test.id
   direction = "import"
@@ -207,7 +214,7 @@ resource "aci_relation_to_route_control_profile" "test" {
 }
 `
 
-const testConfigL3extRsLblToProfileChildrenRemoveOneDependencyWithL3extConsLbl = testConfigL3extConsLblMinDependencyWithFvTenant + `
+const testConfigL3extRsLblToProfileChildrenRemoveOneDependencyWithL3extConsLbl = testConfigrtctrlProfileMinDependencyWithFvTenant + testConfigL3extConsLblMinDependencyWithFvTenant + `
 resource "aci_relation_to_route_control_profile" "test" {
   parent_dn = aci_l3out_consumer_label.test.id
   direction = "import"
@@ -227,7 +234,7 @@ resource "aci_relation_to_route_control_profile" "test" {
 }
 `
 
-const testConfigL3extRsLblToProfileChildrenRemoveAllDependencyWithL3extConsLbl = testConfigL3extConsLblMinDependencyWithFvTenant + `
+const testConfigL3extRsLblToProfileChildrenRemoveAllDependencyWithL3extConsLbl = testConfigrtctrlProfileMinDependencyWithFvTenant + testConfigL3extConsLblMinDependencyWithFvTenant + `
 resource "aci_relation_to_route_control_profile" "test" {
   parent_dn = aci_l3out_consumer_label.test.id
   direction = "import"

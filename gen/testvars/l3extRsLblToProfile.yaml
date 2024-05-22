@@ -42,3 +42,12 @@ parents:
     parent_dependency: "fvTenant"
     parent_dn: "aci_l3out_consumer_label.test.id"
     class_in_parent: false
+
+targets:
+  - class_name: "rtctrlProfile"
+    target_dn: "uni/tn-test_tenant/prof-test_name"
+    parent_dn: "aci_route_control_profile.test.id"
+    parent_dependency: "fvTenant"
+    parent_dependency_dn: "aci_tenant.test.id"
+    resource_required:
+      name: "test_name"
