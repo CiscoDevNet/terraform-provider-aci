@@ -203,25 +203,25 @@ resource "aci_pim_route_map_policy" "test" {
   parent_dn = aci_tenant.test.id
   name = "test_name"
   annotations = [
-    {
-      key = "key_0"
-      value = "value_1"
-    },
-    {
-      key = "key_1"
-      value = "value_2"
-    },
-   ]
+	{
+	  key = "key_0"
+	  value = "value_1"
+	},
+	{
+	  key = "key_1"
+	  value = "value_2"
+	},
+  ]
   tags = [
-    {
-      key = "key_0"
-      value = "value_1"
-    },
-    {
-      key = "key_1"
-      value = "value_2"
-    },
-   ]
+	{
+	  key = "key_0"
+	  value = "value_1"
+	},
+	{
+	  key = "key_1"
+	  value = "value_2"
+	},
+  ]
 }
 `
 

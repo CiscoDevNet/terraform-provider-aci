@@ -85,7 +85,7 @@ All examples for the L3out Redistribute Policy resource can be found in the [exa
 * `id` - (string) The distinguished name (DN) of the L3out Redistribute Policy object.
 
 ### Optional ###
-
+  
 * `annotation` (annotation) - (string) The annotation of the L3out Redistribute Policy object.
   - Default: `orchestrator:terraform`
 

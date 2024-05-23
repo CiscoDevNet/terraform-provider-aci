@@ -45,7 +45,7 @@ func (d *PkiKeyRingDataSource) Schema(ctx context.Context, req datasource.Schema
 				MarkdownDescription: "The distinguished name (DN) of the Key Ring object.",
 			},
 			"parent_dn": schema.StringAttribute{
-				Optional:            true,
+				Required:            true,
 				MarkdownDescription: "The distinguished name (DN) of the parent object.",
 			},
 			"admin_state": schema.StringAttribute{

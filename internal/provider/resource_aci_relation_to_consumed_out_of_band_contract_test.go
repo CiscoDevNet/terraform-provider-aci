@@ -179,25 +179,25 @@ resource "aci_relation_to_consumed_out_of_band_contract" "test" {
   parent_dn = aci_external_management_network_instance_profile.test.id
   out_of_band_contract_name = "test_tn_vz_oob_br_cp_name"
   annotations = [
-    {
-      key = "key_0"
-      value = "value_1"
-    },
-    {
-      key = "key_1"
-      value = "value_2"
-    },
-   ]
+	{
+	  key = "key_0"
+	  value = "value_1"
+	},
+	{
+	  key = "key_1"
+	  value = "value_2"
+	},
+  ]
   tags = [
-    {
-      key = "key_0"
-      value = "value_1"
-    },
-    {
-      key = "key_1"
-      value = "value_2"
-    },
-   ]
+	{
+	  key = "key_0"
+	  value = "value_1"
+	},
+	{
+	  key = "key_1"
+	  value = "value_2"
+	},
+  ]
 }
 `
 

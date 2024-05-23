@@ -171,6 +171,8 @@ All examples for the Certificate Authority resource can be found in the [example
 
 ### Required ###
 
+* `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
+  - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/fvTenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
 * `certificate_chain` (certChain) - (string) The PEM-encoded chain of trust from the trustpoint to a trusted root authority.
 * `name` (name) - (string) The name of the Certificate Authority object.
 
@@ -179,9 +181,7 @@ All examples for the Certificate Authority resource can be found in the [example
 * `id` - (string) The distinguished name (DN) of the Certificate Authority object.
 
 ### Optional ###
-
-* `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
-  - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/fvTenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
+  
 * `annotation` (annotation) - (string) The annotation of the Certificate Authority object.
   - Default: `orchestrator:terraform`
 * `description` (descr) - (string) The description of the Certificate Authority object.

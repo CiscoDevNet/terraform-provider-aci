@@ -13,7 +13,9 @@ import (
 func TestAccResourceMplsNodeSidPWithL3extLoopBackIfP(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck: func() {
+			testAccPreCheck(t, "apic")
+		},
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -160,6 +162,9 @@ func TestAccResourceMplsNodeSidPWithL3extLoopBackIfP(t *testing.T) {
 				),
 			},
 		},
+		CheckDestroy: resource.ComposeAggregateTestCheckFunc(
+			testCheckResourceDestroy,
+		),
 	})
 }
 
@@ -232,16 +237,16 @@ resource "aci_l3out_node_sid_profile" "test" {
   parent_dn = aci_l3out_loopback_interface_profile.test.id
   segment_id = "1"
   annotations = [ 
-	{
+    {
 	  key = "key_1"
 	  value = "value_2"
-	},
+    },
   ]
   tags = [ 
-	{
+    {
 	  key = "key_1"
 	  value = "value_2"
-	},
+    },
   ]
 }
 `

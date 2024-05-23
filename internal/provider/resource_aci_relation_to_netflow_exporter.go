@@ -98,6 +98,7 @@ func (r *NetflowRsMonitorToExporterResource) Schema(ctx context.Context, req res
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
 				MarkdownDescription: `The annotation of the Relation To Netflow Exporter object.`,
@@ -106,6 +107,7 @@ func (r *NetflowRsMonitorToExporterResource) Schema(ctx context.Context, req res
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
 				MarkdownDescription: `Name.`,
@@ -355,6 +357,12 @@ func getAndSetNetflowRsMonitorToExporterAttributes(ctx context.Context, diags *d
 				if attributeName == "tnNetflowExporterPolName" {
 					data.TnNetflowExporterPolName = basetypes.NewStringValue(attributeValue.(string))
 				}
+			}
+			if data.Annotation.IsUnknown() {
+				data.Annotation = types.StringNull()
+			}
+			if data.TnNetflowExporterPolName.IsUnknown() {
+				data.TnNetflowExporterPolName = types.StringNull()
 			}
 			TagAnnotationNetflowRsMonitorToExporterList := make([]TagAnnotationNetflowRsMonitorToExporterResourceModel, 0)
 			TagTagNetflowRsMonitorToExporterList := make([]TagTagNetflowRsMonitorToExporterResourceModel, 0)
