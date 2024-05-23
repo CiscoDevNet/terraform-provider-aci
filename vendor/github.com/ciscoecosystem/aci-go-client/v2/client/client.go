@@ -354,7 +354,6 @@ func (c *Client) MakeRestRequestRaw(method string, rpath string, payload []byte,
 	if err != nil {
 		return nil, err
 	}
-
 	if c.skipLoggingPayload {
 		log.Printf("HTTP request %s %s", method, rpath)
 	} else {
@@ -366,7 +365,6 @@ func (c *Client) MakeRestRequestRaw(method string, rpath string, payload []byte,
 			return req, err
 		}
 	}
-
 	if !c.skipLoggingPayload {
 		log.Printf("HTTP request after injection %s %s %v", method, rpath, req)
 	}
@@ -408,12 +406,13 @@ func (c *Client) MakeRestRequest(method string, rpath string, body *container.Co
 	if err != nil {
 		return nil, err
 	}
-
+	c.l.Lock()
 	if c.skipLoggingPayload {
 		log.Printf("HTTP request %s %s", method, rpath)
 	} else {
 		log.Printf("HTTP request %s %s %v", method, rpath, req)
 	}
+	c.l.Unlock()
 	if authenticated {
 		req, err = c.InjectAuthenticationHeader(req, rpath)
 		if err != nil {
@@ -421,9 +420,11 @@ func (c *Client) MakeRestRequest(method string, rpath string, body *container.Co
 		}
 	}
 
+	c.l.Lock()
 	if !c.skipLoggingPayload {
 		log.Printf("HTTP request after injection %s %s %v", method, rpath, req)
 	}
+	c.l.Unlock()
 
 	return req, nil
 }
@@ -452,7 +453,7 @@ func (c *Client) Authenticate() error {
 	}
 
 	// Setting skipLoggingPayload true so authentication details are not shown in logs
-	c.skipLoggingPayload = true
+	SkipLoggingPayload(true)(c)
 
 	req, err := c.MakeRestRequestRaw(method, path, body, authenticated)
 	if err != nil {
@@ -461,7 +462,7 @@ func (c *Client) Authenticate() error {
 
 	obj, _, err := c.Do(req)
 
-	c.skipLoggingPayload = skipLoggingPayloadState
+	SkipLoggingPayload(skipLoggingPayloadState)(c)
 
 	if err != nil {
 		log.Printf("[DEBUG] Authentication ERROR: %s", err)
