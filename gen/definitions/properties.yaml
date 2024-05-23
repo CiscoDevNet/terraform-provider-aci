@@ -289,3 +289,27 @@ mplsNodeSidP:
     - class_name: "l3extLoopBackIfP"
       parent_dependency: "l3extRsNodeL3OutAtt"
       parent_dn: "aci_logical_node_to_fabric_node.test.id"
+
+netflowRecordPol:
+  default_values:
+    parent_dn: "uni/infra"
+  test_values:
+    default:
+      collect: "src-intf"
+      match: "unspecified"
+    all:
+      collect: "count-bytes"
+      match: "dst-ip"
+    resource_required:
+      name: "netfow_record"
+    datasource_required:
+      name: "netfow_record"
+    datasource_non_existing:
+      name: "netfow_record_non_existing"
+  parents:
+    - class_name: "infraInfra"
+      parent_dependency: ""
+      parent_dn: "uni/infra"
+    - class_name: "fvTenant"
+      parent_dependency: ""
+      parent_dn: "aci_tenant.test.id"
