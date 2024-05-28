@@ -104,9 +104,9 @@ func resourceAciContract() *schema.Resource {
 			},
 
 			"relation_vz_rs_graph_att": &schema.Schema{
-				Type: schema.TypeString,
-
-				Optional: true,
+				Type:       schema.TypeString,
+				Deprecated: "Use the `relation_vz_rs_subj_graph_att` attribute on `aci_contract_subject` instead.",
+				Optional:   true,
 			},
 
 			"filter": &schema.Schema{
@@ -759,27 +759,12 @@ func resourceAciContractCreate(ctx context.Context, d *schema.ResourceData, m in
 
 	checkDns := make([]string, 0, 1)
 
-	if relationTovzRsGraphAtt, ok := d.GetOk("relation_vz_rs_graph_att"); ok {
-		relationParam := relationTovzRsGraphAtt.(string)
-		checkDns = append(checkDns, relationParam)
-	}
-
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 	d.Partial(false)
-
-	if relationTovzRsGraphAtt, ok := d.GetOk("relation_vz_rs_graph_att"); ok {
-		relationParam := relationTovzRsGraphAtt.(string)
-		relationParamName := GetMOName(relationParam)
-		err = aciClient.CreateRelationvzRsGraphAttFromContract(vzBrCP.DistinguishedName, relationParamName)
-		if err != nil {
-			return diag.FromErr(err)
-		}
-
-	}
 
 	d.SetId(vzBrCP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
@@ -970,30 +955,12 @@ func resourceAciContractUpdate(ctx context.Context, d *schema.ResourceData, m in
 
 	checkDns := make([]string, 0, 1)
 
-	if d.HasChange("relation_vz_rs_graph_att") {
-		_, newRelParam := d.GetChange("relation_vz_rs_graph_att")
-		checkDns = append(checkDns, newRelParam.(string))
-	}
-
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 	d.Partial(false)
-
-	if d.HasChange("relation_vz_rs_graph_att") {
-		_, newRelParam := d.GetChange("relation_vz_rs_graph_att")
-		newRelParamName := GetMOName(newRelParam.(string))
-		err = aciClient.DeleteRelationvzRsGraphAttFromContract(vzBrCP.DistinguishedName)
-		if err != nil {
-			return diag.FromErr(err)
-		}
-		err = aciClient.CreateRelationvzRsGraphAttFromContract(vzBrCP.DistinguishedName, newRelParamName)
-		if err != nil {
-			return diag.FromErr(err)
-		}
-	}
 
 	d.SetId(vzBrCP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
@@ -1048,14 +1015,6 @@ func resourceAciContractRead(ctx context.Context, d *schema.ResourceData, m inte
 	if err != nil {
 		d.SetId("")
 		return nil
-	}
-	vzRsGraphAttData, err := aciClient.ReadRelationvzRsGraphAttFromContract(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation vzRsGraphAtt %v", err)
-		d.Set("relation_vz_rs_graph_att", "")
-
-	} else {
-		setRelationAttribute(d, "relation_vz_rs_graph_att", vzRsGraphAttData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
