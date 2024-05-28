@@ -8,23 +8,38 @@ description: |-
 ---
 
 # aci_contract #
+
 Manages ACI Contract
+
+## API Information ##
+
+* Class: [vzBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzBrCP/overview)
+
+* Distinguished Name Format: `uni/tn-{name}/brc-{name}`
+
+## GUI Information ##
+
+* Locations:
+  * `Tenants -> Contracts -> Standard`
+  * `Tenants -> Contracts -> Filters`
 
 ## Example Usage ##
 
 ```hcl
-	resource "aci_contract" "foocontract" {
-		tenant_dn   =  aci_tenant.dev_tenant.id
-		description = "From Terraform"
-		name        = "demo_contract"
-		annotation  = "tag_contract"
-		name_alias  = "alias_contract"
-		prio        = "level1"
-		scope       = "tenant"
-		target_dscp = "unspecified"
-	}
+ resource "aci_contract" "foocontract" {
+  tenant_dn   =  aci_tenant.dev_tenant.id
+  description = "From Terraform"
+  name        = "demo_contract"
+  annotation  = "tag_contract"
+  name_alias  = "alias_contract"
+  prio        = "level1"
+  scope       = "tenant"
+  target_dscp = "unspecified"
+ }
 ```
+
 ## Argument Reference ##
+
 * `tenant_dn` - (Required) Distinguished name of parent Tenant object.
 * `name` - (Required) Name of Object contract.
 * `description` - (Optional) Description for object contract.
@@ -65,21 +80,22 @@ Allowed values: "unspecified", "ftpData", "smtp", "dns", "http","pop3", "https",
 Allowed values: "unspecified", "ftpData", "smtp", "dns", "http","pop3", "https", "rtsp"
 * `filter.filter_entry.stateful` - (Optional) Determines if entry is stateful or not. Allowed values are "yes" and "no". Default is "no".
 * `filter.filter_entry.tcp_rules` - (Optional) TCP Session Rules. Allowed values are "unspecified", "est", "syn", "ack", "fin" and "rst". Default is "unspecified".
-* `relation_vz_rs_graph_att` - (Optional) Relation to class vzRsGraphAtt. Cardinality - N_TO_ONE. Type - String.
+* `relation_vz_rs_graph_att` - **Deprecated** (Optional) Relation to class vzRsGraphAtt. Cardinality - N_TO_ONE. Type - String. Use `relation_vz_rs_subj_graph_att` on `aci_contract_subject` instead.
 
-## Attribute Reference
+## Attribute Reference ##
 
 The only attribute that this resource exports is the `id`, which is set to the
 Dn of the Contract.
+
 * `filter.id` - Exports this attribute for filter object. Set to the Dn for the filter managed by the contract.
 * `filter.filter_entry.id` - Exports this attribute for filter entry object of filter object. Set to the Dn for the filter entry managed by the contract.
 
 ## Importing ##
 
 An existing Contract can be [imported][docs-import] into this resource via its Dn, via the following command:
-[docs-import]: https://www.terraform.io/docs/import/index.html
 
-
-```
+```hcl
 terraform import aci_contract.example <Dn>
 ```
+
+[docs-import]: https://www.terraform.io/docs/import/index.html
