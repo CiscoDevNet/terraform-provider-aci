@@ -11,6 +11,9 @@ fvTenant:
 fvAEPg:
   resource_name: "application_epg"
 
+fvAp:
+  resource_name: "application_profile"
+
 fvCtx:
   resource_name: "vrf"
 
@@ -20,6 +23,7 @@ vzCPIf:
 rtctrlProfile:
   resource_name: "route_control_profile"
   rn_format: "/prof-{name}"
+  exclude: true
 
 vzOOBBrCP:
   resource_name: "out_of_band_contract"
@@ -218,3 +222,138 @@ mplsNodeSidP:
     - "uni/tn-{name}/out-{name}/lnodep-{name}/rsnodeL3OutAtt-[{tDn}]/lbp-[{addr}]/nodesidp-{sidoffset}"
   contained_by:
     - "l3extLoopBackIfP"
+
+fvESg:
+  ui_locations:
+    - "Tenants -> Application Profiles -> Endpoint Security Groups"
+  sub_category: "Application Management"
+  exclude_children:
+    - "fvRsProtBy"
+  migration_version: 1
+  migration_blocks:
+    fvESg:
+      application_profile_dn: parent_dn
+      match_t: match_criteria
+      pc_enf_pref: intra_esg_isolation
+      pref_gr_memb: preferred_group_member
+    fvRsScope:
+      relation_fv_rs_scope: relation_to_vrf.vrf_name
+    fvRsIntraEpg:
+      relation_fv_rs_intra_epg: relation_to_intra_epg_contracts.contract_name
+    fvRsSecInherited:
+      relation_fv_rs_sec_inherited: relation_to_contract_masters.target_dn
+    fvRsCons:
+      relation_fv_rs_cons: relation_to_consumed_contracts
+      prio: relation_to_consumed_contracts.priority
+      target_dn: relation_to_consumed_contracts.contract_name
+    fvRsConsIf:
+      relation_fv_rs_cons_if: relation_to_consumed_contract_interfaces
+      prio: relation_to_consumed_contract_interfaces.priority
+      target_dn: relation_to_consumed_contract_interfaces.contract_interface_name
+    fvRsProv:
+      relation_fv_rs_prov: relation_to_provided_contracts
+      prio: relation_to_provided_contracts.priority
+      match_t: relation_to_provided_contracts.match_criteria
+      target_dn: relation_to_provided_contracts.contract_name
+
+fvRsScope:
+  resource_name: "relation_to_vrf"
+
+fvRsCons:
+  resource_name: "relation_to_consumed_contract"
+  example_classes:
+    - "fvAEPg"
+    - "fvESg"
+  dn_formats:
+    - "... add all relevant DNs ..."
+    - "uni/tn-{name}/ap-{name}/epg-{name}/rscons-{tnVzBrCPName}"
+    - "uni/tn-{name}/ap-{name}/esg-{name}/rscons-{tnVzBrCPName}"
+    - "Too many DN formats to display, see model documentation for all possible parents of [fvRsCons](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsCons/overview)."
+  ui_locations:
+    - "Tenants -> Application Profiles -> Application EPGs -> Contracts"
+    - "Tenants -> Application Profiles -> Endpoint Security Groups -> Contracts"
+    - "... add all locations ..."
+  sub_category: "Application Management"
+
+fvRsProv:
+  resource_name: "relation_to_provided_contract"
+  example_classes:
+    - "fvAEPg"
+    - "fvESg"
+  dn_formats:
+    - "... add all relevant DNs ..."
+    - "uni/tn-{name}/ap-{name}/epg-{name}/rsprov-{tnVzBrCPName}"
+    - "uni/tn-{name}/ap-{name}/esg-{name}/rsprov-{tnVzBrCPName}"
+    - "Too many DN formats to display, see model documentation for all possible parents of [fvRsProv](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsProv/overview)."
+  ui_locations:
+    - "Tenants -> Application Profiles -> Application EPGs -> Contracts"
+    - "Tenants -> Application Profiles -> Endpoint Security Groups -> Contracts"
+    - "... add all locations ..."
+  sub_category: "Application Management"
+
+fvRsConsIf:
+  resource_name: "relation_to_consumed_contract_interface"
+  example_classes:
+    - "fvAEPg"
+    - "fvESg"
+  dn_formats:
+    - "... add all relevant DNs ..."
+    - "uni/tn-{name}/ap-{name}/epg-{name}/rsconsIf-{tnVzCPIfName}"
+    - "uni/tn-{name}/ap-{name}/esg-{name}/rsconsIf-{tnVzCPIfName}"
+    - "Too many DN formats to display, see model documentation for all possible parents of [fvRsConsIf](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsConsIf/overview)."
+  ui_locations:
+    - "Tenants -> Application Profiles -> Application EPGs -> Contracts"
+    - "Tenants -> Application Profiles -> Endpoint Security Groups -> Contracts"
+    - "... add all locations ..."
+  sub_category: "Application Management"
+
+fvRsProtBy:
+  resource_name: "relation_to_taboo_contract"
+  example_classes:
+    - "fvAEPg"
+  dn_formats:
+    - "... add all relevant DNs ..."
+    - "uni/tn-{name}/ap-{name}/epg-{name}/rsprotBy-{tnVzTabooName}"
+    - "Too many DN formats to display, see model documentation for all possible parents of [fvRsProtBy](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsProtBy/overview)."
+  ui_locations:
+    - "Tenants -> Application Profiles -> Application EPGs -> Contracts"
+    - "... add all locations ..."
+  sub_category: "Application Management"
+
+fvRsIntraEpg:
+  resource_name: "relation_to_intra_epg_contract"
+  example_classes:
+    - "fvAEPg"
+    - "fvESg" 
+  dn_formats:
+    - "... add all relevant DNs ..."
+    - "uni/tn-{name}/ap-{name}/epg-{name}/rsintraEpg-{tnVzBrCPName}"
+    - "uni/tn-{name}/ap-{name}/esg-{name}/rsintraEpg-{tnVzBrCPName}"
+    - "Too many DN formats to display, see model documentation for all possible parents of [fvRsIntraEpg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsIntraEpg/overview)."
+  ui_locations:
+    - "Tenants -> Application Profiles -> Application EPGs -> Contracts"
+    - "Tenants -> Application Profiles -> Endpoint Security Groups -> Contracts"
+    - "... add all locations ..."
+  sub_category: "Application Management"
+
+fvRsSecInherited:
+  resource_name: "relation_to_contract_master"
+  example_classes:
+    - "fvAEPg"
+    - "fvESg"
+  dn_formats:
+    - "... add all relevant DNs ..."
+    - "uni/tn-{name}/ap-{name}/epg-{name}/rssecInherited-[{tDn}]"
+    - "uni/tn-{name}/ap-{name}/esg-{name}/rssecInherited-[{tDn}]"
+    - "Too many DN formats to display, see model documentation for all possible parents of [fvRsSecInherited](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsSecInherited/overview)."
+  ui_locations:
+    - "Tenants -> Application Profiles -> Application EPGs"
+    - "Tenants -> Application Profiles -> Endpoint Security Groups"
+    - "... add all locations ..."
+  sub_category: "Application Management"
+
+vzBrCP:
+  resource_name: "contract"
+
+vzTaboo:
+  resource_name: "taboo_contract"

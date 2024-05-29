@@ -5,7 +5,6 @@
 default:
   annotation: "orchestrator:terraform"
   description: ""
-  intent: "install"
   name_alias: ""
   owner_key: ""
   owner_tag: ""
@@ -25,7 +24,6 @@ resource_required:
 all:
   annotation: "annotation"
   description: "description"
-  intent: "estimate_add"
   name_alias: "name_alias"
   owner_key: "owner_key"
   owner_tag: "owner_tag"

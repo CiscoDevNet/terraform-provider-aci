@@ -52,10 +52,6 @@ func (d *VzOOBBrCPDataSource) Schema(ctx context.Context, req datasource.SchemaR
 				Computed:            true,
 				MarkdownDescription: `The description of the Out Of Band Contract object.`,
 			},
-			"intent": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The Install Rules or Estimate Number of Rules.`,
-			},
 			"name": schema.StringAttribute{
 				Required:            true,
 				MarkdownDescription: `The name of the Out Of Band Contract object.`,

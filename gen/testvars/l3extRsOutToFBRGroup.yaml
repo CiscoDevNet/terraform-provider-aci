@@ -6,13 +6,13 @@ default:
   annotation: "orchestrator:terraform"
 
 datasource_non_existing:
-  target_dn: aci_vrf_fallback_route_group.test.id
+  target_dn: "non_existing_t_dn"
 
 datasource_required:
-  target_dn: aci_vrf_fallback_route_group.test.id
+  target_dn: "test_t_dn"
 
 resource_required:
-  target_dn: aci_vrf_fallback_route_group.test.id
+  target_dn: "test_t_dn"
 
 all:
   annotation: "annotation"
@@ -37,12 +37,16 @@ parents:
     parent_dependency: "fvTenant"
     parent_dn: "aci_l3_outside.test.id"
     class_in_parent: false
-
+    target_classes:
+        - "fvFBRGroup"
 targets:
   - class_name: "fvFBRGroup"
-    target_dn: "uni/tn-test_tenant/ctx-test_vrf/fbrg-fallback_route_group"
-    parent_dn: "aci_vrf_fallback_route_group.test.id"
+    target_dn: "uni/tn-test_tenant/ctx-test_vrf/fbrg-fallback_route_group_0"
+    target_dn_ref: "aci_vrf_fallback_route_group.test_0.id"
     parent_dependency: "fvCtx"
-    parent_dependency_dn: "aci_vrf.test.id"
-    resource_required:
-      name: "fallback_route_group"
+    parent_dependency_dn_ref: "aci_vrf.test.id"
+    target_resource_name: "vrf_fallback_route_group"
+    relation_resource_name: "fallback_route_group"
+    parent_dn_key: "parent_dn"
+    properties:
+        name: "fallback_route_group_0"
