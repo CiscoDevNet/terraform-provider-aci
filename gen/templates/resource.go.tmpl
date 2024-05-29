@@ -420,7 +420,7 @@ func set{{ .ResourceClassName }}LegacyAttributes(ctx context.Context, diags *dia
 						{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
 						{{- $AttributeName := getLegacyChildAttribute .PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
 							{{- if eq $AttributeName (capitalize .PkgName)}}
-						if childAttributeName == "tDn" {
+						if childAttributeName == "tDn" && childAttributeValue != "" {
 							Deprecated{{.ResourceClassName}}{{$.ResourceClassName}}List = append(Deprecated{{.ResourceClassName}}{{$.ResourceClassName}}List, childAttributeValue.(string))
 						}
 							{{- else if ne $AttributeName ""}}
@@ -470,10 +470,10 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 			planData.Deprecated{{ .Name }} = stateData.Deprecated{{ .Name }}
 		}
 			{{- else if and (ne .ReplacedBy.AttributeName "") (eq (getMigrationType .ValueType) "String") }}
-		if !configData.{{ .Name }}.IsNull() && stateData != nil {
-			{{- range $.Children}}
-				{{- if isLegacyChild .PkgName $.LegacyChildren}}
-					{{- if eq $SetName (capitalize .PkgName)}}
+				{{- range $.Children}}
+					{{- if isLegacyChild .PkgName $.LegacyChildren}}
+						{{- if eq $SetName (capitalize .PkgName)}}
+		if !configData.{{ $SetName }}.IsNull() && stateData != nil {
 			var attributeValues []{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel
 			configData.{{.ResourceClassName}}.ElementsAs(ctx, &attributeValues, false)
 			for _, attributeValue := range attributeValues {
@@ -486,14 +486,8 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 				}
 							{{- end}}
 						{{- end}}
-			}
-					{{- end }}
-				{{- end }}
-			{{- end }}
-		} else if !configData.Deprecated{{ .Name }}.IsNull() {
-			{{- range $.Children}}
-				{{- if isLegacyChild .PkgName $.LegacyChildren}}
-					{{- if eq $SetName (capitalize .PkgName)}}
+			}	
+		} else if !configData.Deprecated{{ $SetName }}.IsNull() {
 			{{.ResourceClassName}}List := make([]{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel, 0)
 			{{.ResourceClassName}} := {{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel{
 						{{- range .Properties}}
@@ -519,23 +513,18 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 			}
 			{{.ResourceClassName}}Set, _ := types.SetValueFrom(ctx, {{.ResourceClassName}}Type, {{.ResourceClassName}}List)
 			planData.{{.ResourceClassName}} = {{.ResourceClassName}}Set
-					{{- end }}
-				{{- end }}
-			{{- end }}
 		} else if stateData != nil { // used to replace use state for unknown
-			{{- range $.Children}}
-				{{- if isLegacyChild .PkgName $.LegacyChildren}}
-					{{- if eq $SetName (capitalize .PkgName)}}
 			planData.Deprecated{{.ResourceClassName}} = stateData.Deprecated{{.ResourceClassName}}
+		}
+						{{- end }}
 					{{- end }}
 				{{- end }}
-			{{- end }}
-		}
 			{{- else if ne .ReplacedBy.AttributeName "" }}
-		if !configData.{{ .Name }}.IsNull() && stateData != nil {
-			{{- range $.Children}}
-				{{- if isLegacyChild .PkgName $.LegacyChildren}}
-					{{- if eq $SetName (capitalize .PkgName)}}
+				{{- range $.Children}}
+					{{- if isLegacyChild .PkgName $.LegacyChildren}}
+						{{- if eq $SetName (capitalize .PkgName)}}
+		// HasNamedProperties {{.HasNamedProperties}}
+		if !configData.{{ $SetName }}.IsNull() && stateData != nil {
 			var attributeValues []{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel
 			var newAttributeValues, stateAttributeValues []string
 			configData.{{.ResourceClassName}}.ElementsAs(ctx, &attributeValues, false)
@@ -563,18 +552,14 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 					planData.Deprecated{{.ResourceClassName}} = {{.ResourceClassName}}Set
 				}
 			}
-					{{- end }}
-				{{- end }}
-			{{- end }}
-		} else if !configData.Deprecated{{ .Name }}.IsNull() && stateData != nil {
-			{{- range $.Children}}
-				{{- if isLegacyChild .PkgName $.LegacyChildren}}
-					{{- if eq $SetName (capitalize .PkgName)}}
+		} else if !configData.Deprecated{{ $SetName }}.IsNull() {
 			{{.ResourceClassName}}List := make([]{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel, 0)
 			var attributeValues []string
 			var newAttributeValues []{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel
 			configData.Deprecated{{.ResourceClassName}}.ElementsAs(ctx, &attributeValues, false)
-			stateData.{{.ResourceClassName}}.ElementsAs(ctx, &newAttributeValues, false)
+			if stateData != nil {
+				stateData.{{.ResourceClassName}}.ElementsAs(ctx, &newAttributeValues, false)
+			}
 			for _, attributeValue := range attributeValues {
 				{{.ResourceClassName}}Value := {{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel{}
 				foundAttributeValue := false
@@ -632,18 +617,12 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 			}
 			{{.ResourceClassName}}Set, _ := types.SetValueFrom(ctx, {{.ResourceClassName}}Type, {{.ResourceClassName}}List)
 			planData.{{.ResourceClassName}} = {{.ResourceClassName}}Set
-					{{- end }}
-				{{- end }}
-			{{- end }}
 		} else if stateData != nil { // used to replace use state for unknown
-			{{- range $.Children}}
-				{{- if isLegacyChild .PkgName $.LegacyChildren}}
-					{{- if eq $SetName (capitalize .PkgName)}}
 			planData.Deprecated{{.ResourceClassName}} = stateData.Deprecated{{.ResourceClassName}}
+		}
+						{{- end }}
 					{{- end }}
 				{{- end }}
-			{{- end }}
-		}
 			{{- end }}
 		{{ end }}
 

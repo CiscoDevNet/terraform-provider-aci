@@ -12,7 +12,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
-	{{- if or .HasBitmask }}
+	{{- if or .HasBitmask .LegacyAttributes}}
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	{{- end}}
 	{{- if getDefaultValues .PkgName "parent_dn" $.Definitions}}
@@ -46,6 +46,34 @@ func (d *{{.ResourceClassName}}DataSource) Schema(ctx context.Context, req datas
 		MarkdownDescription: "The {{.ResourceName}} datasource for the '{{.PkgName}}' class",
 
 		Attributes: map[string]schema.Attribute{
+			{{- if .LegacyAttributes}}
+			// Deprecated attributes
+				{{- range .LegacyAttributes}}
+					{{- if ne .ReplacedBy.AttributeName "" }}
+						{{- if eq (getMigrationType .ValueType) "String"}}
+			"{{.AttributeName}}": schema.StringAttribute{
+				Computed: true,
+				DeprecationMessage: "Attribute '{{.AttributeName}}' will be deprecated soon, please refer to '{{.ReplacedBy.AttributeName}}' instead",
+			},
+						{{- end}}
+						{{- if eq (getMigrationType .ValueType) "Set"}}
+			"{{.AttributeName}}": schema.SetAttribute{
+				Computed: true,
+				ElementType: types.StringType,
+				DeprecationMessage: "Attribute '{{.AttributeName}}' will be deprecated soon, please refer to '{{.ReplacedBy.AttributeName}}' instead",
+			},
+						{{- end}}
+						{{- if eq (getMigrationType .ValueType) "List"}}
+			"{{.AttributeName}}": schema.ListAttribute{
+				Computed: true,
+				ElementType: types.StringType,
+				DeprecationMessage: "Attribute '{{.AttributeName}}' will be deprecated soon, please refer to '{{.ReplacedBy.AttributeName}}' instead",
+			},
+						{{- end}}
+					{{- end}}
+				{{- end}}
+			// End of deprecated attributes
+			{{- end}}
 			"id": schema.StringAttribute{
 				Computed:            true,
 				MarkdownDescription: "The distinguished name (DN) of the {{getResourceNameAsDescription .ResourceName $.Definitions}} object.",
@@ -99,6 +127,38 @@ func (d *{{.ResourceClassName}}DataSource) Schema(ctx context.Context, req datas
 			},
 			{{- end}}
 		},
+		{{- if .LegacyAttributes}}
+		Blocks: map[string]schema.Block{
+			{{- range .LegacyBlocks}}
+			"{{ .Name }}": schema.SetNestedBlock{
+				NestedObject: schema.NestedBlockObject{
+					Attributes: map[string]schema.Attribute{
+					{{- range .Attributes}}
+						{{- if eq (getMigrationType .ValueType) "String"}}
+						"{{.AttributeName}}": schema.StringAttribute{
+							Computed: true,
+							DeprecationMessage: "Attribute '{{.AttributeName}}' will be deprecated soon, please refer to '{{.ReplacedBy.AttributeName}}' instead",
+						},
+							{{- end}}
+							{{- if eq (getMigrationType .ValueType) "Set"}}
+						"{{.AttributeName}}": schema.SetAttribute{
+							Computed: true,
+							DeprecationMessage: "Attribute '{{.AttributeName}}' will be deprecated soon, please refer to '{{.ReplacedBy.AttributeName}}' instead",
+						},
+							{{- end}}
+							{{- if eq (getMigrationType .ValueType) "List"}}
+						"{{.AttributeName}}": schema.ListAttribute{
+							Computed: true,
+							DeprecationMessage: "Attribute '{{.AttributeName}}' will be deprecated soon, please refer to '{{.ReplacedBy.AttributeName}}' instead",
+						},
+						{{- end}}
+					{{- end}}
+					},
+				},
+			},
+			{{- end }}
+		},
+		{{- end}}
 	}
 	tflog.Debug(ctx, "End schema of datasource: aci_{{.ResourceName}}")
 }

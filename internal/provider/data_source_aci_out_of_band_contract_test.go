@@ -22,7 +22,6 @@ func TestAccDataSourceVzOOBBrCP(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("data.aci_out_of_band_contract.test", "annotation", "annotation"),
 					resource.TestCheckResourceAttr("data.aci_out_of_band_contract.test", "description", "description"),
-					resource.TestCheckResourceAttr("data.aci_out_of_band_contract.test", "intent", "estimate_add"),
 					resource.TestCheckResourceAttr("data.aci_out_of_band_contract.test", "name_alias", "name_alias"),
 					resource.TestCheckResourceAttr("data.aci_out_of_band_contract.test", "owner_key", "owner_key"),
 					resource.TestCheckResourceAttr("data.aci_out_of_band_contract.test", "owner_tag", "owner_tag"),

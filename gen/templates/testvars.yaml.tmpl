@@ -33,27 +33,21 @@ default:
 
 datasource_non_existing:
   {{- range .Properties}}{{$testValue := createNonExistingValue .SnakeCaseName}}{{$overwritePropertyName := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
-    {{- if eq .SnakeCaseName "t_dn" }}
-  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: {{overwritePropertyValue .PkgName $overwritePropertyName $testValue "resource_required" 0 $.Definitions}}
-    {{- else  if or .IsNaming }}
+    {{- if .IsNaming }}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName $testValue "datasource_non_existing" 0 $.Definitions}}"
     {{- end}}
   {{- end}}
 
 datasource_required:
   {{- range .Properties}}{{$testValue := createTestValue .SnakeCaseName}}{{$overwritePropertyName := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
-    {{- if eq .SnakeCaseName "t_dn" }}
-  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: {{overwritePropertyValue .PkgName $overwritePropertyName $testValue "resource_required" 0 $.Definitions}}
-    {{- else if or .IsNaming }}
+    {{- if .IsNaming }}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName $testValue "datasource_required" 0 $.Definitions}}"
     {{- end}}
   {{- end}}
 
 resource_required:
   {{- range .Properties}}{{$testValue := createTestValue .SnakeCaseName}}{{$overwritePropertyName := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
-    {{- if eq .SnakeCaseName "t_dn" }}
-  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: {{overwritePropertyValue .PkgName $overwritePropertyName $testValue "resource_required" 0 $.Definitions}}
-    {{- else if or .IsNaming .IsRequired}}
+    {{- if or .IsNaming .IsRequired}}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName $testValue "resource_required" 0 $.Definitions}}"
     {{- end}}
   {{- end}}
@@ -109,37 +103,53 @@ children:
       {{ end}}{{- end}}{{- end}}{{- end}}
 {{- if .ContainedBy}}
 parents:
-    {{- $index := 0}}{{- range $key := .DocumentationExamples}}{{$parentDependency := getParentTestDependencies $.PkgName $index $.Definitions}}
+    {{- $index := 0}}{{- range $key := .DocumentationExamples}}{{$parentDependency := getParentTestDependencies $.PkgName $index $.Definitions}}{{$index = add $index 1}}
   - class_name: "{{ $key }}"
     parent_dependency: "{{$parentDependency.parent_dependency}}"
     parent_dn: "{{createParentDnValue $key "test" $.Definitions}}"
     class_in_parent: {{$parentDependency.class_in_parent}}
       {{- if ne $parentDependency.parent_dependency_name "" }}
-    parent_dependency_name: "{{$parentDependency.parent_dependency_name}}"{{$index = add $index 1}}
+    parent_dependency_name: "{{$parentDependency.parent_dependency_name}}"
       {{- end }}
-    {{- end}}
-
-  {{- $index := 0}}{{- $key := .TargetResourceClassName}}
-    {{- if ne $key "" }}
-
-targets:
-      {{- $targetDependency := getTargetTestDependencies $.PkgName $index $.Definitions}}
-  - class_name: "{{ $key }}"
-      {{- if ne $targetDependency.target_dn "" }}
-    target_dn: "{{ $targetDependency.target_dn }}"
-      {{- else }} 
-    target_dn: "{{ .TargetDn }}"
-      {{- end }}
-    parent_dn: "{{createParentDnValue $key "test" $.Definitions}}"
-    parent_dependency: "{{$targetDependency.parent_dependency}}"
-    parent_dependency_dn: "{{$targetDependency.parent_dependency_dn}}"
-    resource_required:
-      {{- range $.TargetProperties}}{{$testValue := createTestValue .SnakeCaseName}}{{$overwritePropertyName := overwriteProperty $key .SnakeCaseName $.Definitions}}
-        {{- if eq .SnakeCaseName "t_dn" }}
-      {{overwriteProperty $key .SnakeCaseName $.Definitions}}: {{overwritePropertyValue $key $overwritePropertyName $testValue "resource_required" 0 $.Definitions}}
-        {{- else if or .IsNaming .IsRequired}}
-      {{overwriteProperty $key .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue $key $overwritePropertyName $testValue "resource_required" 0 $.Definitions}}"
+      {{- if ne (len $parentDependency.target_classes) 0}}
+    target_classes:
+        {{- range $parentDependency.target_classes}}
+        - "{{ . }}"
         {{- end}}
-      {{- end}}{{$index = add $index 1}}
+      {{- end}}
+    {{- end}}
+    {{- if .TestDependencies}}
+targets:
+        {{- range .TestDependencies }}
+  - class_name: "{{ .ClassName }}"
+    target_dn: "{{ .TargetDn }}"
+    target_dn_ref: "{{ .TargetDnRef }}"
+    parent_dependency: "{{ .ParentDependency}}"
+    parent_dependency_dn_ref: "{{.ParentDependencyDnRef}}"
+    target_resource_name: "{{ .TargetResourceName }}"
+    relation_resource_name: "{{ .RelationResourceName }}"
+    parent_dn_key: "{{ .ParentDnKey }}"
+    properties:
+            {{- range $key, $value := .Properties}}
+        {{ $key }}: "{{ $value }}"
+            {{- end }}
+        {{- end }}
     {{- end }}
-  {{- end}}
+    {{- if .ChildTestDependencies}}
+child_targets:
+        {{- range .ChildTestDependencies }}
+  - class_name: "{{ .ClassName }}"
+    target_dn: "{{ .TargetDn }}"
+    target_dn_ref: "{{ .TargetDnRef }}"
+    parent_dependency: "{{ .ParentDependency}}"
+    parent_dependency_dn_ref: "{{.ParentDependencyDnRef}}"
+    target_resource_name: "{{ .TargetResourceName }}"
+    relation_resource_name: "{{ .RelationResourceName }}"
+    parent_dn_key: "{{ .ParentDnKey }}"
+    properties:
+            {{- range $key, $value := .Properties}}
+        {{ $key }}: "{{ $value }}"
+            {{- end }}
+        {{- end }}
+    {{- end }}
+{{- end}}
