@@ -2,7 +2,6 @@
 resource "aci_out_of_band_contract" "full_example" {
   annotation  = "annotation"
   description = "description"
-  intent      = "estimate_add"
   name        = "test_name"
   name_alias  = "name_alias"
   owner_key   = "owner_key"

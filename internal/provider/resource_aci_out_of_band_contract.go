@@ -46,7 +46,6 @@ type VzOOBBrCPResourceModel struct {
 	Id            types.String `tfsdk:"id"`
 	Annotation    types.String `tfsdk:"annotation"`
 	Descr         types.String `tfsdk:"description"`
-	Intent        types.String `tfsdk:"intent"`
 	Name          types.String `tfsdk:"name"`
 	NameAlias     types.String `tfsdk:"name_alias"`
 	OwnerKey      types.String `tfsdk:"owner_key"`
@@ -110,17 +109,6 @@ func (r *VzOOBBrCPResource) Schema(ctx context.Context, req resource.SchemaReque
 					stringplanmodifier.UseStateForUnknown(),
 				},
 				MarkdownDescription: `The description of the Out Of Band Contract object.`,
-			},
-			"intent": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
-				},
-				Validators: []validator.String{
-					stringvalidator.OneOf("estimate_add", "estimate_delete", "install"),
-				},
-				MarkdownDescription: `The Install Rules or Estimate Number of Rules.`,
 			},
 			"name": schema.StringAttribute{
 				Required: true,
@@ -431,9 +419,6 @@ func getAndSetVzOOBBrCPAttributes(ctx context.Context, diags *diag.Diagnostics, 
 				if attributeName == "descr" {
 					data.Descr = basetypes.NewStringValue(attributeValue.(string))
 				}
-				if attributeName == "intent" {
-					data.Intent = basetypes.NewStringValue(attributeValue.(string))
-				}
 				if attributeName == "name" {
 					data.Name = basetypes.NewStringValue(attributeValue.(string))
 				}
@@ -623,9 +608,6 @@ func getVzOOBBrCPCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics,
 	}
 	if !data.Descr.IsNull() && !data.Descr.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["descr"] = data.Descr.ValueString()
-	}
-	if !data.Intent.IsNull() && !data.Intent.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["intent"] = data.Intent.ValueString()
 	}
 	if !data.Name.IsNull() && !data.Name.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["name"] = data.Name.ValueString()

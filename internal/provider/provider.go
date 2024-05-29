@@ -196,10 +196,17 @@ func (p *AciProvider) Configure(ctx context.Context, req provider.ConfigureReque
 
 func (p *AciProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
+		NewFvESgResource,
 		NewFvEpIpTagResource,
 		NewFvEpMacTagResource,
 		NewFvFBRGroupResource,
 		NewFvFBRMemberResource,
+		NewFvRsConsResource,
+		NewFvRsConsIfResource,
+		NewFvRsIntraEpgResource,
+		NewFvRsProtByResource,
+		NewFvRsProvResource,
+		NewFvRsSecInheritedResource,
 		NewL3extConsLblResource,
 		NewL3extProvLblResource,
 		NewL3extRsOutToFBRGroupResource,
@@ -222,10 +229,17 @@ func (p *AciProvider) Resources(ctx context.Context) []func() resource.Resource 
 
 func (p *AciProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
+		NewFvESgDataSource,
 		NewFvEpIpTagDataSource,
 		NewFvEpMacTagDataSource,
 		NewFvFBRGroupDataSource,
 		NewFvFBRMemberDataSource,
+		NewFvRsConsDataSource,
+		NewFvRsConsIfDataSource,
+		NewFvRsIntraEpgDataSource,
+		NewFvRsProtByDataSource,
+		NewFvRsProvDataSource,
+		NewFvRsSecInheritedDataSource,
 		NewL3extConsLblDataSource,
 		NewL3extProvLblDataSource,
 		NewL3extRsOutToFBRGroupDataSource,

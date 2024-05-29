@@ -23,7 +23,6 @@ func TestAccResourceVzOOBBrCP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "intent", "install"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "owner_tag", ""),
@@ -39,7 +38,6 @@ func TestAccResourceVzOOBBrCP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotation", "annotation"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "description", "description"),
-					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "intent", "estimate_add"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "name_alias", "name_alias"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "owner_key", "owner_key"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "owner_tag", "owner_tag"),
@@ -55,7 +53,6 @@ func TestAccResourceVzOOBBrCP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "description", "description"),
-					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "intent", "estimate_add"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "name_alias", "name_alias"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "owner_key", "owner_key"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "owner_tag", "owner_tag"),
@@ -71,7 +68,6 @@ func TestAccResourceVzOOBBrCP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "intent", "install"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "owner_tag", ""),
@@ -89,7 +85,6 @@ func TestAccResourceVzOOBBrCP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "intent", "install"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "owner_tag", ""),
@@ -104,7 +99,6 @@ func TestAccResourceVzOOBBrCP(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "intent", "install"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "owner_tag", ""),
@@ -129,7 +123,6 @@ func TestAccResourceVzOOBBrCP(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "intent", "install"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "owner_tag", ""),
@@ -154,7 +147,6 @@ func TestAccResourceVzOOBBrCP(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "intent", "install"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "owner_tag", ""),
@@ -175,7 +167,6 @@ func TestAccResourceVzOOBBrCP(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "intent", "install"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "owner_tag", ""),
@@ -201,7 +192,6 @@ resource "aci_out_of_band_contract" "test" {
   name = "test_name"
   annotation = "annotation"
   description = "description"
-  intent = "estimate_add"
   name_alias = "name_alias"
   owner_key = "owner_key"
   owner_tag = "owner_tag"
@@ -216,7 +206,6 @@ resource "aci_out_of_band_contract" "test" {
   name = "test_name"
   annotation = "orchestrator:terraform"
   description = ""
-  intent = "install"
   name_alias = ""
   owner_key = ""
   owner_tag = ""

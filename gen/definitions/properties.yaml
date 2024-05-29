@@ -19,12 +19,15 @@ global:
     ctx_name: "vrf_name"
     id: "id_attribute" # id is a terraform reserved schema entry and needed in struct
     prio: "priority"
+    match_t: "match_criteria"
     descr: "description"
+
   resource_name_doc_overwrite:
     Vrf: VRF
     Sid: "SR-MPLS Segment ID"
   ignores:
     - "userdom"
+    - "intent"
 
 l3extRsRedistributePol:
   overwrites:
@@ -50,7 +53,6 @@ vzOOBBrCP:
   documentation:
     prio: "The priority of the %s object."
     targetDscp: "The target DSCP value of the %s object."
-    intent: "The Install Rules or Estimate Number of Rules"
 
 mgmtSubnet:
   test_values:
@@ -190,29 +192,23 @@ fvFBRMember:
     - class_name: "fvFBRGroup"
       parent_dependency: "fvCtx"
       parent_dn: "aci_vrf_fallback_route_group.test.id"
-      class_in_parent: false
 
 l3extRsOutToFBRGroup:
   documentation:
     tDn: "The distinguished name of the VRF Fallback Route Group object."
-  test_values:
-    resource_required:
-      target_dn: aci_vrf_fallback_route_group.test.id
-    datasource_required:
-      target_dn: aci_vrf_fallback_route_group.test.id
-    datasource_non_existing:
-      target_dn: aci_vrf_fallback_route_group.test.id
   parents:
     - class_name: "l3extOut"
       parent_dependency: "fvTenant"
       parent_dn: "aci_l3_outside.test.id"
-      class_in_parent: false
+      target_classes:
+        - "fvFBRGroup"
   targets:
     - class_name: "fvFBRGroup"
       parent_dependency: "fvCtx"
-      parent_dependency_dn: "aci_vrf.test.id"
-      parent_dn: "aci_vrf_fallback_route_group.test.id"
-      target_dn: "uni/tn-test_tenant/ctx-test_vrf/fbrg-fallback_route_group"
+      target_dn: "uni/tn-test_tenant/ctx-test_vrf/fbrg-fallback_route_group_0"
+      relation_resource_name: "fallback_route_group"
+      properties:
+        name: "fallback_route_group_0"
 
 l3extProvLbl:
   test_values:
@@ -233,7 +229,6 @@ l3extProvLbl:
       parent_dependency: "fvTenant"
       parent_dependency_name: "infra"
       parent_dn: "aci_l3_outside.test.id"
-      class_in_parent: false
 
 netflowMonitorPol:
   default_values:
@@ -327,3 +322,100 @@ netflowRecordPol:
     - class_name: "fvTenant"
       parent_dependency: ""
       parent_dn: "aci_tenant.test.id"
+
+fvESg:
+  default_values:
+    shutdown: "no"
+  overwrites:
+    pref_gr_memb: "preferred_group_member"
+    pc_enf_pref: "intra_esg_isolation"
+    shutdown: "admin_state"
+  parents:
+    - class_name: "fvAp"
+      parent_dependency: "fvTenant"
+  ignores:
+    - "floodOnEncap"
+    - "prio"
+
+fvRsScope:
+  parents:
+    - class_name: "fvESg"
+      parent_dependency: "fvAp"
+    - class_name: "fvAEPg"
+      parent_dependency: "fvAp"
+
+fvRsCons:
+  parents:
+    - class_name: "fvESg"
+      parent_dependency: "fvAp"
+    - class_name: "fvAEPg"
+      parent_dependency: "fvAp"
+
+fvRsProv:
+  parents:
+    - class_name: "fvESg"
+      parent_dependency: "fvAp"
+    - class_name: "fvAEPg"
+      parent_dependency: "fvAp"
+
+fvRsConsIf:
+  parents:
+    - class_name: "fvESg"
+      parent_dependency: "fvAp"
+    - class_name: "fvAEPg"
+      parent_dependency: "fvAp"
+
+fvRsProtBy:
+  parents:
+    - class_name: "fvESg"
+      parent_dependency: "fvAp"
+    - class_name: "fvAEPg"
+      parent_dependency: "fvAp"
+
+fvRsIntraEpg:
+  parents:
+    - class_name: "fvESg"
+      parent_dependency: "fvAp"
+    - class_name: "fvAEPg"
+      parent_dependency: "fvAp"
+
+fvRsSecInherited:
+  parents:
+    - class_name: "fvAEPg"
+      parent_dependency: "fvAp"
+      target_classes:
+        - "fvAEPg"
+    - class_name: "fvESg"
+      parent_dependency: "fvAp"
+      target_classes:
+        - "fvESg"
+    
+  targets:
+    - class_name: "fvESg"
+      parent_dependency: "fvAp"
+      overwrite_parent_dn_key: "application_profile_dn"
+      target_dn: "uni/tn-test_tenant/ap-test_ap/esg-esg_0"
+      relation_resource_name: "contract_master"
+      properties:
+        name: "esg_0"
+    - class_name: "fvESg"
+      parent_dependency: "fvAp"
+      overwrite_parent_dn_key: "application_profile_dn"
+      target_dn: "uni/tn-test_tenant/ap-test_ap/esg-esg_1"
+      relation_resource_name: "contract_master"
+      properties:
+        name: "esg_1"
+    - class_name: "fvAEPg"
+      parent_dependency: "fvAp"
+      overwrite_parent_dn_key: "application_profile_dn"
+      target_dn: "uni/tn-test_tenant/ap-test_ap/epg-epg_2"
+      relation_resource_name: "contract_master"
+      properties:
+        name: "epg_2"
+    - class_name: "fvAEPg"
+      parent_dependency: "fvAp"
+      overwrite_parent_dn_key: "application_profile_dn"
+      target_dn: "uni/tn-test_tenant/ap-test_ap/epg-epg_3"
+      relation_resource_name: "contract_master"
+      properties:
+        name: "epg_3"

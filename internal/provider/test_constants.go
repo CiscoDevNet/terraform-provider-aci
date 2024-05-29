@@ -20,6 +20,20 @@ resource "aci_l3_outside" "test" {
 }
 `
 
+const testConfigFvApMinDependencyWithFvTenant = testConfigFvTenantMin + `
+resource "aci_application_profile" "test" {
+  tenant_dn = aci_tenant.test.id
+  name      = "test_ap"
+}
+`
+
+const testConfigFvAEPgMinDependencyWithFvAp = testConfigFvApMinDependencyWithFvTenant + `
+resource "aci_application_epg" "test" {
+  application_profile_dn = aci_application_profile.test.id
+  name                   = "test_epg"
+}
+`
+
 const testConfigFvAEPgMin = testConfigFvTenantMin + `
 resource "aci_application_profile" "test" {
   tenant_dn = aci_tenant.test.id

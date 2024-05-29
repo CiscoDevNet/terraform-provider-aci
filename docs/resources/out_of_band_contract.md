@@ -48,7 +48,6 @@ The configuration snippet below shows all possible attributes of the Out Of Band
 resource "aci_out_of_band_contract" "full_example" {
   annotation  = "annotation"
   description = "description"
-  intent      = "estimate_add"
   name        = "test_name"
   name_alias  = "name_alias"
   owner_key   = "owner_key"
@@ -89,9 +88,6 @@ All examples for the Out Of Band Contract resource can be found in the [examples
 * `annotation` (annotation) - (string) The annotation of the Out Of Band Contract object.
   - Default: `orchestrator:terraform`
 * `description` (descr) - (string) The description of the Out Of Band Contract object.
-* `intent` (intent) - (string) The Install Rules or Estimate Number of Rules.
-  - Default: `install`
-  - Valid Values: `estimate_add`, `estimate_delete`, `install`.
 * `name_alias` (nameAlias) - (string) The name alias of the Out Of Band Contract object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
