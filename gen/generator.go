@@ -705,7 +705,10 @@ func main() {
 			// All classmodels have been read, thus now the model, child and relational resources names can be set
 			// When done before additional files would need to be opened and read which would slow down the generation process
 			model.ResourceName = GetResourceName(model.PkgName, definitions)
-			model.RelationshipResourceName = GetResourceName(model.RelationshipClass, definitions)
+
+			for _, relationshipClass := range model.RelationshipClass {
+				model.RelationshipResourceName = append(model.RelationshipResourceName, GetResourceName(relationshipClass, definitions))
+			}
 			childMap := make(map[string]Model, 0)
 			for childName, childModel := range model.Children {
 				childModel.ChildResourceName = GetResourceName(childModel.PkgName, definitions)
@@ -716,7 +719,9 @@ func main() {
 				} else {
 					childModel.ResourceName = childModel.ChildResourceName
 				}
-				childModel.RelationshipResourceName = GetResourceName(childModel.RelationshipClass, definitions)
+				for _, relationshipClass := range childModel.RelationshipClass {
+					childModel.RelationshipResourceName = append(childModel.RelationshipResourceName, GetResourceName(relationshipClass, definitions))
+				}
 				childMap[childName] = childModel
 			}
 			model.Children = childMap
@@ -794,8 +799,8 @@ type Model struct {
 	ExampleResource           string
 	ExampleResourceFull       string
 	SubCategory               string
-	RelationshipClass         string
-	RelationshipResourceName  string
+	RelationshipClass         []string
+	RelationshipResourceName  []string
 	Versions                  string
 	ChildClasses              []string
 	ContainedBy               []string
@@ -928,6 +933,7 @@ func (m *Model) setClassModel(metaPath string, child bool, definitions Definitio
 	for _, classDetails := range classInfo {
 		m.SetClassLabel(classDetails, child)
 		m.SetClassName(classDetails)
+		m.SetRelationshipClasses(definitions)
 		m.SetClassRnFormat(classDetails)
 		m.SetClassDnFormats(classDetails)
 		m.SetClassIdentifiers(classDetails)
@@ -1052,10 +1058,26 @@ func (m *Model) SetClassName(classDetails interface{}) {
 
 func (m *Model) SetClassRnFormat(classDetails interface{}) {
 	m.GetOverwriteRnFormat(classDetails.(map[string]interface{})["rnFormat"].(string))
-	if strings.HasPrefix(m.RnFormat, "rs") {
+	if strings.HasPrefix(m.RnFormat, "rs") && len(m.RelationshipClass) == 0 {
 		toMo := classDetails.(map[string]interface{})["relationInfo"].(map[string]interface{})["toMo"].(string)
-		m.RelationshipClass = strings.Replace(toMo, ":", "", 1)
+		m.RelationshipClass = []string{strings.Replace(toMo, ":", "", 1)}
 	}
+}
+
+func (m *Model) SetRelationshipClasses(definitions Definitions) {
+	overwriteExampleClasses := []interface{}{}
+	if v, ok := definitions.Classes[m.PkgName]; ok {
+		for key, value := range v.(map[interface{}]interface{}) {
+			if key.(string) == "relationship_classes" {
+				overwriteExampleClasses = value.([]interface{})
+			}
+		}
+	}
+
+	for _, className := range overwriteExampleClasses {
+		m.RelationshipClass = append(m.RelationshipClass, className.(string))
+	}
+
 }
 
 func (m *Model) SetClassDnFormats(classDetails interface{}) {

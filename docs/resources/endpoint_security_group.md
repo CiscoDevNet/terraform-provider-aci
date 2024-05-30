@@ -214,7 +214,7 @@ All examples for the Endpoint Security Group resource can be found in the [examp
       - Default: `orchestrator:terraform`
   * `vrf_name` (tnFvCtxName) - (string) Name.
 
-* `relation_to_contract_masters` - (list) A list of Relation To Contract Masters (ACI object [fvRsSecInherited](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsSecInherited/overview)) pointing to  (ACI Object [fvEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvEPg/overview)) which can be configured using the [aci_](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/) resource. This attribute is supported in ACI versions: 2.3(1e) and later.
+* `relation_to_contract_masters` - (list) A list of Relation To Contract Masters (ACI object [fvRsSecInherited](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsSecInherited/overview)) pointing to Endpoint Security Group (ACI Object [fvESg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvESg/overview)) which can be configured using the [aci_endpoint_security_group](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/endpoint_security_group) resource. This attribute is supported in ACI versions: 2.3(1e) and later.
   
   #### Required ####
   

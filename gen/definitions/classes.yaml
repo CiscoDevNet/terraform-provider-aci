@@ -355,6 +355,9 @@ fvRsSecInherited:
   example_classes:
     - "fvAEPg"
     - "fvESg"
+  relationship_classes:
+    - "fvAEPg"
+    - "fvESg"
   dn_formats:
     - "uni/tn-{name}/ap-{name}/epg-{name}/rssecInherited-[{tDn}]"
     - "uni/tn-{name}/ap-{name}/esg-{name}/rssecInherited-[{tDn}]"
