@@ -117,12 +117,12 @@ parents:
 {{- range $key, $value := .MultiParentFormats }}{{$parentDependency := getParentTestDependencies $topContext.PkgName 0 $topContext.Definitions}}
   - class_name: "{{ $value.ContainedBy }}"
     parent_dependency: "{{ $parentDependency.parent_dependency }}"
-    parent_dn: {{ if eq $value.ContainedBy "polUni" }}""{{ else }}"{{ createParentDnValue $value.ContainedBy "test" $topContext.Definitions }}"{{ end }}
+    parent_dn: {{ if eq $key "default" }}""{{ else }}"{{ createParentDnValue $value.ContainedBy "test" $topContext.Definitions }}"{{ end }}
     class_in_parent: false
     {{- $testType := $value.TestType }}
     {{- if $testType }}
     test_type: {{ $testType }}
-    {{- else -}}
+    {{- else }}
     test_type: both
     {{- end }}
 {{- end }}
@@ -137,7 +137,7 @@ test_type: both
 {{- end }}
 {{ $exists_exclude := false -}}
 {{- range .Properties }}
-  {{- if eq .ValueType "password" }}
+  {{- if or (eq .ValueType "password") (getDefaultValues .PkgName "parent_dn" $.Definitions) }}
     {{- $exists_exclude = true -}}
   {{- end }}
 {{- end }}
@@ -147,5 +147,8 @@ exclude_attributes:
     {{- if eq .ValueType "password" }}
   - "{{ overwriteProperty .PkgName .SnakeCaseName $.Definitions }}"
     {{- end }}
+  {{- end }}
+  {{- if getDefaultValues .PkgName "parent_dn" $.Definitions}}
+  - "parent_dn"
   {{- end }}
 {{- end }}

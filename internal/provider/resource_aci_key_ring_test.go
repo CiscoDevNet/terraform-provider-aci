@@ -10,7 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
-func TestAccResourcePkiKeyRingWithPolUni(t *testing.T) {
+func TestAccResourcePkiKeyRingWithDefault(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
 		PreCheck: func() {
@@ -20,7 +20,7 @@ func TestAccResourcePkiKeyRingWithPolUni(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigPkiKeyRingMinDependencyWithPolUni,
+				Config:             testConfigPkiKeyRingMinDependencyWithDefault,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					waitForApicBeforeRefresh,
@@ -41,7 +41,7 @@ func TestAccResourcePkiKeyRingWithPolUni(t *testing.T) {
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config:             testConfigPkiKeyRingAllDependencyWithPolUni,
+				Config:             testConfigPkiKeyRingAllDependencyWithDefault,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					waitForApicBeforeRefresh,
@@ -62,7 +62,7 @@ func TestAccResourcePkiKeyRingWithPolUni(t *testing.T) {
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config:             testConfigPkiKeyRingMinDependencyWithPolUni,
+				Config:             testConfigPkiKeyRingMinDependencyWithDefault,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					waitForApicBeforeRefresh,
@@ -71,7 +71,7 @@ func TestAccResourcePkiKeyRingWithPolUni(t *testing.T) {
 			},
 			// Update with empty strings config or default value
 			{
-				Config:             testConfigPkiKeyRingResetDependencyWithPolUni,
+				Config:             testConfigPkiKeyRingResetDependencyWithDefault,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					waitForApicBeforeRefresh,
@@ -95,7 +95,7 @@ func TestAccResourcePkiKeyRingWithPolUni(t *testing.T) {
 				ResourceName:            "aci_key_ring.test",
 				ImportState:             true,
 				ImportStateVerify:       true,
-				ImportStateVerifyIgnore: []string{"key"},
+				ImportStateVerifyIgnore: []string{"key", "parent_dn"},
 				Check: resource.ComposeAggregateTestCheckFunc(
 					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("aci_key_ring.test", "name", "test_name"),
@@ -116,7 +116,7 @@ func TestAccResourcePkiKeyRingWithPolUni(t *testing.T) {
 			},
 			// Update with children
 			{
-				Config:             testConfigPkiKeyRingChildrenDependencyWithPolUni,
+				Config:             testConfigPkiKeyRingChildrenDependencyWithDefault,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					waitForApicBeforeRefresh,
@@ -148,7 +148,7 @@ func TestAccResourcePkiKeyRingWithPolUni(t *testing.T) {
 				ResourceName:            "aci_key_ring.test",
 				ImportState:             true,
 				ImportStateVerify:       true,
-				ImportStateVerifyIgnore: []string{"key"},
+				ImportStateVerifyIgnore: []string{"key", "parent_dn"},
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_key_ring.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "admin_state", "started"),
@@ -175,7 +175,7 @@ func TestAccResourcePkiKeyRingWithPolUni(t *testing.T) {
 			},
 			// Update with children removed from config
 			{
-				Config:             testConfigPkiKeyRingChildrenRemoveFromConfigDependencyWithPolUni,
+				Config:             testConfigPkiKeyRingChildrenRemoveFromConfigDependencyWithDefault,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					waitForApicBeforeRefresh,
@@ -193,7 +193,7 @@ func TestAccResourcePkiKeyRingWithPolUni(t *testing.T) {
 			},
 			// Update with children first child removed
 			{
-				Config:             testConfigPkiKeyRingChildrenRemoveOneDependencyWithPolUni,
+				Config:             testConfigPkiKeyRingChildrenRemoveOneDependencyWithDefault,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					waitForApicBeforeRefresh,
@@ -207,7 +207,7 @@ func TestAccResourcePkiKeyRingWithPolUni(t *testing.T) {
 			},
 			// Update with all children removed
 			{
-				Config:             testConfigPkiKeyRingChildrenRemoveAllDependencyWithPolUni,
+				Config:             testConfigPkiKeyRingChildrenRemoveAllDependencyWithDefault,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					waitForApicBeforeRefresh,
@@ -307,7 +307,7 @@ func TestAccResourcePkiKeyRingWithFvTenant(t *testing.T) {
 				ResourceName:            "aci_key_ring.test",
 				ImportState:             true,
 				ImportStateVerify:       true,
-				ImportStateVerifyIgnore: []string{"key"},
+				ImportStateVerifyIgnore: []string{"key", "parent_dn"},
 				Check: resource.ComposeAggregateTestCheckFunc(
 					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("aci_key_ring.test", "name", "test_name"),
@@ -360,7 +360,7 @@ func TestAccResourcePkiKeyRingWithFvTenant(t *testing.T) {
 				ResourceName:            "aci_key_ring.test",
 				ImportState:             true,
 				ImportStateVerify:       true,
-				ImportStateVerifyIgnore: []string{"key"},
+				ImportStateVerifyIgnore: []string{"key", "parent_dn"},
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_key_ring.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "admin_state", "started"),
@@ -435,13 +435,13 @@ func TestAccResourcePkiKeyRingWithFvTenant(t *testing.T) {
 	})
 }
 
-const testConfigPkiKeyRingMinDependencyWithPolUni = testConfigPolUniMinDependencyWithPkiTP + `
+const testConfigPkiKeyRingMinDependencyWithDefault = testConfigDefaultMinDependencyWithPkiTP + `
 resource "aci_key_ring" "test" {
   name = "test_name"
 }
 `
 
-const testConfigPkiKeyRingAllDependencyWithPolUni = testConfigPolUniMinDependencyWithPkiTP + `
+const testConfigPkiKeyRingAllDependencyWithDefault = testConfigDefaultMinDependencyWithPkiTP + `
 resource "aci_key_ring" "test" {
   name = "test_name"
   admin_state = "completed"
@@ -460,7 +460,7 @@ resource "aci_key_ring" "test" {
 }
 `
 
-const testConfigPkiKeyRingResetDependencyWithPolUni = testConfigPolUniMinDependencyWithPkiTP + `
+const testConfigPkiKeyRingResetDependencyWithDefault = testConfigDefaultMinDependencyWithPkiTP + `
 resource "aci_key_ring" "test" {
   name = "test_name"
   admin_state = "started"
@@ -478,7 +478,7 @@ resource "aci_key_ring" "test" {
   regenerate = "no"
 }
 `
-const testConfigPkiKeyRingChildrenDependencyWithPolUni = testConfigPolUniMinDependencyWithPkiTP + `
+const testConfigPkiKeyRingChildrenDependencyWithDefault = testConfigDefaultMinDependencyWithPkiTP + `
 resource "aci_key_ring" "test" {
   name = "test_name"
   annotations = [
@@ -504,13 +504,13 @@ resource "aci_key_ring" "test" {
 }
 `
 
-const testConfigPkiKeyRingChildrenRemoveFromConfigDependencyWithPolUni = testConfigPolUniMinDependencyWithPkiTP + `
+const testConfigPkiKeyRingChildrenRemoveFromConfigDependencyWithDefault = testConfigDefaultMinDependencyWithPkiTP + `
 resource "aci_key_ring" "test" {
   name = "test_name"
 }
 `
 
-const testConfigPkiKeyRingChildrenRemoveOneDependencyWithPolUni = testConfigPolUniMinDependencyWithPkiTP + `
+const testConfigPkiKeyRingChildrenRemoveOneDependencyWithDefault = testConfigDefaultMinDependencyWithPkiTP + `
 resource "aci_key_ring" "test" {
   name = "test_name"
   annotations = [ 
@@ -528,7 +528,7 @@ resource "aci_key_ring" "test" {
 }
 `
 
-const testConfigPkiKeyRingChildrenRemoveAllDependencyWithPolUni = testConfigPolUniMinDependencyWithPkiTP + `
+const testConfigPkiKeyRingChildrenRemoveAllDependencyWithDefault = testConfigDefaultMinDependencyWithPkiTP + `
 resource "aci_key_ring" "test" {
   name = "test_name"
   annotations = []

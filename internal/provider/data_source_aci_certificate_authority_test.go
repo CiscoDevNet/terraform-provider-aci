@@ -11,7 +11,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
-func TestAccDataSourcePkiTPWithPolUni(t *testing.T) {
+func TestAccDataSourcePkiTPWithDefault(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
 		PreCheck: func() {
@@ -20,7 +20,7 @@ func TestAccDataSourcePkiTPWithPolUni(t *testing.T) {
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config:             testConfigPkiTPDataSourceDependencyWithPolUni,
+				Config:             testConfigPkiTPDataSourceDependencyWithDefault,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					waitForApicBeforeRefresh,
@@ -34,7 +34,7 @@ func TestAccDataSourcePkiTPWithPolUni(t *testing.T) {
 				),
 			},
 			{
-				Config:      testConfigPkiTPNotExistingPolUni,
+				Config:      testConfigPkiTPNotExistingDefault,
 				ExpectError: regexp.MustCompile("Failed to read aci_certificate_authority data source"),
 			},
 		},
@@ -76,14 +76,14 @@ func TestAccDataSourcePkiTPWithFvTenant(t *testing.T) {
 	})
 }
 
-const testConfigPkiTPDataSourceDependencyWithPolUni = testConfigPkiTPMinDependencyWithPolUni + `
+const testConfigPkiTPDataSourceDependencyWithDefault = testConfigPkiTPMinDependencyWithDefault + `
 data "aci_certificate_authority" "test" {
   name = "test_name"
   depends_on = [aci_certificate_authority.test]
 }
 `
 
-const testConfigPkiTPNotExistingPolUni = testConfigPkiTPMinDependencyWithPolUni + `
+const testConfigPkiTPNotExistingDefault = testConfigPkiTPMinDependencyWithDefault + `
 data "aci_certificate_authority" "test_non_existing" {
   name = "non_existing_name"
   depends_on = [aci_certificate_authority.test]

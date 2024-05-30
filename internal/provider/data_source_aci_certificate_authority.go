@@ -12,6 +12,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
@@ -45,7 +46,7 @@ func (d *PkiTPDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 				MarkdownDescription: "The distinguished name (DN) of the Certificate Authority object.",
 			},
 			"parent_dn": schema.StringAttribute{
-				Required:            true,
+				Optional:            true,
 				MarkdownDescription: "The distinguished name (DN) of the parent object.",
 			},
 			"annotation": schema.StringAttribute{
@@ -144,6 +145,10 @@ func (d *PkiTPDataSource) Read(ctx context.Context, req datasource.ReadRequest, 
 
 	if resp.Diagnostics.HasError() {
 		return
+	}
+
+	if data.ParentDn.IsNull() || data.ParentDn.IsUnknown() {
+		data.ParentDn = basetypes.NewStringValue("uni/userext/pkiext")
 	}
 
 	setPkiTPId(ctx, data)

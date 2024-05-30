@@ -91,7 +91,9 @@ func (r *PkiTPResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				},
 			},
 			"parent_dn": schema.StringAttribute{
-				Required:            true,
+				Optional:            true,
+				Computed:            true,
+				Default:             stringdefault.StaticString("uni/userext/pkiext"),
 				MarkdownDescription: "The distinguished name (DN) of the parent object.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
@@ -277,8 +279,10 @@ func (r *PkiTPResource) Create(ctx context.Context, req resource.CreateRequest, 
 	for rnPrepend, wrapperClass := range wrapperClassMap {
 		if strings.Contains(data.Id.ValueString(), rnPrepend) && wrapperClass != "" {
 			DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s%s.json", strings.Split(data.Id.ValueString(), rnPrepend)[0], rnPrepend), "POST", jsonPayload)
+			break
 		} else if strings.Contains(data.Id.ValueString(), rnPrepend) && wrapperClass == "" {
 			DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+			break
 		}
 	}
 
@@ -349,8 +353,10 @@ func (r *PkiTPResource) Update(ctx context.Context, req resource.UpdateRequest, 
 	for rnPrepend, wrapperClass := range wrapperClassMap {
 		if strings.Contains(data.Id.ValueString(), rnPrepend) && wrapperClass != "" {
 			DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s%s.json", strings.Split(data.Id.ValueString(), rnPrepend)[0], rnPrepend), "POST", jsonPayload)
+			break
 		} else if strings.Contains(data.Id.ValueString(), rnPrepend) && wrapperClass == "" {
 			DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+			break
 		}
 	}
 
@@ -534,6 +540,7 @@ func setPkiTPParentDn(ctx context.Context, dn string, data *PkiTPResourceModel) 
 		if strings.Contains(parentDn, parent_identifier) {
 			parentDn = parentDn[:strings.Index(parentDn, fmt.Sprintf("/%s", rn_prepend))]
 			data.ParentDn = basetypes.NewStringValue(parentDn)
+			break
 		}
 	}
 }
@@ -541,14 +548,13 @@ func setPkiTPParentDn(ctx context.Context, dn string, data *PkiTPResourceModel) 
 func setPkiTPId(ctx context.Context, data *PkiTPResourceModel) {
 	rn := getPkiTPRn(ctx, data)
 	rnMap := map[string]string{
-		"":   "uni/userext/pkiext",
 		"tn": "certstore",
 	}
+	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 	for parent_identifier, rn_prepend := range rnMap {
-		if data.ParentDn.ValueString() == "" && parent_identifier == "" {
-			data.Id = types.StringValue(fmt.Sprintf("%s/%s", rn_prepend, rn))
-		} else if parent_identifier != "" && strings.Contains(data.ParentDn.ValueString(), parent_identifier) {
+		if strings.Contains(data.ParentDn.ValueString(), parent_identifier) {
 			data.Id = types.StringValue(fmt.Sprintf("%s/%s/%s", data.ParentDn.ValueString(), rn_prepend, rn))
+			break
 		}
 	}
 }
@@ -686,8 +692,10 @@ func getPkiTPCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, dat
 				},
 			}
 			payload, err = json.Marshal(wrapperPayloadMap)
+			break
 		} else if (strings.Contains(data.Id.ValueString(), rnPrepend) && wrapperClass == "") || stateData.Id.ValueString() != "" {
 			payload, err = json.Marshal(map[string]interface{}{"pkiTP": payloadMap})
+			break
 		}
 	}
 

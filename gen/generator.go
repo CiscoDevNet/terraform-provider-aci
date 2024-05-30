@@ -1726,6 +1726,14 @@ func GetMultiParentFormats(classPkgName string, definitions Definitions) map[str
 			}
 		}
 	}
+	defaultParentEntry := GetDefaultValues(classPkgName, "parent_dn", definitions)
+	if defaultParentEntry != "" {
+		defaultMultiParentFormat := MultiParentFormat{
+			ContainedBy: "default",
+			RnPrepend:   defaultParentEntry,
+		}
+		multiParentFormats["default"] = defaultMultiParentFormat
+	}
 	return multiParentFormats
 }
 
@@ -1883,7 +1891,7 @@ func setDocumentationData(m *Model, definitions Definitions) {
 	if len(getMultiParentFormats) > 0 {
 		m.DocumentationParentDns = nil
 		for _, format := range getMultiParentFormats {
-			if format.ContainedBy != "polUni" {
+			if format.ContainedBy != "default" {
 				m.DocumentationParentDns = append(m.DocumentationParentDns, fmt.Sprintf("[%s_%s](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/%s) (%s)", providerName, GetResourceName(format.ContainedBy, definitions), format.ContainedBy, GetDevnetDocForClass(format.ContainedBy)))
 			}
 		}

@@ -139,6 +139,8 @@ tagAnnotation:
       value: "test_value"
 
 pkiTP:
+  default_values:
+    parent_dn: "uni/userext/pkiext"
   overwrites:
     cert_chain: "certificate_chain"
   multi_line:
@@ -306,6 +308,8 @@ mplsNodeSidP:
       parent_dn: "aci_logical_node_to_fabric_node.test.id"
       
 pkiKeyRing:
+  default_values:
+    parent_dn: "uni/userext/pkiext"
   overwrites:
     cert: "certificate"
     regen: "regenerate"

@@ -57,7 +57,7 @@ children:
       value: "value_2"
       
 parents:
-  - class_name: "polUni"
+  - class_name: "default"
     parent_dependency: "pkiTP"
     parent_dn: ""
     class_in_parent: false
@@ -70,3 +70,4 @@ parents:
 
 exclude_attributes:
   - "key"
+  - "parent_dn"

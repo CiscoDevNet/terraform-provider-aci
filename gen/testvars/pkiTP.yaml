@@ -44,7 +44,7 @@ children:
       value: "value_2"
       
 parents:
-  - class_name: "polUni"
+  - class_name: "default"
     parent_dependency: ""
     parent_dn: ""
     class_in_parent: false
@@ -54,3 +54,6 @@ parents:
     parent_dn: "aci_tenant.test.id"
     class_in_parent: false
     test_type: cloud
+
+exclude_attributes:
+  - "parent_dn"

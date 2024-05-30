@@ -58,3 +58,6 @@ parents:
     parent_dn: "aci_tenant.test.id"
     class_in_parent: false
     test_type: both
+
+exclude_attributes:
+  - "parent_dn"

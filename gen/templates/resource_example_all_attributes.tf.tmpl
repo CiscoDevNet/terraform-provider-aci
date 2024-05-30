@@ -5,8 +5,8 @@
 {{- if eq $testType "cloud"}}
 // This example is only applicable to Cisco Cloud Network Controller
 {{- end}}
-resource "aci_{{$topContext.ResourceName}}" {{- if ne $formatValue.ContainedBy "polUni"}}"full_example_{{ getResourceName $formatValue.ContainedBy $topContext.Definitions }}"{{- else}}"full_example"{{- end }} { 
-    {{- if ne $formatValue.ContainedBy "polUni"}}
+resource "aci_{{$topContext.ResourceName}}" {{- if ne $formatValue.ContainedBy "default"}}"full_example_{{ getResourceName $formatValue.ContainedBy $topContext.Definitions }}"{{- else}}"full_example"{{- end }} { 
+    {{- if ne $formatValue.ContainedBy "default"}}
     parent_dn = {{createParentDnValue $formatValue.ContainedBy "example" $topContext.Definitions}}
   {{- end }}
     {{- range $topContext.Properties }}

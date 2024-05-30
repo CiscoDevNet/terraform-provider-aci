@@ -67,9 +67,10 @@ func TestAccResourceNetflowMonitorPolWithFvTenant(t *testing.T) {
 			},
 			// Import testing
 			{
-				ResourceName:      "aci_netflow_monitor_policy.test",
-				ImportState:       true,
-				ImportStateVerify: true,
+				ResourceName:            "aci_netflow_monitor_policy.test",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"parent_dn"},
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "name", "netfow_monitor"),
 					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "annotation", "orchestrator:terraform"),
@@ -108,9 +109,10 @@ func TestAccResourceNetflowMonitorPolWithFvTenant(t *testing.T) {
 			},
 			// Import testing with children
 			{
-				ResourceName:      "aci_netflow_monitor_policy.test",
-				ImportState:       true,
-				ImportStateVerify: true,
+				ResourceName:            "aci_netflow_monitor_policy.test",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"parent_dn"},
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "name", "netfow_monitor"),
 					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "annotation", "orchestrator:terraform"),
