@@ -30,7 +30,7 @@ default:
       {{- end}}
     {{- end}}
   {{- end}}
-
+{{ if .HasNaming }}
 datasource_non_existing:
   {{- range .Properties}}{{$testValue := createNonExistingValue .SnakeCaseName}}{{$overwritePropertyName := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
     {{- if .IsNaming }}
@@ -51,6 +51,7 @@ resource_required:
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName $testValue "resource_required" 0 $.Definitions}}"
     {{- end}}
   {{- end}}
+{{- end }}
 
 all:
   {{- range .Properties}}{{$overwritePropertyName := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
