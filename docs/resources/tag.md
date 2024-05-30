@@ -79,10 +79,10 @@ All examples for the Tag resource can be found in the [examples](https://github.
   - [aci_relation_to_vrf](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/relation_to_vrf) ([fvRsScope](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsScope/overview))
   - [aci_relation_to_contract_master](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/relation_to_contract_master) ([fvRsSecInherited](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsSecInherited/overview))
   - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
+  - [aci_aci_l2out_extepg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/aci_l2out_extepg) ([l2extInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l2extInstP/overview))
   - [aci_l3out_consumer_label](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3out_consumer_label) ([l3extConsLbl](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extConsLbl/overview))
+  - [aci_aci_external_network_instance_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/aci_external_network_instance_profile) ([l3extInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extInstP/overview))
   - [aci_logical_node_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/logical_node_profile) ([l3extLNodeP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extLNodeP/overview))
-  - [aci_l3out_loopback_interface_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3out_loopback_interface_profile) ([l3extLoopBackIfP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extLoopBackIfP/overview))
-  - [aci_l3_outside](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3_outside) ([l3extOut](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extOut/overview))
 * `key` (key) - (string) The key used to uniquely identify this configuration object.
 * `value` (value) - (string) The value of the property.
 
