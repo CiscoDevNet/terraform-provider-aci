@@ -81,7 +81,7 @@ data "aci_endpoint_security_group" "example_application_profile" {
   * `annotation` (annotation) - (string) The annotation of the Relation To VRF object.
   * `vrf_name` (tnFvCtxName) - (string) Name.
 
-* `relation_to_contract_masters` - (list) A list of Relation To Contract Masters (ACI object [fvRsSecInherited](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsSecInherited/overview)) pointing to  (ACI Object [fvEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvEPg/overview)). This attribute is supported in ACI versions: 2.3(1e) and later.
+* `relation_to_contract_masters` - (list) A list of Relation To Contract Masters (ACI object [fvRsSecInherited](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsSecInherited/overview)) pointing to Endpoint Security Group (ACI Object [fvESg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvESg/overview)). This attribute is supported in ACI versions: 2.3(1e) and later.
   * `annotation` (annotation) - (string) The annotation of the Relation To Contract Master object.
   * `target_dn` (tDn) - (string) The distinguished name of the target.
 
