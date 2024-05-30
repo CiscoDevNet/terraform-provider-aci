@@ -118,6 +118,16 @@ var templateFuncs = template.FuncMap{
 	"isNewNamedClassAttribute":          IsNewNamedClassAttribute,
 	"getChildAttributesFromBlocks":      GetChildAttributesFromBlocks,
 	"getNewChildAttributes":             GetNewChildAttributes,
+	"containsRequired":                  ContainsRequired,
+}
+
+func ContainsRequired(properties map[string]Property) bool {
+	for _, property := range properties {
+		if property.IsRequired {
+			return true
+		}
+	}
+	return false
 }
 
 func Replace(oldValue, newValue, inputString string) string {
