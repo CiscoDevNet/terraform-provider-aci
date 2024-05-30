@@ -21,15 +21,17 @@ Data source for Relation To Taboo Contract
 * Supported in ACI versions: 1.0(1e) and later.
 
 * Distinguished Name Formats:
-  - `... add all relevant DNs ...`
   - Too many DN formats to display, see model documentation for all possible parents of [fvRsProtBy](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsProtBy/overview).
   - `uni/tn-{name}/ap-{name}/epg-{name}/rsprotBy-{tnVzTabooName}`
+  - `uni/tn-{name}/l2out-{name}/instP-{name}/rsprov-{tnVzBrCPName}`
+  - `uni/tn-{name}/out-{name}/instP-{name}/rsprov-{tnVzBrCPName}`
 
 ## GUI Information ##
 
 * Locations:
   - `Tenants -> Application Profiles -> Application EPGs -> Contracts`
-  - `... add all locations ...`
+  - `Tenants -> Networkings -> L3Outs -> External EPGs -> Contracts`
+  - `Tenants -> Networkings -> L2Outs -> External EPGs -> Contracts`
 
 ## Example Usage ##
 
@@ -49,6 +51,8 @@ data "aci_relation_to_taboo_contract" "example_application_epg" {
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_application_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/application_epg) ([fvAEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvAEPg/overview))
   - [aci_endpoint_security_group](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/endpoint_security_group) ([fvESg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvESg/overview))
+  - [aci_aci_l2out_extepg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/aci_l2out_extepg) ([l2extInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l2extInstP/overview))
+  - [aci_aci_external_network_instance_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/aci_external_network_instance_profile) ([l3extInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extInstP/overview))
   - The distinquised name (DN) of classes below can be used but currently there is no available resource for it:
     - [cloudEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/cloudEPg/overview)
     - [cloudExtEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/cloudExtEPg/overview)
@@ -60,8 +64,6 @@ data "aci_relation_to_taboo_contract" "example_application_epg" {
     - [fvTnlEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTnlEPg/overview)
     - [infraCEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraCEPg/overview)
     - [infraPEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraPEPg/overview)
-    - [l2extInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l2extInstP/overview)
-    - [l3extInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extInstP/overview)
     - [l3extInstPDef](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extInstPDef/overview)
     - [mgmtInB](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/mgmtInB/overview)
     - [vnsEPpInfo](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vnsEPpInfo/overview)
