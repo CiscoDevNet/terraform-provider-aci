@@ -71,6 +71,12 @@ mgmtRsOoBCons:
     - "Tenants (mgmt) -> External Management Network Instance Profiles -> Contracts"
   sub_category: "Node Management"
 
+l2extInstP:
+  resource_name: "aci_l2out_extepg"
+
+l3extInstP:
+  resource_name: "aci_external_network_instance_profile"
+
 l3extOut:
   resource_name: "l3_outside"
 
@@ -265,14 +271,16 @@ fvRsCons:
     - "fvAEPg"
     - "fvESg"
   dn_formats:
-    - "... add all relevant DNs ..."
     - "uni/tn-{name}/ap-{name}/epg-{name}/rscons-{tnVzBrCPName}"
     - "uni/tn-{name}/ap-{name}/esg-{name}/rscons-{tnVzBrCPName}"
+    - "uni/tn-{name}/out-{name}/instP-{name}/rscons-{tnVzBrCPName}"
+    - "uni/tn-{name}/l2out-{name}/instP-{name}/rscons-{tnVzBrCPName}"
     - "Too many DN formats to display, see model documentation for all possible parents of [fvRsCons](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsCons/overview)."
   ui_locations:
     - "Tenants -> Application Profiles -> Application EPGs -> Contracts"
     - "Tenants -> Application Profiles -> Endpoint Security Groups -> Contracts"
-    - "... add all locations ..."
+    - "Tenants -> Networkings -> L3Outs -> External EPGs -> Contracts"
+    - "Tenants -> Networkings -> L2Outs -> External EPGs -> Contracts"
   sub_category: "Application Management"
 
 fvRsProv:
@@ -281,14 +289,16 @@ fvRsProv:
     - "fvAEPg"
     - "fvESg"
   dn_formats:
-    - "... add all relevant DNs ..."
     - "uni/tn-{name}/ap-{name}/epg-{name}/rsprov-{tnVzBrCPName}"
     - "uni/tn-{name}/ap-{name}/esg-{name}/rsprov-{tnVzBrCPName}"
+    - "uni/tn-{name}/out-{name}/instP-{name}/rsprov-{tnVzBrCPName}"
+    - "uni/tn-{name}/l2out-{name}/instP-{name}/rsprov-{tnVzBrCPName}"
     - "Too many DN formats to display, see model documentation for all possible parents of [fvRsProv](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsProv/overview)."
   ui_locations:
     - "Tenants -> Application Profiles -> Application EPGs -> Contracts"
     - "Tenants -> Application Profiles -> Endpoint Security Groups -> Contracts"
-    - "... add all locations ..."
+    - "Tenants -> Networkings -> L3Outs -> External EPGs -> Contracts"
+    - "Tenants -> Networkings -> L2Outs -> External EPGs -> Contracts"
   sub_category: "Application Management"
 
 fvRsConsIf:
@@ -297,14 +307,16 @@ fvRsConsIf:
     - "fvAEPg"
     - "fvESg"
   dn_formats:
-    - "... add all relevant DNs ..."
     - "uni/tn-{name}/ap-{name}/epg-{name}/rsconsIf-{tnVzCPIfName}"
     - "uni/tn-{name}/ap-{name}/esg-{name}/rsconsIf-{tnVzCPIfName}"
+    - "uni/tn-{name}/out-{name}/instP-{name}/rsprov-{tnVzBrCPName}"
+    - "uni/tn-{name}/l2out-{name}/instP-{name}/rsprov-{tnVzBrCPName}"
     - "Too many DN formats to display, see model documentation for all possible parents of [fvRsConsIf](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsConsIf/overview)."
   ui_locations:
     - "Tenants -> Application Profiles -> Application EPGs -> Contracts"
     - "Tenants -> Application Profiles -> Endpoint Security Groups -> Contracts"
-    - "... add all locations ..."
+    - "Tenants -> Networkings -> L3Outs -> External EPGs -> Contracts"
+    - "Tenants -> Networkings -> L2Outs -> External EPGs -> Contracts"
   sub_category: "Application Management"
 
 fvRsProtBy:
@@ -312,12 +324,14 @@ fvRsProtBy:
   example_classes:
     - "fvAEPg"
   dn_formats:
-    - "... add all relevant DNs ..."
     - "uni/tn-{name}/ap-{name}/epg-{name}/rsprotBy-{tnVzTabooName}"
+    - "uni/tn-{name}/out-{name}/instP-{name}/rsprov-{tnVzBrCPName}"
+    - "uni/tn-{name}/l2out-{name}/instP-{name}/rsprov-{tnVzBrCPName}"
     - "Too many DN formats to display, see model documentation for all possible parents of [fvRsProtBy](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsProtBy/overview)."
   ui_locations:
     - "Tenants -> Application Profiles -> Application EPGs -> Contracts"
-    - "... add all locations ..."
+    - "Tenants -> Networkings -> L3Outs -> External EPGs -> Contracts"
+    - "Tenants -> Networkings -> L2Outs -> External EPGs -> Contracts"
   sub_category: "Application Management"
 
 fvRsIntraEpg:
@@ -326,14 +340,14 @@ fvRsIntraEpg:
     - "fvAEPg"
     - "fvESg" 
   dn_formats:
-    - "... add all relevant DNs ..."
     - "uni/tn-{name}/ap-{name}/epg-{name}/rsintraEpg-{tnVzBrCPName}"
     - "uni/tn-{name}/ap-{name}/esg-{name}/rsintraEpg-{tnVzBrCPName}"
+    - "uni/tn-{name}/out-{name}/instP-{name}/rsprov-{tnVzBrCPName}"
     - "Too many DN formats to display, see model documentation for all possible parents of [fvRsIntraEpg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsIntraEpg/overview)."
   ui_locations:
     - "Tenants -> Application Profiles -> Application EPGs -> Contracts"
     - "Tenants -> Application Profiles -> Endpoint Security Groups -> Contracts"
-    - "... add all locations ..."
+    - "Tenants -> Networkings -> L3Outs -> External EPGs -> Contracts"
   sub_category: "Application Management"
 
 fvRsSecInherited:
@@ -342,14 +356,12 @@ fvRsSecInherited:
     - "fvAEPg"
     - "fvESg"
   dn_formats:
-    - "... add all relevant DNs ..."
     - "uni/tn-{name}/ap-{name}/epg-{name}/rssecInherited-[{tDn}]"
     - "uni/tn-{name}/ap-{name}/esg-{name}/rssecInherited-[{tDn}]"
     - "Too many DN formats to display, see model documentation for all possible parents of [fvRsSecInherited](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsSecInherited/overview)."
   ui_locations:
     - "Tenants -> Application Profiles -> Application EPGs"
     - "Tenants -> Application Profiles -> Endpoint Security Groups"
-    - "... add all locations ..."
   sub_category: "Application Management"
 
 vzBrCP:
