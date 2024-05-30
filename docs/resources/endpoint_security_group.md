@@ -205,8 +205,6 @@ All examples for the Endpoint Security Group resource can be found in the [examp
 
 * `relation_to_vrf` - (list) A list of Relation To VRF (ACI object [fvRsScope](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsScope/overview)) pointing to VRF (ACI Object [fvCtx](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvCtx/overview)) which can be configured using the [aci_vrf](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vrf) resource.
   
-  #### Required ####
-  
 
   #### Optional ####
     
