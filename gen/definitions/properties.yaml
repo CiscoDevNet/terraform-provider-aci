@@ -27,7 +27,6 @@ global:
     Sid: "SR-MPLS Segment ID"
   ignores:
     - "userdom"
-    - "intent"
 
 l3extRsRedistributePol:
   overwrites:
@@ -53,6 +52,7 @@ vzOOBBrCP:
   documentation:
     prio: "The priority of the %s object."
     targetDscp: "The target DSCP value of the %s object."
+    intent: "The Install Rules or Estimate Number of Rules"
 
 mgmtSubnet:
   test_values:
@@ -307,6 +307,8 @@ fvRsScope:
       parent_dependency: "fvAp"
 
 fvRsCons:
+  ignores:
+    - "intent"
   parents:
     - class_name: "fvESg"
       parent_dependency: "fvAp"
@@ -314,6 +316,8 @@ fvRsCons:
       parent_dependency: "fvAp"
 
 fvRsProv:
+  ignores:
+    - "intent"
   parents:
     - class_name: "fvESg"
       parent_dependency: "fvAp"
@@ -335,6 +339,8 @@ fvRsProtBy:
       parent_dependency: "fvAp"
 
 fvRsIntraEpg:
+  ignores:
+    - "intent"
   parents:
     - class_name: "fvESg"
       parent_dependency: "fvAp"
@@ -351,7 +357,6 @@ fvRsSecInherited:
       parent_dependency: "fvAp"
       target_classes:
         - "fvESg"
-    
   targets:
     - class_name: "fvESg"
       parent_dependency: "fvAp"
