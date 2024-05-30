@@ -94,6 +94,8 @@ var templateFuncs = template.FuncMap{
 	"containsNoneAttributeValue":   ContainsNoneAttributeValue,
 	"definedInMap":                 DefinedInMap,
 	"add":                          func(val1, val2 int) int { return val1 + val2 },
+	"substract":                    func(val1, val2 int) int { return val1 - val2 },
+	"determineLength":              DetermineLength,
 	"lookupTestValue":              LookupTestValue,
 	"lookupChildTestValue":         LookupChildTestValue,
 	"createParentDnValue":          CreateParentDnValue,
@@ -163,14 +165,19 @@ func CreateParentDnValue(className, caller string, definitions Definitions) stri
 
 // Retrieves a value for a attribute of a aci class when defined in the testVars YAML file of the class
 // Returns "test_value" if no value is defined in the testVars YAML file
-func LookupTestValue(classPkgName, propertyName string, testVars map[string]interface{}, definitions Definitions) string {
-	lookupValue := "test_value"
+func LookupTestValue(classPkgName, propertyName string, testVars map[string]interface{}, definitions Definitions) interface{} {
+	var lookupValue interface{} = "test_value"
 	propertyName = GetOverwriteAttributeName(classPkgName, propertyName, definitions)
 	_, ok := testVars["all"]
 	if ok {
 		val, ok := testVars["all"].(interface{}).(map[interface{}]interface{})[propertyName]
 		if ok {
-			lookupValue = val.(string)
+			switch val := val.(type) {
+			case string:
+				lookupValue = val
+			case []interface{}:
+				lookupValue = val
+			}
 		}
 	}
 	_, ok = testVars["resource_required"]
@@ -185,7 +192,7 @@ func LookupTestValue(classPkgName, propertyName string, testVars map[string]inte
 
 // Retrieves a value for a attribute of a aci class when defined in the testVars YAML file of the class
 // Returns "test_value_for_child" if no value is defined in the testVars YAML file
-func LookupChildTestValue(classPkgName, childResourceName, propertyName string, testVars map[string]interface{}, testValueIndex int, definitions Definitions) string {
+func LookupChildTestValue(classPkgName, childResourceName, propertyName string, testVars map[string]interface{}, testValueIndex int, definitions Definitions) interface{} {
 	propertyName = GetOverwriteAttributeName(classPkgName, propertyName, definitions)
 	overwritePropertyValue := GetOverwriteAttributeValue(classPkgName, propertyName, "", "test_values_for_parent", testValueIndex, definitions)
 	if overwritePropertyValue != "" {
@@ -1280,7 +1287,7 @@ Determine if a attribute value in testvars should be overwritten by a attribute 
 Precendence order is:
  1. class level from properties.yaml
 */
-func GetOverwriteAttributeValue(classPkgName, propertyName, propertyValue, testType string, valueIndex int, definitions Definitions) string {
+func GetOverwriteAttributeValue(classPkgName, propertyName, propertyValue, testType string, valueIndex int, definitions Definitions) interface{} {
 	if classDetails, ok := definitions.Properties[classPkgName]; ok {
 		for key, value := range classDetails.(map[interface{}]interface{}) {
 			if key.(string) == "test_values" {
@@ -1293,7 +1300,12 @@ func GetOverwriteAttributeValue(classPkgName, propertyName, propertyValue, testT
 					}
 					for k, v := range test_type_value {
 						if k.(string) == propertyName {
-							return v.(string)
+							switch v := v.(type) {
+							case string:
+								return v
+							case []interface{}:
+								return v
+							}
 						}
 					}
 
@@ -1611,4 +1623,17 @@ func GetDefaultValues(classPkgName, propertyName string, definitions Definitions
 		}
 	}
 	return ""
+}
+
+/*
+TODO expend the cases if needed.
+Determine the input length depending on its type. Only useful in the test templates.
+If the input is a slice of interface{}, return its length.
+Else, return 0.
+*/
+func DetermineLength(input interface{}) int {
+	if sliceInput, ok := input.([]interface{}); ok {
+		return len(sliceInput)
+	}
+	return 0
 }

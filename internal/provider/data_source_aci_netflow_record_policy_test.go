@@ -23,9 +23,9 @@ func TestAccDataSourceNetflowRecordPolWithFvTenant(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("data.aci_netflow_record_policy.test", "name", "netfow_record"),
 					resource.TestCheckResourceAttr("data.aci_netflow_record_policy.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("data.aci_netflow_record_policy.test", "collect", "src-intf"),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "collect.0", "src-intf"),
 					resource.TestCheckResourceAttr("data.aci_netflow_record_policy.test", "description", ""),
-					resource.TestCheckResourceAttr("data.aci_netflow_record_policy.test", "match", "unspecified"),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "match.0", "dst-ip"),
 					resource.TestCheckResourceAttr("data.aci_netflow_record_policy.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("data.aci_netflow_record_policy.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("data.aci_netflow_record_policy.test", "owner_tag", ""),

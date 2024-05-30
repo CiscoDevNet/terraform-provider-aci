@@ -295,11 +295,17 @@ netflowRecordPol:
     parent_dn: "uni/infra"
   test_values:
     default:
-      collect: "src-intf"
-      match: "unspecified"
+      collect:
+        - "src-intf"
+      match:
+        - "dst-ip"
     all:
-      collect: "count-bytes"
-      match: "dst-ip"
+      collect: 
+        - "count-bytes"
+        - "src-intf"
+      match: 
+        - "dst-ip"
+        - "src-ip"
     resource_required:
       name: "netfow_record"
     datasource_required:
