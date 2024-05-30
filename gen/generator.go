@@ -1148,8 +1148,6 @@ func (m *Model) SetClassInclude() {
 		for key, value := range classDetails.(map[interface{}]interface{}) {
 			if key.(string) == "include" {
 				m.Include = value.(bool)
-			} else {
-				m.Include = false
 			}
 		}
 	}
