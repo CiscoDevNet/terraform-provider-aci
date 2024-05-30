@@ -124,7 +124,7 @@ All examples for the {{.ResourceNameAsDescription}} resource can be found in the
     {{- else}}
 * `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName $.Definitions}} (ACI object {{getDevnetDocForClass .PkgName}}). {{getResourceNameAsDescription .ResourceName $.Definitions}} can also be configured using a separate [aci_{{.ResourceNameDocReference}}](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{.ResourceNameDocReference}}) resource.{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
     {{- end}}
-  
+  {{ if containsRequired .Properties}}
   #### Required ####
   {{ range .Properties}}
       {{- if or .IsNaming .IsRequired}}
@@ -134,7 +134,7 @@ All examples for the {{.ResourceNameAsDescription}} resource can be found in the
   * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}}{{if ne .NamedPropertyClass ""}}{{$RName := getResourceName .NamedPropertyClass $.Definitions}} This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{$RName}}) with `aci_{{$RName}}.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/{{$RName}}) with `data.aci_{{$RName}}.example.name`.{{end}}{{if ne $childVersion .Versions}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
           {{- end}}
       {{- end}}
-  {{- end}}
+  {{- end}}{{- end}}
   {{- if .HasOptionalProperties}}
 
   #### Optional ####
