@@ -58,6 +58,7 @@ resource "aci_vrf" "test" {
   name      = "test_vrf"
 }
 `
+const testConfigFvAEPgMinDependencyWithFvTenant = testConfigFvAEPgMin
 
 const testConfigFvTenantInfraMin = `
 data "aci_tenant" "test" {
