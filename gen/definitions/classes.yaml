@@ -162,6 +162,13 @@ fvFBRMember:
   resource_notes:
     - "This resource should not be used in combination with the `vrf_fallback_route_group` nested attributes of other resources for the same object. Doing so will result in unexpected behaviour."
 
+fvSiteAssociated:
+  include: true
+  resource_name: "associated_site"
+  ui_locations:
+    - "Not shown in UI"
+  sub_category: "Multi-Site"
+
 l3extRsOutToFBRGroup:
   resource_name: "relation_to_fallback_route_group"
   ui_locations:
