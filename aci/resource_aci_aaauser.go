@@ -182,7 +182,7 @@ func tryLogin(d *schema.ResourceData, aciClient *client.Client) bool {
 	client.SkipLoggingPayload(false)(aciClient)
 
 	if err != nil {
-		log.Printf("[DEBUG] Authentication failed for local user: '%s'. ERROR: %s", d.Get("name").(string), err)
+		log.Printf("[DEBUG] Authentication failed for local user: '%s'. ERROR: %v", d.Get("name").(string), err)
 		return false
 	} else if resp.StatusCode != 200 {
 		log.Printf("[DEBUG] Authentication failed for local user: '%s'.", d.Get("name").(string))
