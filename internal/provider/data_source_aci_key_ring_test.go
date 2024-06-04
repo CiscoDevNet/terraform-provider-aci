@@ -40,7 +40,10 @@ func TestAccDataSourcePkiKeyRingWithDefault(t *testing.T) {
 				),
 			},
 			{
-				Config:      testConfigPkiKeyRingNotExistingDefault,
+				Config: testConfigPkiKeyRingNotExistingDefault,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					waitForApicBeforeRefresh,
+				),
 				ExpectError: regexp.MustCompile("Failed to read aci_key_ring data source"),
 			},
 		},
@@ -78,7 +81,10 @@ func TestAccDataSourcePkiKeyRingWithFvTenant(t *testing.T) {
 				),
 			},
 			{
-				Config:      testConfigPkiKeyRingNotExistingFvTenant,
+				Config: testConfigPkiKeyRingNotExistingFvTenant,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					waitForApicBeforeRefresh,
+				),
 				ExpectError: regexp.MustCompile("Failed to read aci_key_ring data source"),
 			},
 		},

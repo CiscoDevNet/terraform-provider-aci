@@ -165,6 +165,7 @@ func (r *MplsNodeSidPResource) Schema(ctx context.Context, req resource.SchemaRe
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
@@ -172,6 +173,7 @@ func (r *MplsNodeSidPResource) Schema(ctx context.Context, req resource.SchemaRe
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -191,6 +193,7 @@ func (r *MplsNodeSidPResource) Schema(ctx context.Context, req resource.SchemaRe
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
@@ -198,6 +201,7 @@ func (r *MplsNodeSidPResource) Schema(ctx context.Context, req resource.SchemaRe
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -265,6 +269,7 @@ func (r *MplsNodeSidPResource) Create(ctx context.Context, req resource.CreateRe
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -624,7 +629,6 @@ func getMplsNodeSidPCreateJsonPayload(ctx context.Context, diags *diag.Diagnosti
 	if !data.Sidoffset.IsNull() && !data.Sidoffset.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["sidoffset"] = data.Sidoffset.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"mplsNodeSidP": payloadMap})
 	if err != nil {
 		diags.AddError(

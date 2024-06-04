@@ -125,6 +125,7 @@ func (r *NetflowRsMonitorToExporterResource) Schema(ctx context.Context, req res
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
@@ -132,6 +133,7 @@ func (r *NetflowRsMonitorToExporterResource) Schema(ctx context.Context, req res
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -151,6 +153,7 @@ func (r *NetflowRsMonitorToExporterResource) Schema(ctx context.Context, req res
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
@@ -158,6 +161,7 @@ func (r *NetflowRsMonitorToExporterResource) Schema(ctx context.Context, req res
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -225,6 +229,7 @@ func (r *NetflowRsMonitorToExporterResource) Create(ctx context.Context, req res
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -548,7 +553,6 @@ func getNetflowRsMonitorToExporterCreateJsonPayload(ctx context.Context, diags *
 	if !data.TnNetflowExporterPolName.IsNull() && !data.TnNetflowExporterPolName.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["tnNetflowExporterPolName"] = data.TnNetflowExporterPolName.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"netflowRsMonitorToExporter": payloadMap})
 	if err != nil {
 		diags.AddError(

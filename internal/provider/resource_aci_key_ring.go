@@ -264,6 +264,7 @@ func (r *PkiKeyRingResource) Schema(ctx context.Context, req resource.SchemaRequ
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
@@ -271,6 +272,7 @@ func (r *PkiKeyRingResource) Schema(ctx context.Context, req resource.SchemaRequ
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -290,6 +292,7 @@ func (r *PkiKeyRingResource) Schema(ctx context.Context, req resource.SchemaRequ
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
@@ -297,6 +300,7 @@ func (r *PkiKeyRingResource) Schema(ctx context.Context, req resource.SchemaRequ
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -374,6 +378,10 @@ func (r *PkiKeyRingResource) Create(ctx context.Context, req resource.CreateRequ
 		}
 	}
 
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	getAndSetPkiKeyRingAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save data into Terraform state
@@ -446,6 +454,10 @@ func (r *PkiKeyRingResource) Update(ctx context.Context, req resource.UpdateRequ
 			DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
 			break
 		}
+	}
+
+	if resp.Diagnostics.HasError() {
+		return
 	}
 
 	getAndSetPkiKeyRingAttributes(ctx, &resp.Diagnostics, r.client, data)
@@ -658,9 +670,9 @@ func setPkiKeyRingParentDn(ctx context.Context, dn string, data *PkiKeyRingResou
 	rnIndex := 0
 	for i := len(dn) - 1; i >= 0; i-- {
 		if string(dn[i]) == "]" {
-			bracketIndex++
+			bracketIndex = bracketIndex + 1
 		} else if string(dn[i]) == "[" {
-			bracketIndex--
+			bracketIndex = bracketIndex - 1
 		} else if string(dn[i]) == "/" && bracketIndex == 0 {
 			rnIndex = i
 			break

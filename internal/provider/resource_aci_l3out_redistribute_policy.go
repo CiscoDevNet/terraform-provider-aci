@@ -141,6 +141,7 @@ func (r *L3extRsRedistributePolResource) Schema(ctx context.Context, req resourc
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
@@ -148,6 +149,7 @@ func (r *L3extRsRedistributePolResource) Schema(ctx context.Context, req resourc
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -167,6 +169,7 @@ func (r *L3extRsRedistributePolResource) Schema(ctx context.Context, req resourc
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
@@ -174,6 +177,7 @@ func (r *L3extRsRedistributePolResource) Schema(ctx context.Context, req resourc
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -241,6 +245,7 @@ func (r *L3extRsRedistributePolResource) Create(ctx context.Context, req resourc
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -573,7 +578,6 @@ func getL3extRsRedistributePolCreateJsonPayload(ctx context.Context, diags *diag
 	if !data.TnRtctrlProfileName.IsNull() && !data.TnRtctrlProfileName.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["tnRtctrlProfileName"] = data.TnRtctrlProfileName.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"l3extRsRedistributePol": payloadMap})
 	if err != nil {
 		diags.AddError(

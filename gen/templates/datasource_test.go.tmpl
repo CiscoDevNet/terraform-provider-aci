@@ -52,6 +52,11 @@ func TestAccDataSource{{$.resourceClassName}}With{{capitalize .class_name}} (t *
 			},
 			{
 				Config:      testConfig{{$.resourceClassName}}NotExisting{{capitalize .class_name}},
+				{{- if $found_cert }}
+				Check: resource.ComposeAggregateTestCheckFunc(
+					waitForApicBeforeRefresh,
+				),
+				{{- end}}
 				ExpectError: regexp.MustCompile("Failed to read aci_{{$.resourceName}} data source"),
 			},
 		},

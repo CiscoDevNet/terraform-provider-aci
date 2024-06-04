@@ -684,7 +684,6 @@ func main() {
 			// Set the documentation specific information for the resource
 			// This is done to ensure references can be made to parent/child resources and output amounts can be restricted
 			setDocumentationData(&model, definitions)
-			setParentDnOptional(&model)
 
 			// Render the testvars file for the resource
 			// First generate run would not mean the file is correct from beginning since some testvars would need to be manually overwritten in the properties definitions YAML file
@@ -889,7 +888,6 @@ type Model struct {
 	HasChildNamedProperties   bool
 	Include                   bool
 	Exclude                   bool
-	ParentDnOptional          bool
 }
 
 // A Property represents a ACI class property
@@ -1756,17 +1754,6 @@ func (m *Model) SetClassRnFormatList(classDetails interface{}) {
 		getMultiParentFormats[key] = format
 	}
 	m.MultiParentFormats = getMultiParentFormats
-}
-
-// TODO Make the function generic based on future cases
-func setParentDnOptional(m *Model) {
-	getMultiParentFormats := GetMultiParentFormats(m.PkgName, m.Definitions)
-	for _, format := range getMultiParentFormats {
-		if format.ContainedBy == "polUni" {
-			m.ParentDnOptional = true
-			break
-		}
-	}
 }
 
 // Determine if possible dn formats in terraform documentation should be overwritten by dn formats from the classes.yaml file

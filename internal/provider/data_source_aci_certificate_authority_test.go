@@ -34,7 +34,10 @@ func TestAccDataSourcePkiTPWithDefault(t *testing.T) {
 				),
 			},
 			{
-				Config:      testConfigPkiTPNotExistingDefault,
+				Config: testConfigPkiTPNotExistingDefault,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					waitForApicBeforeRefresh,
+				),
 				ExpectError: regexp.MustCompile("Failed to read aci_certificate_authority data source"),
 			},
 		},
@@ -66,7 +69,10 @@ func TestAccDataSourcePkiTPWithFvTenant(t *testing.T) {
 				),
 			},
 			{
-				Config:      testConfigPkiTPNotExistingFvTenant,
+				Config: testConfigPkiTPNotExistingFvTenant,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					waitForApicBeforeRefresh,
+				),
 				ExpectError: regexp.MustCompile("Failed to read aci_certificate_authority data source"),
 			},
 		},

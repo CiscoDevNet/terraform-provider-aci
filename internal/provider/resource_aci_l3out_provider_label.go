@@ -180,6 +180,7 @@ func (r *L3extProvLblResource) Schema(ctx context.Context, req resource.SchemaRe
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
@@ -187,6 +188,7 @@ func (r *L3extProvLblResource) Schema(ctx context.Context, req resource.SchemaRe
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -206,6 +208,7 @@ func (r *L3extProvLblResource) Schema(ctx context.Context, req resource.SchemaRe
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
@@ -213,6 +216,7 @@ func (r *L3extProvLblResource) Schema(ctx context.Context, req resource.SchemaRe
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -280,6 +284,7 @@ func (r *L3extProvLblResource) Create(ctx context.Context, req resource.CreateRe
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -648,7 +653,6 @@ func getL3extProvLblCreateJsonPayload(ctx context.Context, diags *diag.Diagnosti
 	if !data.Tag.IsNull() && !data.Tag.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["tag"] = data.Tag.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"l3extProvLbl": payloadMap})
 	if err != nil {
 		diags.AddError(

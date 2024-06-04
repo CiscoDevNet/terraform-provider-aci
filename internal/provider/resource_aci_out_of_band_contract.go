@@ -210,6 +210,7 @@ func (r *VzOOBBrCPResource) Schema(ctx context.Context, req resource.SchemaReque
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
@@ -217,6 +218,7 @@ func (r *VzOOBBrCPResource) Schema(ctx context.Context, req resource.SchemaReque
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -236,6 +238,7 @@ func (r *VzOOBBrCPResource) Schema(ctx context.Context, req resource.SchemaReque
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
@@ -243,6 +246,7 @@ func (r *VzOOBBrCPResource) Schema(ctx context.Context, req resource.SchemaReque
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -310,6 +314,7 @@ func (r *VzOOBBrCPResource) Create(ctx context.Context, req resource.CreateReque
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -688,7 +693,6 @@ func getVzOOBBrCPCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics,
 	if !data.TargetDscp.IsNull() && !data.TargetDscp.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["targetDscp"] = data.TargetDscp.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"vzOOBBrCP": payloadMap})
 	if err != nil {
 		diags.AddError(

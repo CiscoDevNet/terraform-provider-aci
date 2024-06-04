@@ -184,6 +184,7 @@ func (r *NetflowMonitorPolResource) Schema(ctx context.Context, req resource.Sch
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The annotation of the Relation To Netflow Exporter object.`,
 						},
@@ -191,6 +192,7 @@ func (r *NetflowMonitorPolResource) Schema(ctx context.Context, req resource.Sch
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `Name.`,
 						},
@@ -214,6 +216,7 @@ func (r *NetflowMonitorPolResource) Schema(ctx context.Context, req resource.Sch
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The annotation of the Relation To Netflow Record object.`,
 						},
@@ -222,6 +225,7 @@ func (r *NetflowMonitorPolResource) Schema(ctx context.Context, req resource.Sch
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `Name.`,
 						},
@@ -241,6 +245,7 @@ func (r *NetflowMonitorPolResource) Schema(ctx context.Context, req resource.Sch
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
@@ -248,6 +253,7 @@ func (r *NetflowMonitorPolResource) Schema(ctx context.Context, req resource.Sch
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -267,6 +273,7 @@ func (r *NetflowMonitorPolResource) Schema(ctx context.Context, req resource.Sch
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
@@ -274,6 +281,7 @@ func (r *NetflowMonitorPolResource) Schema(ctx context.Context, req resource.Sch
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -347,6 +355,7 @@ func (r *NetflowMonitorPolResource) Create(ctx context.Context, req resource.Cre
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -824,7 +833,6 @@ func getNetflowMonitorPolCreateJsonPayload(ctx context.Context, diags *diag.Diag
 	if !data.OwnerTag.IsNull() && !data.OwnerTag.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["ownerTag"] = data.OwnerTag.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"netflowMonitorPol": payloadMap})
 	if err != nil {
 		diags.AddError(

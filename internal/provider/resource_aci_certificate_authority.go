@@ -176,6 +176,7 @@ func (r *PkiTPResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
@@ -183,6 +184,7 @@ func (r *PkiTPResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -202,6 +204,7 @@ func (r *PkiTPResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
@@ -209,6 +212,7 @@ func (r *PkiTPResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -286,6 +290,10 @@ func (r *PkiTPResource) Create(ctx context.Context, req resource.CreateRequest, 
 		}
 	}
 
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	getAndSetPkiTPAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save data into Terraform state
@@ -358,6 +366,10 @@ func (r *PkiTPResource) Update(ctx context.Context, req resource.UpdateRequest, 
 			DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
 			break
 		}
+	}
+
+	if resp.Diagnostics.HasError() {
+		return
 	}
 
 	getAndSetPkiTPAttributes(ctx, &resp.Diagnostics, r.client, data)
@@ -524,9 +536,9 @@ func setPkiTPParentDn(ctx context.Context, dn string, data *PkiTPResourceModel) 
 	rnIndex := 0
 	for i := len(dn) - 1; i >= 0; i-- {
 		if string(dn[i]) == "]" {
-			bracketIndex++
+			bracketIndex = bracketIndex + 1
 		} else if string(dn[i]) == "[" {
-			bracketIndex--
+			bracketIndex = bracketIndex - 1
 		} else if string(dn[i]) == "/" && bracketIndex == 0 {
 			rnIndex = i
 			break

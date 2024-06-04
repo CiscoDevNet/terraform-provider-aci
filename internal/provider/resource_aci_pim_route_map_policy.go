@@ -165,6 +165,7 @@ func (r *PimRouteMapPolResource) Schema(ctx context.Context, req resource.Schema
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
@@ -172,6 +173,7 @@ func (r *PimRouteMapPolResource) Schema(ctx context.Context, req resource.Schema
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -191,6 +193,7 @@ func (r *PimRouteMapPolResource) Schema(ctx context.Context, req resource.Schema
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
@@ -198,6 +201,7 @@ func (r *PimRouteMapPolResource) Schema(ctx context.Context, req resource.Schema
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -265,6 +269,7 @@ func (r *PimRouteMapPolResource) Create(ctx context.Context, req resource.Create
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -624,7 +629,6 @@ func getPimRouteMapPolCreateJsonPayload(ctx context.Context, diags *diag.Diagnos
 	if !data.OwnerTag.IsNull() && !data.OwnerTag.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["ownerTag"] = data.OwnerTag.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"pimRouteMapPol": payloadMap})
 	if err != nil {
 		diags.AddError(

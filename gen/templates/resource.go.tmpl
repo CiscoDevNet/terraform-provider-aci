@@ -242,6 +242,7 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 							{{- end}}
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							{{- if .ValidValues}}
 							Validators: []validator.String{
@@ -307,8 +308,25 @@ func (r *{{.ResourceClassName}}Resource) Create(ctx context.Context, req resourc
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_{{ .ResourceName }} with id '%s'", data.Id.ValueString()))
 
-	{{ if .MultiParentFormats }}
+	{{ if not .MultiParentFormats }}
 		{{- if .HasChild }}
+			{{- range .Children }}
+	var {{ .PkgName }}Plan, {{ .PkgName }}State []{{ .ResourceClassName }}{{ $.ResourceClassName }}ResourceModel
+	data.{{ .ResourceClassName }}.ElementsAs(ctx, &{{ .PkgName }}Plan, false)
+	stateData.{{ .ResourceClassName }}.ElementsAs(ctx, &{{ .PkgName }}State, false)
+			{{- end }}
+	jsonPayload := get{{ .ResourceClassName }}CreateJsonPayload(ctx, &resp.Diagnostics, data{{- range .Children }}, {{ .PkgName }}Plan, {{ .PkgName }}State{{- end }})    
+		{{- else }}
+	jsonPayload := get{{ .ResourceClassName }}CreateJsonPayload(ctx, &resp.Diagnostics, data)
+		{{- end }}
+
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+	{{- else }}
+	{{- if .HasChild }}
 			{{- range .Children }}
 	var {{ .PkgName }}Plan, {{ .PkgName }}State []{{ .ResourceClassName }}{{ $.ResourceClassName }}ResourceModel
 	data.{{ .ResourceClassName }}.ElementsAs(ctx, &{{ .PkgName }}Plan, false)
@@ -333,27 +351,11 @@ func (r *{{.ResourceClassName}}Resource) Create(ctx context.Context, req resourc
 			break
 		}
 	}
-	{{- else }}
-		{{- if .HasChild }}
-			{{- range .Children }}
-	var {{ .PkgName }}Plan, {{ .PkgName }}State []{{ .ResourceClassName }}{{ $.ResourceClassName }}ResourceModel
-	data.{{ .ResourceClassName }}.ElementsAs(ctx, &{{ .PkgName }}Plan, false)
-	stateData.{{ .ResourceClassName }}.ElementsAs(ctx, &{{ .PkgName }}State, false)
-			{{- end }}
-	jsonPayload := get{{ .ResourceClassName }}CreateJsonPayload(ctx, &resp.Diagnostics, data{{- range .Children }}, {{ .PkgName }}Plan, {{ .PkgName }}State{{- end }})    
-		{{- else }}
-	jsonPayload := get{{ .ResourceClassName }}CreateJsonPayload(ctx, &resp.Diagnostics, data)
-		{{- end }}
-
-	if resp.Diagnostics.HasError() {
-		return
-	}
-
-	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
-	if resp.Diagnostics.HasError() {
-		return
-	}
 	{{- end }}
+
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
 	getAndSet{{.ResourceClassName}}Attributes(ctx, &resp.Diagnostics, r.client, data)
 
@@ -408,8 +410,25 @@ if resp.Diagnostics.HasError() {
 
 tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_{{ .ResourceName }} with id '%s'", data.Id.ValueString()))
 
-{{ if .MultiParentFormats }}
-    {{- if .HasChild }}
+{{ if not .MultiParentFormats }}
+	{{- if .HasChild }}
+        {{- range .Children }}
+    var {{ .PkgName }}Plan, {{ .PkgName }}State []{{ .ResourceClassName }}{{ $.ResourceClassName }}ResourceModel
+    data.{{ .ResourceClassName }}.ElementsAs(ctx, &{{ .PkgName }}Plan, false)
+    stateData.{{ .ResourceClassName }}.ElementsAs(ctx, &{{ .PkgName }}State, false)
+        {{- end }}
+    jsonPayload := get{{ .ResourceClassName }}CreateJsonPayload(ctx, &resp.Diagnostics, data{{- range .Children }}, {{ .PkgName }}Plan, {{ .PkgName }}State{{- end }})
+    {{- else }}
+    jsonPayload := get{{ .ResourceClassName }}CreateJsonPayload(ctx, &resp.Diagnostics, data)
+    {{- end }}
+
+    if resp.Diagnostics.HasError() {
+        return
+    }
+
+    DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+{{- else }}
+	{{- if .HasChild }}
         {{- range .Children }}
     var {{ .PkgName }}Plan, {{ .PkgName }}State []{{ .ResourceClassName }}{{ $.ResourceClassName }}ResourceModel
     data.{{ .ResourceClassName }}.ElementsAs(ctx, &{{ .PkgName }}Plan, false)
@@ -438,28 +457,11 @@ tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_{{ .ResourceName }} with id
 			break
         }
     }
-{{- else }}
-    {{- if .HasChild }}
-        {{- range .Children }}
-    var {{ .PkgName }}Plan, {{ .PkgName }}State []{{ .ResourceClassName }}{{ $.ResourceClassName }}ResourceModel
-    data.{{ .ResourceClassName }}.ElementsAs(ctx, &{{ .PkgName }}Plan, false)
-    stateData.{{ .ResourceClassName }}.ElementsAs(ctx, &{{ .PkgName }}State, false)
-        {{- end }}
-    jsonPayload := get{{ .ResourceClassName }}CreateJsonPayload(ctx, &resp.Diagnostics, data{{- range .Children }}, {{ .PkgName }}Plan, {{ .PkgName }}State{{- end }})
-    {{- else }}
-    jsonPayload := get{{ .ResourceClassName }}CreateJsonPayload(ctx, &resp.Diagnostics, data)
-    {{- end }}
-
-    if resp.Diagnostics.HasError() {
-        return
-    }
-
-    DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
-
-    if resp.Diagnostics.HasError() {
-        return
-    }
 {{- end }}
+
+	if resp.Diagnostics.HasError() {
+			return
+		}
 
 	getAndSet{{.ResourceClassName}}Attributes(ctx, &resp.Diagnostics, r.client, data)
 
@@ -654,65 +656,6 @@ func getAndSet{{.ResourceClassName}}Attributes(ctx context.Context, diags *diag.
 	}
 }
 
-{{ if .MultiParentFormats }}
-func get{{ .ResourceClassName }}Rn(ctx context.Context, data *{{ .ResourceClassName }}ResourceModel) string {
-    rn := "{{ $.RnFormat }}"
-    for _, identifier := range []string{ {{- fromInterfacesToString .IdentifiedBy }} } {
-        fieldName := fmt.Sprintf("%s%s", strings.ToUpper(identifier[:1]), identifier[1:])
-        fieldValue := reflect.ValueOf(data).Elem().FieldByName(fieldName).Interface().(basetypes.StringValue).ValueString()
-        rn = strings.ReplaceAll(rn, fmt.Sprintf("{%s}", identifier), fieldValue)
-    }
-    return rn
-}
-
-func set{{ .ResourceClassName }}ParentDn(ctx context.Context, dn string, data *{{ .ResourceClassName }}ResourceModel) {
-    bracketIndex := 0
-    rnIndex := 0
-    for i := len(dn) - 1; i >= 0; i-- {
-        if string(dn[i]) == "]" {
-            bracketIndex++
-        } else if string(dn[i]) == "[" {
-            bracketIndex--
-        } else if string(dn[i]) == "/" && bracketIndex == 0 {
-            rnIndex = i
-            break
-        }
-    }
-    parentDn := dn[:rnIndex]
-    rnMap := map[string]string{
-        {{- range $key, $value := .MultiParentFormats }}
-            {{- if ne $key "default" }}
-        "{{ $key }}": "{{ $value.RnPrepend }}",
-            {{- end }}
-        {{- end }}
-    }
-    for parent_identifier, rn_prepend := range rnMap {
-        if strings.Contains(parentDn, parent_identifier) {
-            parentDn = parentDn[:strings.Index(parentDn, fmt.Sprintf("/%s", rn_prepend))]
-            data.ParentDn = basetypes.NewStringValue(parentDn)
-			break
-        }
-    }
-}
-
-func set{{ .ResourceClassName }}Id(ctx context.Context, data *{{ .ResourceClassName }}ResourceModel) {
-    rn := get{{ .ResourceClassName }}Rn(ctx, data)
-    rnMap := map[string]string{
-        {{- range $key, $value := .MultiParentFormats }}
-			{{- if ne $key "default" }}
-        "{{ $key }}": "{{ $value.RnPrepend }}",
-			{{- end }}
-        {{- end }}
-    }
-	data.Id =  types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
-    for parent_identifier, rn_prepend := range rnMap {
-         if strings.Contains(data.ParentDn.ValueString(), parent_identifier) {
-            data.Id = types.StringValue(fmt.Sprintf("%s/%s/%s", data.ParentDn.ValueString(), rn_prepend, rn))
-			break
-        }
-    }
-}
-{{- else }}
 func get{{.ResourceClassName}}Rn(ctx context.Context, data *{{.ResourceClassName}}ResourceModel) string {
 	{{- if .IdentifiedBy}}
 	rn := "{{.RnFormat}}"
@@ -741,7 +684,23 @@ func set{{.ResourceClassName}}ParentDn(ctx context.Context, dn string, data *{{.
 			break
 		}
 	}
-	{{- if eq .RnPrepend ""}}
+	{{- if .MultiParentFormats }}
+	parentDn := dn[:rnIndex]
+    rnMap := map[string]string{
+        {{- range $key, $value := .MultiParentFormats }}
+            {{- if ne $key "default" }}
+        "{{ $key }}": "{{ $value.RnPrepend }}",
+            {{- end }}
+        {{- end }}
+    }
+    for parent_identifier, rn_prepend := range rnMap {
+        if strings.Contains(parentDn, parent_identifier) {
+            parentDn = parentDn[:strings.Index(parentDn, fmt.Sprintf("/%s", rn_prepend))]
+            data.ParentDn = basetypes.NewStringValue(parentDn)
+			break
+        }
+    }
+	{{- else if eq .RnPrepend ""}}
 	data.ParentDn = basetypes.NewStringValue(dn[:rnIndex])
 	{{- else}}
 	parentDn := dn[:rnIndex]
@@ -753,13 +712,29 @@ func set{{.ResourceClassName}}ParentDn(ctx context.Context, dn string, data *{{.
 
 func set{{.ResourceClassName}}Id(ctx context.Context, data *{{.ResourceClassName}}ResourceModel) {
 	rn := get{{.ResourceClassName}}Rn(ctx, data)
-	{{- if .HasParent}}
+	{{- if .MultiParentFormats }}
+	rnMap := map[string]string{
+        {{- range $key, $value := .MultiParentFormats }}
+			{{- if ne $key "default" }}
+        "{{ $key }}": "{{ $value.RnPrepend }}",
+			{{- end }}
+        {{- end }}
+    }
 	data.Id =  types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
-	{{- else}}
+    for parent_identifier, rn_prepend := range rnMap {
+         if strings.Contains(data.ParentDn.ValueString(), parent_identifier) {
+            data.Id = types.StringValue(fmt.Sprintf("%s/%s/%s", data.ParentDn.ValueString(), rn_prepend, rn))
+			break
+        }
+    }
+	{{- else }}
+		{{- if .HasParent}}
+	data.Id =  types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
+		{{- else}}
 	data.Id =  types.StringValue(fmt.Sprintf("%s/%s", strings.Split([]string{ {{- fromInterfacesToString .DnFormats}} }[0], "/")[0], rn))
+		{{- end}}
 	{{- end}}
 }
-{{- end}}
 
 {{ range .Children}}
 func get{{$.ResourceClassName}}{{ .ResourceClassName }}ChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *{{$.ResourceClassName}}ResourceModel, {{.PkgName}}Plan, {{.PkgName}}State []{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel) []map[string]interface{} {
@@ -845,7 +820,83 @@ func get{{$.ResourceClassName}}{{ .ResourceClassName }}ChildPayloads(ctx context
 }
 {{- end}}
 
-{{ if .MultiParentFormats }}
+{{ if not .MultiParentFormats }}
+func get{{.ResourceClassName}}CreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *{{.ResourceClassName}}ResourceModel{{- range .Children}}, {{.PkgName}}Plan, {{.PkgName}}State []{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel{{- end}}) *container.Container {
+	payloadMap := map[string]interface{}{}
+	payloadMap["attributes"] = map[string]string{}
+	{{- if .HasChild}}
+	childPayloads := []map[string]interface{}{}
+		{{ range .Children}}
+	{{ .ResourceClassName }}childPayloads := get{{$.ResourceClassName}}{{ .ResourceClassName }}ChildPayloads(ctx, diags, data, {{.PkgName}}Plan, {{.PkgName}}State)
+	if {{ .ResourceClassName }}childPayloads == nil {
+		return nil
+	}
+	childPayloads = append(childPayloads, {{ .ResourceClassName }}childPayloads...)
+
+		{{ end}}
+	payloadMap["children"] = childPayloads
+	{{- end}}
+
+	{{- range .Properties}}
+		{{- if eq .ValueType "bitmask"}}
+	if !data.{{ .Name }}.IsNull() && !data.{{ .Name }}.IsUnknown() {
+		var tmp{{ .Name }} []string
+		data.{{ .Name }}.ElementsAs(ctx, &tmp{{ .Name }}, false)
+		payloadMap["attributes"].(map[string]string)["{{ .PropertyName }}"] = strings.Join(tmp{{ .Name }}, ",")
+	}
+		{{- else}}
+	if !data.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}.IsNull() && !data.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}.IsUnknown(){
+		payloadMap["attributes"].(map[string]string)["{{ .PropertyName }}"] = data.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}.ValueString()
+	}
+		{{- end}}
+	{{- end}}
+	{{- if .MultiParentFormats }}
+	wrapperClassMap := map[string]string{
+        {{- range $key, $value := .MultiParentFormats }}
+        "{{ $value.RnPrepend }}": "{{ $value.WrapperClass }}",
+        {{- end }}
+    }
+
+    var payload []byte
+    var err error
+    for rnPrepend, wrapperClass := range wrapperClassMap {
+        if strings.Contains(data.Id.ValueString(), rnPrepend) && wrapperClass != "" && stateData.Id.ValueString() == "" {
+            wrapperPayloadMap := map[string]interface{}{
+                wrapperClass: map[string]interface{}{
+                    "attributes": map[string]interface{}{},
+                    "children":   []interface{}{map[string]interface{}{"{{ .PkgName }}": payloadMap}},
+                },
+            }
+            payload, err = json.Marshal(wrapperPayloadMap)
+			break
+        } else if (strings.Contains(data.Id.ValueString(), rnPrepend) && wrapperClass == "") || stateData.Id.ValueString() != "" {
+            payload, err = json.Marshal(map[string]interface{}{"{{ .PkgName }}": payloadMap})
+			break
+        }
+    }
+	{{- else }}
+	payload, err := json.Marshal(map[string]interface{}{"{{.PkgName}}": payloadMap})
+	{{- end}}
+	if err != nil {
+		diags.AddError(
+			"Marshalling of json payload failed",
+			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
+		)
+		return nil
+	}
+
+	jsonPayload, err := container.ParseJSON(payload)
+
+	if err != nil {
+		diags.AddError(
+			"Construction of json payload failed",
+			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
+		)
+		return nil
+	}
+	return jsonPayload
+}
+{{- else }}
 func get{{ .ResourceClassName }}CreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data, stateData *{{ .ResourceClassName }}ResourceModel{{- range .Children }}, {{ .PkgName }}Plan, {{ .PkgName }}State []{{ .ResourceClassName }}{{ $.ResourceClassName }}ResourceModel{{- end }}) *container.Container {
     payloadMap := map[string]interface{}{
         "attributes": map[string]string{},
@@ -919,56 +970,5 @@ func get{{ .ResourceClassName }}CreateJsonPayload(ctx context.Context, diags *di
     }
 
     return jsonPayload
-}
-{{- else }}
-func get{{.ResourceClassName}}CreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *{{.ResourceClassName}}ResourceModel{{- range .Children}}, {{.PkgName}}Plan, {{.PkgName}}State []{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel{{- end}}) *container.Container {
-	payloadMap := map[string]interface{}{}
-	payloadMap["attributes"] = map[string]string{}
-	{{- if .HasChild}}
-	childPayloads := []map[string]interface{}{}
-		{{ range .Children}}
-	{{ .ResourceClassName }}childPayloads := get{{$.ResourceClassName}}{{ .ResourceClassName }}ChildPayloads(ctx, diags, data, {{.PkgName}}Plan, {{.PkgName}}State)
-	if {{ .ResourceClassName }}childPayloads == nil {
-		return nil
-	}
-	childPayloads = append(childPayloads, {{ .ResourceClassName }}childPayloads...)
-
-		{{ end}}
-	payloadMap["children"] = childPayloads
-	{{- end}}
-
-	{{- range .Properties}}
-		{{- if eq .ValueType "bitmask"}}
-	if !data.{{ .Name }}.IsNull() && !data.{{ .Name }}.IsUnknown() {
-		var tmp{{ .Name }} []string
-		data.{{ .Name }}.ElementsAs(ctx, &tmp{{ .Name }}, false)
-		payloadMap["attributes"].(map[string]string)["{{ .PropertyName }}"] = strings.Join(tmp{{ .Name }}, ",")
-	}
-		{{- else}}
-	if !data.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}.IsNull() && !data.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}.IsUnknown(){
-		payloadMap["attributes"].(map[string]string)["{{ .PropertyName }}"] = data.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}.ValueString()
-	}
-		{{- end}}
-	{{- end}}
-
-	payload, err := json.Marshal(map[string]interface{}{"{{.PkgName}}": payloadMap})
-	if err != nil {
-		diags.AddError(
-			"Marshalling of json payload failed",
-			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
-		)
-		return nil
-	}
-
-	jsonPayload, err := container.ParseJSON(payload)
-
-	if err != nil {
-		diags.AddError(
-			"Construction of json payload failed",
-			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
-		)
-		return nil
-	}
-	return jsonPayload
 }
 {{- end}}

@@ -166,6 +166,7 @@ func (r *FvEpIpTagResource) Schema(ctx context.Context, req resource.SchemaReque
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
@@ -173,6 +174,7 @@ func (r *FvEpIpTagResource) Schema(ctx context.Context, req resource.SchemaReque
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -192,6 +194,7 @@ func (r *FvEpIpTagResource) Schema(ctx context.Context, req resource.SchemaReque
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
@@ -199,6 +202,7 @@ func (r *FvEpIpTagResource) Schema(ctx context.Context, req resource.SchemaReque
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -266,6 +270,7 @@ func (r *FvEpIpTagResource) Create(ctx context.Context, req resource.CreateReque
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -627,7 +632,6 @@ func getFvEpIpTagCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics,
 	if !data.NameAlias.IsNull() && !data.NameAlias.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["nameAlias"] = data.NameAlias.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"fvEpIpTag": payloadMap})
 	if err != nil {
 		diags.AddError(

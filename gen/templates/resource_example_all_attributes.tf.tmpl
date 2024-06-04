@@ -1,34 +1,4 @@
-{{- $topContext := . }}
-  {{- if .MultiParentFormats }}
-    {{- range $formatKey, $formatValue := $topContext.MultiParentFormats }}
-{{- $testType := $formatValue.TestType }}
-{{- if eq $testType "cloud"}}
-// This example is only applicable to Cisco Cloud Network Controller
-{{- end}}
-resource "aci_{{$topContext.ResourceName}}" {{- if ne $formatValue.ContainedBy "default"}}"full_example_{{ getResourceName $formatValue.ContainedBy $topContext.Definitions }}"{{- else}}"full_example"{{- end }} { 
-    {{- if ne $formatValue.ContainedBy "default"}}
-    parent_dn = {{createParentDnValue $formatValue.ContainedBy "example" $topContext.Definitions}}
-  {{- end }}
-    {{- range $topContext.Properties }}
-        {{- if ne .NamedPropertyClass ""}}
-  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = aci_{{getResourceName .NamedPropertyClass $.Definitions}}.example.name
-    {{- else}}
-  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = {{lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions }}
-  {{- end }}
-      {{- end }}
-  {{- range $key, $value := $.Children}}{{$ChildResourceName := .ResourceName}}
-  {{$ChildResourceName}} = [
-    { {{- range .Properties}}{{- if ne .NamedPropertyClass ""}}
-      {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = aci_{{getResourceName .NamedPropertyClass $.Definitions}}.example.name
-        {{- else}}
-      {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = "{{lookupChildTestValue .PkgName $ChildResourceName .SnakeCaseName $.TestVars 0 $.Definitions}}"{{- end}}{{ end}}
-    }
-  ]
-  {{- end}}
-}
-{{- println }}
-{{- end -}}
-{{- else -}}
+{{- if not .MultiParentFormats }}
 {{- if .DocumentationExamples}}{{- range $key := .DocumentationExamples}}
 {{- $testType := getTestType $.PkgName }}
 {{- if eq $testType "cloud"}}
@@ -78,4 +48,34 @@ resource "aci_{{$.ResourceName}}" "full_example" {
   {{- end}}
 }
 {{ end}}
+{{- else -}}
+{{- $topContext := . }}
+{{- range $formatKey, $formatValue := $topContext.MultiParentFormats }}
+{{- $testType := $formatValue.TestType }}
+{{- if eq $testType "cloud"}}
+// This example is only applicable to Cisco Cloud Network Controller
+{{- end}}
+resource "aci_{{$topContext.ResourceName}}" {{- if ne $formatValue.ContainedBy "default"}}"full_example_{{ getResourceName $formatValue.ContainedBy $topContext.Definitions }}"{{- else}}"full_example"{{- end }} { 
+    {{- if ne $formatValue.ContainedBy "default"}}
+    parent_dn = {{createParentDnValue $formatValue.ContainedBy "example" $topContext.Definitions}}
+  {{- end }}
+    {{- range $topContext.Properties }}
+        {{- if ne .NamedPropertyClass ""}}
+  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = aci_{{getResourceName .NamedPropertyClass $.Definitions}}.example.name
+    {{- else}}
+  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = {{lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions }}
+  {{- end }}
+      {{- end }}
+  {{- range $key, $value := $.Children}}{{$ChildResourceName := .ResourceName}}
+  {{$ChildResourceName}} = [
+    { {{- range .Properties}}{{- if ne .NamedPropertyClass ""}}
+      {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = aci_{{getResourceName .NamedPropertyClass $.Definitions}}.example.name
+        {{- else}}
+      {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = "{{lookupChildTestValue .PkgName $ChildResourceName .SnakeCaseName $.TestVars 0 $.Definitions}}"{{- end}}{{ end}}
+    }
+  ]
+  {{- end}}
+}
+{{- println }}
+{{- end -}}
 {{- end}}

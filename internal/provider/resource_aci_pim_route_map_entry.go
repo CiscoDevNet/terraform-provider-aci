@@ -200,6 +200,7 @@ func (r *PimRouteMapEntryResource) Schema(ctx context.Context, req resource.Sche
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
@@ -207,6 +208,7 @@ func (r *PimRouteMapEntryResource) Schema(ctx context.Context, req resource.Sche
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -226,6 +228,7 @@ func (r *PimRouteMapEntryResource) Schema(ctx context.Context, req resource.Sche
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
@@ -233,6 +236,7 @@ func (r *PimRouteMapEntryResource) Schema(ctx context.Context, req resource.Sche
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -300,6 +304,7 @@ func (r *PimRouteMapEntryResource) Create(ctx context.Context, req resource.Crea
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -686,7 +691,6 @@ func getPimRouteMapEntryCreateJsonPayload(ctx context.Context, diags *diag.Diagn
 	if !data.Src.IsNull() && !data.Src.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["src"] = data.Src.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"pimRouteMapEntry": payloadMap})
 	if err != nil {
 		diags.AddError(

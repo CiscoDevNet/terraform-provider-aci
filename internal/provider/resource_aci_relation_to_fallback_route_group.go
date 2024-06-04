@@ -125,6 +125,7 @@ func (r *L3extRsOutToFBRGroupResource) Schema(ctx context.Context, req resource.
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
@@ -132,6 +133,7 @@ func (r *L3extRsOutToFBRGroupResource) Schema(ctx context.Context, req resource.
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -151,6 +153,7 @@ func (r *L3extRsOutToFBRGroupResource) Schema(ctx context.Context, req resource.
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
@@ -158,6 +161,7 @@ func (r *L3extRsOutToFBRGroupResource) Schema(ctx context.Context, req resource.
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -225,6 +229,7 @@ func (r *L3extRsOutToFBRGroupResource) Create(ctx context.Context, req resource.
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -548,7 +553,6 @@ func getL3extRsOutToFBRGroupCreateJsonPayload(ctx context.Context, diags *diag.D
 	if !data.TDn.IsNull() && !data.TDn.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["tDn"] = data.TDn.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"l3extRsOutToFBRGroup": payloadMap})
 	if err != nil {
 		diags.AddError(

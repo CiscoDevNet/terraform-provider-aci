@@ -155,6 +155,7 @@ func (r *FvFBRMemberResource) Schema(ctx context.Context, req resource.SchemaReq
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
@@ -162,6 +163,7 @@ func (r *FvFBRMemberResource) Schema(ctx context.Context, req resource.SchemaReq
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -181,6 +183,7 @@ func (r *FvFBRMemberResource) Schema(ctx context.Context, req resource.SchemaReq
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
@@ -188,6 +191,7 @@ func (r *FvFBRMemberResource) Schema(ctx context.Context, req resource.SchemaReq
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -255,6 +259,7 @@ func (r *FvFBRMemberResource) Create(ctx context.Context, req resource.CreateReq
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -605,7 +610,6 @@ func getFvFBRMemberCreateJsonPayload(ctx context.Context, diags *diag.Diagnostic
 	if !data.RnhAddr.IsNull() && !data.RnhAddr.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["rnhAddr"] = data.RnhAddr.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"fvFBRMember": payloadMap})
 	if err != nil {
 		diags.AddError(

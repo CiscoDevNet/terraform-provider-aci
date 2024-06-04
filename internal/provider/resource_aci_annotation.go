@@ -144,6 +144,7 @@ func (r *TagAnnotationResource) Create(ctx context.Context, req resource.CreateR
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -326,7 +327,6 @@ func getTagAnnotationCreateJsonPayload(ctx context.Context, diags *diag.Diagnost
 	if !data.Value.IsNull() && !data.Value.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["value"] = data.Value.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"tagAnnotation": payloadMap})
 	if err != nil {
 		diags.AddError(
