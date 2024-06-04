@@ -53,8 +53,7 @@ data "aci_netflow_monitor_policy" "example_tenant" {
   - The distinguished name (DN) of classes below can be used but currently there is no available resource for it:
     - [infraInfra](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraInfra/overview)
 
-  - Default: `uni/infra`
-    
+
 ### Read-Only ###
 
 * `id` - (string) The distinguished name (DN) of the Netflow Monitor Policy object.
