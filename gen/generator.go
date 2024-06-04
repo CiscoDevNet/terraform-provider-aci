@@ -1739,14 +1739,38 @@ Precendence order is:
  2. global level from properties.yaml
 */
 func requiredProperty(propertyName, classPkgName string, definitions Definitions) bool {
+	// precedenceList := []string{classPkgName, "global"}
+	// for _, precedence := range precedenceList {
+	// 	if classDetails, ok := definitions.Properties[precedence]; ok {
+	// 		for key, value := range classDetails.(map[interface{}]interface{}) {
+	// 			if key.(string) == "resource_required" {
+	// 				for _, v := range value.([]interface{}) {
+	// 					if v.(string) == propertyName {
+	// 						return true
+	// 					}
+	// 				}
+	// 			}
+	// 		}
+	// 	}
+	// }
+	// return false
 	precedenceList := []string{classPkgName, "global"}
 	for _, precedence := range precedenceList {
 		if classDetails, ok := definitions.Properties[precedence]; ok {
 			for key, value := range classDetails.(map[interface{}]interface{}) {
 				if key.(string) == "resource_required" {
-					for _, v := range value.([]interface{}) {
-						if v.(string) == propertyName {
-							return true
+					v1, ok1 := value.([]interface{})
+					if !ok1 {
+						for k1, _ := range value.(map[interface{}]interface{}) {
+							if k1.(string) == propertyName {
+								return true
+							}
+						}
+					} else {
+						for _, v := range v1 {
+							if v.(string) == propertyName {
+								return true
+							}
 						}
 					}
 				}

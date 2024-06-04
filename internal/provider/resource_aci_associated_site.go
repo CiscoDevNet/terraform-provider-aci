@@ -143,8 +143,7 @@ func (r *FvSiteAssociatedResource) Schema(ctx context.Context, req resource.Sche
 				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
 			},
 			"site_id": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
+				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},

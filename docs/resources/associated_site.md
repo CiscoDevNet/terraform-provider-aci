@@ -40,10 +40,12 @@ The configuration snippet below creates a Associated Site with only required att
 
 resource "aci_associated_site" "example_application_epg" {
   parent_dn = aci_application_epg.example.id
+  site_id   = "0"
 }
 
 resource "aci_associated_site" "example_vrf" {
   parent_dn = aci_vrf.example.id
+  site_id   = "0"
 }
 
 ```
@@ -61,7 +63,7 @@ resource "aci_associated_site" "full_example_application_epg" {
   name_alias  = "name_alias"
   owner_key   = "owner_key"
   owner_tag   = "owner_tag"
-  site_id     = "0.000000"
+  site_id     = "0"
   annotations = [
     {
       key   = "key_0"
@@ -84,7 +86,7 @@ resource "aci_associated_site" "full_example_vrf" {
   name_alias  = "name_alias"
   owner_key   = "owner_key"
   owner_tag   = "owner_tag"
-  site_id     = "0.000000"
+  site_id     = "0"
   annotations = [
     {
       key   = "key_0"
@@ -115,6 +117,7 @@ All examples for the Associated Site resource can be found in the [examples](htt
     - [l3extInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extInstP/overview)
     - [vnsEpgDefXlate](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vnsEpgDefXlate/overview)
 
+* `site_id` (siteId) - (string) Local Site ID.
 
 ### Read-Only ###
 
@@ -129,8 +132,6 @@ All examples for the Associated Site resource can be found in the [examples](htt
 * `name_alias` (nameAlias) - (string) The name alias of the Associated Site object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
-* `site_id` (siteId) - (string) Local Site ID.
-  - Default: `0.000000`
 
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   

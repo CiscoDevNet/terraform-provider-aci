@@ -27,7 +27,7 @@ func TestAccDataSourceFvSiteAssociatedWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("data.aci_associated_site.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("data.aci_associated_site.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("data.aci_associated_site.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("data.aci_associated_site.test", "site_id", "0.000000"),
+					resource.TestCheckResourceAttr("data.aci_associated_site.test", "site_id", "0"),
 				),
 			},
 			{
@@ -53,7 +53,7 @@ func TestAccDataSourceFvSiteAssociatedWithFvCtx(t *testing.T) {
 					resource.TestCheckResourceAttr("data.aci_associated_site.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("data.aci_associated_site.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("data.aci_associated_site.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("data.aci_associated_site.test", "site_id", "0.000000"),
+					resource.TestCheckResourceAttr("data.aci_associated_site.test", "site_id", "0"),
 				),
 			},
 			{
