@@ -21,12 +21,7 @@ Manages ACI Associated Site
 * Class: [fvSiteAssociated](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvSiteAssociated/overview)
 
 
-* Distinguished Name Formats:
-  - `uni/tn-{name}/BD-{name}/stAsc`
-  - `uni/tn-{name}/ap-{name}/epg-{name}/stAsc`
-  - `uni/tn-{name}/ctx-{name}/stAsc`
-  - `uni/tn-{name}/mscGraphXlateCont/epgDefXlate-[{epgDefDn}]/stAsc`
-  - `uni/tn-{name}/out-{name}/instP-{name}/stAsc`
+* Distinguished Name Format: `uni/tn-{name}/ctx-{name}/stAsc`
 
 ## GUI Information ##
 
@@ -152,7 +147,7 @@ All examples for the Associated Site resource can be found in the [examples](htt
 An existing Associated Site can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_associated_site.example_application_epg uni/tn-{name}/mscGraphXlateCont/epgDefXlate-[{epgDefDn}]/stAsc
+terraform import aci_associated_site.example_application_epg uni/tn-{name}/ctx-{name}/stAsc
 ```
 
 Starting in Terraform version 1.5, an existing Associated Site can be imported
@@ -160,7 +155,7 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 
 ```
 import {
-  id = "uni/tn-{name}/mscGraphXlateCont/epgDefXlate-[{epgDefDn}]/stAsc"
+  id = "uni/tn-{name}/ctx-{name}/stAsc"
   to = aci_associated_site.example_application_epg
 }
 ```

@@ -19,12 +19,7 @@ Data source for Associated Site
 * Class: [fvSiteAssociated](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvSiteAssociated/overview)
 
 
-* Distinguished Name Formats:
-  - `uni/tn-{name}/BD-{name}/stAsc`
-  - `uni/tn-{name}/ap-{name}/epg-{name}/stAsc`
-  - `uni/tn-{name}/ctx-{name}/stAsc`
-  - `uni/tn-{name}/mscGraphXlateCont/epgDefXlate-[{epgDefDn}]/stAsc`
-  - `uni/tn-{name}/out-{name}/instP-{name}/stAsc`
+* Distinguished Name Format: `uni/tn-{name}/ctx-{name}/stAsc`
 
 ## GUI Information ##
 
