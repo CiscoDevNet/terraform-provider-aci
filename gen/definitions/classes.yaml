@@ -168,6 +168,8 @@ fvSiteAssociated:
   ui_locations:
     - "Not shown in UI"
   sub_category: "Multi-Site"
+  dn_formats:
+  - "uni/tn-{name}/ctx-{name}/stAsc"
 
 l3extRsOutToFBRGroup:
   resource_name: "relation_to_fallback_route_group"
