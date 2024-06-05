@@ -31,6 +31,14 @@ data "aci_client_end_point" "check" {
   vlan                = "5"
   allow_empty_result  = true
 }
+
+data "aci_client_end_point" "check_on_epg_dn" {
+  filter_dn = "uni/tn-{tenant_name}/ap-{ap_name}/epg-{epg_name}"
+}
+
+data "aci_client_end_point" "check_on_epg_dn_as_reference" {
+  filter_dn = data.aci_application_epg.application_epg.id
+}
 ```
 
 ## Argument Reference
@@ -39,6 +47,7 @@ data "aci_client_end_point" "check" {
 - `mac` - (Optional) MAC address of the Client End Point object.
 - `ip` - (Optional) IP address of the Client End Point object.
 - `vlan` - (Optional) VLAN of the Client End Point object.
+- `filter_dn` - (Optional) Filter based on matching DN (Distinguished Name) of parents.
 - `allow_empty_result` - (Optional) Empty return instead of error when client is not found. Default value is "false". 
 
 ## Attribute Reference
