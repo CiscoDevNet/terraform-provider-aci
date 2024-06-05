@@ -20,7 +20,8 @@ func dataSourceAciClientEndPoint() *schema.Resource {
 		SchemaVersion: 1,
 
 		Schema: AppendAttrSchemas(map[string]*schema.Schema{
-			"name": &schema.Schema{Type: schema.TypeString,
+			"name": &schema.Schema{
+				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 			},
@@ -38,6 +39,12 @@ func dataSourceAciClientEndPoint() *schema.Resource {
 			},
 
 			"vlan": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+
+			"filter_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -359,6 +366,14 @@ func dataSourceAciClientEndPointRead(d *schema.ResourceData, m interface{}) erro
 			queryString = fmt.Sprintf("%s,eq(fvCEp.encap, \"vlan-%s\")", queryString, vlan.(string))
 		} else {
 			queryString = fmt.Sprintf("eq(fvCEp.encap, \"vlan-%s\")", vlan.(string))
+		}
+	}
+
+	if filterDn, ok := d.GetOk("filter_dn"); ok {
+		if queryString != "" {
+			queryString = fmt.Sprintf("%s,wcard(fvCEp.dn, \"%s\")", queryString, filterDn.(string))
+		} else {
+			queryString = fmt.Sprintf("wcard(fvCEp.dn, \"%s*\")", filterDn.(string))
 		}
 	}
 
