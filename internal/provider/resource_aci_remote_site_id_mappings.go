@@ -8,10 +8,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"reflect"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -20,67 +22,74 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &FvSiteAssociatedResource{}
-var _ resource.ResourceWithImportState = &FvSiteAssociatedResource{}
+var _ resource.Resource = &FvRemoteIdResource{}
+var _ resource.ResourceWithImportState = &FvRemoteIdResource{}
 
-func NewFvSiteAssociatedResource() resource.Resource {
-	return &FvSiteAssociatedResource{}
+func NewFvRemoteIdResource() resource.Resource {
+	return &FvRemoteIdResource{}
 }
 
-// FvSiteAssociatedResource defines the resource implementation.
-type FvSiteAssociatedResource struct {
+// FvRemoteIdResource defines the resource implementation.
+type FvRemoteIdResource struct {
 	client *client.Client
 }
 
-// FvSiteAssociatedResourceModel describes the resource data model.
-type FvSiteAssociatedResourceModel struct {
-	Id            types.String `tfsdk:"id"`
-	ParentDn      types.String `tfsdk:"parent_dn"`
-	Annotation    types.String `tfsdk:"annotation"`
-	Descr         types.String `tfsdk:"description"`
-	Name          types.String `tfsdk:"name"`
-	NameAlias     types.String `tfsdk:"name_alias"`
-	OwnerKey      types.String `tfsdk:"owner_key"`
-	OwnerTag      types.String `tfsdk:"owner_tag"`
-	SiteId        types.String `tfsdk:"site_id"`
-	TagAnnotation types.Set    `tfsdk:"annotations"`
-	TagTag        types.Set    `tfsdk:"tags"`
+// FvRemoteIdResourceModel describes the resource data model.
+type FvRemoteIdResourceModel struct {
+	Id             types.String `tfsdk:"id"`
+	ParentDn       types.String `tfsdk:"parent_dn"`
+	Annotation     types.String `tfsdk:"annotation"`
+	Descr          types.String `tfsdk:"description"`
+	Name           types.String `tfsdk:"name"`
+	NameAlias      types.String `tfsdk:"name_alias"`
+	OwnerKey       types.String `tfsdk:"owner_key"`
+	OwnerTag       types.String `tfsdk:"owner_tag"`
+	RemoteCtxPcTag types.String `tfsdk:"remote_ctx_pc_tag"`
+	RemotePcTag    types.String `tfsdk:"remote_pc_tag"`
+	SiteId         types.String `tfsdk:"site_id"`
+	TagAnnotation  types.Set    `tfsdk:"annotations"`
+	TagTag         types.Set    `tfsdk:"tags"`
 }
 
-// TagAnnotationFvSiteAssociatedResourceModel describes the resource data model for the children without relation ships.
-type TagAnnotationFvSiteAssociatedResourceModel struct {
+// TagAnnotationFvRemoteIdResourceModel describes the resource data model for the children without relation ships.
+type TagAnnotationFvRemoteIdResourceModel struct {
 	Key   types.String `tfsdk:"key"`
 	Value types.String `tfsdk:"value"`
 }
 
-// TagTagFvSiteAssociatedResourceModel describes the resource data model for the children without relation ships.
-type TagTagFvSiteAssociatedResourceModel struct {
+// TagTagFvRemoteIdResourceModel describes the resource data model for the children without relation ships.
+type TagTagFvRemoteIdResourceModel struct {
 	Key   types.String `tfsdk:"key"`
 	Value types.String `tfsdk:"value"`
 }
 
-func (r *FvSiteAssociatedResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	tflog.Debug(ctx, "Start metadata of resource: aci_associated_site")
-	resp.TypeName = req.ProviderTypeName + "_associated_site"
-	tflog.Debug(ctx, "End metadata of resource: aci_associated_site")
+type FvRemoteIdIdentifier struct {
+	SiteId types.String
 }
 
-func (r *FvSiteAssociatedResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
-	tflog.Debug(ctx, "Start schema of resource: aci_associated_site")
+func (r *FvRemoteIdResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	tflog.Debug(ctx, "Start metadata of resource: aci_remote_site_id_mappings")
+	resp.TypeName = req.ProviderTypeName + "_remote_site_id_mappings"
+	tflog.Debug(ctx, "End metadata of resource: aci_remote_site_id_mappings")
+}
+
+func (r *FvRemoteIdResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+	tflog.Debug(ctx, "Start schema of resource: aci_remote_site_id_mappings")
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "The associated_site resource for the 'fvSiteAssociated' class",
+		MarkdownDescription: "The remote_site_id_mappings resource for the 'fvRemoteId' class",
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Associated Site object.",
+				MarkdownDescription: "The distinguished name (DN) of the Remote Site Id Mappings object.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
@@ -100,7 +109,7 @@ func (r *FvSiteAssociatedResource) Schema(ctx context.Context, req resource.Sche
 					stringplanmodifier.UseStateForUnknown(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
-				MarkdownDescription: `The annotation of the Associated Site object.`,
+				MarkdownDescription: `The annotation of the Remote Site Id Mappings object.`,
 			},
 			"description": schema.StringAttribute{
 				Optional: true,
@@ -108,7 +117,7 @@ func (r *FvSiteAssociatedResource) Schema(ctx context.Context, req resource.Sche
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
-				MarkdownDescription: `The description of the Associated Site object.`,
+				MarkdownDescription: `The description of the Remote Site Id Mappings object.`,
 			},
 			"name": schema.StringAttribute{
 				Optional: true,
@@ -116,7 +125,7 @@ func (r *FvSiteAssociatedResource) Schema(ctx context.Context, req resource.Sche
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
-				MarkdownDescription: `The name of the Associated Site object.`,
+				MarkdownDescription: `The name of the Remote Site Id Mappings object.`,
 			},
 			"name_alias": schema.StringAttribute{
 				Optional: true,
@@ -124,7 +133,7 @@ func (r *FvSiteAssociatedResource) Schema(ctx context.Context, req resource.Sche
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
-				MarkdownDescription: `The name alias of the Associated Site object.`,
+				MarkdownDescription: `The name alias of the Remote Site Id Mappings object.`,
 			},
 			"owner_key": schema.StringAttribute{
 				Optional: true,
@@ -142,12 +151,35 @@ func (r *FvSiteAssociatedResource) Schema(ctx context.Context, req resource.Sche
 				},
 				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
 			},
+			"remote_ctx_pc_tag": schema.StringAttribute{
+				Optional: true,
+				Computed: true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
+				Validators: []validator.String{
+					stringvalidator.OneOf("any"),
+				},
+				MarkdownDescription: `Remote context's *pcTag*, mapping required for default route case.`,
+			},
+			"remote_pc_tag": schema.StringAttribute{
+				Optional: true,
+				Computed: true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
+				Validators: []validator.String{
+					stringvalidator.OneOf("any"),
+				},
+				MarkdownDescription: `Remote Class ID.`,
+			},
 			"site_id": schema.StringAttribute{
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.RequiresReplace(),
 				},
-				MarkdownDescription: `Local Site ID.`,
+				MarkdownDescription: `Remote Site ID.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,
@@ -203,11 +235,11 @@ func (r *FvSiteAssociatedResource) Schema(ctx context.Context, req resource.Sche
 			},
 		},
 	}
-	tflog.Debug(ctx, "End schema of resource: aci_associated_site")
+	tflog.Debug(ctx, "End schema of resource: aci_remote_site_id_mappings")
 }
 
-func (r *FvSiteAssociatedResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	tflog.Debug(ctx, "Start configure of resource: aci_associated_site")
+func (r *FvRemoteIdResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+	tflog.Debug(ctx, "Start configure of resource: aci_remote_site_id_mappings")
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
 		return
@@ -225,18 +257,18 @@ func (r *FvSiteAssociatedResource) Configure(ctx context.Context, req resource.C
 	}
 
 	r.client = client
-	tflog.Debug(ctx, "End configure of resource: aci_associated_site")
+	tflog.Debug(ctx, "End configure of resource: aci_remote_site_id_mappings")
 }
 
-func (r *FvSiteAssociatedResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	tflog.Debug(ctx, "Start create of resource: aci_associated_site")
+func (r *FvRemoteIdResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	tflog.Debug(ctx, "Start create of resource: aci_remote_site_id_mappings")
 	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
-	var stateData *FvSiteAssociatedResourceModel
+	var stateData *FvRemoteIdResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
-	setFvSiteAssociatedId(ctx, stateData)
-	getAndSetFvSiteAssociatedAttributes(ctx, &resp.Diagnostics, r.client, stateData)
+	setFvRemoteIdId(ctx, stateData)
+	getAndSetFvRemoteIdAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 
-	var data *FvSiteAssociatedResourceModel
+	var data *FvRemoteIdResourceModel
 
 	// Read Terraform plan data into the model
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
@@ -245,17 +277,17 @@ func (r *FvSiteAssociatedResource) Create(ctx context.Context, req resource.Crea
 		return
 	}
 
-	setFvSiteAssociatedId(ctx, data)
+	setFvRemoteIdId(ctx, data)
 
-	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_associated_site with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_remote_site_id_mappings with id '%s'", data.Id.ValueString()))
 
-	var tagAnnotationPlan, tagAnnotationState []TagAnnotationFvSiteAssociatedResourceModel
+	var tagAnnotationPlan, tagAnnotationState []TagAnnotationFvRemoteIdResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
 	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
-	var tagTagPlan, tagTagState []TagTagFvSiteAssociatedResourceModel
+	var tagTagPlan, tagTagState []TagTagFvRemoteIdResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvSiteAssociatedCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := getFvRemoteIdCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -266,16 +298,16 @@ func (r *FvSiteAssociatedResource) Create(ctx context.Context, req resource.Crea
 		return
 	}
 
-	getAndSetFvSiteAssociatedAttributes(ctx, &resp.Diagnostics, r.client, data)
+	getAndSetFvRemoteIdAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_associated_site with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_remote_site_id_mappings with id '%s'", data.Id.ValueString()))
 }
 
-func (r *FvSiteAssociatedResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
-	tflog.Debug(ctx, "Start read of resource: aci_associated_site")
-	var data *FvSiteAssociatedResourceModel
+func (r *FvRemoteIdResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+	tflog.Debug(ctx, "Start read of resource: aci_remote_site_id_mappings")
+	var data *FvRemoteIdResourceModel
 
 	// Read Terraform prior state data into the model
 	resp.Diagnostics.Append(req.State.Get(ctx, &data)...)
@@ -284,25 +316,25 @@ func (r *FvSiteAssociatedResource) Read(ctx context.Context, req resource.ReadRe
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Read of resource aci_associated_site with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Read of resource aci_remote_site_id_mappings with id '%s'", data.Id.ValueString()))
 
-	getAndSetFvSiteAssociatedAttributes(ctx, &resp.Diagnostics, r.client, data)
+	getAndSetFvRemoteIdAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save updated data into Terraform state
 	if data.Id.IsNull() {
-		var emptyData *FvSiteAssociatedResourceModel
+		var emptyData *FvRemoteIdResourceModel
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_associated_site with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_remote_site_id_mappings with id '%s'", data.Id.ValueString()))
 }
 
-func (r *FvSiteAssociatedResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	tflog.Debug(ctx, "Start update of resource: aci_associated_site")
-	var data *FvSiteAssociatedResourceModel
-	var stateData *FvSiteAssociatedResourceModel
+func (r *FvRemoteIdResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+	tflog.Debug(ctx, "Start update of resource: aci_remote_site_id_mappings")
+	var data *FvRemoteIdResourceModel
+	var stateData *FvRemoteIdResourceModel
 
 	// Read Terraform plan data into the model
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
@@ -312,15 +344,15 @@ func (r *FvSiteAssociatedResource) Update(ctx context.Context, req resource.Upda
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_associated_site with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_remote_site_id_mappings with id '%s'", data.Id.ValueString()))
 
-	var tagAnnotationPlan, tagAnnotationState []TagAnnotationFvSiteAssociatedResourceModel
+	var tagAnnotationPlan, tagAnnotationState []TagAnnotationFvRemoteIdResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
 	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
-	var tagTagPlan, tagTagState []TagTagFvSiteAssociatedResourceModel
+	var tagTagPlan, tagTagState []TagTagFvRemoteIdResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvSiteAssociatedCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := getFvRemoteIdCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -332,16 +364,16 @@ func (r *FvSiteAssociatedResource) Update(ctx context.Context, req resource.Upda
 		return
 	}
 
-	getAndSetFvSiteAssociatedAttributes(ctx, &resp.Diagnostics, r.client, data)
+	getAndSetFvRemoteIdAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_associated_site with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_remote_site_id_mappings with id '%s'", data.Id.ValueString()))
 }
 
-func (r *FvSiteAssociatedResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	tflog.Debug(ctx, "Start delete of resource: aci_associated_site")
-	var data *FvSiteAssociatedResourceModel
+func (r *FvRemoteIdResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	tflog.Debug(ctx, "Start delete of resource: aci_remote_site_id_mappings")
+	var data *FvRemoteIdResourceModel
 
 	// Read Terraform prior state data into the model
 	resp.Diagnostics.Append(req.State.Get(ctx, &data)...)
@@ -350,8 +382,8 @@ func (r *FvSiteAssociatedResource) Delete(ctx context.Context, req resource.Dele
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Delete of resource aci_associated_site with id '%s'", data.Id.ValueString()))
-	jsonPayload := GetDeleteJsonPayload(ctx, &resp.Diagnostics, "fvSiteAssociated", data.Id.ValueString())
+	tflog.Debug(ctx, fmt.Sprintf("Delete of resource aci_remote_site_id_mappings with id '%s'", data.Id.ValueString()))
+	jsonPayload := GetDeleteJsonPayload(ctx, &resp.Diagnostics, "fvRemoteId", data.Id.ValueString())
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -359,34 +391,34 @@ func (r *FvSiteAssociatedResource) Delete(ctx context.Context, req resource.Dele
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_associated_site with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_remote_site_id_mappings with id '%s'", data.Id.ValueString()))
 }
 
-func (r *FvSiteAssociatedResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	tflog.Debug(ctx, "Start import state of resource: aci_associated_site")
+func (r *FvRemoteIdResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	tflog.Debug(ctx, "Start import state of resource: aci_remote_site_id_mappings")
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 
-	var stateData *FvSiteAssociatedResourceModel
+	var stateData *FvRemoteIdResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
-	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_associated_site with id '%s'", stateData.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_remote_site_id_mappings with id '%s'", stateData.Id.ValueString()))
 
-	tflog.Debug(ctx, "End import of state resource: aci_associated_site")
+	tflog.Debug(ctx, "End import of state resource: aci_remote_site_id_mappings")
 }
 
-func getAndSetFvSiteAssociatedAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvSiteAssociatedResourceModel) {
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "fvSiteAssociated,tagAnnotation,tagTag"), "GET", nil)
+func getAndSetFvRemoteIdAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvRemoteIdResourceModel) {
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "fvRemoteId,tagAnnotation,tagTag"), "GET", nil)
 
 	if diags.HasError() {
 		return
 	}
-	if requestData.Search("imdata").Search("fvSiteAssociated").Data() != nil {
-		classReadInfo := requestData.Search("imdata").Search("fvSiteAssociated").Data().([]interface{})
+	if requestData.Search("imdata").Search("fvRemoteId").Data() != nil {
+		classReadInfo := requestData.Search("imdata").Search("fvRemoteId").Data().([]interface{})
 		if len(classReadInfo) == 1 {
 			attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
 			for attributeName, attributeValue := range attributes {
 				if attributeName == "dn" {
 					data.Id = basetypes.NewStringValue(attributeValue.(string))
-					setFvSiteAssociatedParentDn(ctx, attributeValue.(string), data)
+					setFvRemoteIdParentDn(ctx, attributeValue.(string), data)
 				}
 				if attributeName == "annotation" {
 					data.Annotation = basetypes.NewStringValue(attributeValue.(string))
@@ -406,12 +438,18 @@ func getAndSetFvSiteAssociatedAttributes(ctx context.Context, diags *diag.Diagno
 				if attributeName == "ownerTag" {
 					data.OwnerTag = basetypes.NewStringValue(attributeValue.(string))
 				}
+				if attributeName == "remoteCtxPcTag" {
+					data.RemoteCtxPcTag = basetypes.NewStringValue(attributeValue.(string))
+				}
+				if attributeName == "remotePcTag" {
+					data.RemotePcTag = basetypes.NewStringValue(attributeValue.(string))
+				}
 				if attributeName == "siteId" {
 					data.SiteId = basetypes.NewStringValue(attributeValue.(string))
 				}
 			}
-			TagAnnotationFvSiteAssociatedList := make([]TagAnnotationFvSiteAssociatedResourceModel, 0)
-			TagTagFvSiteAssociatedList := make([]TagTagFvSiteAssociatedResourceModel, 0)
+			TagAnnotationFvRemoteIdList := make([]TagAnnotationFvRemoteIdResourceModel, 0)
+			TagTagFvRemoteIdList := make([]TagTagFvRemoteIdResourceModel, 0)
 			_, ok := classReadInfo[0].(map[string]interface{})["children"]
 			if ok {
 				children := classReadInfo[0].(map[string]interface{})["children"].([]interface{})
@@ -419,40 +457,40 @@ func getAndSetFvSiteAssociatedAttributes(ctx context.Context, diags *diag.Diagno
 					for childClassName, childClassDetails := range child.(map[string]interface{}) {
 						childAttributes := childClassDetails.(map[string]interface{})["attributes"].(map[string]interface{})
 						if childClassName == "tagAnnotation" {
-							TagAnnotationFvSiteAssociated := TagAnnotationFvSiteAssociatedResourceModel{}
+							TagAnnotationFvRemoteId := TagAnnotationFvRemoteIdResourceModel{}
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "key" {
-									TagAnnotationFvSiteAssociated.Key = basetypes.NewStringValue(childAttributeValue.(string))
+									TagAnnotationFvRemoteId.Key = basetypes.NewStringValue(childAttributeValue.(string))
 								}
 								if childAttributeName == "value" {
-									TagAnnotationFvSiteAssociated.Value = basetypes.NewStringValue(childAttributeValue.(string))
+									TagAnnotationFvRemoteId.Value = basetypes.NewStringValue(childAttributeValue.(string))
 								}
 							}
-							TagAnnotationFvSiteAssociatedList = append(TagAnnotationFvSiteAssociatedList, TagAnnotationFvSiteAssociated)
+							TagAnnotationFvRemoteIdList = append(TagAnnotationFvRemoteIdList, TagAnnotationFvRemoteId)
 						}
 						if childClassName == "tagTag" {
-							TagTagFvSiteAssociated := TagTagFvSiteAssociatedResourceModel{}
+							TagTagFvRemoteId := TagTagFvRemoteIdResourceModel{}
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "key" {
-									TagTagFvSiteAssociated.Key = basetypes.NewStringValue(childAttributeValue.(string))
+									TagTagFvRemoteId.Key = basetypes.NewStringValue(childAttributeValue.(string))
 								}
 								if childAttributeName == "value" {
-									TagTagFvSiteAssociated.Value = basetypes.NewStringValue(childAttributeValue.(string))
+									TagTagFvRemoteId.Value = basetypes.NewStringValue(childAttributeValue.(string))
 								}
 							}
-							TagTagFvSiteAssociatedList = append(TagTagFvSiteAssociatedList, TagTagFvSiteAssociated)
+							TagTagFvRemoteIdList = append(TagTagFvRemoteIdList, TagTagFvRemoteId)
 						}
 					}
 				}
 			}
-			tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationFvSiteAssociatedList)
+			tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationFvRemoteIdList)
 			data.TagAnnotation = tagAnnotationSet
-			tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagFvSiteAssociatedList)
+			tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagFvRemoteIdList)
 			data.TagTag = tagTagSet
 		} else {
 			diags.AddError(
 				"too many results in response",
-				fmt.Sprintf("%v matches returned for class 'fvSiteAssociated'. Please report this issue to the provider developers.", len(classReadInfo)),
+				fmt.Sprintf("%v matches returned for class 'fvRemoteId'. Please report this issue to the provider developers.", len(classReadInfo)),
 			)
 		}
 	} else {
@@ -460,11 +498,17 @@ func getAndSetFvSiteAssociatedAttributes(ctx context.Context, diags *diag.Diagno
 	}
 }
 
-func getFvSiteAssociatedRn(ctx context.Context, data *FvSiteAssociatedResourceModel) string {
-	return "stAsc"
+func getFvRemoteIdRn(ctx context.Context, data *FvRemoteIdResourceModel) string {
+	rn := "site-{siteId}"
+	for _, identifier := range []string{"siteId"} {
+		fieldName := fmt.Sprintf("%s%s", strings.ToUpper(identifier[:1]), identifier[1:])
+		fieldValue := reflect.ValueOf(data).Elem().FieldByName(fieldName).Interface().(basetypes.StringValue).ValueString()
+		rn = strings.ReplaceAll(rn, fmt.Sprintf("{%s}", identifier), fieldValue)
+	}
+	return rn
 }
 
-func setFvSiteAssociatedParentDn(ctx context.Context, dn string, data *FvSiteAssociatedResourceModel) {
+func setFvRemoteIdParentDn(ctx context.Context, dn string, data *FvRemoteIdResourceModel) {
 	bracketIndex := 0
 	rnIndex := 0
 	for i := len(dn) - 1; i >= 0; i-- {
@@ -480,12 +524,12 @@ func setFvSiteAssociatedParentDn(ctx context.Context, dn string, data *FvSiteAss
 	data.ParentDn = basetypes.NewStringValue(dn[:rnIndex])
 }
 
-func setFvSiteAssociatedId(ctx context.Context, data *FvSiteAssociatedResourceModel) {
-	rn := getFvSiteAssociatedRn(ctx, data)
+func setFvRemoteIdId(ctx context.Context, data *FvRemoteIdResourceModel) {
+	rn := getFvRemoteIdRn(ctx, data)
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
 
-func getFvSiteAssociatedTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvSiteAssociatedResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvSiteAssociatedResourceModel) []map[string]interface{} {
+func getFvRemoteIdTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvRemoteIdResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvRemoteIdResourceModel) []map[string]interface{} {
 
 	childPayloads := []map[string]interface{}{}
 	if !data.TagAnnotation.IsUnknown() {
@@ -524,7 +568,7 @@ func getFvSiteAssociatedTagAnnotationChildPayloads(ctx context.Context, diags *d
 
 	return childPayloads
 }
-func getFvSiteAssociatedTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvSiteAssociatedResourceModel, tagTagPlan, tagTagState []TagTagFvSiteAssociatedResourceModel) []map[string]interface{} {
+func getFvRemoteIdTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvRemoteIdResourceModel, tagTagPlan, tagTagState []TagTagFvRemoteIdResourceModel) []map[string]interface{} {
 
 	childPayloads := []map[string]interface{}{}
 	if !data.TagTag.IsUnknown() {
@@ -564,18 +608,18 @@ func getFvSiteAssociatedTagTagChildPayloads(ctx context.Context, diags *diag.Dia
 	return childPayloads
 }
 
-func getFvSiteAssociatedCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *FvSiteAssociatedResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvSiteAssociatedResourceModel, tagTagPlan, tagTagState []TagTagFvSiteAssociatedResourceModel) *container.Container {
+func getFvRemoteIdCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *FvRemoteIdResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvRemoteIdResourceModel, tagTagPlan, tagTagState []TagTagFvRemoteIdResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 	childPayloads := []map[string]interface{}{}
 
-	TagAnnotationchildPayloads := getFvSiteAssociatedTagAnnotationChildPayloads(ctx, diags, data, tagAnnotationPlan, tagAnnotationState)
+	TagAnnotationchildPayloads := getFvRemoteIdTagAnnotationChildPayloads(ctx, diags, data, tagAnnotationPlan, tagAnnotationState)
 	if TagAnnotationchildPayloads == nil {
 		return nil
 	}
 	childPayloads = append(childPayloads, TagAnnotationchildPayloads...)
 
-	TagTagchildPayloads := getFvSiteAssociatedTagTagChildPayloads(ctx, diags, data, tagTagPlan, tagTagState)
+	TagTagchildPayloads := getFvRemoteIdTagTagChildPayloads(ctx, diags, data, tagTagPlan, tagTagState)
 	if TagTagchildPayloads == nil {
 		return nil
 	}
@@ -600,11 +644,17 @@ func getFvSiteAssociatedCreateJsonPayload(ctx context.Context, diags *diag.Diagn
 	if !data.OwnerTag.IsNull() && !data.OwnerTag.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["ownerTag"] = data.OwnerTag.ValueString()
 	}
+	if !data.RemoteCtxPcTag.IsNull() && !data.RemoteCtxPcTag.IsUnknown() {
+		payloadMap["attributes"].(map[string]string)["remoteCtxPcTag"] = data.RemoteCtxPcTag.ValueString()
+	}
+	if !data.RemotePcTag.IsNull() && !data.RemotePcTag.IsUnknown() {
+		payloadMap["attributes"].(map[string]string)["remotePcTag"] = data.RemotePcTag.ValueString()
+	}
 	if !data.SiteId.IsNull() && !data.SiteId.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["siteId"] = data.SiteId.ValueString()
 	}
 
-	payload, err := json.Marshal(map[string]interface{}{"fvSiteAssociated": payloadMap})
+	payload, err := json.Marshal(map[string]interface{}{"fvRemoteId": payloadMap})
 	if err != nil {
 		diags.AddError(
 			"Marshalling of json payload failed",

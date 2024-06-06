@@ -171,6 +171,13 @@ fvSiteAssociated:
   dn_formats:
   - "uni/tn-{name}/ctx-{name}/stAsc"
 
+fvRemoteId:
+  ui_locations:
+    - "Not shown in UI"
+  sub_category: "Multi-Site"
+  dn_formats:
+  - "uni/tn-{name}/ctx-{name}/stAsc/site-{siteId}"
+
 l3extRsOutToFBRGroup:
   resource_name: "relation_to_fallback_route_group"
   ui_locations:
