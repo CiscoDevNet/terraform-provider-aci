@@ -159,3 +159,7 @@ import {
   to = aci_associated_site.example_application_epg
 }
 ```
+
+## Child Resources
+  
+  - [aci_remote_site_id_mappings](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/remote_site_id_mappings)
