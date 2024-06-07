@@ -166,7 +166,7 @@ func TestAccResourceFvSiteAssociatedWithFvAEPg(t *testing.T) {
 		},
 	})
 }
-func TestAccResourceFvSiteAssociatedWithFvCtx(t *testing.T) {
+func TestAccResourceFvSiteAssociatedWithFvBD(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -174,7 +174,7 @@ func TestAccResourceFvSiteAssociatedWithFvCtx(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigFvSiteAssociatedMinDependencyWithFvCtx,
+				Config:             testConfigFvSiteAssociatedMinDependencyWithFvBD,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_associated_site.test", "annotation", "orchestrator:terraform"),
@@ -188,7 +188,7 @@ func TestAccResourceFvSiteAssociatedWithFvCtx(t *testing.T) {
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config:             testConfigFvSiteAssociatedAllDependencyWithFvCtx,
+				Config:             testConfigFvSiteAssociatedAllDependencyWithFvBD,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_associated_site.test", "annotation", "annotation"),
@@ -202,13 +202,13 @@ func TestAccResourceFvSiteAssociatedWithFvCtx(t *testing.T) {
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config:             testConfigFvSiteAssociatedMinDependencyWithFvCtx,
+				Config:             testConfigFvSiteAssociatedMinDependencyWithFvBD,
 				ExpectNonEmptyPlan: false,
 				Check:              resource.ComposeAggregateTestCheckFunc(),
 			},
 			// Update with empty strings config or default value
 			{
-				Config:             testConfigFvSiteAssociatedResetDependencyWithFvCtx,
+				Config:             testConfigFvSiteAssociatedResetDependencyWithFvBD,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_associated_site.test", "annotation", "orchestrator:terraform"),
@@ -237,7 +237,7 @@ func TestAccResourceFvSiteAssociatedWithFvCtx(t *testing.T) {
 			},
 			// Update with children
 			{
-				Config:             testConfigFvSiteAssociatedChildrenDependencyWithFvCtx,
+				Config:             testConfigFvSiteAssociatedChildrenDependencyWithFvBD,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_associated_site.test", "annotation", "orchestrator:terraform"),
@@ -282,7 +282,7 @@ func TestAccResourceFvSiteAssociatedWithFvCtx(t *testing.T) {
 			},
 			// Update with children removed from config
 			{
-				Config:             testConfigFvSiteAssociatedChildrenRemoveFromConfigDependencyWithFvCtx,
+				Config:             testConfigFvSiteAssociatedChildrenRemoveFromConfigDependencyWithFvBD,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.0.key", "key_0"),
@@ -299,7 +299,7 @@ func TestAccResourceFvSiteAssociatedWithFvCtx(t *testing.T) {
 			},
 			// Update with children first child removed
 			{
-				Config:             testConfigFvSiteAssociatedChildrenRemoveOneDependencyWithFvCtx,
+				Config:             testConfigFvSiteAssociatedChildrenRemoveOneDependencyWithFvBD,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.0.key", "key_1"),
@@ -312,7 +312,7 @@ func TestAccResourceFvSiteAssociatedWithFvCtx(t *testing.T) {
 			},
 			// Update with all children removed
 			{
-				Config:             testConfigFvSiteAssociatedChildrenRemoveAllDependencyWithFvCtx,
+				Config:             testConfigFvSiteAssociatedChildrenRemoveAllDependencyWithFvBD,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.#", "0"),
@@ -412,15 +412,15 @@ resource "aci_associated_site" "test" {
 }
 `
 
-const testConfigFvSiteAssociatedMinDependencyWithFvCtx = testConfigFvCtxMinDependencyWithFvTenant + `
+const testConfigFvSiteAssociatedMinDependencyWithFvBD = testConfigFvBDMinDependencyWithFvTenant + `
 resource "aci_associated_site" "test" {
-  parent_dn = aci_vrf.test.id
+  parent_dn = aci_bridge_domain.test.id
 }
 `
 
-const testConfigFvSiteAssociatedAllDependencyWithFvCtx = testConfigFvCtxMinDependencyWithFvTenant + `
+const testConfigFvSiteAssociatedAllDependencyWithFvBD = testConfigFvBDMinDependencyWithFvTenant + `
 resource "aci_associated_site" "test" {
-  parent_dn = aci_vrf.test.id
+  parent_dn = aci_bridge_domain.test.id
   annotation = "annotation"
   description = "description"
   name = "name"
@@ -431,9 +431,9 @@ resource "aci_associated_site" "test" {
 }
 `
 
-const testConfigFvSiteAssociatedResetDependencyWithFvCtx = testConfigFvCtxMinDependencyWithFvTenant + `
+const testConfigFvSiteAssociatedResetDependencyWithFvBD = testConfigFvBDMinDependencyWithFvTenant + `
 resource "aci_associated_site" "test" {
-  parent_dn = aci_vrf.test.id
+  parent_dn = aci_bridge_domain.test.id
   annotation = "orchestrator:terraform"
   description = ""
   name = ""
@@ -443,9 +443,9 @@ resource "aci_associated_site" "test" {
   site_id = "0"
 }
 `
-const testConfigFvSiteAssociatedChildrenDependencyWithFvCtx = testConfigFvCtxMinDependencyWithFvTenant + `
+const testConfigFvSiteAssociatedChildrenDependencyWithFvBD = testConfigFvBDMinDependencyWithFvTenant + `
 resource "aci_associated_site" "test" {
-  parent_dn = aci_vrf.test.id
+  parent_dn = aci_bridge_domain.test.id
   annotations = [
 	{
 	  key = "key_0"
@@ -469,15 +469,15 @@ resource "aci_associated_site" "test" {
 }
 `
 
-const testConfigFvSiteAssociatedChildrenRemoveFromConfigDependencyWithFvCtx = testConfigFvCtxMinDependencyWithFvTenant + `
+const testConfigFvSiteAssociatedChildrenRemoveFromConfigDependencyWithFvBD = testConfigFvBDMinDependencyWithFvTenant + `
 resource "aci_associated_site" "test" {
-  parent_dn = aci_vrf.test.id
+  parent_dn = aci_bridge_domain.test.id
 }
 `
 
-const testConfigFvSiteAssociatedChildrenRemoveOneDependencyWithFvCtx = testConfigFvCtxMinDependencyWithFvTenant + `
+const testConfigFvSiteAssociatedChildrenRemoveOneDependencyWithFvBD = testConfigFvBDMinDependencyWithFvTenant + `
 resource "aci_associated_site" "test" {
-  parent_dn = aci_vrf.test.id
+  parent_dn = aci_bridge_domain.test.id
   annotations = [ 
 	{
 	  key = "key_1"
@@ -493,9 +493,9 @@ resource "aci_associated_site" "test" {
 }
 `
 
-const testConfigFvSiteAssociatedChildrenRemoveAllDependencyWithFvCtx = testConfigFvCtxMinDependencyWithFvTenant + `
+const testConfigFvSiteAssociatedChildrenRemoveAllDependencyWithFvBD = testConfigFvBDMinDependencyWithFvTenant + `
 resource "aci_associated_site" "test" {
-  parent_dn = aci_vrf.test.id
+  parent_dn = aci_bridge_domain.test.id
   annotations = []
   tags = []
 }

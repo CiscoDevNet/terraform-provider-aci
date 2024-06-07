@@ -55,6 +55,7 @@ data "aci_tag" "example_application_epg" {
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - Too many parent DNs to display, see model documentation for all possible parents of [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview).
   - [aci_application_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/application_epg) ([fvAEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvAEPg/overview))
+  - [aci_bridge_domain](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bridge_domain) ([fvBD](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvBD/overview))
   - [aci_vrf](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vrf) ([fvCtx](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvCtx/overview))
   - [aci_endpoint_tag_ip](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/endpoint_tag_ip) ([fvEpIpTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvEpIpTag/overview))
   - [aci_endpoint_tag_mac](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/endpoint_tag_mac) ([fvEpMacTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvEpMacTag/overview))
@@ -64,6 +65,7 @@ data "aci_tag" "example_application_epg" {
   - [aci_associated_site](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/associated_site) ([fvSiteAssociated](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvSiteAssociated/overview))
   - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
   - [aci_l3out_consumer_label](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3out_consumer_label) ([l3extConsLbl](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extConsLbl/overview))
+  - [aci_external_network_instance_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/external_network_instance_profile) ([l3extInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extInstP/overview))
   - [aci_logical_node_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/logical_node_profile) ([l3extLNodeP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extLNodeP/overview))
   - [aci_l3out_loopback_interface_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3out_loopback_interface_profile) ([l3extLoopBackIfP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extLoopBackIfP/overview))
   - [aci_l3_outside](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3_outside) ([l3extOut](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extOut/overview))
@@ -72,8 +74,6 @@ data "aci_tag" "example_application_epg" {
   - [aci_relation_to_fallback_route_group](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/relation_to_fallback_route_group) ([l3extRsOutToFBRGroup](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extRsOutToFBRGroup/overview))
   - [aci_l3out_redistribute_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3out_redistribute_policy) ([l3extRsRedistributePol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extRsRedistributePol/overview))
   - [aci_external_management_network_instance_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/external_management_network_instance_profile) ([mgmtInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/mgmtInstP/overview))
-  - [aci_relation_to_consumed_out_of_band_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/relation_to_consumed_out_of_band_contract) ([mgmtRsOoBCons](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/mgmtRsOoBCons/overview))
-  - [aci_external_management_network_subnet](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/external_management_network_subnet) ([mgmtSubnet](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/mgmtSubnet/overview))
 * `key` (key) - (string) The key used to uniquely identify this configuration object.
 
 ### Read-Only ###
