@@ -37,14 +37,14 @@ func TestAccDataSourceFvSiteAssociatedWithFvAEPg(t *testing.T) {
 		},
 	})
 }
-func TestAccDataSourceFvSiteAssociatedWithFvCtx(t *testing.T) {
+func TestAccDataSourceFvSiteAssociatedWithFvBD(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config:             testConfigFvSiteAssociatedDataSourceDependencyWithFvCtx,
+				Config:             testConfigFvSiteAssociatedDataSourceDependencyWithFvBD,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("data.aci_associated_site.test", "annotation", "orchestrator:terraform"),
@@ -57,7 +57,7 @@ func TestAccDataSourceFvSiteAssociatedWithFvCtx(t *testing.T) {
 				),
 			},
 			{
-				Config:      testConfigFvSiteAssociatedNotExistingFvCtx,
+				Config:      testConfigFvSiteAssociatedNotExistingFvBD,
 				ExpectError: regexp.MustCompile("Failed to read aci_associated_site data source"),
 			},
 		},
@@ -77,16 +77,16 @@ data "aci_associated_site" "test_non_existing" {
   depends_on = [aci_associated_site.test]
 }
 `
-const testConfigFvSiteAssociatedDataSourceDependencyWithFvCtx = testConfigFvSiteAssociatedMinDependencyWithFvCtx + `
+const testConfigFvSiteAssociatedDataSourceDependencyWithFvBD = testConfigFvSiteAssociatedMinDependencyWithFvBD + `
 data "aci_associated_site" "test" {
-  parent_dn = aci_vrf.test.id
+  parent_dn = aci_bridge_domain.test.id
   depends_on = [aci_associated_site.test]
 }
 `
 
-const testConfigFvSiteAssociatedNotExistingFvCtx = testConfigFvSiteAssociatedMinDependencyWithFvCtx + `
+const testConfigFvSiteAssociatedNotExistingFvBD = testConfigFvSiteAssociatedMinDependencyWithFvBD + `
 data "aci_associated_site" "test_non_existing" {
-  parent_dn = aci_vrf.test.id
+  parent_dn = aci_bridge_domain.test.id
   depends_on = [aci_associated_site.test]
 }
 `

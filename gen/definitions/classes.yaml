@@ -311,6 +311,12 @@ fvFBRoute:
   resource_notes:
     - "This resource should not be used in combination with the `vrf_fallback_routes` nested attribute of the `aci_vrf_fallback_route_group` resource. Doing so will result in unexpected behaviour."
 
+fvBD:
+  resource_name: "bridge_domain"
+
+l3extInstP:
+  resource_name: "external_network_instance_profile"
+
 fvSiteAssociated:
   include: true
   resource_name: "associated_site"
@@ -319,6 +325,10 @@ fvSiteAssociated:
   sub_category: "Multi-Site"
   dn_formats:
   - "uni/tn-{name}/ctx-{name}/stAsc"
+  - "uni/tn-{name}/ap-{name}/epg-{name}/stAsc"
+  - "uni/tn-{name}/BD-{name}/stAsc"
+  - "uni/tn-{name}/out-{name}/instP-{name}/stAsc"
+  - "uni/tn-{name}/mscGraphXlateCont/epgDefXlate-[{epgDefDn}]/stAsc"
 
 fvRemoteId:
   ui_locations:

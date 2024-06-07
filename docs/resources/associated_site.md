@@ -21,7 +21,12 @@ Manages ACI Associated Site
 * Class: [fvSiteAssociated](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvSiteAssociated/overview)
 
 
-* Distinguished Name Format: `uni/tn-{name}/ctx-{name}/stAsc`
+* Distinguished Name Formats:
+  - `uni/tn-{name}/BD-{name}/stAsc`
+  - `uni/tn-{name}/ap-{name}/epg-{name}/stAsc`
+  - `uni/tn-{name}/ctx-{name}/stAsc`
+  - `uni/tn-{name}/mscGraphXlateCont/epgDefXlate-[{epgDefDn}]/stAsc`
+  - `uni/tn-{name}/out-{name}/instP-{name}/stAsc`
 
 ## GUI Information ##
 
@@ -38,8 +43,8 @@ resource "aci_associated_site" "example_application_epg" {
   site_id   = "0"
 }
 
-resource "aci_associated_site" "example_vrf" {
-  parent_dn = aci_vrf.example.id
+resource "aci_associated_site" "example_bridge_domain" {
+  parent_dn = aci_bridge_domain.example.id
   site_id   = "0"
 }
 
@@ -73,8 +78,8 @@ resource "aci_associated_site" "full_example_application_epg" {
   ]
 }
 
-resource "aci_associated_site" "full_example_vrf" {
-  parent_dn   = aci_vrf.example.id
+resource "aci_associated_site" "full_example_bridge_domain" {
+  parent_dn   = aci_bridge_domain.example.id
   annotation  = "annotation"
   description = "description"
   name        = "name"
@@ -106,10 +111,10 @@ All examples for the Associated Site resource can be found in the [examples](htt
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_application_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/application_epg) ([fvAEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvAEPg/overview))
+  - [aci_bridge_domain](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bridge_domain) ([fvBD](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvBD/overview))
   - [aci_vrf](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vrf) ([fvCtx](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvCtx/overview))
+  - [aci_external_network_instance_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/external_network_instance_profile) ([l3extInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extInstP/overview))
   - The distinquised name (DN) of classes below can be used but currently there is no available resource for it:
-    - [fvBD](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvBD/overview)
-    - [l3extInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extInstP/overview)
     - [vnsEpgDefXlate](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vnsEpgDefXlate/overview)
 
 * `site_id` (siteId) - (string) Local Site ID.

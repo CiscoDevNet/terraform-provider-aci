@@ -19,7 +19,12 @@ Data source for Associated Site
 * Class: [fvSiteAssociated](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvSiteAssociated/overview)
 
 
-* Distinguished Name Format: `uni/tn-{name}/ctx-{name}/stAsc`
+* Distinguished Name Formats:
+  - `uni/tn-{name}/BD-{name}/stAsc`
+  - `uni/tn-{name}/ap-{name}/epg-{name}/stAsc`
+  - `uni/tn-{name}/ctx-{name}/stAsc`
+  - `uni/tn-{name}/mscGraphXlateCont/epgDefXlate-[{epgDefDn}]/stAsc`
+  - `uni/tn-{name}/out-{name}/instP-{name}/stAsc`
 
 ## GUI Information ##
 
@@ -33,8 +38,8 @@ data "aci_associated_site" "example_application_epg" {
   parent_dn = aci_application_epg.example.id
 }
 
-data "aci_associated_site" "example_vrf" {
-  parent_dn = aci_vrf.example.id
+data "aci_associated_site" "example_bridge_domain" {
+  parent_dn = aci_bridge_domain.example.id
 }
 
 ```
@@ -45,10 +50,10 @@ data "aci_associated_site" "example_vrf" {
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_application_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/application_epg) ([fvAEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvAEPg/overview))
+  - [aci_bridge_domain](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bridge_domain) ([fvBD](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvBD/overview))
   - [aci_vrf](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vrf) ([fvCtx](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvCtx/overview))
+  - [aci_external_network_instance_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/external_network_instance_profile) ([l3extInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extInstP/overview))
   - The distinquised name (DN) of classes below can be used but currently there is no available resource for it:
-    - [fvBD](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvBD/overview)
-    - [l3extInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extInstP/overview)
     - [vnsEpgDefXlate](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vnsEpgDefXlate/overview)
 
 

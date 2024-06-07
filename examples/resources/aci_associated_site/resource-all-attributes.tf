@@ -22,8 +22,8 @@ resource "aci_associated_site" "full_example_application_epg" {
   ]
 }
 
-resource "aci_associated_site" "full_example_vrf" {
-  parent_dn   = aci_vrf.example.id
+resource "aci_associated_site" "full_example_bridge_domain" {
+  parent_dn   = aci_bridge_domain.example.id
   annotation  = "annotation"
   description = "description"
   name        = "name"
