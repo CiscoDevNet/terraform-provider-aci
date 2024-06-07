@@ -393,9 +393,9 @@ func (r *{{.ResourceClassName}}Resource) Read(ctx context.Context, req resource.
 func (r *{{.ResourceClassName}}Resource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	tflog.Debug(ctx, "Start update of resource: aci_{{.ResourceName}}")
 	var data *{{.ResourceClassName}}ResourceModel
-	{{- if .HasChild }}
+		{{- if .HasChild }}
     var stateData *{{ .ResourceClassName }}ResourceModel
-{{- end }}
+		{{- end }}
 
 // Read Terraform plan data into the model
 resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)

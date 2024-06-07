@@ -14,9 +14,7 @@ import (
 func TestAccDataSourcePkiTPWithDefault(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck: func() {
-			testAccPreCheck(t, "both")
-		},
+		PreCheck:                 func() { testAccPreCheck(t, "both") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -49,9 +47,7 @@ func TestAccDataSourcePkiTPWithDefault(t *testing.T) {
 func TestAccDataSourcePkiTPWithFvTenant(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck: func() {
-			testAccPreCheck(t, "cloud")
-		},
+		PreCheck:                 func() { testAccPreCheck(t, "cloud") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{

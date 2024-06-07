@@ -23,8 +23,7 @@ import (
 func TestAccDataSource{{$.resourceClassName}}With{{capitalize .class_name}} (t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { 
-		testAccPreCheck(t, "{{.test_type}}") },
+		PreCheck:                 func() { testAccPreCheck(t, "{{.test_type}}") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -63,7 +62,7 @@ func TestAccDataSource{{$.resourceClassName}}With{{capitalize .class_name}} (t *
 		{{- if $found_cert }}
 		CheckDestroy: resource.ComposeAggregateTestCheckFunc(
 			waitForApicBeforeRefresh,
-			),
+	    ),
 		{{- end}}
 	})
 }
@@ -72,8 +71,7 @@ func TestAccDataSource{{$.resourceClassName}}With{{capitalize .class_name}} (t *
 func TestAccDataSource{{.resourceClassName}}(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { 
-		testAccPreCheck(t, "{{.test_type}}") },
+		PreCheck:                 func() { testAccPreCheck(t, "{{.test_type}}") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -96,13 +94,18 @@ func TestAccDataSource{{.resourceClassName}}(t *testing.T) {
 			},
 			{
 				Config:      testConfig{{.resourceClassName}}NotExisting,
+				{{- if $found_cert }}
+				Check: resource.ComposeAggregateTestCheckFunc(
+					waitForApicBeforeRefresh,
+				),
+				{{- end}}
 				ExpectError: regexp.MustCompile("Failed to read aci_{{$.resourceName}} data source"),
 			},
 		},
 		{{- if $found_cert }}
 		CheckDestroy: resource.ComposeAggregateTestCheckFunc(
 			waitForApicBeforeRefresh,
-			),
+		),
 		{{- end}}
 	})
 }

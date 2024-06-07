@@ -231,9 +231,6 @@ pkiTP:
       contained_by: "fvTenant"
       wrapper_class: "cloudCertStore"
       test_type: "cloud"
-    # - rn_prepend: "uni/userext/pkiext"
-    #   contained_by: "polUni"
-    #   test_type: "both"
 
 pkiKeyRing:
   sub_category: "AAA"
@@ -245,7 +242,4 @@ pkiKeyRing:
       contained_by: "fvTenant"
       wrapper_class: "cloudCertStore"
       test_type: "cloud"
-    # - rn_prepend: "uni/userext/pkiext"
-    #   contained_by: "polUni"
-    #   test_type: "both"
  

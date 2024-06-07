@@ -14,9 +14,7 @@ import (
 func TestAccDataSourceFvFBRGroupWithFvCtx(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck: func() {
-			testAccPreCheck(t, "both")
-		},
+		PreCheck:                 func() { testAccPreCheck(t, "both") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{

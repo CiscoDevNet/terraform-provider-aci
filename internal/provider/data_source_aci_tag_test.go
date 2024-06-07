@@ -14,9 +14,7 @@ import (
 func TestAccDataSourceTagTagWithFvTenant(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck: func() {
-			testAccPreCheck(t, "both")
-		},
+		PreCheck:                 func() { testAccPreCheck(t, "both") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -37,9 +35,7 @@ func TestAccDataSourceTagTagWithFvTenant(t *testing.T) {
 func TestAccDataSourceTagTagWithFvAEPg(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck: func() {
-			testAccPreCheck(t, "both")
-		},
+		PreCheck:                 func() { testAccPreCheck(t, "both") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
