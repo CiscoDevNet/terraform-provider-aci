@@ -144,9 +144,9 @@ func (r *NetflowRecordPolResource) Schema(ctx context.Context, req resource.Sche
 					setplanmodifier.UseStateForUnknown(),
 				},
 				Validators: []validator.Set{
-					setvalidator.SizeAtMost(15),
+					setvalidator.SizeAtMost(14),
 					setvalidator.ValueStringsAre(
-						stringvalidator.OneOf("dst-ip", "dst-ipv4", "dst-ipv6", "dst-mac", "dst-port", "ethertype", "proto", "src-ip", "src-ipv4", "src-ipv6", "src-mac", "src-port", "tos", "unspecified", "vlan"),
+						stringvalidator.OneOf("dst-ip", "dst-ipv4", "dst-ipv6", "dst-mac", "dst-port", "ethertype", "proto", "src-ip", "src-ipv4", "src-ipv6", "src-mac", "src-port", "tos", "vlan"),
 					),
 				},
 				ElementType: types.StringType,
@@ -426,7 +426,10 @@ func getAndSetNetflowRecordPolAttributes(ctx context.Context, diags *diag.Diagno
 					data.Annotation = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "collect" {
-					collectList := strings.Split(attributeValue.(string), ",")
+					collectList := make([]string, 0)
+					if attributeValue.(string) != "" {
+						collectList = strings.Split(attributeValue.(string), ",")
+					}
 					collectSet, _ := types.SetValueFrom(ctx, data.Collect.ElementType(ctx), collectList)
 					data.Collect = collectSet
 				}
@@ -434,7 +437,10 @@ func getAndSetNetflowRecordPolAttributes(ctx context.Context, diags *diag.Diagno
 					data.Descr = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "match" {
-					matchList := strings.Split(attributeValue.(string), ",")
+					matchList := make([]string, 0)
+					if attributeValue.(string) != "" {
+						matchList = strings.Split(attributeValue.(string), ",")
+					}
 					matchSet, _ := types.SetValueFrom(ctx, data.Match.ElementType(ctx), matchList)
 					data.Match = matchSet
 				}

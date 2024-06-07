@@ -7,8 +7,7 @@ default:
   collect: 
     - "src-intf"
   description: ""
-  match: 
-    - "dst-ip"
+  match: []
   name_alias: ""
   owner_key: ""
   owner_tag: ""

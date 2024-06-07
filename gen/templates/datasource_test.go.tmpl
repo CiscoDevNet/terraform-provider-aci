@@ -31,9 +31,13 @@ func TestAccDataSource{{$.resourceClassName}}With{{capitalize .class_name}} (t *
 						{{- end }}
 					{{- end}}
 					{{- range $key, $value := $.default}}
-						{{- if lt 0 (determineLength $value)}}
-							{{- range $index, $subvalue := $value}}
+						{{- if lt -1 (determineLength $value)}}
+							{{- if lt 0 (determineLength $value)}}
+								{{- range $index, $subvalue := $value}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$index}}", "{{$subvalue}}"),
+								{{- end}}
+							{{- else}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "0"),
 							{{- end}}
 						{{- else}}
 					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
@@ -63,9 +67,13 @@ func TestAccDataSource{{.resourceClassName}}(t *testing.T) {
 					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
 					{{- end}}
 					{{- range $key, $value := .all}}
-						{{- if lt 0 (determineLength $value)}}
-							{{- range $index, $subvalue := $value}}
+						{{- if lt -1 (determineLength $value)}}
+							{{- if lt 0 (determineLength $value)}}
+								{{- range $index, $subvalue := $value}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$index}}", "{{$subvalue}}"),
+								{{- end}}
+							{{- else}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "0"),
 							{{- end}}
 						{{- else}}
 					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),

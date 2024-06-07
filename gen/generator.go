@@ -1112,9 +1112,10 @@ func (m *Model) SetClassProperties(classDetails interface{}) {
 			}
 
 			if propertyValue.(map[string]interface{})["validValues"] != nil {
+				removedValidValuesList := GetValidValuesToRemove(m.PkgName, propertyName, m.Definitions)
 				for _, details := range propertyValue.(map[string]interface{})["validValues"].([]interface{}) {
 					validValue := details.(map[string]interface{})["localName"].(string)
-					if validValue != "defaultValue" {
+					if validValue != "defaultValue" && !isInSlice(removedValidValuesList, validValue) {
 						property.ValidValues = append(property.ValidValues, validValue)
 					}
 				}
@@ -1629,11 +1630,42 @@ func GetDefaultValues(classPkgName, propertyName string, definitions Definitions
 TODO expend the cases if needed.
 Determine the input length depending on its type. Only useful in the test templates.
 If the input is a slice of interface{}, return its length.
-Else, return 0.
+Else, return -1.
 */
 func DetermineLength(input interface{}) int {
-	if sliceInput, ok := input.([]interface{}); ok {
-		return len(sliceInput)
+	if val, ok := input.([]interface{}); ok {
+		return len(val)
 	}
-	return 0
+	return -1
+}
+
+func isInSlice(slice []interface{}, element interface{}) bool {
+	if len(slice) == 0 {
+		return false
+	}
+	for _, v := range slice {
+		if v == element {
+			return true
+		}
+	}
+	return false
+}
+
+func GetValidValuesToRemove(classPkgName, propertyName string, definitions Definitions) []interface{} {
+	precedenceList := []string{classPkgName, "global"}
+	removedValidValuesSlice := make([]interface{}, 0)
+	for _, precedence := range precedenceList {
+		if classDetails, ok := definitions.Properties[precedence]; ok {
+			for key, value := range classDetails.(map[interface{}]interface{}) {
+				if key.(string) == "remove_valid_values" {
+					for k, v := range value.(map[interface{}]interface{}) {
+						if k.(string) == propertyName {
+							removedValidValuesSlice = append(removedValidValuesSlice, v.([]interface{})...)
+						}
+					}
+				}
+			}
+		}
+	}
+	return removedValidValuesSlice
 }

@@ -25,7 +25,7 @@ func TestAccResourceNetflowRecordPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "collect.0", "src-intf"),
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "match.0", "dst-ip"),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "match.#", "0"),
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "owner_tag", ""),
@@ -65,7 +65,7 @@ func TestAccResourceNetflowRecordPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "collect.0", "src-intf"),
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "match.0", "dst-ip"),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "match.#", "0"),
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "owner_tag", ""),
@@ -81,7 +81,7 @@ func TestAccResourceNetflowRecordPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "collect.0", "src-intf"),
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "match.0", "dst-ip"),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "match.#", "0"),
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "owner_tag", ""),
@@ -96,7 +96,7 @@ func TestAccResourceNetflowRecordPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "collect.0", "src-intf"),
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "match.0", "dst-ip"),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "match.#", "0"),
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "owner_tag", ""),
@@ -120,7 +120,7 @@ func TestAccResourceNetflowRecordPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "collect.0", "src-intf"),
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "match.0", "dst-ip"),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "match.#", "0"),
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "owner_tag", ""),
@@ -205,7 +205,7 @@ resource "aci_netflow_record_policy" "test" {
   annotation = "orchestrator:terraform"
   collect = ["src-intf"]
   description = ""
-  match = ["dst-ip"]
+  match = []
   name_alias = ""
   owner_key = ""
   owner_tag = ""

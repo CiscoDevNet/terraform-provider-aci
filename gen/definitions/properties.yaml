@@ -293,12 +293,15 @@ mplsNodeSidP:
 netflowRecordPol:
   default_values:
     parent_dn: "uni/infra"
+    match: ""
+  remove_valid_values:
+    match: 
+      - "unspecified"
   test_values:
     default:
+      match: []
       collect:
         - "src-intf"
-      match:
-        - "dst-ip"
     all:
       collect: 
         - "count-bytes"

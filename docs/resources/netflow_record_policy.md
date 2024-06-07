@@ -103,7 +103,7 @@ All examples for the Netflow Record Policy resource can be found in the [example
 * `description` (descr) - (string) The description of the Netflow Record Policy object.
 * `match` (match) - (list) Match parameters for the flow record.
   - Default: `unspecified`.
-  - Valid Values: `dst-ip`, `dst-ipv4`, `dst-ipv6`, `dst-mac`, `dst-port`, `ethertype`, `proto`, `src-ip`, `src-ipv4`, `src-ipv6`, `src-mac`, `src-port`, `tos`, `unspecified`, `vlan`.
+  - Valid Values: `dst-ip`, `dst-ipv4`, `dst-ipv6`, `dst-mac`, `dst-port`, `ethertype`, `proto`, `src-ip`, `src-ipv4`, `src-ipv6`, `src-mac`, `src-port`, `tos`, `vlan`.
 * `name_alias` (nameAlias) - (string) The name alias of the Netflow Record Policy object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
