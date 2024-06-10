@@ -72,7 +72,7 @@ func (d *FvRemoteIdDataSource) Schema(ctx context.Context, req datasource.Schema
 				Computed:            true,
 				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
 			},
-			"remote_ctx_pc_tag": schema.StringAttribute{
+			"remote_vrf_pc_tag": schema.StringAttribute{
 				Computed:            true,
 				MarkdownDescription: `Remote context's *pcTag*, mapping required for default route case.`,
 			},

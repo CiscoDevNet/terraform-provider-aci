@@ -8,7 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"

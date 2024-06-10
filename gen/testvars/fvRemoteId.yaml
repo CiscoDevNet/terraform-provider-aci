@@ -9,8 +9,8 @@ default:
   name_alias: ""
   owner_key: ""
   owner_tag: ""
-  remote_ctx_pc_tag: ""
-  remote_pc_tag: ""
+  remote_vrf_pc_tag: "0"
+  remote_pc_tag: "0"
   site_id: "0"
 
 datasource_non_existing:
@@ -29,8 +29,8 @@ all:
   name_alias: "name_alias"
   owner_key: "owner_key"
   owner_tag: "owner_tag"
-  remote_ctx_pc_tag: "remote_ctx_pc_tag"
-  remote_pc_tag: "remote_pc_tag"
+  remote_vrf_pc_tag: "0"
+  remote_pc_tag: "0"
   site_id: "0"
 
 children:
