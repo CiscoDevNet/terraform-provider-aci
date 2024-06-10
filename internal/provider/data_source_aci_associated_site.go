@@ -74,7 +74,7 @@ func (d *FvSiteAssociatedDataSource) Schema(ctx context.Context, req datasource.
 			},
 			"site_id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `Local Site ID.`,
+				MarkdownDescription: `A number between 0 and 1000 to identify the primary site being associated.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,

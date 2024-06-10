@@ -81,7 +81,7 @@ All examples for the Remote Site Id Mappings resource can be found in the [examp
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_associated_site](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/associated_site) ([fvSiteAssociated](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvSiteAssociated/overview))
-* `site_id` (siteId) - (string) Remote Site ID.
+* `site_id` (siteId) - (string) A number between 0 and 1000 to identify the remote site being associated with the primary site.
 
 ### Read-Only ###
 
