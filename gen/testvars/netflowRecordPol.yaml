@@ -4,10 +4,10 @@
 
 default:
   annotation: "orchestrator:terraform"
-  collect: 
+  collect_paramaters: 
     - "src-intf"
   description: ""
-  match: []
+  match_parameters: []
   name_alias: ""
   owner_key: ""
   owner_tag: ""
@@ -23,11 +23,11 @@ resource_required:
 
 all:
   annotation: "annotation"
-  collect: 
+  collect_paramaters: 
     - "count-bytes"
     - "src-intf"
   description: "description"
-  match: 
+  match_parameters: 
     - "dst-ip"
     - "src-ip"
   name_alias: "name_alias"

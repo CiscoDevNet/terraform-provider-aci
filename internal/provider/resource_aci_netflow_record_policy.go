@@ -47,9 +47,9 @@ type NetflowRecordPolResourceModel struct {
 	Id            types.String `tfsdk:"id"`
 	ParentDn      types.String `tfsdk:"parent_dn"`
 	Annotation    types.String `tfsdk:"annotation"`
-	Collect       types.Set    `tfsdk:"collect"`
+	Collect       types.Set    `tfsdk:"collect_paramaters"`
 	Descr         types.String `tfsdk:"description"`
-	Match         types.Set    `tfsdk:"match"`
+	Match         types.Set    `tfsdk:"match_parameters"`
 	Name          types.String `tfsdk:"name"`
 	NameAlias     types.String `tfsdk:"name_alias"`
 	OwnerKey      types.String `tfsdk:"owner_key"`
@@ -113,8 +113,8 @@ func (r *NetflowRecordPolResource) Schema(ctx context.Context, req resource.Sche
 				Default:             stringdefault.StaticString(globalAnnotation),
 				MarkdownDescription: `The annotation of the Netflow Record Policy object.`,
 			},
-			"collect": schema.SetAttribute{
-				MarkdownDescription: `Collect parameters for the flow record.`,
+			"collect_paramaters": schema.SetAttribute{
+				MarkdownDescription: `Collect paramaters of the Netflow Record Policy object.`,
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
@@ -136,8 +136,8 @@ func (r *NetflowRecordPolResource) Schema(ctx context.Context, req resource.Sche
 				},
 				MarkdownDescription: `The description of the Netflow Record Policy object.`,
 			},
-			"match": schema.SetAttribute{
-				MarkdownDescription: `Match parameters for the flow record.`,
+			"match_parameters": schema.SetAttribute{
+				MarkdownDescription: `Match parameters of the Netflow Record Policy object.`,
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{

@@ -54,18 +54,18 @@ func (d *NetflowRecordPolDataSource) Schema(ctx context.Context, req datasource.
 				Computed:            true,
 				MarkdownDescription: `The annotation of the Netflow Record Policy object.`,
 			},
-			"collect": schema.SetAttribute{
+			"collect_paramaters": schema.SetAttribute{
 				Computed:            true,
-				MarkdownDescription: `Collect parameters for the flow record.`,
+				MarkdownDescription: `Collect paramaters of the Netflow Record Policy object.`,
 				ElementType:         types.StringType,
 			},
 			"description": schema.StringAttribute{
 				Computed:            true,
 				MarkdownDescription: `The description of the Netflow Record Policy object.`,
 			},
-			"match": schema.SetAttribute{
+			"match_parameters": schema.SetAttribute{
 				Computed:            true,
-				MarkdownDescription: `Match parameters for the flow record.`,
+				MarkdownDescription: `Match parameters of the Netflow Record Policy object.`,
 				ElementType:         types.StringType,
 			},
 			"name": schema.StringAttribute{

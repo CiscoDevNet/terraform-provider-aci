@@ -291,22 +291,27 @@ mplsNodeSidP:
       parent_dn: "aci_logical_node_to_fabric_node.test.id"
 
 netflowRecordPol:
+  overwrites:
+    match: "match_parameters"
+    collect: "collect_paramaters"
+  documentation:
+    match: "Match parameters of the %s object."
+    collect: "Collect paramaters of the %s object."
   default_values:
     parent_dn: "uni/infra"
-    match: ""
   remove_valid_values:
     match: 
       - "unspecified"
   test_values:
     default:
-      match: []
-      collect:
+      match_parameters: []
+      collect_paramaters:
         - "src-intf"
     all:
-      collect: 
+      collect_paramaters: 
         - "count-bytes"
         - "src-intf"
-      match: 
+      match_parameters: 
         - "dst-ip"
         - "src-ip"
     resource_required:
