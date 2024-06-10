@@ -20,6 +20,7 @@ Manages ACI Associated Site
 
 * Class: [fvSiteAssociated](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvSiteAssociated/overview)
 
+* Supported in ACI versions: 3.0(1k) and later.
 
 * Distinguished Name Formats:
   - `uni/tn-{name}/BD-{name}/stAsc`
@@ -117,7 +118,7 @@ All examples for the Associated Site resource can be found in the [examples](htt
   - The distinquised name (DN) of classes below can be used but currently there is no available resource for it:
     - [vnsEpgDefXlate](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vnsEpgDefXlate/overview)
 
-* `site_id` (siteId) - (string) Local Site ID.
+* `site_id` (siteId) - (string) A number between 0 and 1000 to identify the primary site being associated.
 
 ### Read-Only ###
 

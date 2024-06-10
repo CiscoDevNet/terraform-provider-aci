@@ -18,6 +18,7 @@ Data source for Associated Site
 
 * Class: [fvSiteAssociated](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvSiteAssociated/overview)
 
+* Supported in ACI versions: 3.0(1k) and later.
 
 * Distinguished Name Formats:
   - `uni/tn-{name}/BD-{name}/stAsc`
@@ -66,7 +67,7 @@ data "aci_associated_site" "example_bridge_domain" {
 * `name_alias` (nameAlias) - (string) The name alias of the Associated Site object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
-* `site_id` (siteId) - (string) Local Site ID.
+* `site_id` (siteId) - (string) A number between 0 and 1000 to identify the primary site being associated.
 
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
   * `key` (key) - (string) The key used to uniquely identify this configuration object.

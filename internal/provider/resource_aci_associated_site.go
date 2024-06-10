@@ -8,6 +8,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
@@ -146,7 +147,7 @@ func (r *FvSiteAssociatedResource) Schema(ctx context.Context, req resource.Sche
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
-				MarkdownDescription: `Local Site ID.`,
+				MarkdownDescription: `A number between 0 and 1000 to identify the primary site being associated.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,

@@ -179,7 +179,7 @@ func (r *FvRemoteIdResource) Schema(ctx context.Context, req resource.SchemaRequ
 					stringplanmodifier.UseStateForUnknown(),
 					stringplanmodifier.RequiresReplace(),
 				},
-				MarkdownDescription: `Remote Site ID.`,
+				MarkdownDescription: `A number between 0 and 1000 to identify the remote site being associated with the primary site.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,
