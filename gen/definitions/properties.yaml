@@ -262,13 +262,18 @@ fvSiteAssociated:
 fvRemoteId:
   overwrites:
     siteId: "site_id"
+    remote_ctx_pc_tag: "remote_vrf_pc_tag"
   documentation:
     siteId: "A number between 0 and 1000 to identify the remote site being associated with the primary site"
   test_values:
     all:
-       site_id: "0" 
+      site_id: "0" 
+      remote_vrf_pc_tag: "0"
+      remote_pc_tag: "0"
     default:
       site_id: "0"
+      remote_vrf_pc_tag: "0"
+      remote_pc_tag: "0"
     resource_required:
       site_id: "0"
   resource_required:

@@ -51,7 +51,7 @@ type FvRemoteIdResourceModel struct {
 	NameAlias      types.String `tfsdk:"name_alias"`
 	OwnerKey       types.String `tfsdk:"owner_key"`
 	OwnerTag       types.String `tfsdk:"owner_tag"`
-	RemoteCtxPcTag types.String `tfsdk:"remote_ctx_pc_tag"`
+	RemoteCtxPcTag types.String `tfsdk:"remote_vrf_pc_tag"`
 	RemotePcTag    types.String `tfsdk:"remote_pc_tag"`
 	SiteId         types.String `tfsdk:"site_id"`
 	TagAnnotation  types.Set    `tfsdk:"annotations"`
@@ -151,7 +151,7 @@ func (r *FvRemoteIdResource) Schema(ctx context.Context, req resource.SchemaRequ
 				},
 				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
 			},
-			"remote_ctx_pc_tag": schema.StringAttribute{
+			"remote_vrf_pc_tag": schema.StringAttribute{
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{

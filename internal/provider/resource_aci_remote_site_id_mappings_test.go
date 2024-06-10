@@ -27,8 +27,8 @@ func TestAccResourceFvRemoteIdWithFvSiteAssociated(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "remote_ctx_pc_tag", ""),
-					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "remote_pc_tag", ""),
+					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "remote_pc_tag", "0"),
+					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "remote_vrf_pc_tag", "0"),
 					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "site_id", "0"),
 				),
 			},
@@ -43,8 +43,8 @@ func TestAccResourceFvRemoteIdWithFvSiteAssociated(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "name_alias", "name_alias"),
 					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "owner_key", "owner_key"),
 					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "owner_tag", "owner_tag"),
-					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "remote_ctx_pc_tag", "remote_ctx_pc_tag"),
-					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "remote_pc_tag", "remote_pc_tag"),
+					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "remote_pc_tag", "0"),
+					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "remote_vrf_pc_tag", "0"),
 					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "site_id", "0"),
 				),
 			},
@@ -68,8 +68,8 @@ func TestAccResourceFvRemoteIdWithFvSiteAssociated(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "remote_ctx_pc_tag", ""),
-					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "remote_pc_tag", ""),
+					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "remote_pc_tag", "0"),
+					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "remote_vrf_pc_tag", "0"),
 				),
 			},
 			// Import testing
@@ -85,8 +85,8 @@ func TestAccResourceFvRemoteIdWithFvSiteAssociated(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "remote_ctx_pc_tag", ""),
-					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "remote_pc_tag", ""),
+					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "remote_pc_tag", "0"),
+					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "remote_vrf_pc_tag", "0"),
 				),
 			},
 			// Update with children
@@ -101,8 +101,8 @@ func TestAccResourceFvRemoteIdWithFvSiteAssociated(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "remote_ctx_pc_tag", ""),
-					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "remote_pc_tag", ""),
+					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "remote_pc_tag", "0"),
+					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "remote_vrf_pc_tag", "0"),
 					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "annotations.1.key", "key_1"),
@@ -126,8 +126,8 @@ func TestAccResourceFvRemoteIdWithFvSiteAssociated(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "remote_ctx_pc_tag", ""),
-					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "remote_pc_tag", ""),
+					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "remote_pc_tag", "0"),
+					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "remote_vrf_pc_tag", "0"),
 					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "annotations.1.key", "key_1"),
@@ -197,8 +197,8 @@ resource "aci_remote_site_id_mappings" "test" {
   name_alias = "name_alias"
   owner_key = "owner_key"
   owner_tag = "owner_tag"
-  remote_ctx_pc_tag = "remote_ctx_pc_tag"
-  remote_pc_tag = "remote_pc_tag"
+  remote_pc_tag = "0"
+  remote_vrf_pc_tag = "0"
   site_id = "0"
 }
 `
@@ -212,8 +212,8 @@ resource "aci_remote_site_id_mappings" "test" {
   name_alias = ""
   owner_key = ""
   owner_tag = ""
-  remote_ctx_pc_tag = ""
-  remote_pc_tag = ""
+  remote_pc_tag = "0"
+  remote_vrf_pc_tag = "0"
   site_id = "0"
 }
 `

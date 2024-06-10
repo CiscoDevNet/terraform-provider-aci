@@ -54,7 +54,7 @@ data "aci_remote_site_id_mappings" "example_associated_site" {
 * `name_alias` (nameAlias) - (string) The name alias of the Remote Site Id Mappings object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
-* `remote_ctx_pc_tag` (remoteCtxPcTag) - (string) Remote context's *pcTag*, mapping required for default route case.
+* `remote_vrf_pc_tag` (remoteCtxPcTag) - (string) Remote context's *pcTag*, mapping required for default route case.
 * `remote_pc_tag` (remotePcTag) - (string) Remote Class ID.
 
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
