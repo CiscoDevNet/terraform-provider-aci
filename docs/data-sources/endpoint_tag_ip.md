@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_endpoint_tag_ip"
 sidebar_current: "docs-aci-data-source-aci_endpoint_tag_ip"
 description: |-
-  Data source for Endpoint Tag Ip
+  Data source for Endpoint Tag IP
 ---
 
 # aci_endpoint_tag_ip #
 
-Data source for Endpoint Tag Ip
+Data source for Endpoint Tag IP
 
 ## API Information ##
 
@@ -44,16 +44,16 @@ data "aci_endpoint_tag_ip" "example_tenant" {
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
-* `vrf_name` (ctxName) - (string) The VRF name of the Endpoint Tag Ip object.
-* `ip` (ip) - (string) The IP address of the Endpoint Tag Ip object.
+* `vrf_name` (ctxName) - (string) The VRF name of the Endpoint Tag IP object.
+* `ip` (ip) - (string) The IP address of the Endpoint Tag IP object.
 
 ### Read-Only ###
 
-* `id` - (string) The distinguished name (DN) of the Endpoint Tag Ip object.
-* `annotation` (annotation) - (string) The annotation of the Endpoint Tag Ip object.
-* `id_attribute` (id) - (string) The identifier of the Endpoint Tag Ip object.
-* `name` (name) - (string) The name of the Endpoint Tag Ip object.
-* `name_alias` (nameAlias) - (string) The name alias of the Endpoint Tag Ip object.
+* `id` - (string) The distinguished name (DN) of the Endpoint Tag IP object.
+* `annotation` (annotation) - (string) The annotation of the Endpoint Tag IP object.
+* `id_attribute` (id) - (string) The identifier of the Endpoint Tag IP object.
+* `name` (name) - (string) The name of the Endpoint Tag IP object.
+* `name_alias` (nameAlias) - (string) The name alias of the Endpoint Tag IP object.
 
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
   * `key` (key) - (string) The key used to uniquely identify this configuration object.

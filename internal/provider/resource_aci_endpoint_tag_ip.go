@@ -85,7 +85,7 @@ func (r *FvEpIpTagResource) Schema(ctx context.Context, req resource.SchemaReque
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Endpoint Tag Ip object.",
+				MarkdownDescription: "The distinguished name (DN) of the Endpoint Tag IP object.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
@@ -105,7 +105,7 @@ func (r *FvEpIpTagResource) Schema(ctx context.Context, req resource.SchemaReque
 					stringplanmodifier.UseStateForUnknown(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
-				MarkdownDescription: `The annotation of the Endpoint Tag Ip object.`,
+				MarkdownDescription: `The annotation of the Endpoint Tag IP object.`,
 			},
 			"vrf_name": schema.StringAttribute{
 				Required: true,
@@ -113,7 +113,7 @@ func (r *FvEpIpTagResource) Schema(ctx context.Context, req resource.SchemaReque
 					stringplanmodifier.UseStateForUnknown(),
 					stringplanmodifier.RequiresReplace(),
 				},
-				MarkdownDescription: `The VRF name of the Endpoint Tag Ip object.`,
+				MarkdownDescription: `The VRF name of the Endpoint Tag IP object.`,
 			},
 			"id_attribute": schema.StringAttribute{
 				Optional: true,
@@ -121,7 +121,7 @@ func (r *FvEpIpTagResource) Schema(ctx context.Context, req resource.SchemaReque
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
-				MarkdownDescription: `The identifier of the Endpoint Tag Ip object.`,
+				MarkdownDescription: `The identifier of the Endpoint Tag IP object.`,
 			},
 			"ip": schema.StringAttribute{
 				Required: true,
@@ -129,7 +129,7 @@ func (r *FvEpIpTagResource) Schema(ctx context.Context, req resource.SchemaReque
 					stringplanmodifier.UseStateForUnknown(),
 					stringplanmodifier.RequiresReplace(),
 				},
-				MarkdownDescription: `The IP address of the Endpoint Tag Ip object.`,
+				MarkdownDescription: `The IP address of the Endpoint Tag IP object.`,
 			},
 			"name": schema.StringAttribute{
 				Optional: true,
@@ -137,7 +137,7 @@ func (r *FvEpIpTagResource) Schema(ctx context.Context, req resource.SchemaReque
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
-				MarkdownDescription: `The name of the Endpoint Tag Ip object.`,
+				MarkdownDescription: `The name of the Endpoint Tag IP object.`,
 			},
 			"name_alias": schema.StringAttribute{
 				Optional: true,
@@ -145,7 +145,7 @@ func (r *FvEpIpTagResource) Schema(ctx context.Context, req resource.SchemaReque
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
-				MarkdownDescription: `The name alias of the Endpoint Tag Ip object.`,
+				MarkdownDescription: `The name alias of the Endpoint Tag IP object.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,

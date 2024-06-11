@@ -43,10 +43,9 @@ data "aci_vrf_fallback_route_group" "test" {
 }
 `
 
-const testConfigFvFBRGroupNotExistingFvCtx = testConfigFvFBRGroupMinDependencyWithFvCtx + `
+const testConfigFvFBRGroupNotExistingFvCtx = testConfigFvCtxMinDependencyWithFvTenant + `
 data "aci_vrf_fallback_route_group" "test_non_existing" {
   parent_dn = aci_vrf.test.id
   name = "fallback_route_group_non_existing"
-  depends_on = [aci_vrf_fallback_route_group.test]
 }
 `

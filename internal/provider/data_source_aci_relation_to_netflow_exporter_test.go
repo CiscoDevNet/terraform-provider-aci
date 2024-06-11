@@ -41,10 +41,9 @@ data "aci_relation_to_netflow_exporter" "test" {
 }
 `
 
-const testConfigNetflowRsMonitorToExporterNotExistingNetflowMonitorPol = testConfigNetflowRsMonitorToExporterMinDependencyWithNetflowMonitorPol + `
+const testConfigNetflowRsMonitorToExporterNotExistingNetflowMonitorPol = testConfigNetflowMonitorPolMinDependencyWithFvTenant + `
 data "aci_relation_to_netflow_exporter" "test_non_existing" {
   parent_dn = aci_netflow_monitor_policy.test.id
   netflow_exporter_policy_name = "non_existing_tn_netflow_exporter_pol_name"
-  depends_on = [aci_relation_to_netflow_exporter.test]
 }
 `
