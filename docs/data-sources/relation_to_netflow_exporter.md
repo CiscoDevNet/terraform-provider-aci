@@ -18,6 +18,7 @@ Data source for Relation To Netflow Exporter
 
 * Class: [netflowRsMonitorToExporter](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRsMonitorToExporter/overview)
 
+* Supported in ACI versions: 2.2(1k) and later.
 
 * Distinguished Name Formats:
   - `uni/infra/monitorpol-{name}/rsmonitorToExporter-{tnNetflowExporterPolName}`

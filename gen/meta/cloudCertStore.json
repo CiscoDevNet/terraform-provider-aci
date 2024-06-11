@@ -61,9 +61,11 @@
             "stats": {
 
             },
+            "versions": "4.1(1i)-",
             "isAbstract": false,
             "isConfigurable": true,
             "isContextRoot": false,
+            "isNxosConverged": false,
             "isDeprecated": false,
             "isHidden": false,
             "isEncrypted": false,
@@ -94,6 +96,7 @@
             "label": "Certificate Store",
             "properties": {
                 "annotation": {
+                    "versions": "4.1(1i)-",
                     "comment": [
                          "User annotation. Suggested format orchestrator:value"
                     ],
@@ -124,10 +127,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "childAction": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "Delete or ignore. For internal use only."
                     ],
@@ -153,25 +158,27 @@
                              "platformFlavors": [
 
                              ],
-                             "label": "deleteAll "},
+                             "label": "Delete All "},
                          { "value": "8192", "localName": "deleteNonPresent",
                              "platformFlavors": [
 
                              ],
-                             "label": "deleteNonPresent "},
+                             "label": "Delete Non Present "},
                          { "value": "4096", "localName": "ignore",
                              "platformFlavors": [
 
                              ],
-                             "label": "ignore "}
+                             "label": "Ignore "}
                     ],
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "dn": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "A tag or metadata is a non-hierarchical keyword or term assigned to the fabric module."
                     ],
@@ -195,10 +202,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "extMngdBy": {
+                    "versions": "4.1(1i)-",
                     "comment": [
                          "Indicates which orchestrator is managing this MO"
                     ],
@@ -229,21 +238,23 @@
                              "platformFlavors": [
 
                              ],
-                             "label": "msc "},
+                             "label": "MSC "},
                          { "value": "0", "localName": "undefined",
                              "platformFlavors": [
 
                              ],
-                             "label": "undefined "}
+                             "label": "Undefined "}
                     ],
                     "default": "undefined",
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "lcOwn": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "A value that indicates how this object was created. For internal use only."
                     ],
@@ -294,16 +305,18 @@
                              "platformFlavors": [
 
                              ],
-                             "label": "ResolvedOnBehalf "}
+                             "label": "Resolved On Behalf "}
                     ],
                     "default": "local",
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "modTs": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "The time when this object was last modified."
                     ],
@@ -334,23 +347,25 @@
                              "platformFlavors": [
 
                              ],
-                             "label": "never "}
+                             "label": "Never "}
                     ],
                     "default": "never",
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "monPolDn": {
+                    "versions": "4.1(1i)-",
                     "comment": [
                          "The monitoring policy attached to this observable object."
                     ],
                     "isConfigurable": false,
                     "propGlobalId": "52687",
                     "propLocalId": "228",
-                    "label": "Monitoring policy",
+                    "label": "Monitoring Policy",
                     "baseType": "reference:BinRef",
                     "modelType": "reference:BinRef",
                     "needsPropDelimiters": true,
@@ -367,10 +382,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "name": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "The name of the object."
                     ],
@@ -402,10 +419,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "nameAlias": {
+                    "versions": "2.2(1k)-",
                     "isConfigurable": true,
                     "propGlobalId": "28417",
                     "propLocalId": "6719",
@@ -433,10 +452,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "rn": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "Identifies an object from its siblings within the context of its parent object. The distinguished name contains a sequence of relative names."
                     ],
@@ -460,10 +481,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "status": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "The upgrade status. This property is for internal use only."
                     ],
@@ -492,7 +515,7 @@
                              "comment": [
                                  "In a setter method: specifies that an object should be created. An error is returned if the object already exists.  \nIn the return value of a setter method: indicates that an object has been created.  \n"
                              ],
-                             "label": "created "},
+                             "label": "Created "},
                          { "value": "8", "localName": "deleted",
                              "platformFlavors": [
 
@@ -500,7 +523,7 @@
                              "comment": [
                                  "In a setter method: specifies that an object should be deleted.  \nIn the return value of a setter method: indicates that an object has been deleted.\n"
                              ],
-                             "label": "deleted "},
+                             "label": "Deleted "},
                          { "value": "4", "localName": "modified",
                              "platformFlavors": [
 
@@ -508,15 +531,17 @@
                              "comment": [
                                  "In a setter method: specifies that an object should be modified  \nIn the return value of a setter method: indicates that an object has been modified.\n"
                              ],
-                             "label": "modified "}
+                             "label": "Modified "}
                     ],
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "uid": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "A unique identifier for this object."
                     ],
@@ -540,10 +565,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "userdom": {
+                    "versions": "5.0(1k)-",
                     "isConfigurable": true,
                     "propGlobalId": "60657",
                     "propLocalId": "13244",
@@ -579,6 +606,7 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 }

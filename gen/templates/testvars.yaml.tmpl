@@ -82,8 +82,9 @@ parents:
       {{- if $test -}}
     test_type: {{$test}}
       {{- else -}}
-    test_type: {{$testType}}
+    test_type: both
       {{- end}}
+    test_applicable_from_version: {{$.TestApplicableFromVersion}}
     {{- end}}
 
   {{- $index := 0}}{{- $key := .TargetResourceClassName}}
@@ -125,6 +126,7 @@ parents:
     {{- else }}
     test_type: both
     {{- end }}
+    test_applicable_from_version: {{$topContext.TestApplicableFromVersion}}
 {{- end }}
 {{- end }}
 {{- if and (not .ContainedBy) (not .MultiParentFormats) -}}
@@ -134,6 +136,7 @@ test_type: {{ $testType }}
   {{- else }}
 test_type: both
   {{- end }}
+test_applicable_from_version: {{.TestApplicableFromVersion}}
 {{- end }}
 {{ $exists_exclude := false -}}
 {{- range .Properties }}

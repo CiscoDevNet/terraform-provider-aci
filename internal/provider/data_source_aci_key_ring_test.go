@@ -14,7 +14,7 @@ import (
 func TestAccDataSourcePkiKeyRingWithDefault(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t, "both") },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "6.0(2h)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -53,7 +53,7 @@ func TestAccDataSourcePkiKeyRingWithDefault(t *testing.T) {
 func TestAccDataSourcePkiKeyRingWithFvTenant(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t, "cloud") },
+		PreCheck:                 func() { testAccPreCheck(t, "cloud", "6.0(2h)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{

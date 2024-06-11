@@ -13,7 +13,7 @@ import (
 func TestAccResourcePkiKeyRingWithDefault(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t, "both") },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "6.0(2h)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -223,7 +223,7 @@ func TestAccResourcePkiKeyRingWithDefault(t *testing.T) {
 func TestAccResourcePkiKeyRingWithFvTenant(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t, "cloud") },
+		PreCheck:                 func() { testAccPreCheck(t, "cloud", "6.0(2h)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values

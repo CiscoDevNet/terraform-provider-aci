@@ -13,7 +13,7 @@ import (
 func TestAccResourceTagAnnotationWithFvTenant(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t, "apic") },
+		PreCheck:                 func() { testAccPreCheck(t, "apic", "3.2(1l)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -71,7 +71,7 @@ func TestAccResourceTagAnnotationWithFvTenant(t *testing.T) {
 func TestAccResourceTagAnnotationWithFvAEPg(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t, "apic") },
+		PreCheck:                 func() { testAccPreCheck(t, "apic", "3.2(1l)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values

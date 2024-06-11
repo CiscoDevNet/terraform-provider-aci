@@ -62,11 +62,13 @@ parents:
     parent_dn: ""
     class_in_parent: false
     test_type: both
+    test_applicable_from_version: 6.0(2h)
   - class_name: "fvTenant"
     parent_dependency: "pkiTP"
     parent_dn: "aci_tenant.test.id"
     class_in_parent: false
     test_type: cloud
+    test_applicable_from_version: 6.0(2h)
 
 exclude_attributes:
   - "key"

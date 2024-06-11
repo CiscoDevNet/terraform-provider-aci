@@ -660,6 +660,7 @@ func main() {
 			model.TestType = classifyTests(model.PkgName, predecessorPaths, testCloudApic, testApic)
 		}
 		addGetTestClassificationFunc(model.TestType)
+		setTestApplicableFromVersion(&model)
 		// Only render resources and datasources when the class has a unique identifier or is marked as include in the classes definitions YAML file
 		if (len(model.IdentifiedBy) > 0 && !model.Exclude) || model.Include {
 			// All classmodels have been read, thus now the model, child and relational resources names can be set
@@ -806,6 +807,63 @@ func calculatePredecessors(predecessor []string, classPkgName string, classModel
 	return results
 }
 
+type Version struct {
+	Major int
+	Minor int
+	Patch int
+	Tag   int
+}
+
+func parseVersion(rawVersion string) Version {
+	versionRegex := regexp.MustCompile(`(\d+)\.(\d+)\((\d+)([a-z])\)`)
+	matches := versionRegex.FindStringSubmatch(rawVersion)
+	if matches == nil {
+		panic("The files included in the metadata do not contain the version of APIC where the properties were first introduced. Please ensure that only the correct metadata files are included.")
+	}
+	major, _ := strconv.Atoi(matches[1])
+	minor, _ := strconv.Atoi(matches[2])
+	patch, _ := strconv.Atoi(matches[3])
+	tag := int(matches[4][0])
+
+	return Version{Major: major, Minor: minor, Patch: patch, Tag: tag}
+
+}
+
+func isVersionGreater(v1, v2 Version) bool {
+	if v1.Major != v2.Major {
+		return v1.Major > v2.Major
+	}
+	if v1.Minor != v2.Minor {
+		return v1.Minor > v2.Minor
+	}
+	if v1.Patch != v2.Patch {
+		return v1.Patch > v2.Patch
+	}
+	return v1.Tag > v2.Tag
+}
+
+func setTestApplicableFromVersion(model *Model) {
+	var latestVersion Version
+
+	var checkLatestVersion func(*Model)
+	checkLatestVersion = func(m *Model) {
+		for _, property := range m.Properties {
+			version := parseVersion(property.RawVersion)
+
+			if isVersionGreater(version, latestVersion) {
+				latestVersion = version
+				m.TestApplicableFromVersion = property.RawVersion
+			}
+		}
+
+		for _, childModel := range m.Children {
+			checkLatestVersion(&childModel)
+		}
+	}
+
+	checkLatestVersion(model)
+}
+
 // A Model that represents the provider
 type ProviderModel struct {
 	Example string
@@ -844,6 +902,7 @@ type Model struct {
 	TargetResourceClassName     string
 	TargetResourceName          string
 	TargetDn                    string
+	TestApplicableFromVersion   string
 	ChildClasses                []string
 	ContainedBy                 []string
 	Contains                    []string
@@ -904,6 +963,7 @@ type Property struct {
 	DefaultValue       string
 	Versions           string
 	NamedPropertyClass string
+	RawVersion         string
 	ValidValues        []string
 	IdentifiedBy       []interface{}
 	Validators         []interface{}
@@ -1378,6 +1438,10 @@ func (m *Model) SetClassProperties(classDetails interface{}) {
 			// if propertyValue.(map[string]interface{})["versions"] != nil {
 			// 	property.Versions = formatVersion(propertyValue.(map[string]interface{})["versions"].(string))
 			// }
+
+			if propertyValue.(map[string]interface{})["versions"] != nil {
+				property.RawVersion = strings.TrimSuffix(propertyValue.(map[string]interface{})["versions"].(string), "-")
+			}
 
 			properties[propertyName] = property
 

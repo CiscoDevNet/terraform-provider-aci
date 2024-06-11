@@ -49,3 +49,4 @@ children:
       value: "value_2"
       
 test_type: both
+test_applicable_from_version: 4.2(1i)

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 	"sync"
@@ -87,14 +88,23 @@ func getACIClientTest(t *testing.T) *client.Client {
 	return aciClientTest
 }
 
-func testAccPreCheck(t *testing.T, testType string) {
+func testAccPreCheck(t *testing.T, testType string, TestApplicableFromVersion string) {
 	infoCloud, _ := getACIClientTest(t).GetViaURL("/api/node/class/cloudProvP.json")
 	environment, _ := extractEnvironmentValue(infoCloud)
 	if environment == "public-cloud" && testType == "apic" {
-		t.Skip("[WARNING] Skipping the test because the test cannot be run on a cloud APIC")
+		t.Skip("[WARNING] Test skipped because it is not supported on a cloud APIC.")
 	} else if environment != "public-cloud" && testType == "cloud" {
-		t.Skip("[WARNING] Skipping the test because the test cannot be run on an on-prem APIC")
+		t.Skip("[WARNING] Test skipped because it is not supported on an on-prem APIC")
 	}
+
+	infoController, _ := getACIClientTest(t).GetViaURL("/api/node/class/firmwareCtrlrRunning.json")
+	apicVersion := extractControllerVersion(infoController)
+	if apicVersion != TestApplicableFromVersion {
+		if isVersionGreater(parseVersion(TestApplicableFromVersion), parseVersion(apicVersion)) {
+			t.Skip("[WARNING] Test skipped because it contains a property that is not supported on APIC version:", apicVersion)
+		}
+	}
+
 }
 
 func extractEnvironmentValue(requestData *container.Container) (string, error) {
@@ -111,6 +121,54 @@ func extractEnvironmentValue(requestData *container.Container) (string, error) {
 	}
 	return "", fmt.Errorf("no cloudProvP instances found in the response")
 
+}
+
+func extractControllerVersion(requestData *container.Container) string {
+	classReadInfo := requestData.Search("imdata").Search("firmwareCtrlrRunning").Data().([]interface{})
+	if len(classReadInfo) == 1 {
+		attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
+		for attributeName, attributeValue := range attributes {
+			if attributeName == "version" {
+				return attributeValue.(string)
+			}
+		}
+	}
+	return ""
+}
+
+type Version struct {
+	Major int
+	Minor int
+	Patch int
+	Tag   int
+}
+
+func parseVersion(rawVersion string) Version {
+	versionRegex := regexp.MustCompile(`(\d+)\.(\d+)\((\d+)([a-z])\)`)
+	matches := versionRegex.FindStringSubmatch(rawVersion)
+	if matches == nil {
+		panic("The files included in the metadata do not contain the version of APIC where the properties were first introduced. Please ensure that only the correct metadata files are included.")
+	}
+	major, _ := strconv.Atoi(matches[1])
+	minor, _ := strconv.Atoi(matches[2])
+	patch, _ := strconv.Atoi(matches[3])
+	tag := int(matches[4][0])
+
+	return Version{Major: major, Minor: minor, Patch: patch, Tag: tag}
+
+}
+
+func isVersionGreater(v1, v2 Version) bool {
+	if v1.Major != v2.Major {
+		return v1.Major > v2.Major
+	}
+	if v1.Minor != v2.Minor {
+		return v1.Minor > v2.Minor
+	}
+	if v1.Patch != v2.Patch {
+		return v1.Patch > v2.Patch
+	}
+	return v1.Tag > v2.Tag
 }
 
 // waitForApicBeforeRefresh ensures the APIC is available by polling the API until it responds or times out before Terraform refresh is applied in the test.

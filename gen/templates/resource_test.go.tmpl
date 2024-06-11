@@ -22,7 +22,7 @@ import (
 func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-PreCheck: func() { testAccPreCheck(t, "{{.test_type}}") },
+PreCheck: func() { testAccPreCheck(t, "{{.test_type}}", "{{.test_applicable_from_version}}") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -368,8 +368,7 @@ PreCheck: func() { testAccPreCheck(t, "{{.test_type}}") },
 func TestAccResource{{.resourceClassName}}(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { 
-		testAccPreCheck(t, "{{.test_type}}") },
+		PreCheck:                 func() { testAccPreCheck(t, "{{.test_type}}", "{{.test_applicable_from_version}}") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values

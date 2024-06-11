@@ -14,7 +14,7 @@ import (
 func TestAccDataSourceMplsNodeSidPWithL3extLoopBackIfP(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t, "apic") },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "5.0(1k)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{

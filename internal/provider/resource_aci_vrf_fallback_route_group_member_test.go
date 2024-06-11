@@ -13,7 +13,7 @@ import (
 func TestAccResourceFvFBRMemberWithFvFBRGroup(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t, "both") },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(4d)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
