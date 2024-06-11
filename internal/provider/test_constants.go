@@ -102,3 +102,16 @@ resource "aci_l3out_loopback_interface_profile" "test" {
   addr           = "1.2.3.5"
 }
 `
+
+const testConfigFvCrtrnMin = testConfigFvAEPgMin + `
+resource "aci_epg_useg_criterion" "test" {
+  parent_dn = aci_application_epg.test.id
+}
+`
+
+const testConfigFvSCrtrnMin = testConfigFvCrtrnMin + `
+resource "aci_epg_useg_sub_criterion" "test" {
+  parent_dn = aci_epg_useg_criterion.test.id
+  name = "test_name"
+}
+`

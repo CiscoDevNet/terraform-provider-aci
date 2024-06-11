@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_endpoint_tag_mac"
 sidebar_current: "docs-aci-resource-aci_endpoint_tag_mac"
 description: |-
-  Manages ACI Endpoint Tag Mac
+  Manages ACI Endpoint Tag MAC
 ---
 
 # aci_endpoint_tag_mac #
 
-Manages ACI Endpoint Tag Mac
+Manages ACI Endpoint Tag MAC
 
 
 
@@ -30,7 +30,7 @@ Manages ACI Endpoint Tag Mac
 
 ## Example Usage ##
 
-The configuration snippet below creates a Endpoint Tag Mac with only required attributes.
+The configuration snippet below creates a Endpoint Tag MAC with only required attributes.
 
 ```hcl
 
@@ -41,7 +41,7 @@ resource "aci_endpoint_tag_mac" "example_tenant" {
 }
 
 ```
-The configuration snippet below shows all possible attributes of the Endpoint Tag Mac.
+The configuration snippet below shows all possible attributes of the Endpoint Tag MAC.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
@@ -71,7 +71,7 @@ resource "aci_endpoint_tag_mac" "full_example_tenant" {
 
 ```
 
-All examples for the Endpoint Tag Mac resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/resources/aci_endpoint_tag_mac) folder.
+All examples for the Endpoint Tag MAC resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/resources/aci_endpoint_tag_mac) folder.
 
 ## Schema ##
 
@@ -79,20 +79,20 @@ All examples for the Endpoint Tag Mac resource can be found in the [examples](ht
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
-* `bd_name` (bdName) - (string) The bridge domain name of the Endpoint Tag Mac object.
-* `mac` (mac) - (string) The MAC address of the Endpoint Tag Mac object.
+* `bd_name` (bdName) - (string) The bridge domain name of the Endpoint Tag MAC object.
+* `mac` (mac) - (string) The MAC address of the Endpoint Tag MAC object.
 
 ### Read-Only ###
 
-* `id` - (string) The distinguished name (DN) of the Endpoint Tag Mac object.
+* `id` - (string) The distinguished name (DN) of the Endpoint Tag MAC object.
 
 ### Optional ###
   
-* `annotation` (annotation) - (string) The annotation of the Endpoint Tag Mac object.
+* `annotation` (annotation) - (string) The annotation of the Endpoint Tag MAC object.
   - Default: `orchestrator:terraform`
-* `id_attribute` (id) - (string) The identifier of the Endpoint Tag Mac object.
-* `name` (name) - (string) The name of the Endpoint Tag Mac object.
-* `name_alias` (nameAlias) - (string) The name alias of the Endpoint Tag Mac object.
+* `id_attribute` (id) - (string) The identifier of the Endpoint Tag MAC object.
+* `name` (name) - (string) The name of the Endpoint Tag MAC object.
+* `name_alias` (nameAlias) - (string) The name alias of the Endpoint Tag MAC object.
 
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   
@@ -110,13 +110,13 @@ All examples for the Endpoint Tag Mac resource can be found in the [examples](ht
 
 ## Importing
 
-An existing Endpoint Tag Mac can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
+An existing Endpoint Tag MAC can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
 terraform import aci_endpoint_tag_mac.example_tenant uni/tn-{name}/eptags/epmactag-{mac}-[{bdName}]
 ```
 
-Starting in Terraform version 1.5, an existing Endpoint Tag Mac can be imported
+Starting in Terraform version 1.5, an existing Endpoint Tag MAC can be imported
 using [import blocks](https://developer.hashicorp.com/terraform/language/import) via the following configuration:
 
 ```

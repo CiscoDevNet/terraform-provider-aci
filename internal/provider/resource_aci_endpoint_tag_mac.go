@@ -110,7 +110,7 @@ func (r *FvEpMacTagResource) Schema(ctx context.Context, req resource.SchemaRequ
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Endpoint Tag Mac object.",
+				MarkdownDescription: "The distinguished name (DN) of the Endpoint Tag MAC object.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
@@ -130,7 +130,7 @@ func (r *FvEpMacTagResource) Schema(ctx context.Context, req resource.SchemaRequ
 					stringplanmodifier.UseStateForUnknown(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
-				MarkdownDescription: `The annotation of the Endpoint Tag Mac object.`,
+				MarkdownDescription: `The annotation of the Endpoint Tag MAC object.`,
 			},
 			"bd_name": schema.StringAttribute{
 				Required: true,
@@ -138,7 +138,7 @@ func (r *FvEpMacTagResource) Schema(ctx context.Context, req resource.SchemaRequ
 					stringplanmodifier.UseStateForUnknown(),
 					stringplanmodifier.RequiresReplace(),
 				},
-				MarkdownDescription: `The bridge domain name of the Endpoint Tag Mac object.`,
+				MarkdownDescription: `The bridge domain name of the Endpoint Tag MAC object.`,
 			},
 			"id_attribute": schema.StringAttribute{
 				Optional: true,
@@ -146,7 +146,7 @@ func (r *FvEpMacTagResource) Schema(ctx context.Context, req resource.SchemaRequ
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
-				MarkdownDescription: `The identifier of the Endpoint Tag Mac object.`,
+				MarkdownDescription: `The identifier of the Endpoint Tag MAC object.`,
 			},
 			"mac": schema.StringAttribute{
 				Required: true,
@@ -154,7 +154,7 @@ func (r *FvEpMacTagResource) Schema(ctx context.Context, req resource.SchemaRequ
 					stringplanmodifier.UseStateForUnknown(),
 					stringplanmodifier.RequiresReplace(),
 				},
-				MarkdownDescription: `The MAC address of the Endpoint Tag Mac object.`,
+				MarkdownDescription: `The MAC address of the Endpoint Tag MAC object.`,
 			},
 			"name": schema.StringAttribute{
 				Optional: true,
@@ -162,7 +162,7 @@ func (r *FvEpMacTagResource) Schema(ctx context.Context, req resource.SchemaRequ
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
-				MarkdownDescription: `The name of the Endpoint Tag Mac object.`,
+				MarkdownDescription: `The name of the Endpoint Tag MAC object.`,
 			},
 			"name_alias": schema.StringAttribute{
 				Optional: true,
@@ -170,7 +170,7 @@ func (r *FvEpMacTagResource) Schema(ctx context.Context, req resource.SchemaRequ
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
-				MarkdownDescription: `The name alias of the Endpoint Tag Mac object.`,
+				MarkdownDescription: `The name alias of the Endpoint Tag MAC object.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,

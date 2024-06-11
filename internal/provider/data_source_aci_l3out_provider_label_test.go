@@ -46,10 +46,9 @@ data "aci_l3out_provider_label" "test" {
 }
 `
 
-const testConfigL3extProvLblNotExistingL3extOut = testConfigL3extProvLblMinDependencyWithL3extOut + `
+const testConfigL3extProvLblNotExistingL3extOut = testConfigL3extOutMinDependencyWithFvTenantInfra + `
 data "aci_l3out_provider_label" "test_non_existing" {
   parent_dn = aci_l3_outside.test.id
   name = "prov_label_non_existing"
-  depends_on = [aci_l3out_provider_label.test]
 }
 `

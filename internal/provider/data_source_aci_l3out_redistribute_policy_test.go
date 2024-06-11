@@ -44,11 +44,10 @@ data "aci_l3out_redistribute_policy" "test" {
 }
 `
 
-const testConfigL3extRsRedistributePolNotExistingL3extOut = testConfigL3extRsRedistributePolMinDependencyWithL3extOut + `
+const testConfigL3extRsRedistributePolNotExistingL3extOut = testConfigL3extOutMinDependencyWithFvTenant + `
 data "aci_l3out_redistribute_policy" "test_non_existing" {
   parent_dn = aci_l3_outside.test.id
   route_control_profile_name = "non_existing_tn_rtctrl_profile_name"
   source = "static"
-  depends_on = [aci_l3out_redistribute_policy.test]
 }
 `

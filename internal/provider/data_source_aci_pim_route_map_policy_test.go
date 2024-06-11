@@ -45,10 +45,9 @@ data "aci_pim_route_map_policy" "test" {
 }
 `
 
-const testConfigPimRouteMapPolNotExistingFvTenant = testConfigPimRouteMapPolMinDependencyWithFvTenant + `
+const testConfigPimRouteMapPolNotExistingFvTenant = testConfigFvTenantMin + `
 data "aci_pim_route_map_policy" "test_non_existing" {
   parent_dn = aci_tenant.test.id
   name = "non_existing_name"
-  depends_on = [aci_pim_route_map_policy.test]
 }
 `

@@ -27,6 +27,12 @@ global:
   resource_name_doc_overwrite:
     Vrf: VRF
     Sid: "SR-MPLS Segment ID"
+    Epg: "EPG"
+    Useg: "uSeg"
+    Vm: "VM"
+    Dns: "DNS"
+    Mac: "MAC"
+    Ip: "IP"
   ignores:
     - "userdom"
 
@@ -317,7 +323,7 @@ netflowRecordPol:
   default_values:
     parent_dn: "uni/infra"
   remove_valid_values:
-    match: 
+    match:
       - "unspecified"
   test_values:
     default:
@@ -325,10 +331,10 @@ netflowRecordPol:
       collect_parameters:
         - "src-intf"
     all:
-      collect_parameters: 
+      collect_parameters:
         - "count-bytes"
         - "src-intf"
-      match_parameters: 
+      match_parameters:
         - "dst-ip"
         - "src-ip"
     resource_required:
@@ -454,3 +460,136 @@ fvRsSecInherited:
       relation_resource_name: "contract_master"
       properties:
         name: "epg_3"
+
+fvCrtrn:
+  overwrites:
+    prec: "precedence"
+  documentation:
+    match: "The Matching Rule Type of the %s object."
+    prec: "The precedence of the %s object."
+    scope: "The scope of the %s object."
+  test_values:
+    default:
+      match: "any"
+      precedence: "0"
+      scope: "scope-bd"
+    all:
+      match: "all"
+      precedence: "1"
+      name: "criterion"
+    resource_required:
+      name: "criterion"
+    datasource_required:
+      name: "criterion"
+    datasource_non_existing:
+      name: "criterion_non_existing"
+
+fvSCrtrn:
+  documentation:
+    match: "The Matching Rule Type of the %s object."
+  test_values:
+    default:
+      match: "any"
+    all:
+      match: "all"
+    resource_required:
+      name: "sub_criterion"
+    datasource_required:
+      name: "sub_criterion"
+    datasource_non_existing:
+      name: "sub_criterion_non_existing"
+
+fvVmAttr:
+  resource_required:
+    - value
+  overwrites:
+    labelName: "label_name"
+  documentation:
+    value: "The value of the %s object."
+    type: "The type of the %s object."
+    operator: "The operator of the %s object."
+    labelName: "The label name of the %s object."
+    category: "The category of the %s object."
+  test_values:
+    default:
+      type: "vm-name"
+      operator: "equals"
+      value: "default_value"
+    all:
+      type: "domain"
+      operator: "contains"
+      value: "all_value"
+      label_name: "label_name"
+      category: "all_category"
+    resource_required:
+      name: "vm_attribute"
+      value: "default_value"
+    datasource_required:
+      name: "vm_attribute"
+    datasource_non_existing:
+      name: "vm_attribute_non_existing"
+
+fvIdGroupAttr:
+  documentation:
+    selector: "The selector of the %s object. Represents the DN or expression to select an identity group."
+  test_values:
+    resource_required:
+      selector: "adepg/authsvr-common-sg1-ISE_1/grpcont/dom-cisco.com/grp-Eng"
+    datasource_required:
+      selector: "adepg/authsvr-common-sg1-ISE_1/grpcont/dom-cisco.com/grp-Eng"
+    datasource_non_existing:
+      selector: "adepg/authsvr-common-sg1-ISE_1/grpcont/dom-cisco.com/grp-Eng_non_existing"
+
+fvDnsAttr:
+  documentation:
+    filter: "The domain name filter of the %s object."
+  test_values:
+    resource_required:
+      name: "dns_attribute"
+      filter: "test_filter"
+    datasource_required:
+      name: "dns_attribute"
+    datasource_non_existing:
+      name: "dns_attribute_non_existing"
+
+fvMacAttr:
+  resource_required:
+    - mac
+  test_values:
+    default:
+      mac: "AA:BB:CC:DD:EE:FF"
+    all:
+      mac: "AA:BB:CC:BB:BB:EE"
+    resource_required:
+      name: "mac_attr"
+      mac: "AA:BB:CC:DD:EE:FF"
+    datasource_required:
+      name: "mac_attr"
+    datasource_non_existing:
+      name: "mac_attr_non_existing"
+
+fvIpAttr:
+  resource_required:
+    - ip
+  overwrites:
+    usefv_subnet: "use_fv_subnet"
+  documentation:
+    ip: "The device IP address of the %s object."
+    usefvSubnet: "The usefvSubnet flag of the %s object."
+  default_values:
+    usefvSubnet: "no"
+  test_values:
+    default:
+      use_fv_subnet: "no"
+      ip: "131.107.1.200"
+      name: "131"
+    all:
+      use_fv_subnet: "yes"
+      ip: "0.0.0.0"
+    resource_required:
+      name: "131"
+      ip: "131.107.1.200"
+    datasource_required:
+      name: "131"
+    datasource_non_existing:
+      name: "131_non_existing"
