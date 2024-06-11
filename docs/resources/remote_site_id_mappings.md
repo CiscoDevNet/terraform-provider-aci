@@ -22,7 +22,13 @@ Manages ACI Remote Site Id Mappings
 
 * Supported in ACI versions: 3.0(1k) and later.
 
-* Distinguished Name Format: `uni/tn-{name}/ctx-{name}/stAsc/site-{siteId}`
+* Distinguished Name Formats:
+  - `uni/tn-{name}/BD-{name}/stAsc/site-{siteId}`
+  - `uni/tn-{name}/ap-{name}/epg-{name}/stAsc/site-{siteId}`
+  - `uni/tn-{name}/ap-{name}/esg-{name}/stAsc/site-{siteId}`
+  - `uni/tn-{name}/ctx-{name}/stAsc/site-{siteId}`
+  - `uni/tn-{name}/mscGraphXlateCont/epgDefXlate-[{epgDefDn}]/stAsc/site-{siteId}`
+  - `uni/tn-{name}/out-{name}/instP-{name}/stAsc/site-{siteId}`
 
 ## GUI Information ##
 

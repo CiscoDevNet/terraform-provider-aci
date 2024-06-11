@@ -336,6 +336,11 @@ fvRemoteId:
   sub_category: "Multi-Site"
   dn_formats:
   - "uni/tn-{name}/ctx-{name}/stAsc/site-{siteId}"
+  - "uni/tn-{name}/ap-{name}/epg-{name}/stAsc/site-{siteId}"
+  - "uni/tn-{name}/BD-{name}/stAsc/site-{siteId}"
+  - "uni/tn-{name}/out-{name}/instP-{name}/stAsc/site-{siteId}"
+  - "uni/tn-{name}/ap-{name}/esg-{name}/stAsc/site-{siteId}"
+  - "uni/tn-{name}/mscGraphXlateCont/epgDefXlate-[{epgDefDn}]/stAsc/site-{siteId}"
 
 l3extRsOutToFBRGroup:
   resource_name: "relation_to_vrf_fallback_route_group"

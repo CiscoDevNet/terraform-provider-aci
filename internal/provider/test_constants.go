@@ -60,6 +60,25 @@ resource "aci_vrf" "test" {
 `
 const testConfigFvAEPgMinDependencyWithFvTenant = testConfigFvAEPgMin
 
+const testConfigFvSiteAssociatedMinDependencyWithFvCtx = testConfigFvTenantMin + `
+resource "aci_vrf" "test" {
+  tenant_dn = aci_tenant.test.id
+  name      = "test_vrf"
+}
+
+resource "aci_site_associated" "test" {
+  vrf_dn = aci_vrf.test.id
+  name   = "test_site_associated"
+}
+`
+
+const testConfigFvBDMinDependencyWithFvTenant = testConfigFvTenantMin + `
+resource "aci_bridge_domain" "test" {
+  tenant_dn = aci_tenant.test.id
+  name      = "test_bd"
+}
+`
+
 const testConfigFvTenantInfraMin = `
 data "aci_tenant" "test" {
   name = "infra"
