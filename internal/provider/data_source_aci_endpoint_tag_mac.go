@@ -42,7 +42,7 @@ func (d *FvEpMacTagDataSource) Schema(ctx context.Context, req datasource.Schema
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Endpoint Tag Mac object.",
+				MarkdownDescription: "The distinguished name (DN) of the Endpoint Tag MAC object.",
 			},
 			"parent_dn": schema.StringAttribute{
 				Required:            true,
@@ -50,27 +50,27 @@ func (d *FvEpMacTagDataSource) Schema(ctx context.Context, req datasource.Schema
 			},
 			"annotation": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The annotation of the Endpoint Tag Mac object.`,
+				MarkdownDescription: `The annotation of the Endpoint Tag MAC object.`,
 			},
 			"bd_name": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: `The bridge domain name of the Endpoint Tag Mac object.`,
+				MarkdownDescription: `The bridge domain name of the Endpoint Tag MAC object.`,
 			},
 			"id_attribute": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The identifier of the Endpoint Tag Mac object.`,
+				MarkdownDescription: `The identifier of the Endpoint Tag MAC object.`,
 			},
 			"mac": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: `The MAC address of the Endpoint Tag Mac object.`,
+				MarkdownDescription: `The MAC address of the Endpoint Tag MAC object.`,
 			},
 			"name": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The name of the Endpoint Tag Mac object.`,
+				MarkdownDescription: `The name of the Endpoint Tag MAC object.`,
 			},
 			"name_alias": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The name alias of the Endpoint Tag Mac object.`,
+				MarkdownDescription: `The name alias of the Endpoint Tag MAC object.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,

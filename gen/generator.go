@@ -311,8 +311,8 @@ func CreateParentDnValue(className, caller string, definitions Definitions) stri
 func LookupTestValue(classPkgName, propertyName string, testVars map[string]interface{}, definitions Definitions) interface{} {
 	var lookupValue interface{} = "test_value"
 	propertyName = GetOverwriteAttributeName(classPkgName, propertyName, definitions)
-	_, ok := testVars["all"]
-	if ok {
+
+	if _, ok := testVars["all"]; ok && testVars["all"] != nil {
 		val, ok := testVars["all"].(interface{}).(map[interface{}]interface{})[propertyName]
 		if ok {
 			switch val := val.(type) {
@@ -323,8 +323,8 @@ func LookupTestValue(classPkgName, propertyName string, testVars map[string]inte
 			}
 		}
 	}
-	_, ok = testVars["resource_required"]
-	if ok {
+
+	if _, ok := testVars["resource_required"]; ok && testVars["resource_required"] != nil {
 		val, ok := testVars["resource_required"].(interface{}).(map[interface{}]interface{})[propertyName]
 		if ok {
 			lookupValue = val.(string)
@@ -374,9 +374,11 @@ func ContainsNoneAttributeValue(values []string) bool {
 	return false
 }
 
-func DefinedInMap(s string, values map[interface{}]interface{}) bool {
-	if _, ok := values[s]; ok {
-		return true
+func DefinedInMap(s string, values interface{}) bool {
+	if values != nil {
+		if _, ok := values.(map[interface{}]interface{})[s]; ok {
+			return true
+		}
 	}
 	return false
 }

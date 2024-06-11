@@ -46,11 +46,10 @@ data "aci_endpoint_tag_ip" "test" {
 }
 `
 
-const testConfigFvEpIpTagNotExistingFvTenant = testConfigFvEpIpTagMinDependencyWithFvTenant + `
+const testConfigFvEpIpTagNotExistingFvTenant = testConfigFvTenantMin + `
 data "aci_endpoint_tag_ip" "test_non_existing" {
   parent_dn = aci_tenant.test.id
   ip = "10.0.1.2"
   vrf_name = "non_existing_ctx_name"
-  depends_on = [aci_endpoint_tag_ip.test]
 }
 `

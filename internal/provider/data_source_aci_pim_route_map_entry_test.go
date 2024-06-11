@@ -48,10 +48,9 @@ data "aci_pim_route_map_entry" "test" {
 }
 `
 
-const testConfigPimRouteMapEntryNotExistingPimRouteMapPol = testConfigPimRouteMapEntryMinDependencyWithPimRouteMapPol + `
+const testConfigPimRouteMapEntryNotExistingPimRouteMapPol = testConfigPimRouteMapPolMinDependencyWithFvTenant + `
 data "aci_pim_route_map_entry" "test_non_existing" {
   parent_dn = aci_pim_route_map_policy.test.id
   order = "2"
-  depends_on = [aci_pim_route_map_entry.test]
 }
 `

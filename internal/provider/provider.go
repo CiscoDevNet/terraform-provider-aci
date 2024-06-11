@@ -205,6 +205,8 @@ func (p *AciProvider) Configure(ctx context.Context, req provider.ConfigureReque
 func (p *AciProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
 		NewFvESgResource,
+		NewFvCrtrnResource,
+		NewFvDnsAttrResource,
 		NewFvEpIpTagResource,
 		NewFvEpMacTagResource,
 		NewFvFBRGroupResource,
@@ -216,6 +218,11 @@ func (p *AciProvider) Resources(ctx context.Context) []func() resource.Resource 
 		NewFvRsProtByResource,
 		NewFvRsProvResource,
 		NewFvRsSecInheritedResource,
+		NewFvIdGroupAttrResource,
+		NewFvIpAttrResource,
+		NewFvMacAttrResource,
+		NewFvSCrtrnResource,
+		NewFvVmAttrResource,
 		NewL3extConsLblResource,
 		NewL3extProvLblResource,
 		NewL3extRsOutToFBRGroupResource,
@@ -239,6 +246,8 @@ func (p *AciProvider) Resources(ctx context.Context) []func() resource.Resource 
 func (p *AciProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
 		NewFvESgDataSource,
+		NewFvCrtrnDataSource,
+		NewFvDnsAttrDataSource,
 		NewFvEpIpTagDataSource,
 		NewFvEpMacTagDataSource,
 		NewFvFBRGroupDataSource,
@@ -250,6 +259,11 @@ func (p *AciProvider) DataSources(ctx context.Context) []func() datasource.DataS
 		NewFvRsProtByDataSource,
 		NewFvRsProvDataSource,
 		NewFvRsSecInheritedDataSource,
+		NewFvIdGroupAttrDataSource,
+		NewFvIpAttrDataSource,
+		NewFvMacAttrDataSource,
+		NewFvSCrtrnDataSource,
+		NewFvVmAttrDataSource,
 		NewL3extConsLblDataSource,
 		NewL3extProvLblDataSource,
 		NewL3extRsOutToFBRGroupDataSource,

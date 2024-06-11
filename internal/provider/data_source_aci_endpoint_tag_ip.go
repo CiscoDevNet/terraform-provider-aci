@@ -42,7 +42,7 @@ func (d *FvEpIpTagDataSource) Schema(ctx context.Context, req datasource.SchemaR
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Endpoint Tag Ip object.",
+				MarkdownDescription: "The distinguished name (DN) of the Endpoint Tag IP object.",
 			},
 			"parent_dn": schema.StringAttribute{
 				Required:            true,
@@ -50,27 +50,27 @@ func (d *FvEpIpTagDataSource) Schema(ctx context.Context, req datasource.SchemaR
 			},
 			"annotation": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The annotation of the Endpoint Tag Ip object.`,
+				MarkdownDescription: `The annotation of the Endpoint Tag IP object.`,
 			},
 			"vrf_name": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: `The VRF name of the Endpoint Tag Ip object.`,
+				MarkdownDescription: `The VRF name of the Endpoint Tag IP object.`,
 			},
 			"id_attribute": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The identifier of the Endpoint Tag Ip object.`,
+				MarkdownDescription: `The identifier of the Endpoint Tag IP object.`,
 			},
 			"ip": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: `The IP address of the Endpoint Tag Ip object.`,
+				MarkdownDescription: `The IP address of the Endpoint Tag IP object.`,
 			},
 			"name": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The name of the Endpoint Tag Ip object.`,
+				MarkdownDescription: `The name of the Endpoint Tag IP object.`,
 			},
 			"name_alias": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The name alias of the Endpoint Tag Ip object.`,
+				MarkdownDescription: `The name alias of the Endpoint Tag IP object.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,

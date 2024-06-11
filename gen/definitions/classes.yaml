@@ -357,7 +357,7 @@ fvRsIntraEpg:
   resource_name: "relation_to_intra_epg_contract"
   example_classes:
     - "fvAEPg"
-    - "fvESg" 
+    - "fvESg"
   dn_formats:
     - "uni/tn-{name}/ap-{name}/epg-{name}/rsintraEpg-{tnVzBrCPName}"
     - "uni/tn-{name}/ap-{name}/esg-{name}/rsintraEpg-{tnVzBrCPName}"
@@ -395,3 +395,65 @@ vzBrCP:
 
 vzTaboo:
   resource_name: "taboo_contract"
+
+fvCrtrn:
+  resource_name: "epg_useg_criterion"
+  ui_locations:
+    - "Tenants -> Application Profiles -> uSeg EPGs -> uSeg Attributes"
+  sub_category: "Application Management"
+  include: true
+
+fvSCrtrn:
+  resource_name: "epg_useg_sub_criterion"
+  ui_locations:
+    - "Tenants -> Application Profiles -> uSeg EPGs -> uSeg Attributes"
+  sub_category: "Application Management"
+  dn_formats:
+    - "uni/tn-{name}/ap-{name}/epg-{name}/crtrn/crtrn-{name}"
+  contained_by:
+    - "fvCrtrn"
+
+fvVmAttr:
+  resource_name: "epg_useg_criterion_vm_attribute"
+  ui_locations:
+    - "Tenants -> Application Profiles -> uSeg EPGs -> uSeg Attributes"
+  sub_category: "Application Management"
+  dn_formats:
+    - "uni/tn-{name}/ap-{name}/epg-{name}/crtrn/vmattr-{name}"
+    - "uni/tn-{name}/ap-{name}/epg-{name}/crtrn/crtrn-{name}/vmattr-{name}"
+
+fvIdGroupAttr:
+  resource_name: "epg_useg_criterion_identity_group_attribute"
+  ui_locations:
+    - "Tenants -> Application Profiles -> uSeg EPGs -> uSeg Attributes"
+  sub_category: "Application Management"
+  dn_formats:
+    - "uni/tn-{name}/ap-{name}/epg-{name}/crtrn/idgattr-[{selector}]"
+
+fvDnsAttr:
+  resource_name: "epg_useg_criterion_dns_attribute"
+  ui_locations:
+    - "Tenants -> Application Profiles -> uSeg EPGs -> uSeg Attributes"
+  sub_category: "Application Management"
+  dn_formats:
+    - "uni/tn-{name}/ap-{name}/epg-{name}/crtrn/dnsattr-{name}"
+
+fvMacAttr:
+  resource_name: "epg_useg_criterion_mac_attribute"
+  ui_locations:
+    - "Tenants -> Application Profiles -> uSeg EPGs -> uSeg Attributes"
+  sub_category: "Application Management"
+  dn_formats:
+    - "uni/tn-{name}/ap-{name}/epg-{name}/crtrn/macattr-{name}"
+  contained_by:
+    - "fvCrtrn"
+
+fvIpAttr:
+  resource_name: "epg_useg_criterion_ip_attribute"
+  ui_locations:
+    - "Tenants -> Application Profiles -> uSeg EPGs -> uSeg Attributes"
+  sub_category: "Application Management"
+  dn_formats:
+    - "uni/tn-{name}/ap-{name}/epg-{name}/crtrn/ipattr-{name}"
+  contained_by:
+    - "fvCrtrn"
