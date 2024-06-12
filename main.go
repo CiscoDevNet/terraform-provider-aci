@@ -20,7 +20,7 @@ import (
 //go:generate go run gen/generator.go
 
 // Format code and cleanup imports
-//go:generate go run -mod=mod golang.org/x/tools/cmd/goimports -w internal/provider/
+//go:generate go run golang.org/x/tools/cmd/goimports -w internal/provider/
 
 // If you do not have terraform installed, you can remove the formatting command, but its suggested to
 // ensure the documentation is formatted properly.
