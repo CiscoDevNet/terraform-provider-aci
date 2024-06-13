@@ -20,6 +20,7 @@ Manages ACI Netflow Record Policy
 
 * Class: [netflowRecordPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRecordPol/overview)
 
+* Supported in ACI versions: 2.2(1k) and later.
 
 * Distinguished Name Formats:
   - `uni/infra/recordpol-{name}`
