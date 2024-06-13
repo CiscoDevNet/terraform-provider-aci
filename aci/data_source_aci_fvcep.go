@@ -373,7 +373,7 @@ func dataSourceAciClientEndPointRead(d *schema.ResourceData, m interface{}) erro
 		if queryString != "" {
 			queryString = fmt.Sprintf("%s,wcard(fvCEp.dn, \"%s\")", queryString, filterDn.(string))
 		} else {
-			queryString = fmt.Sprintf("wcard(fvCEp.dn, \"%s*\")", filterDn.(string))
+			queryString = fmt.Sprintf("wcard(fvCEp.dn, \"%s\")", filterDn.(string))
 		}
 	}
 
