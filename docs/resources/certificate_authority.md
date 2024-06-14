@@ -209,7 +209,7 @@ All examples for the Certificate Authority resource can be found in the [example
 An existing Certificate Authority can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_certificate_authority.example uni/tn-{name}/certstore/tp-{name}
+terraform import aci_certificate_authority.example uni/userext/pkiext/tp-{name}
 ```
 
 Starting in Terraform version 1.5, an existing Certificate Authority can be imported
@@ -217,7 +217,7 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 
 ```
 import {
-  id = "uni/tn-{name}/certstore/tp-{name}"
+  id = "uni/userext/pkiext/tp-{name}"
   to = aci_certificate_authority.example
 }
 ```

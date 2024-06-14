@@ -11,14 +11,14 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
-func TestAccDataSourcePkiKeyRingWithDefault(t *testing.T) {
+func TestAccDataSourcePkiKeyRing(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t, "both", "6.0(2h)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config:             testConfigPkiKeyRingDataSourceDependencyWithDefault,
+				Config:             testConfigPkiKeyRingDataSource,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					waitForApicBeforeRefresh,
@@ -38,7 +38,7 @@ func TestAccDataSourcePkiKeyRingWithDefault(t *testing.T) {
 				),
 			},
 			{
-				Config: testConfigPkiKeyRingNotExistingDefault,
+				Config: testConfigPkiKeyRingNotExisting,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					waitForApicBeforeRefresh,
 				),
@@ -90,14 +90,14 @@ func TestAccDataSourcePkiKeyRingWithFvTenant(t *testing.T) {
 	})
 }
 
-const testConfigPkiKeyRingDataSourceDependencyWithDefault = testConfigPkiKeyRingMinDependencyWithDefault + `
+const testConfigPkiKeyRingDataSource = testConfigPkiKeyRingMin + `
 data "aci_key_ring" "test" {
   name = "test_name"
   depends_on = [aci_key_ring.test]
 }
 `
 
-const testConfigPkiKeyRingNotExistingDefault = testConfigPkiKeyRingMinDependencyWithDefault + `
+const testConfigPkiKeyRingNotExisting = testConfigPkiKeyRingMin + `
 data "aci_key_ring" "test_non_existing" {
   name = "non_existing_name"
   depends_on = [aci_key_ring.test]

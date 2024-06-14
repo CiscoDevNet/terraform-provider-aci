@@ -44,7 +44,7 @@ children:
       value: "value_2"
       
 parents:
-  - class_name: "default"
+  - class_name: ""
     parent_dependency: ""
     parent_dn: ""
     class_in_parent: false

@@ -10,7 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
-func TestAccResourcePkiKeyRingWithDefault(t *testing.T) {
+func TestAccResourcePkiKeyRing(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t, "both", "6.0(2h)") },
@@ -18,7 +18,7 @@ func TestAccResourcePkiKeyRingWithDefault(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigPkiKeyRingMinDependencyWithDefault,
+				Config:             testConfigPkiKeyRingMin,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					waitForApicBeforeRefresh,
@@ -39,7 +39,7 @@ func TestAccResourcePkiKeyRingWithDefault(t *testing.T) {
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config:             testConfigPkiKeyRingAllDependencyWithDefault,
+				Config:             testConfigPkiKeyRingAll,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					waitForApicBeforeRefresh,
@@ -60,7 +60,7 @@ func TestAccResourcePkiKeyRingWithDefault(t *testing.T) {
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config:             testConfigPkiKeyRingMinDependencyWithDefault,
+				Config:             testConfigPkiKeyRingMin,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					waitForApicBeforeRefresh,
@@ -69,7 +69,7 @@ func TestAccResourcePkiKeyRingWithDefault(t *testing.T) {
 			},
 			// Update with empty strings config or default value
 			{
-				Config:             testConfigPkiKeyRingResetDependencyWithDefault,
+				Config:             testConfigPkiKeyRingReset,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					waitForApicBeforeRefresh,
@@ -114,7 +114,7 @@ func TestAccResourcePkiKeyRingWithDefault(t *testing.T) {
 			},
 			// Update with children
 			{
-				Config:             testConfigPkiKeyRingChildrenDependencyWithDefault,
+				Config:             testConfigPkiKeyRingChildren,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					waitForApicBeforeRefresh,
@@ -173,7 +173,7 @@ func TestAccResourcePkiKeyRingWithDefault(t *testing.T) {
 			},
 			// Update with children removed from config
 			{
-				Config:             testConfigPkiKeyRingChildrenRemoveFromConfigDependencyWithDefault,
+				Config:             testConfigPkiKeyRingChildrenRemoveFromConfig,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					waitForApicBeforeRefresh,
@@ -191,7 +191,7 @@ func TestAccResourcePkiKeyRingWithDefault(t *testing.T) {
 			},
 			// Update with children first child removed
 			{
-				Config:             testConfigPkiKeyRingChildrenRemoveOneDependencyWithDefault,
+				Config:             testConfigPkiKeyRingChildrenRemoveOne,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					waitForApicBeforeRefresh,
@@ -205,7 +205,7 @@ func TestAccResourcePkiKeyRingWithDefault(t *testing.T) {
 			},
 			// Update with all children removed
 			{
-				Config:             testConfigPkiKeyRingChildrenRemoveAllDependencyWithDefault,
+				Config:             testConfigPkiKeyRingChildrenRemoveAll,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					waitForApicBeforeRefresh,
@@ -431,13 +431,13 @@ func TestAccResourcePkiKeyRingWithFvTenant(t *testing.T) {
 	})
 }
 
-const testConfigPkiKeyRingMinDependencyWithDefault = testConfigDefaultMinDependencyWithPkiTP + `
+const testConfigPkiKeyRingMin = `
 resource "aci_key_ring" "test" {
   name = "test_name"
 }
 `
 
-const testConfigPkiKeyRingAllDependencyWithDefault = testConfigDefaultMinDependencyWithPkiTP + `
+const testConfigPkiKeyRingAll = `
 resource "aci_key_ring" "test" {
   name = "test_name"
   admin_state = "completed"
@@ -456,7 +456,7 @@ resource "aci_key_ring" "test" {
 }
 `
 
-const testConfigPkiKeyRingResetDependencyWithDefault = testConfigDefaultMinDependencyWithPkiTP + `
+const testConfigPkiKeyRingReset = `
 resource "aci_key_ring" "test" {
   name = "test_name"
   admin_state = "started"
@@ -474,7 +474,7 @@ resource "aci_key_ring" "test" {
   regenerate = "no"
 }
 `
-const testConfigPkiKeyRingChildrenDependencyWithDefault = testConfigDefaultMinDependencyWithPkiTP + `
+const testConfigPkiKeyRingChildren = `
 resource "aci_key_ring" "test" {
   name = "test_name"
   annotations = [
@@ -500,13 +500,13 @@ resource "aci_key_ring" "test" {
 }
 `
 
-const testConfigPkiKeyRingChildrenRemoveFromConfigDependencyWithDefault = testConfigDefaultMinDependencyWithPkiTP + `
+const testConfigPkiKeyRingChildrenRemoveFromConfig = `
 resource "aci_key_ring" "test" {
   name = "test_name"
 }
 `
 
-const testConfigPkiKeyRingChildrenRemoveOneDependencyWithDefault = testConfigDefaultMinDependencyWithPkiTP + `
+const testConfigPkiKeyRingChildrenRemoveOne = `
 resource "aci_key_ring" "test" {
   name = "test_name"
   annotations = [ 
@@ -524,7 +524,7 @@ resource "aci_key_ring" "test" {
 }
 `
 
-const testConfigPkiKeyRingChildrenRemoveAllDependencyWithDefault = testConfigDefaultMinDependencyWithPkiTP + `
+const testConfigPkiKeyRingChildrenRemoveAll = `
 resource "aci_key_ring" "test" {
   name = "test_name"
   annotations = []

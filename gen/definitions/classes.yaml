@@ -231,6 +231,9 @@ pkiTP:
       contained_by: "fvTenant"
       wrapper_class: "cloudCertStore"
       test_type: "cloud"
+  dn_formats:
+    - "uni/userext/pkiext/tp-{name}"
+    - "uni/tn-{name}/certstore/tp-{name}"
 
 pkiKeyRing:
   sub_category: "AAA"
@@ -242,4 +245,7 @@ pkiKeyRing:
       contained_by: "fvTenant"
       wrapper_class: "cloudCertStore"
       test_type: "cloud"
- 
+  dn_formats:
+    - "uni/userext/pkiext/keyring-{name}"
+    - "uni/tn-{name}/certstore/keyring-{name}"
+  

@@ -88,8 +88,6 @@ resource "aci_l3out_loopback_interface_profile" "test" {
 }
 `
 
-const testConfigDefaultMin = ``
-
 const testConfigFvTenantMinDependencyWithPkiTP = testConfigFvTenantMin + `
 resource "aci_certificate_authority" "test" {
   parent_dn = aci_tenant.test.id

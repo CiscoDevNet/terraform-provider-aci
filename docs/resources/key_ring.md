@@ -241,7 +241,7 @@ All examples for the Key Ring resource can be found in the [examples](https://gi
 An existing Key Ring can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_key_ring.example uni/tn-{name}/certstore/keyring-{name}
+terraform import aci_key_ring.example uni/userext/pkiext/keyring-{name}
 ```
 
 Starting in Terraform version 1.5, an existing Key Ring can be imported
@@ -249,7 +249,7 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 
 ```
 import {
-  id = "uni/tn-{name}/certstore/keyring-{name}"
+  id = "uni/userext/pkiext/keyring-{name}"
   to = aci_key_ring.example
 }
 ```

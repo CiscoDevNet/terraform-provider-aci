@@ -1170,8 +1170,6 @@ func (m *Model) SetClassInclude() {
 		for key, value := range classDetails.(map[interface{}]interface{}) {
 			if key.(string) == "include" {
 				m.Include = value.(bool)
-			} else {
-				m.Include = false
 			}
 		}
 	}
@@ -1231,8 +1229,6 @@ func (m *Model) SetClassExclude() {
 		for key, value := range classDetails.(map[interface{}]interface{}) {
 			if key.(string) == "exclude" {
 				m.Exclude = value.(bool)
-			} else {
-				m.Exclude = false
 			}
 		}
 	}
@@ -1791,7 +1787,7 @@ func GetMultiParentFormats(classPkgName string, definitions Definitions) map[str
 	defaultParentEntry := GetDefaultValues(classPkgName, "parent_dn", definitions)
 	if defaultParentEntry != "" {
 		defaultMultiParentFormat := MultiParentFormat{
-			ContainedBy: "default",
+			ContainedBy: "",
 			RnPrepend:   defaultParentEntry,
 		}
 		multiParentFormats["default"] = defaultMultiParentFormat
@@ -1942,7 +1938,7 @@ func setDocumentationData(m *Model, definitions Definitions) {
 	if len(getMultiParentFormats) > 0 {
 		m.DocumentationParentDns = nil
 		for _, format := range getMultiParentFormats {
-			if format.ContainedBy != "default" {
+			if format.ContainedBy != "" {
 				m.DocumentationParentDns = append(m.DocumentationParentDns, fmt.Sprintf("[%s_%s](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/%s) (%s)", providerName, GetResourceName(format.ContainedBy, definitions), format.ContainedBy, GetDevnetDocForClass(format.ContainedBy)))
 			}
 		}

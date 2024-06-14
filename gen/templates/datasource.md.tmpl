@@ -53,9 +53,6 @@ Data source for {{.ResourceNameAsDescription}}
   {{- range .DocumentationParentDns}}
   - {{ . }}
   {{- end}}
-  {{- if getDefaultValues .PkgName "parent_dn" $.Definitions}}
-  - Default: `{{ getDefaultValues .PkgName "parent_dn" $.Definitions}}`
-  {{ end}}
 {{- end}}
 {{- range .Properties}}
     {{- if .IsNaming}}
@@ -73,6 +70,7 @@ Data source for {{.ResourceNameAsDescription}}
     {{- range .DocumentationParentDns }}
   - {{ . }}
     {{- end }}
+  - Default: `{{ getDefaultValues .PkgName "parent_dn" $.Definitions}}`
 {{- end }}
 
 ### Read-Only ###

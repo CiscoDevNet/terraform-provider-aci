@@ -20,14 +20,14 @@ import (
 
 {{- if .parents}}
 	{{- range .parents}}
-func TestAccDataSource{{$.resourceClassName}}With{{capitalize .class_name}} (t *testing.T) {
+func TestAccDataSource{{$.resourceClassName}}{{if .class_name}}With{{capitalize .class_name}}{{end}} (t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t, "{{.test_type}}", "{{.test_applicable_from_version}}") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config: testConfig{{$.resourceClassName}}DataSourceDependencyWith{{capitalize .class_name}} ,
+				Config: testConfig{{$.resourceClassName}}DataSource{{if .class_name}}DependencyWith{{capitalize .class_name}}{{end}} ,
 				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
 					{{- if $found_cert }}
@@ -50,7 +50,7 @@ func TestAccDataSource{{$.resourceClassName}}With{{capitalize .class_name}} (t *
 				),
 			},
 			{
-				Config:      testConfig{{$.resourceClassName}}NotExisting{{capitalize .class_name}},
+				Config:      testConfig{{$.resourceClassName}}NotExisting{{if .class_name}}{{capitalize .class_name}}{{end}},
 				{{- if $found_cert }}
 				Check: resource.ComposeAggregateTestCheckFunc(
 					waitForApicBeforeRefresh,
@@ -113,7 +113,7 @@ func TestAccDataSource{{.resourceClassName}}(t *testing.T) {
 
 {{- if .parents}}
 	{{- range .parents}}
-const testConfig{{$.resourceClassName}}DataSourceDependencyWith{{capitalize .class_name}}  = testConfig{{$.resourceClassName}}MinDependencyWith{{capitalize .class_name}}  + `
+const testConfig{{$.resourceClassName}}DataSource{{if .class_name}}DependencyWith{{capitalize .class_name}}{{end}}  = testConfig{{$.resourceClassName}}Min{{if .class_name}}DependencyWith{{capitalize .class_name}}{{end}}  + `
 data "aci_{{$.resourceName}}" "test" {
   {{- if ne .parent_dn ""}}
   parent_dn = {{.parent_dn}}
@@ -129,7 +129,7 @@ data "aci_{{$.resourceName}}" "test" {
 }
 `
 
-const testConfig{{$.resourceClassName}}NotExisting{{capitalize .class_name}}  = testConfig{{$.resourceClassName}}MinDependencyWith{{capitalize .class_name}}  + `
+const testConfig{{$.resourceClassName}}NotExisting{{if .class_name}}{{capitalize .class_name}}{{end}}  = testConfig{{$.resourceClassName}}Min{{if .class_name}}DependencyWith{{capitalize .class_name}}{{end}}  + `
 data "aci_{{$.resourceName}}" "test_non_existing" {
   {{- if ne .parent_dn ""}}
   parent_dn = {{.parent_dn}}
