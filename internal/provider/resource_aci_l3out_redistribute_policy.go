@@ -102,6 +102,7 @@ func (r *L3extRsRedistributePolResource) Schema(ctx context.Context, req resourc
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
 				MarkdownDescription: `The annotation of the L3out Redistribute Policy object.`,
@@ -110,6 +111,7 @@ func (r *L3extRsRedistributePolResource) Schema(ctx context.Context, req resourc
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
 				Validators: []validator.String{
@@ -121,6 +123,7 @@ func (r *L3extRsRedistributePolResource) Schema(ctx context.Context, req resourc
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
 				MarkdownDescription: `The name of the Route Control Profile object.`,
@@ -138,6 +141,7 @@ func (r *L3extRsRedistributePolResource) Schema(ctx context.Context, req resourc
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
@@ -145,6 +149,7 @@ func (r *L3extRsRedistributePolResource) Schema(ctx context.Context, req resourc
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -164,6 +169,7 @@ func (r *L3extRsRedistributePolResource) Schema(ctx context.Context, req resourc
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
@@ -171,6 +177,7 @@ func (r *L3extRsRedistributePolResource) Schema(ctx context.Context, req resourc
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -238,6 +245,7 @@ func (r *L3extRsRedistributePolResource) Create(ctx context.Context, req resourc
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -373,6 +381,15 @@ func getAndSetL3extRsRedistributePolAttributes(ctx context.Context, diags *diag.
 				if attributeName == "tnRtctrlProfileName" {
 					data.TnRtctrlProfileName = basetypes.NewStringValue(attributeValue.(string))
 				}
+			}
+			if data.Annotation.IsUnknown() {
+				data.Annotation = types.StringNull()
+			}
+			if data.Src.IsUnknown() {
+				data.Src = types.StringNull()
+			}
+			if data.TnRtctrlProfileName.IsUnknown() {
+				data.TnRtctrlProfileName = types.StringNull()
 			}
 			TagAnnotationL3extRsRedistributePolList := make([]TagAnnotationL3extRsRedistributePolResourceModel, 0)
 			TagTagL3extRsRedistributePolList := make([]TagTagL3extRsRedistributePolResourceModel, 0)
@@ -561,7 +578,6 @@ func getL3extRsRedistributePolCreateJsonPayload(ctx context.Context, diags *diag
 	if !data.TnRtctrlProfileName.IsNull() && !data.TnRtctrlProfileName.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["tnRtctrlProfileName"] = data.TnRtctrlProfileName.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"l3extRsRedistributePol": payloadMap})
 	if err != nil {
 		diags.AddError(

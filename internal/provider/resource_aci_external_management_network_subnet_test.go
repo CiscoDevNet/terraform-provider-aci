@@ -13,7 +13,7 @@ import (
 func TestAccResourceMgmtSubnetWithMgmtInstP(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "3.2(1l)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -154,6 +154,9 @@ func TestAccResourceMgmtSubnetWithMgmtInstP(t *testing.T) {
 				),
 			},
 		},
+		CheckDestroy: resource.ComposeAggregateTestCheckFunc(
+			testCheckResourceDestroy,
+		),
 	})
 }
 
@@ -224,16 +227,16 @@ resource "aci_external_management_network_subnet" "test" {
   parent_dn = aci_external_management_network_instance_profile.test.id
   ip = "1.1.1.0/24"
   annotations = [ 
-	{
+    {
 	  key = "key_1"
 	  value = "value_2"
-	},
+    },
   ]
   tags = [ 
-	{
+    {
 	  key = "key_1"
 	  value = "value_2"
-	},
+    },
   ]
 }
 `

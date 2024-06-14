@@ -18,6 +18,7 @@ Data source for Netflow Monitor Policy
 
 * Class: [netflowMonitorPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowMonitorPol/overview)
 
+* Supported in ACI versions: 2.2(1k) and later.
 
 * Distinguished Name Formats:
   - `uni/infra/monitorpol-{name}`
@@ -44,14 +45,16 @@ data "aci_netflow_monitor_policy" "example_tenant" {
 
 ### Required ###
 
+* `name` (name) - (string) The name of the Netflow Monitor Policy object.
+
+### Optional ###
+
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
-  - The distinquised name (DN) of classes below can be used but currently there is no available resource for it:
+  - The distinguished name (DN) of classes below can be used but currently there is no available resource for it:
     - [infraInfra](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraInfra/overview)
 
   - Default: `uni/infra`
-  
-* `name` (name) - (string) The name of the Netflow Monitor Policy object.
 
 ### Read-Only ###
 
