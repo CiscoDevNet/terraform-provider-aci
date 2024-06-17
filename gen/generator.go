@@ -95,7 +95,7 @@ var templateFuncs = template.FuncMap{
 	"definedInMap":                 DefinedInMap,
 	"add":                          func(val1, val2 int) int { return val1 + val2 },
 	"substract":                    func(val1, val2 int) int { return val1 - val2 },
-	"determineLength":              DetermineLength,
+	"isInterfaceSlice":             IsInterfaceSlice,
 	"lookupTestValue":              LookupTestValue,
 	"lookupChildTestValue":         LookupChildTestValue,
 	"createParentDnValue":          CreateParentDnValue,
@@ -1626,17 +1626,9 @@ func GetDefaultValues(classPkgName, propertyName string, definitions Definitions
 	return ""
 }
 
-/*
-TODO expend the cases if needed.
-Determine the input length depending on its type. Only useful in the test templates.
-If the input is a slice of interface{}, return its length.
-Else, return -1.
-*/
-func DetermineLength(input interface{}) int {
-	if val, ok := input.([]interface{}); ok {
-		return len(val)
-	}
-	return -1
+func IsInterfaceSlice(input interface{}) bool {
+	_, ok := input.([]interface{})
+	return ok
 }
 
 func isInSlice(slice []interface{}, element interface{}) bool {
