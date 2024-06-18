@@ -57,7 +57,7 @@ type FvESgResourceModel struct {
 	PrefGrMemb                 types.String `tfsdk:"preferred_group_member"`
 	Shutdown                   types.String `tfsdk:"admin_state"`
 	FvRsCons                   types.Set    `tfsdk:"relation_to_consumed_contracts"`
-	FvRsConsIf                 types.Set    `tfsdk:"relation_to_consumed_contract_interfaces"`
+	FvRsConsIf                 types.Set    `tfsdk:"relation_to_imported_contracts"`
 	FvRsIntraEpg               types.Set    `tfsdk:"relation_to_intra_epg_contracts"`
 	FvRsProv                   types.Set    `tfsdk:"relation_to_provided_contracts"`
 	FvRsScope                  types.Set    `tfsdk:"relation_to_vrf"`
@@ -87,7 +87,7 @@ type FvRsConsFvESgResourceModel struct {
 type FvRsConsIfFvESgResourceModel struct {
 	Annotation   types.String `tfsdk:"annotation"`
 	Prio         types.String `tfsdk:"priority"`
-	TnVzCPIfName types.String `tfsdk:"contract_interface_name"`
+	TnVzCPIfName types.String `tfsdk:"imported_contract_name"`
 }
 
 // FvRsIntraEpgFvESgResourceModel describes the resource data model for the children without relation ships.
@@ -387,9 +387,9 @@ func (r *FvESgResource) UpgradeState(ctx context.Context) map[int64]resource.Sta
 				}
 				FvRsConsIfType := types.ObjectType{
 					AttrTypes: map[string]attr.Type{
-						"annotation":              basetypes.StringType{},
-						"priority":                basetypes.StringType{},
-						"contract_interface_name": basetypes.StringType{},
+						"annotation":             basetypes.StringType{},
+						"priority":               basetypes.StringType{},
+						"imported_contract_name": basetypes.StringType{},
 					},
 				}
 				FvRsConsIfSet, _ := types.SetValueFrom(ctx, FvRsConsIfType, FvRsConsIfList)
@@ -851,9 +851,9 @@ func (r *FvESgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanR
 
 			FvRsConsIfType := types.ObjectType{
 				AttrTypes: map[string]attr.Type{
-					"annotation":              basetypes.StringType{},
-					"priority":                basetypes.StringType{},
-					"contract_interface_name": basetypes.StringType{},
+					"annotation":             basetypes.StringType{},
+					"priority":               basetypes.StringType{},
+					"imported_contract_name": basetypes.StringType{},
 				},
 			}
 			FvRsConsIfSet, _ := types.SetValueFrom(ctx, FvRsConsIfType, FvRsConsIfList)
@@ -1141,7 +1141,7 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 					},
 				},
 			},
-			"relation_to_consumed_contract_interfaces": schema.SetNestedAttribute{
+			"relation_to_imported_contracts": schema.SetNestedAttribute{
 				MarkdownDescription: `A contract for which the EPG will be a consumer.`,
 				Optional:            true,
 				Computed:            true,
@@ -1156,7 +1156,7 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
-							MarkdownDescription: `The annotation of the Relation To Consumed Contract Interface object.`,
+							MarkdownDescription: `The annotation of the Relation To Imported Contract object.`,
 						},
 						"priority": schema.StringAttribute{
 							Optional: true,
@@ -1169,7 +1169,7 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							},
 							MarkdownDescription: `The contract interface priority.`,
 						},
-						"contract_interface_name": schema.StringAttribute{
+						"imported_contract_name": schema.StringAttribute{
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
@@ -1403,20 +1403,20 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 						"target_dn": schema.StringAttribute{
 							Optional:           true,
 							Computed:           true,
-							DeprecationMessage: "Attribute 'target_dn' will be deprecated soon, please use 'relation_to_consumed_contract_interfaces.contract_interface_name' instead",
+							DeprecationMessage: "Attribute 'target_dn' will be deprecated soon, please use 'relation_to_imported_contracts.imported_contract_name' instead",
 							Validators: []validator.String{
 								stringvalidator.ConflictsWith(path.Expressions{
-									path.MatchRoot("relation_to_consumed_contract_interfaces"),
+									path.MatchRoot("relation_to_imported_contracts"),
 								}...),
 							},
 						},
 						"prio": schema.StringAttribute{
 							Optional:           true,
 							Computed:           true,
-							DeprecationMessage: "Attribute 'prio' will be deprecated soon, please use 'relation_to_consumed_contract_interfaces.priority' instead",
+							DeprecationMessage: "Attribute 'prio' will be deprecated soon, please use 'relation_to_imported_contracts.priority' instead",
 							Validators: []validator.String{
 								stringvalidator.ConflictsWith(path.Expressions{
-									path.MatchRoot("relation_to_consumed_contract_interfaces"),
+									path.MatchRoot("relation_to_imported_contracts"),
 								}...),
 							},
 						},

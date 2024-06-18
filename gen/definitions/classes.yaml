@@ -18,7 +18,7 @@ fvCtx:
   resource_name: "vrf"
 
 vzCPIf:
-  resource_name: "contract_interface"
+  resource_name: "imported_contract"
 
 rtctrlProfile:
   resource_name: "route_control_profile"
@@ -252,9 +252,9 @@ fvESg:
       prio: relation_to_consumed_contracts.priority
       target_dn: relation_to_consumed_contracts.contract_name
     fvRsConsIf:
-      relation_fv_rs_cons_if: relation_to_consumed_contract_interfaces
-      prio: relation_to_consumed_contract_interfaces.priority
-      target_dn: relation_to_consumed_contract_interfaces.contract_interface_name
+      relation_fv_rs_cons_if: relation_to_imported_contracts
+      prio: relation_to_imported_contracts.priority
+      target_dn: relation_to_imported_contracts.imported_contract_name
     fvRsProv:
       relation_fv_rs_prov: relation_to_provided_contracts
       prio: relation_to_provided_contracts.priority
@@ -301,7 +301,7 @@ fvRsProv:
   sub_category: "Application Management"
 
 fvRsConsIf:
-  resource_name: "relation_to_consumed_contract_interface"
+  resource_name: "relation_to_imported_contract"
   example_classes:
     - "fvAEPg"
     - "fvESg"

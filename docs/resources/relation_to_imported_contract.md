@@ -4,15 +4,17 @@
 # More details can be found in the [README](https://github.com/CiscoDevNet/terraform-provider-aci/blob/master/README.md).
 subcategory: "Application Management"
 layout: "aci"
-page_title: "ACI: aci_relation_to_consumed_contract_interface"
-sidebar_current: "docs-aci-data-source-aci_relation_to_consumed_contract_interface"
+page_title: "ACI: aci_relation_to_imported_contract"
+sidebar_current: "docs-aci-resource-aci_relation_to_imported_contract"
 description: |-
-  Data source for Relation To Consumed Contract Interface
+  Manages ACI Relation To Imported Contract
 ---
 
-# aci_relation_to_consumed_contract_interface #
+# aci_relation_to_imported_contract #
 
-Data source for Relation To Consumed Contract Interface
+Manages ACI Relation To Imported Contract
+
+
 
 ## API Information ##
 
@@ -37,19 +39,68 @@ Data source for Relation To Consumed Contract Interface
 
 ## Example Usage ##
 
+The configuration snippet below creates a Relation To Imported Contract with only required attributes.
+
 ```hcl
 
-data "aci_relation_to_consumed_contract_interface" "example_application_epg" {
-  parent_dn               = aci_application_epg.example.id
-  contract_interface_name = aci_contract_interface.example.name
+resource "aci_relation_to_imported_contract" "example_application_epg" {
+  parent_dn              = aci_application_epg.example.id
+  imported_contract_name = aci_imported_contract.example.name
 }
 
-data "aci_relation_to_consumed_contract_interface" "example_endpoint_security_group" {
-  parent_dn               = aci_endpoint_security_group.example.id
-  contract_interface_name = aci_contract_interface.example.name
+resource "aci_relation_to_imported_contract" "example_endpoint_security_group" {
+  parent_dn              = aci_endpoint_security_group.example.id
+  imported_contract_name = aci_imported_contract.example.name
 }
 
 ```
+The configuration snippet below shows all possible attributes of the Relation To Imported Contract.
+
+!> This example might not be valid configuration and is only used to show all possible attributes.
+
+```hcl
+
+resource "aci_relation_to_imported_contract" "full_example_application_epg" {
+  parent_dn              = aci_application_epg.example.id
+  annotation             = "annotation"
+  priority               = "level1"
+  imported_contract_name = aci_imported_contract.example.name
+  annotations = [
+    {
+      key   = "key_0"
+      value = "value_1"
+    }
+  ]
+  tags = [
+    {
+      key   = "key_0"
+      value = "value_1"
+    }
+  ]
+}
+
+resource "aci_relation_to_imported_contract" "full_example_endpoint_security_group" {
+  parent_dn              = aci_endpoint_security_group.example.id
+  annotation             = "annotation"
+  priority               = "level1"
+  imported_contract_name = aci_imported_contract.example.name
+  annotations = [
+    {
+      key   = "key_0"
+      value = "value_1"
+    }
+  ]
+  tags = [
+    {
+      key   = "key_0"
+      value = "value_1"
+    }
+  ]
+}
+
+```
+
+All examples for the Relation To Imported Contract resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/resources/aci_relation_to_imported_contract) folder.
 
 ## Schema ##
 
@@ -78,18 +129,48 @@ data "aci_relation_to_consumed_contract_interface" "example_endpoint_security_gr
     - [vnsSDEPpInfo](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vnsSDEPpInfo/overview)
     - [vnsSHEPpInfo](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vnsSHEPpInfo/overview)
 
-* `contract_interface_name` (tnVzCPIfName) - (string) The contract interface name. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/contract_interface) with `aci_contract_interface.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/contract_interface) with `data.aci_contract_interface.example.name`.
+* `imported_contract_name` (tnVzCPIfName) - (string) The contract interface name. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/imported_contract) with `aci_imported_contract.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/imported_contract) with `data.aci_imported_contract.example.name`.
 
 ### Read-Only ###
 
-* `id` - (string) The distinguished name (DN) of the Relation To Consumed Contract Interface object.
-* `annotation` (annotation) - (string) The annotation of the Relation To Consumed Contract Interface object.
+* `id` - (string) The distinguished name (DN) of the Relation To Imported Contract object.
+
+### Optional ###
+  
+* `annotation` (annotation) - (string) The annotation of the Relation To Imported Contract object.
+  - Default: `orchestrator:terraform`
 * `priority` (prio) - (string) The contract interface priority.
+  - Default: `unspecified`
+  - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
 
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+  
+  #### Required ####
+  
   * `key` (key) - (string) The key used to uniquely identify this configuration object.
   * `value` (value) - (string) The value of the property.
 
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+  
+  #### Required ####
+  
   * `key` (key) - (string) The key used to uniquely identify this configuration object.
   * `value` (value) - (string) The value of the property.
+
+## Importing
+
+An existing Relation To Imported Contract can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
+
+```
+terraform import aci_relation_to_imported_contract.example_application_epg uni/tn-{name}/ap-{name}/epg-{name}/rsconsIf-{tnVzCPIfName}
+```
+
+Starting in Terraform version 1.5, an existing Relation To Imported Contract can be imported
+using [import blocks](https://developer.hashicorp.com/terraform/language/import) via the following configuration:
+
+```
+import {
+  id = "uni/tn-{name}/ap-{name}/epg-{name}/rsconsIf-{tnVzCPIfName}"
+  to = aci_relation_to_imported_contract.example_application_epg
+}
+```

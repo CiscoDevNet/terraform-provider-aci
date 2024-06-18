@@ -7,13 +7,13 @@ default:
   priority: "unspecified"
 
 datasource_non_existing:
-  contract_interface_name: "non_existing_tn_vz_cp_if_name"
+  imported_contract_name: "non_existing_tn_vz_cp_if_name"
 
 datasource_required:
-  contract_interface_name: "test_tn_vz_cp_if_name"
+  imported_contract_name: "test_tn_vz_cp_if_name"
 
 resource_required:
-  contract_interface_name: "test_tn_vz_cp_if_name"
+  imported_contract_name: "test_tn_vz_cp_if_name"
 
 all:
   annotation: "annotation"

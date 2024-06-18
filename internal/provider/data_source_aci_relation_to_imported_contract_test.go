@@ -21,14 +21,14 @@ func TestAccDataSourceFvRsConsIfWithFvAEPg(t *testing.T) {
 				Config:             testConfigFvRsConsIfDataSourceDependencyWithFvAEPg,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.aci_relation_to_consumed_contract_interface.test", "contract_interface_name", "test_tn_vz_cp_if_name"),
-					resource.TestCheckResourceAttr("data.aci_relation_to_consumed_contract_interface.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("data.aci_relation_to_consumed_contract_interface.test", "priority", "unspecified"),
+					resource.TestCheckResourceAttr("data.aci_relation_to_imported_contract.test", "imported_contract_name", "test_tn_vz_cp_if_name"),
+					resource.TestCheckResourceAttr("data.aci_relation_to_imported_contract.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("data.aci_relation_to_imported_contract.test", "priority", "unspecified"),
 				),
 			},
 			{
 				Config:      testConfigFvRsConsIfNotExistingFvAEPg,
-				ExpectError: regexp.MustCompile("Failed to read aci_relation_to_consumed_contract_interface data source"),
+				ExpectError: regexp.MustCompile("Failed to read aci_relation_to_imported_contract data source"),
 			},
 		},
 	})
@@ -43,46 +43,46 @@ func TestAccDataSourceFvRsConsIfWithFvESg(t *testing.T) {
 				Config:             testConfigFvRsConsIfDataSourceDependencyWithFvESg,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.aci_relation_to_consumed_contract_interface.test", "contract_interface_name", "test_tn_vz_cp_if_name"),
-					resource.TestCheckResourceAttr("data.aci_relation_to_consumed_contract_interface.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("data.aci_relation_to_consumed_contract_interface.test", "priority", "unspecified"),
+					resource.TestCheckResourceAttr("data.aci_relation_to_imported_contract.test", "imported_contract_name", "test_tn_vz_cp_if_name"),
+					resource.TestCheckResourceAttr("data.aci_relation_to_imported_contract.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("data.aci_relation_to_imported_contract.test", "priority", "unspecified"),
 				),
 			},
 			{
 				Config:      testConfigFvRsConsIfNotExistingFvESg,
-				ExpectError: regexp.MustCompile("Failed to read aci_relation_to_consumed_contract_interface data source"),
+				ExpectError: regexp.MustCompile("Failed to read aci_relation_to_imported_contract data source"),
 			},
 		},
 	})
 }
 
 const testConfigFvRsConsIfDataSourceDependencyWithFvAEPg = testConfigFvRsConsIfMinDependencyWithFvAEPg + `
-data "aci_relation_to_consumed_contract_interface" "test" {
+data "aci_relation_to_imported_contract" "test" {
   parent_dn = aci_application_epg.test.id
-  contract_interface_name = "test_tn_vz_cp_if_name"
-  depends_on = [aci_relation_to_consumed_contract_interface.test]
+  imported_contract_name = "test_tn_vz_cp_if_name"
+  depends_on = [aci_relation_to_imported_contract.test]
 }
 `
 
 const testConfigFvRsConsIfNotExistingFvAEPg = testConfigFvRsConsIfMinDependencyWithFvAEPg + `
-data "aci_relation_to_consumed_contract_interface" "test_non_existing" {
+data "aci_relation_to_imported_contract" "test_non_existing" {
   parent_dn = aci_application_epg.test.id
-  contract_interface_name = "non_existing_tn_vz_cp_if_name"
-  depends_on = [aci_relation_to_consumed_contract_interface.test]
+  imported_contract_name = "non_existing_tn_vz_cp_if_name"
+  depends_on = [aci_relation_to_imported_contract.test]
 }
 `
 const testConfigFvRsConsIfDataSourceDependencyWithFvESg = testConfigFvRsConsIfMinDependencyWithFvESg + `
-data "aci_relation_to_consumed_contract_interface" "test" {
+data "aci_relation_to_imported_contract" "test" {
   parent_dn = aci_endpoint_security_group.test.id
-  contract_interface_name = "test_tn_vz_cp_if_name"
-  depends_on = [aci_relation_to_consumed_contract_interface.test]
+  imported_contract_name = "test_tn_vz_cp_if_name"
+  depends_on = [aci_relation_to_imported_contract.test]
 }
 `
 
 const testConfigFvRsConsIfNotExistingFvESg = testConfigFvRsConsIfMinDependencyWithFvESg + `
-data "aci_relation_to_consumed_contract_interface" "test_non_existing" {
+data "aci_relation_to_imported_contract" "test_non_existing" {
   parent_dn = aci_endpoint_security_group.test.id
-  contract_interface_name = "non_existing_tn_vz_cp_if_name"
-  depends_on = [aci_relation_to_consumed_contract_interface.test]
+  imported_contract_name = "non_existing_tn_vz_cp_if_name"
+  depends_on = [aci_relation_to_imported_contract.test]
 }
 `

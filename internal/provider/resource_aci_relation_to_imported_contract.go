@@ -47,7 +47,7 @@ type FvRsConsIfResourceModel struct {
 	ParentDn      types.String `tfsdk:"parent_dn"`
 	Annotation    types.String `tfsdk:"annotation"`
 	Prio          types.String `tfsdk:"priority"`
-	TnVzCPIfName  types.String `tfsdk:"contract_interface_name"`
+	TnVzCPIfName  types.String `tfsdk:"imported_contract_name"`
 	TagAnnotation types.Set    `tfsdk:"annotations"`
 	TagTag        types.Set    `tfsdk:"tags"`
 }
@@ -69,21 +69,21 @@ type FvRsConsIfIdentifier struct {
 }
 
 func (r *FvRsConsIfResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	tflog.Debug(ctx, "Start metadata of resource: aci_relation_to_consumed_contract_interface")
-	resp.TypeName = req.ProviderTypeName + "_relation_to_consumed_contract_interface"
-	tflog.Debug(ctx, "End metadata of resource: aci_relation_to_consumed_contract_interface")
+	tflog.Debug(ctx, "Start metadata of resource: aci_relation_to_imported_contract")
+	resp.TypeName = req.ProviderTypeName + "_relation_to_imported_contract"
+	tflog.Debug(ctx, "End metadata of resource: aci_relation_to_imported_contract")
 }
 
 func (r *FvRsConsIfResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
-	tflog.Debug(ctx, "Start schema of resource: aci_relation_to_consumed_contract_interface")
+	tflog.Debug(ctx, "Start schema of resource: aci_relation_to_imported_contract")
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "The relation_to_consumed_contract_interface resource for the 'fvRsConsIf' class",
+		MarkdownDescription: "The relation_to_imported_contract resource for the 'fvRsConsIf' class",
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Relation To Consumed Contract Interface object.",
+				MarkdownDescription: "The distinguished name (DN) of the Relation To Imported Contract object.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
@@ -103,7 +103,7 @@ func (r *FvRsConsIfResource) Schema(ctx context.Context, req resource.SchemaRequ
 					stringplanmodifier.UseStateForUnknown(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
-				MarkdownDescription: `The annotation of the Relation To Consumed Contract Interface object.`,
+				MarkdownDescription: `The annotation of the Relation To Imported Contract object.`,
 			},
 			"priority": schema.StringAttribute{
 				Optional: true,
@@ -116,7 +116,7 @@ func (r *FvRsConsIfResource) Schema(ctx context.Context, req resource.SchemaRequ
 				},
 				MarkdownDescription: `The contract interface priority.`,
 			},
-			"contract_interface_name": schema.StringAttribute{
+			"imported_contract_name": schema.StringAttribute{
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
@@ -178,11 +178,11 @@ func (r *FvRsConsIfResource) Schema(ctx context.Context, req resource.SchemaRequ
 			},
 		},
 	}
-	tflog.Debug(ctx, "End schema of resource: aci_relation_to_consumed_contract_interface")
+	tflog.Debug(ctx, "End schema of resource: aci_relation_to_imported_contract")
 }
 
 func (r *FvRsConsIfResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	tflog.Debug(ctx, "Start configure of resource: aci_relation_to_consumed_contract_interface")
+	tflog.Debug(ctx, "Start configure of resource: aci_relation_to_imported_contract")
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
 		return
@@ -200,11 +200,11 @@ func (r *FvRsConsIfResource) Configure(ctx context.Context, req resource.Configu
 	}
 
 	r.client = client
-	tflog.Debug(ctx, "End configure of resource: aci_relation_to_consumed_contract_interface")
+	tflog.Debug(ctx, "End configure of resource: aci_relation_to_imported_contract")
 }
 
 func (r *FvRsConsIfResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	tflog.Debug(ctx, "Start create of resource: aci_relation_to_consumed_contract_interface")
+	tflog.Debug(ctx, "Start create of resource: aci_relation_to_imported_contract")
 	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
 	var stateData *FvRsConsIfResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
@@ -222,7 +222,7 @@ func (r *FvRsConsIfResource) Create(ctx context.Context, req resource.CreateRequ
 
 	setFvRsConsIfId(ctx, data)
 
-	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_relation_to_consumed_contract_interface with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_relation_to_imported_contract with id '%s'", data.Id.ValueString()))
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationFvRsConsIfResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
@@ -245,11 +245,11 @@ func (r *FvRsConsIfResource) Create(ctx context.Context, req resource.CreateRequ
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_relation_to_consumed_contract_interface with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_relation_to_imported_contract with id '%s'", data.Id.ValueString()))
 }
 
 func (r *FvRsConsIfResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
-	tflog.Debug(ctx, "Start read of resource: aci_relation_to_consumed_contract_interface")
+	tflog.Debug(ctx, "Start read of resource: aci_relation_to_imported_contract")
 	var data *FvRsConsIfResourceModel
 
 	// Read Terraform prior state data into the model
@@ -259,7 +259,7 @@ func (r *FvRsConsIfResource) Read(ctx context.Context, req resource.ReadRequest,
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Read of resource aci_relation_to_consumed_contract_interface with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Read of resource aci_relation_to_imported_contract with id '%s'", data.Id.ValueString()))
 
 	getAndSetFvRsConsIfAttributes(ctx, &resp.Diagnostics, r.client, data)
 
@@ -271,11 +271,11 @@ func (r *FvRsConsIfResource) Read(ctx context.Context, req resource.ReadRequest,
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_relation_to_consumed_contract_interface with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_relation_to_imported_contract with id '%s'", data.Id.ValueString()))
 }
 
 func (r *FvRsConsIfResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	tflog.Debug(ctx, "Start update of resource: aci_relation_to_consumed_contract_interface")
+	tflog.Debug(ctx, "Start update of resource: aci_relation_to_imported_contract")
 	var data *FvRsConsIfResourceModel
 	var stateData *FvRsConsIfResourceModel
 
@@ -287,7 +287,7 @@ func (r *FvRsConsIfResource) Update(ctx context.Context, req resource.UpdateRequ
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_relation_to_consumed_contract_interface with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_relation_to_imported_contract with id '%s'", data.Id.ValueString()))
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationFvRsConsIfResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
@@ -311,11 +311,11 @@ func (r *FvRsConsIfResource) Update(ctx context.Context, req resource.UpdateRequ
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_relation_to_consumed_contract_interface with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_relation_to_imported_contract with id '%s'", data.Id.ValueString()))
 }
 
 func (r *FvRsConsIfResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	tflog.Debug(ctx, "Start delete of resource: aci_relation_to_consumed_contract_interface")
+	tflog.Debug(ctx, "Start delete of resource: aci_relation_to_imported_contract")
 	var data *FvRsConsIfResourceModel
 
 	// Read Terraform prior state data into the model
@@ -325,7 +325,7 @@ func (r *FvRsConsIfResource) Delete(ctx context.Context, req resource.DeleteRequ
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Delete of resource aci_relation_to_consumed_contract_interface with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Delete of resource aci_relation_to_imported_contract with id '%s'", data.Id.ValueString()))
 	jsonPayload := GetDeleteJsonPayload(ctx, &resp.Diagnostics, "fvRsConsIf", data.Id.ValueString())
 	if resp.Diagnostics.HasError() {
 		return
@@ -334,18 +334,18 @@ func (r *FvRsConsIfResource) Delete(ctx context.Context, req resource.DeleteRequ
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_relation_to_consumed_contract_interface with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_relation_to_imported_contract with id '%s'", data.Id.ValueString()))
 }
 
 func (r *FvRsConsIfResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	tflog.Debug(ctx, "Start import state of resource: aci_relation_to_consumed_contract_interface")
+	tflog.Debug(ctx, "Start import state of resource: aci_relation_to_imported_contract")
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 
 	var stateData *FvRsConsIfResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
-	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_relation_to_consumed_contract_interface with id '%s'", stateData.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_relation_to_imported_contract with id '%s'", stateData.Id.ValueString()))
 
-	tflog.Debug(ctx, "End import of state resource: aci_relation_to_consumed_contract_interface")
+	tflog.Debug(ctx, "End import of state resource: aci_relation_to_imported_contract")
 }
 
 func getAndSetFvRsConsIfAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvRsConsIfResourceModel) {
