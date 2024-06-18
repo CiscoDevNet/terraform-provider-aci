@@ -248,9 +248,9 @@ fvSiteAssociated:
     resource_required:
       site_id: "0"
   resource_required:
-      siteId: "0"
+      site_id: "0"
   default_values:
-    siteId: "0"
+    site_id: "0"
   parents:
     - class_name: "fvCtx"
       parent_dependency: "fvTenant"
