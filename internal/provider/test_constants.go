@@ -66,9 +66,9 @@ resource "aci_vrf" "test" {
   name      = "test_vrf"
 }
 
-resource "aci_site_associated" "test" {
+resource "aci_associated_site" "test" {
   vrf_dn = aci_vrf.test.id
-  name   = "test_site_associated"
+  name   = "test_associated_site"
 }
 `
 
