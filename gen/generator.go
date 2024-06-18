@@ -193,10 +193,18 @@ func GetPropertyNameForLegacyAttribute(name string, legacyAttributes map[string]
 
 func GetLegacyChildAttribute(className, overwriteProperty string, property Property, legacyAttributes map[string]LegacyAttribute, legacyBlocks []LegacyBlock) string {
 
+	if className == "fvRsConsIf" {
+		log.Println(overwriteProperty)
+		log.Println(property)
+	}
+
 	for _, legacyBlock := range legacyBlocks {
 		if legacyBlock.ClassName == className {
 			for _, legacyAttribute := range legacyBlock.Attributes {
 				if strings.Contains(legacyAttribute.ReplacedBy.AttributeName, overwriteProperty) {
+					if className == "fvRsConsIf" {
+						log.Println(legacyAttribute.Name)
+					}
 					return legacyAttribute.Name
 				}
 			}
@@ -206,6 +214,9 @@ func GetLegacyChildAttribute(className, overwriteProperty string, property Prope
 
 	for _, legacyAttribute := range legacyAttributes {
 		if strings.Contains(legacyAttribute.ReplacedBy.AttributeName, overwriteProperty) {
+			if className == "fvRsConsIf" {
+				log.Println(className)
+			}
 			return Capitalize(className)
 		}
 	}

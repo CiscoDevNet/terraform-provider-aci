@@ -17,11 +17,11 @@ resource "aci_endpoint_security_group" "full_example_application_profile" {
       contract_name = aci_contract.example.name
     }
   ]
-  relation_to_consumed_contract_interfaces = [
+  relation_to_imported_contracts = [
     {
-      annotation              = "annotation_1"
-      priority                = "level1"
-      contract_interface_name = aci_contract_interface.example.name
+      annotation             = "annotation_1"
+      priority               = "level1"
+      imported_contract_name = aci_imported_contract.example.name
     }
   ]
   relation_to_intra_epg_contracts = [

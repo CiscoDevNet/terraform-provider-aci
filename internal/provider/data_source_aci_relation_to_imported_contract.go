@@ -28,21 +28,21 @@ type FvRsConsIfDataSource struct {
 }
 
 func (d *FvRsConsIfDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
-	tflog.Debug(ctx, "Start metadata of datasource: aci_relation_to_consumed_contract_interface")
-	resp.TypeName = req.ProviderTypeName + "_relation_to_consumed_contract_interface"
-	tflog.Debug(ctx, "End metadata of datasource: aci_relation_to_consumed_contract_interface")
+	tflog.Debug(ctx, "Start metadata of datasource: aci_relation_to_imported_contract")
+	resp.TypeName = req.ProviderTypeName + "_relation_to_imported_contract"
+	tflog.Debug(ctx, "End metadata of datasource: aci_relation_to_imported_contract")
 }
 
 func (d *FvRsConsIfDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
-	tflog.Debug(ctx, "Start schema of datasource: aci_relation_to_consumed_contract_interface")
+	tflog.Debug(ctx, "Start schema of datasource: aci_relation_to_imported_contract")
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "The relation_to_consumed_contract_interface datasource for the 'fvRsConsIf' class",
+		MarkdownDescription: "The relation_to_imported_contract datasource for the 'fvRsConsIf' class",
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Relation To Consumed Contract Interface object.",
+				MarkdownDescription: "The distinguished name (DN) of the Relation To Imported Contract object.",
 			},
 			"parent_dn": schema.StringAttribute{
 				Required:            true,
@@ -50,13 +50,13 @@ func (d *FvRsConsIfDataSource) Schema(ctx context.Context, req datasource.Schema
 			},
 			"annotation": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The annotation of the Relation To Consumed Contract Interface object.`,
+				MarkdownDescription: `The annotation of the Relation To Imported Contract object.`,
 			},
 			"priority": schema.StringAttribute{
 				Computed:            true,
 				MarkdownDescription: `The contract interface priority.`,
 			},
-			"contract_interface_name": schema.StringAttribute{
+			"imported_contract_name": schema.StringAttribute{
 				Required:            true,
 				MarkdownDescription: `The contract interface name.`,
 			},
@@ -94,11 +94,11 @@ func (d *FvRsConsIfDataSource) Schema(ctx context.Context, req datasource.Schema
 			},
 		},
 	}
-	tflog.Debug(ctx, "End schema of datasource: aci_relation_to_consumed_contract_interface")
+	tflog.Debug(ctx, "End schema of datasource: aci_relation_to_imported_contract")
 }
 
 func (d *FvRsConsIfDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	tflog.Debug(ctx, "Start configure of datasource: aci_relation_to_consumed_contract_interface")
+	tflog.Debug(ctx, "Start configure of datasource: aci_relation_to_imported_contract")
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
 		return
@@ -116,11 +116,11 @@ func (d *FvRsConsIfDataSource) Configure(ctx context.Context, req datasource.Con
 	}
 
 	d.client = client
-	tflog.Debug(ctx, "End configure of datasource: aci_relation_to_consumed_contract_interface")
+	tflog.Debug(ctx, "End configure of datasource: aci_relation_to_imported_contract")
 }
 
 func (d *FvRsConsIfDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	tflog.Debug(ctx, "Start read of datasource: aci_relation_to_consumed_contract_interface")
+	tflog.Debug(ctx, "Start read of datasource: aci_relation_to_imported_contract")
 	var data *FvRsConsIfResourceModel
 
 	// Read Terraform configuration data into the model
@@ -135,19 +135,19 @@ func (d *FvRsConsIfDataSource) Read(ctx context.Context, req datasource.ReadRequ
 	// Create a copy of the Id for when not found during getAndSetFvRsConsIfAttributes
 	cachedId := data.Id.ValueString()
 
-	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_relation_to_consumed_contract_interface with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_relation_to_imported_contract with id '%s'", data.Id.ValueString()))
 
 	getAndSetFvRsConsIfAttributes(ctx, &resp.Diagnostics, d.client, data)
 
 	if data.Id.IsNull() {
 		resp.Diagnostics.AddError(
-			"Failed to read aci_relation_to_consumed_contract_interface data source",
-			fmt.Sprintf("The aci_relation_to_consumed_contract_interface data source with id '%s' has not been found", cachedId),
+			"Failed to read aci_relation_to_imported_contract data source",
+			fmt.Sprintf("The aci_relation_to_imported_contract data source with id '%s' has not been found", cachedId),
 		)
 		return
 	}
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_relation_to_consumed_contract_interface with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_relation_to_imported_contract with id '%s'", data.Id.ValueString()))
 }

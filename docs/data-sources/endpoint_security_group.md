@@ -62,10 +62,10 @@ data "aci_endpoint_security_group" "example_application_profile" {
   * `priority` (prio) - (string) The system class determines the quality of service and priority for the consumer traffic.
   * `contract_name` (tnVzBrCPName) - (string) The consumer contract name.
 
-* `relation_to_consumed_contract_interfaces` - (list) A list of Relation To Consumed Contract Interfaces (ACI object [fvRsConsIf](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsConsIf/overview)) pointing to Contract Interface (ACI Object [vzCPIf](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzCPIf/overview)). This attribute is supported in ACI versions: 1.0(1e) and later.
-  * `annotation` (annotation) - (string) The annotation of the Relation To Consumed Contract Interface object.
+* `relation_to_imported_contracts` - (list) A list of Relation To Imported Contracts (ACI object [fvRsConsIf](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsConsIf/overview)) pointing to Imported Contract (ACI Object [vzCPIf](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzCPIf/overview)). This attribute is supported in ACI versions: 1.0(1e) and later.
+  * `annotation` (annotation) - (string) The annotation of the Relation To Imported Contract object.
   * `priority` (prio) - (string) The contract interface priority.
-  * `contract_interface_name` (tnVzCPIfName) - (string) The contract interface name.
+  * `imported_contract_name` (tnVzCPIfName) - (string) The contract interface name.
 
 * `relation_to_intra_epg_contracts` - (list) A list of Relation To Intra Epg Contracts (ACI object [fvRsIntraEpg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsIntraEpg/overview)) pointing to Contract (ACI Object [vzBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzBrCP/overview)). This attribute is supported in ACI versions: 3.0(1k) and later.
   * `annotation` (annotation) - (string) The annotation of the Relation To Intra Epg Contract object.
