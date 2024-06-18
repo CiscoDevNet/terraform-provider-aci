@@ -64,11 +64,11 @@ resource "aci_endpoint_security_group" "full_example_application_profile" {
       contract_name = aci_contract.example.name
     }
   ]
-  relation_to_consumed_contract_interfaces = [
+  relation_to_imported_contracts = [
     {
-      annotation              = "annotation_1"
-      priority                = "level1"
-      contract_interface_name = aci_contract_interface.example.name
+      annotation             = "annotation_1"
+      priority               = "level1"
+      imported_contract_name = aci_imported_contract.example.name
     }
   ]
   relation_to_intra_epg_contracts = [
@@ -161,15 +161,15 @@ All examples for the Endpoint Security Group resource can be found in the [examp
       - Default: `unspecified`
       - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
 
-* `relation_to_consumed_contract_interfaces` - (list) A list of Relation To Consumed Contract Interfaces (ACI object [fvRsConsIf](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsConsIf/overview)) pointing to Contract Interface (ACI Object [vzCPIf](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzCPIf/overview)) which can be configured using the [aci_contract_interface](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/contract_interface) resource. This attribute is supported in ACI versions: 1.0(1e) and later.
+* `relation_to_imported_contracts` - (list) A list of Relation To Imported Contracts (ACI object [fvRsConsIf](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsConsIf/overview)) pointing to Imported Contract (ACI Object [vzCPIf](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzCPIf/overview)) which can be configured using the [aci_imported_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/imported_contract) resource. This attribute is supported in ACI versions: 1.0(1e) and later.
   
   #### Required ####
   
-  * `contract_interface_name` (tnVzCPIfName) - (string) The contract interface name. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/contract_interface) with `aci_contract_interface.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/contract_interface) with `data.aci_contract_interface.example.name`.
+  * `imported_contract_name` (tnVzCPIfName) - (string) The contract interface name. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/imported_contract) with `aci_imported_contract.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/imported_contract) with `data.aci_imported_contract.example.name`.
 
   #### Optional ####
     
-  * `annotation` (annotation) - (string) The annotation of the Relation To Consumed Contract Interface object.
+  * `annotation` (annotation) - (string) The annotation of the Relation To Imported Contract object.
       - Default: `orchestrator:terraform`
   * `priority` (prio) - (string) The contract interface priority.
       - Default: `unspecified`

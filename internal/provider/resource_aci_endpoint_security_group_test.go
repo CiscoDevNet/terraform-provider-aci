@@ -107,12 +107,6 @@ func TestAccResourceFvESgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "annotations.1.value", "value_2"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contract_interfaces.0.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contract_interfaces.0.contract_interface_name", "contract_interface_name_0"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contract_interfaces.0.priority", "level1"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contract_interfaces.1.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contract_interfaces.1.contract_interface_name", "contract_interface_name_1"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contract_interfaces.1.priority", "level2"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contracts.0.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contracts.0.contract_name", "contract_name_0"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contracts.0.priority", "level1"),
@@ -123,6 +117,12 @@ func TestAccResourceFvESgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_contract_masters.0.target_dn", "uni/tn-test_tenant/ap-test_ap/esg-esg_0"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_contract_masters.1.annotation", "annotation_2"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_contract_masters.1.target_dn", "uni/tn-test_tenant/ap-test_ap/esg-esg_1"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_imported_contracts.0.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_imported_contracts.0.imported_contract_name", "imported_contract_name_0"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_imported_contracts.0.priority", "level1"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_imported_contracts.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_imported_contracts.1.imported_contract_name", "imported_contract_name_1"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_imported_contracts.1.priority", "level2"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_intra_epg_contracts.0.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_intra_epg_contracts.0.contract_name", "contract_name_0"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_intra_epg_contracts.1.annotation", "annotation_2"),
@@ -162,12 +162,6 @@ func TestAccResourceFvESgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "annotations.1.value", "value_2"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contract_interfaces.0.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contract_interfaces.0.contract_interface_name", "contract_interface_name_0"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contract_interfaces.0.priority", "level1"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contract_interfaces.1.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contract_interfaces.1.contract_interface_name", "contract_interface_name_1"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contract_interfaces.1.priority", "level2"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contracts.0.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contracts.0.contract_name", "contract_name_0"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contracts.0.priority", "level1"),
@@ -178,6 +172,12 @@ func TestAccResourceFvESgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_contract_masters.0.target_dn", "uni/tn-test_tenant/ap-test_ap/esg-esg_0"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_contract_masters.1.annotation", "annotation_2"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_contract_masters.1.target_dn", "uni/tn-test_tenant/ap-test_ap/esg-esg_1"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_imported_contracts.0.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_imported_contracts.0.imported_contract_name", "imported_contract_name_0"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_imported_contracts.0.priority", "level1"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_imported_contracts.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_imported_contracts.1.imported_contract_name", "imported_contract_name_1"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_imported_contracts.1.priority", "level2"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_intra_epg_contracts.0.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_intra_epg_contracts.0.contract_name", "contract_name_0"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_intra_epg_contracts.1.annotation", "annotation_2"),
@@ -208,13 +208,6 @@ func TestAccResourceFvESgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "annotations.1.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contract_interfaces.0.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contract_interfaces.0.contract_interface_name", "contract_interface_name_0"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contract_interfaces.0.priority", "level1"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contract_interfaces.1.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contract_interfaces.1.contract_interface_name", "contract_interface_name_1"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contract_interfaces.1.priority", "level2"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contract_interfaces.#", "2"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contracts.0.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contracts.0.contract_name", "contract_name_0"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contracts.0.priority", "level1"),
@@ -227,6 +220,13 @@ func TestAccResourceFvESgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_contract_masters.1.annotation", "annotation_2"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_contract_masters.1.target_dn", "uni/tn-test_tenant/ap-test_ap/esg-esg_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_contract_masters.#", "2"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_imported_contracts.0.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_imported_contracts.0.imported_contract_name", "imported_contract_name_0"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_imported_contracts.0.priority", "level1"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_imported_contracts.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_imported_contracts.1.imported_contract_name", "imported_contract_name_1"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_imported_contracts.1.priority", "level2"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_imported_contracts.#", "2"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_intra_epg_contracts.0.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_intra_epg_contracts.0.contract_name", "contract_name_0"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_intra_epg_contracts.1.annotation", "annotation_2"),
@@ -259,10 +259,6 @@ func TestAccResourceFvESgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "annotations.0.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "annotations.0.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contract_interfaces.0.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contract_interfaces.0.contract_interface_name", "contract_interface_name_1"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contract_interfaces.0.priority", "level2"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contract_interfaces.#", "1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contracts.0.annotation", "annotation_2"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contracts.0.contract_name", "contract_name_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contracts.0.priority", "level2"),
@@ -270,6 +266,10 @@ func TestAccResourceFvESgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_contract_masters.0.annotation", "annotation_2"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_contract_masters.0.target_dn", "uni/tn-test_tenant/ap-test_ap/esg-esg_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_contract_masters.#", "1"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_imported_contracts.0.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_imported_contracts.0.imported_contract_name", "imported_contract_name_1"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_imported_contracts.0.priority", "level2"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_imported_contracts.#", "1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_intra_epg_contracts.0.annotation", "annotation_2"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_intra_epg_contracts.0.contract_name", "contract_name_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_intra_epg_contracts.#", "1"),
@@ -292,9 +292,9 @@ func TestAccResourceFvESgWithFvAp(t *testing.T) {
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "annotations.#", "0"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contract_interfaces.#", "0"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contracts.#", "0"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_contract_masters.#", "0"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_imported_contracts.#", "0"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_intra_epg_contracts.#", "0"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_provided_contracts.#", "0"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_vrf.0.annotation", "annotation_1"),
@@ -368,18 +368,6 @@ resource "aci_endpoint_security_group" "test" {
 	  value = "value_2"
 	},
   ]
-  relation_to_consumed_contract_interfaces = [
-	{
-	  annotation = "annotation_1"
-	  contract_interface_name = "contract_interface_name_0"
-	  priority = "level1"
-	},
-	{
-	  annotation = "annotation_2"
-	  contract_interface_name = "contract_interface_name_1"
-	  priority = "level2"
-	},
-  ]
   relation_to_consumed_contracts = [
 	{
 	  annotation = "annotation_1"
@@ -400,6 +388,18 @@ resource "aci_endpoint_security_group" "test" {
 	{
 	  annotation = "annotation_2"
 	  target_dn = aci_endpoint_security_group.test_1.id
+	},
+  ]
+  relation_to_imported_contracts = [
+	{
+	  annotation = "annotation_1"
+	  imported_contract_name = "imported_contract_name_0"
+	  priority = "level1"
+	},
+	{
+	  annotation = "annotation_2"
+	  imported_contract_name = "imported_contract_name_1"
+	  priority = "level2"
 	},
   ]
   relation_to_intra_epg_contracts = [
@@ -462,13 +462,6 @@ resource "aci_endpoint_security_group" "test" {
 	  value = "value_2"
 	},
   ]
-  relation_to_consumed_contract_interfaces = [ 
-	{
-	  annotation = "annotation_2"
-	  contract_interface_name = "contract_interface_name_1"
-	  priority = "level2"
-	},
-  ]
   relation_to_consumed_contracts = [ 
 	{
 	  annotation = "annotation_2"
@@ -480,6 +473,13 @@ resource "aci_endpoint_security_group" "test" {
 	{
 	  annotation = "annotation_2"
 	  target_dn = aci_endpoint_security_group.test_1.id
+	},
+  ]
+  relation_to_imported_contracts = [ 
+	{
+	  annotation = "annotation_2"
+	  imported_contract_name = "imported_contract_name_1"
+	  priority = "level2"
 	},
   ]
   relation_to_intra_epg_contracts = [ 
@@ -510,9 +510,9 @@ resource "aci_endpoint_security_group" "test" {
   parent_dn = aci_application_profile.test.id
   name = "test_name"
   annotations = []
-  relation_to_consumed_contract_interfaces = []
   relation_to_consumed_contracts = []
   relation_to_contract_masters = []
+  relation_to_imported_contracts = []
   relation_to_intra_epg_contracts = []
   relation_to_provided_contracts = []
   tags = []

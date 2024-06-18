@@ -137,20 +137,20 @@ func (d *FvESgDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 					},
 				},
 			},
-			"relation_to_consumed_contract_interfaces": schema.SetNestedAttribute{
+			"relation_to_imported_contracts": schema.SetNestedAttribute{
 				MarkdownDescription: `A contract for which the EPG will be a consumer.`,
 				Computed:            true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"annotation": schema.StringAttribute{
 							Computed:            true,
-							MarkdownDescription: `The annotation of the Relation To Consumed Contract Interface object.`,
+							MarkdownDescription: `The annotation of the Relation To Imported Contract object.`,
 						},
 						"priority": schema.StringAttribute{
 							Computed:            true,
 							MarkdownDescription: `The contract interface priority.`,
 						},
-						"contract_interface_name": schema.StringAttribute{
+						"imported_contract_name": schema.StringAttribute{
 							Computed:            true,
 							MarkdownDescription: `The contract interface name.`,
 						},
@@ -286,11 +286,11 @@ func (d *FvESgDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 					Attributes: map[string]schema.Attribute{
 						"target_dn": schema.StringAttribute{
 							Computed:           true,
-							DeprecationMessage: "Attribute 'target_dn' will be deprecated soon, please refer to 'relation_to_consumed_contract_interfaces.contract_interface_name' instead",
+							DeprecationMessage: "Attribute 'target_dn' will be deprecated soon, please refer to 'relation_to_imported_contracts.imported_contract_name' instead",
 						},
 						"prio": schema.StringAttribute{
 							Computed:           true,
-							DeprecationMessage: "Attribute 'prio' will be deprecated soon, please refer to 'relation_to_consumed_contract_interfaces.priority' instead",
+							DeprecationMessage: "Attribute 'prio' will be deprecated soon, please refer to 'relation_to_imported_contracts.priority' instead",
 						},
 					},
 				},

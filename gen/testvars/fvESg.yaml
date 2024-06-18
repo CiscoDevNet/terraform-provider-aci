@@ -41,14 +41,14 @@ children:
       priority: "level2"
       contract_name: "contract_name_1"
       
-  relation_to_consumed_contract_interfaces:
+  relation_to_imported_contracts:
     - annotation: "annotation_1"
       priority: "level1"
-      contract_interface_name: "contract_interface_name_0"
+      imported_contract_name: "imported_contract_name_0"
       
     - annotation: "annotation_2"
       priority: "level2"
-      contract_interface_name: "contract_interface_name_1"
+      imported_contract_name: "imported_contract_name_1"
       
   relation_to_intra_epg_contracts:
     - annotation: "annotation_1"
