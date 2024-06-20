@@ -268,8 +268,8 @@ fvRemoteId:
   test_values:
     all:
       site_id: "0" 
-      remote_vrf_pc_tag: "0"
-      remote_pc_tag: "0"
+      remote_vrf_pc_tag: "16386"
+      remote_pc_tag: "2818057"
     default:
       site_id: "0"
       remote_vrf_pc_tag: "0"

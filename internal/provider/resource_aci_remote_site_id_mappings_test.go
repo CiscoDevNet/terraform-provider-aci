@@ -43,8 +43,8 @@ func TestAccResourceFvRemoteIdWithFvSiteAssociated(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "name_alias", "name_alias"),
 					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "owner_key", "owner_key"),
 					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "owner_tag", "owner_tag"),
-					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "remote_pc_tag", "0"),
-					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "remote_vrf_pc_tag", "0"),
+					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "remote_pc_tag", "2818057"),
+					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "remote_vrf_pc_tag", "16386"),
 					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "site_id", "0"),
 				),
 			},
@@ -197,8 +197,8 @@ resource "aci_remote_site_id_mappings" "test" {
   name_alias = "name_alias"
   owner_key = "owner_key"
   owner_tag = "owner_tag"
-  remote_pc_tag = "0"
-  remote_vrf_pc_tag = "0"
+  remote_pc_tag = "2818057"
+  remote_vrf_pc_tag = "16386"
   site_id = "0"
 }
 `
