@@ -293,10 +293,10 @@ mplsNodeSidP:
 netflowRecordPol:
   overwrites:
     match: "match_parameters"
-    collect: "collect_paramaters"
+    collect: "collect_parameters"
   documentation:
     match: "Match parameters of the %s object."
-    collect: "Collect paramaters of the %s object."
+    collect: "Collect parameters of the %s object."
   default_values:
     parent_dn: "uni/infra"
   remove_valid_values:
@@ -305,10 +305,10 @@ netflowRecordPol:
   test_values:
     default:
       match_parameters: []
-      collect_paramaters:
+      collect_parameters:
         - "src-intf"
     all:
-      collect_paramaters: 
+      collect_parameters: 
         - "count-bytes"
         - "src-intf"
       match_parameters: 

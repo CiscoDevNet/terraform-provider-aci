@@ -2,7 +2,7 @@
 resource "aci_netflow_record_policy" "full_example_tenant" {
   parent_dn          = aci_tenant.example.id
   annotation         = "annotation"
-  collect_paramaters = ["count-bytes", "src-intf"]
+  collect_parameters = ["count-bytes", "src-intf"]
   description        = "description"
   match_parameters   = ["dst-ip", "src-ip"]
   name               = "netfow_record"

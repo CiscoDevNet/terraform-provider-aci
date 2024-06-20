@@ -58,7 +58,7 @@ data "aci_netflow_record_policy" "example_tenant" {
 
 * `id` - (string) The distinguished name (DN) of the Netflow Record Policy object.
 * `annotation` (annotation) - (string) The annotation of the Netflow Record Policy object.
-* `collect_paramaters` (collect) - (list) Collect paramaters of the Netflow Record Policy object.
+* `collect_parameters` (collect) - (list) Collect parameters of the Netflow Record Policy object.
 * `description` (descr) - (string) The description of the Netflow Record Policy object.
 * `match_parameters` (match) - (list) Match parameters of the Netflow Record Policy object.
 * `name_alias` (nameAlias) - (string) The name alias of the Netflow Record Policy object.

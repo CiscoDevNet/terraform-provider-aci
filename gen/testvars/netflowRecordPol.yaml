@@ -4,7 +4,7 @@
 
 default:
   annotation: "orchestrator:terraform"
-  collect_paramaters: 
+  collect_parameters: 
     - "src-intf"
   description: ""
   match_parameters: []
@@ -23,7 +23,7 @@ resource_required:
 
 all:
   annotation: "annotation"
-  collect_paramaters: 
+  collect_parameters: 
     - "count-bytes"
     - "src-intf"
   description: "description"

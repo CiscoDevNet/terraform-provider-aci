@@ -53,7 +53,7 @@ The configuration snippet below shows all possible attributes of the Netflow Rec
 resource "aci_netflow_record_policy" "full_example_tenant" {
   parent_dn          = aci_tenant.example.id
   annotation         = "annotation"
-  collect_paramaters = ["count-bytes", "src-intf"]
+  collect_parameters = ["count-bytes", "src-intf"]
   description        = "description"
   match_parameters   = ["dst-ip", "src-ip"]
   name               = "netfow_record"
@@ -98,7 +98,7 @@ All examples for the Netflow Record Policy resource can be found in the [example
   
 * `annotation` (annotation) - (string) The annotation of the Netflow Record Policy object.
   - Default: `orchestrator:terraform`
-* `collect_paramaters` (collect) - (list) Collect paramaters of the Netflow Record Policy object.
+* `collect_parameters` (collect) - (list) Collect parameters of the Netflow Record Policy object.
   - Default: `src-intf`.
   - Valid Values: `count-bytes`, `count-pkts`, `pkt-disp`, `sampler-id`, `src-intf`, `tcp-flags`, `ts-first`, `ts-recent`.
 * `description` (descr) - (string) The description of the Netflow Record Policy object.

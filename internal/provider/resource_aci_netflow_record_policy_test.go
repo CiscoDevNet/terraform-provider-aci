@@ -23,8 +23,8 @@ func TestAccResourceNetflowRecordPolWithFvTenant(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "name", "netfow_record"),
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "collect_paramaters.#", "1"),
-					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "collect_paramaters.0", "src-intf"),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "collect_parameters.#", "1"),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "collect_parameters.0", "src-intf"),
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "match_parameters.#", "0"),
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "name_alias", ""),
@@ -39,9 +39,9 @@ func TestAccResourceNetflowRecordPolWithFvTenant(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "name", "netfow_record"),
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "annotation", "annotation"),
-					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "collect_paramaters.#", "2"),
-					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "collect_paramaters.0", "count-bytes"),
-					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "collect_paramaters.1", "src-intf"),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "collect_parameters.#", "2"),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "collect_parameters.0", "count-bytes"),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "collect_parameters.1", "src-intf"),
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "description", "description"),
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "match_parameters.#", "2"),
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "match_parameters.0", "dst-ip"),
@@ -66,8 +66,8 @@ func TestAccResourceNetflowRecordPolWithFvTenant(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "name", "netfow_record"),
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "collect_paramaters.#", "1"),
-					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "collect_paramaters.0", "src-intf"),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "collect_parameters.#", "1"),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "collect_parameters.0", "src-intf"),
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "match_parameters.#", "0"),
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "name_alias", ""),
@@ -83,8 +83,8 @@ func TestAccResourceNetflowRecordPolWithFvTenant(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "name", "netfow_record"),
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "collect_paramaters.#", "1"),
-					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "collect_paramaters.0", "src-intf"),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "collect_parameters.#", "1"),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "collect_parameters.0", "src-intf"),
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "match_parameters.#", "0"),
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "name_alias", ""),
@@ -99,8 +99,8 @@ func TestAccResourceNetflowRecordPolWithFvTenant(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "name", "netfow_record"),
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "collect_paramaters.#", "1"),
-					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "collect_paramaters.0", "src-intf"),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "collect_parameters.#", "1"),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "collect_parameters.0", "src-intf"),
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "match_parameters.#", "0"),
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "name_alias", ""),
@@ -124,8 +124,8 @@ func TestAccResourceNetflowRecordPolWithFvTenant(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "name", "netfow_record"),
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "collect_paramaters.#", "1"),
-					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "collect_paramaters.0", "src-intf"),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "collect_parameters.#", "1"),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "collect_parameters.0", "src-intf"),
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "match_parameters.#", "0"),
 					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "name_alias", ""),
@@ -196,7 +196,7 @@ resource "aci_netflow_record_policy" "test" {
   parent_dn = aci_tenant.test.id
   name = "netfow_record"
   annotation = "annotation"
-  collect_paramaters = ["count-bytes", "src-intf"]
+  collect_parameters = ["count-bytes", "src-intf"]
   description = "description"
   match_parameters = ["dst-ip", "src-ip"]
   name_alias = "name_alias"
@@ -210,7 +210,7 @@ resource "aci_netflow_record_policy" "test" {
   parent_dn = aci_tenant.test.id
   name = "netfow_record"
   annotation = "orchestrator:terraform"
-  collect_paramaters = ["src-intf"]
+  collect_parameters = ["src-intf"]
   description = ""
   match_parameters = []
   name_alias = ""

@@ -47,7 +47,7 @@ type NetflowRecordPolResourceModel struct {
 	Id            types.String `tfsdk:"id"`
 	ParentDn      types.String `tfsdk:"parent_dn"`
 	Annotation    types.String `tfsdk:"annotation"`
-	Collect       types.Set    `tfsdk:"collect_paramaters"`
+	Collect       types.Set    `tfsdk:"collect_parameters"`
 	Descr         types.String `tfsdk:"description"`
 	Match         types.Set    `tfsdk:"match_parameters"`
 	Name          types.String `tfsdk:"name"`
@@ -113,8 +113,8 @@ func (r *NetflowRecordPolResource) Schema(ctx context.Context, req resource.Sche
 				Default:             stringdefault.StaticString(globalAnnotation),
 				MarkdownDescription: `The annotation of the Netflow Record Policy object.`,
 			},
-			"collect_paramaters": schema.SetAttribute{
-				MarkdownDescription: `Collect paramaters of the Netflow Record Policy object.`,
+			"collect_parameters": schema.SetAttribute{
+				MarkdownDescription: `Collect parameters of the Netflow Record Policy object.`,
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
