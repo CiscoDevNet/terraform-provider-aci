@@ -277,6 +277,12 @@ func resourceAciVRFCreate(ctx context.Context, d *schema.ResourceData, m interfa
 	} else {
 		fvCtxAttr.Annotation = "{}"
 	}
+	if PcTag, ok := d.GetOk("pc_tag"); ok {
+		fvCtxAttr.PcTag = PcTag.(string)
+	}
+	if Scope, ok := d.GetOk("scope"); ok {
+		fvCtxAttr.Scope = Scope.(string)
+	}
 	if BdEnforcedEnable, ok := d.GetOk("bd_enforced_enable"); ok {
 		fvCtxAttr.BdEnforcedEnable = BdEnforcedEnable.(string)
 	}
@@ -474,6 +480,12 @@ func resourceAciVRFUpdate(ctx context.Context, d *schema.ResourceData, m interfa
 		fvCtxAttr.Annotation = Annotation.(string)
 	} else {
 		fvCtxAttr.Annotation = "{}"
+	}
+	if PcTag, ok := d.GetOk("pc_tag"); ok {
+		fvCtxAttr.PcTag = PcTag.(string)
+	}
+	if Scope, ok := d.GetOk("scope"); ok {
+		fvCtxAttr.Scope = Scope.(string)
 	}
 	if BdEnforcedEnable, ok := d.GetOk("bd_enforced_enable"); ok {
 		fvCtxAttr.BdEnforcedEnable = BdEnforcedEnable.(string)
