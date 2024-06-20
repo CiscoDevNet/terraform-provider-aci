@@ -12,69 +12,69 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ datasource.DataSource = &NetflowRecordPolDataSource{}
+var _ datasource.DataSource = &NetflowExporterPolDataSource{}
 
-func NewNetflowRecordPolDataSource() datasource.DataSource {
-	return &NetflowRecordPolDataSource{}
+func NewNetflowExporterPolDataSource() datasource.DataSource {
+	return &NetflowExporterPolDataSource{}
 }
 
-// NetflowRecordPolDataSource defines the data source implementation.
-type NetflowRecordPolDataSource struct {
+// NetflowExporterPolDataSource defines the data source implementation.
+type NetflowExporterPolDataSource struct {
 	client *client.Client
 }
 
-func (d *NetflowRecordPolDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
-	tflog.Debug(ctx, "Start metadata of datasource: aci_netflow_record_policy")
-	resp.TypeName = req.ProviderTypeName + "_netflow_record_policy"
-	tflog.Debug(ctx, "End metadata of datasource: aci_netflow_record_policy")
+func (d *NetflowExporterPolDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
+	tflog.Debug(ctx, "Start metadata of datasource: aci_netflow_exporter_policy")
+	resp.TypeName = req.ProviderTypeName + "_netflow_exporter_policy"
+	tflog.Debug(ctx, "End metadata of datasource: aci_netflow_exporter_policy")
 }
 
-func (d *NetflowRecordPolDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
-	tflog.Debug(ctx, "Start schema of datasource: aci_netflow_record_policy")
+func (d *NetflowExporterPolDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+	tflog.Debug(ctx, "Start schema of datasource: aci_netflow_exporter_policy")
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "The netflow_record_policy datasource for the 'netflowRecordPol' class",
+		MarkdownDescription: "The netflow_exporter_policy datasource for the 'netflowExporterPol' class",
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Netflow Record Policy object.",
+				MarkdownDescription: "The distinguished name (DN) of the Netflow Exporter Policy object.",
 			},
 			"parent_dn": schema.StringAttribute{
-				Optional:            true,
+				Required:            true,
 				MarkdownDescription: "The distinguished name (DN) of the parent object.",
 			},
 			"annotation": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The annotation of the Netflow Record Policy object.`,
-			},
-			"collect_paramaters": schema.SetAttribute{
-				Computed:            true,
-				MarkdownDescription: `Collect paramaters of the Netflow Record Policy object.`,
-				ElementType:         types.StringType,
+				MarkdownDescription: `The annotation of the Netflow Exporter Policy object.`,
 			},
 			"description": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The description of the Netflow Record Policy object.`,
+				MarkdownDescription: `The description of the Netflow Exporter Policy object.`,
 			},
-			"match_parameters": schema.SetAttribute{
+			"dscp": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `Match parameters of the Netflow Record Policy object.`,
-				ElementType:         types.StringType,
+				MarkdownDescription: `IP dscp value.`,
+			},
+			"dst_addr": schema.StringAttribute{
+				Computed:            true,
+				MarkdownDescription: `Remote node destination IP address.`,
+			},
+			"dst_port": schema.StringAttribute{
+				Computed:            true,
+				MarkdownDescription: `Remote node destination port.`,
 			},
 			"name": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: `The name of the Netflow Record Policy object.`,
+				MarkdownDescription: `The name of the Netflow Exporter Policy object.`,
 			},
 			"name_alias": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The name alias of the Netflow Record Policy object.`,
+				MarkdownDescription: `The name alias of the Netflow Exporter Policy object.`,
 			},
 			"owner_key": schema.StringAttribute{
 				Computed:            true,
@@ -83,6 +83,18 @@ func (d *NetflowRecordPolDataSource) Schema(ctx context.Context, req datasource.
 			"owner_tag": schema.StringAttribute{
 				Computed:            true,
 				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
+			},
+			"source_ip_type": schema.StringAttribute{
+				Computed:            true,
+				MarkdownDescription: `Type of Exporter Src IP Address: Can be one of the available management IP Address for a given leaf or a custom IP Address.`,
+			},
+			"src_addr": schema.StringAttribute{
+				Computed:            true,
+				MarkdownDescription: `Source IP address.`,
+			},
+			"ver": schema.StringAttribute{
+				Computed:            true,
+				MarkdownDescription: `Collector version.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,
@@ -118,11 +130,11 @@ func (d *NetflowRecordPolDataSource) Schema(ctx context.Context, req datasource.
 			},
 		},
 	}
-	tflog.Debug(ctx, "End schema of datasource: aci_netflow_record_policy")
+	tflog.Debug(ctx, "End schema of datasource: aci_netflow_exporter_policy")
 }
 
-func (d *NetflowRecordPolDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	tflog.Debug(ctx, "Start configure of datasource: aci_netflow_record_policy")
+func (d *NetflowExporterPolDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
+	tflog.Debug(ctx, "Start configure of datasource: aci_netflow_exporter_policy")
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
 		return
@@ -140,12 +152,12 @@ func (d *NetflowRecordPolDataSource) Configure(ctx context.Context, req datasour
 	}
 
 	d.client = client
-	tflog.Debug(ctx, "End configure of datasource: aci_netflow_record_policy")
+	tflog.Debug(ctx, "End configure of datasource: aci_netflow_exporter_policy")
 }
 
-func (d *NetflowRecordPolDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	tflog.Debug(ctx, "Start read of datasource: aci_netflow_record_policy")
-	var data *NetflowRecordPolResourceModel
+func (d *NetflowExporterPolDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
+	tflog.Debug(ctx, "Start read of datasource: aci_netflow_exporter_policy")
+	var data *NetflowExporterPolResourceModel
 
 	// Read Terraform configuration data into the model
 	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
@@ -154,28 +166,24 @@ func (d *NetflowRecordPolDataSource) Read(ctx context.Context, req datasource.Re
 		return
 	}
 
-	if data.ParentDn.IsNull() || data.ParentDn.IsUnknown() {
-		data.ParentDn = basetypes.NewStringValue("uni/infra")
-	}
+	setNetflowExporterPolId(ctx, data)
 
-	setNetflowRecordPolId(ctx, data)
-
-	// Create a copy of the Id for when not found during getAndSetNetflowRecordPolAttributes
+	// Create a copy of the Id for when not found during getAndSetNetflowExporterPolAttributes
 	cachedId := data.Id.ValueString()
 
-	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_netflow_record_policy with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_netflow_exporter_policy with id '%s'", data.Id.ValueString()))
 
-	getAndSetNetflowRecordPolAttributes(ctx, &resp.Diagnostics, d.client, data)
+	getAndSetNetflowExporterPolAttributes(ctx, &resp.Diagnostics, d.client, data)
 
 	if data.Id.IsNull() {
 		resp.Diagnostics.AddError(
-			"Failed to read aci_netflow_record_policy data source",
-			fmt.Sprintf("The aci_netflow_record_policy data source with id '%s' has not been found", cachedId),
+			"Failed to read aci_netflow_exporter_policy data source",
+			fmt.Sprintf("The aci_netflow_exporter_policy data source with id '%s' has not been found", cachedId),
 		)
 		return
 	}
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_netflow_record_policy with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_netflow_exporter_policy with id '%s'", data.Id.ValueString()))
 }

@@ -16,6 +16,8 @@ datasource_required:
   segment_id: "1"
 
 resource_required:
+  loopback_address: "1.1.1.1"
+  name: "node_sid_profile"
   segment_id: "1"
 
 all:

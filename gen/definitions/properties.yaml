@@ -290,36 +290,28 @@ mplsNodeSidP:
       parent_dependency: "l3extRsNodeL3OutAtt"
       parent_dn: "aci_logical_node_to_fabric_node.test.id"
 
-netflowRecordPol:
-  overwrites:
-    match: "match_parameters"
-    collect: "collect_paramaters"
-  documentation:
-    match: "Match parameters of the %s object."
-    collect: "Collect paramaters of the %s object."
-  default_values:
-    parent_dn: "uni/infra"
-  remove_valid_values:
-    match: 
-      - "unspecified"
+netflowExporterPol:
   test_values:
     default:
-      match_parameters: []
-      collect_paramaters:
-        - "src-intf"
+      name: "netfow_exporter_default"
+      dst_addr: "2.2.2.1"
+      src_addr: "1.1.1.1/10"
+      dst_port: "https"
     all:
-      collect_paramaters: 
-        - "count-bytes"
-        - "src-intf"
-      match_parameters: 
-        - "dst-ip"
-        - "src-ip"
+      name: "netfow_exporter"
+      dst_addr: "12.12.12.1"
+      src_addr: "11.11.11.1/11"
+      dst_port: "ssh"
+      ver: "v9"
     resource_required:
-      name: "netfow_record"
+      src_addr: "1.1.1.1/10"
+      name: "netfow_exporter"
+      dst_addr: "2.2.2.1"
+      dst_port: "https"
     datasource_required:
-      name: "netfow_record"
+      name: "netfow_exporter"
     datasource_non_existing:
-      name: "netfow_record_non_existing"
+      name: "netfow_exporter_non_existing"
   parents:
     - class_name: "infraInfra"
       parent_dependency: ""

@@ -4,39 +4,39 @@
 # More details can be found in the [README](https://github.com/CiscoDevNet/terraform-provider-aci/blob/master/README.md).
 subcategory: "Tenant Policies"
 layout: "aci"
-page_title: "ACI: aci_netflow_record_policy"
-sidebar_current: "docs-aci-data-source-aci_netflow_record_policy"
+page_title: "ACI: aci_netflow_exporter_policy"
+sidebar_current: "docs-aci-data-source-aci_netflow_exporter_policy"
 description: |-
-  Data source for Netflow Record Policy
+  Data source for Netflow Exporter Policy
 ---
 
-# aci_netflow_record_policy #
+# aci_netflow_exporter_policy #
 
-Data source for Netflow Record Policy
+Data source for Netflow Exporter Policy
 
 ## API Information ##
 
-* Class: [netflowRecordPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRecordPol/overview)
+* Class: [netflowExporterPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowExporterPol/overview)
 
 * Supported in ACI versions: 2.2(1k) and later.
 
 * Distinguished Name Formats:
-  - `uni/infra/recordpol-{name}`
-  - `uni/tn-{name}/recordpol-{name}`
+  - `uni/infra/exporterpol-{name}`
+  - `uni/tn-{name}/exporterpol-{name}`
 
 ## GUI Information ##
 
 * Locations:
-  - `Tenants -> Policies -> NetFlow -> NetFlow Records`
-  - `Fabric -> Access Policies -> Policies -> Interface -> NetFlow -> NetFlow Records`
+  - `Tenants -> Policies -> NetFlow -> NetFlow Exporters`
+  - `Fabric -> Access Policies -> Policies -> Interface -> NetFlow -> NetFlow Exporters`
 
 ## Example Usage ##
 
 ```hcl
 
-data "aci_netflow_record_policy" "example_tenant" {
+data "aci_netflow_exporter_policy" "example_tenant" {
   parent_dn = aci_tenant.example.id
-  name      = "netfow_record"
+  name      = "netfow_exporter"
 }
 
 ```
@@ -50,20 +50,22 @@ data "aci_netflow_record_policy" "example_tenant" {
   - The distinquised name (DN) of classes below can be used but currently there is no available resource for it:
     - [infraInfra](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraInfra/overview)
 
-  - Default: `uni/infra`
-  
-* `name` (name) - (string) The name of the Netflow Record Policy object.
+* `name` (name) - (string) The name of the Netflow Exporter Policy object.
 
 ### Read-Only ###
 
-* `id` - (string) The distinguished name (DN) of the Netflow Record Policy object.
-* `annotation` (annotation) - (string) The annotation of the Netflow Record Policy object.
-* `collect_paramaters` (collect) - (list) Collect paramaters of the Netflow Record Policy object.
-* `description` (descr) - (string) The description of the Netflow Record Policy object.
-* `match_parameters` (match) - (list) Match parameters of the Netflow Record Policy object.
-* `name_alias` (nameAlias) - (string) The name alias of the Netflow Record Policy object.
+* `id` - (string) The distinguished name (DN) of the Netflow Exporter Policy object.
+* `annotation` (annotation) - (string) The annotation of the Netflow Exporter Policy object.
+* `description` (descr) - (string) The description of the Netflow Exporter Policy object.
+* `dscp` (dscp) - (string) IP dscp value.
+* `dst_addr` (dstAddr) - (string) Remote node destination IP address.
+* `dst_port` (dstPort) - (string) Remote node destination port.
+* `name_alias` (nameAlias) - (string) The name alias of the Netflow Exporter Policy object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
+* `source_ip_type` (sourceIpType) - (string) Type of Exporter Src IP Address: Can be one of the available management IP Address for a given leaf or a custom IP Address.
+* `src_addr` (srcAddr) - (string) Source IP address.
+* `ver` (ver) - (string) Collector version.
 
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
   * `key` (key) - (string) The key used to uniquely identify this configuration object.

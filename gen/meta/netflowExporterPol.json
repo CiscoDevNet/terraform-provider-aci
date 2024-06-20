@@ -1,29 +1,40 @@
 {
-    "netflow:RecordPol": {
+    "netflow:ExporterPol": {
         "contains": {
             "aaa:RbacAnnotation": "",
+            "fault:Counts": "",
             "fault:Delegate": "",
-            "netflow:RtMonitorToRecord": "",
+            "health:Inst": "",
+            "netflow:RsExporterToCtx": "",
+            "netflow:RsExporterToEPg": "",
+            "netflow:RsExporterToTopSystem": "",
+            "netflow:RtMonitorToExporter": "",
             "tag:Annotation": "",
             "tag:Tag": ""
         },
         "rnMap": {
             "annotationKey-": "tag:Annotation",
             "fd-": "fault:Delegate",
+            "fltCnts": "fault:Counts",
+            "health": "health:Inst",
             "rbacDom-": "aaa:RbacAnnotation",
-            "rtmonitorToRecord-": "netflow:RtMonitorToRecord",
+            "rsexporterToCtx": "netflow:RsExporterToCtx",
+            "rsexporterToEPg": "netflow:RsExporterToEPg",
+            "rsexporterToTopSystem": "netflow:RsExporterToTopSystem",
+            "rtmonitorToExporter-": "netflow:RtMonitorToExporter",
             "tagKey-": "tag:Tag"
         },
         "identifiedBy": [
             "name"
         ],
-        "rnFormat": "recordpol-{name}",
+        "rnFormat": "exporterpol-{name}",
         "containedBy": {
             "fv:Tenant": "",
             "infra:Infra": ""
         },
         "superClasses": [
-            "netflow:ARecordPol",
+            "netflow:AExporterPol",
+            "netflow:AFabExporterPol",
             "fabric:L2IfPol",
             "fabric:ProtoIfPol",
             "fabric:ProtoPol",
@@ -35,14 +46,16 @@
 
         },
         "relationFrom": {
-            "netflow:RtMonitorToRecord": "netflow:MonitorPol"
+            "netflow:RtMonitorToExporter": "netflow:MonitorPol"
         },
         "relationTo": {
-
+            "netflow:RsExporterToCtx": "fv:Ctx",
+            "netflow:RsExporterToEPg": "fv:EPg",
+            "netflow:RsExporterToTopSystem": "top:System"
         },
         "dnFormats": [
-            "uni/infra/recordpol-{name}",
-            "uni/tn-{name}/recordpol-{name}"
+            "uni/infra/exporterpol-{name}",
+            "uni/tn-{name}/exporterpol-{name}"
         ],
         "writeAccess": [
             "admin",
@@ -56,9 +69,9 @@
 
         },
         "events": {
-            "E4214402": "creation||netflow:RecordPol",
-            "E4214403": "modification||netflow:RecordPol",
-            "E4214404": "deletion||netflow:RecordPol"
+            "E4214399": "creation||netflow:ExporterPol",
+            "E4214400": "modification||netflow:ExporterPol",
+            "E4214401": "deletion||netflow:ExporterPol"
         },
         "stats": {
 
@@ -74,12 +87,12 @@
         "isExportable": true,
         "isPersistent": true,
         "isSubjectToQuota": false,
-        "isObservable": false,
+        "isObservable": true,
         "hasStats": false,
         "isStat": false,
         "isFaultable": false,
         "isDomainable": false,
-        "isHealthScorable": false,
+        "isHealthScorable": true,
         "shouldCollectHealthStats": false,
         "healthCollectionSource": "faults",
         "hasEventRules": false,
@@ -90,14 +103,14 @@
         "platformFlavors": [
 
         ],
-        "classId": "9203",
-        "className": "RecordPol",
+        "classId": "9207",
+        "className": "ExporterPol",
         "classPkg": "netflow",
         "featureTag": "",
         "moCategory": "Regular",
-        "label": "Flow Record",
+        "label": "External Collector Reachability",
         "comment": [
-            "Flow Record"
+            "Exporter information for bootstrapping the netflow Collection agent"
         ],
         "properties": {
             "annotation": {
@@ -106,7 +119,7 @@
                      "User annotation. Suggested format orchestrator:value"
                 ],
                 "isConfigurable": true,
-                "propGlobalId": "38544",
+                "propGlobalId": "38546",
                 "propLocalId": "8719",
                 "label": "Annotation",
                 "baseType": "string:Basic",
@@ -182,115 +195,13 @@
                 "isDeprecated": false,
                 "isHidden": false
             },
-            "collect": {
+            "descr": {
                 "versions": "2.2(1k)-",
                 "comment": [
-                     "Collect parameters for the flow record"
+                     "The description of this configuration item."
                 ],
                 "isConfigurable": true,
-                "propGlobalId": "27326",
-                "propLocalId": "5850",
-                "label": "Collect Params",
-                "baseType": "scalar:Bitmask64",
-                "modelType": "analytics:CollectParams",
-                "needsPropDelimiters": false,
-                "uitype": "bitmask",
-                "createOnly": false,
-                "readWrite": true,
-                "readOnly": false,
-                "isNaming": false,
-                "secure": false,
-                "implicit": false,
-                "mandatory": false,
-                "isOverride": false,
-                "isLike": true,
-                "likeProp": "analytics:RecordP:collect",
-                "validValues": [
-                     { "value": "1", "localName": "count-bytes",
-                         "platformFlavors": [
-
-                         ],
-                         "comment": [
-                             "Bytes counter"
-                         ],
-                         "label": "Bytes counter "},
-                     { "value": "2", "localName": "count-pkts",
-                         "platformFlavors": [
-
-                         ],
-                         "comment": [
-                             "Packets counter"
-                         ],
-                         "label": "Pkts counter "},
-                     { "value": "src-intf", "localName": "defaultValue",
-                         "platformFlavors": [
-
-                         ],
-                         "label": " "},
-                     { "value": "8", "localName": "pkt-disp",
-                         "platformFlavors": [
-
-                         ],
-                         "comment": [
-                             "Packet disposition"
-                         ],
-                         "label": "Pkt disposition "},
-                     { "value": "4", "localName": "sampler-id",
-                         "platformFlavors": [
-
-                         ],
-                         "comment": [
-                             "Sampler Id"
-                         ],
-                         "label": "Sampler ID "},
-                     { "value": "128", "localName": "src-intf",
-                         "platformFlavors": [
-
-                         ],
-                         "comment": [
-                             "Source interface"
-                         ],
-                         "label": "Source Interface "},
-                     { "value": "64", "localName": "tcp-flags",
-                         "platformFlavors": [
-
-                         ],
-                         "comment": [
-                             "TCP flags"
-                         ],
-                         "label": "TCP flags "},
-                     { "value": "16", "localName": "ts-first",
-                         "platformFlavors": [
-
-                         ],
-                         "comment": [
-                             "First packet timestamp"
-                         ],
-                         "label": "First pkt timestamp "},
-                     { "value": "32", "localName": "ts-recent",
-                         "platformFlavors": [
-
-                         ],
-                         "comment": [
-                             "Recent packet timestamp"
-                         ],
-                         "label": "Recent pkt timestamp "}
-                ],
-                "default": "src-intf",
-                "platformFlavors": [
-
-                ],
-                "isNxosConverged": false,
-                "isDeprecated": false,
-                "isHidden": false
-            },
-            "descr": {
-                "versions": "1.0(1e)-",
-                "comment": [
-                     "Specifies a description of the policy definition."
-                ],
-                "isConfigurable": true,
-                "propGlobalId": "5579",
+                "propGlobalId": "27338",
                 "propLocalId": "28",
                 "label": "Description",
                 "baseType": "string:Basic",
@@ -304,9 +215,8 @@
                 "secure": false,
                 "implicit": false,
                 "mandatory": false,
-                "isOverride": false,
-                "isLike": true,
-                "likeProp": "naming:Described:descr",
+                "isOverride": true,
+                "isLike": false,
                 "validators": [
                      {"min" : 0, "max": 128,
                          "regexs": [
@@ -350,13 +260,347 @@
                 "isDeprecated": false,
                 "isHidden": false
             },
+            "dscp": {
+                "versions": "2.3(1e)-",
+                "comment": [
+                     "IP dscp value"
+                ],
+                "isConfigurable": true,
+                "propGlobalId": "33153",
+                "propLocalId": "978",
+                "label": "QoS DSCP Value",
+                "baseType": "scalar:UByte",
+                "modelType": "qosp:DscpCP",
+                "needsPropDelimiters": false,
+                "uitype": "number",
+                "createOnly": false,
+                "readWrite": true,
+                "readOnly": false,
+                "isNaming": false,
+                "secure": false,
+                "implicit": false,
+                "mandatory": false,
+                "isOverride": false,
+                "isLike": true,
+                "likeProp": "analytics:RemoteNode:dscp",
+                "validators": [
+                     {"min" : 0, "max": 63 }
+                ],
+                "validValues": [
+                     { "value": "10", "localName": "AF11",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "AF11 low drop"
+                         ],
+                         "label": "AF11 Low Drop "},
+                     { "value": "12", "localName": "AF12",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "AF12 medium drop"
+                         ],
+                         "label": "AF12 Medium Drop "},
+                     { "value": "14", "localName": "AF13",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "AF13 high drop"
+                         ],
+                         "label": "AF13 High Drop "},
+                     { "value": "18", "localName": "AF21",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "AF21 low drop"
+                         ],
+                         "label": "AF21 Low Drop "},
+                     { "value": "20", "localName": "AF22",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "AF22 medium drop"
+                         ],
+                         "label": "AF22 Medium Drop "},
+                     { "value": "22", "localName": "AF23",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "AF22 high drop"
+                         ],
+                         "label": "AF23 High Drop "},
+                     { "value": "26", "localName": "AF31",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "AF31 low drop"
+                         ],
+                         "label": "AF31 Low Drop "},
+                     { "value": "28", "localName": "AF32",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "AF32 medium drop"
+                         ],
+                         "label": "AF32 Medium Drop "},
+                     { "value": "30", "localName": "AF33",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "AF33 high drop"
+                         ],
+                         "label": "AF33 High Drop "},
+                     { "value": "34", "localName": "AF41",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "AF41 low drop"
+                         ],
+                         "label": "AF41 Low Drop "},
+                     { "value": "36", "localName": "AF42",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "AF42 medium drop"
+                         ],
+                         "label": "AF42 Medium Drop "},
+                     { "value": "38", "localName": "AF43",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "AF42 high drop"
+                         ],
+                         "label": "AF43 High Drop "},
+                     { "value": "0", "localName": "CS0",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "CS0"
+                         ],
+                         "label": "CS0 "},
+                     { "value": "8", "localName": "CS1",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "CS1"
+                         ],
+                         "label": "CS1 "},
+                     { "value": "16", "localName": "CS2",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "CS2"
+                         ],
+                         "label": "CS2 "},
+                     { "value": "24", "localName": "CS3",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "CS3"
+                         ],
+                         "label": "CS3 "},
+                     { "value": "32", "localName": "CS4",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "CS4"
+                         ],
+                         "label": "CS4 "},
+                     { "value": "40", "localName": "CS5",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "CS5"
+                         ],
+                         "label": "CS5 "},
+                     { "value": "48", "localName": "CS6",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "CS6"
+                         ],
+                         "label": "CS6 "},
+                     { "value": "56", "localName": "CS7",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "CS7"
+                         ],
+                         "label": "CS7 "},
+                     { "value": "46", "localName": "EF",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "EF"
+                         ],
+                         "label": "Expedited Forwarding "},
+                     { "value": "44", "localName": "VA",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "VA"
+                         ],
+                         "label": "Voice Admit "},
+                     { "value": "CS2", "localName": "defaultValue",
+                         "platformFlavors": [
+
+                         ],
+                         "label": " "}
+                ],
+                "default": "CS2",
+                "platformFlavors": [
+
+                ],
+                "isNxosConverged": false,
+                "isDeprecated": false,
+                "isHidden": false
+            },
+            "dstAddr": {
+                "versions": "2.2(1k)-",
+                "comment": [
+                     "Remote node destination IP address"
+                ],
+                "isConfigurable": true,
+                "propGlobalId": "27503",
+                "propLocalId": "5353",
+                "label": "Remote Entity IP",
+                "baseType": "address:Ip",
+                "modelType": "address:Ip",
+                "needsPropDelimiters": true,
+                "uitype": "string",
+                "createOnly": false,
+                "readWrite": true,
+                "readOnly": false,
+                "isNaming": false,
+                "secure": false,
+                "implicit": false,
+                "mandatory": false,
+                "isOverride": false,
+                "isLike": true,
+                "likeProp": "analytics:RemoteNode:dstAddr",
+                "validateAsIPv4OrIPv6": true,
+                "platformFlavors": [
+
+                ],
+                "isNxosConverged": false,
+                "isDeprecated": false,
+                "isHidden": false
+            },
+            "dstPort": {
+                "versions": "2.2(1k)-",
+                "comment": [
+                     "Remote node destination port"
+                ],
+                "isConfigurable": true,
+                "propGlobalId": "27504",
+                "propLocalId": "1046",
+                "label": "Remote Entity L4 Port",
+                "baseType": "scalar:Uint16",
+                "modelType": "l4:Port",
+                "needsPropDelimiters": false,
+                "uitype": "number",
+                "createOnly": false,
+                "readWrite": true,
+                "readOnly": false,
+                "isNaming": false,
+                "secure": false,
+                "implicit": false,
+                "mandatory": false,
+                "isOverride": false,
+                "isLike": true,
+                "likeProp": "analytics:RemoteNode:dstPort",
+                "validators": [
+                     {"min" : 0, "max": 65535 }
+                ],
+                "validValues": [
+                     { "value": "unspecified", "localName": "defaultValue",
+                         "platformFlavors": [
+
+                         ],
+                         "label": " "},
+                     { "value": "53", "localName": "dns",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "DNS "},
+                     { "value": "20", "localName": "ftpData",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "FTP Data "},
+                     { "value": "80", "localName": "http",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "HTTP "},
+                     { "value": "443", "localName": "https",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "HTTPS "},
+                     { "value": "110", "localName": "pop3",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "POP3 "},
+                     { "value": "554", "localName": "rtsp",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "RTSP "},
+                     { "value": "25", "localName": "smtp",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "SMTP "},
+                     { "value": "22", "localName": "ssh",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "SSH "},
+                     { "value": "0", "localName": "unspecified",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "Unspecified "}
+                ],
+                "default": "unspecified",
+                "platformFlavors": [
+
+                ],
+                "isNxosConverged": false,
+                "isDeprecated": false,
+                "isHidden": false
+            },
             "extMngdBy": {
                 "versions": "3.2(1l)-",
                 "comment": [
                      "Indicates which orchestrator is managing this MO"
                 ],
                 "isConfigurable": false,
-                "propGlobalId": "40683",
+                "propGlobalId": "40685",
                 "propLocalId": "8023",
                 "label": "Managed By",
                 "baseType": "scalar:Bitmask32",
@@ -459,164 +703,6 @@
                 "isDeprecated": false,
                 "isHidden": false
             },
-            "match": {
-                "versions": "2.2(1k)-",
-                "comment": [
-                     "Match parameters for the flow record"
-                ],
-                "isConfigurable": true,
-                "propGlobalId": "27325",
-                "propLocalId": "5227",
-                "label": "Match Params",
-                "baseType": "scalar:Bitmask64",
-                "modelType": "analytics:MatchParams",
-                "needsPropDelimiters": false,
-                "uitype": "bitmask",
-                "createOnly": false,
-                "readWrite": true,
-                "readOnly": false,
-                "isNaming": false,
-                "secure": false,
-                "implicit": false,
-                "mandatory": false,
-                "isOverride": false,
-                "isLike": true,
-                "likeProp": "analytics:RecordP:match",
-                "validValues": [
-                     { "value": "unspecified", "localName": "defaultValue",
-                         "platformFlavors": [
-
-                         ],
-                         "label": " "},
-                     { "value": "8192", "localName": "dst-ip",
-                         "platformFlavors": [
-
-                         ],
-                         "comment": [
-                             "Destination IPv4/v6"
-                         ],
-                         "label": "Destination IPv4/6 "},
-                     { "value": "128", "localName": "dst-ipv4",
-                         "platformFlavors": [
-
-                         ],
-                         "comment": [
-                             "Destination IPv4"
-                         ],
-                         "label": "Destination IPv4 "},
-                     { "value": "512", "localName": "dst-ipv6",
-                         "platformFlavors": [
-
-                         ],
-                         "comment": [
-                             "Destination IPv6"
-                         ],
-                         "label": "Destination IPv6 "},
-                     { "value": "2", "localName": "dst-mac",
-                         "platformFlavors": [
-
-                         ],
-                         "comment": [
-                             "Destination MAC"
-                         ],
-                         "label": "Destination MAC "},
-                     { "value": "2048", "localName": "dst-port",
-                         "platformFlavors": [
-
-                         ],
-                         "comment": [
-                             "Destination port"
-                         ],
-                         "label": "Destination Port "},
-                     { "value": "1", "localName": "ethertype",
-                         "platformFlavors": [
-
-                         ],
-                         "comment": [
-                             "Ethertype"
-                         ],
-                         "label": "Ethertype "},
-                     { "value": "16", "localName": "proto",
-                         "platformFlavors": [
-
-                         ],
-                         "comment": [
-                             "IP protocol"
-                         ],
-                         "label": "IP Protocol "},
-                     { "value": "4096", "localName": "src-ip",
-                         "platformFlavors": [
-
-                         ],
-                         "comment": [
-                             "Source IPv4/v6"
-                         ],
-                         "label": "Source IPv4/6 "},
-                     { "value": "64", "localName": "src-ipv4",
-                         "platformFlavors": [
-
-                         ],
-                         "comment": [
-                             "Source IPv4"
-                         ],
-                         "label": "Source IPv4 "},
-                     { "value": "256", "localName": "src-ipv6",
-                         "platformFlavors": [
-
-                         ],
-                         "comment": [
-                             "Source IPv6"
-                         ],
-                         "label": "Source IPv6 "},
-                     { "value": "4", "localName": "src-mac",
-                         "platformFlavors": [
-
-                         ],
-                         "comment": [
-                             "Source MAC"
-                         ],
-                         "label": "Source MAC "},
-                     { "value": "1024", "localName": "src-port",
-                         "platformFlavors": [
-
-                         ],
-                         "comment": [
-                             "Source port"
-                         ],
-                         "label": "Source Port "},
-                     { "value": "32", "localName": "tos",
-                         "platformFlavors": [
-
-                         ],
-                         "comment": [
-                             "IP type of service"
-                         ],
-                         "label": "IP TOS "},
-                     { "value": "0", "localName": "unspecified",
-                         "platformFlavors": [
-
-                         ],
-                         "comment": [
-                             "Unspecified"
-                         ],
-                         "label": "Unspecified "},
-                     { "value": "8", "localName": "vlan",
-                         "platformFlavors": [
-
-                         ],
-                         "comment": [
-                             "VLAN"
-                         ],
-                         "label": "VLAN "}
-                ],
-                "default": "unspecified",
-                "platformFlavors": [
-
-                ],
-                "isNxosConverged": false,
-                "isDeprecated": false,
-                "isHidden": false
-            },
             "modTs": {
                 "versions": "1.0(1e)-",
                 "comment": [
@@ -659,13 +745,42 @@
                 "isDeprecated": false,
                 "isHidden": false
             },
+            "monPolDn": {
+                "versions": "2.2(1k)-",
+                "comment": [
+                     "The monitoring policy attached to this observable object."
+                ],
+                "isConfigurable": false,
+                "propGlobalId": "27389",
+                "propLocalId": "228",
+                "label": "Monitoring Policy",
+                "baseType": "reference:BinRef",
+                "modelType": "reference:BinRef",
+                "needsPropDelimiters": true,
+                "uitype": "auto",
+                "createOnly": false,
+                "readWrite": false,
+                "readOnly": true,
+                "isNaming": false,
+                "secure": false,
+                "implicit": true,
+                "mandatory": false,
+                "isOverride": false,
+                "isLike": false,
+                "platformFlavors": [
+
+                ],
+                "isNxosConverged": false,
+                "isDeprecated": false,
+                "isHidden": false
+            },
             "name": {
                 "versions": "2.2(1k)-",
                 "comment": [
                      "The name of the object."
                 ],
                 "isConfigurable": true,
-                "propGlobalId": "27342",
+                "propGlobalId": "27339",
                 "propLocalId": "13",
                 "label": "Name",
                 "baseType": "string:Basic",
@@ -829,6 +944,91 @@
                 "isDeprecated": false,
                 "isHidden": false
             },
+            "sourceIpType": {
+                "versions": "3.0(1k)-",
+                "isConfigurable": true,
+                "propGlobalId": "33429",
+                "propLocalId": "7997",
+                "label": "Type of Exporter Src IP Address: Can be one of the available management IP Address for a given leaf or a custom IP Address",
+                "baseType": "scalar:Enum8",
+                "modelType": "netflow:SrcIpType",
+                "needsPropDelimiters": false,
+                "uitype": "enum",
+                "createOnly": false,
+                "readWrite": true,
+                "readOnly": false,
+                "isNaming": false,
+                "secure": false,
+                "implicit": false,
+                "mandatory": false,
+                "isOverride": false,
+                "isLike": false,
+                "validValues": [
+                     { "value": "1", "localName": "custom-src-ip",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "Custom Src IP "},
+                     { "value": "custom-src-ip", "localName": "defaultValue",
+                         "platformFlavors": [
+
+                         ],
+                         "label": " "},
+                     { "value": "2", "localName": "inband-mgmt-ip",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "Inband Management IP "},
+                     { "value": "3", "localName": "oob-mgmt-ip",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "OutOfband Management IP "},
+                     { "value": "4", "localName": "ptep",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "PTEP address "}
+                ],
+                "default": "custom-src-ip",
+                "platformFlavors": [
+
+                ],
+                "isNxosConverged": false,
+                "isDeprecated": false,
+                "isHidden": false
+            },
+            "srcAddr": {
+                "versions": "2.2(1k)-",
+                "comment": [
+                     "Source IP address"
+                ],
+                "isConfigurable": true,
+                "propGlobalId": "27505",
+                "propLocalId": "4387",
+                "label": "Source IP Address",
+                "baseType": "address:Ip",
+                "modelType": "address:Ip",
+                "needsPropDelimiters": true,
+                "uitype": "string",
+                "createOnly": false,
+                "readWrite": true,
+                "readOnly": false,
+                "isNaming": false,
+                "secure": false,
+                "implicit": false,
+                "mandatory": false,
+                "isOverride": false,
+                "isLike": true,
+                "likeProp": "analytics:RemoteNode:srcAddr",
+                "validateAsIPv4OrIPv6": true,
+                "platformFlavors": [
+
+                ],
+                "isNxosConverged": false,
+                "isDeprecated": false,
+                "isHidden": false
+            },
             "status": {
                 "versions": "1.0(1e)-",
                 "comment": [
@@ -947,6 +1147,67 @@
                          "label": " "}
                 ],
                 "default": "all",
+                "platformFlavors": [
+
+                ],
+                "isNxosConverged": false,
+                "isDeprecated": false,
+                "isHidden": false
+            },
+            "ver": {
+                "versions": "2.2(1k)-",
+                "comment": [
+                     "Collector version"
+                ],
+                "isConfigurable": true,
+                "propGlobalId": "65628",
+                "propLocalId": "811",
+                "label": "Exporter NetFlow Version Format",
+                "baseType": "scalar:Enum8",
+                "modelType": "analytics:CollVersion",
+                "needsPropDelimiters": false,
+                "uitype": "enum",
+                "createOnly": false,
+                "readWrite": true,
+                "readOnly": false,
+                "isNaming": false,
+                "secure": false,
+                "implicit": false,
+                "mandatory": false,
+                "isOverride": true,
+                "isLike": false,
+                "validValues": [
+                     { "value": "3", "localName": "cisco-v1",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "Cisco proprietary version 1"
+                         ],
+                         "label": "Cisco proprietary version 1 "},
+                     { "value": "v9", "localName": "defaultValue",
+                         "platformFlavors": [
+
+                         ],
+                         "label": " "},
+                     { "value": "1", "localName": "v5",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "Version 5"
+                         ],
+                         "label": "Version 5 "},
+                     { "value": "2", "localName": "v9",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "Version 9"
+                         ],
+                         "label": "Version 9 "}
+                ],
+                "default": "v9",
                 "platformFlavors": [
 
                 ],

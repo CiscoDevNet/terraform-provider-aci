@@ -13,7 +13,6 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
-	"github.com/hashicorp/terraform-plugin-framework-validators/setvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -30,74 +29,76 @@ import (
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &NetflowRecordPolResource{}
-var _ resource.ResourceWithImportState = &NetflowRecordPolResource{}
+var _ resource.Resource = &NetflowExporterPolResource{}
+var _ resource.ResourceWithImportState = &NetflowExporterPolResource{}
 
-func NewNetflowRecordPolResource() resource.Resource {
-	return &NetflowRecordPolResource{}
+func NewNetflowExporterPolResource() resource.Resource {
+	return &NetflowExporterPolResource{}
 }
 
-// NetflowRecordPolResource defines the resource implementation.
-type NetflowRecordPolResource struct {
+// NetflowExporterPolResource defines the resource implementation.
+type NetflowExporterPolResource struct {
 	client *client.Client
 }
 
-// NetflowRecordPolResourceModel describes the resource data model.
-type NetflowRecordPolResourceModel struct {
+// NetflowExporterPolResourceModel describes the resource data model.
+type NetflowExporterPolResourceModel struct {
 	Id            types.String `tfsdk:"id"`
 	ParentDn      types.String `tfsdk:"parent_dn"`
 	Annotation    types.String `tfsdk:"annotation"`
-	Collect       types.Set    `tfsdk:"collect_paramaters"`
 	Descr         types.String `tfsdk:"description"`
-	Match         types.Set    `tfsdk:"match_parameters"`
+	Dscp          types.String `tfsdk:"dscp"`
+	DstAddr       types.String `tfsdk:"dst_addr"`
+	DstPort       types.String `tfsdk:"dst_port"`
 	Name          types.String `tfsdk:"name"`
 	NameAlias     types.String `tfsdk:"name_alias"`
 	OwnerKey      types.String `tfsdk:"owner_key"`
 	OwnerTag      types.String `tfsdk:"owner_tag"`
+	SourceIpType  types.String `tfsdk:"source_ip_type"`
+	SrcAddr       types.String `tfsdk:"src_addr"`
+	Ver           types.String `tfsdk:"ver"`
 	TagAnnotation types.Set    `tfsdk:"annotations"`
 	TagTag        types.Set    `tfsdk:"tags"`
 }
 
-// TagAnnotationNetflowRecordPolResourceModel describes the resource data model for the children without relation ships.
-type TagAnnotationNetflowRecordPolResourceModel struct {
+// TagAnnotationNetflowExporterPolResourceModel describes the resource data model for the children without relation ships.
+type TagAnnotationNetflowExporterPolResourceModel struct {
 	Key   types.String `tfsdk:"key"`
 	Value types.String `tfsdk:"value"`
 }
 
-// TagTagNetflowRecordPolResourceModel describes the resource data model for the children without relation ships.
-type TagTagNetflowRecordPolResourceModel struct {
+// TagTagNetflowExporterPolResourceModel describes the resource data model for the children without relation ships.
+type TagTagNetflowExporterPolResourceModel struct {
 	Key   types.String `tfsdk:"key"`
 	Value types.String `tfsdk:"value"`
 }
 
-type NetflowRecordPolIdentifier struct {
+type NetflowExporterPolIdentifier struct {
 	Name types.String
 }
 
-func (r *NetflowRecordPolResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	tflog.Debug(ctx, "Start metadata of resource: aci_netflow_record_policy")
-	resp.TypeName = req.ProviderTypeName + "_netflow_record_policy"
-	tflog.Debug(ctx, "End metadata of resource: aci_netflow_record_policy")
+func (r *NetflowExporterPolResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	tflog.Debug(ctx, "Start metadata of resource: aci_netflow_exporter_policy")
+	resp.TypeName = req.ProviderTypeName + "_netflow_exporter_policy"
+	tflog.Debug(ctx, "End metadata of resource: aci_netflow_exporter_policy")
 }
 
-func (r *NetflowRecordPolResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
-	tflog.Debug(ctx, "Start schema of resource: aci_netflow_record_policy")
+func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+	tflog.Debug(ctx, "Start schema of resource: aci_netflow_exporter_policy")
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "The netflow_record_policy resource for the 'netflowRecordPol' class",
+		MarkdownDescription: "The netflow_exporter_policy resource for the 'netflowExporterPol' class",
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Netflow Record Policy object.",
+				MarkdownDescription: "The distinguished name (DN) of the Netflow Exporter Policy object.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
 			"parent_dn": schema.StringAttribute{
-				Optional:            true,
-				Computed:            true,
-				Default:             stringdefault.StaticString("uni/infra"),
+				Required:            true,
 				MarkdownDescription: "The distinguished name (DN) of the parent object.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
@@ -111,22 +112,7 @@ func (r *NetflowRecordPolResource) Schema(ctx context.Context, req resource.Sche
 					stringplanmodifier.UseStateForUnknown(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
-				MarkdownDescription: `The annotation of the Netflow Record Policy object.`,
-			},
-			"collect_paramaters": schema.SetAttribute{
-				MarkdownDescription: `Collect paramaters of the Netflow Record Policy object.`,
-				Optional:            true,
-				Computed:            true,
-				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
-				},
-				Validators: []validator.Set{
-					setvalidator.SizeAtMost(8),
-					setvalidator.ValueStringsAre(
-						stringvalidator.OneOf("count-bytes", "count-pkts", "pkt-disp", "sampler-id", "src-intf", "tcp-flags", "ts-first", "ts-recent"),
-					),
-				},
-				ElementType: types.StringType,
+				MarkdownDescription: `The annotation of the Netflow Exporter Policy object.`,
 			},
 			"description": schema.StringAttribute{
 				Optional: true,
@@ -134,22 +120,37 @@ func (r *NetflowRecordPolResource) Schema(ctx context.Context, req resource.Sche
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
-				MarkdownDescription: `The description of the Netflow Record Policy object.`,
+				MarkdownDescription: `The description of the Netflow Exporter Policy object.`,
 			},
-			"match_parameters": schema.SetAttribute{
-				MarkdownDescription: `Match parameters of the Netflow Record Policy object.`,
-				Optional:            true,
-				Computed:            true,
-				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+			"dscp": schema.StringAttribute{
+				Optional: true,
+				Computed: true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
 				},
-				Validators: []validator.Set{
-					setvalidator.SizeAtMost(14),
-					setvalidator.ValueStringsAre(
-						stringvalidator.OneOf("dst-ip", "dst-ipv4", "dst-ipv6", "dst-mac", "dst-port", "ethertype", "proto", "src-ip", "src-ipv4", "src-ipv6", "src-mac", "src-port", "tos", "vlan"),
-					),
+				Validators: []validator.String{
+					stringvalidator.OneOf("AF11", "AF12", "AF13", "AF21", "AF22", "AF23", "AF31", "AF32", "AF33", "AF41", "AF42", "AF43", "CS0", "CS1", "CS2", "CS3", "CS4", "CS5", "CS6", "CS7", "EF", "VA"),
 				},
-				ElementType: types.StringType,
+				MarkdownDescription: `IP dscp value.`,
+			},
+			"dst_addr": schema.StringAttribute{
+				Optional: true,
+				Computed: true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
+				MarkdownDescription: `Remote node destination IP address.`,
+			},
+			"dst_port": schema.StringAttribute{
+				Optional: true,
+				Computed: true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
+				Validators: []validator.String{
+					stringvalidator.OneOf("dns", "ftpData", "http", "https", "pop3", "rtsp", "smtp", "ssh", "unspecified"),
+				},
+				MarkdownDescription: `Remote node destination port.`,
 			},
 			"name": schema.StringAttribute{
 				Required: true,
@@ -157,7 +158,7 @@ func (r *NetflowRecordPolResource) Schema(ctx context.Context, req resource.Sche
 					stringplanmodifier.UseStateForUnknown(),
 					stringplanmodifier.RequiresReplace(),
 				},
-				MarkdownDescription: `The name of the Netflow Record Policy object.`,
+				MarkdownDescription: `The name of the Netflow Exporter Policy object.`,
 			},
 			"name_alias": schema.StringAttribute{
 				Optional: true,
@@ -165,7 +166,7 @@ func (r *NetflowRecordPolResource) Schema(ctx context.Context, req resource.Sche
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
-				MarkdownDescription: `The name alias of the Netflow Record Policy object.`,
+				MarkdownDescription: `The name alias of the Netflow Exporter Policy object.`,
 			},
 			"owner_key": schema.StringAttribute{
 				Optional: true,
@@ -182,6 +183,36 @@ func (r *NetflowRecordPolResource) Schema(ctx context.Context, req resource.Sche
 					stringplanmodifier.UseStateForUnknown(),
 				},
 				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
+			},
+			"source_ip_type": schema.StringAttribute{
+				Optional: true,
+				Computed: true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
+				Validators: []validator.String{
+					stringvalidator.OneOf("custom-src-ip", "inband-mgmt-ip", "oob-mgmt-ip", "ptep"),
+				},
+				MarkdownDescription: `Type of Exporter Src IP Address: Can be one of the available management IP Address for a given leaf or a custom IP Address.`,
+			},
+			"src_addr": schema.StringAttribute{
+				Optional: true,
+				Computed: true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
+				MarkdownDescription: `Source IP address.`,
+			},
+			"ver": schema.StringAttribute{
+				Optional: true,
+				Computed: true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
+				Validators: []validator.String{
+					stringvalidator.OneOf("cisco-v1", "v5", "v9"),
+				},
+				MarkdownDescription: `Collector version.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,
@@ -237,11 +268,11 @@ func (r *NetflowRecordPolResource) Schema(ctx context.Context, req resource.Sche
 			},
 		},
 	}
-	tflog.Debug(ctx, "End schema of resource: aci_netflow_record_policy")
+	tflog.Debug(ctx, "End schema of resource: aci_netflow_exporter_policy")
 }
 
-func (r *NetflowRecordPolResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	tflog.Debug(ctx, "Start configure of resource: aci_netflow_record_policy")
+func (r *NetflowExporterPolResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+	tflog.Debug(ctx, "Start configure of resource: aci_netflow_exporter_policy")
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
 		return
@@ -259,18 +290,18 @@ func (r *NetflowRecordPolResource) Configure(ctx context.Context, req resource.C
 	}
 
 	r.client = client
-	tflog.Debug(ctx, "End configure of resource: aci_netflow_record_policy")
+	tflog.Debug(ctx, "End configure of resource: aci_netflow_exporter_policy")
 }
 
-func (r *NetflowRecordPolResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	tflog.Debug(ctx, "Start create of resource: aci_netflow_record_policy")
+func (r *NetflowExporterPolResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	tflog.Debug(ctx, "Start create of resource: aci_netflow_exporter_policy")
 	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
-	var stateData *NetflowRecordPolResourceModel
+	var stateData *NetflowExporterPolResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
-	setNetflowRecordPolId(ctx, stateData)
-	getAndSetNetflowRecordPolAttributes(ctx, &resp.Diagnostics, r.client, stateData)
+	setNetflowExporterPolId(ctx, stateData)
+	getAndSetNetflowExporterPolAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 
-	var data *NetflowRecordPolResourceModel
+	var data *NetflowExporterPolResourceModel
 
 	// Read Terraform plan data into the model
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
@@ -279,17 +310,17 @@ func (r *NetflowRecordPolResource) Create(ctx context.Context, req resource.Crea
 		return
 	}
 
-	setNetflowRecordPolId(ctx, data)
+	setNetflowExporterPolId(ctx, data)
 
-	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_netflow_record_policy with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_netflow_exporter_policy with id '%s'", data.Id.ValueString()))
 
-	var tagAnnotationPlan, tagAnnotationState []TagAnnotationNetflowRecordPolResourceModel
+	var tagAnnotationPlan, tagAnnotationState []TagAnnotationNetflowExporterPolResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
 	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
-	var tagTagPlan, tagTagState []TagTagNetflowRecordPolResourceModel
+	var tagTagPlan, tagTagState []TagTagNetflowExporterPolResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getNetflowRecordPolCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := getNetflowExporterPolCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -300,16 +331,16 @@ func (r *NetflowRecordPolResource) Create(ctx context.Context, req resource.Crea
 		return
 	}
 
-	getAndSetNetflowRecordPolAttributes(ctx, &resp.Diagnostics, r.client, data)
+	getAndSetNetflowExporterPolAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_netflow_record_policy with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_netflow_exporter_policy with id '%s'", data.Id.ValueString()))
 }
 
-func (r *NetflowRecordPolResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
-	tflog.Debug(ctx, "Start read of resource: aci_netflow_record_policy")
-	var data *NetflowRecordPolResourceModel
+func (r *NetflowExporterPolResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+	tflog.Debug(ctx, "Start read of resource: aci_netflow_exporter_policy")
+	var data *NetflowExporterPolResourceModel
 
 	// Read Terraform prior state data into the model
 	resp.Diagnostics.Append(req.State.Get(ctx, &data)...)
@@ -318,25 +349,25 @@ func (r *NetflowRecordPolResource) Read(ctx context.Context, req resource.ReadRe
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Read of resource aci_netflow_record_policy with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Read of resource aci_netflow_exporter_policy with id '%s'", data.Id.ValueString()))
 
-	getAndSetNetflowRecordPolAttributes(ctx, &resp.Diagnostics, r.client, data)
+	getAndSetNetflowExporterPolAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save updated data into Terraform state
 	if data.Id.IsNull() {
-		var emptyData *NetflowRecordPolResourceModel
+		var emptyData *NetflowExporterPolResourceModel
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_netflow_record_policy with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_netflow_exporter_policy with id '%s'", data.Id.ValueString()))
 }
 
-func (r *NetflowRecordPolResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	tflog.Debug(ctx, "Start update of resource: aci_netflow_record_policy")
-	var data *NetflowRecordPolResourceModel
-	var stateData *NetflowRecordPolResourceModel
+func (r *NetflowExporterPolResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+	tflog.Debug(ctx, "Start update of resource: aci_netflow_exporter_policy")
+	var data *NetflowExporterPolResourceModel
+	var stateData *NetflowExporterPolResourceModel
 
 	// Read Terraform plan data into the model
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
@@ -346,15 +377,15 @@ func (r *NetflowRecordPolResource) Update(ctx context.Context, req resource.Upda
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_netflow_record_policy with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_netflow_exporter_policy with id '%s'", data.Id.ValueString()))
 
-	var tagAnnotationPlan, tagAnnotationState []TagAnnotationNetflowRecordPolResourceModel
+	var tagAnnotationPlan, tagAnnotationState []TagAnnotationNetflowExporterPolResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
 	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
-	var tagTagPlan, tagTagState []TagTagNetflowRecordPolResourceModel
+	var tagTagPlan, tagTagState []TagTagNetflowExporterPolResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getNetflowRecordPolCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := getNetflowExporterPolCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -366,16 +397,16 @@ func (r *NetflowRecordPolResource) Update(ctx context.Context, req resource.Upda
 		return
 	}
 
-	getAndSetNetflowRecordPolAttributes(ctx, &resp.Diagnostics, r.client, data)
+	getAndSetNetflowExporterPolAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_netflow_record_policy with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_netflow_exporter_policy with id '%s'", data.Id.ValueString()))
 }
 
-func (r *NetflowRecordPolResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	tflog.Debug(ctx, "Start delete of resource: aci_netflow_record_policy")
-	var data *NetflowRecordPolResourceModel
+func (r *NetflowExporterPolResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	tflog.Debug(ctx, "Start delete of resource: aci_netflow_exporter_policy")
+	var data *NetflowExporterPolResourceModel
 
 	// Read Terraform prior state data into the model
 	resp.Diagnostics.Append(req.State.Get(ctx, &data)...)
@@ -384,8 +415,8 @@ func (r *NetflowRecordPolResource) Delete(ctx context.Context, req resource.Dele
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Delete of resource aci_netflow_record_policy with id '%s'", data.Id.ValueString()))
-	jsonPayload := GetDeleteJsonPayload(ctx, &resp.Diagnostics, "netflowRecordPol", data.Id.ValueString())
+	tflog.Debug(ctx, fmt.Sprintf("Delete of resource aci_netflow_exporter_policy with id '%s'", data.Id.ValueString()))
+	jsonPayload := GetDeleteJsonPayload(ctx, &resp.Diagnostics, "netflowExporterPol", data.Id.ValueString())
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -393,56 +424,49 @@ func (r *NetflowRecordPolResource) Delete(ctx context.Context, req resource.Dele
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_netflow_record_policy with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_netflow_exporter_policy with id '%s'", data.Id.ValueString()))
 }
 
-func (r *NetflowRecordPolResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	tflog.Debug(ctx, "Start import state of resource: aci_netflow_record_policy")
+func (r *NetflowExporterPolResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	tflog.Debug(ctx, "Start import state of resource: aci_netflow_exporter_policy")
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 
-	var stateData *NetflowRecordPolResourceModel
+	var stateData *NetflowExporterPolResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
-	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_netflow_record_policy with id '%s'", stateData.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_netflow_exporter_policy with id '%s'", stateData.Id.ValueString()))
 
-	tflog.Debug(ctx, "End import of state resource: aci_netflow_record_policy")
+	tflog.Debug(ctx, "End import of state resource: aci_netflow_exporter_policy")
 }
 
-func getAndSetNetflowRecordPolAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *NetflowRecordPolResourceModel) {
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "netflowRecordPol,tagAnnotation,tagTag"), "GET", nil)
+func getAndSetNetflowExporterPolAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *NetflowExporterPolResourceModel) {
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "netflowExporterPol,tagAnnotation,tagTag"), "GET", nil)
 
 	if diags.HasError() {
 		return
 	}
-	if requestData.Search("imdata").Search("netflowRecordPol").Data() != nil {
-		classReadInfo := requestData.Search("imdata").Search("netflowRecordPol").Data().([]interface{})
+	if requestData.Search("imdata").Search("netflowExporterPol").Data() != nil {
+		classReadInfo := requestData.Search("imdata").Search("netflowExporterPol").Data().([]interface{})
 		if len(classReadInfo) == 1 {
 			attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
 			for attributeName, attributeValue := range attributes {
 				if attributeName == "dn" {
 					data.Id = basetypes.NewStringValue(attributeValue.(string))
-					setNetflowRecordPolParentDn(ctx, attributeValue.(string), data)
+					setNetflowExporterPolParentDn(ctx, attributeValue.(string), data)
 				}
 				if attributeName == "annotation" {
 					data.Annotation = basetypes.NewStringValue(attributeValue.(string))
 				}
-				if attributeName == "collect" {
-					collectList := make([]string, 0)
-					if attributeValue.(string) != "" {
-						collectList = strings.Split(attributeValue.(string), ",")
-					}
-					collectSet, _ := types.SetValueFrom(ctx, data.Collect.ElementType(ctx), collectList)
-					data.Collect = collectSet
-				}
 				if attributeName == "descr" {
 					data.Descr = basetypes.NewStringValue(attributeValue.(string))
 				}
-				if attributeName == "match" {
-					matchList := make([]string, 0)
-					if attributeValue.(string) != "" {
-						matchList = strings.Split(attributeValue.(string), ",")
-					}
-					matchSet, _ := types.SetValueFrom(ctx, data.Match.ElementType(ctx), matchList)
-					data.Match = matchSet
+				if attributeName == "dscp" {
+					data.Dscp = basetypes.NewStringValue(attributeValue.(string))
+				}
+				if attributeName == "dstAddr" {
+					data.DstAddr = basetypes.NewStringValue(attributeValue.(string))
+				}
+				if attributeName == "dstPort" {
+					data.DstPort = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "name" {
 					data.Name = basetypes.NewStringValue(attributeValue.(string))
@@ -456,9 +480,18 @@ func getAndSetNetflowRecordPolAttributes(ctx context.Context, diags *diag.Diagno
 				if attributeName == "ownerTag" {
 					data.OwnerTag = basetypes.NewStringValue(attributeValue.(string))
 				}
+				if attributeName == "sourceIpType" {
+					data.SourceIpType = basetypes.NewStringValue(attributeValue.(string))
+				}
+				if attributeName == "srcAddr" {
+					data.SrcAddr = basetypes.NewStringValue(attributeValue.(string))
+				}
+				if attributeName == "ver" {
+					data.Ver = basetypes.NewStringValue(attributeValue.(string))
+				}
 			}
-			TagAnnotationNetflowRecordPolList := make([]TagAnnotationNetflowRecordPolResourceModel, 0)
-			TagTagNetflowRecordPolList := make([]TagTagNetflowRecordPolResourceModel, 0)
+			TagAnnotationNetflowExporterPolList := make([]TagAnnotationNetflowExporterPolResourceModel, 0)
+			TagTagNetflowExporterPolList := make([]TagTagNetflowExporterPolResourceModel, 0)
 			_, ok := classReadInfo[0].(map[string]interface{})["children"]
 			if ok {
 				children := classReadInfo[0].(map[string]interface{})["children"].([]interface{})
@@ -466,40 +499,40 @@ func getAndSetNetflowRecordPolAttributes(ctx context.Context, diags *diag.Diagno
 					for childClassName, childClassDetails := range child.(map[string]interface{}) {
 						childAttributes := childClassDetails.(map[string]interface{})["attributes"].(map[string]interface{})
 						if childClassName == "tagAnnotation" {
-							TagAnnotationNetflowRecordPol := TagAnnotationNetflowRecordPolResourceModel{}
+							TagAnnotationNetflowExporterPol := TagAnnotationNetflowExporterPolResourceModel{}
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "key" {
-									TagAnnotationNetflowRecordPol.Key = basetypes.NewStringValue(childAttributeValue.(string))
+									TagAnnotationNetflowExporterPol.Key = basetypes.NewStringValue(childAttributeValue.(string))
 								}
 								if childAttributeName == "value" {
-									TagAnnotationNetflowRecordPol.Value = basetypes.NewStringValue(childAttributeValue.(string))
+									TagAnnotationNetflowExporterPol.Value = basetypes.NewStringValue(childAttributeValue.(string))
 								}
 							}
-							TagAnnotationNetflowRecordPolList = append(TagAnnotationNetflowRecordPolList, TagAnnotationNetflowRecordPol)
+							TagAnnotationNetflowExporterPolList = append(TagAnnotationNetflowExporterPolList, TagAnnotationNetflowExporterPol)
 						}
 						if childClassName == "tagTag" {
-							TagTagNetflowRecordPol := TagTagNetflowRecordPolResourceModel{}
+							TagTagNetflowExporterPol := TagTagNetflowExporterPolResourceModel{}
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "key" {
-									TagTagNetflowRecordPol.Key = basetypes.NewStringValue(childAttributeValue.(string))
+									TagTagNetflowExporterPol.Key = basetypes.NewStringValue(childAttributeValue.(string))
 								}
 								if childAttributeName == "value" {
-									TagTagNetflowRecordPol.Value = basetypes.NewStringValue(childAttributeValue.(string))
+									TagTagNetflowExporterPol.Value = basetypes.NewStringValue(childAttributeValue.(string))
 								}
 							}
-							TagTagNetflowRecordPolList = append(TagTagNetflowRecordPolList, TagTagNetflowRecordPol)
+							TagTagNetflowExporterPolList = append(TagTagNetflowExporterPolList, TagTagNetflowExporterPol)
 						}
 					}
 				}
 			}
-			tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationNetflowRecordPolList)
+			tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationNetflowExporterPolList)
 			data.TagAnnotation = tagAnnotationSet
-			tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagNetflowRecordPolList)
+			tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagNetflowExporterPolList)
 			data.TagTag = tagTagSet
 		} else {
 			diags.AddError(
 				"too many results in response",
-				fmt.Sprintf("%v matches returned for class 'netflowRecordPol'. Please report this issue to the provider developers.", len(classReadInfo)),
+				fmt.Sprintf("%v matches returned for class 'netflowExporterPol'. Please report this issue to the provider developers.", len(classReadInfo)),
 			)
 		}
 	} else {
@@ -507,8 +540,8 @@ func getAndSetNetflowRecordPolAttributes(ctx context.Context, diags *diag.Diagno
 	}
 }
 
-func getNetflowRecordPolRn(ctx context.Context, data *NetflowRecordPolResourceModel) string {
-	rn := "recordpol-{name}"
+func getNetflowExporterPolRn(ctx context.Context, data *NetflowExporterPolResourceModel) string {
+	rn := "exporterpol-{name}"
 	for _, identifier := range []string{"name"} {
 		fieldName := fmt.Sprintf("%s%s", strings.ToUpper(identifier[:1]), identifier[1:])
 		fieldValue := reflect.ValueOf(data).Elem().FieldByName(fieldName).Interface().(basetypes.StringValue).ValueString()
@@ -517,7 +550,7 @@ func getNetflowRecordPolRn(ctx context.Context, data *NetflowRecordPolResourceMo
 	return rn
 }
 
-func setNetflowRecordPolParentDn(ctx context.Context, dn string, data *NetflowRecordPolResourceModel) {
+func setNetflowExporterPolParentDn(ctx context.Context, dn string, data *NetflowExporterPolResourceModel) {
 	bracketIndex := 0
 	rnIndex := 0
 	for i := len(dn) - 1; i >= 0; i-- {
@@ -533,12 +566,12 @@ func setNetflowRecordPolParentDn(ctx context.Context, dn string, data *NetflowRe
 	data.ParentDn = basetypes.NewStringValue(dn[:rnIndex])
 }
 
-func setNetflowRecordPolId(ctx context.Context, data *NetflowRecordPolResourceModel) {
-	rn := getNetflowRecordPolRn(ctx, data)
+func setNetflowExporterPolId(ctx context.Context, data *NetflowExporterPolResourceModel) {
+	rn := getNetflowExporterPolRn(ctx, data)
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
 
-func getNetflowRecordPolTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *NetflowRecordPolResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationNetflowRecordPolResourceModel) []map[string]interface{} {
+func getNetflowExporterPolTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *NetflowExporterPolResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationNetflowExporterPolResourceModel) []map[string]interface{} {
 
 	childPayloads := []map[string]interface{}{}
 	if !data.TagAnnotation.IsUnknown() {
@@ -577,7 +610,7 @@ func getNetflowRecordPolTagAnnotationChildPayloads(ctx context.Context, diags *d
 
 	return childPayloads
 }
-func getNetflowRecordPolTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *NetflowRecordPolResourceModel, tagTagPlan, tagTagState []TagTagNetflowRecordPolResourceModel) []map[string]interface{} {
+func getNetflowExporterPolTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *NetflowExporterPolResourceModel, tagTagPlan, tagTagState []TagTagNetflowExporterPolResourceModel) []map[string]interface{} {
 
 	childPayloads := []map[string]interface{}{}
 	if !data.TagTag.IsUnknown() {
@@ -617,18 +650,18 @@ func getNetflowRecordPolTagTagChildPayloads(ctx context.Context, diags *diag.Dia
 	return childPayloads
 }
 
-func getNetflowRecordPolCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *NetflowRecordPolResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationNetflowRecordPolResourceModel, tagTagPlan, tagTagState []TagTagNetflowRecordPolResourceModel) *container.Container {
+func getNetflowExporterPolCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *NetflowExporterPolResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationNetflowExporterPolResourceModel, tagTagPlan, tagTagState []TagTagNetflowExporterPolResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 	childPayloads := []map[string]interface{}{}
 
-	TagAnnotationchildPayloads := getNetflowRecordPolTagAnnotationChildPayloads(ctx, diags, data, tagAnnotationPlan, tagAnnotationState)
+	TagAnnotationchildPayloads := getNetflowExporterPolTagAnnotationChildPayloads(ctx, diags, data, tagAnnotationPlan, tagAnnotationState)
 	if TagAnnotationchildPayloads == nil {
 		return nil
 	}
 	childPayloads = append(childPayloads, TagAnnotationchildPayloads...)
 
-	TagTagchildPayloads := getNetflowRecordPolTagTagChildPayloads(ctx, diags, data, tagTagPlan, tagTagState)
+	TagTagchildPayloads := getNetflowExporterPolTagTagChildPayloads(ctx, diags, data, tagTagPlan, tagTagState)
 	if TagTagchildPayloads == nil {
 		return nil
 	}
@@ -638,18 +671,17 @@ func getNetflowRecordPolCreateJsonPayload(ctx context.Context, diags *diag.Diagn
 	if !data.Annotation.IsNull() && !data.Annotation.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["annotation"] = data.Annotation.ValueString()
 	}
-	if !data.Collect.IsNull() && !data.Collect.IsUnknown() {
-		var tmpCollect []string
-		data.Collect.ElementsAs(ctx, &tmpCollect, false)
-		payloadMap["attributes"].(map[string]string)["collect"] = strings.Join(tmpCollect, ",")
-	}
 	if !data.Descr.IsNull() && !data.Descr.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["descr"] = data.Descr.ValueString()
 	}
-	if !data.Match.IsNull() && !data.Match.IsUnknown() {
-		var tmpMatch []string
-		data.Match.ElementsAs(ctx, &tmpMatch, false)
-		payloadMap["attributes"].(map[string]string)["match"] = strings.Join(tmpMatch, ",")
+	if !data.Dscp.IsNull() && !data.Dscp.IsUnknown() {
+		payloadMap["attributes"].(map[string]string)["dscp"] = data.Dscp.ValueString()
+	}
+	if !data.DstAddr.IsNull() && !data.DstAddr.IsUnknown() {
+		payloadMap["attributes"].(map[string]string)["dstAddr"] = data.DstAddr.ValueString()
+	}
+	if !data.DstPort.IsNull() && !data.DstPort.IsUnknown() {
+		payloadMap["attributes"].(map[string]string)["dstPort"] = data.DstPort.ValueString()
 	}
 	if !data.Name.IsNull() && !data.Name.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["name"] = data.Name.ValueString()
@@ -663,8 +695,17 @@ func getNetflowRecordPolCreateJsonPayload(ctx context.Context, diags *diag.Diagn
 	if !data.OwnerTag.IsNull() && !data.OwnerTag.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["ownerTag"] = data.OwnerTag.ValueString()
 	}
+	if !data.SourceIpType.IsNull() && !data.SourceIpType.IsUnknown() {
+		payloadMap["attributes"].(map[string]string)["sourceIpType"] = data.SourceIpType.ValueString()
+	}
+	if !data.SrcAddr.IsNull() && !data.SrcAddr.IsUnknown() {
+		payloadMap["attributes"].(map[string]string)["srcAddr"] = data.SrcAddr.ValueString()
+	}
+	if !data.Ver.IsNull() && !data.Ver.IsUnknown() {
+		payloadMap["attributes"].(map[string]string)["ver"] = data.Ver.ValueString()
+	}
 
-	payload, err := json.Marshal(map[string]interface{}{"netflowRecordPol": payloadMap})
+	payload, err := json.Marshal(map[string]interface{}{"netflowExporterPol": payloadMap})
 	if err != nil {
 		diags.AddError(
 			"Marshalling of json payload failed",

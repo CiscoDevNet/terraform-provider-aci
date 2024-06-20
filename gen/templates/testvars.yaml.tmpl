@@ -44,7 +44,7 @@ datasource_required:
   {{- range .Properties}}{{$testValue := createTestValue .SnakeCaseName}}{{$overwritePropertyName := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
     {{- if eq .SnakeCaseName "t_dn" }}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: {{overwritePropertyValue .PkgName $overwritePropertyName $testValue "resource_required" 0 $.Definitions}}
-    {{- else if or .IsNaming }}
+    {{- else if or .IsNaming (isInRequiredTestValues .PkgName $overwritePropertyName $.Definitions "datasource_required") }}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName $testValue "datasource_required" 0 $.Definitions}}"
     {{- end}}
   {{- end}}
@@ -53,7 +53,7 @@ resource_required:
   {{- range .Properties}}{{$testValue := createTestValue .SnakeCaseName}}{{$overwritePropertyName := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
     {{- if eq .SnakeCaseName "t_dn" }}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: {{overwritePropertyValue .PkgName $overwritePropertyName $testValue "resource_required" 0 $.Definitions}}
-    {{- else if or .IsNaming .IsRequired}}
+    {{- else if or .IsNaming (or .IsRequired (isInRequiredTestValues .PkgName $overwritePropertyName $.Definitions "resource_required")) }}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName $testValue "resource_required" 0 $.Definitions}}"
     {{- end}}
   {{- end}}

@@ -4,35 +4,41 @@
 
 default:
   annotation: "orchestrator:terraform"
-  collect_paramaters: 
-    - "src-intf"
   description: ""
-  match_parameters: []
+  dscp: "CS2"
+  dst_addr: "2.2.2.1"
+  dst_port: "https"
   name_alias: ""
   owner_key: ""
   owner_tag: ""
+  source_ip_type: "custom-src-ip"
+  src_addr: "1.1.1.1/10"
+  ver: "v9"
 
 datasource_non_existing:
-  name: "netfow_record_non_existing"
+  name: "netfow_exporter_non_existing"
 
 datasource_required:
-  name: "netfow_record"
+  name: "netfow_exporter"
 
 resource_required:
-  name: "netfow_record"
+  dst_addr: "2.2.2.1"
+  dst_port: "https"
+  name: "netfow_exporter"
+  src_addr: "1.1.1.1/10"
 
 all:
   annotation: "annotation"
-  collect_paramaters: 
-    - "count-bytes"
-    - "src-intf"
   description: "description"
-  match_parameters: 
-    - "dst-ip"
-    - "src-ip"
+  dscp: "AF11"
+  dst_addr: "12.12.12.1"
+  dst_port: "ssh"
   name_alias: "name_alias"
   owner_key: "owner_key"
   owner_tag: "owner_tag"
+  source_ip_type: "custom-src-ip"
+  src_addr: "11.11.11.1/11"
+  ver: "v9"
 
 children:
   annotations:

@@ -98,6 +98,7 @@ var templateFuncs = template.FuncMap{
 	"isInterfaceSlice":             IsInterfaceSlice,
 	"lookupTestValue":              LookupTestValue,
 	"lookupChildTestValue":         LookupChildTestValue,
+	"isInRequiredTestValues":       IsInRequiredTestValues,
 	"createParentDnValue":          CreateParentDnValue,
 	"getResourceName":              GetResourceName,
 	"getResourceNameAsDescription": GetResourceNameAsDescription,
@@ -1660,4 +1661,24 @@ func GetValidValuesToRemove(classPkgName, propertyName string, definitions Defin
 		}
 	}
 	return removedValidValuesSlice
+}
+
+func IsInRequiredTestValues(classPkgName, propertyName string, definitions Definitions, testType string) bool {
+	if classDetails, ok := definitions.Properties[classPkgName]; ok {
+		for key, value := range classDetails.(map[interface{}]interface{}) {
+			if key.(string) == "test_values" {
+				for test_type, test_type_values := range value.(map[interface{}]interface{}) {
+					if test_type.(string) == testType {
+						for k := range test_type_values.(map[interface{}]interface{}) {
+							if k.(string) == propertyName {
+								return true
+							}
+						}
+					}
+				}
+
+			}
+		}
+	}
+	return false
 }
