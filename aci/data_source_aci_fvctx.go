@@ -29,13 +29,11 @@ func dataSourceAciVRF() *schema.Resource {
 
 			"pc_tag": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
 
 			"scope": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
 
