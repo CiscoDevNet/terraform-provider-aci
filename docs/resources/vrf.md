@@ -46,8 +46,8 @@ resource "aci_vrf" "foovrf" {
 - `tenant_dn` - (Required) Distinguished name of parent Tenant object.
 - `name` - (Required) Name of Object VRF.
 - `annotation` - (Optional) Annotation tags for object VRF.
-- `pc_tag` - (Optional) A numeric ID to represent an EPG.
-- `scope` - (Optional) A numeric value for other APICs to identify VRF.
+- `pc_tag` - (Read-Only) A numeric ID to represent an EPG.
+- `scope` - (Read-Only) A numeric value for other APICs to identify VRF.
 - `description` - (Optional) Description tags for object VRF.
 - `bd_enforced_enable` - (Optional) Flag to enable/disable enforced bridge domain for VRF. Allowed values are "yes" and "no". Default is "no".
 - `ip_data_plane_learning` - (Optional) Flag to enable/disable IP-data-plane learning for VRF. Allowed values are "enabled" and "disabled". Default is "enabled".
