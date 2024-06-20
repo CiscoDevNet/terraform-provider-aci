@@ -1522,7 +1522,7 @@ func setDocumentationData(m *Model, definitions Definitions) {
 			for _, resource := range resourcesNotFound {
 				resourceDetails = fmt.Sprintf("%s    - %s\n", resourceDetails, GetDevnetDocForClass(resource))
 			}
-			m.DocumentationParentDns = append(m.DocumentationParentDns, fmt.Sprintf("The distinquised name (DN) of classes below can be used but currently there is no available resource for it:\n%s", resourceDetails))
+			m.DocumentationParentDns = append(m.DocumentationParentDns, fmt.Sprintf("The distinguished name (DN) of classes below can be used but currently there is no available resource for it:\n%s", resourceDetails))
 		}
 	}
 
