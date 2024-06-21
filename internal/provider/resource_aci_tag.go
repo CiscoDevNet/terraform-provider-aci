@@ -49,6 +49,29 @@ type TagTagIdentifier struct {
 	Key types.String
 }
 
+func (r *TagTagResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
+	if !req.Plan.Raw.IsNull() {
+		var planData, stateData *TagTagResourceModel
+		resp.Diagnostics.Append(req.Plan.Get(ctx, &planData)...)
+		resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
+
+		if resp.Diagnostics.HasError() {
+			return
+		}
+
+		if stateData == nil && !globalAllowExistingOnCreate && !planData.ParentDn.IsUnknown() && !planData.Key.IsUnknown() {
+			var createCheckData *TagTagResourceModel
+			resp.Diagnostics.Append(req.Plan.Get(ctx, &createCheckData)...)
+			setTagTagId(ctx, createCheckData)
+			CheckDn(ctx, &resp.Diagnostics, r.client, "tagTag", createCheckData.Id.ValueString())
+			if resp.Diagnostics.HasError() {
+				return
+			}
+		}
+
+	}
+}
+
 func (r *TagTagResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	tflog.Debug(ctx, "Start metadata of resource: aci_tag")
 	resp.TypeName = req.ProviderTypeName + "_tag"
@@ -135,7 +158,7 @@ func (r *TagTagResource) Create(ctx context.Context, req resource.CreateRequest,
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_tag with id '%s'", data.Id.ValueString()))
 
-	jsonPayload := getTagTagCreateJsonPayload(ctx, &resp.Diagnostics, data)
+	jsonPayload := getTagTagCreateJsonPayload(ctx, &resp.Diagnostics, true, data)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -192,7 +215,7 @@ func (r *TagTagResource) Update(ctx context.Context, req resource.UpdateRequest,
 
 	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_tag with id '%s'", data.Id.ValueString()))
 
-	jsonPayload := getTagTagCreateJsonPayload(ctx, &resp.Diagnostics, data)
+	jsonPayload := getTagTagCreateJsonPayload(ctx, &resp.Diagnostics, false, data)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -309,9 +332,13 @@ func setTagTagId(ctx context.Context, data *TagTagResourceModel) {
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
 
-func getTagTagCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *TagTagResourceModel) *container.Container {
+func getTagTagCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *TagTagResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
+
+	if createType && !globalAllowExistingOnCreate {
+		payloadMap["attributes"].(map[string]string)["status"] = "created"
+	}
 	if !data.Key.IsNull() && !data.Key.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["key"] = data.Key.ValueString()
 	}

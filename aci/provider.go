@@ -69,6 +69,11 @@ func Provider() *schema.Provider {
 				Optional:    true,
 				Description: "Global annotation for the provider. This can also be set as the ACI_ANNOTATION environment variable.",
 			},
+			"allow_existing_on_create": &schema.Schema{
+				Type:        schema.TypeBool,
+				Description: "Allow existing objects to be managed. This can also be set as the ACI_ALLOW_EXISTING_ON_CREATE environment variable.",
+				Optional:    true,
+			},
 		},
 
 		ResourcesMap: map[string]*schema.Resource{

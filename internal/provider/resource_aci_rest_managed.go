@@ -85,8 +85,9 @@ func (r *AciRestManagedResource) Metadata(ctx context.Context, req resource.Meta
 func (r *AciRestManagedResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
 	tflog.Debug(ctx, "Start plan modification of resource: aci_rest_managed")
 	if !req.Plan.Raw.IsNull() {
-		var planData *AciRestManagedResourceModel
+		var planData, stateData *AciRestManagedResourceModel
 		resp.Diagnostics.Append(req.Plan.Get(ctx, &planData)...)
+		resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
 
 		// modify the plan when annotation is not a property of class
 		if ContainsString(NoAnnotationClasses, planData.ClassName.ValueString()) {
@@ -97,6 +98,15 @@ func (r *AciRestManagedResource) ModifyPlan(ctx context.Context, req resource.Mo
 					"Annotation not supported in content",
 					"Annotation is not supported in content, please remove annotation from content and specify at resource level",
 				)
+			}
+		}
+
+		if stateData == nil && !globalAllowExistingOnCreate && !planData.Dn.IsUnknown() {
+			var createCheckData *AciRestManagedResourceModel
+			resp.Diagnostics.Append(req.Plan.Get(ctx, &createCheckData)...)
+			CheckDn(ctx, &resp.Diagnostics, r.client, createCheckData.ClassName.ValueString(), createCheckData.Dn.ValueString())
+			if resp.Diagnostics.HasError() {
+				return
 			}
 		}
 
@@ -230,13 +240,13 @@ func (r *AciRestManagedResource) Create(ctx context.Context, req resource.Create
 		return
 	}
 
-	data.Id = types.StringValue(data.Dn.ValueString())
+	data.Id = data.Dn
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_rest_managed with id '%s'", data.Id.ValueString()))
 
 	var childPlan, childState []ChildAciRestManagedResourceModel
 	data.Child.ElementsAs(ctx, &childPlan, false)
-	jsonPayload := getAciRestManagedCreateJsonPayload(ctx, &resp.Diagnostics, data, childPlan, childState)
+	jsonPayload := getAciRestManagedCreateJsonPayload(ctx, &resp.Diagnostics, true, data, childPlan, childState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -320,7 +330,7 @@ func (r *AciRestManagedResource) Update(ctx context.Context, req resource.Update
 	var childPlan, childState []ChildAciRestManagedResourceModel
 	data.Child.ElementsAs(ctx, &childPlan, false)
 	stateData.Child.ElementsAs(ctx, &childState, false)
-	jsonPayload := getAciRestManagedCreateJsonPayload(ctx, &resp.Diagnostics, data, childPlan, childState)
+	jsonPayload := getAciRestManagedCreateJsonPayload(ctx, &resp.Diagnostics, false, data, childPlan, childState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -709,9 +719,12 @@ func getAciRestManagedChildPayloads(ctx context.Context, diags *diag.Diagnostics
 	return childPayloads
 }
 
-func getAciRestManagedCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *AciRestManagedResourceModel, childPlan, childState []ChildAciRestManagedResourceModel) *container.Container {
+func getAciRestManagedCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *AciRestManagedResourceModel, childPlan, childState []ChildAciRestManagedResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
+	if createType && !globalAllowExistingOnCreate {
+		payloadMap["attributes"].(map[string]string)["status"] = "created"
+	}
 
 	childPayloads := getAciRestManagedChildPayloads(ctx, diags, data, childPlan, childState)
 	if diags.HasError() {
