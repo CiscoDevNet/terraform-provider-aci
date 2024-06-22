@@ -53,8 +53,8 @@ data "aci_endpoint_security_group" "example_application_profile" {
 * `exception_tag` (exceptionTag) - (string) Contract Exception Tag.
 * `match_criteria` (matchT) - (string) The provider label match criteria.
 * `name_alias` (nameAlias) - (string) The name alias of the Endpoint Security Group object.
-* `intra_esg_isolation` (pcEnfPref) - (string) Represents parameter used by the node (i.e. Leaf) to enforce filter rules in this EPG.
-* `preferred_group_member` (prefGrMemb) - (string) Represents parameter used to determine if EPg is part of a group that does not a contract for communication.
+* `intra_esg_isolation` (pcEnfPref) - (string) Represents parameter used by the node (i.e. Leaf) to enforce filter rules in this ESG.
+* `preferred_group_member` (prefGrMemb) - (string) Represents parameter used to determine if the ESG is part of a group that is not a contract for communication.
 * `admin_state` (shutdown) - (string) Withdraw ESg Configuration from all Nodes in the Fabric.
 
 * `relation_to_consumed_contracts` - (list) A list of Relation To Consumed Contracts (ACI object [fvRsCons](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsCons/overview)) pointing to Contract (ACI Object [vzBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzBrCP/overview)). This attribute is supported in ACI versions: 1.0(1e) and later.

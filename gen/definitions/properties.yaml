@@ -330,6 +330,9 @@ fvESg:
     pref_gr_memb: "preferred_group_member"
     pc_enf_pref: "intra_esg_isolation"
     shutdown: "admin_state"
+  documentation:
+    prefGrMemb: "Represents parameter used to determine if the ESG is part of a group that is not a contract for communication."
+    pcEnfPref: "Represents parameter used by the node (i.e. Leaf) to enforce filter rules in this ESG."
   parents:
     - class_name: "fvAp"
       parent_dependency: "fvTenant"
