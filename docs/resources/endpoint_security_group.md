@@ -137,10 +137,10 @@ All examples for the Endpoint Security Group resource can be found in the [examp
   - Default: `AtleastOne`
   - Valid Values: `All`, `AtleastOne`, `AtmostOne`, `None`.
 * `name_alias` (nameAlias) - (string) The name alias of the Endpoint Security Group object.
-* `intra_esg_isolation` (pcEnfPref) - (string) Represents parameter used by the node (i.e. Leaf) to enforce filter rules in this EPG.
+* `intra_esg_isolation` (pcEnfPref) - (string) Represents parameter used by the node (i.e. Leaf) to enforce filter rules in this ESG.
   - Default: `unenforced`
   - Valid Values: `enforced`, `unenforced`.
-* `preferred_group_member` (prefGrMemb) - (string) Represents parameter used to determine if EPg is part of a group that does not a contract for communication.
+* `preferred_group_member` (prefGrMemb) - (string) Represents parameter used to determine if the ESG is part of a group that is not a contract for communication.
   - Default: `exclude`
   - Valid Values: `exclude`, `include`.
 * `admin_state` (shutdown) - (string) Withdraw ESg Configuration from all Nodes in the Fabric.

@@ -107,11 +107,11 @@ func (d *FvESgDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 			},
 			"intra_esg_isolation": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `Represents parameter used by the node (i.e. Leaf) to enforce filter rules in this EPG.`,
+				MarkdownDescription: `Represents parameter used by the node (i.e. Leaf) to enforce filter rules in this ESG.`,
 			},
 			"preferred_group_member": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `Represents parameter used to determine if EPg is part of a group that does not a contract for communication.`,
+				MarkdownDescription: `Represents parameter used to determine if the ESG is part of a group that is not a contract for communication.`,
 			},
 			"admin_state": schema.StringAttribute{
 				Computed:            true,

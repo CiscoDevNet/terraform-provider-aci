@@ -1079,7 +1079,7 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Validators: []validator.String{
 					stringvalidator.OneOf("enforced", "unenforced"),
 				},
-				MarkdownDescription: `Represents parameter used by the node (i.e. Leaf) to enforce filter rules in this EPG.`,
+				MarkdownDescription: `Represents parameter used by the node (i.e. Leaf) to enforce filter rules in this ESG.`,
 			},
 			"preferred_group_member": schema.StringAttribute{
 				Optional: true,
@@ -1090,7 +1090,7 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Validators: []validator.String{
 					stringvalidator.OneOf("exclude", "include"),
 				},
-				MarkdownDescription: `Represents parameter used to determine if EPg is part of a group that does not a contract for communication.`,
+				MarkdownDescription: `Represents parameter used to determine if the ESG is part of a group that is not a contract for communication.`,
 			},
 			"admin_state": schema.StringAttribute{
 				Optional: true,
