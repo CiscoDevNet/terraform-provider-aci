@@ -278,6 +278,8 @@ fvRemoteId:
       site_id: "0"
   resource_required:
     - "site_id"
+    - "remote_vrf_pc_tag"
+    - "remote_pc_tag"
   default_values:
     siteId: "102"
   parents:
