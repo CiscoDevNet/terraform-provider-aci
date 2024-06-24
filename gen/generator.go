@@ -1381,6 +1381,9 @@ func (m *Model) SetClassProperties(classDetails interface{}) {
 
 				for _, details := range propertyValue.(map[string]interface{})["validValues"].([]interface{}) {
 					validValue := details.(map[string]interface{})["localName"].(string)
+					if propertyName == "remoteCtxPcTag" || propertyName == "remotePcTag" {
+						validValue = "defaultValue"
+					}
 					if validValue != "defaultValue" && !isInSlice(removedValidValuesList, validValue) {
 						property.ValidValues = append(property.ValidValues, validValue)
 					}

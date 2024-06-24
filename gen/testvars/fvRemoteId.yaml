@@ -31,7 +31,7 @@ all:
   owner_tag: "owner_tag"
   remote_vrf_pc_tag: "16386"
   remote_pc_tag: "2818057"
-  site_id: "0"
+  site_id: "102"
 
 children:
   annotations:
