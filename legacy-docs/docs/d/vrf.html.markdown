@@ -29,8 +29,8 @@ data "aci_vrf" "dev_ctx" {
 
 - `id` - Attribute id set to the Dn of the VRF.
 - `annotation` - (Optional) Annotation tags for object VRF.
-- `pc_tag` - (Read-Only) A numeric ID to represent an EPG.
-- `scope` - (Read-Only) A numeric value for other APICs to identify VRF.
+- `pc_tag` - (Read-Only) A numeric ID to represent a policy enforcement group.
+- `scope` - (Read-Only) A numeric value for other APICs to identify a specific VRF.
 - `description` - (Optional) Description tags for object VRF.
 - `bd_enforced_enable` - (Optional) Flag to enable/disable enforced bridge domain for VRF.
 - `ip_data_plane_learning` - (Optional) Flag to enable/disable IP-data-plane learning for VRF.
