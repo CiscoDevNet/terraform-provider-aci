@@ -63,9 +63,11 @@
         "stats": {
 
         },
+        "versions": "2.2(1k)-",
         "isAbstract": false,
         "isConfigurable": true,
         "isContextRoot": false,
+        "isNxosConverged": false,
         "isDeprecated": false,
         "isHidden": false,
         "isEncrypted": false,
@@ -96,6 +98,7 @@
         "label": "Exporter Policy Attachment",
         "properties": {
             "annotation": {
+                "versions": "3.2(1l)-",
                 "comment": [
                      "User annotation. Suggested format orchestrator:value"
                 ],
@@ -126,10 +129,12 @@
                 "platformFlavors": [
 
                 ],
+                "isNxosConverged": false,
                 "isDeprecated": false,
                 "isHidden": false
             },
             "childAction": {
+                "versions": "1.0(1e)-",
                 "comment": [
                      "Delete or ignore. For internal use only."
                 ],
@@ -155,25 +160,27 @@
                          "platformFlavors": [
 
                          ],
-                         "label": "deleteAll "},
+                         "label": "Delete All "},
                      { "value": "8192", "localName": "deleteNonPresent",
                          "platformFlavors": [
 
                          ],
-                         "label": "deleteNonPresent "},
+                         "label": "Delete Non Present "},
                      { "value": "4096", "localName": "ignore",
                          "platformFlavors": [
 
                          ],
-                         "label": "ignore "}
+                         "label": "Ignore "}
                 ],
                 "platformFlavors": [
 
                 ],
+                "isNxosConverged": false,
                 "isDeprecated": false,
                 "isHidden": false
             },
             "dn": {
+                "versions": "1.0(1e)-",
                 "comment": [
                      "A tag or metadata is a non-hierarchical keyword or term assigned to the fabric module."
                 ],
@@ -197,10 +204,12 @@
                 "platformFlavors": [
 
                 ],
+                "isNxosConverged": false,
                 "isDeprecated": false,
                 "isHidden": false
             },
             "extMngdBy": {
+                "versions": "3.2(1l)-",
                 "comment": [
                      "Indicates which orchestrator is managing this MO"
                 ],
@@ -231,28 +240,30 @@
                          "platformFlavors": [
 
                          ],
-                         "label": "msc "},
+                         "label": "MSC "},
                      { "value": "0", "localName": "undefined",
                          "platformFlavors": [
 
                          ],
-                         "label": "undefined "}
+                         "label": "Undefined "}
                 ],
                 "default": "undefined",
                 "platformFlavors": [
 
                 ],
+                "isNxosConverged": false,
                 "isDeprecated": false,
                 "isHidden": false
             },
             "forceResolve": {
+                "versions": "1.0(1e)-",
                 "comment": [
                      "Whether the relation should force pull the target."
                 ],
                 "isConfigurable": false,
                 "propGlobalId": "107",
                 "propLocalId": "83",
-                "label": "forceResolve",
+                "label": "Force Resolve",
                 "baseType": "scalar:Bool",
                 "modelType": "scalar:Bool",
                 "needsPropDelimiters": false,
@@ -287,10 +298,12 @@
                 "platformFlavors": [
 
                 ],
+                "isNxosConverged": false,
                 "isDeprecated": false,
                 "isHidden": false
             },
             "lcOwn": {
+                "versions": "1.0(1e)-",
                 "comment": [
                      "A value that indicates how this object was created. For internal use only."
                 ],
@@ -341,16 +354,18 @@
                          "platformFlavors": [
 
                          ],
-                         "label": "ResolvedOnBehalf "}
+                         "label": "Resolved On Behalf "}
                 ],
                 "default": "local",
                 "platformFlavors": [
 
                 ],
+                "isNxosConverged": false,
                 "isDeprecated": false,
                 "isHidden": false
             },
             "modTs": {
+                "versions": "1.0(1e)-",
                 "comment": [
                      "The time when this object was last modified."
                 ],
@@ -381,23 +396,25 @@
                          "platformFlavors": [
 
                          ],
-                         "label": "never "}
+                         "label": "Never "}
                 ],
                 "default": "never",
                 "platformFlavors": [
 
                 ],
+                "isNxosConverged": false,
                 "isDeprecated": false,
                 "isHidden": false
             },
             "monPolDn": {
+                "versions": "2.2(1k)-",
                 "comment": [
                      "The monitoring policy attached to this observable object."
                 ],
                 "isConfigurable": false,
                 "propGlobalId": "27393",
                 "propLocalId": "228",
-                "label": "Monitoring policy",
+                "label": "Monitoring Policy",
                 "baseType": "reference:BinRef",
                 "modelType": "reference:BinRef",
                 "needsPropDelimiters": true,
@@ -414,17 +431,19 @@
                 "platformFlavors": [
 
                 ],
+                "isNxosConverged": false,
                 "isDeprecated": false,
                 "isHidden": false
             },
             "rType": {
+                "versions": "1.0(1e)-",
                 "comment": [
                      "Represents the type of resolver."
                 ],
                 "isConfigurable": false,
                 "propGlobalId": "106",
                 "propLocalId": "82",
-                "label": "rType",
+                "label": "Resolver Type",
                 "baseType": "scalar:Enum8",
                 "modelType": "reln:ResolverType",
                 "needsPropDelimiters": false,
@@ -448,26 +467,28 @@
                          "platformFlavors": [
 
                          ],
-                         "label": "local "},
+                         "label": "Local "},
                      { "value": "1", "localName": "mo",
                          "platformFlavors": [
 
                          ],
-                         "label": "mo "},
+                         "label": "MO "},
                      { "value": "2", "localName": "service",
                          "platformFlavors": [
 
                          ],
-                         "label": "service "}
+                         "label": "Service "}
                 ],
                 "default": "mo",
                 "platformFlavors": [
 
                 ],
+                "isNxosConverged": false,
                 "isDeprecated": false,
                 "isHidden": false
             },
             "rn": {
+                "versions": "1.0(1e)-",
                 "comment": [
                      "Identifies an object from its siblings within the context of its parent object. The distinguished name contains a sequence of relative names."
                 ],
@@ -491,10 +512,12 @@
                 "platformFlavors": [
 
                 ],
+                "isNxosConverged": false,
                 "isDeprecated": false,
                 "isHidden": false
             },
             "state": {
+                "versions": "1.0(1e)-",
                 "comment": [
                      "Represents the state of the relationship."
                 ],
@@ -523,7 +546,7 @@
                          "comment": [
                              "cardinality violation - When relations are created such that\n                     they violate the cardinality, state of the relation would be\n                     set to this."
                          ],
-                         "label": "cardinality-violation "},
+                         "label": "Cardinality Violation "},
                      { "value": "unformed", "localName": "defaultValue",
                          "platformFlavors": [
 
@@ -536,7 +559,7 @@
                          "comment": [
                              "the relationship is formed with the target object"
                          ],
-                         "label": "formed "},
+                         "label": "Formed "},
                      { "value": "4", "localName": "invalid-target",
                          "platformFlavors": [
 
@@ -544,7 +567,7 @@
                          "comment": [
                              "invalid target DN"
                          ],
-                         "label": "invalid-target "},
+                         "label": "Invalid Target "},
                      { "value": "2", "localName": "missing-target",
                          "platformFlavors": [
 
@@ -552,7 +575,7 @@
                          "comment": [
                              "target does not exist"
                          ],
-                         "label": "missing-target "},
+                         "label": "Missing Target "},
                      { "value": "0", "localName": "unformed",
                          "platformFlavors": [
 
@@ -560,16 +583,18 @@
                          "comment": [
                              "the relationship is not formed"
                          ],
-                         "label": "unformed "}
+                         "label": "Unformed "}
                 ],
                 "default": "unformed",
                 "platformFlavors": [
 
                 ],
+                "isNxosConverged": false,
                 "isDeprecated": false,
                 "isHidden": false
             },
             "stateQual": {
+                "versions": "1.0(1e)-",
                 "comment": [
                      "Represents the state qualifier of the relationship."
                 ],
@@ -598,7 +623,7 @@
                          "comment": [
                              "target not specified, using default"
                          ],
-                         "label": "default-target "},
+                         "label": "Target Not Specified "},
                      { "value": "none", "localName": "defaultValue",
                          "platformFlavors": [
 
@@ -611,7 +636,7 @@
                          "comment": [
                              "target not found, using default"
                          ],
-                         "label": "mismatch-target "},
+                         "label": "Target Not Found "},
                      { "value": "0", "localName": "none",
                          "platformFlavors": [
 
@@ -619,16 +644,18 @@
                          "comment": [
                              "no issue"
                          ],
-                         "label": "none "}
+                         "label": "None "}
                 ],
                 "default": "none",
                 "platformFlavors": [
 
                 ],
+                "isNxosConverged": false,
                 "isDeprecated": false,
                 "isHidden": false
             },
             "status": {
+                "versions": "1.0(1e)-",
                 "comment": [
                      "The upgrade status. This property is for internal use only."
                 ],
@@ -657,7 +684,7 @@
                          "comment": [
                              "In a setter method: specifies that an object should be created. An error is returned if the object already exists.  \nIn the return value of a setter method: indicates that an object has been created.  \n"
                          ],
-                         "label": "created "},
+                         "label": "Created "},
                      { "value": "8", "localName": "deleted",
                          "platformFlavors": [
 
@@ -665,7 +692,7 @@
                          "comment": [
                              "In a setter method: specifies that an object should be deleted.  \nIn the return value of a setter method: indicates that an object has been deleted.\n"
                          ],
-                         "label": "deleted "},
+                         "label": "Deleted "},
                      { "value": "4", "localName": "modified",
                          "platformFlavors": [
 
@@ -673,22 +700,24 @@
                          "comment": [
                              "In a setter method: specifies that an object should be modified  \nIn the return value of a setter method: indicates that an object has been modified.\n"
                          ],
-                         "label": "modified "}
+                         "label": "Modified "}
                 ],
                 "platformFlavors": [
 
                 ],
+                "isNxosConverged": false,
                 "isDeprecated": false,
                 "isHidden": false
             },
             "tCl": {
+                "versions": "2.2(1k)-",
                 "comment": [
                      "The class ID of the target object. This property is managed internally and should not be modified by the user."
                 ],
                 "isConfigurable": false,
                 "propGlobalId": "27372",
                 "propLocalId": "78",
-                "label": "Target-class",
+                "label": "Target Class",
                 "baseType": "scalar:Enum16",
                 "modelType": "reln:ClassId",
                 "needsPropDelimiters": false,
@@ -723,10 +752,12 @@
                 "platformFlavors": [
 
                 ],
+                "isNxosConverged": false,
                 "isDeprecated": false,
                 "isHidden": false
             },
             "tContextDn": {
+                "versions": "1.0(1e)-",
                 "comment": [
                      "Specifies the target context distinguished name."
                 ],
@@ -750,10 +781,12 @@
                 "platformFlavors": [
 
                 ],
+                "isNxosConverged": false,
                 "isDeprecated": false,
                 "isHidden": false
             },
             "tDn": {
+                "versions": "1.0(1e)-",
                 "comment": [
                      "The distinguished name of the target."
                 ],
@@ -777,10 +810,12 @@
                 "platformFlavors": [
 
                 ],
+                "isNxosConverged": false,
                 "isDeprecated": false,
                 "isHidden": false
             },
             "tRn": {
+                "versions": "1.0(1e)-",
                 "comment": [
                      "Specifies the target's related name."
                 ],
@@ -804,17 +839,19 @@
                 "platformFlavors": [
 
                 ],
+                "isNxosConverged": false,
                 "isDeprecated": false,
                 "isHidden": false
             },
             "tType": {
+                "versions": "1.0(1e)-",
                 "comment": [
                      "Represents the type of target. The target type for this object is named."
                 ],
                 "isConfigurable": false,
                 "propGlobalId": "4988",
                 "propLocalId": "81",
-                "label": "tType",
+                "label": "Target Type",
                 "baseType": "scalar:Enum8",
                 "modelType": "reln:TargetType",
                 "needsPropDelimiters": false,
@@ -833,7 +870,7 @@
                          "platformFlavors": [
 
                          ],
-                         "label": "all "},
+                         "label": "All "},
                      { "value": "name", "localName": "defaultValue",
                          "platformFlavors": [
 
@@ -843,21 +880,23 @@
                          "platformFlavors": [
 
                          ],
-                         "label": "mo "},
+                         "label": "MO "},
                      { "value": "0", "localName": "name",
                          "platformFlavors": [
 
                          ],
-                         "label": "name "}
+                         "label": "Name "}
                 ],
                 "default": "name",
                 "platformFlavors": [
 
                 ],
+                "isNxosConverged": false,
                 "isDeprecated": false,
                 "isHidden": false
             },
             "tnNetflowExporterPolName": {
+                "versions": "2.2(1k)-",
                 "isConfigurable": true,
                 "propGlobalId": "27371",
                 "propLocalId": "6396",
@@ -885,10 +924,12 @@
                 "platformFlavors": [
 
                 ],
+                "isNxosConverged": false,
                 "isDeprecated": false,
                 "isHidden": false
             },
             "uid": {
+                "versions": "1.0(1e)-",
                 "comment": [
                      "A unique identifier for this object."
                 ],
@@ -912,10 +953,12 @@
                 "platformFlavors": [
 
                 ],
+                "isNxosConverged": false,
                 "isDeprecated": false,
                 "isHidden": false
             },
             "userdom": {
+                "versions": "5.0(1k)-",
                 "isConfigurable": true,
                 "propGlobalId": "60657",
                 "propLocalId": "13244",
@@ -951,6 +994,7 @@
                 "platformFlavors": [
 
                 ],
+                "isNxosConverged": false,
                 "isDeprecated": false,
                 "isHidden": false
             }

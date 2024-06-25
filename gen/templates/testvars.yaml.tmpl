@@ -5,9 +5,29 @@
 default:
   {{- range .Properties}}{{$overwritePropertyName := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
     {{- if .DefaultValue}}
+      {{- if eq .ValueType "bitmask"}}
+        {{- if lt 0 (len (overwritePropertyValue .PkgName $overwritePropertyName .DefaultValue "default" 0 $.Definitions))}}
+  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: {{range $index, $value := (overwritePropertyValue .PkgName $overwritePropertyName .DefaultValue "default" 0 $.Definitions)}}
+    - "{{ $value}}"
+          {{- end}}
+        {{- else}}
+  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: []
+        {{- end}}
+      {{- else}}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName .DefaultValue "default" 0 $.Definitions}}"
+      {{- end}}
     {{- else if not .IsNaming}}
+      {{- if eq .ValueType "bitmask"}}
+        {{- if lt 0 (len (overwritePropertyValue .PkgName $overwritePropertyName "" "default" 0 $.Definitions))}}
+  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: {{range $index, $value := (overwritePropertyValue .PkgName $overwritePropertyName "" "default" 0 $.Definitions)}}
+    - "{{ $value}}"
+          {{- end}}
+        {{- else}}
+  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: []
+        {{- end}}
+      {{- else}}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName "" "default" 0 $.Definitions}}"
+      {{- end}}
     {{- end}}
   {{- end}}
 
@@ -43,14 +63,33 @@ all:
     {{- if overwriteProperty .PkgName .SnakeCaseName $.Definitions | eq "annotation"}}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "annotation"
     {{- else if .DefaultValue}}{{$length := len .ValidValues}}
-      {{- if eq $length 0}}
+      {{- if eq .ValueType "bitmask"}}
+        {{- if lt 0 (len (overwritePropertyValue .PkgName $overwritePropertyName .DefaultValue "all" 0 $.Definitions))}}
+  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: {{range $index, $value := (overwritePropertyValue .PkgName $overwritePropertyName .DefaultValue "all" 0 $.Definitions)}}
+    - "{{ $value}}"
+          {{- end}}
+        {{- else}}
+  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: []
+        {{- end}}
+      {{- else if eq $length 0}}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName .DefaultValue "all" 0 $.Definitions}}"
       {{- else }}{{$testValue := index .ValidValues 0 }}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName $testValue "all" 0 $.Definitions}}"
       {{- end}}
     {{- else if not .IsNaming}}
-  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName $overwritePropertyName "all" 0 $.Definitions}}"{{- end}}
+      {{- if eq .ValueType "bitmask"}}
+        {{- if lt 0 (len (overwritePropertyValue .PkgName $overwritePropertyName $overwritePropertyName "all" 0 $.Definitions))}}
+  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: {{range $index, $value := (overwritePropertyValue .PkgName $overwritePropertyName $overwritePropertyName "all" 0 $.Definitions)}}
+    - "{{ $value}}"
+          {{- end}}
+        {{- else}}
+  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: []
+        {{- end}}
+      {{- else}}
+  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName $overwritePropertyName "all" 0 $.Definitions}}"
+      {{- end}}
     {{- end}}
+  {{- end}}
 {{ if .Children}}
 children:
   {{- range $key, $value := .Children}}{{$name := .ResourceName}}{{$child_deletable := .AllowDelete}}

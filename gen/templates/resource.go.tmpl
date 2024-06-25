@@ -460,22 +460,14 @@ func getAndSet{{.ResourceClassName}}Attributes(ctx context.Context, diags *diag.
 				}
 				{{- range .Properties}}
 					{{- if eq .ValueType "bitmask"}}
-						{{- if containsNoneAttributeValue .ValidValues}}
-				if attributeName == "{{.PropertyName}}" && attributeValue.(string) == "" {
-					{{.PropertyName}}Set, _ := types.SetValueFrom(ctx, data.{{.Name}}.ElementType(ctx), []string{"none"})
-					data.{{.Name}} = {{.PropertyName}}Set
-				} else if attributeName == "{{.PropertyName}}" {
-					{{.PropertyName}}List := strings.Split(attributeValue.(string), ",")
-					{{.PropertyName}}Set, _ := types.SetValueFrom(ctx, data.{{.Name}}.ElementType(ctx), {{.PropertyName}}List)
-					data.{{.Name}} = {{.PropertyName}}Set
-				}
-						{{- else}}
 				if attributeName == "{{.PropertyName}}" {
-					{{.PropertyName}}List := strings.Split(attributeValue.(string), ",")
+					{{.PropertyName}}List := make([]string, 0)
+					if attributeValue.(string) != "" {
+                        {{.PropertyName}}List = strings.Split(attributeValue.(string), ",")
+                    }
 					{{.PropertyName}}Set, _ := types.SetValueFrom(ctx, data.{{.Name}}.ElementType(ctx), {{.PropertyName}}List)
 					data.{{.Name}} = {{.PropertyName}}Set
 				}
-						{{- end}}
 					{{- else}}
 						{{- if containsNoneAttributeValue .ValidValues}}
 				if attributeName == "{{.PropertyName}}" && attributeValue.(string) == "" {

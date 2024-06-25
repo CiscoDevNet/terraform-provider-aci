@@ -94,6 +94,8 @@ var templateFuncs = template.FuncMap{
 	"containsNoneAttributeValue":   ContainsNoneAttributeValue,
 	"definedInMap":                 DefinedInMap,
 	"add":                          func(val1, val2 int) int { return val1 + val2 },
+	"substract":                    func(val1, val2 int) int { return val1 - val2 },
+	"isInterfaceSlice":             IsInterfaceSlice,
 	"lookupTestValue":              LookupTestValue,
 	"lookupChildTestValue":         LookupChildTestValue,
 	"createParentDnValue":          CreateParentDnValue,
@@ -163,14 +165,19 @@ func CreateParentDnValue(className, caller string, definitions Definitions) stri
 
 // Retrieves a value for a attribute of a aci class when defined in the testVars YAML file of the class
 // Returns "test_value" if no value is defined in the testVars YAML file
-func LookupTestValue(classPkgName, propertyName string, testVars map[string]interface{}, definitions Definitions) string {
-	lookupValue := "test_value"
+func LookupTestValue(classPkgName, propertyName string, testVars map[string]interface{}, definitions Definitions) interface{} {
+	var lookupValue interface{} = "test_value"
 	propertyName = GetOverwriteAttributeName(classPkgName, propertyName, definitions)
 	_, ok := testVars["all"]
 	if ok {
 		val, ok := testVars["all"].(interface{}).(map[interface{}]interface{})[propertyName]
 		if ok {
-			lookupValue = val.(string)
+			switch val := val.(type) {
+			case string:
+				lookupValue = val
+			case []interface{}:
+				lookupValue = val
+			}
 		}
 	}
 	_, ok = testVars["resource_required"]
@@ -185,7 +192,7 @@ func LookupTestValue(classPkgName, propertyName string, testVars map[string]inte
 
 // Retrieves a value for a attribute of a aci class when defined in the testVars YAML file of the class
 // Returns "test_value_for_child" if no value is defined in the testVars YAML file
-func LookupChildTestValue(classPkgName, childResourceName, propertyName string, testVars map[string]interface{}, testValueIndex int, definitions Definitions) string {
+func LookupChildTestValue(classPkgName, childResourceName, propertyName string, testVars map[string]interface{}, testValueIndex int, definitions Definitions) interface{} {
 	propertyName = GetOverwriteAttributeName(classPkgName, propertyName, definitions)
 	overwritePropertyValue := GetOverwriteAttributeValue(classPkgName, propertyName, "", "test_values_for_parent", testValueIndex, definitions)
 	if overwritePropertyValue != "" {
@@ -1105,9 +1112,10 @@ func (m *Model) SetClassProperties(classDetails interface{}) {
 			}
 
 			if propertyValue.(map[string]interface{})["validValues"] != nil {
+				removedValidValuesList := GetValidValuesToRemove(m.PkgName, propertyName, m.Definitions)
 				for _, details := range propertyValue.(map[string]interface{})["validValues"].([]interface{}) {
 					validValue := details.(map[string]interface{})["localName"].(string)
-					if validValue != "defaultValue" {
+					if validValue != "defaultValue" && !isInSlice(removedValidValuesList, validValue) {
 						property.ValidValues = append(property.ValidValues, validValue)
 					}
 				}
@@ -1280,7 +1288,7 @@ Determine if a attribute value in testvars should be overwritten by a attribute 
 Precendence order is:
  1. class level from properties.yaml
 */
-func GetOverwriteAttributeValue(classPkgName, propertyName, propertyValue, testType string, valueIndex int, definitions Definitions) string {
+func GetOverwriteAttributeValue(classPkgName, propertyName, propertyValue, testType string, valueIndex int, definitions Definitions) interface{} {
 	if classDetails, ok := definitions.Properties[classPkgName]; ok {
 		for key, value := range classDetails.(map[interface{}]interface{}) {
 			if key.(string) == "test_values" {
@@ -1293,7 +1301,12 @@ func GetOverwriteAttributeValue(classPkgName, propertyName, propertyValue, testT
 					}
 					for k, v := range test_type_value {
 						if k.(string) == propertyName {
-							return v.(string)
+							switch v := v.(type) {
+							case string:
+								return v
+							case []interface{}:
+								return v
+							}
 						}
 					}
 
@@ -1508,7 +1521,7 @@ func setDocumentationData(m *Model, definitions Definitions) {
 			for _, resource := range resourcesNotFound {
 				resourceDetails = fmt.Sprintf("%s    - %s\n", resourceDetails, GetDevnetDocForClass(resource))
 			}
-			m.DocumentationParentDns = append(m.DocumentationParentDns, fmt.Sprintf("The distinquised name (DN) of classes below can be used but currently there is no available resource for it:\n%s", resourceDetails))
+			m.DocumentationParentDns = append(m.DocumentationParentDns, fmt.Sprintf("The distinguished name (DN) of classes below can be used but currently there is no available resource for it:\n%s", resourceDetails))
 		}
 	}
 
@@ -1611,4 +1624,40 @@ func GetDefaultValues(classPkgName, propertyName string, definitions Definitions
 		}
 	}
 	return ""
+}
+
+func IsInterfaceSlice(input interface{}) bool {
+	_, ok := input.([]interface{})
+	return ok
+}
+
+func isInSlice(slice []interface{}, element interface{}) bool {
+	if len(slice) == 0 {
+		return false
+	}
+	for _, v := range slice {
+		if v == element {
+			return true
+		}
+	}
+	return false
+}
+
+func GetValidValuesToRemove(classPkgName, propertyName string, definitions Definitions) []interface{} {
+	precedenceList := []string{classPkgName, "global"}
+	removedValidValuesSlice := make([]interface{}, 0)
+	for _, precedence := range precedenceList {
+		if classDetails, ok := definitions.Properties[precedence]; ok {
+			for key, value := range classDetails.(map[interface{}]interface{}) {
+				if key.(string) == "remove_valid_values" {
+					for k, v := range value.(map[interface{}]interface{}) {
+						if k.(string) == propertyName {
+							removedValidValuesSlice = append(removedValidValuesSlice, v.([]interface{})...)
+						}
+					}
+				}
+			}
+		}
+	}
+	return removedValidValuesSlice
 }

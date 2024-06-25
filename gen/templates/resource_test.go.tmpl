@@ -33,7 +33,14 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 			{{- end}}
 		{{- end}}
 		{{- range $key, $value := $.default}}
+			{{- if (isInterfaceSlice $value)}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "{{len $value}}"),
+				{{- range $index, $subvalue := $value}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$index}}", "{{$subvalue}}"),
+				{{- end}}
+			{{- else}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+			{{- end}}
 		{{- end}}
 				),
 			},
@@ -52,7 +59,14 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 			{{- end}}
 		{{- end}}
 		{{- range $key, $value := $.all}}
+			{{- if (isInterfaceSlice $value)}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "{{len $value}}"),
+				{{- range $index, $subvalue := $value}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$index}}", "{{$subvalue}}"),
+				{{- end}}
+			{{- else}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+			{{- end}}
 		{{- end}}
 				),
 			},
@@ -97,7 +111,14 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 		{{- end}}
 		{{- range $key, $value := $.default}}{{$contains := definedInMap $key $.resource_required}}
 			{{- if not $contains}}
+				{{- if (isInterfaceSlice $value)}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "{{len $value}}"),
+					{{- range $index, $subvalue := $value}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$index}}", "{{$subvalue}}"),
+					{{- end}}
+				{{- else}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+				{{- end}}
 			{{- end}}
 		{{- end}}
 				),
@@ -117,7 +138,14 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 		{{- end}}
 		{{- range $key, $value := $.default}}{{$contains := definedInMap $key $.resource_required}}
 			{{- if not $contains}}
+				{{- if (isInterfaceSlice $value)}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "{{len $value}}"),
+					{{- range $index, $subvalue := $value}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$index}}", "{{$subvalue}}"),
+					{{- end}}
+				{{- else}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+				{{- end}}
 			{{- end}}
 		{{- end}}
 				),
@@ -137,7 +165,14 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 		{{- end}}
 			{{- range $key, $value := $.default}}{{$contains := definedInMap $key $.resource_required}}
 				{{- if not $contains}}
+					{{- if (isInterfaceSlice $value)}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "{{len $value}}"),
+						{{- range $index, $subvalue := $value}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$index}}", "{{$subvalue}}"),
+						{{- end}}
+					{{- else}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+					{{- end}}
 				{{- end}}
 			{{- end}}
 			{{- range $key, $value := $.children}}
@@ -166,7 +201,14 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 		{{- end}}
 			{{- range $key, $value := $.default}}{{$contains := definedInMap $key $.resource_required}}
 				{{- if not $contains}}
+					{{- if (isInterfaceSlice $value)}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "{{len $value}}"),
+						{{- range $index, $subvalue := $value}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$index}}", "{{$subvalue}}"),
+						{{- end}}
+					{{- else}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+					{{- end}}
 				{{- end}}
 			{{- end}}
 			{{- range $key, $value := $.children}}
@@ -189,8 +231,15 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
 		{{- end}}
 		{{- range $key, $value := .default}}{{$contains := definedInMap $key $.resource_required}}
-				{{- if not $contains}}
+			{{- if not $contains}}
+				{{- if (isInterfaceSlice $value)}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "{{len $value}}"),
+						{{- range $index, $subvalue := $value}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$index}}", "{{$subvalue}}"),
+						{{- end}}
+				{{- else}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+				{{- end}}
 			{{- end}}
 		{{- end}}
 		{{- range $key, $value := $.children}}
@@ -301,7 +350,14 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 		{{- end}}
 	{{- end}}
 	{{- range $key, $value := .default}}
+		{{- if (isInterfaceSlice $value)}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "{{len $value}}"),
+			{{- range $index, $subvalue := $value}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$index}}", "{{$subvalue}}"),
+			{{- end}}
+		{{- else}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+		{{- end}}
 	{{- end}}
 				),
 			},
@@ -319,7 +375,14 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 		{{- end}}
 	{{- end}}
 	{{- range $key, $value := .all}}
+		{{- if (isInterfaceSlice $value)}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "{{len $value}}"),
+			{{- range $index, $subvalue := $value}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$index}}", "{{$subvalue}}"),
+			{{- end}}
+		{{- else}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+		{{- end}}
 	{{- end}}
 				),
 			},
@@ -338,7 +401,14 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 	{{- end}}
 	{{- range $key, $value := .all}}
 		{{- if ne $key "annotation"}}
+			{{- if (isInterfaceSlice $value)}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "{{len $value}}"),
+				{{- range $index, $subvalue := $value}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$index}}", "{{$subvalue}}"),
+				{{- end}}
+			{{- else}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+			{{- end}}
 		{{- else}}
 			{{- range $dkey, $dvalue := $.default}}
 				{{- if eq $dkey "annotation"}}
@@ -362,7 +432,14 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 	{{- end}}
 	{{- range $key, $value := $.default}}{{$contains := definedInMap $key $.resource_required}}
 		{{- if not $contains}}
-			resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+			{{- if (isInterfaceSlice $value)}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "{{len $value}}"),
+				{{- range $index, $subvalue := $value}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$index}}", "{{$subvalue}}"),
+				{{- end}}
+			{{- else}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+			{{- end}}
 		{{- end}}
 	{{- end}}
 				),
@@ -382,7 +459,14 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 	{{- end}}
 	{{- range $key, $value := $.default}}{{$contains := definedInMap $key $.resource_required}}
 		{{- if not $contains}}
-			resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+			{{- if (isInterfaceSlice $value)}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "{{len $value}}"),
+				{{- range $index, $subvalue := $value}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$index}}", "{{$subvalue}}"),
+				{{- end}}
+			{{- else}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+			{{- end}}
 		{{- end}}
 	{{- end}}
 				),
@@ -400,8 +484,15 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 			{{- end }}
 		{{- end}}
 		{{- range $key, $value := .default}}{{$contains := definedInMap $key $.resource_required}}
-				{{- if not $contains}}
+			{{- if not $contains}}
+				{{- if (isInterfaceSlice $value)}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "{{len $value}}"),
+					{{- range $index, $subvalue := $value}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$index}}", "{{$subvalue}}"),
+					{{- end}}
+				{{- else}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+				{{- end}}
 			{{- end}}
 		{{- end}}
 		{{- range $key, $value := $.children}}
@@ -428,8 +519,15 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 			{{- end }}
 		{{- end}}
 		{{- range $key, $value := .default}}{{$contains := definedInMap $key $.resource_required}}
-				{{- if not $contains}}
+			{{- if not $contains}}
+				{{- if (isInterfaceSlice $value)}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "{{len $value}}"),
+					{{- range $index, $subvalue := $value}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$index}}", "{{$subvalue}}"),
+					{{- end}}
+				{{- else}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+				{{- end}}
 			{{- end}}
 		{{- end}}
 		{{- range $key, $value := $.children}}
@@ -460,8 +558,15 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 			{{- end }}
 		{{- end}}
 		{{- range $key, $value := .default}}{{$contains := definedInMap $key $.resource_required}}
-				{{- if not $contains}}
+			{{- if not $contains}}
+				{{- if (isInterfaceSlice $value)}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "{{len $value}}"),
+					{{- range $index, $subvalue := $value}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$index}}", "{{$subvalue}}"),
+					{{- end}}
+				{{- else}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+				{{- end}}
 			{{- end}}
 		{{- end}}
 		{{- range $key, $value := $.children}}
@@ -498,8 +603,15 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 			{{- end }}
 		{{- end}}
 		{{- range $key, $value := .default}}{{$contains := definedInMap $key $.resource_required}}
-				{{- if not $contains}}
+			{{- if not $contains}}
+				{{- if (isInterfaceSlice $value)}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "{{len $value}}"),
+					{{- range $index, $subvalue := $value}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$index}}", "{{$subvalue}}"),
+					{{- end}}
+				{{- else}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+				{{- end}}
 			{{- end}}
 		{{- end}}
 		{{- range $key, $value := $.children}}
@@ -574,7 +686,15 @@ resource "aci_{{$.resourceName}}" "test" {
 			{{- end}}
 		{{- end}}
 		{{- range $key, $value := $.all}}
+			{{- if (isInterfaceSlice $value)}}
+				{{- if lt 0 (len $value)}}
+  {{$key}} = [{{range $index, $subvalue := $value}}{{if lt $index (substract (len $value) 1)}}"{{$subvalue}}", {{else}}"{{$subvalue}}"{{end}}{{end}}]
+				{{- else}}
+  {{$key}} = []
+				{{- end}}
+			{{- else}}
   {{$key}} = "{{$value}}"
+			{{- end}}
 		{{- end}}
 }
 `
@@ -592,7 +712,15 @@ resource "aci_{{$.resourceName}}" "test" {
 			{{- end}}
 		{{- end}}
 		{{- range $key, $value := $.default}}
+			{{- if (isInterfaceSlice $value)}}
+				{{- if lt 0 (len $value)}}
+  {{$key}} = [{{range $index, $subvalue := $value}}{{if lt $index (substract (len $value) 1)}}"{{$subvalue}}", {{else}}"{{$subvalue}}"{{end}}{{end}}]
+				{{- else}}
+  {{$key}} = []
+				{{- end}}
+			{{- else}}
   {{$key}} = "{{$value}}"
+			{{- end}}
 		{{- end}}
 }
 `
@@ -707,7 +835,15 @@ resource "aci_{{$.resourceName}}" "test" {
 		{{- end}}
   	{{- end}}
   	{{- range $key, $value := $.all}}
+			{{- if (isInterfaceSlice $value)}}
+				{{- if lt 0 (len $value)}}
+  {{$key}} = [{{range $index, $subvalue := $value}}{{if lt $index (substract (len $value) 1)}}"{{$subvalue}}", {{else}}"{{$subvalue}}"{{end}}{{end}}]
+				{{- else}}
+  {{$key}} = []
+				{{- end}}
+			{{- else}}
   {{$key}} = "{{$value}}"
+			{{- end}}
   	{{- end}}
 }
 `
@@ -720,7 +856,15 @@ resource "aci_{{$.resourceName}}" "test" {
 		{{- end}}
   	{{- end}}
   	{{- range $key, $value := $.default}}
+			{{- if (isInterfaceSlice $value)}}
+				{{- if lt 0 (len $value)}}
+  {{$key}} = [{{range $index, $subvalue := $value}}{{if lt $index (substract (len $value) 1)}}"{{$subvalue}}", {{else}}"{{$subvalue}}"{{end}}{{end}}]
+				{{- else}}
+  {{$key}} = []
+				{{- end}}
+			{{- else}}
   {{$key}} = "{{$value}}"
+			{{- end}}
   	{{- end}}
 }
 `
