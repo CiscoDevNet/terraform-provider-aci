@@ -544,6 +544,53 @@ func TestAccAciRestManaged_tenantChildren(t *testing.T) {
 
 }
 
+func TestAccAciRestManaged_globalAllowExistingOnCreate(t *testing.T) {
+	name := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config:             testAccAciRestManagedConfig_globalAllowExisting(name),
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "dn", "uni/tn-"+name),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant_2", "dn", "uni/tn-"+name),
+				),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config:      testAccAciRestManagedConfig_globalAllowExisting(name),
+				ExpectError: regexp.MustCompile("object already exists"),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config:             testAccAciRestManagedConfig_globalAllowExisting(name),
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "dn", "uni/tn-"+name),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant_2", "dn", "uni/tn-"+name),
+				),
+			},
+		},
+	})
+}
+
 func TestAccAciRestManaged_globalAnnotation(t *testing.T) {
 	name := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
 
@@ -564,7 +611,7 @@ func TestAccAciRestManaged_globalAnnotation(t *testing.T) {
 		},
 	})
 
-	setGlobalAnnotationEnvVariable(t, "orchestrator:from_env")
+	setEnvVariable(t, "ACI_ANNOTATION", "orchestrator:from_env")
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -629,7 +676,7 @@ func TestAccAciRestManaged_globalAnnotation(t *testing.T) {
 			},
 		},
 	})
-	setGlobalAnnotationEnvVariable(t, "")
+	setEnvVariable(t, "ACI_ANNOTATION", "")
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -965,6 +1012,26 @@ func testAccAciRestManagedConfig_tagTag(name string) string {
 		content = {
 			value = "test"
 		}
+	}
+	`, name)
+}
+
+func testAccAciRestManagedConfig_globalAllowExisting(name string) string {
+	return fmt.Sprintf(`
+	resource "aci_rest_managed" "fvTenant" {
+		dn = "uni/tn-%[1]s"
+		class_name = "fvTenant"
+		content = {
+			name = "%[1]s"
+		}
+	}
+	resource "aci_rest_managed" "fvTenant_2" {
+		dn = "uni/tn-%[1]s"
+		class_name = "fvTenant"
+		content = {
+			name = "%[1]s"
+		}
+		depends_on = [aci_rest_managed.fvTenant]
 	}
 	`, name)
 }

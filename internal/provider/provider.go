@@ -27,6 +27,7 @@ import (
 )
 
 var globalAnnotation string
+var globalAllowExistingOnCreate bool
 
 // Ensure AciProvider satisfies various provider interfaces.
 var _ provider.Provider = &AciProvider{}
@@ -48,10 +49,11 @@ type AciProviderModel struct {
 	// IsInsecure         types.Bool   `tfsdk:"insecure"`
 	// ValidateRelationDn types.Bool   `tfsdk:"validate_relation_dn"`
 	// MaxRetries         types.Int64  `tfsdk:"retries"`
-	IsInsecure         types.String `tfsdk:"insecure"`
-	ValidateRelationDn types.String `tfsdk:"validate_relation_dn"`
-	MaxRetries         types.String `tfsdk:"retries"`
-	Annotation         types.String `tfsdk:"annotation"`
+	IsInsecure            types.String `tfsdk:"insecure"`
+	ValidateRelationDn    types.String `tfsdk:"validate_relation_dn"`
+	MaxRetries            types.String `tfsdk:"retries"`
+	Annotation            types.String `tfsdk:"annotation"`
+	AllowExistingOnCreate types.Bool   `tfsdk:"allow_existing_on_create"`
 }
 
 func (p *AciProvider) Metadata(ctx context.Context, req provider.MetadataRequest, resp *provider.MetadataResponse) {
@@ -123,6 +125,10 @@ func (p *AciProvider) Schema(ctx context.Context, req provider.SchemaRequest, re
 				Description: "Global annotation for the provider. This can also be set as the ACI_ANNOTATION environment variable.",
 				Optional:    true,
 			},
+			"allow_existing_on_create": schema.BoolAttribute{
+				Description: "Allow existing objects to be managed. This can also be set as the ACI_ALLOW_EXISTING_ON_CREATE environment variable.",
+				Optional:    true,
+			},
 		},
 	}
 }
@@ -148,6 +154,7 @@ func (p *AciProvider) Configure(ctx context.Context, req provider.ConfigureReque
 	validateRelationDn := stringToBool(resp, "insecure", getStringAttribute(data.ValidateRelationDn, "ACI_VAL_REL_DN"), true)
 	maxRetries := stringToInt(resp, "retries", getStringAttribute(data.MaxRetries, "ACI_RETRIES"), 2)
 	setGlobalAnnotation(data.Annotation, "ACI_ANNOTATION")
+	setGlobalAllowExistingOnCreate(resp, data.AllowExistingOnCreate, "ACI_ALLOW_EXISTING_ON_CREATE")
 
 	if username == "" {
 		resp.Diagnostics.AddError(
@@ -196,10 +203,17 @@ func (p *AciProvider) Configure(ctx context.Context, req provider.ConfigureReque
 
 func (p *AciProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
+		NewFvESgResource,
 		NewFvEpIpTagResource,
 		NewFvEpMacTagResource,
 		NewFvFBRGroupResource,
 		NewFvFBRMemberResource,
+		NewFvRsConsResource,
+		NewFvRsConsIfResource,
+		NewFvRsIntraEpgResource,
+		NewFvRsProtByResource,
+		NewFvRsProvResource,
+		NewFvRsSecInheritedResource,
 		NewL3extConsLblResource,
 		NewL3extProvLblResource,
 		NewL3extRsOutToFBRGroupResource,
@@ -221,10 +235,17 @@ func (p *AciProvider) Resources(ctx context.Context) []func() resource.Resource 
 
 func (p *AciProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
+		NewFvESgDataSource,
 		NewFvEpIpTagDataSource,
 		NewFvEpMacTagDataSource,
 		NewFvFBRGroupDataSource,
 		NewFvFBRMemberDataSource,
+		NewFvRsConsDataSource,
+		NewFvRsConsIfDataSource,
+		NewFvRsIntraEpgDataSource,
+		NewFvRsProtByDataSource,
+		NewFvRsProvDataSource,
+		NewFvRsSecInheritedDataSource,
 		NewL3extConsLblDataSource,
 		NewL3extProvLblDataSource,
 		NewL3extRsOutToFBRGroupDataSource,
@@ -249,6 +270,27 @@ func New(version string) func() provider.Provider {
 		return &AciProvider{
 			version: version,
 		}
+	}
+}
+
+func setGlobalAllowExistingOnCreate(resp *provider.ConfigureResponse, attribute basetypes.BoolValue, envKey string) {
+
+	if attribute.IsNull() {
+		envValue, found := os.LookupEnv(envKey)
+		if found {
+			boolValue, err := strconv.ParseBool(envValue)
+			if err != nil {
+				resp.Diagnostics.AddError(
+					fmt.Sprintf("Invalid input '%s'", envValue),
+					fmt.Sprintf("A boolean value must be provided for %s", envKey),
+				)
+			}
+			globalAllowExistingOnCreate = boolValue
+		} else {
+			globalAllowExistingOnCreate = true
+		}
+	} else {
+		globalAllowExistingOnCreate = attribute.ValueBool()
 	}
 }
 

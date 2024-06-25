@@ -69,6 +69,11 @@ func Provider() *schema.Provider {
 				Optional:    true,
 				Description: "Global annotation for the provider. This can also be set as the ACI_ANNOTATION environment variable.",
 			},
+			"allow_existing_on_create": &schema.Schema{
+				Type:        schema.TypeBool,
+				Description: "Allow existing objects to be managed. This can also be set as the ACI_ALLOW_EXISTING_ON_CREATE environment variable.",
+				Optional:    true,
+			},
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
@@ -236,7 +241,6 @@ func Provider() *schema.Provider {
 			"aci_l3out_static_route_next_hop":              resourceAciL3outStaticRouteNextHop(),
 			"aci_l3out_vpc_member":                         resourceAciL3outVPCMember(),
 			"aci_endpoint_security_group_selector":         resourceAciEndpointSecurityGroupSelector(),
-			"aci_endpoint_security_group":                  resourceAciEndpointSecurityGroup(),
 			"aci_endpoint_security_group_epg_selector":     resourceAciEndpointSecurityGroupEPgSelector(),
 			"aci_endpoint_security_group_tag_selector":     resourceAciEndpointSecurityGroupTagSelector(),
 			"aci_bfd_interface_policy":                     resourceAciBFDInterfacePolicy(),
@@ -491,7 +495,6 @@ func Provider() *schema.Provider {
 			"aci_l3out_static_route_next_hop":              dataSourceAciL3outStaticRouteNextHop(),
 			"aci_l3out_vpc_member":                         dataSourceAciL3outVPCMember(),
 			"aci_endpoint_security_group_selector":         dataSourceAciEndpointSecurityGroupSelector(),
-			"aci_endpoint_security_group":                  dataSourceAciEndpointSecurityGroup(),
 			"aci_endpoint_security_group_epg_selector":     dataSourceAciEndpointSecurityGroupEPgSelector(),
 			"aci_endpoint_security_group_tag_selector":     dataSourceAciEndpointSecurityGroupTagSelector(),
 			"aci_bfd_interface_policy":                     dataSourceAciBFDInterfacePolicy(),
