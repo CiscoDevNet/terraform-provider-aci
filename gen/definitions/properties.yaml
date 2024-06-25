@@ -279,8 +279,6 @@ mplsNodeSidP:
       name: "node_sid_profile"
     resource_required:
       segment_id: "1"
-      name: "node_sid_profile"
-      loopback_address: "1.1.1.1"
     datasource_required:
       segment_id: "1"
     datasource_non_existing:

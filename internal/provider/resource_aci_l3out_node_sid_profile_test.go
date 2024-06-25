@@ -47,8 +47,6 @@ func TestAccResourceMplsNodeSidPWithL3extLoopBackIfP(t *testing.T) {
 				Config:             testConfigMplsNodeSidPMinDependencyWithL3extLoopBackIfP,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "loopback_address", "1.1.1.1"),
-					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "name", "node_sid_profile"),
 					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "segment_id", "1"),
 				),
 			},
@@ -57,11 +55,11 @@ func TestAccResourceMplsNodeSidPWithL3extLoopBackIfP(t *testing.T) {
 				Config:             testConfigMplsNodeSidPResetDependencyWithL3extLoopBackIfP,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "loopback_address", "1.1.1.1"),
-					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "name", "node_sid_profile"),
 					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "segment_id", "1"),
 					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "loopback_address", "0.0.0.0"),
+					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "name", ""),
 					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "name_alias", ""),
 				),
 			},
@@ -71,11 +69,11 @@ func TestAccResourceMplsNodeSidPWithL3extLoopBackIfP(t *testing.T) {
 				ImportState:       true,
 				ImportStateVerify: true,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "loopback_address", "1.1.1.1"),
-					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "name", "node_sid_profile"),
 					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "segment_id", "1"),
 					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "loopback_address", "0.0.0.0"),
+					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "name", ""),
 					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "name_alias", ""),
 				),
 			},
@@ -84,11 +82,11 @@ func TestAccResourceMplsNodeSidPWithL3extLoopBackIfP(t *testing.T) {
 				Config:             testConfigMplsNodeSidPChildrenDependencyWithL3extLoopBackIfP,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "loopback_address", "1.1.1.1"),
-					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "name", "node_sid_profile"),
 					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "segment_id", "1"),
 					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "loopback_address", "0.0.0.0"),
+					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "name", ""),
 					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "annotations.0.value", "value_1"),
@@ -106,11 +104,11 @@ func TestAccResourceMplsNodeSidPWithL3extLoopBackIfP(t *testing.T) {
 				ImportState:       true,
 				ImportStateVerify: true,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "loopback_address", "1.1.1.1"),
-					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "name", "node_sid_profile"),
 					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "segment_id", "1"),
 					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "loopback_address", "0.0.0.0"),
+					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "name", ""),
 					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "annotations.0.value", "value_1"),
@@ -168,8 +166,6 @@ func TestAccResourceMplsNodeSidPWithL3extLoopBackIfP(t *testing.T) {
 const testConfigMplsNodeSidPMinDependencyWithL3extLoopBackIfP = testConfigL3extLoopBackIfPMinDependencyWithL3extRsNodeL3OutAtt + `
 resource "aci_l3out_node_sid_profile" "test" {
   parent_dn = aci_l3out_loopback_interface_profile.test.id
-  loopback_address = "1.1.1.1"
-  name = "node_sid_profile"
   segment_id = "1"
 }
 `
@@ -200,8 +196,6 @@ resource "aci_l3out_node_sid_profile" "test" {
 const testConfigMplsNodeSidPChildrenDependencyWithL3extLoopBackIfP = testConfigL3extLoopBackIfPMinDependencyWithL3extRsNodeL3OutAtt + `
 resource "aci_l3out_node_sid_profile" "test" {
   parent_dn = aci_l3out_loopback_interface_profile.test.id
-  loopback_address = "1.1.1.1"
-  name = "node_sid_profile"
   segment_id = "1"
   annotations = [
 	{
@@ -229,8 +223,6 @@ resource "aci_l3out_node_sid_profile" "test" {
 const testConfigMplsNodeSidPChildrenRemoveFromConfigDependencyWithL3extLoopBackIfP = testConfigL3extLoopBackIfPMinDependencyWithL3extRsNodeL3OutAtt + `
 resource "aci_l3out_node_sid_profile" "test" {
   parent_dn = aci_l3out_loopback_interface_profile.test.id
-  loopback_address = "1.1.1.1"
-  name = "node_sid_profile"
   segment_id = "1"
 }
 `
@@ -238,8 +230,6 @@ resource "aci_l3out_node_sid_profile" "test" {
 const testConfigMplsNodeSidPChildrenRemoveOneDependencyWithL3extLoopBackIfP = testConfigL3extLoopBackIfPMinDependencyWithL3extRsNodeL3OutAtt + `
 resource "aci_l3out_node_sid_profile" "test" {
   parent_dn = aci_l3out_loopback_interface_profile.test.id
-  loopback_address = "1.1.1.1"
-  name = "node_sid_profile"
   segment_id = "1"
   annotations = [ 
 	{
@@ -259,8 +249,6 @@ resource "aci_l3out_node_sid_profile" "test" {
 const testConfigMplsNodeSidPChildrenRemoveAllDependencyWithL3extLoopBackIfP = testConfigL3extLoopBackIfPMinDependencyWithL3extRsNodeL3OutAtt + `
 resource "aci_l3out_node_sid_profile" "test" {
   parent_dn = aci_l3out_loopback_interface_profile.test.id
-  loopback_address = "1.1.1.1"
-  name = "node_sid_profile"
   segment_id = "1"
   annotations = []
   tags = []
