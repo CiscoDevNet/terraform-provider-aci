@@ -68,7 +68,7 @@ resource "aci_vrf" "test" {
 
 resource "aci_associated_site" "test" {
   parent_dn = aci_vrf.test.id
-  site_id = "100"
+  site_id = "102"
   name   = "test_associated_site"
 }
 `

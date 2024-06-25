@@ -7,7 +7,7 @@ resource "aci_associated_site" "full_example_application_epg" {
   name_alias  = "name_alias"
   owner_key   = "owner_key"
   owner_tag   = "owner_tag"
-  site_id     = "0"
+  site_id     = "102"
   annotations = [
     {
       key   = "key_0"
@@ -30,7 +30,7 @@ resource "aci_associated_site" "full_example_bridge_domain" {
   name_alias  = "name_alias"
   owner_key   = "owner_key"
   owner_tag   = "owner_tag"
-  site_id     = "0"
+  site_id     = "102"
   annotations = [
     {
       key   = "key_0"

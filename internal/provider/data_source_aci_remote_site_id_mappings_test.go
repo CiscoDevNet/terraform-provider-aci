@@ -28,9 +28,9 @@ func TestAccDataSourceFvRemoteIdWithFvSiteAssociated(t *testing.T) {
 					resource.TestCheckResourceAttr("data.aci_remote_site_id_mappings.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("data.aci_remote_site_id_mappings.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("data.aci_remote_site_id_mappings.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("data.aci_remote_site_id_mappings.test", "remote_pc_tag", "0"),
-					resource.TestCheckResourceAttr("data.aci_remote_site_id_mappings.test", "remote_vrf_pc_tag", "0"),
-					resource.TestCheckResourceAttr("data.aci_remote_site_id_mappings.test", "site_id", "0"),
+					resource.TestCheckResourceAttr("data.aci_remote_site_id_mappings.test", "remote_pc_tag", ""),
+					resource.TestCheckResourceAttr("data.aci_remote_site_id_mappings.test", "remote_vrf_pc_tag", ""),
+					resource.TestCheckResourceAttr("data.aci_remote_site_id_mappings.test", "site_id", "102"),
 				),
 			},
 			{

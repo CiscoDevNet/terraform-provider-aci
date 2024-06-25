@@ -241,16 +241,16 @@ fvSiteAssociated:
   documentation:
     siteId: "A number between 0 and 1000 to identify the primary site being associated"
   default_values:
-    site_id: "0"
+    site_id: "102"
   resource_required:
     - "site_id"
   test_values:
     all:
-       site_id: "0" 
+       site_id: "102" 
     default:
-      site_id: "0"
+      site_id: "102"
     resource_required:
-      site_id: "0"
+      site_id: "102"
   parents:
     - class_name: "fvCtx"
       parent_dependency: "fvTenant"
@@ -268,18 +268,14 @@ fvRemoteId:
   test_values:
     all:
       site_id: "102" 
-      remote_vrf_pc_tag: "16386"
-      remote_pc_tag: "2818057"
     default:
-      site_id: "0"
-      remote_vrf_pc_tag: "0"
-      remote_pc_tag: "0"
+      site_id: "102"
     resource_required:
-      site_id: "0"
+      site_id: "102"
   resource_required:
     - "site_id"
-    - "remote_vrf_pc_tag"
-    - "remote_pc_tag"
+  datasource_required:
+    - "site_id"
   default_values:
     siteId: "102"
   parents:
