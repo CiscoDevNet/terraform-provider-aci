@@ -40,14 +40,14 @@ datasource_non_existing:
 
 datasource_required:
   {{- range .Properties}}{{$testValue := createTestValue .SnakeCaseName}}{{$overwritePropertyName := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
-    {{- if .IsNaming }}
+    {{- if or .IsNaming (isInRequiredTestValues .PkgName $overwritePropertyName $.Definitions "datasource_required") }}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName $testValue "datasource_required" 0 $.Definitions}}"
     {{- end}}
   {{- end}}
 
 resource_required:
   {{- range .Properties}}{{$testValue := createTestValue .SnakeCaseName}}{{$overwritePropertyName := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
-    {{- if or .IsNaming .IsRequired}}
+    {{- if or .IsNaming (or .IsRequired (isInRequiredTestValues .PkgName $overwritePropertyName $.Definitions "resource_required"))}}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName $testValue "resource_required" 0 $.Definitions}}"
     {{- end}}
   {{- end}}

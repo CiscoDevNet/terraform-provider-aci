@@ -829,7 +829,7 @@ resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClas
 		{{- range $key, $value := $.all}}
 			{{- if (isInterfaceSlice $value)}}
 				{{- if lt 0 (len $value)}}
-  {{$key}} = [{{range $index, $subvalue := $value}}{{if lt $index (substract (len $value) 1)}}"{{$subvalue}}", {{else}}"{{$subvalue}}"{{end}}{{end}}]
+  {{$key}} = [{{range $index, $subvalue := $value}}{{if lt $index (subtract (len $value) 1)}}"{{$subvalue}}", {{else}}"{{$subvalue}}"{{end}}{{end}}]
 				{{- else}}
   {{$key}} = []
 				{{- end}}
@@ -855,7 +855,7 @@ resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClas
 		{{- range $key, $value := $.default}}
 			{{- if (isInterfaceSlice $value)}}
 				{{- if lt 0 (len $value)}}
-  {{$key}} = [{{range $index, $subvalue := $value}}{{if lt $index (substract (len $value) 1)}}"{{$subvalue}}", {{else}}"{{$subvalue}}"{{end}}{{end}}]
+  {{$key}} = [{{range $index, $subvalue := $value}}{{if lt $index (subtract (len $value) 1)}}"{{$subvalue}}", {{else}}"{{$subvalue}}"{{end}}{{end}}]
 				{{- else}}
   {{$key}} = []
 				{{- end}}
@@ -999,7 +999,7 @@ resource "aci_{{$.resourceName}}" "test" {
   	{{- range $key, $value := $.all}}
 			{{- if (isInterfaceSlice $value)}}
 				{{- if lt 0 (len $value)}}
-  {{$key}} = [{{range $index, $subvalue := $value}}{{if lt $index (substract (len $value) 1)}}"{{$subvalue}}", {{else}}"{{$subvalue}}"{{end}}{{end}}]
+  {{$key}} = [{{range $index, $subvalue := $value}}{{if lt $index (subtract (len $value) 1)}}"{{$subvalue}}", {{else}}"{{$subvalue}}"{{end}}{{end}}]
 				{{- else}}
   {{$key}} = []
 				{{- end}}
@@ -1020,7 +1020,7 @@ resource "aci_{{$.resourceName}}" "test" {
   	{{- range $key, $value := $.default}}
 			{{- if (isInterfaceSlice $value)}}
 				{{- if lt 0 (len $value)}}
-  {{$key}} = [{{range $index, $subvalue := $value}}{{if lt $index (substract (len $value) 1)}}"{{$subvalue}}", {{else}}"{{$subvalue}}"{{end}}{{end}}]
+  {{$key}} = [{{range $index, $subvalue := $value}}{{if lt $index (subtract (len $value) 1)}}"{{$subvalue}}", {{else}}"{{$subvalue}}"{{end}}{{end}}]
 				{{- else}}
   {{$key}} = []
 				{{- end}}
