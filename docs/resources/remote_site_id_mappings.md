@@ -42,7 +42,7 @@ The configuration snippet below creates a Remote Site Id Mappings with only requ
 
 resource "aci_remote_site_id_mappings" "example_associated_site" {
   parent_dn = aci_associated_site.example.id
-  site_id   = "102"
+  site_id   = "0"
 }
 
 ```
@@ -62,7 +62,7 @@ resource "aci_remote_site_id_mappings" "full_example_associated_site" {
   owner_tag         = "owner_tag"
   remote_vrf_pc_tag = "remote_vrf_pc_tag"
   remote_pc_tag     = "remote_pc_tag"
-  site_id           = "102"
+  site_id           = "0"
   annotations = [
     {
       key   = "key_0"

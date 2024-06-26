@@ -9,7 +9,7 @@ default:
   name_alias: ""
   owner_key: ""
   owner_tag: ""
-  site_id: "102"
+  site_id: "0"
 
 
 all:
@@ -19,7 +19,7 @@ all:
   name_alias: "name_alias"
   owner_key: "owner_key"
   owner_tag: "owner_tag"
-  site_id: "102"
+  site_id: "0"
 
 children:
   annotations:

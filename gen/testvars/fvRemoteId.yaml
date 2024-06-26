@@ -11,7 +11,7 @@ default:
   owner_tag: ""
   remote_vrf_pc_tag: ""
   remote_pc_tag: ""
-  site_id: "102"
+  site_id: "0"
 
 datasource_non_existing:
   site_id: "non_existing_site_id"
@@ -20,7 +20,7 @@ datasource_required:
   site_id: "test_site_id"
 
 resource_required:
-  site_id: "102"
+  site_id: "0"
 
 all:
   annotation: "annotation"
@@ -31,7 +31,7 @@ all:
   owner_tag: "owner_tag"
   remote_vrf_pc_tag: "remote_vrf_pc_tag"
   remote_pc_tag: "remote_pc_tag"
-  site_id: "102"
+  site_id: "0"
 
 children:
   annotations:
