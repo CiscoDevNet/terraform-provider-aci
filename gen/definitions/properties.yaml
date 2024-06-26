@@ -323,8 +323,6 @@ mplsNodeSidP:
       name: "node_sid_profile"
     resource_required:
       segment_id: "1"
-      name: "node_sid_profile"
-      loopback_address: "1.1.1.1"
     datasource_required:
       segment_id: "1"
     datasource_non_existing:
@@ -924,6 +922,35 @@ qosDppPol:
     admin_st: "admin_state"
   parents:
     - class_name: "fvTenant"
+
+netflowExporterPol:
+  test_values:
+    default:
+      name: "netfow_exporter_default"
+      dst_addr: "2.2.2.1"
+      src_addr: "1.1.1.1/10"
+      dst_port: "https"
+    all:
+      name: "netfow_exporter"
+      dst_addr: "12.12.12.1"
+      src_addr: "11.11.11.1/11"
+      dst_port: "ssh"
+      ver: "v9"
+    resource_required:
+      src_addr: "1.1.1.1/10"
+      name: "netfow_exporter"
+      dst_addr: "2.2.2.1"
+      dst_port: "https"
+    datasource_required:
+      name: "netfow_exporter"
+    datasource_non_existing:
+      name: "netfow_exporter_non_existing"
+  parents:
+    - class_name: "infraInfra"
+      parent_dependency: ""
+      parent_dn: "uni/infra"
+    - class_name: "fvTenant"
+      parent_dependency: ""
       parent_dn: "aci_tenant.test.id"
 
 rtctrlProfile:
