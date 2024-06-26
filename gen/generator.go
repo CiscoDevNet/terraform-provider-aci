@@ -915,8 +915,6 @@ func (m *Model) SetClassInclude() {
 		for key, value := range classDetails.(map[interface{}]interface{}) {
 			if key.(string) == "include" {
 				m.Include = value.(bool)
-			} else {
-				m.Include = false
 			}
 		}
 	}
@@ -1115,6 +1113,9 @@ func (m *Model) SetClassProperties(classDetails interface{}) {
 				removedValidValuesList := GetValidValuesToRemove(m.PkgName, propertyName, m.Definitions)
 				for _, details := range propertyValue.(map[string]interface{})["validValues"].([]interface{}) {
 					validValue := details.(map[string]interface{})["localName"].(string)
+					if propertyName == "remoteCtxPcTag" || propertyName == "remotePcTag" {
+						validValue = "defaultValue"
+					}
 					if validValue != "defaultValue" && !isInSlice(removedValidValuesList, validValue) {
 						property.ValidValues = append(property.ValidValues, validValue)
 					}
@@ -1231,14 +1232,38 @@ Precendence order is:
  2. global level from properties.yaml
 */
 func requiredProperty(propertyName, classPkgName string, definitions Definitions) bool {
+	// precedenceList := []string{classPkgName, "global"}
+	// for _, precedence := range precedenceList {
+	// 	if classDetails, ok := definitions.Properties[precedence]; ok {
+	// 		for key, value := range classDetails.(map[interface{}]interface{}) {
+	// 			if key.(string) == "resource_required" {
+	// 				for _, v := range value.([]interface{}) {
+	// 					if v.(string) == propertyName {
+	// 						return true
+	// 					}
+	// 				}
+	// 			}
+	// 		}
+	// 	}
+	// }
+	// return false
 	precedenceList := []string{classPkgName, "global"}
 	for _, precedence := range precedenceList {
 		if classDetails, ok := definitions.Properties[precedence]; ok {
 			for key, value := range classDetails.(map[interface{}]interface{}) {
 				if key.(string) == "resource_required" {
-					for _, v := range value.([]interface{}) {
-						if v.(string) == propertyName {
-							return true
+					v1, ok1 := value.([]interface{})
+					if !ok1 {
+						for k1, _ := range value.(map[interface{}]interface{}) {
+							if k1.(string) == propertyName {
+								return true
+							}
+						}
+					} else {
+						for _, v := range v1 {
+							if v.(string) == propertyName {
+								return true
+							}
 						}
 					}
 				}

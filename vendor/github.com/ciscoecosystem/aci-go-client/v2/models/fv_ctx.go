@@ -19,6 +19,10 @@ type VRFAttributes struct {
 
 	Annotation string `json:",omitempty"`
 
+	PcTag string `json:",omitempty"`
+
+	Scope string `json:",omitempty"`
+
 	BdEnforcedEnable string `json:",omitempty"`
 
 	IpDataPlaneLearning string `json:",omitempty"`
@@ -57,6 +61,10 @@ func (fvCtx *VRF) ToMap() (map[string]string, error) {
 
 	A(fvCtxMap, "annotation", fvCtx.Annotation)
 
+	A(fvCtxMap, "pcTag", fvCtx.PcTag)
+
+	A(fvCtxMap, "scope", fvCtx.Scope)
+
 	A(fvCtxMap, "bdEnforcedEnable", fvCtx.BdEnforcedEnable)
 
 	A(fvCtxMap, "ipDataPlaneLearning", fvCtx.IpDataPlaneLearning)
@@ -89,6 +97,10 @@ func VRFFromContainerList(cont *container.Container, index int) *VRF {
 			Name: G(VRFCont, "name"),
 
 			Annotation: G(VRFCont, "annotation"),
+
+			PcTag: G(VRFCont, "pcTag"),
+
+			Scope: G(VRFCont, "scope"),
 
 			BdEnforcedEnable: G(VRFCont, "bdEnforcedEnable"),
 
