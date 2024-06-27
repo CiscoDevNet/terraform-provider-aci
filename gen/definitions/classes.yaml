@@ -397,49 +397,40 @@ vzTaboo:
   resource_name: "taboo_contract"
 
 fvCrtrn:
-  resource_name: "epg_useg_criterion"
+  resource_name: "epg_useg_block_statement"
   ui_locations:
     - "Tenants -> Application Profiles -> uSeg EPGs -> uSeg Attributes"
   sub_category: "Application Management"
   include: true
 
 fvSCrtrn:
-  resource_name: "epg_useg_sub_criterion"
+  resource_name: "epg_useg_sub_block_statement"
   ui_locations:
     - "Tenants -> Application Profiles -> uSeg EPGs -> uSeg Attributes"
   sub_category: "Application Management"
-  dn_formats:
-    - "uni/tn-{name}/ap-{name}/epg-{name}/crtrn/crtrn-{name}"
-  contained_by:
-    - "fvCrtrn"
+  resource_notes:
+    - "The `aci_epg_useg_sub_block_statement` is used to create nested sub-block statements by referencing itself."
 
 fvVmAttr:
-  resource_name: "epg_useg_criterion_vm_attribute"
+  resource_name: "epg_useg_vm_attribute"
   ui_locations:
     - "Tenants -> Application Profiles -> uSeg EPGs -> uSeg Attributes"
   sub_category: "Application Management"
-  dn_formats:
-    - "uni/tn-{name}/ap-{name}/epg-{name}/crtrn/vmattr-{name}"
-    - "uni/tn-{name}/ap-{name}/epg-{name}/crtrn/crtrn-{name}/vmattr-{name}"
 
 fvIdGroupAttr:
-  resource_name: "epg_useg_criterion_identity_group_attribute"
+  resource_name: "epg_useg_ad_group_attribute"
   ui_locations:
     - "Tenants -> Application Profiles -> uSeg EPGs -> uSeg Attributes"
   sub_category: "Application Management"
-  dn_formats:
-    - "uni/tn-{name}/ap-{name}/epg-{name}/crtrn/idgattr-[{selector}]"
 
 fvDnsAttr:
-  resource_name: "epg_useg_criterion_dns_attribute"
+  resource_name: "epg_useg_dns_attribute"
   ui_locations:
     - "Tenants -> Application Profiles -> uSeg EPGs -> uSeg Attributes"
   sub_category: "Application Management"
-  dn_formats:
-    - "uni/tn-{name}/ap-{name}/epg-{name}/crtrn/dnsattr-{name}"
 
 fvMacAttr:
-  resource_name: "epg_useg_criterion_mac_attribute"
+  resource_name: "epg_useg_mac_attribute"
   ui_locations:
     - "Tenants -> Application Profiles -> uSeg EPGs -> uSeg Attributes"
   sub_category: "Application Management"
@@ -449,7 +440,7 @@ fvMacAttr:
     - "fvCrtrn"
 
 fvIpAttr:
-  resource_name: "epg_useg_criterion_ip_attribute"
+  resource_name: "epg_useg_ip_attribute"
   ui_locations:
     - "Tenants -> Application Profiles -> uSeg EPGs -> uSeg Attributes"
   sub_category: "Application Management"

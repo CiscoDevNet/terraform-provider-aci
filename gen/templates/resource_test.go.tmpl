@@ -13,6 +13,9 @@ import (
 
 {{- if .parents}}
 	{{- range .parents}}{{$target_classes := .target_classes}}
+		{{- $parentClassName := capitalize .class_name }}
+	{{- range .parents}}
+{{- $parentClassName := capitalize .class_name }}
 func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
@@ -117,20 +120,20 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 		{{- range $key, $value := $.resource_required}}{{$contains := definedInMap $key $.default}}
 			{{- if not $contains}}
 				{{- if eq $key "target_dn" }}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{getTestTargetDn $.targets $.resourceName $value false $target_classes 0}}"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}", "{{getTestTargetDn $.targets $.resourceName $value false $target_classes 0}}"),
 				{{- else }}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}", "{{$value}}"),
 				{{- end }}
 			{{- end}}
 		{{- end}}
 		{{- range $key, $value := $.default}}
 			{{- if (isInterfaceSlice $value)}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "{{len $value}}"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}.#", "{{len $value}}"),
 				{{- range $index, $subvalue := $value}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$index}}", "{{$subvalue}}"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}.{{$index}}", "{{$subvalue}}"),
 				{{- end}}
 			{{- else}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}", "{{$value}}"),
 			{{- end}}
 		{{- end}}
 				),
@@ -143,20 +146,20 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 		{{- range $key, $value := $.resource_required}}{{$contains := definedInMap $key $.all}}
 			{{- if not $contains}}
 				{{- if eq $key "target_dn" }}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{getTestTargetDn $.targets $.resourceName $value false $target_classes 0}}"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}", "{{getTestTargetDn $.targets $.resourceName $value false $target_classes 0}}"),
 				{{- else }}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}", "{{$value}}"),
 				{{- end }}
 			{{- end}}
 		{{- end}}
 		{{- range $key, $value := $.all}}
 			{{- if (isInterfaceSlice $value)}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "{{len $value}}"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}.#", "{{len $value}}"),
 				{{- range $index, $subvalue := $value}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$index}}", "{{$subvalue}}"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}.{{$index}}", "{{$subvalue}}"),
 				{{- end}}
 			{{- else}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}", "{{$value}}"),
 			{{- end}}
 		{{- end}}
 				),
@@ -168,19 +171,19 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 				Check: resource.ComposeAggregateTestCheckFunc(
 		{{- range $key, $value := $.resource_required}}
 			{{- if eq $key "target_dn" }}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{getTestTargetDn $.targets $.resourceName $value false $target_classes 0}}"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}", "{{getTestTargetDn $.targets $.resourceName $value false $target_classes 0}}"),
 			{{- else }}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}", "{{$value}}"),
 			{{- end }}
 		{{- end}}
 		{{- range $key, $value := $.all}}{{$contains := definedInMap $key $.all}}
 			{{- if not $contains}}
 				{{- if ne $key "annotation"}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}", "{{$value}}"),
 				{{- else}}
 					{{- range $dkey, $dvalue := $.default}}
 						{{- if eq $dkey "annotation"}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$dkey}}", "{{$dvalue}}"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$dkey}}", "{{$dvalue}}"),
 						{{- end}}
 					{{- end}}
 				{{- end}}
@@ -195,20 +198,20 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 				Check: resource.ComposeAggregateTestCheckFunc(
 		{{- range $key, $value := $.resource_required}}
 			{{- if eq $key "target_dn" }}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{getTestTargetDn $.targets $.resourceName $value false $target_classes 0}}"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}", "{{getTestTargetDn $.targets $.resourceName $value false $target_classes 0}}"),
 			{{- else }}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}", "{{$value}}"),
 			{{- end }}
 		{{- end}}
 		{{- range $key, $value := $.default}}{{$contains := definedInMap $key $.resource_required}}
 			{{- if not $contains}}
 				{{- if (isInterfaceSlice $value)}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "{{len $value}}"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}.#", "{{len $value}}"),
 					{{- range $index, $subvalue := $value}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$index}}", "{{$subvalue}}"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}.{{$index}}", "{{$subvalue}}"),
 					{{- end}}
 				{{- else}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}", "{{$value}}"),
 				{{- end}}
 			{{- end}}
 		{{- end}}
@@ -216,7 +219,7 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 			},
 			// Import testing
 			{
-				ResourceName:      "aci_{{$.resourceName}}.test",
+				ResourceName:      "aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}",
 				ImportState:       true,
         		ImportStateVerify: true,
 			},
@@ -228,20 +231,20 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 				Check: resource.ComposeAggregateTestCheckFunc(
 		{{- range $key, $value := $.resource_required}}
 			{{- if eq $key "target_dn" }}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{getTestTargetDn $.targets $.resourceName $value false $target_classes 0}}"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}", "{{getTestTargetDn $.targets $.resourceName $value false $target_classes 0}}"),
 			{{- else }}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}", "{{$value}}"),
 			{{- end }}
 		{{- end}}
 			{{- range $key, $value := $.default}}{{$contains := definedInMap $key $.resource_required}}
 				{{- if not $contains}}
 					{{- if (isInterfaceSlice $value)}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "{{len $value}}"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}.#", "{{len $value}}"),
 						{{- range $index, $subvalue := $value}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$index}}", "{{$subvalue}}"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}.{{$index}}", "{{$subvalue}}"),
 						{{- end}}
 					{{- else}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}", "{{$value}}"),
 					{{- end}}
 				{{- end}}
 			{{- end}}
@@ -260,7 +263,7 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 			},
 			// Import testing with children
 			{	
-				ResourceName:      "aci_{{$.resourceName}}.test",
+				ResourceName:      "aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}",
 				ImportState:       true,
 				ImportStateVerify: true,
 			},
@@ -270,17 +273,17 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
 		{{- range $key, $value := .min}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}", "{{$value}}"),
 		{{- end}}
 		{{- range $key, $value := .default}}{{$contains := definedInMap $key $.resource_required}}
 			{{- if not $contains}}
 				{{- if (isInterfaceSlice $value)}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "{{len $value}}"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}.#", "{{len $value}}"),
 						{{- range $index, $subvalue := $value}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$index}}", "{{$subvalue}}"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}.{{$index}}", "{{$subvalue}}"),
 						{{- end}}
 				{{- else}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}", "{{$value}}"),
 				{{- end}}
 			{{- end}}
 		{{- end}}
@@ -295,9 +298,9 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 				{{- end}}
 			{{- end}}
 			{{- if eq (len $value) 1}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "1"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}.#", "1"),
 			{{- else}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "2"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}.#", "2"),
 			{{- end}}
 		{{- end}}
 				),
@@ -308,17 +311,17 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
 		{{- range $key, $value := .min}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}", "{{$value}}"),
 		{{- end}}
 		{{- range $key, $value := .default}}{{$contains := definedInMap $key $.resource_required}}
 				{{- if not $contains}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}", "{{$value}}"),
 			{{- end}}
 		{{- end}}
 		{{- range $key, $value := $.children}}
 			{{- if eq (len $value) 1}}{{- $child := index $value 0 }}
 				{{- if $child.deletable_child}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "0"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}.#", "0"),
 				{{- else}}
 					{{- range $child_key, $child_value := $child}}
 						{{- if eq $child_key "target_dn"}}
@@ -327,7 +330,7 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.0.{{$child_key}}", "{{$child_value}}"),
 						{{- end}}
 					{{- end}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "1"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}.#", "1"),
 				{{- end}}
 			{{- else}}
 				{{- $child := index $value 1 }}
@@ -338,7 +341,7 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.0.{{$child_key}}", "{{$child_value}}"),
 					{{- end}}
 				{{- end}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "1"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}.#", "1"),
 			{{- end}}
 		{{- end}}
 				),
@@ -349,27 +352,27 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
 		{{- range $key, $value := .min}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}", "{{$value}}"),
 		{{- end}}
 		{{- range $key, $value := .default}}{{$contains := definedInMap $key $.resource_required}}
 				{{- if not $contains}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}", "{{$value}}"),
 			{{- end}}
 		{{- end}}
 		{{- range $key, $value := $.children}}
 			{{- if eq (len $value) 1}}{{- $child := index $value 0 }}
 				{{- if $child.deletable_child}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "0"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}.#", "0"),
 				{{- else}}
 					{{- range $child_key, $child_value := $child}}
 						{{- if ne $child_key "deletable_child"}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.0.{{$child_key}}", "{{$child_value}}"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}.0.{{$child_key}}", "{{$child_value}}"),
 						{{- end}}
 					{{- end}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "1"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}.#", "1"),
 				{{- end}}
 			{{- else}}
-				resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "0"),
+				resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}.#", "0"),
 			{{- end}}
 		{{- end}}
 				),

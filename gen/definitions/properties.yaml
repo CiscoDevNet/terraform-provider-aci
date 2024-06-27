@@ -33,6 +33,7 @@ global:
     Dns: "DNS"
     Mac: "MAC"
     Ip: "IP"
+    Ad: "AD"
   ignores:
     - "userdom"
 
@@ -483,6 +484,9 @@ fvCrtrn:
       name: "criterion"
     datasource_non_existing:
       name: "criterion_non_existing"
+  parents:
+    - class_name: "fvAEPg"
+      parent_dn: "aci_application_epg.test.id"
 
 fvSCrtrn:
   documentation:
@@ -498,6 +502,13 @@ fvSCrtrn:
       name: "sub_criterion"
     datasource_non_existing:
       name: "sub_criterion_non_existing"
+  parents:
+    - class_name: "fvCrtrn"
+      parent_dependency: "fvAEPg"
+      parent_dn: "epg_useg_block_statement.test.id"
+    - class_name: "fvSCrtrn"
+      parent_dependency: "fvCrtrn"
+      parent_dn: "epg_useg_sub_block_statement.test.id"
 
 fvVmAttr:
   resource_required:
@@ -528,6 +539,13 @@ fvVmAttr:
       name: "vm_attribute"
     datasource_non_existing:
       name: "vm_attribute_non_existing"
+  parents:
+    - class_name: "fvCrtrn"
+      parent_dependency: "fvAEPg"
+      parent_dn: "epg_useg_block_statement.test.id"
+    - class_name: "fvSCrtrn"
+      parent_dependency: "fvCrtrn"
+      parent_dn: "epg_useg_sub_block_statement.test.id"
 
 fvIdGroupAttr:
   documentation:
@@ -539,6 +557,10 @@ fvIdGroupAttr:
       selector: "adepg/authsvr-common-sg1-ISE_1/grpcont/dom-cisco.com/grp-Eng"
     datasource_non_existing:
       selector: "adepg/authsvr-common-sg1-ISE_1/grpcont/dom-cisco.com/grp-Eng_non_existing"
+  parents:
+    - class_name: "fvCrtrn"
+      parent_dependency: "fvAEPg"
+      parent_dn: "epg_useg_block_statement.test.id"
 
 fvDnsAttr:
   documentation:
@@ -551,6 +573,10 @@ fvDnsAttr:
       name: "dns_attribute"
     datasource_non_existing:
       name: "dns_attribute_non_existing"
+  parents:
+    - class_name: "fvCrtrn"
+      parent_dependency: "fvAEPg"
+      parent_dn: "epg_useg_block_statement.test.id"
 
 fvMacAttr:
   resource_required:
@@ -567,6 +593,10 @@ fvMacAttr:
       name: "mac_attr"
     datasource_non_existing:
       name: "mac_attr_non_existing"
+  parents:
+    - class_name: "fvCrtrn"
+      parent_dependency: "fvAEPg"
+      parent_dn: "epg_useg_block_statement.test.id"
 
 fvIpAttr:
   resource_required:
@@ -593,3 +623,7 @@ fvIpAttr:
       name: "131"
     datasource_non_existing:
       name: "131_non_existing"
+  parents:
+    - class_name: "fvCrtrn"
+      parent_dependency: "fvAEPg"
+      parent_dn: "epg_useg_block_statement.test.id"

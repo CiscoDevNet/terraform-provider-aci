@@ -13,6 +13,7 @@ import (
 
 {{- if .parents}}
 	{{- range .parents}}{{$target_classes := .target_classes}}
+		{{- $parentClassName := capitalize .class_name }}
 func TestAccDataSource{{$.resourceClassName}}With{{capitalize .class_name}} (t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
@@ -25,19 +26,19 @@ func TestAccDataSource{{$.resourceClassName}}With{{capitalize .class_name}} (t *
 				Check: resource.ComposeAggregateTestCheckFunc(
 					{{- range $key, $value := $.datasource_required}}
 						{{- if eq $key "target_dn" }}
-					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$key}}", "{{getTestTargetDn $.targets $.resourceName $value false $target_classes 0}}"),
+					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}", "{{getTestTargetDn $.targets $.resourceName $value false $target_classes 0}}"),
 						{{- else }}
-					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}", "{{$value}}"),
 						{{- end }}
 					{{- end}}
 					{{- range $key, $value := $.default}}
 						{{- if (isInterfaceSlice $value)}}
-					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$key}}.#", "{{len $value}}"),
+					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}.#", "{{len $value}}"),
 							{{- range $index, $subvalue := $value}}
-					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$key}}.{{$index}}", "{{$subvalue}}"),
+					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}.{{$index}}", "{{$subvalue}}"),
 							{{- end}}
 						{{- else}}
-					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}", "{{$value}}"),
 						{{- end}}
 					{{- end}}
 				),
@@ -85,9 +86,10 @@ func TestAccDataSource{{.resourceClassName}}(t *testing.T) {
 {{- end}}
 
 {{- if .parents}}
-	{{- range .parents}}{{$target_classes := .target_classes}}
+{{- range .parents}}{{$target_classes := .target_classes}}
+{{- $parentClassName := capitalize .class_name }}
 const testConfig{{$.resourceClassName}}DataSourceDependencyWith{{capitalize .class_name}}  = testConfig{{$.resourceClassName}}MinDependencyWith{{capitalize .class_name}}  + `
-data "aci_{{$.resourceName}}" "test" {
+data "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}" {
   parent_dn = {{.parent_dn}}
   {{- range $key, $value := $.datasource_required}}
 		{{- if eq $key "target_dn" }}
@@ -96,7 +98,7 @@ data "aci_{{$.resourceName}}" "test" {
   {{$key}} = "{{$value}}"
 		{{- end }}
   {{- end}}
-  depends_on = [aci_{{$.resourceName}}.test]
+  depends_on = [aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}]
 }
 `
 
@@ -128,7 +130,7 @@ data "aci_{{$.resourceName}}" "test" {
 `
 
 const testConfig{{$.resourceClassName}}NotExisting = testConfig{{.resourceClassName}}All + `
-data "aci_{{$.resourceName}}" "test" {
+data "aci_{{$.resourceName}}" "test_non_existing" {
   {{- range $key, $value := $.datasource_non_existing}}
 		{{- if eq $key "target_dn" }}
   {{$key}} = "{{getTestTargetDn $.targets $.resourceName $value false nil 0}}_not_existing"
