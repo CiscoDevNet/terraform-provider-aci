@@ -53,10 +53,10 @@ children:
       
 parents:
   - class_name: "fvCrtrn"
-    parent_dependency: ""
-    parent_dn: "aci_epg_useg_criterion.test.id"
+    parent_dependency: "fvAEPg"
+    parent_dn: "aci_epg_useg_block_statement.test.id"
     class_in_parent: false
   - class_name: "fvSCrtrn"
-    parent_dependency: ""
-    parent_dn: "aci_epg_useg_sub_criterion.test.id"
+    parent_dependency: "fvCrtrn"
+    parent_dn: "aci_epg_useg_sub_block_statement.test.id"
     class_in_parent: false

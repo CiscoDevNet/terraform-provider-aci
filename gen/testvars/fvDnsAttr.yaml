@@ -44,6 +44,6 @@ children:
       
 parents:
   - class_name: "fvCrtrn"
-    parent_dependency: ""
-    parent_dn: "aci_epg_useg_criterion.test.id"
+    parent_dependency: "fvAEPg"
+    parent_dn: "aci_epg_useg_block_statement.test.id"
     class_in_parent: false

@@ -42,7 +42,7 @@ data "aci_external_management_network_instance_profile" "test" {
 `
 
 const testConfigMgmtInstPNotExisting = testConfigMgmtInstPAll + `
-data "aci_external_management_network_instance_profile" "test" {
+data "aci_external_management_network_instance_profile" "test_non_existing" {
   name = "non_existing_name"
   depends_on = [aci_external_management_network_instance_profile.test]
 }
