@@ -71,10 +71,9 @@ data "aci_associated_site" "test" {
 }
 `
 
-const testConfigFvSiteAssociatedNotExistingFvAEPg = testConfigFvSiteAssociatedMinDependencyWithFvAEPg + `
+const testConfigFvSiteAssociatedNotExistingFvAEPg = testConfigFvAEPgMinDependencyWithFvTenant + `
 data "aci_associated_site" "test_non_existing" {
   parent_dn = aci_application_epg.test.id
-  depends_on = [aci_associated_site.test]
 }
 `
 const testConfigFvSiteAssociatedDataSourceDependencyWithFvBD = testConfigFvSiteAssociatedMinDependencyWithFvBD + `
