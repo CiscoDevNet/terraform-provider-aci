@@ -448,3 +448,6 @@ fvIpAttr:
     - "uni/tn-{name}/ap-{name}/epg-{name}/crtrn/ipattr-{name}"
   contained_by:
     - "fvCrtrn"
+
+infraHPathS:
+  resource_name: "host_path_selector"

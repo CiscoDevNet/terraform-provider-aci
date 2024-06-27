@@ -627,3 +627,20 @@ fvIpAttr:
     - class_name: "fvCrtrn"
       parent_dependency: "fvAEPg"
       parent_dn: "epg_useg_block_statement.test.id"
+
+infraHPathS:
+  default_values:
+    parent_dn: "uni/infra"
+  test_values:
+    default:
+      name: "host_path_selector_default"
+    resource_required:
+      name: "host_path_selector"
+    datasource_required:
+      name: "host_path_selector"
+    datasource_non_existing:
+      name: "host_path_selector_non_existing"
+  parents:
+    - class_name: "infraInfra"
+      parent_dependency: ""
+      parent_dn: "uni/infra"
