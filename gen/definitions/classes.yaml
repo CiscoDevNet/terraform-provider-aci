@@ -218,3 +218,6 @@ mplsNodeSidP:
     - "uni/tn-{name}/out-{name}/lnodep-{name}/rsnodeL3OutAtt-[{tDn}]/lbp-[{addr}]/nodesidp-{sidoffset}"
   contained_by:
     - "l3extLoopBackIfP"
+
+infraHPathS:
+  resource_name: "host_path_selector"

@@ -61,6 +61,7 @@ data "aci_annotation" "example_application_epg" {
   - [aci_vrf_fallback_route_group](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vrf_fallback_route_group) ([fvFBRGroup](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvFBRGroup/overview))
   - [aci_vrf_fallback_route_group_member](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vrf_fallback_route_group_member) ([fvFBRMember](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvFBRMember/overview))
   - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
+  - [aci_host_path_selector](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/host_path_selector) ([infraHPathS](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraHPathS/overview))
   - [aci_l3out_consumer_label](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3out_consumer_label) ([l3extConsLbl](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extConsLbl/overview))
   - [aci_logical_node_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/logical_node_profile) ([l3extLNodeP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extLNodeP/overview))
   - [aci_l3out_loopback_interface_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3out_loopback_interface_profile) ([l3extLoopBackIfP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extLoopBackIfP/overview))
@@ -73,7 +74,6 @@ data "aci_annotation" "example_application_epg" {
   - [aci_relation_to_consumed_out_of_band_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/relation_to_consumed_out_of_band_contract) ([mgmtRsOoBCons](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/mgmtRsOoBCons/overview))
   - [aci_external_management_network_subnet](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/external_management_network_subnet) ([mgmtSubnet](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/mgmtSubnet/overview))
   - [aci_l3out_node_sid_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3out_node_sid_profile) ([mplsNodeSidP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/mplsNodeSidP/overview))
-  - [aci_netflow_exporter_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/netflow_exporter_policy) ([netflowExporterPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowExporterPol/overview))
 * `key` (key) - (string) The key used to uniquely identify this configuration object.
 
 ### Read-Only ###
