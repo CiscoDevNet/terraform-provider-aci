@@ -115,7 +115,7 @@ func (r *FvRsProvResource) Schema(ctx context.Context, req resource.SchemaReques
 				Validators: []validator.String{
 					stringvalidator.OneOf("All", "AtleastOne", "AtmostOne", "None"),
 				},
-				MarkdownDescription: `The matched EPG type.`,
+				MarkdownDescription: `The provider label match criteria.`,
 			},
 			"priority": schema.StringAttribute{
 				Optional: true,

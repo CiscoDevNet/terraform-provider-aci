@@ -1236,7 +1236,7 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Validators: []validator.String{
 								stringvalidator.OneOf("All", "AtleastOne", "AtmostOne", "None"),
 							},
-							MarkdownDescription: `The matched EPG type.`,
+							MarkdownDescription: `The provider label match criteria.`,
 						},
 						"priority": schema.StringAttribute{
 							Optional: true,
