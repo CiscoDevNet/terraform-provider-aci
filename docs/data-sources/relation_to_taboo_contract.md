@@ -30,8 +30,8 @@ Data source for Relation To Taboo Contract
 
 * Locations:
   - `Tenants -> Application Profiles -> Application EPGs -> Contracts`
-  - `Tenants -> Networkings -> L3Outs -> External EPGs -> Contracts`
-  - `Tenants -> Networkings -> L2Outs -> External EPGs -> Contracts`
+  - `Tenants -> Networking -> L3Outs -> External EPGs -> Contracts`
+  - `Tenants -> Networking -> L2Outs -> External EPGs -> Contracts`
 
 ## Example Usage ##
 

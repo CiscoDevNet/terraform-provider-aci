@@ -32,8 +32,8 @@ Data source for Relation To Contract Master
 * Locations:
   - `Tenants -> Application Profiles -> Application EPGs`
   - `Tenants -> Application Profiles -> Endpoint Security Groups`
-  - `Tenants -> Networkings -> L3Outs -> External EPGs`
-  - `Tenants -> Networkings -> L2Outs -> External EPGs`
+  - `Tenants -> Networking -> L3Outs -> External EPGs`
+  - `Tenants -> Networking -> L2Outs -> External EPGs`
 
 ## Example Usage ##
 
