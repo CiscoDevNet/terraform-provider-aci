@@ -12,7 +12,7 @@ import (
 )
 
 {{- if .parents}}
-	{{- range .parents}}
+	{{- range .parents}}{{$target_classes := .target_classes}}
 func TestAccDataSource{{$.resourceClassName}}With{{capitalize .class_name}} (t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
@@ -25,7 +25,7 @@ func TestAccDataSource{{$.resourceClassName}}With{{capitalize .class_name}} (t *
 				Check: resource.ComposeAggregateTestCheckFunc(
 					{{- range $key, $value := $.datasource_required}}
 						{{- if eq $key "target_dn" }}
-					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$key}}", "{{$.targetDn}}"),
+					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$key}}", "{{getTestTargetDn $.targets $.resourceName $value false $target_classes 0}}"),
 						{{- else }}
 					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
 						{{- end }}
@@ -85,13 +85,13 @@ func TestAccDataSource{{.resourceClassName}}(t *testing.T) {
 {{- end}}
 
 {{- if .parents}}
-	{{- range .parents}}
+	{{- range .parents}}{{$target_classes := .target_classes}}
 const testConfig{{$.resourceClassName}}DataSourceDependencyWith{{capitalize .class_name}}  = testConfig{{$.resourceClassName}}MinDependencyWith{{capitalize .class_name}}  + `
 data "aci_{{$.resourceName}}" "test" {
   parent_dn = {{.parent_dn}}
   {{- range $key, $value := $.datasource_required}}
 		{{- if eq $key "target_dn" }}
-  {{$key}} = {{$value}}
+  {{$key}} = {{getTestTargetDn $.targets $.resourceName $value true $target_classes 0}}
 		{{- else }}
   {{$key}} = "{{$value}}"
 		{{- end }}
@@ -105,7 +105,7 @@ data "aci_{{$.resourceName}}" "test_non_existing" {
   parent_dn = {{.parent_dn}}
   {{- range $key, $value := $.datasource_non_existing}}
 		{{- if eq $key "target_dn" }}
-  {{$key}} = "{{$.targetDn}}_not_existing"
+  {{$key}} = "{{getTestTargetDn $.targets $.resourceName $value false $target_classes 0}}_not_existing"
 		{{- else }}
   {{$key}} = "{{$value}}"
 		{{- end }}
@@ -119,7 +119,7 @@ const testConfig{{.resourceClassName}}DataSource = testConfig{{.resourceClassNam
 data "aci_{{$.resourceName}}" "test" {
   {{- range $key, $value := $.datasource_required}}
 		{{- if eq $key "target_dn" }}
-  {{$key}} = {{$value}}
+  {{$key}} = {{getTestTargetDn $.targets $.resourceName $value true nil 0}}
 		{{- else }}
   {{$key}} = "{{$value}}"
 		{{- end }}
@@ -132,7 +132,7 @@ const testConfig{{$.resourceClassName}}NotExisting = testConfig{{.resourceClassN
 data "aci_{{$.resourceName}}" "test" {
   {{- range $key, $value := $.datasource_non_existing}}
 		{{- if eq $key "target_dn" }}
-  {{$key}} = "{{$.targetDn}}_not_existing"
+  {{$key}} = "{{getTestTargetDn $.targets $.resourceName $value false nil 0}}_not_existing"
 		{{- else }}
   {{$key}} = "{{$value}}"
 		{{- end }}

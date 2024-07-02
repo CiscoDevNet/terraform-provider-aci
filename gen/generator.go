@@ -31,6 +31,7 @@ package main
 
 import (
 	"bytes"
+	"cmp"
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
@@ -79,31 +80,169 @@ const pubhupDevnetBaseUrl = "https://pubhub.devnetcloud.com/media/model-doc-late
 // The map contains a key which is the name of the function used in the template and a value which is the function itself
 // The functions itself are defined in the current file
 var templateFuncs = template.FuncMap{
-	"snakeCase":                    Underscore,
-	"validatorString":              ValidatorString,
-	"containsString":               ContainsString,
-	"listToString":                 ListToString,
-	"overwriteProperty":            GetOverwriteAttributeName,
-	"overwritePropertyValue":       GetOverwriteAttributeValue,
-	"createTestValue":              func(val string) string { return fmt.Sprintf("test_%s", val) },
-	"createNonExistingValue":       func(val string) string { return fmt.Sprintf("non_existing_%s", val) },
-	"getParentTestDependencies":    GetParentTestDependencies,
-	"getTargetTestDependencies":    GetTargetTestDependencies,
-	"getDefaultValues":             GetDefaultValues,
-	"fromInterfacesToString":       FromInterfacesToString,
-	"containsNoneAttributeValue":   ContainsNoneAttributeValue,
-	"definedInMap":                 DefinedInMap,
-	"add":                          func(val1, val2 int) int { return val1 + val2 },
-	"substract":                    func(val1, val2 int) int { return val1 - val2 },
-	"isInterfaceSlice":             IsInterfaceSlice,
-	"lookupTestValue":              LookupTestValue,
-	"lookupChildTestValue":         LookupChildTestValue,
-	"createParentDnValue":          CreateParentDnValue,
-	"getResourceName":              GetResourceName,
-	"getResourceNameAsDescription": GetResourceNameAsDescription,
-	"capitalize":                   Capitalize,
-	"getTestConfigVariableName":    GetTestConfigVariableName,
-	"getDevnetDocForClass":         GetDevnetDocForClass,
+	"snakeCase":                         Underscore,
+	"validatorString":                   ValidatorString,
+	"containsString":                    ContainsString,
+	"listToString":                      ListToString,
+	"overwriteProperty":                 GetOverwriteAttributeName,
+	"overwritePropertyValue":            GetOverwriteAttributeValue,
+	"createTestValue":                   func(val string) string { return fmt.Sprintf("test_%s", val) },
+	"createNonExistingValue":            func(val string) string { return fmt.Sprintf("non_existing_%s", val) },
+	"getParentTestDependencies":         GetParentTestDependencies,
+	"getTestTargetDn":                   GetTestTargetDn,
+	"getDefaultValues":                  GetDefaultValues,
+	"fromInterfacesToString":            FromInterfacesToString,
+	"containsNoneAttributeValue":        ContainsNoneAttributeValue,
+	"definedInMap":                      DefinedInMap,
+	"getValueFromMap":                   GetValueFromMap,
+	"add":                               func(val1, val2 int) int { return val1 + val2 },
+	"substract":                         func(val1, val2 int) int { return val1 - val2 },
+	"isInterfaceSlice":                  IsInterfaceSlice,
+	"replace":                           Replace,
+	"lookupTestValue":                   LookupTestValue,
+	"lookupChildTestValue":              LookupChildTestValue,
+	"createParentDnValue":               CreateParentDnValue,
+	"getResourceName":                   GetResourceName,
+	"getResourceNameAsDescription":      GetResourceNameAsDescription,
+	"capitalize":                        Capitalize,
+	"decapitalize":                      Decapitalize,
+	"getTestConfigVariableName":         GetTestConfigVariableName,
+	"getDevnetDocForClass":              GetDevnetDocForClass,
+	"getMigrationType":                  GetMigrationType,
+	"isLegacyAttribute":                 IsLegacyAttribute,
+	"isLegacyChild":                     IsLegacyChild,
+	"getLegacyChildAttribute":           GetLegacyChildAttribute,
+	"getConflictingAttributeName":       GetConflictingAttributeName,
+	"getPropertyNameForLegacyAttribute": GetPropertyNameForLegacyAttribute,
+	"isNewAttributeStringType":          IsNewAttributeStringType,
+	"isNewNamedClassAttribute":          IsNewNamedClassAttribute,
+	"getChildAttributesFromBlocks":      GetChildAttributesFromBlocks,
+	"getNewChildAttributes":             GetNewChildAttributes,
+	"containsRequired":                  ContainsRequired,
+}
+
+func ContainsRequired(properties map[string]Property) bool {
+	for _, property := range properties {
+		if property.IsRequired {
+			return true
+		}
+	}
+	return false
+}
+
+func Replace(oldValue, newValue, inputString string) string {
+	return strings.Replace(inputString, oldValue, newValue, -1)
+}
+
+func GetMigrationType(valueType []string) string {
+	if len(valueType) == 2 && valueType[0] == "set" && valueType[1] == "string" {
+		return "Set"
+	} else if len(valueType) == 2 && valueType[0] == "list" && valueType[1] == "string" {
+		return "List"
+	}
+	return "String"
+}
+
+func GetValueFromMap(key string, searchMap map[string]string) string {
+	if value, ok := searchMap[key]; ok {
+		return value
+	}
+	return ""
+}
+
+func IsLegacyAttribute(name string, legacyAttributes map[string]LegacyAttribute) bool {
+	if _, ok := legacyAttributes[name]; ok {
+		return true
+	}
+	return false
+}
+
+func IsLegacyChild(child string, children []string) bool {
+	if slices.Contains(children, child) {
+		return true
+	}
+	return false
+}
+
+func IsNewAttributeStringType(attributeName string) bool {
+	if len(strings.Split(attributeName, ".")) == 1 {
+		return true
+	}
+	return false
+}
+
+func IsNewNamedClassAttribute(attributeName string) bool {
+	if strings.HasSuffix(attributeName, "_name") {
+		return true
+	}
+	return false
+}
+
+func GetConflictingAttributeName(attributeName string) string {
+	return strings.Split(attributeName, ".")[0]
+}
+
+func GetPropertyNameForLegacyAttribute(name string, legacyAttributes map[string]LegacyAttribute) string {
+	for _, legacyAttribute := range legacyAttributes {
+		if legacyAttribute.ReplacedBy.AttributeName == name {
+			return legacyAttribute.AttributeName
+		}
+	}
+	return ""
+}
+
+func GetLegacyChildAttribute(className, overwriteProperty string, property Property, legacyAttributes map[string]LegacyAttribute, legacyBlocks []LegacyBlock) string {
+
+	for _, legacyBlock := range legacyBlocks {
+		if legacyBlock.ClassName == className {
+			for _, legacyAttribute := range legacyBlock.Attributes {
+				if strings.Contains(legacyAttribute.ReplacedBy.AttributeName, overwriteProperty) {
+					return legacyAttribute.Name
+				}
+			}
+			return ""
+		}
+	}
+
+	for _, legacyAttribute := range legacyAttributes {
+		if strings.Contains(legacyAttribute.ReplacedBy.AttributeName, overwriteProperty) {
+			return Capitalize(className)
+		}
+	}
+	return ""
+}
+
+func GetChildAttributesFromBlocks(className string, legacyBlocks []LegacyBlock) map[string]LegacyAttribute {
+	legacyAttributes := map[string]LegacyAttribute{}
+	for _, legacyBlock := range legacyBlocks {
+		if legacyBlock.ClassName == className {
+			legacyAttributes = legacyBlock.Attributes
+		}
+	}
+	return legacyAttributes
+}
+
+func GetNewChildAttributes(legacyAttributes map[string]LegacyAttribute, properties map[string]Property) []Property {
+	result := []Property{}
+	for _, property := range properties {
+		found := false
+		for _, attribute := range legacyAttributes {
+			if property.Name == attribute.Name {
+				found = true
+				break
+			}
+		}
+		if !found && property.Name != "Annotation" {
+			result = append(result, property)
+		}
+	}
+
+	// return result sorted to guarantee consistent output
+	slices.SortFunc(result, func(a, b Property) int {
+		return cmp.Compare(a.Name, b.Name)
+	})
+
+	return result
 }
 
 // Global variables used for unique resource name setting based on label from meta data
@@ -129,6 +268,10 @@ func GetDevnetDocForClass(className string) string {
 
 func Capitalize(s string) string {
 	return fmt.Sprintf("%s%s", strings.ToUpper(s[:1]), s[1:])
+}
+
+func Decapitalize(s string) string {
+	return fmt.Sprintf("%s%s", strings.ToLower(s[:1]), s[1:])
 }
 
 func ContainsString(s, sub string) bool {
@@ -187,6 +330,19 @@ func LookupTestValue(classPkgName, propertyName string, testVars map[string]inte
 			lookupValue = val.(string)
 		}
 	}
+
+	if propertyName == "target_dn" {
+		targetResourceName := strings.TrimPrefix(GetResourceName(classPkgName, definitions), "relation_to_")
+		targets, ok := testVars["targets"].([]interface{})
+		if ok {
+			for _, target := range targets {
+				if targetResourceName == target.(map[interface{}]interface{})["relation_resource_name"].(string) {
+					return target.(map[interface{}]interface{})["target_dn_ref"].(string)
+				}
+			}
+		}
+	}
+
 	return lookupValue
 }
 
@@ -194,6 +350,7 @@ func LookupTestValue(classPkgName, propertyName string, testVars map[string]inte
 // Returns "test_value_for_child" if no value is defined in the testVars YAML file
 func LookupChildTestValue(classPkgName, childResourceName, propertyName string, testVars map[string]interface{}, testValueIndex int, definitions Definitions) interface{} {
 	propertyName = GetOverwriteAttributeName(classPkgName, propertyName, definitions)
+
 	overwritePropertyValue := GetOverwriteAttributeValue(classPkgName, propertyName, "", "test_values_for_parent", testValueIndex, definitions)
 	if overwritePropertyValue != "" {
 		return overwritePropertyValue
@@ -318,20 +475,6 @@ func getTestVars(model Model) (map[string]interface{}, error) {
 	// Adds the resource name and resource class name to the testVars map to be used in test template rendering
 	testVarsMap["resourceName"] = model.ResourceName
 	testVarsMap["resourceClassName"] = model.ResourceClassName
-	testVarsMap["targetResourceName"] = model.TargetResourceName
-	testVarsMap["targetResourceClassName"] = model.TargetResourceClassName
-	testVarsMap["targetResourceParentClassName"] = ""
-	testVarsMap["targetDn"] = model.TargetDn
-	targets, targetsOk := testVarsMap["targets"]
-	if targetsOk && targets != nil {
-		if targets.([]interface{})[0].(map[interface{}]interface{})["parent_dependency"] != nil {
-			testVarsMap["targetResourceParentClassName"] = targets.([]interface{})[0].(map[interface{}]interface{})["parent_dependency"].(string)
-		}
-
-		if targets.([]interface{})[0].(map[interface{}]interface{})["target_dn"] != "" {
-			testVarsMap["targetDn"] = targets.([]interface{})[0].(map[interface{}]interface{})["target_dn"].(string)
-		}
-	}
 	return testVarsMap, nil
 }
 
@@ -343,22 +486,32 @@ func getDefinitions() Definitions {
 		panic(err)
 	}
 	for _, file := range files {
-		if path.Ext(file.Name()) != ".yaml" {
-			continue
-		}
-		definitionMap := make(map[string]interface{})
-		definition, err := os.ReadFile(fmt.Sprintf("%s/%s", definitionsPath, file.Name()))
-		if err != nil {
-			panic(err)
-		}
-		err = yaml.Unmarshal([]byte(definition), &definitionMap)
-		if err != nil {
-			panic(err)
-		}
-		if file.Name() == "classes.yaml" {
-			definitions.Classes = definitionMap
-		} else if file.Name() == "properties.yaml" {
-			definitions.Properties = definitionMap
+		if path.Ext(file.Name()) == ".yaml" {
+			definitionMap := make(map[string]interface{})
+			definition, err := os.ReadFile(fmt.Sprintf("%s/%s", definitionsPath, file.Name()))
+			if err != nil {
+				panic(err)
+			}
+			err = yaml.Unmarshal([]byte(definition), &definitionMap)
+			if err != nil {
+				panic(err)
+			}
+			if file.Name() == "classes.yaml" {
+				definitions.Classes = definitionMap
+			} else if file.Name() == "properties.yaml" {
+				definitions.Properties = definitionMap
+			}
+		} else if path.Ext(file.Name()) == ".json" && strings.Contains(file.Name(), "schema-git-commit-") {
+			definitionMap := make(map[string]interface{})
+			definition, err := os.ReadFile(fmt.Sprintf("%s/%s", definitionsPath, file.Name()))
+			if err != nil {
+				panic(err)
+			}
+			err = json.Unmarshal([]byte(definition), &definitionMap)
+			if err != nil {
+				panic(err)
+			}
+			definitions.Migration = definitionMap
 		}
 	}
 	return definitions
@@ -562,7 +715,10 @@ func main() {
 			// All classmodels have been read, thus now the model, child and relational resources names can be set
 			// When done before additional files would need to be opened and read which would slow down the generation process
 			model.ResourceName = GetResourceName(model.PkgName, definitions)
-			model.RelationshipResourceName = GetResourceName(model.RelationshipClass, definitions)
+
+			for _, relationshipClass := range model.RelationshipClasses {
+				model.RelationshipResourceNames = append(model.RelationshipResourceNames, GetResourceName(relationshipClass, definitions))
+			}
 			childMap := make(map[string]Model, 0)
 			for childName, childModel := range model.Children {
 				childModel.ChildResourceName = GetResourceName(childModel.PkgName, definitions)
@@ -573,7 +729,9 @@ func main() {
 				} else {
 					childModel.ResourceName = childModel.ChildResourceName
 				}
-				childModel.RelationshipResourceName = GetResourceName(childModel.RelationshipClass, definitions)
+				for _, relationshipClass := range childModel.RelationshipClasses {
+					childModel.RelationshipResourceNames = append(childModel.RelationshipResourceNames, GetResourceName(relationshipClass, definitions))
+				}
 				childMap[childName] = childModel
 			}
 			model.Children = childMap
@@ -584,7 +742,7 @@ func main() {
 
 			// Render the testvars file for the resource
 			// First generate run would not mean the file is correct from beginning since some testvars would need to be manually overwritten in the properties definitions YAML file
-			SetModelTargetValues(model.PkgName, &model, classModels, definitions)
+			model.SetModelTestDependencies(classModels, definitions)
 			renderTemplate("testvars.yaml.tmpl", fmt.Sprintf("%s.yaml", model.PkgName), testVarsPath, model)
 			testVarsMap, err := getTestVars(model)
 			if err != nil {
@@ -651,8 +809,8 @@ type Model struct {
 	ExampleResource           string
 	ExampleResourceFull       string
 	SubCategory               string
-	RelationshipClass         string
-	RelationshipResourceName  string
+	RelationshipClasses       []string
+	RelationshipResourceNames []string
 	Versions                  string
 	ChildClasses              []string
 	ContainedBy               []string
@@ -660,11 +818,8 @@ type Model struct {
 	DocumentationDnFormats    []string
 	DocumentationParentDns    []string
 	DocumentationExamples     []string
-	TargetResourceClassName   string
-	TargetResourceName        string
-	TargetDn                  string
-	TargetProperties          map[string]Property
-	TargetNamedProperties     map[string]Property
+	TestDependencies          []TestDependency
+	ChildTestDependencies     []TestDependency
 	DocumentationChildren     []string
 	ResourceNotes             []string
 	ResourceWarnings          []string
@@ -676,6 +831,11 @@ type Model struct {
 	DnFormats                 []interface{}
 	Properties                map[string]Property
 	NamedProperties           map[string]Property
+	LegacyAttributes          map[string]LegacyAttribute
+	LegacyBlocks              []LegacyBlock
+	LegacySchemaVersion       int
+	LegacyChildren            []string
+	MigrationClassTypes       map[string]string
 	Children                  map[string]Model
 	Configuration             map[string]interface{}
 	TestVars                  map[string]interface{}
@@ -696,6 +856,40 @@ type Model struct {
 	HasNamedProperties        bool
 	HasChildNamedProperties   bool
 	Include                   bool
+}
+
+type TestDependency struct {
+	ClassName             string
+	ParentDependency      string
+	ParentDependencyDnRef string
+	ParentDnKey           string
+	TargetDn              string
+	TargetDnRef           string
+	TargetResourceName    string
+	RelationResourceName  string
+	Properties            map[string]string
+}
+
+type LegacyBlock struct {
+	Name        string
+	NestingMode string
+	ClassName   string
+	Attributes  map[string]LegacyAttribute
+}
+
+type LegacyAttribute struct {
+	Name          string
+	AttributeName string
+	ValueType     []string
+	ReplacedBy    ReplacementAttribute
+	Optional      bool
+	Computed      bool
+	Required      bool
+}
+
+type ReplacementAttribute struct {
+	ClassName     string
+	AttributeName string
 }
 
 // A Property represents a ACI class property
@@ -726,6 +920,7 @@ type Property struct {
 type Definitions struct {
 	Classes    map[string]interface{}
 	Properties map[string]interface{}
+	Migration  map[string]interface{}
 }
 
 // Reads the class details from the meta file and sets all details to the Model
@@ -748,6 +943,7 @@ func (m *Model) setClassModel(metaPath string, child bool, definitions Definitio
 	for _, classDetails := range classInfo {
 		m.SetClassLabel(classDetails, child)
 		m.SetClassName(classDetails)
+		m.SetRelationshipClasses(definitions)
 		m.SetClassRnFormat(classDetails)
 		m.SetClassDnFormats(classDetails)
 		m.SetClassIdentifiers(classDetails)
@@ -798,6 +994,14 @@ func (m *Model) setClassModel(metaPath string, child bool, definitions Definitio
 			m.HasChild = false
 		}
 	}
+
+	if isMigrationResource(m.PkgName, definitions) {
+		m.SetMigrationClassTypes(definitions)
+		m.SetLegacyChildren(definitions)
+		m.SetMigrationVersion(definitions)
+		m.SetLegacyAttributes(definitions)
+	}
+
 }
 
 func (m *Model) SetClassLabel(classDetails interface{}, child bool) {
@@ -864,10 +1068,26 @@ func (m *Model) SetClassName(classDetails interface{}) {
 
 func (m *Model) SetClassRnFormat(classDetails interface{}) {
 	m.GetOverwriteRnFormat(classDetails.(map[string]interface{})["rnFormat"].(string))
-	if strings.HasPrefix(m.RnFormat, "rs") {
+	if strings.HasPrefix(m.RnFormat, "rs") && len(m.RelationshipClasses) == 0 {
 		toMo := classDetails.(map[string]interface{})["relationInfo"].(map[string]interface{})["toMo"].(string)
-		m.RelationshipClass = strings.Replace(toMo, ":", "", 1)
+		m.RelationshipClasses = []string{strings.Replace(toMo, ":", "", 1)}
 	}
+}
+
+func (m *Model) SetRelationshipClasses(definitions Definitions) {
+	overwriteExampleClasses := []interface{}{}
+	if v, ok := definitions.Classes[m.PkgName]; ok {
+		for key, value := range v.(map[interface{}]interface{}) {
+			if key.(string) == "relationship_classes" {
+				overwriteExampleClasses = value.([]interface{})
+			}
+		}
+	}
+
+	for _, className := range overwriteExampleClasses {
+		m.RelationshipClasses = append(m.RelationshipClasses, className.(string))
+	}
+
 }
 
 func (m *Model) SetClassDnFormats(classDetails interface{}) {
@@ -886,12 +1106,25 @@ func (m *Model) SetClassIdentifiers(classDetails interface{}) {
 
 func (m *Model) SetClassChildren(classDetails interface{}, pkgNames []string) {
 	childClasses := []string{}
+	excludeChildClasses := []string{}
+	if classDetails, ok := m.Definitions.Classes[m.PkgName]; ok {
+		for key, value := range classDetails.(map[interface{}]interface{}) {
+			if key.(string) == "exclude_children" {
+				for _, child := range value.([]interface{}) {
+					if !slices.Contains(childClasses, child.(string)) {
+						excludeChildClasses = append(childClasses, child.(string))
+					}
+				}
+			}
+		}
+	}
+
 	rnMap := classDetails.(map[string]interface{})["rnMap"].(map[string]interface{})
 	for rn, className := range rnMap {
 		// TODO check if this condition is correct since there might be cases where that we should exclude
 		if !strings.HasSuffix(rn, "-") || strings.HasPrefix(rn, "rs") || slices.Contains(alwaysIncludeChildren, className.(string)) {
 			pkgName := strings.ReplaceAll(className.(string), ":", "")
-			if slices.Contains(pkgNames, pkgName) {
+			if slices.Contains(pkgNames, pkgName) && !slices.Contains(excludeChildClasses, pkgName) {
 				childClasses = append(childClasses, pkgName)
 			}
 		}
@@ -915,8 +1148,6 @@ func (m *Model) SetClassInclude() {
 		for key, value := range classDetails.(map[interface{}]interface{}) {
 			if key.(string) == "include" {
 				m.Include = value.(bool)
-			} else {
-				m.Include = false
 			}
 		}
 	}
@@ -1173,6 +1404,192 @@ func (m *Model) SetClassProperties(classDetails interface{}) {
 	}
 }
 
+func (m *Model) SetMigrationClassTypes(definitions Definitions) {
+
+	migrationClassTypes := map[string]string{}
+	resource_name := fmt.Sprintf("%s_%s", providerName, resourceNames[m.PkgName])
+	legacyResource := definitions.Migration["provider_schemas"].(map[string]interface{})["registry.terraform.io/ciscodevnet/aci"].(map[string]interface{})["resource_schemas"].(map[string]interface{})[resource_name]
+	blockTypes := legacyResource.(map[string]interface{})["block"].(map[string]interface{})["block_types"].(map[string]interface{})
+	for blockName, blockDetails := range blockTypes {
+		className := m.GetClassFromMigrationClassMapping(definitions, blockName, false)
+		attributeType := fmt.Sprintf("block,%s", blockDetails.(map[string]interface{})["nesting_mode"].(string))
+		migrationClassTypes[className] = attributeType
+	}
+
+	attributes := legacyResource.(map[string]interface{})["block"].(map[string]interface{})["attributes"].(map[string]interface{})
+	for attributeName, attributeValue := range attributes {
+		className := m.GetClassFromMigrationClassMapping(definitions, attributeName, true)
+		if className != m.PkgName {
+			switch v := attributeValue.(map[string]interface{})["type"].(type) {
+			case string:
+				migrationClassTypes[className] = v
+			case []interface{}:
+				attributeTypes := []string{}
+				for _, value := range v {
+					attributeTypes = append(attributeTypes, value.(string))
+				}
+				migrationClassTypes[className] = strings.Join(attributeTypes, ",")
+			}
+		}
+	}
+
+	m.MigrationClassTypes = migrationClassTypes
+}
+
+func (m *Model) SetLegacyChildren(definitions Definitions) {
+
+	legacyChildren := []string{}
+	if v, ok := definitions.Classes[m.PkgName]; ok {
+		for key, value := range v.(map[interface{}]interface{}) {
+			if key.(string) == "migration_blocks" {
+				for className := range value.(map[interface{}]interface{}) {
+					if className.(string) != m.PkgName {
+						legacyChildren = append(legacyChildren, className.(string))
+					}
+				}
+			}
+		}
+	}
+	m.LegacyChildren = legacyChildren
+}
+
+func (m *Model) SetMigrationVersion(definitions Definitions) {
+	m.LegacySchemaVersion = 1
+	if v, ok := definitions.Classes[m.PkgName]; ok {
+		for key, value := range v.(map[interface{}]interface{}) {
+			if key.(string) == "migration_version" {
+				m.LegacySchemaVersion = value.(int)
+			}
+		}
+	}
+}
+
+func (m *Model) SetLegacyAttributes(definitions Definitions) {
+
+	m.LegacyAttributes = make(map[string]LegacyAttribute)
+	resourceName := fmt.Sprintf("%s_%s", providerName, GetResourceName(m.PkgName, definitions))
+
+	legacyResource := definitions.Migration["provider_schemas"].(map[string]interface{})["registry.terraform.io/ciscodevnet/aci"].(map[string]interface{})["resource_schemas"].(map[string]interface{})[resourceName]
+
+	if legacyResource != nil {
+
+		attributeNames := []string{}
+		for _, property := range m.Properties {
+			attributeNames = append(attributeNames, property.SnakeCaseName)
+		}
+
+		blockTypes := legacyResource.(map[string]interface{})["block"].(map[string]interface{})["block_types"].(map[string]interface{})
+		for blockName, blockDetails := range blockTypes {
+			block := LegacyBlock{
+				Name:        blockName,
+				NestingMode: blockDetails.(map[string]interface{})["nesting_mode"].(string),
+				Attributes:  make(map[string]LegacyAttribute),
+			}
+			block.ClassName = m.GetClassForBlockName(definitions, block.Name)
+			attributes := blockDetails.(map[string]interface{})["block"].(map[string]interface{})["attributes"].(map[string]interface{})
+			for attributeName, attributeValue := range attributes {
+				legacyAttribute, propertyName := m.GetLegacyAttribute(attributeName, block.ClassName, attributeValue, definitions)
+
+				if legacyAttribute.AttributeName == "target_dn" {
+					legacyAttribute.Name = "TargetDn"
+				}
+
+				childClass := m.Children[block.ClassName]
+				for _, property := range childClass.Properties {
+					if legacyAttribute.AttributeName == property.SnakeCaseName {
+						legacyAttribute.Name = property.Name
+						break
+					}
+				}
+				block.Attributes[propertyName] = legacyAttribute
+			}
+			m.LegacyBlocks = append(m.LegacyBlocks, block)
+		}
+
+		// sort LegacyBlocks to guarantee consistent output
+		slices.SortFunc(m.LegacyBlocks, func(a, b LegacyBlock) int {
+			return cmp.Compare(a.ClassName, b.ClassName)
+		})
+
+		attributes := legacyResource.(map[string]interface{})["block"].(map[string]interface{})["attributes"].(map[string]interface{})
+		for attributeName, attributeValue := range attributes {
+			legacyAttribute, propertyName := m.GetLegacyAttribute(attributeName, m.GetClassFromMigrationClassMapping(definitions, attributeName, true), attributeValue, definitions)
+			if attributeName == propertyName {
+				legacyAttribute.Name = fmt.Sprintf("Deprecated_%s", legacyAttribute.Name)
+			}
+			if legacyAttribute.ReplacedBy.ClassName != "" && legacyAttribute.ReplacedBy.ClassName != m.PkgName {
+				legacyAttribute.Name = Capitalize(legacyAttribute.ReplacedBy.ClassName)
+			}
+			m.LegacyAttributes[propertyName] = legacyAttribute
+		}
+
+	}
+
+}
+
+func (m *Model) GetLegacyAttribute(attributeName, className string, attributeValue interface{}, definitions Definitions) (LegacyAttribute, string) {
+	optional := false
+	if attributeValue.(map[string]interface{})["optional"] != nil {
+		optional = attributeValue.(map[string]interface{})["optional"].(bool)
+	}
+
+	computed := false
+	if attributeValue.(map[string]interface{})["computed"] != nil {
+		computed = attributeValue.(map[string]interface{})["computed"].(bool)
+	}
+
+	required := false
+	if attributeValue.(map[string]interface{})["required"] != nil {
+		required = attributeValue.(map[string]interface{})["required"].(bool)
+	}
+
+	valueType := []string{}
+	if value, found := attributeValue.(map[string]interface{})["type"].(string); found {
+		valueType = []string{value}
+	} else {
+		for _, value := range attributeValue.(map[string]interface{})["type"].([]interface{}) {
+			valueType = append(valueType, value.(string))
+		}
+	}
+
+	replacedBy := m.GetOverwriteAttributeMigration(definitions, attributeName, className)
+
+	var propertyName string
+	if replacedBy != nil {
+		propertyName = GetOverwriteAttributeName(m.PkgName, replacedBy.(ReplacementAttribute).AttributeName, definitions)
+	} else {
+		propertyName = attributeName
+	}
+
+	if propertyName == "id_attribute" || propertyName == "id" {
+		propertyName = "Id"
+	} else if propertyName == "parent_dn" {
+		propertyName = "ParentDn"
+	} else {
+		for _, property := range m.Properties {
+			if GetOverwriteAttributeName(m.PkgName, property.SnakeCaseName, definitions) == propertyName {
+				propertyName = property.Name
+				break
+			}
+		}
+	}
+
+	legacyAttribute := LegacyAttribute{
+		Name:          propertyName,
+		AttributeName: attributeName,
+		ValueType:     valueType,
+		Optional:      optional,
+		Computed:      computed,
+		Required:      required,
+	}
+
+	if replacedBy != nil {
+		legacyAttribute.ReplacedBy = replacedBy.(ReplacementAttribute)
+	}
+
+	return legacyAttribute, propertyName
+}
+
 /*
 Determine if a property comment from meta data should be overwritten by a comment overwrite in the properties.yaml file
 Precendence order is:
@@ -1317,76 +1734,6 @@ func GetOverwriteAttributeValue(classPkgName, propertyName, propertyValue, testT
 	return propertyValue
 }
 
-func GetParentTestDependencies(classPkgName string, index int, definitions Definitions) map[string]interface{} {
-	parentDependency := ""
-	classInParent := false
-	parentDependencyName := ""
-	if classDetails, ok := definitions.Properties[classPkgName]; ok {
-		for key, value := range classDetails.(map[interface{}]interface{}) {
-			if key.(string) == "parents" {
-				if len(value.([]interface{})) > index {
-					parentMap := value.([]interface{})[index].(map[interface{}]interface{})
-					if pd, ok := parentMap["parent_dependency"]; ok {
-						parentDependency = pd.(string)
-					}
-					if cip, ok := parentMap["class_in_parent"]; ok {
-						classInParent = cip.(bool)
-					}
-					if pdn, ok := parentMap["parent_dependency_name"]; ok {
-						parentDependencyName = pdn.(string)
-					}
-				}
-			}
-		}
-	}
-	return map[string]interface{}{"parent_dependency": parentDependency, "class_in_parent": classInParent, "parent_dependency_name": parentDependencyName}
-}
-
-func GetTargetTestDependencies(classPkgName string, index int, definitions Definitions) map[string]interface{} {
-	parentDependency := ""
-	grandParentDependency := ""
-	parentDependencyDn := ""
-	targetDn := ""
-	parentClassName := ""
-	if classDetails, ok := definitions.Properties[classPkgName]; ok {
-		for key, value := range classDetails.(map[interface{}]interface{}) {
-			if key.(string) == "targets" {
-				if len(value.([]interface{})) > index {
-					targetMap := value.([]interface{})[index].(map[interface{}]interface{})
-
-					if pd, ok := targetMap["parent_dependency"]; ok {
-						parentDependency = pd.(string)
-					}
-
-					if gpd, ok := targetMap["grandparent_class_name"]; ok {
-						grandParentDependency = gpd.(string)
-					}
-
-					if pd_dn, ok := targetMap["parent_dependency_dn"]; ok {
-						parentDependencyDn = pd_dn.(string)
-					}
-
-					if doc_dn, ok := targetMap["target_dn"]; ok {
-						targetDn = doc_dn.(string)
-					}
-
-					if pcn, ok := targetMap["class_name"]; ok {
-						parentClassName = pcn.(string)
-					}
-				}
-			}
-		}
-	}
-
-	return map[string]interface{}{
-		"parent_dependency":      parentDependency,
-		"parent_dependency_dn":   parentDependencyDn,
-		"grandparent_class_name": grandParentDependency,
-		"target_dn":              targetDn,
-		"parent_class_name":      parentClassName,
-	}
-}
-
 // Determine if possible parent classes in terraform configuration should be overwritten by contained_by from the classes.yaml file
 func GetOverwriteContainedBy(classDetails interface{}, classPkgName string, definitions Definitions) map[string]interface{} {
 	containedBy := make(map[string]interface{})
@@ -1452,14 +1799,219 @@ func GetOverwriteExampleClasses(classPkgName string, definitions Definitions) []
 	return overwriteExampleClasses
 }
 
-func SetModelTargetValues(PkgName string, model *Model, classModels map[string]Model, definitions Definitions) {
-	targetTestDependencies := GetTargetTestDependencies(model.PkgName, 0, definitions)
-	parentClassName := targetTestDependencies["parent_class_name"].(string)
-	model.TargetProperties = classModels[parentClassName].Properties
-	model.TargetNamedProperties = classModels[parentClassName].NamedProperties
-	model.TargetResourceClassName = classModels[parentClassName].PkgName
-	model.TargetDn = targetTestDependencies["target_dn"].(string)
-	model.TargetResourceName = GetResourceName(model.TargetResourceClassName, definitions)
+func GetParentTestDependencies(classPkgName string, index int, definitions Definitions) map[string]interface{} {
+	parentDependency := ""
+	classInParent := false
+	parentDependencyName := ""
+	targetClasses := []string{}
+
+	if classDetails, ok := definitions.Properties[classPkgName]; ok {
+		for key, value := range classDetails.(map[interface{}]interface{}) {
+			if key.(string) == "parents" {
+				if len(value.([]interface{})) > index {
+					parentMap := value.([]interface{})[index].(map[interface{}]interface{})
+					if pd, ok := parentMap["parent_dependency"]; ok {
+						parentDependency = pd.(string)
+					}
+					if cip, ok := parentMap["class_in_parent"]; ok {
+						classInParent = cip.(bool)
+					}
+					if pdn, ok := parentMap["parent_dependency_name"]; ok {
+						parentDependencyName = pdn.(string)
+					}
+					if tc, ok := parentMap["target_classes"]; ok {
+						results := []string{}
+						for _, targetClass := range tc.([]interface{}) {
+							results = append(results, targetClass.(string))
+						}
+						sort.Strings(results)
+						targetClasses = results
+					}
+				}
+			}
+		}
+	}
+	return map[string]interface{}{"parent_dependency": parentDependency, "class_in_parent": classInParent, "parent_dependency_name": parentDependencyName, "target_classes": targetClasses}
+}
+
+func (m *Model) SetModelTestDependencies(classModels map[string]Model, definitions Definitions) {
+
+	testDependencies := []TestDependency{}
+	if classDetails, ok := definitions.Properties[m.PkgName]; ok {
+		for key, value := range classDetails.(map[interface{}]interface{}) {
+			if key.(string) == "targets" {
+				for index, v := range value.([]interface{}) {
+					targetMap := v.(map[interface{}]interface{})
+					if className, ok := targetMap["class_name"]; ok {
+						testDependencies = append(testDependencies, getTestDependency(className.(string), targetMap, definitions, index))
+					}
+				}
+			}
+		}
+	}
+
+	childTestDependencies := []TestDependency{}
+	for _, child := range m.ChildClasses {
+		if classDetails, ok := definitions.Properties[child]; ok {
+			for key, value := range classDetails.(map[interface{}]interface{}) {
+				if key.(string) == "targets" {
+					for index, v := range value.([]interface{}) {
+						targetMap := v.(map[interface{}]interface{})
+						if className, ok := targetMap["class_name"]; ok && className.(string) == m.PkgName {
+							childTestDependencies = append(childTestDependencies, getTestDependency(className.(string), targetMap, definitions, index))
+						}
+					}
+				}
+			}
+		}
+	}
+
+	m.TestDependencies = testDependencies
+	m.ChildTestDependencies = childTestDependencies
+
+}
+
+func getTestDependency(className string, targetMap map[interface{}]interface{}, definitions Definitions, index int) TestDependency {
+
+	testDependency := TestDependency{}
+	testDependency.ClassName = className
+	testDependency.TargetResourceName = GetResourceName(className, definitions)
+	testDependency.RelationResourceName = testDependency.TargetResourceName
+	testDependency.ParentDnKey = "parent_dn"
+
+	if relationResourceName, ok := targetMap["relation_resource_name"]; ok {
+		testDependency.RelationResourceName = relationResourceName.(string)
+	}
+
+	if parentDependency, ok := targetMap["parent_dependency"]; ok {
+		testDependency.ParentDependency = parentDependency.(string)
+		testDependency.ParentDependencyDnRef = fmt.Sprintf("%s_%s.test.id", providerName, GetResourceName(parentDependency.(string), definitions))
+	}
+
+	if targetDn, ok := targetMap["target_dn"]; ok {
+		testDependency.TargetDn = targetDn.(string)
+		testDependency.TargetDnRef = fmt.Sprintf("%s_%s.test_%d.id", providerName, GetResourceName(className, definitions), index)
+	}
+
+	if properties, ok := targetMap["properties"]; ok {
+		testDependency.Properties = make(map[string]string)
+		for name, value := range properties.(map[interface{}]interface{}) {
+			testDependency.Properties[name.(string)] = value.(string)
+		}
+	}
+
+	if overwriteKey, ok := targetMap["overwrite_parent_dn_key"]; ok {
+		testDependency.ParentDnKey = overwriteKey.(string)
+	}
+
+	return testDependency
+}
+
+func GetTestTargetDn(targets []interface{}, resourceName, targetDnValue string, reference bool, targetClasses interface{}, index int) string {
+
+	var filteredTargets []interface{}
+	targetResourceName := strings.TrimPrefix(resourceName, "relation_to_")
+
+	if targetClasses != nil {
+		// CHANGE logic here when allowing for multiple target classes in single resource
+		targetClass := targetClasses.([]interface{})[0].(string)
+		for _, target := range targets {
+			if targetClass == target.(map[interface{}]interface{})["class_name"].(string) {
+				filteredTargets = append(filteredTargets, target)
+			}
+		}
+	} else {
+		filteredTargets = targets
+	}
+
+	for _, target := range filteredTargets {
+		targetRelationResourceName := target.(map[interface{}]interface{})["relation_resource_name"].(string)
+		if targetResourceName == targetRelationResourceName || strings.TrimSuffix(targetResourceName, "s") == targetRelationResourceName {
+			if index > 0 {
+				index = index - 1
+			} else {
+				if reference {
+					return target.(map[interface{}]interface{})["target_dn_ref"].(string)
+				}
+				return target.(map[interface{}]interface{})["target_dn"].(string)
+			}
+		}
+	}
+	return targetDnValue
+}
+
+func (m *Model) GetClassForBlockName(definitions Definitions, blockName string) string {
+	if v, ok := definitions.Classes[m.PkgName]; ok {
+		for key, value := range v.(map[interface{}]interface{}) {
+			if key.(string) == "migration_blocks" {
+				for className, classValues := range value.(map[interface{}]interface{}) {
+					for migrationKey := range classValues.(map[interface{}]interface{}) {
+						if migrationKey.(string) == blockName {
+							return className.(string)
+						}
+					}
+				}
+			}
+		}
+	}
+	panic(fmt.Sprintf("Class name not found for block %s", blockName))
+}
+
+func (m *Model) GetClassFromMigrationClassMapping(definitions Definitions, attributeName string, set bool) string {
+	if v, ok := definitions.Classes[m.PkgName]; ok {
+		for key, value := range v.(map[interface{}]interface{}) {
+			if key.(string) == "migration_blocks" {
+				for className, attributes := range value.(map[interface{}]interface{}) {
+					if set {
+						if className.(string) != m.PkgName && len(attributes.(map[interface{}]interface{})) == 1 {
+							for name := range attributes.(map[interface{}]interface{}) {
+								if name.(string) == attributeName {
+									return className.(string)
+								}
+							}
+						}
+					} else {
+						for name := range attributes.(map[interface{}]interface{}) {
+							if name.(string) == attributeName {
+								return className.(string)
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return m.PkgName
+}
+
+func (m *Model) GetOverwriteAttributeMigration(definitions Definitions, attributeName, className string) interface{} {
+	if v, ok := definitions.Classes[m.PkgName]; ok {
+		for key, value := range v.(map[interface{}]interface{}) {
+			if key.(string) == "migration_blocks" {
+				for classNameDefinition, classValues := range value.(map[interface{}]interface{}) {
+					if classNameDefinition.(string) == className {
+						for migrationKey, migrationValue := range classValues.(map[interface{}]interface{}) {
+							if strings.Contains(migrationKey.(string), attributeName) {
+								return ReplacementAttribute{AttributeName: migrationValue.(string), ClassName: className}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return nil
+}
+
+func isMigrationResource(classPkgName string, definitions Definitions) bool {
+	if v, ok := definitions.Classes[classPkgName]; ok {
+		for key := range v.(map[interface{}]interface{}) {
+			if key.(string) == "migration_blocks" {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 // Set variables that are used during the rendering of the example and documentation templates
@@ -1513,7 +2065,6 @@ func setDocumentationData(m *Model, definitions Definitions) {
 
 	if len(resourcesNotFound) != 0 && len(resourcesFound) < docsParentDnAmount {
 		if len(resourcesNotFound) > docsParentDnAmount-len(resourcesFound) {
-			// TODO catch default classes and add to documentation
 			resourcesNotFound = resourcesNotFound[0:(docsParentDnAmount - len(resourcesFound))]
 			m.DocumentationParentDns = append(m.DocumentationParentDns, fmt.Sprintf("Too many classes to display, see model documentation for all possible classes of %s.", GetDevnetDocForClass(m.PkgName)))
 		} else {
