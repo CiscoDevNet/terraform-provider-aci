@@ -121,8 +121,14 @@ All examples for the {{.ResourceNameAsDescription}} resource can be found in the
 {{ range .Children }}{{$childVersion := .Versions}}{{$RelationshipClasses := .RelationshipClasses}}{{$length := len .RelationshipClasses}}
     {{- if ge $length 1}}
 * `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName $.Definitions}} (ACI object {{getDevnetDocForClass .PkgName}}) pointing to {{range $index, $value := .RelationshipResourceNames}}{{- if or (eq $length 1) (eq $.PkgName (index $RelationshipClasses $index))}}{{getResourceNameAsDescription $value $.Definitions}} (ACI Object {{getDevnetDocForClass (index $RelationshipClasses $index)}}) which can be configured using the [aci_{{($value)}}](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{($value)}}) resource{{end}}{{end}}.{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
+    {{- if not .IdentifiedBy}}
+    - Max Items: 1
+    {{- end}}
     {{- else}}
 * `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName $.Definitions}} (ACI object {{getDevnetDocForClass .PkgName}}). {{getResourceNameAsDescription .ResourceName $.Definitions}} can also be configured using a separate [aci_{{.ResourceNameDocReference}}](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{.ResourceNameDocReference}}) resource.{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
+    {{- if not .IdentifiedBy}}
+    - Max Items: 1
+    {{- end}}
     {{- end}}
   {{ if containsRequired .Properties}}
   #### Required ####
