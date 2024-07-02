@@ -126,7 +126,7 @@ func (r *FvRsProvResource) Schema(ctx context.Context, req resource.SchemaReques
 				Validators: []validator.String{
 					stringvalidator.OneOf("level1", "level2", "level3", "level4", "level5", "level6", "unspecified"),
 				},
-				MarkdownDescription: `The system class determines the quality of service and priority for the consumer traffic.`,
+				MarkdownDescription: `The QoS priority class identifierq of the Relation To Provided Contract object.`,
 			},
 			"contract_name": schema.StringAttribute{
 				Required: true,

@@ -95,7 +95,7 @@ All examples for the Out Of Band Contract resource can be found in the [examples
 * `name_alias` (nameAlias) - (string) The name alias of the Out Of Band Contract object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
-* `priority` (prio) - (string) The priority of the Out Of Band Contract object.
+* `priority` (prio) - (string) The QoS priority class identifierq of the Out Of Band Contract object.
   - Default: `unspecified`
   - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
 * `scope` (scope) - (string) Represents the scope of this contract. If the scope is set as application-profile, the epg can only communicate with epgs in the same application-profile.

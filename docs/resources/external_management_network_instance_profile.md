@@ -92,7 +92,7 @@ All examples for the External Management Network Instance Profile resource can b
   - Default: `orchestrator:terraform`
 * `description` (descr) - (string) The description of the External Management Network Instance Profile object.
 * `name_alias` (nameAlias) - (string) The name alias of the External Management Network Instance Profile object.
-* `priority` (prio) - (string) The QoS priority class identifier.
+* `priority` (prio) - (string) The QoS priority class identifierq of the External Management Network Instance Profile object.
   - Default: `unspecified`
   - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
 
@@ -106,7 +106,7 @@ All examples for the External Management Network Instance Profile resource can b
     
   * `annotation` (annotation) - (string) The annotation of the Relation To Consumed Out Of Band Contract object.
       - Default: `orchestrator:terraform`
-  * `priority` (prio) - (string) The Quality of service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
+  * `priority` (prio) - (string) The QoS priority class identifierq of the Relation To Consumed Out Of Band Contract object.
       - Default: `unspecified`
       - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
 

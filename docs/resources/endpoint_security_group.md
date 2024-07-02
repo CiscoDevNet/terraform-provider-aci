@@ -137,10 +137,10 @@ All examples for the Endpoint Security Group resource can be found in the [examp
   - Default: `AtleastOne`
   - Valid Values: `All`, `AtleastOne`, `AtmostOne`, `None`.
 * `name_alias` (nameAlias) - (string) The name alias of the Endpoint Security Group object.
-* `intra_esg_isolation` (pcEnfPref) - (string) Represents parameter used by the node (i.e. Leaf) to enforce filter rules in this ESG.
+* `intra_esg_isolation` (pcEnfPref) - (string) Parameter used to determine whether communication between endpoints within the ESG is blocked.
   - Default: `unenforced`
   - Valid Values: `enforced`, `unenforced`.
-* `preferred_group_member` (prefGrMemb) - (string) Represents parameter used to determine if the ESG is part of a group that is not a contract for communication.
+* `preferred_group_member` (prefGrMemb) - (string) Parameter used to determine whether the ESG is part of the preferred group. Members of this group are allowed to communicate without contracts.
   - Default: `exclude`
   - Valid Values: `exclude`, `include`.
 * `admin_state` (shutdown) - (string) Withdraw ESg Configuration from all Nodes in the Fabric.
@@ -157,7 +157,7 @@ All examples for the Endpoint Security Group resource can be found in the [examp
     
   * `annotation` (annotation) - (string) The annotation of the Relation To Consumed Contract object.
       - Default: `orchestrator:terraform`
-  * `priority` (prio) - (string) The system class determines the quality of service and priority for the consumer traffic.
+  * `priority` (prio) - (string) The QoS priority class identifierq of the Relation To Consumed Contract object.
       - Default: `unspecified`
       - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
 
@@ -171,7 +171,7 @@ All examples for the Endpoint Security Group resource can be found in the [examp
     
   * `annotation` (annotation) - (string) The annotation of the Relation To Imported Contract object.
       - Default: `orchestrator:terraform`
-  * `priority` (prio) - (string) The contract interface priority.
+  * `priority` (prio) - (string) The QoS priority class identifierq of the Relation To Imported Contract object.
       - Default: `unspecified`
       - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
 
@@ -199,7 +199,7 @@ All examples for the Endpoint Security Group resource can be found in the [examp
   * `match_criteria` (matchT) - (string) The matched EPG type.
       - Default: `AtleastOne`
       - Valid Values: `All`, `AtleastOne`, `AtmostOne`, `None`.
-  * `priority` (prio) - (string) The system class determines the quality of service and priority for the consumer traffic.
+  * `priority` (prio) - (string) The QoS priority class identifierq of the Relation To Provided Contract object.
       - Default: `unspecified`
       - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
 

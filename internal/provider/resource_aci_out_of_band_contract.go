@@ -163,7 +163,7 @@ func (r *VzOOBBrCPResource) Schema(ctx context.Context, req resource.SchemaReque
 				Validators: []validator.String{
 					stringvalidator.OneOf("level1", "level2", "level3", "level4", "level5", "level6", "unspecified"),
 				},
-				MarkdownDescription: `The priority of the Out Of Band Contract object.`,
+				MarkdownDescription: `The QoS priority class identifierq of the Out Of Band Contract object.`,
 			},
 			"scope": schema.StringAttribute{
 				Optional: true,

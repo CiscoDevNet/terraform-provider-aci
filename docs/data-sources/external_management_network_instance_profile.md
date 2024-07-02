@@ -48,11 +48,11 @@ data "aci_external_management_network_instance_profile" "example" {
 * `annotation` (annotation) - (string) The annotation of the External Management Network Instance Profile object.
 * `description` (descr) - (string) The description of the External Management Network Instance Profile object.
 * `name_alias` (nameAlias) - (string) The name alias of the External Management Network Instance Profile object.
-* `priority` (prio) - (string) The QoS priority class identifier.
+* `priority` (prio) - (string) The QoS priority class identifierq of the External Management Network Instance Profile object.
 
 * `relation_to_consumed_out_of_band_contracts` - (list) A list of Relation To Consumed Out Of Band Contracts (ACI object [mgmtRsOoBCons](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/mgmtRsOoBCons/overview)) pointing to Out Of Band Contract (ACI Object [vzOOBBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzOOBBrCP/overview)).
   * `annotation` (annotation) - (string) The annotation of the Relation To Consumed Out Of Band Contract object.
-  * `priority` (prio) - (string) The Quality of service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
+  * `priority` (prio) - (string) The QoS priority class identifierq of the Relation To Consumed Out Of Band Contract object.
   * `out_of_band_contract_name` (tnVzOOBBrCPName) - (string) The name of the Out Of Band Contract object.
 
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.

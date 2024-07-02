@@ -54,7 +54,7 @@ func (d *FvRsConsIfDataSource) Schema(ctx context.Context, req datasource.Schema
 			},
 			"priority": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The contract interface priority.`,
+				MarkdownDescription: `The QoS priority class identifierq of the Relation To Imported Contract object.`,
 			},
 			"imported_contract_name": schema.StringAttribute{
 				Required:            true,
