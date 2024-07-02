@@ -716,8 +716,8 @@ func main() {
 			// When done before additional files would need to be opened and read which would slow down the generation process
 			model.ResourceName = GetResourceName(model.PkgName, definitions)
 
-			for _, relationshipClass := range model.RelationshipClass {
-				model.RelationshipResourceName = append(model.RelationshipResourceName, GetResourceName(relationshipClass, definitions))
+			for _, relationshipClass := range model.RelationshipClasses {
+				model.RelationshipResourceNames = append(model.RelationshipResourceNames, GetResourceName(relationshipClass, definitions))
 			}
 			childMap := make(map[string]Model, 0)
 			for childName, childModel := range model.Children {
@@ -729,8 +729,8 @@ func main() {
 				} else {
 					childModel.ResourceName = childModel.ChildResourceName
 				}
-				for _, relationshipClass := range childModel.RelationshipClass {
-					childModel.RelationshipResourceName = append(childModel.RelationshipResourceName, GetResourceName(relationshipClass, definitions))
+				for _, relationshipClass := range childModel.RelationshipClasses {
+					childModel.RelationshipResourceNames = append(childModel.RelationshipResourceNames, GetResourceName(relationshipClass, definitions))
 				}
 				childMap[childName] = childModel
 			}
@@ -809,8 +809,8 @@ type Model struct {
 	ExampleResource           string
 	ExampleResourceFull       string
 	SubCategory               string
-	RelationshipClass         []string
-	RelationshipResourceName  []string
+	RelationshipClasses       []string
+	RelationshipResourceNames []string
 	Versions                  string
 	ChildClasses              []string
 	ContainedBy               []string
@@ -1068,9 +1068,9 @@ func (m *Model) SetClassName(classDetails interface{}) {
 
 func (m *Model) SetClassRnFormat(classDetails interface{}) {
 	m.GetOverwriteRnFormat(classDetails.(map[string]interface{})["rnFormat"].(string))
-	if strings.HasPrefix(m.RnFormat, "rs") && len(m.RelationshipClass) == 0 {
+	if strings.HasPrefix(m.RnFormat, "rs") && len(m.RelationshipClasses) == 0 {
 		toMo := classDetails.(map[string]interface{})["relationInfo"].(map[string]interface{})["toMo"].(string)
-		m.RelationshipClass = []string{strings.Replace(toMo, ":", "", 1)}
+		m.RelationshipClasses = []string{strings.Replace(toMo, ":", "", 1)}
 	}
 }
 
@@ -1085,7 +1085,7 @@ func (m *Model) SetRelationshipClasses(definitions Definitions) {
 	}
 
 	for _, className := range overwriteExampleClasses {
-		m.RelationshipClass = append(m.RelationshipClass, className.(string))
+		m.RelationshipClasses = append(m.RelationshipClasses, className.(string))
 	}
 
 }
