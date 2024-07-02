@@ -20,6 +20,18 @@ fvCtx:
 vzCPIf:
   resource_name: "imported_contract"
 
+cloudEPg:
+  resource_name: "cloud_epg"
+
+cloudExtEPg:
+  resource_name: "cloud_external_epg"
+
+cloudSvcEPg:
+  resource_name: "cloud_service_epg"
+
+mgmtInB:
+  resource_name: "node_mgmt_epg"
+
 rtctrlProfile:
   resource_name: "route_control_profile"
   rn_format: "/prof-{name}"
@@ -71,10 +83,10 @@ mgmtRsOoBCons:
   sub_category: "Node Management"
 
 l2extInstP:
-  resource_name: "aci_l2out_extepg"
+  resource_name: "l2out_extepg"
 
 l3extInstP:
-  resource_name: "aci_external_network_instance_profile"
+  resource_name: "external_network_instance_profile"
 
 l3extOut:
   resource_name: "l3_outside"
