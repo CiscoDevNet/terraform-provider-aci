@@ -27,6 +27,16 @@ func dataSourceAciVRF() *schema.Resource {
 				Required: true,
 			},
 
+			"pc_tag": &schema.Schema{
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+
+			"scope": &schema.Schema{
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+
 			"bd_enforced_enable": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,

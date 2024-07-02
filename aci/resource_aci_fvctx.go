@@ -38,6 +38,16 @@ func resourceAciVRF() *schema.Resource {
 				ForceNew: true,
 			},
 
+			"pc_tag": &schema.Schema{
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+
+			"scope": &schema.Schema{
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+
 			"bd_enforced_enable": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -213,6 +223,8 @@ func setVRFAttributes(fvCtx *models.VRF, d *schema.ResourceData) (*schema.Resour
 	d.Set("name", fvCtxMap["name"])
 
 	d.Set("annotation", fvCtxMap["annotation"])
+	d.Set("scope", fvCtxMap["scope"])
+	d.Set("pc_tag", fvCtxMap["pcTag"])
 	d.Set("bd_enforced_enable", fvCtxMap["bdEnforcedEnable"])
 	d.Set("ip_data_plane_learning", fvCtxMap["ipDataPlaneLearning"])
 	d.Set("knw_mcast_act", fvCtxMap["knwMcastAct"])
