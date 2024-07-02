@@ -96,6 +96,11 @@ func TestAccResourceFvFBRGroupWithFvCtx(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_route_group_members.1.fallback_member", "2.2.2.3"),
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_route_group_members.1.name", "name_2"),
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_route_group_members.1.name_alias", "name_alias_2"),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_routes.0.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_routes.0.description", "description_1"),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_routes.0.name", "name_1"),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_routes.0.name_alias", "name_alias_1"),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_routes.0.prefix_address", "2.2.2.2/24"),
 				),
 			},
 			// Import testing with children
@@ -126,6 +131,11 @@ func TestAccResourceFvFBRGroupWithFvCtx(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_route_group_members.1.fallback_member", "2.2.2.3"),
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_route_group_members.1.name", "name_2"),
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_route_group_members.1.name_alias", "name_alias_2"),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_routes.0.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_routes.0.description", "description_1"),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_routes.0.name", "name_1"),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_routes.0.name_alias", "name_alias_1"),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_routes.0.prefix_address", "2.2.2.2/24"),
 				),
 			},
 			// Update with children removed from config
@@ -154,6 +164,12 @@ func TestAccResourceFvFBRGroupWithFvCtx(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_route_group_members.1.name", "name_2"),
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_route_group_members.1.name_alias", "name_alias_2"),
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_route_group_members.#", "2"),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_routes.0.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_routes.0.description", "description_1"),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_routes.0.name", "name_1"),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_routes.0.name_alias", "name_alias_1"),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_routes.0.prefix_address", "2.2.2.2/24"),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_routes.#", "1"),
 				),
 			},
 			// Update with children first child removed
@@ -173,6 +189,7 @@ func TestAccResourceFvFBRGroupWithFvCtx(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_route_group_members.0.name", "name_2"),
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_route_group_members.0.name_alias", "name_alias_2"),
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_route_group_members.#", "1"),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_routes.#", "0"),
 				),
 			},
 			// Update with all children removed
@@ -183,6 +200,7 @@ func TestAccResourceFvFBRGroupWithFvCtx(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "annotations.#", "0"),
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "tags.#", "0"),
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_route_group_members.#", "0"),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_routes.#", "0"),
 				),
 			},
 		},
@@ -255,6 +273,15 @@ resource "aci_vrf_fallback_route_group" "test" {
 	  name_alias = "name_alias_2"
 	},
   ]
+  vrf_fallback_routes = [
+	{
+	  annotation = "annotation_1"
+	  description = "description_1"
+	  name = "name_1"
+	  name_alias = "name_alias_1"
+	  prefix_address = "2.2.2.2/24"
+	},
+  ]
 }
 `
 
@@ -290,6 +317,7 @@ resource "aci_vrf_fallback_route_group" "test" {
 	  name_alias = "name_alias_2"
 	},
   ]
+  vrf_fallback_routes = []
 }
 `
 
@@ -300,5 +328,6 @@ resource "aci_vrf_fallback_route_group" "test" {
   annotations = []
   tags = []
   vrf_fallback_route_group_members = []
+  vrf_fallback_routes = []
 }
 `
