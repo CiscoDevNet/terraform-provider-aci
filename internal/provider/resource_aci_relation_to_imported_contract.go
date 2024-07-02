@@ -114,7 +114,7 @@ func (r *FvRsConsIfResource) Schema(ctx context.Context, req resource.SchemaRequ
 				Validators: []validator.String{
 					stringvalidator.OneOf("level1", "level2", "level3", "level4", "level5", "level6", "unspecified"),
 				},
-				MarkdownDescription: `The QoS priority class identifierq of the Relation To Imported Contract object.`,
+				MarkdownDescription: `The QoS priority class identifier of the Relation To Imported Contract object.`,
 			},
 			"imported_contract_name": schema.StringAttribute{
 				Required: true,

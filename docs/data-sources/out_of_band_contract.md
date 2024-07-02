@@ -51,7 +51,7 @@ data "aci_out_of_band_contract" "example" {
 * `name_alias` (nameAlias) - (string) The name alias of the Out Of Band Contract object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
-* `priority` (prio) - (string) The QoS priority class identifierq of the Out Of Band Contract object.
+* `priority` (prio) - (string) The QoS priority class identifier of the Out Of Band Contract object.
 * `scope` (scope) - (string) Represents the scope of this contract. If the scope is set as application-profile, the epg can only communicate with epgs in the same application-profile.
 * `target_dscp` (targetDscp) - (string) The target DSCP value of the Out Of Band Contract object.
 

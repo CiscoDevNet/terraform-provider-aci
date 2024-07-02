@@ -85,7 +85,7 @@ All examples for the Relation To Consumed Out Of Band Contract resource can be f
   
 * `annotation` (annotation) - (string) The annotation of the Relation To Consumed Out Of Band Contract object.
   - Default: `orchestrator:terraform`
-* `priority` (prio) - (string) The QoS priority class identifierq of the Relation To Consumed Out Of Band Contract object.
+* `priority` (prio) - (string) The QoS priority class identifier of the Relation To Consumed Out Of Band Contract object.
   - Default: `unspecified`
   - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
 

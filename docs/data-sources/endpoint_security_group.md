@@ -59,12 +59,12 @@ data "aci_endpoint_security_group" "example_application_profile" {
 
 * `relation_to_consumed_contracts` - (list) A list of Relation To Consumed Contracts (ACI object [fvRsCons](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsCons/overview)) pointing to Contract (ACI Object [vzBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzBrCP/overview)). This attribute is supported in ACI versions: 1.0(1e) and later.
   * `annotation` (annotation) - (string) The annotation of the Relation To Consumed Contract object.
-  * `priority` (prio) - (string) The QoS priority class identifierq of the Relation To Consumed Contract object.
+  * `priority` (prio) - (string) The QoS priority class identifier of the Relation To Consumed Contract object.
   * `contract_name` (tnVzBrCPName) - (string) The consumer contract name.
 
 * `relation_to_imported_contracts` - (list) A list of Relation To Imported Contracts (ACI object [fvRsConsIf](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsConsIf/overview)) pointing to Imported Contract (ACI Object [vzCPIf](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzCPIf/overview)). This attribute is supported in ACI versions: 1.0(1e) and later.
   * `annotation` (annotation) - (string) The annotation of the Relation To Imported Contract object.
-  * `priority` (prio) - (string) The QoS priority class identifierq of the Relation To Imported Contract object.
+  * `priority` (prio) - (string) The QoS priority class identifier of the Relation To Imported Contract object.
   * `imported_contract_name` (tnVzCPIfName) - (string) The contract interface name.
 
 * `relation_to_intra_epg_contracts` - (list) A list of Relation To Intra Epg Contracts (ACI object [fvRsIntraEpg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsIntraEpg/overview)) pointing to Contract (ACI Object [vzBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzBrCP/overview)). This attribute is supported in ACI versions: 3.0(1k) and later.
@@ -74,7 +74,7 @@ data "aci_endpoint_security_group" "example_application_profile" {
 * `relation_to_provided_contracts` - (list) A list of Relation To Provided Contracts (ACI object [fvRsProv](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsProv/overview)) pointing to Contract (ACI Object [vzBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzBrCP/overview)). This attribute is supported in ACI versions: 1.0(1e) and later.
   * `annotation` (annotation) - (string) The annotation of the Relation To Provided Contract object.
   * `match_criteria` (matchT) - (string) The matched EPG type.
-  * `priority` (prio) - (string) The QoS priority class identifierq of the Relation To Provided Contract object.
+  * `priority` (prio) - (string) The QoS priority class identifier of the Relation To Provided Contract object.
   * `contract_name` (tnVzBrCPName) - (string) The provider contract name.
 
 * `relation_to_vrf` - (list) A list of Relation To VRF (ACI object [fvRsScope](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsScope/overview)) pointing to VRF (ACI Object [fvCtx](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvCtx/overview)).

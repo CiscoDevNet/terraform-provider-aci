@@ -54,7 +54,7 @@ func (d *MgmtRsOoBConsDataSource) Schema(ctx context.Context, req datasource.Sch
 			},
 			"priority": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The QoS priority class identifierq of the Relation To Consumed Out Of Band Contract object.`,
+				MarkdownDescription: `The QoS priority class identifier of the Relation To Consumed Out Of Band Contract object.`,
 			},
 			"out_of_band_contract_name": schema.StringAttribute{
 				Required:            true,

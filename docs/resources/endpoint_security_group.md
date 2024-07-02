@@ -157,7 +157,7 @@ All examples for the Endpoint Security Group resource can be found in the [examp
     
   * `annotation` (annotation) - (string) The annotation of the Relation To Consumed Contract object.
       - Default: `orchestrator:terraform`
-  * `priority` (prio) - (string) The QoS priority class identifierq of the Relation To Consumed Contract object.
+  * `priority` (prio) - (string) The QoS priority class identifier of the Relation To Consumed Contract object.
       - Default: `unspecified`
       - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
 
@@ -171,7 +171,7 @@ All examples for the Endpoint Security Group resource can be found in the [examp
     
   * `annotation` (annotation) - (string) The annotation of the Relation To Imported Contract object.
       - Default: `orchestrator:terraform`
-  * `priority` (prio) - (string) The QoS priority class identifierq of the Relation To Imported Contract object.
+  * `priority` (prio) - (string) The QoS priority class identifier of the Relation To Imported Contract object.
       - Default: `unspecified`
       - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
 
@@ -199,7 +199,7 @@ All examples for the Endpoint Security Group resource can be found in the [examp
   * `match_criteria` (matchT) - (string) The matched EPG type.
       - Default: `AtleastOne`
       - Valid Values: `All`, `AtleastOne`, `AtmostOne`, `None`.
-  * `priority` (prio) - (string) The QoS priority class identifierq of the Relation To Provided Contract object.
+  * `priority` (prio) - (string) The QoS priority class identifier of the Relation To Provided Contract object.
       - Default: `unspecified`
       - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
 

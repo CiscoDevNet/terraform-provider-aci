@@ -139,7 +139,7 @@ All examples for the Relation To Consumed Contract resource can be found in the 
   
 * `annotation` (annotation) - (string) The annotation of the Relation To Consumed Contract object.
   - Default: `orchestrator:terraform`
-* `priority` (prio) - (string) The QoS priority class identifierq of the Relation To Consumed Contract object.
+* `priority` (prio) - (string) The QoS priority class identifier of the Relation To Consumed Contract object.
   - Default: `unspecified`
   - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
 

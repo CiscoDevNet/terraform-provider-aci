@@ -128,7 +128,7 @@ func (d *FvESgDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 						},
 						"priority": schema.StringAttribute{
 							Computed:            true,
-							MarkdownDescription: `The QoS priority class identifierq of the Relation To Consumed Contract object.`,
+							MarkdownDescription: `The QoS priority class identifier of the Relation To Consumed Contract object.`,
 						},
 						"contract_name": schema.StringAttribute{
 							Computed:            true,
@@ -148,7 +148,7 @@ func (d *FvESgDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 						},
 						"priority": schema.StringAttribute{
 							Computed:            true,
-							MarkdownDescription: `The QoS priority class identifierq of the Relation To Imported Contract object.`,
+							MarkdownDescription: `The QoS priority class identifier of the Relation To Imported Contract object.`,
 						},
 						"imported_contract_name": schema.StringAttribute{
 							Computed:            true,
@@ -192,7 +192,7 @@ func (d *FvESgDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 						},
 						"priority": schema.StringAttribute{
 							Computed:            true,
-							MarkdownDescription: `The QoS priority class identifierq of the Relation To Provided Contract object.`,
+							MarkdownDescription: `The QoS priority class identifier of the Relation To Provided Contract object.`,
 						},
 						"contract_name": schema.StringAttribute{
 							Computed:            true,
