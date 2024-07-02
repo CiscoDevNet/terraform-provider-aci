@@ -26,12 +26,16 @@ Manages ACI Relation To Contract Master
   - Too many DN formats to display, see model documentation for all possible parents of [fvRsSecInherited](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsSecInherited/overview).
   - `uni/tn-{name}/ap-{name}/epg-{name}/rssecInherited-[{tDn}]`
   - `uni/tn-{name}/ap-{name}/esg-{name}/rssecInherited-[{tDn}]`
+  - `uni/tn-{name}/l2out-{name}/instP-{name}/rssecInherited-[{tDn}]`
+  - `uni/tn-{name}/out-{name}/instP-{name}/rssecInherited-[{tDn}]`
 
 ## GUI Information ##
 
 * Locations:
   - `Tenants -> Application Profiles -> Application EPGs`
   - `Tenants -> Application Profiles -> Endpoint Security Groups`
+  - `Tenants -> Networkings -> L3Outs -> External EPGs`
+  - `Tenants -> Networkings -> L2Outs -> External EPGs`
 
 ## Example Usage ##
 
