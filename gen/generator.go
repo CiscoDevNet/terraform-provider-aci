@@ -828,6 +828,7 @@ type Model struct {
 	Parents                   []string
 	UiLocations               []string
 	IdentifiedBy              []interface{}
+	MaxOneClassAllowed        bool
 	DnFormats                 []interface{}
 	Properties                map[string]Property
 	NamedProperties           map[string]Property
@@ -1102,6 +1103,17 @@ func (m *Model) SetClassDnFormats(classDetails interface{}) {
 
 func (m *Model) SetClassIdentifiers(classDetails interface{}) {
 	m.IdentifiedBy = uniqueInterfaceSlice(classDetails.(map[string]interface{})["identifiedBy"].([]interface{}))
+	m.setMax1Entry()
+}
+
+func (m *Model) setMax1Entry() {
+	if v, ok := m.Definitions.Classes[m.PkgName]; ok {
+		for key, value := range v.(map[interface{}]interface{}) {
+			if key.(string) == "max_one_class_allowed" {
+				m.MaxOneClassAllowed = value.(bool)
+			}
+		}
+	}
 }
 
 func (m *Model) SetClassChildren(classDetails interface{}, pkgNames []string) {
@@ -2098,7 +2110,7 @@ func setDocumentationData(m *Model, definitions Definitions) {
 	// Add child class references to documentation when resource name is known
 	for _, child := range m.Contains {
 		match, _ := regexp.MatchString("[Rs][A-Z][^\r\n\t\f\v]", child) // match all Rs classes
-		if !match {
+		if !match && !slices.Contains(m.ChildClasses, child) {
 			resourceName := GetResourceName(child, definitions)
 			if !slices.Contains(excludeChildResourceNamesFromDocs, resourceName) { // exclude anotation children since they will be included into the resource when possible
 				m.DocumentationChildren = append(m.DocumentationChildren, fmt.Sprintf("[%s_%s](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/%s)", providerName, resourceName, resourceName))

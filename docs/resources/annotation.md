@@ -74,6 +74,7 @@ All examples for the Annotation resource can be found in the [examples](https://
   - [aci_endpoint_tag_mac](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/endpoint_tag_mac) ([fvEpMacTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvEpMacTag/overview))
   - [aci_vrf_fallback_route_group](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vrf_fallback_route_group) ([fvFBRGroup](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvFBRGroup/overview))
   - [aci_vrf_fallback_route_group_member](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vrf_fallback_route_group_member) ([fvFBRMember](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvFBRMember/overview))
+  - [aci_vrf_fallback_route](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vrf_fallback_route) ([fvFBRoute](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvFBRoute/overview))
   - [aci_relation_to_consumed_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/relation_to_consumed_contract) ([fvRsCons](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsCons/overview))
   - [aci_relation_to_imported_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/relation_to_imported_contract) ([fvRsConsIf](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsConsIf/overview))
   - [aci_relation_to_intra_epg_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/relation_to_intra_epg_contract) ([fvRsIntraEpg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsIntraEpg/overview))
@@ -82,7 +83,6 @@ All examples for the Annotation resource can be found in the [examples](https://
   - [aci_relation_to_vrf](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/relation_to_vrf) ([fvRsScope](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsScope/overview))
   - [aci_relation_to_contract_master](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/relation_to_contract_master) ([fvRsSecInherited](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsSecInherited/overview))
   - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
-  - [aci_l2out_extepg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l2out_extepg) ([l2extInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l2extInstP/overview))
 * `key` (key) - (string) The key used to uniquely identify this configuration object.
 * `value` (value) - (string) The value of the property.
 

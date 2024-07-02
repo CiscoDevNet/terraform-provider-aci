@@ -875,7 +875,7 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
 				},
-				{{- if not .IdentifiedBy}}
+				{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
 				Validators: []validator.Set{
 					setvalidator.SizeAtMost(1),
 				},

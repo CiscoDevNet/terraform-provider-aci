@@ -16,33 +16,33 @@ import (
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ datasource.DataSource = &L3extRsOutToFBRGroupDataSource{}
+var _ datasource.DataSource = &FvFBRouteDataSource{}
 
-func NewL3extRsOutToFBRGroupDataSource() datasource.DataSource {
-	return &L3extRsOutToFBRGroupDataSource{}
+func NewFvFBRouteDataSource() datasource.DataSource {
+	return &FvFBRouteDataSource{}
 }
 
-// L3extRsOutToFBRGroupDataSource defines the data source implementation.
-type L3extRsOutToFBRGroupDataSource struct {
+// FvFBRouteDataSource defines the data source implementation.
+type FvFBRouteDataSource struct {
 	client *client.Client
 }
 
-func (d *L3extRsOutToFBRGroupDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
-	tflog.Debug(ctx, "Start metadata of datasource: aci_relation_to_fallback_route_group")
-	resp.TypeName = req.ProviderTypeName + "_relation_to_fallback_route_group"
-	tflog.Debug(ctx, "End metadata of datasource: aci_relation_to_fallback_route_group")
+func (d *FvFBRouteDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
+	tflog.Debug(ctx, "Start metadata of datasource: aci_vrf_fallback_route")
+	resp.TypeName = req.ProviderTypeName + "_vrf_fallback_route"
+	tflog.Debug(ctx, "End metadata of datasource: aci_vrf_fallback_route")
 }
 
-func (d *L3extRsOutToFBRGroupDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
-	tflog.Debug(ctx, "Start schema of datasource: aci_relation_to_fallback_route_group")
+func (d *FvFBRouteDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+	tflog.Debug(ctx, "Start schema of datasource: aci_vrf_fallback_route")
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "The relation_to_fallback_route_group datasource for the 'l3extRsOutToFBRGroup' class",
+		MarkdownDescription: "The vrf_fallback_route datasource for the 'fvFBRoute' class",
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Relation To Fallback Route Group object.",
+				MarkdownDescription: "The distinguished name (DN) of the VRF Fallback Route object.",
 			},
 			"parent_dn": schema.StringAttribute{
 				Required:            true,
@@ -50,11 +50,23 @@ func (d *L3extRsOutToFBRGroupDataSource) Schema(ctx context.Context, req datasou
 			},
 			"annotation": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The annotation of the Relation To Fallback Route Group object.`,
+				MarkdownDescription: `The annotation of the VRF Fallback Route object.`,
 			},
-			"target_dn": schema.StringAttribute{
+			"description": schema.StringAttribute{
+				Computed:            true,
+				MarkdownDescription: `The description of the VRF Fallback Route object.`,
+			},
+			"prefix_address": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: `The distinguished name of the VRF Fallback Route Group object.`,
+				MarkdownDescription: `The prefix address of the VRF Fallback Route object.`,
+			},
+			"name": schema.StringAttribute{
+				Computed:            true,
+				MarkdownDescription: `The name of the VRF Fallback Route object.`,
+			},
+			"name_alias": schema.StringAttribute{
+				Computed:            true,
+				MarkdownDescription: `The name alias of the VRF Fallback Route object.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,
@@ -90,11 +102,11 @@ func (d *L3extRsOutToFBRGroupDataSource) Schema(ctx context.Context, req datasou
 			},
 		},
 	}
-	tflog.Debug(ctx, "End schema of datasource: aci_relation_to_fallback_route_group")
+	tflog.Debug(ctx, "End schema of datasource: aci_vrf_fallback_route")
 }
 
-func (d *L3extRsOutToFBRGroupDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	tflog.Debug(ctx, "Start configure of datasource: aci_relation_to_fallback_route_group")
+func (d *FvFBRouteDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
+	tflog.Debug(ctx, "Start configure of datasource: aci_vrf_fallback_route")
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
 		return
@@ -112,12 +124,12 @@ func (d *L3extRsOutToFBRGroupDataSource) Configure(ctx context.Context, req data
 	}
 
 	d.client = client
-	tflog.Debug(ctx, "End configure of datasource: aci_relation_to_fallback_route_group")
+	tflog.Debug(ctx, "End configure of datasource: aci_vrf_fallback_route")
 }
 
-func (d *L3extRsOutToFBRGroupDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	tflog.Debug(ctx, "Start read of datasource: aci_relation_to_fallback_route_group")
-	var data *L3extRsOutToFBRGroupResourceModel
+func (d *FvFBRouteDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
+	tflog.Debug(ctx, "Start read of datasource: aci_vrf_fallback_route")
+	var data *FvFBRouteResourceModel
 
 	// Read Terraform configuration data into the model
 	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
@@ -126,24 +138,24 @@ func (d *L3extRsOutToFBRGroupDataSource) Read(ctx context.Context, req datasourc
 		return
 	}
 
-	setL3extRsOutToFBRGroupId(ctx, data)
+	setFvFBRouteId(ctx, data)
 
-	// Create a copy of the Id for when not found during getAndSetL3extRsOutToFBRGroupAttributes
+	// Create a copy of the Id for when not found during getAndSetFvFBRouteAttributes
 	cachedId := data.Id.ValueString()
 
-	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_relation_to_fallback_route_group with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_vrf_fallback_route with id '%s'", data.Id.ValueString()))
 
-	getAndSetL3extRsOutToFBRGroupAttributes(ctx, &resp.Diagnostics, d.client, data)
+	getAndSetFvFBRouteAttributes(ctx, &resp.Diagnostics, d.client, data)
 
 	if data.Id.IsNull() {
 		resp.Diagnostics.AddError(
-			"Failed to read aci_relation_to_fallback_route_group data source",
-			fmt.Sprintf("The aci_relation_to_fallback_route_group data source with id '%s' has not been found", cachedId),
+			"Failed to read aci_vrf_fallback_route data source",
+			fmt.Sprintf("The aci_vrf_fallback_route data source with id '%s' has not been found", cachedId),
 		)
 		return
 	}
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_relation_to_fallback_route_group with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_vrf_fallback_route with id '%s'", data.Id.ValueString()))
 }

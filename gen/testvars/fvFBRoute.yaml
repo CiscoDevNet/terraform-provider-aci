@@ -5,43 +5,25 @@
 default:
   annotation: "orchestrator:terraform"
   description: ""
+  name: ""
   name_alias: ""
 
 datasource_non_existing:
-  name: "fallback_route_group_non_existing"
+  prefix_address: "2.2.2.4/24"
 
 datasource_required:
-  name: "fallback_route_group"
+  prefix_address: "2.2.2.3/24"
 
 resource_required:
-  name: "fallback_route_group"
+  prefix_address: "2.2.2.3/24"
 
 all:
   annotation: "annotation"
   description: "description"
+  name: "name"
   name_alias: "name_alias"
 
 children:
-  vrf_fallback_route_group_members:
-    - annotation: "annotation_1"
-      description: "description_1"
-      name: "name_1"
-      name_alias: "name_alias_1"
-      fallback_member: "2.2.2.2"
-      
-    - annotation: "annotation_2"
-      description: "description_2"
-      name: "name_2"
-      name_alias: "name_alias_2"
-      fallback_member: "2.2.2.3"
-      
-  vrf_fallback_routes:
-    - annotation: "annotation_1"
-      description: "description_1"
-      prefix_address: "2.2.2.2/24"
-      name: "name_1"
-      name_alias: "name_alias_1"
-      deletable_child: true
   annotations:
     - key: "key_0"
       value: "value_1"
@@ -57,7 +39,7 @@ children:
       value: "value_2"
       
 parents:
-  - class_name: "fvCtx"
-    parent_dependency: "fvTenant"
-    parent_dn: "aci_vrf.test.id"
+  - class_name: "fvFBRGroup"
+    parent_dependency: "fvCtx"
+    parent_dn: "aci_vrf_fallback_route_group.test.id"
     class_in_parent: false

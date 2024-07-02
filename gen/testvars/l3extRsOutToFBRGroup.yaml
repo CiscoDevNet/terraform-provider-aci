@@ -46,7 +46,7 @@ targets:
     parent_dependency: "fvCtx"
     parent_dependency_dn_ref: "aci_vrf.test.id"
     target_resource_name: "vrf_fallback_route_group"
-    relation_resource_name: "fallback_route_group"
+    relation_resource_name: "vrf_fallback_route_group"
     parent_dn_key: "parent_dn"
     properties:
-        name: "fallback_route_group_0"
+        name: "vrf_fallback_route_group_0"
