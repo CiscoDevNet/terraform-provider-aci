@@ -62,7 +62,7 @@ func (d *MgmtInstPDataSource) Schema(ctx context.Context, req datasource.SchemaR
 			},
 			"priority": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The QoS priority class identifier.`,
+				MarkdownDescription: `The QoS priority class identifierq of the External Management Network Instance Profile object.`,
 			},
 			"relation_to_consumed_out_of_band_contracts": schema.SetNestedAttribute{
 				MarkdownDescription: `An external management entity instance profile to an out-of-band binary contract profile. The instance profiles of external management entities can communicate with nodes that are part of out-of-band management endpoint group. To enable this communication, a contract is required between the instance profile and the out-of-band management endpoint group.`,
@@ -75,7 +75,7 @@ func (d *MgmtInstPDataSource) Schema(ctx context.Context, req datasource.SchemaR
 						},
 						"priority": schema.StringAttribute{
 							Computed:            true,
-							MarkdownDescription: `The Quality of service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.`,
+							MarkdownDescription: `The QoS priority class identifierq of the Relation To Consumed Out Of Band Contract object.`,
 						},
 						"out_of_band_contract_name": schema.StringAttribute{
 							Computed:            true,

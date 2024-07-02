@@ -58,7 +58,7 @@ func (d *FvRsProvDataSource) Schema(ctx context.Context, req datasource.SchemaRe
 			},
 			"priority": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The system class determines the quality of service and priority for the consumer traffic.`,
+				MarkdownDescription: `The QoS priority class identifierq of the Relation To Provided Contract object.`,
 			},
 			"contract_name": schema.StringAttribute{
 				Required:            true,

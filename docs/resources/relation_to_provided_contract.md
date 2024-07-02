@@ -144,7 +144,7 @@ All examples for the Relation To Provided Contract resource can be found in the 
 * `match_criteria` (matchT) - (string) The matched EPG type.
   - Default: `AtleastOne`
   - Valid Values: `All`, `AtleastOne`, `AtmostOne`, `None`.
-* `priority` (prio) - (string) The system class determines the quality of service and priority for the consumer traffic.
+* `priority` (prio) - (string) The QoS priority class identifierq of the Relation To Provided Contract object.
   - Default: `unspecified`
   - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
 

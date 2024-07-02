@@ -107,11 +107,11 @@ func (d *FvESgDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 			},
 			"intra_esg_isolation": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `Represents parameter used by the node (i.e. Leaf) to enforce filter rules in this ESG.`,
+				MarkdownDescription: `Parameter used to determine whether communication between endpoints within the ESG is blocked.`,
 			},
 			"preferred_group_member": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `Represents parameter used to determine if the ESG is part of a group that is not a contract for communication.`,
+				MarkdownDescription: `Parameter used to determine whether the ESG is part of the preferred group. Members of this group are allowed to communicate without contracts.`,
 			},
 			"admin_state": schema.StringAttribute{
 				Computed:            true,
@@ -128,7 +128,7 @@ func (d *FvESgDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 						},
 						"priority": schema.StringAttribute{
 							Computed:            true,
-							MarkdownDescription: `The system class determines the quality of service and priority for the consumer traffic.`,
+							MarkdownDescription: `The QoS priority class identifierq of the Relation To Consumed Contract object.`,
 						},
 						"contract_name": schema.StringAttribute{
 							Computed:            true,
@@ -148,7 +148,7 @@ func (d *FvESgDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 						},
 						"priority": schema.StringAttribute{
 							Computed:            true,
-							MarkdownDescription: `The contract interface priority.`,
+							MarkdownDescription: `The QoS priority class identifierq of the Relation To Imported Contract object.`,
 						},
 						"imported_contract_name": schema.StringAttribute{
 							Computed:            true,
@@ -192,7 +192,7 @@ func (d *FvESgDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 						},
 						"priority": schema.StringAttribute{
 							Computed:            true,
-							MarkdownDescription: `The system class determines the quality of service and priority for the consumer traffic.`,
+							MarkdownDescription: `The QoS priority class identifierq of the Relation To Provided Contract object.`,
 						},
 						"contract_name": schema.StringAttribute{
 							Computed:            true,

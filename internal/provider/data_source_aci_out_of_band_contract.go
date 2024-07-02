@@ -74,7 +74,7 @@ func (d *VzOOBBrCPDataSource) Schema(ctx context.Context, req datasource.SchemaR
 			},
 			"priority": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The priority of the Out Of Band Contract object.`,
+				MarkdownDescription: `The QoS priority class identifierq of the Out Of Band Contract object.`,
 			},
 			"scope": schema.StringAttribute{
 				Computed:            true,
