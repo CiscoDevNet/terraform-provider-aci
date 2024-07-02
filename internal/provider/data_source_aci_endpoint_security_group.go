@@ -188,7 +188,7 @@ func (d *FvESgDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 						},
 						"match_criteria": schema.StringAttribute{
 							Computed:            true,
-							MarkdownDescription: `The matched EPG type.`,
+							MarkdownDescription: `The provider label match criteria.`,
 						},
 						"priority": schema.StringAttribute{
 							Computed:            true,

@@ -73,7 +73,7 @@ data "aci_endpoint_security_group" "example_application_profile" {
 
 * `relation_to_provided_contracts` - (list) A list of Relation To Provided Contracts (ACI object [fvRsProv](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsProv/overview)) pointing to Contract (ACI Object [vzBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzBrCP/overview)). This attribute is supported in ACI versions: 1.0(1e) and later.
   * `annotation` (annotation) - (string) The annotation of the Relation To Provided Contract object.
-  * `match_criteria` (matchT) - (string) The matched EPG type.
+  * `match_criteria` (matchT) - (string) The provider label match criteria.
   * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
   * `contract_name` (tnVzBrCPName) - (string) The provider contract name.
 
