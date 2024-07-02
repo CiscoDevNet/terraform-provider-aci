@@ -21,7 +21,7 @@ func TestAccResourceL3extRsOutToFBRGroupWithL3extOut(t *testing.T) {
 				Config:             testConfigL3extRsOutToFBRGroupMinDependencyWithL3extOut,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "target_dn", "uni/tn-test_tenant/ctx-test_vrf/fbrg-fallback_route_group_0"),
+					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "target_dn", "uni/tn-test_tenant/ctx-test_vrf/fbrg-vrf_fallback_route_group_0"),
 					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "annotation", "orchestrator:terraform"),
 				),
 			},
@@ -30,7 +30,7 @@ func TestAccResourceL3extRsOutToFBRGroupWithL3extOut(t *testing.T) {
 				Config:             testConfigL3extRsOutToFBRGroupAllDependencyWithL3extOut,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "target_dn", "uni/tn-test_tenant/ctx-test_vrf/fbrg-fallback_route_group_0"),
+					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "target_dn", "uni/tn-test_tenant/ctx-test_vrf/fbrg-vrf_fallback_route_group_0"),
 					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "annotation", "annotation"),
 				),
 			},
@@ -39,7 +39,7 @@ func TestAccResourceL3extRsOutToFBRGroupWithL3extOut(t *testing.T) {
 				Config:             testConfigL3extRsOutToFBRGroupMinDependencyWithL3extOut,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "target_dn", "uni/tn-test_tenant/ctx-test_vrf/fbrg-fallback_route_group_0"),
+					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "target_dn", "uni/tn-test_tenant/ctx-test_vrf/fbrg-vrf_fallback_route_group_0"),
 				),
 			},
 			// Update with empty strings config or default value
@@ -47,7 +47,7 @@ func TestAccResourceL3extRsOutToFBRGroupWithL3extOut(t *testing.T) {
 				Config:             testConfigL3extRsOutToFBRGroupResetDependencyWithL3extOut,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "target_dn", "uni/tn-test_tenant/ctx-test_vrf/fbrg-fallback_route_group_0"),
+					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "target_dn", "uni/tn-test_tenant/ctx-test_vrf/fbrg-vrf_fallback_route_group_0"),
 					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "annotation", "orchestrator:terraform"),
 				),
 			},
@@ -57,7 +57,7 @@ func TestAccResourceL3extRsOutToFBRGroupWithL3extOut(t *testing.T) {
 				ImportState:       true,
 				ImportStateVerify: true,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "target_dn", "uni/tn-test_tenant/ctx-test_vrf/fbrg-fallback_route_group_0"),
+					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "target_dn", "uni/tn-test_tenant/ctx-test_vrf/fbrg-vrf_fallback_route_group_0"),
 					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "annotation", "orchestrator:terraform"),
 				),
 			},
@@ -66,7 +66,7 @@ func TestAccResourceL3extRsOutToFBRGroupWithL3extOut(t *testing.T) {
 				Config:             testConfigL3extRsOutToFBRGroupChildrenDependencyWithL3extOut,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "target_dn", "uni/tn-test_tenant/ctx-test_vrf/fbrg-fallback_route_group_0"),
+					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "target_dn", "uni/tn-test_tenant/ctx-test_vrf/fbrg-vrf_fallback_route_group_0"),
 					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "annotations.0.value", "value_1"),
@@ -84,7 +84,7 @@ func TestAccResourceL3extRsOutToFBRGroupWithL3extOut(t *testing.T) {
 				ImportState:       true,
 				ImportStateVerify: true,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "target_dn", "uni/tn-test_tenant/ctx-test_vrf/fbrg-fallback_route_group_0"),
+					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "target_dn", "uni/tn-test_tenant/ctx-test_vrf/fbrg-vrf_fallback_route_group_0"),
 					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "annotations.0.value", "value_1"),

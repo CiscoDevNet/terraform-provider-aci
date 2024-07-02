@@ -41,7 +41,7 @@ parents:
         - "fvFBRGroup"
 targets:
   - class_name: "fvFBRGroup"
-    target_dn: "uni/tn-test_tenant/ctx-test_vrf/fbrg-fallback_route_group_0"
+    target_dn: "uni/tn-test_tenant/ctx-test_vrf/fbrg-vrf_fallback_route_group_0"
     target_dn_ref: "aci_vrf_fallback_route_group.test_0.id"
     parent_dependency: "fvCtx"
     parent_dependency_dn_ref: "aci_vrf.test.id"

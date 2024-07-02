@@ -227,7 +227,7 @@ l3extRsOutToFBRGroup:
   targets:
     - class_name: "fvFBRGroup"
       parent_dependency: "fvCtx"
-      target_dn: "uni/tn-test_tenant/ctx-test_vrf/fbrg-fallback_route_group_0"
+      target_dn: "uni/tn-test_tenant/ctx-test_vrf/fbrg-vrf_fallback_route_group_0"
       relation_resource_name: "vrf_fallback_route_group"
       properties:
         name: "vrf_fallback_route_group_0"
