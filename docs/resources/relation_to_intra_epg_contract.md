@@ -33,7 +33,7 @@ Manages ACI Relation To Intra Epg Contract
 * Locations:
   - `Tenants -> Application Profiles -> Application EPGs -> Contracts`
   - `Tenants -> Application Profiles -> Endpoint Security Groups -> Contracts`
-  - `Tenants -> Networkings -> L3Outs -> External EPGs -> Contracts`
+  - `Tenants -> Networking -> L3Outs -> External EPGs -> Contracts`
 
 ## Example Usage ##
 

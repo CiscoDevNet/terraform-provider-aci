@@ -290,8 +290,8 @@ fvRsCons:
   ui_locations:
     - "Tenants -> Application Profiles -> Application EPGs -> Contracts"
     - "Tenants -> Application Profiles -> Endpoint Security Groups -> Contracts"
-    - "Tenants -> Networkings -> L3Outs -> External EPGs -> Contracts"
-    - "Tenants -> Networkings -> L2Outs -> External EPGs -> Contracts"
+    - "Tenants -> Networking -> L3Outs -> External EPGs -> Contracts"
+    - "Tenants -> Networking -> L2Outs -> External EPGs -> Contracts"
   sub_category: "Application Management"
 
 fvRsProv:
@@ -308,8 +308,8 @@ fvRsProv:
   ui_locations:
     - "Tenants -> Application Profiles -> Application EPGs -> Contracts"
     - "Tenants -> Application Profiles -> Endpoint Security Groups -> Contracts"
-    - "Tenants -> Networkings -> L3Outs -> External EPGs -> Contracts"
-    - "Tenants -> Networkings -> L2Outs -> External EPGs -> Contracts"
+    - "Tenants -> Networking -> L3Outs -> External EPGs -> Contracts"
+    - "Tenants -> Networking -> L2Outs -> External EPGs -> Contracts"
   sub_category: "Application Management"
 
 fvRsConsIf:
@@ -326,8 +326,8 @@ fvRsConsIf:
   ui_locations:
     - "Tenants -> Application Profiles -> Application EPGs -> Contracts"
     - "Tenants -> Application Profiles -> Endpoint Security Groups -> Contracts"
-    - "Tenants -> Networkings -> L3Outs -> External EPGs -> Contracts"
-    - "Tenants -> Networkings -> L2Outs -> External EPGs -> Contracts"
+    - "Tenants -> Networking -> L3Outs -> External EPGs -> Contracts"
+    - "Tenants -> Networking -> L2Outs -> External EPGs -> Contracts"
   sub_category: "Application Management"
 
 fvRsProtBy:
@@ -341,8 +341,8 @@ fvRsProtBy:
     - "Too many DN formats to display, see model documentation for all possible parents of [fvRsProtBy](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsProtBy/overview)."
   ui_locations:
     - "Tenants -> Application Profiles -> Application EPGs -> Contracts"
-    - "Tenants -> Networkings -> L3Outs -> External EPGs -> Contracts"
-    - "Tenants -> Networkings -> L2Outs -> External EPGs -> Contracts"
+    - "Tenants -> Networking -> L3Outs -> External EPGs -> Contracts"
+    - "Tenants -> Networking -> L2Outs -> External EPGs -> Contracts"
   sub_category: "Application Management"
 
 fvRsIntraEpg:
@@ -358,7 +358,7 @@ fvRsIntraEpg:
   ui_locations:
     - "Tenants -> Application Profiles -> Application EPGs -> Contracts"
     - "Tenants -> Application Profiles -> Endpoint Security Groups -> Contracts"
-    - "Tenants -> Networkings -> L3Outs -> External EPGs -> Contracts"
+    - "Tenants -> Networking -> L3Outs -> External EPGs -> Contracts"
   sub_category: "Application Management"
 
 fvRsSecInherited:
@@ -378,8 +378,8 @@ fvRsSecInherited:
   ui_locations:
     - "Tenants -> Application Profiles -> Application EPGs"
     - "Tenants -> Application Profiles -> Endpoint Security Groups"
-    - "Tenants -> Networkings -> L3Outs -> External EPGs"
-    - "Tenants -> Networkings -> L2Outs -> External EPGs"
+    - "Tenants -> Networking -> L3Outs -> External EPGs"
+    - "Tenants -> Networking -> L2Outs -> External EPGs"
   sub_category: "Application Management"
 
 vzBrCP:
