@@ -97,7 +97,7 @@ var templateFuncs = template.FuncMap{
 	"definedInMap":                      DefinedInMap,
 	"getValueFromMap":                   GetValueFromMap,
 	"add":                               func(val1, val2 int) int { return val1 + val2 },
-	"substract":                         func(val1, val2 int) int { return val1 - val2 },
+	"subtract":                          func(val1, val2 int) int { return val1 - val2 },
 	"mod":                               func(val1, val2 int) int { return val1 % val2 },
 	"isInterfaceSlice":                  IsInterfaceSlice,
 	"replace":                           Replace,
