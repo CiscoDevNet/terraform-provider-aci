@@ -108,7 +108,7 @@ func (r *FvRsIntraEpgResource) Schema(ctx context.Context, req resource.SchemaRe
 					stringplanmodifier.UseStateForUnknown(),
 					stringplanmodifier.RequiresReplace(),
 				},
-				MarkdownDescription: `The binary contract name.`,
+				MarkdownDescription: `The contract name.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,

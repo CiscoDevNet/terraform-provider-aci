@@ -1101,7 +1101,7 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Validators: []validator.String{
 					stringvalidator.OneOf("no", "yes"),
 				},
-				MarkdownDescription: `Withdraw ESg Configuration from all Nodes in the Fabric.`,
+				MarkdownDescription: `Withdraw the ESG configuration from all nodes in the fabric.`,
 			},
 			"relation_to_consumed_contracts": schema.SetNestedAttribute{
 				MarkdownDescription: `The Consumer contract profile information.`,
@@ -1129,7 +1129,7 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Validators: []validator.String{
 								stringvalidator.OneOf("level1", "level2", "level3", "level4", "level5", "level6", "unspecified"),
 							},
-							MarkdownDescription: `The QoS priority class identifier of the Relation To Consumed Contract object.`,
+							MarkdownDescription: `The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.`,
 						},
 						"contract_name": schema.StringAttribute{
 							Required: true,
@@ -1167,7 +1167,7 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Validators: []validator.String{
 								stringvalidator.OneOf("level1", "level2", "level3", "level4", "level5", "level6", "unspecified"),
 							},
-							MarkdownDescription: `The QoS priority class identifier of the Relation To Imported Contract object.`,
+							MarkdownDescription: `The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.`,
 						},
 						"imported_contract_name": schema.StringAttribute{
 							Required: true,
@@ -1205,7 +1205,7 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
-							MarkdownDescription: `The binary contract name.`,
+							MarkdownDescription: `The contract name.`,
 						},
 					},
 				},
@@ -1247,7 +1247,7 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Validators: []validator.String{
 								stringvalidator.OneOf("level1", "level2", "level3", "level4", "level5", "level6", "unspecified"),
 							},
-							MarkdownDescription: `The QoS priority class identifier of the Relation To Provided Contract object.`,
+							MarkdownDescription: `The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.`,
 						},
 						"contract_name": schema.StringAttribute{
 							Required: true,
@@ -1285,7 +1285,7 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
-							MarkdownDescription: `Name.`,
+							MarkdownDescription: `The name of the VRF object.`,
 						},
 					},
 				},

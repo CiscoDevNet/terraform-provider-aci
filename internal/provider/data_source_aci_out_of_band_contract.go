@@ -74,7 +74,7 @@ func (d *VzOOBBrCPDataSource) Schema(ctx context.Context, req datasource.SchemaR
 			},
 			"priority": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The QoS priority class identifier of the Out Of Band Contract object.`,
+				MarkdownDescription: `The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.`,
 			},
 			"scope": schema.StringAttribute{
 				Computed:            true,

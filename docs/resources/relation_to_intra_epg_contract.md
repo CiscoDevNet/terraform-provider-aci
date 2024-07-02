@@ -125,7 +125,7 @@ All examples for the Relation To Intra Epg Contract resource can be found in the
     - [vnsSDEPpInfo](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vnsSDEPpInfo/overview)
     - [vnsSHEPpInfo](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vnsSHEPpInfo/overview)
 
-* `contract_name` (tnVzBrCPName) - (string) The binary contract name. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/contract) with `aci_contract.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/contract) with `data.aci_contract.example.name`.
+* `contract_name` (tnVzBrCPName) - (string) The contract name. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/contract) with `aci_contract.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/contract) with `data.aci_contract.example.name`.
 
 ### Read-Only ###
 

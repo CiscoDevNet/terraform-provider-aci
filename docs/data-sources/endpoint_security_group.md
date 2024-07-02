@@ -55,31 +55,31 @@ data "aci_endpoint_security_group" "example_application_profile" {
 * `name_alias` (nameAlias) - (string) The name alias of the Endpoint Security Group object.
 * `intra_esg_isolation` (pcEnfPref) - (string) Parameter used to determine whether communication between endpoints within the ESG is blocked.
 * `preferred_group_member` (prefGrMemb) - (string) Parameter used to determine whether the ESG is part of the preferred group. Members of this group are allowed to communicate without contracts.
-* `admin_state` (shutdown) - (string) Withdraw ESg Configuration from all Nodes in the Fabric.
+* `admin_state` (shutdown) - (string) Withdraw the ESG configuration from all nodes in the fabric.
 
 * `relation_to_consumed_contracts` - (list) A list of Relation To Consumed Contracts (ACI object [fvRsCons](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsCons/overview)) pointing to Contract (ACI Object [vzBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzBrCP/overview)). This attribute is supported in ACI versions: 1.0(1e) and later.
   * `annotation` (annotation) - (string) The annotation of the Relation To Consumed Contract object.
-  * `priority` (prio) - (string) The QoS priority class identifier of the Relation To Consumed Contract object.
+  * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
   * `contract_name` (tnVzBrCPName) - (string) The consumer contract name.
 
 * `relation_to_imported_contracts` - (list) A list of Relation To Imported Contracts (ACI object [fvRsConsIf](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsConsIf/overview)) pointing to Imported Contract (ACI Object [vzCPIf](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzCPIf/overview)). This attribute is supported in ACI versions: 1.0(1e) and later.
   * `annotation` (annotation) - (string) The annotation of the Relation To Imported Contract object.
-  * `priority` (prio) - (string) The QoS priority class identifier of the Relation To Imported Contract object.
+  * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
   * `imported_contract_name` (tnVzCPIfName) - (string) The contract interface name.
 
 * `relation_to_intra_epg_contracts` - (list) A list of Relation To Intra Epg Contracts (ACI object [fvRsIntraEpg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsIntraEpg/overview)) pointing to Contract (ACI Object [vzBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzBrCP/overview)). This attribute is supported in ACI versions: 3.0(1k) and later.
   * `annotation` (annotation) - (string) The annotation of the Relation To Intra Epg Contract object.
-  * `contract_name` (tnVzBrCPName) - (string) The binary contract name.
+  * `contract_name` (tnVzBrCPName) - (string) The contract name.
 
 * `relation_to_provided_contracts` - (list) A list of Relation To Provided Contracts (ACI object [fvRsProv](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsProv/overview)) pointing to Contract (ACI Object [vzBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzBrCP/overview)). This attribute is supported in ACI versions: 1.0(1e) and later.
   * `annotation` (annotation) - (string) The annotation of the Relation To Provided Contract object.
   * `match_criteria` (matchT) - (string) The matched EPG type.
-  * `priority` (prio) - (string) The QoS priority class identifier of the Relation To Provided Contract object.
+  * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
   * `contract_name` (tnVzBrCPName) - (string) The provider contract name.
 
 * `relation_to_vrf` - (list) A list of Relation To VRF (ACI object [fvRsScope](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsScope/overview)) pointing to VRF (ACI Object [fvCtx](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvCtx/overview)).
   * `annotation` (annotation) - (string) The annotation of the Relation To VRF object.
-  * `vrf_name` (tnFvCtxName) - (string) Name.
+  * `vrf_name` (tnFvCtxName) - (string) The name of the VRF object.
 
 * `relation_to_contract_masters` - (list) A list of Relation To Contract Masters (ACI object [fvRsSecInherited](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsSecInherited/overview)) pointing to Endpoint Security Group (ACI Object [fvESg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvESg/overview)). This attribute is supported in ACI versions: 2.3(1e) and later.
   * `annotation` (annotation) - (string) The annotation of the Relation To Contract Master object.

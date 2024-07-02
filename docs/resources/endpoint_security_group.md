@@ -143,7 +143,7 @@ All examples for the Endpoint Security Group resource can be found in the [examp
 * `preferred_group_member` (prefGrMemb) - (string) Parameter used to determine whether the ESG is part of the preferred group. Members of this group are allowed to communicate without contracts.
   - Default: `exclude`
   - Valid Values: `exclude`, `include`.
-* `admin_state` (shutdown) - (string) Withdraw ESg Configuration from all Nodes in the Fabric.
+* `admin_state` (shutdown) - (string) Withdraw the ESG configuration from all nodes in the fabric.
   - Default: `no`
   - Valid Values: `no`, `yes`.
 
@@ -157,7 +157,7 @@ All examples for the Endpoint Security Group resource can be found in the [examp
     
   * `annotation` (annotation) - (string) The annotation of the Relation To Consumed Contract object.
       - Default: `orchestrator:terraform`
-  * `priority` (prio) - (string) The QoS priority class identifier of the Relation To Consumed Contract object.
+  * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
       - Default: `unspecified`
       - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
 
@@ -171,7 +171,7 @@ All examples for the Endpoint Security Group resource can be found in the [examp
     
   * `annotation` (annotation) - (string) The annotation of the Relation To Imported Contract object.
       - Default: `orchestrator:terraform`
-  * `priority` (prio) - (string) The QoS priority class identifier of the Relation To Imported Contract object.
+  * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
       - Default: `unspecified`
       - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
 
@@ -179,7 +179,7 @@ All examples for the Endpoint Security Group resource can be found in the [examp
   
   #### Required ####
   
-  * `contract_name` (tnVzBrCPName) - (string) The binary contract name. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/contract) with `aci_contract.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/contract) with `data.aci_contract.example.name`.
+  * `contract_name` (tnVzBrCPName) - (string) The contract name. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/contract) with `aci_contract.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/contract) with `data.aci_contract.example.name`.
 
   #### Optional ####
     
@@ -199,7 +199,7 @@ All examples for the Endpoint Security Group resource can be found in the [examp
   * `match_criteria` (matchT) - (string) The matched EPG type.
       - Default: `AtleastOne`
       - Valid Values: `All`, `AtleastOne`, `AtmostOne`, `None`.
-  * `priority` (prio) - (string) The QoS priority class identifier of the Relation To Provided Contract object.
+  * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
       - Default: `unspecified`
       - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
 
@@ -211,7 +211,7 @@ All examples for the Endpoint Security Group resource can be found in the [examp
     
   * `annotation` (annotation) - (string) The annotation of the Relation To VRF object.
       - Default: `orchestrator:terraform`
-  * `vrf_name` (tnFvCtxName) - (string) Name.
+  * `vrf_name` (tnFvCtxName) - (string) The name of the VRF object.
 
 * `relation_to_contract_masters` - (list) A list of Relation To Contract Masters (ACI object [fvRsSecInherited](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsSecInherited/overview)) pointing to Endpoint Security Group (ACI Object [fvESg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvESg/overview)) which can be configured using the [aci_endpoint_security_group](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/endpoint_security_group) resource. This attribute is supported in ACI versions: 2.3(1e) and later.
   

@@ -54,7 +54,7 @@ func (d *FvRsIntraEpgDataSource) Schema(ctx context.Context, req datasource.Sche
 			},
 			"contract_name": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: `The binary contract name.`,
+				MarkdownDescription: `The contract name.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,
