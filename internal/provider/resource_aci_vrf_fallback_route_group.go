@@ -300,8 +300,8 @@ func (r *FvFBRGroupResource) Create(ctx context.Context, req resource.CreateRequ
 	getAndSetFvFBRGroupAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
 		resp.Diagnostics.AddError(
-			"object already exists",
-			fmt.Sprintf("The fvFBRGroup object with DN '%s' already exists", stateData.Id.ValueString()),
+			"Object Already Exists",
+			fmt.Sprintf("The fvFBRGroup object with DN '%s' already exists.", stateData.Id.ValueString()),
 		)
 		return
 	}

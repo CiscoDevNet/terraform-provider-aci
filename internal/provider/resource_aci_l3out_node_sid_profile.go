@@ -257,8 +257,8 @@ func (r *MplsNodeSidPResource) Create(ctx context.Context, req resource.CreateRe
 	getAndSetMplsNodeSidPAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
 		resp.Diagnostics.AddError(
-			"object already exists",
-			fmt.Sprintf("The mplsNodeSidP object with DN '%s' already exists", stateData.Id.ValueString()),
+			"Object Already Exists",
+			fmt.Sprintf("The mplsNodeSidP object with DN '%s' already exists.", stateData.Id.ValueString()),
 		)
 		return
 	}

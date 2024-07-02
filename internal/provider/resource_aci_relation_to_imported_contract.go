@@ -235,8 +235,8 @@ func (r *FvRsConsIfResource) Create(ctx context.Context, req resource.CreateRequ
 	getAndSetFvRsConsIfAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
 		resp.Diagnostics.AddError(
-			"object already exists",
-			fmt.Sprintf("The fvRsConsIf object with DN '%s' already exists", stateData.Id.ValueString()),
+			"Object Already Exists",
+			fmt.Sprintf("The fvRsConsIf object with DN '%s' already exists.", stateData.Id.ValueString()),
 		)
 		return
 	}

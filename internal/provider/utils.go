@@ -34,8 +34,8 @@ func CheckDn(ctx context.Context, diags *diag.Diagnostics, client *client.Client
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json", dn), "GET", nil)
 	if requestData.Search("imdata").Search(classname).Data() != nil {
 		diags.AddError(
-			"object already exists",
-			fmt.Sprintf("The %s object with DN '%s' already exists", classname, dn),
+			"Object Already Exists",
+			fmt.Sprintf("The %s object with DN '%s' already exists.", classname, dn),
 		)
 	}
 }

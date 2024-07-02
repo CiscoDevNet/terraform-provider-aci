@@ -271,8 +271,8 @@ func (r *L3extProvLblResource) Create(ctx context.Context, req resource.CreateRe
 	getAndSetL3extProvLblAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
 		resp.Diagnostics.AddError(
-			"object already exists",
-			fmt.Sprintf("The l3extProvLbl object with DN '%s' already exists", stateData.Id.ValueString()),
+			"Object Already Exists",
+			fmt.Sprintf("The l3extProvLbl object with DN '%s' already exists.", stateData.Id.ValueString()),
 		)
 		return
 	}

@@ -248,8 +248,8 @@ func (r *MgmtSubnetResource) Create(ctx context.Context, req resource.CreateRequ
 	getAndSetMgmtSubnetAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
 		resp.Diagnostics.AddError(
-			"object already exists",
-			fmt.Sprintf("The mgmtSubnet object with DN '%s' already exists", stateData.Id.ValueString()),
+			"Object Already Exists",
+			fmt.Sprintf("The mgmtSubnet object with DN '%s' already exists.", stateData.Id.ValueString()),
 		)
 		return
 	}

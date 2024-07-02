@@ -248,8 +248,8 @@ func (r *FvFBRMemberResource) Create(ctx context.Context, req resource.CreateReq
 	getAndSetFvFBRMemberAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
 		resp.Diagnostics.AddError(
-			"object already exists",
-			fmt.Sprintf("The fvFBRMember object with DN '%s' already exists", stateData.Id.ValueString()),
+			"Object Already Exists",
+			fmt.Sprintf("The fvFBRMember object with DN '%s' already exists.", stateData.Id.ValueString()),
 		)
 		return
 	}

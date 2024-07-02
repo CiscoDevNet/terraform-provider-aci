@@ -221,8 +221,8 @@ func (r *L3extRsOutToFBRGroupResource) Create(ctx context.Context, req resource.
 	getAndSetL3extRsOutToFBRGroupAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
 		resp.Diagnostics.AddError(
-			"object already exists",
-			fmt.Sprintf("The l3extRsOutToFBRGroup object with DN '%s' already exists", stateData.Id.ValueString()),
+			"Object Already Exists",
+			fmt.Sprintf("The l3extRsOutToFBRGroup object with DN '%s' already exists.", stateData.Id.ValueString()),
 		)
 		return
 	}

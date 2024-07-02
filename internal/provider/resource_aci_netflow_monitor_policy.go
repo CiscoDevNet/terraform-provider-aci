@@ -333,8 +333,8 @@ func (r *NetflowMonitorPolResource) Create(ctx context.Context, req resource.Cre
 	getAndSetNetflowMonitorPolAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
 		resp.Diagnostics.AddError(
-			"object already exists",
-			fmt.Sprintf("The netflowMonitorPol object with DN '%s' already exists", stateData.Id.ValueString()),
+			"Object Already Exists",
+			fmt.Sprintf("The netflowMonitorPol object with DN '%s' already exists.", stateData.Id.ValueString()),
 		)
 		return
 	}
