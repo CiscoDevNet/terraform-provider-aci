@@ -2,7 +2,7 @@
 resource "aci_relation_to_contract_master" "full_example_application_epg" {
   parent_dn  = aci_application_epg.example.id
   annotation = "annotation"
-  target_dn  = aci_endpoint_security_group.example.id
+  target_dn  = aci_application_epg.example_2.id
   annotations = [
     {
       key   = "key_0"
@@ -20,7 +20,7 @@ resource "aci_relation_to_contract_master" "full_example_application_epg" {
 resource "aci_relation_to_contract_master" "full_example_endpoint_security_group" {
   parent_dn  = aci_endpoint_security_group.example.id
   annotation = "annotation"
-  target_dn  = aci_endpoint_security_group.example.id
+  target_dn  = aci_endpoint_security_group.example_2.id
   annotations = [
     {
       key   = "key_0"
