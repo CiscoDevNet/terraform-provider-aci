@@ -139,7 +139,7 @@ func (r *MgmtInstPResource) Schema(ctx context.Context, req resource.SchemaReque
 				Validators: []validator.String{
 					stringvalidator.OneOf("level1", "level2", "level3", "level4", "level5", "level6", "unspecified"),
 				},
-				MarkdownDescription: `The QoS priority class identifier of the External Management Network Instance Profile object.`,
+				MarkdownDescription: `The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.`,
 			},
 			"relation_to_consumed_out_of_band_contracts": schema.SetNestedAttribute{
 				MarkdownDescription: `An external management entity instance profile to an out-of-band binary contract profile. The instance profiles of external management entities can communicate with nodes that are part of out-of-band management endpoint group. To enable this communication, a contract is required between the instance profile and the out-of-band management endpoint group.`,
@@ -167,7 +167,7 @@ func (r *MgmtInstPResource) Schema(ctx context.Context, req resource.SchemaReque
 							Validators: []validator.String{
 								stringvalidator.OneOf("level1", "level2", "level3", "level4", "level5", "level6", "unspecified"),
 							},
-							MarkdownDescription: `The QoS priority class identifier of the Relation To Consumed Out Of Band Contract object.`,
+							MarkdownDescription: `The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.`,
 						},
 						"out_of_band_contract_name": schema.StringAttribute{
 							Required: true,

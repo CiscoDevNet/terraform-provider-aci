@@ -114,7 +114,7 @@ func (r *FvRsConsIfResource) Schema(ctx context.Context, req resource.SchemaRequ
 				Validators: []validator.String{
 					stringvalidator.OneOf("level1", "level2", "level3", "level4", "level5", "level6", "unspecified"),
 				},
-				MarkdownDescription: `The QoS priority class identifier of the Relation To Imported Contract object.`,
+				MarkdownDescription: `The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.`,
 			},
 			"imported_contract_name": schema.StringAttribute{
 				Required: true,
