@@ -229,6 +229,7 @@ func (p *AciProvider) Resources(ctx context.Context) []func() resource.Resource 
 		NewFvRsSecInheritedResource,
 		NewFvSCrtrnResource,
 		NewFvVmAttrResource,
+		NewInfraHPathSResource,
 		NewL3extConsLblResource,
 		NewL3extProvLblResource,
 		NewL3extRsOutToFBRGroupResource,
