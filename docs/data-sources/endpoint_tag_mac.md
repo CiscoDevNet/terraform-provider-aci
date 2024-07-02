@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_endpoint_tag_mac"
 sidebar_current: "docs-aci-data-source-aci_endpoint_tag_mac"
 description: |-
-  Data source for Endpoint Tag Mac
+  Data source for Endpoint Tag MAC
 ---
 
 # aci_endpoint_tag_mac #
 
-Data source for Endpoint Tag Mac
+Data source for Endpoint Tag MAC
 
 ## API Information ##
 
@@ -44,16 +44,16 @@ data "aci_endpoint_tag_mac" "example_tenant" {
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
-* `bd_name` (bdName) - (string) The bridge domain name of the Endpoint Tag Mac object.
-* `mac` (mac) - (string) The MAC address of the Endpoint Tag Mac object.
+* `bd_name` (bdName) - (string) The bridge domain name of the Endpoint Tag MAC object.
+* `mac` (mac) - (string) The MAC address of the Endpoint Tag MAC object.
 
 ### Read-Only ###
 
-* `id` - (string) The distinguished name (DN) of the Endpoint Tag Mac object.
-* `annotation` (annotation) - (string) The annotation of the Endpoint Tag Mac object.
-* `id_attribute` (id) - (string) The identifier of the Endpoint Tag Mac object.
-* `name` (name) - (string) The name of the Endpoint Tag Mac object.
-* `name_alias` (nameAlias) - (string) The name alias of the Endpoint Tag Mac object.
+* `id` - (string) The distinguished name (DN) of the Endpoint Tag MAC object.
+* `annotation` (annotation) - (string) The annotation of the Endpoint Tag MAC object.
+* `id_attribute` (id) - (string) The identifier of the Endpoint Tag MAC object.
+* `name` (name) - (string) The name of the Endpoint Tag MAC object.
+* `name_alias` (nameAlias) - (string) The name alias of the Endpoint Tag MAC object.
 
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
   * `key` (key) - (string) The key used to uniquely identify this configuration object.

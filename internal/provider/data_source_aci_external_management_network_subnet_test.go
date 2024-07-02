@@ -44,10 +44,9 @@ data "aci_external_management_network_subnet" "test" {
 }
 `
 
-const testConfigMgmtSubnetNotExistingMgmtInstP = testConfigMgmtSubnetMinDependencyWithMgmtInstP + `
+const testConfigMgmtSubnetNotExistingMgmtInstP = testConfigMgmtInstPMin + `
 data "aci_external_management_network_subnet" "test_non_existing" {
   parent_dn = aci_external_management_network_instance_profile.test.id
   ip = "2.2.2.0/24"
-  depends_on = [aci_external_management_network_subnet.test]
 }
 `

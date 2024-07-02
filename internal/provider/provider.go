@@ -20,6 +20,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
+
 	// temporary unused until muxing is removed
 	// "github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -196,10 +197,17 @@ func (p *AciProvider) Configure(ctx context.Context, req provider.ConfigureReque
 
 func (p *AciProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
+		NewFvCrtrnResource,
+		NewFvDnsAttrResource,
 		NewFvEpIpTagResource,
 		NewFvEpMacTagResource,
 		NewFvFBRGroupResource,
 		NewFvFBRMemberResource,
+		NewFvIdGroupAttrResource,
+		NewFvIpAttrResource,
+		NewFvMacAttrResource,
+		NewFvSCrtrnResource,
+		NewFvVmAttrResource,
 		NewL3extConsLblResource,
 		NewL3extProvLblResource,
 		NewL3extRsOutToFBRGroupResource,
@@ -222,10 +230,17 @@ func (p *AciProvider) Resources(ctx context.Context) []func() resource.Resource 
 
 func (p *AciProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
+		NewFvCrtrnDataSource,
+		NewFvDnsAttrDataSource,
 		NewFvEpIpTagDataSource,
 		NewFvEpMacTagDataSource,
 		NewFvFBRGroupDataSource,
 		NewFvFBRMemberDataSource,
+		NewFvIdGroupAttrDataSource,
+		NewFvIpAttrDataSource,
+		NewFvMacAttrDataSource,
+		NewFvSCrtrnDataSource,
+		NewFvVmAttrDataSource,
 		NewL3extConsLblDataSource,
 		NewL3extProvLblDataSource,
 		NewL3extRsOutToFBRGroupDataSource,

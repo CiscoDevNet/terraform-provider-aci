@@ -47,7 +47,7 @@ data "aci_out_of_band_contract" "test" {
 `
 
 const testConfigVzOOBBrCPNotExisting = testConfigVzOOBBrCPAll + `
-data "aci_out_of_band_contract" "test" {
+data "aci_out_of_band_contract" "test_non_existing" {
   name = "non_existing_name"
   depends_on = [aci_out_of_band_contract.test]
 }

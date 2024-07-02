@@ -218,3 +218,56 @@ mplsNodeSidP:
     - "uni/tn-{name}/out-{name}/lnodep-{name}/rsnodeL3OutAtt-[{tDn}]/lbp-[{addr}]/nodesidp-{sidoffset}"
   contained_by:
     - "l3extLoopBackIfP"
+
+fvCrtrn:
+  resource_name: "epg_useg_block_statement"
+  ui_locations:
+    - "Tenants -> Application Profiles -> uSeg EPGs -> uSeg Attributes"
+  sub_category: "Application Management"
+  include: true
+
+fvSCrtrn:
+  resource_name: "epg_useg_sub_block_statement"
+  ui_locations:
+    - "Tenants -> Application Profiles -> uSeg EPGs -> uSeg Attributes"
+  sub_category: "Application Management"
+  resource_notes:
+    - "The `aci_epg_useg_sub_block_statement` is used to create nested sub-block statements by referencing itself."
+
+fvVmAttr:
+  resource_name: "epg_useg_vm_attribute"
+  ui_locations:
+    - "Tenants -> Application Profiles -> uSeg EPGs -> uSeg Attributes"
+  sub_category: "Application Management"
+
+fvIdGroupAttr:
+  resource_name: "epg_useg_ad_group_attribute"
+  ui_locations:
+    - "Tenants -> Application Profiles -> uSeg EPGs -> uSeg Attributes"
+  sub_category: "Application Management"
+
+fvDnsAttr:
+  resource_name: "epg_useg_dns_attribute"
+  ui_locations:
+    - "Tenants -> Application Profiles -> uSeg EPGs -> uSeg Attributes"
+  sub_category: "Application Management"
+
+fvMacAttr:
+  resource_name: "epg_useg_mac_attribute"
+  ui_locations:
+    - "Tenants -> Application Profiles -> uSeg EPGs -> uSeg Attributes"
+  sub_category: "Application Management"
+  dn_formats:
+    - "uni/tn-{name}/ap-{name}/epg-{name}/crtrn/macattr-{name}"
+  contained_by:
+    - "fvCrtrn"
+
+fvIpAttr:
+  resource_name: "epg_useg_ip_attribute"
+  ui_locations:
+    - "Tenants -> Application Profiles -> uSeg EPGs -> uSeg Attributes"
+  sub_category: "Application Management"
+  dn_formats:
+    - "uni/tn-{name}/ap-{name}/epg-{name}/crtrn/ipattr-{name}"
+  contained_by:
+    - "fvCrtrn"

@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_endpoint_tag_ip"
 sidebar_current: "docs-aci-resource-aci_endpoint_tag_ip"
 description: |-
-  Manages ACI Endpoint Tag Ip
+  Manages ACI Endpoint Tag IP
 ---
 
 # aci_endpoint_tag_ip #
 
-Manages ACI Endpoint Tag Ip
+Manages ACI Endpoint Tag IP
 
 
 
@@ -30,7 +30,7 @@ Manages ACI Endpoint Tag Ip
 
 ## Example Usage ##
 
-The configuration snippet below creates a Endpoint Tag Ip with only required attributes.
+The configuration snippet below creates a Endpoint Tag IP with only required attributes.
 
 ```hcl
 
@@ -41,7 +41,7 @@ resource "aci_endpoint_tag_ip" "example_tenant" {
 }
 
 ```
-The configuration snippet below shows all possible attributes of the Endpoint Tag Ip.
+The configuration snippet below shows all possible attributes of the Endpoint Tag IP.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
@@ -71,7 +71,7 @@ resource "aci_endpoint_tag_ip" "full_example_tenant" {
 
 ```
 
-All examples for the Endpoint Tag Ip resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/resources/aci_endpoint_tag_ip) folder.
+All examples for the Endpoint Tag IP resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/resources/aci_endpoint_tag_ip) folder.
 
 ## Schema ##
 
@@ -79,20 +79,20 @@ All examples for the Endpoint Tag Ip resource can be found in the [examples](htt
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
-* `vrf_name` (ctxName) - (string) The VRF name of the Endpoint Tag Ip object.
-* `ip` (ip) - (string) The IP address of the Endpoint Tag Ip object.
+* `vrf_name` (ctxName) - (string) The VRF name of the Endpoint Tag IP object.
+* `ip` (ip) - (string) The IP address of the Endpoint Tag IP object.
 
 ### Read-Only ###
 
-* `id` - (string) The distinguished name (DN) of the Endpoint Tag Ip object.
+* `id` - (string) The distinguished name (DN) of the Endpoint Tag IP object.
 
 ### Optional ###
   
-* `annotation` (annotation) - (string) The annotation of the Endpoint Tag Ip object.
+* `annotation` (annotation) - (string) The annotation of the Endpoint Tag IP object.
   - Default: `orchestrator:terraform`
-* `id_attribute` (id) - (string) The identifier of the Endpoint Tag Ip object.
-* `name` (name) - (string) The name of the Endpoint Tag Ip object.
-* `name_alias` (nameAlias) - (string) The name alias of the Endpoint Tag Ip object.
+* `id_attribute` (id) - (string) The identifier of the Endpoint Tag IP object.
+* `name` (name) - (string) The name of the Endpoint Tag IP object.
+* `name_alias` (nameAlias) - (string) The name alias of the Endpoint Tag IP object.
 
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   
@@ -110,13 +110,13 @@ All examples for the Endpoint Tag Ip resource can be found in the [examples](htt
 
 ## Importing
 
-An existing Endpoint Tag Ip can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
+An existing Endpoint Tag IP can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
 terraform import aci_endpoint_tag_ip.example_tenant uni/tn-{name}/eptags/epiptag-[{ip}]-{ctxName}
 ```
 
-Starting in Terraform version 1.5, an existing Endpoint Tag Ip can be imported
+Starting in Terraform version 1.5, an existing Endpoint Tag IP can be imported
 using [import blocks](https://developer.hashicorp.com/terraform/language/import) via the following configuration:
 
 ```
