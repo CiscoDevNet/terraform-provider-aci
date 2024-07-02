@@ -94,7 +94,7 @@ resource "aci_endpoint_security_group" "full_example_application_profile" {
   relation_to_contract_masters = [
     {
       annotation = "annotation_1"
-      target_dn  = "target_dn_0"
+      target_dn  = aci_endpoint_security_group.example_2.id
     }
   ]
   annotations = [
