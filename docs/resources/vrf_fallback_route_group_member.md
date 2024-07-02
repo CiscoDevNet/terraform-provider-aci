@@ -14,7 +14,7 @@ description: |-
 
 Manages ACI VRF Fallback Route Group Member
 
-  -> This resource should not be used in combination with the `vrf_fallback_route_group` nested attributes of other resources for the same object. Doing so will result in unexpected behaviour.
+  -> This resource should not be used in combination with the `vrf_fallback_route_group_members` nested attribute of the `aci_vrf_fallback_route_group` resource. Doing so will result in unexpected behaviour.
 
 
 ## API Information ##
