@@ -1,12 +1,17 @@
-{{- if .DocumentationExamples}}{{- range $key := .DocumentationExamples}}
+{{- if .DocumentationExamples}}{{$parentIndex := 0}}{{- range $key := .DocumentationExamples}}
 data "aci_{{$.ResourceName}}" "example_{{getResourceName $key $.Definitions}}" {
   {{- if $.HasParent}}
   parent_dn = {{createParentDnValue $key "example" $.Definitions}}
   {{- end}}
   {{- range $.Properties}}{{- if .IsNaming}}{{- if ne .NamedPropertyClass ""}}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = aci_{{getResourceName .NamedPropertyClass $.Definitions}}.example.name
-    {{- else if eq .SnakeCaseName "t_dn" }}
-  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = {{lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions | replace ".test_0.id" ".example.id"}}
+    {{- else if eq .SnakeCaseName "t_dn" }}{{$attributeKey := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
+    {{- range $index, $testParent := $.TestVars.parents }}
+      {{- if eq $index $parentIndex }}
+  {{$attributeKey}} = {{getTestTargetDn $.TestVars.targets $.TestVars.resourceName "" true $testParent.target_classes $index | replace "test" "example" | replace "_0" "" | replace "_1" "_2" }}
+    {{- $parentIndex = add $parentIndex 1 }}{{- break}}
+      {{- end}}
+    {{- end}}
     {{- else}}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = "{{lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions}}"{{- end}}{{- end}}
   {{- end}}
