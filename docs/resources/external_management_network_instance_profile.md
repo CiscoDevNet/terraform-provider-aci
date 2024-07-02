@@ -92,7 +92,7 @@ All examples for the External Management Network Instance Profile resource can b
   - Default: `orchestrator:terraform`
 * `description` (descr) - (string) The description of the External Management Network Instance Profile object.
 * `name_alias` (nameAlias) - (string) The name alias of the External Management Network Instance Profile object.
-* `priority` (prio) - (string) The QoS priority class identifierq of the External Management Network Instance Profile object.
+* `priority` (prio) - (string) The QoS priority class identifier of the External Management Network Instance Profile object.
   - Default: `unspecified`
   - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
 
@@ -106,7 +106,7 @@ All examples for the External Management Network Instance Profile resource can b
     
   * `annotation` (annotation) - (string) The annotation of the Relation To Consumed Out Of Band Contract object.
       - Default: `orchestrator:terraform`
-  * `priority` (prio) - (string) The QoS priority class identifierq of the Relation To Consumed Out Of Band Contract object.
+  * `priority` (prio) - (string) The QoS priority class identifier of the Relation To Consumed Out Of Band Contract object.
       - Default: `unspecified`
       - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
 

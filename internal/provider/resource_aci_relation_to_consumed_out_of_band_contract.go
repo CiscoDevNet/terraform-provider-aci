@@ -114,7 +114,7 @@ func (r *MgmtRsOoBConsResource) Schema(ctx context.Context, req resource.SchemaR
 				Validators: []validator.String{
 					stringvalidator.OneOf("level1", "level2", "level3", "level4", "level5", "level6", "unspecified"),
 				},
-				MarkdownDescription: `The QoS priority class identifierq of the Relation To Consumed Out Of Band Contract object.`,
+				MarkdownDescription: `The QoS priority class identifier of the Relation To Consumed Out Of Band Contract object.`,
 			},
 			"out_of_band_contract_name": schema.StringAttribute{
 				Required: true,

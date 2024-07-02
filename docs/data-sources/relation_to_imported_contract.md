@@ -84,7 +84,7 @@ data "aci_relation_to_imported_contract" "example_endpoint_security_group" {
 
 * `id` - (string) The distinguished name (DN) of the Relation To Imported Contract object.
 * `annotation` (annotation) - (string) The annotation of the Relation To Imported Contract object.
-* `priority` (prio) - (string) The QoS priority class identifierq of the Relation To Imported Contract object.
+* `priority` (prio) - (string) The QoS priority class identifier of the Relation To Imported Contract object.
 
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
   * `key` (key) - (string) The key used to uniquely identify this configuration object.

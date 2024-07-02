@@ -49,7 +49,7 @@ data "aci_relation_to_consumed_out_of_band_contract" "example_external_managemen
 
 * `id` - (string) The distinguished name (DN) of the Relation To Consumed Out Of Band Contract object.
 * `annotation` (annotation) - (string) The annotation of the Relation To Consumed Out Of Band Contract object.
-* `priority` (prio) - (string) The QoS priority class identifierq of the Relation To Consumed Out Of Band Contract object.
+* `priority` (prio) - (string) The QoS priority class identifier of the Relation To Consumed Out Of Band Contract object.
 
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
   * `key` (key) - (string) The key used to uniquely identify this configuration object.

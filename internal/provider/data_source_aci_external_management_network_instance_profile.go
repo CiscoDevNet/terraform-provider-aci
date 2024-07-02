@@ -62,7 +62,7 @@ func (d *MgmtInstPDataSource) Schema(ctx context.Context, req datasource.SchemaR
 			},
 			"priority": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The QoS priority class identifierq of the External Management Network Instance Profile object.`,
+				MarkdownDescription: `The QoS priority class identifier of the External Management Network Instance Profile object.`,
 			},
 			"relation_to_consumed_out_of_band_contracts": schema.SetNestedAttribute{
 				MarkdownDescription: `An external management entity instance profile to an out-of-band binary contract profile. The instance profiles of external management entities can communicate with nodes that are part of out-of-band management endpoint group. To enable this communication, a contract is required between the instance profile and the out-of-band management endpoint group.`,
@@ -75,7 +75,7 @@ func (d *MgmtInstPDataSource) Schema(ctx context.Context, req datasource.SchemaR
 						},
 						"priority": schema.StringAttribute{
 							Computed:            true,
-							MarkdownDescription: `The QoS priority class identifierq of the Relation To Consumed Out Of Band Contract object.`,
+							MarkdownDescription: `The QoS priority class identifier of the Relation To Consumed Out Of Band Contract object.`,
 						},
 						"out_of_band_contract_name": schema.StringAttribute{
 							Computed:            true,
