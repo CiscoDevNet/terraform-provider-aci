@@ -74,6 +74,12 @@ data "aci_tag" "example_application_epg" {
   - [aci_relation_to_consumed_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/relation_to_consumed_contract) ([fvRsCons](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsCons/overview))
   - [aci_relation_to_imported_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/relation_to_imported_contract) ([fvRsConsIf](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsConsIf/overview))
   - [aci_relation_to_intra_epg_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/relation_to_intra_epg_contract) ([fvRsIntraEpg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsIntraEpg/overview))
+  - [aci_relation_to_taboo_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/relation_to_taboo_contract) ([fvRsProtBy](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsProtBy/overview))
+  - [aci_relation_to_provided_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/relation_to_provided_contract) ([fvRsProv](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsProv/overview))
+  - [aci_relation_to_vrf](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/relation_to_vrf) ([fvRsScope](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsScope/overview))
+  - [aci_relation_to_contract_master](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/relation_to_contract_master) ([fvRsSecInherited](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsSecInherited/overview))
+  - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
+  - [aci_host_path_selector](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/host_path_selector) ([infraHPathS](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraHPathS/overview))
 * `key` (key) - (string) The key used to uniquely identify this configuration object.
 
 ### Read-Only ###
