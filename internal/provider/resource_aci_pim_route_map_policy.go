@@ -69,6 +69,29 @@ type PimRouteMapPolIdentifier struct {
 	Name types.String
 }
 
+func (r *PimRouteMapPolResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
+	if !req.Plan.Raw.IsNull() {
+		var planData, stateData *PimRouteMapPolResourceModel
+		resp.Diagnostics.Append(req.Plan.Get(ctx, &planData)...)
+		resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
+
+		if resp.Diagnostics.HasError() {
+			return
+		}
+
+		if stateData == nil && !globalAllowExistingOnCreate && !planData.ParentDn.IsUnknown() && !planData.Name.IsUnknown() {
+			var createCheckData *PimRouteMapPolResourceModel
+			resp.Diagnostics.Append(req.Plan.Get(ctx, &createCheckData)...)
+			setPimRouteMapPolId(ctx, createCheckData)
+			CheckDn(ctx, &resp.Diagnostics, r.client, "pimRouteMapPol", createCheckData.Id.ValueString())
+			if resp.Diagnostics.HasError() {
+				return
+			}
+		}
+
+	}
+}
+
 func (r *PimRouteMapPolResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	tflog.Debug(ctx, "Start metadata of resource: aci_pim_route_map_policy")
 	resp.TypeName = req.ProviderTypeName + "_pim_route_map_policy"
@@ -232,6 +255,13 @@ func (r *PimRouteMapPolResource) Create(ctx context.Context, req resource.Create
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
 	setPimRouteMapPolId(ctx, stateData)
 	getAndSetPimRouteMapPolAttributes(ctx, &resp.Diagnostics, r.client, stateData)
+	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
+		resp.Diagnostics.AddError(
+			"Object Already Exists",
+			fmt.Sprintf("The pimRouteMapPol object with DN '%s' already exists.", stateData.Id.ValueString()),
+		)
+		return
+	}
 
 	var data *PimRouteMapPolResourceModel
 
@@ -252,7 +282,7 @@ func (r *PimRouteMapPolResource) Create(ctx context.Context, req resource.Create
 	var tagTagPlan, tagTagState []TagTagPimRouteMapPolResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getPimRouteMapPolCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := getPimRouteMapPolCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -317,7 +347,7 @@ func (r *PimRouteMapPolResource) Update(ctx context.Context, req resource.Update
 	var tagTagPlan, tagTagState []TagTagPimRouteMapPolResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getPimRouteMapPolCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := getPimRouteMapPolCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -564,9 +594,13 @@ func getPimRouteMapPolTagTagChildPayloads(ctx context.Context, diags *diag.Diagn
 	return childPayloads
 }
 
-func getPimRouteMapPolCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *PimRouteMapPolResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationPimRouteMapPolResourceModel, tagTagPlan, tagTagState []TagTagPimRouteMapPolResourceModel) *container.Container {
+func getPimRouteMapPolCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *PimRouteMapPolResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationPimRouteMapPolResourceModel, tagTagPlan, tagTagState []TagTagPimRouteMapPolResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
+
+	if createType && !globalAllowExistingOnCreate {
+		payloadMap["attributes"].(map[string]string)["status"] = "created"
+	}
 	childPayloads := []map[string]interface{}{}
 
 	TagAnnotationchildPayloads := getPimRouteMapPolTagAnnotationChildPayloads(ctx, diags, data, tagAnnotationPlan, tagAnnotationState)

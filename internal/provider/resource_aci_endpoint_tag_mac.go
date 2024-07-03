@@ -70,6 +70,29 @@ type FvEpMacTagIdentifier struct {
 	Mac    types.String
 }
 
+func (r *FvEpMacTagResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
+	if !req.Plan.Raw.IsNull() {
+		var planData, stateData *FvEpMacTagResourceModel
+		resp.Diagnostics.Append(req.Plan.Get(ctx, &planData)...)
+		resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
+
+		if resp.Diagnostics.HasError() {
+			return
+		}
+
+		if stateData == nil && !globalAllowExistingOnCreate && !planData.ParentDn.IsUnknown() && !planData.BdName.IsUnknown() && !planData.Mac.IsUnknown() {
+			var createCheckData *FvEpMacTagResourceModel
+			resp.Diagnostics.Append(req.Plan.Get(ctx, &createCheckData)...)
+			setFvEpMacTagId(ctx, createCheckData)
+			CheckDn(ctx, &resp.Diagnostics, r.client, "fvEpMacTag", createCheckData.Id.ValueString())
+			if resp.Diagnostics.HasError() {
+				return
+			}
+		}
+
+	}
+}
+
 func (r *FvEpMacTagResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	tflog.Debug(ctx, "Start metadata of resource: aci_endpoint_tag_mac")
 	resp.TypeName = req.ProviderTypeName + "_endpoint_tag_mac"
@@ -233,6 +256,13 @@ func (r *FvEpMacTagResource) Create(ctx context.Context, req resource.CreateRequ
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
 	setFvEpMacTagId(ctx, stateData)
 	getAndSetFvEpMacTagAttributes(ctx, &resp.Diagnostics, r.client, stateData)
+	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
+		resp.Diagnostics.AddError(
+			"Object Already Exists",
+			fmt.Sprintf("The fvEpMacTag object with DN '%s' already exists.", stateData.Id.ValueString()),
+		)
+		return
+	}
 
 	var data *FvEpMacTagResourceModel
 
@@ -253,7 +283,7 @@ func (r *FvEpMacTagResource) Create(ctx context.Context, req resource.CreateRequ
 	var tagTagPlan, tagTagState []TagTagFvEpMacTagResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvEpMacTagCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := getFvEpMacTagCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -318,7 +348,7 @@ func (r *FvEpMacTagResource) Update(ctx context.Context, req resource.UpdateRequ
 	var tagTagPlan, tagTagState []TagTagFvEpMacTagResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvEpMacTagCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := getFvEpMacTagCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -567,9 +597,13 @@ func getFvEpMacTagTagTagChildPayloads(ctx context.Context, diags *diag.Diagnosti
 	return childPayloads
 }
 
-func getFvEpMacTagCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *FvEpMacTagResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvEpMacTagResourceModel, tagTagPlan, tagTagState []TagTagFvEpMacTagResourceModel) *container.Container {
+func getFvEpMacTagCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *FvEpMacTagResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvEpMacTagResourceModel, tagTagPlan, tagTagState []TagTagFvEpMacTagResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
+
+	if createType && !globalAllowExistingOnCreate {
+		payloadMap["attributes"].(map[string]string)["status"] = "created"
+	}
 	childPayloads := []map[string]interface{}{}
 
 	TagAnnotationchildPayloads := getFvEpMacTagTagAnnotationChildPayloads(ctx, diags, data, tagAnnotationPlan, tagAnnotationState)

@@ -5,12 +5,79 @@
 package provider
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
 func TestAccResourceMplsNodeSidPWithL3extLoopBackIfP(t *testing.T) {
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:             testConfigMplsNodeSidPMinDependencyWithL3extLoopBackIfPAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "segment_id", "1"),
+					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test_2", "segment_id", "1"),
+					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "loopback_address", "0.0.0.0"),
+					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test_2", "loopback_address", "0.0.0.0"),
+					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "name", ""),
+					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test_2", "name", ""),
+					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test_2", "name_alias", ""),
+				),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:      testConfigMplsNodeSidPMinDependencyWithL3extLoopBackIfPAllowExisting,
+				ExpectError: regexp.MustCompile("Object Already Exists"),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:             testConfigMplsNodeSidPMinDependencyWithL3extLoopBackIfPAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "segment_id", "1"),
+					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test_2", "segment_id", "1"),
+					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "loopback_address", "0.0.0.0"),
+					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test_2", "loopback_address", "0.0.0.0"),
+					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "name", ""),
+					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test_2", "name", ""),
+					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test_2", "name_alias", ""),
+				),
+			},
+		},
+	})
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -162,6 +229,18 @@ func TestAccResourceMplsNodeSidPWithL3extLoopBackIfP(t *testing.T) {
 		},
 	})
 }
+
+const testConfigMplsNodeSidPMinDependencyWithL3extLoopBackIfPAllowExisting = testConfigL3extLoopBackIfPMinDependencyWithL3extRsNodeL3OutAtt + `
+resource "aci_l3out_node_sid_profile" "test" {
+  parent_dn = aci_l3out_loopback_interface_profile.test.id
+  segment_id = "1"
+}
+resource "aci_l3out_node_sid_profile" "test_2" {
+  parent_dn = aci_l3out_loopback_interface_profile.test.id
+  segment_id = "1"
+  depends_on = [aci_l3out_node_sid_profile.test]
+}
+`
 
 const testConfigMplsNodeSidPMinDependencyWithL3extLoopBackIfP = testConfigL3extLoopBackIfPMinDependencyWithL3extRsNodeL3OutAtt + `
 resource "aci_l3out_node_sid_profile" "test" {

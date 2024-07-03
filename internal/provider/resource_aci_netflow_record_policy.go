@@ -74,6 +74,29 @@ type NetflowRecordPolIdentifier struct {
 	Name types.String
 }
 
+func (r *NetflowRecordPolResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
+	if !req.Plan.Raw.IsNull() {
+		var planData, stateData *NetflowRecordPolResourceModel
+		resp.Diagnostics.Append(req.Plan.Get(ctx, &planData)...)
+		resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
+
+		if resp.Diagnostics.HasError() {
+			return
+		}
+
+		if stateData == nil && !globalAllowExistingOnCreate && !planData.ParentDn.IsUnknown() && !planData.Name.IsUnknown() {
+			var createCheckData *NetflowRecordPolResourceModel
+			resp.Diagnostics.Append(req.Plan.Get(ctx, &createCheckData)...)
+			setNetflowRecordPolId(ctx, createCheckData)
+			CheckDn(ctx, &resp.Diagnostics, r.client, "netflowRecordPol", createCheckData.Id.ValueString())
+			if resp.Diagnostics.HasError() {
+				return
+			}
+		}
+
+	}
+}
+
 func (r *NetflowRecordPolResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	tflog.Debug(ctx, "Start metadata of resource: aci_netflow_record_policy")
 	resp.TypeName = req.ProviderTypeName + "_netflow_record_policy"
@@ -269,6 +292,13 @@ func (r *NetflowRecordPolResource) Create(ctx context.Context, req resource.Crea
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
 	setNetflowRecordPolId(ctx, stateData)
 	getAndSetNetflowRecordPolAttributes(ctx, &resp.Diagnostics, r.client, stateData)
+	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
+		resp.Diagnostics.AddError(
+			"Object Already Exists",
+			fmt.Sprintf("The netflowRecordPol object with DN '%s' already exists.", stateData.Id.ValueString()),
+		)
+		return
+	}
 
 	var data *NetflowRecordPolResourceModel
 
@@ -289,7 +319,7 @@ func (r *NetflowRecordPolResource) Create(ctx context.Context, req resource.Crea
 	var tagTagPlan, tagTagState []TagTagNetflowRecordPolResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getNetflowRecordPolCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := getNetflowRecordPolCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -354,7 +384,7 @@ func (r *NetflowRecordPolResource) Update(ctx context.Context, req resource.Upda
 	var tagTagPlan, tagTagState []TagTagNetflowRecordPolResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getNetflowRecordPolCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := getNetflowRecordPolCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -617,9 +647,13 @@ func getNetflowRecordPolTagTagChildPayloads(ctx context.Context, diags *diag.Dia
 	return childPayloads
 }
 
-func getNetflowRecordPolCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *NetflowRecordPolResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationNetflowRecordPolResourceModel, tagTagPlan, tagTagState []TagTagNetflowRecordPolResourceModel) *container.Container {
+func getNetflowRecordPolCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *NetflowRecordPolResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationNetflowRecordPolResourceModel, tagTagPlan, tagTagState []TagTagNetflowRecordPolResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
+
+	if createType && !globalAllowExistingOnCreate {
+		payloadMap["attributes"].(map[string]string)["status"] = "created"
+	}
 	childPayloads := []map[string]interface{}{}
 
 	TagAnnotationchildPayloads := getNetflowRecordPolTagAnnotationChildPayloads(ctx, diags, data, tagAnnotationPlan, tagAnnotationState)

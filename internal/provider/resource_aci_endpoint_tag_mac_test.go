@@ -5,12 +5,79 @@
 package provider
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
 func TestAccResourceFvEpMacTagWithFvTenant(t *testing.T) {
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:             testConfigFvEpMacTagMinDependencyWithFvTenantAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "bd_name", "test_bd_name"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test_2", "bd_name", "test_bd_name"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "mac", "00:00:00:00:00:01"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test_2", "mac", "00:00:00:00:00:01"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "id_attribute", "0"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test_2", "id_attribute", "0"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "name", ""),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test_2", "name", ""),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test_2", "name_alias", ""),
+				),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:      testConfigFvEpMacTagMinDependencyWithFvTenantAllowExisting,
+				ExpectError: regexp.MustCompile("Object Already Exists"),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:             testConfigFvEpMacTagMinDependencyWithFvTenantAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "bd_name", "test_bd_name"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test_2", "bd_name", "test_bd_name"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "mac", "00:00:00:00:00:01"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test_2", "mac", "00:00:00:00:00:01"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "id_attribute", "0"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test_2", "id_attribute", "0"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "name", ""),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test_2", "name", ""),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test_2", "name_alias", ""),
+				),
+			},
+		},
+	})
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -163,6 +230,20 @@ func TestAccResourceFvEpMacTagWithFvTenant(t *testing.T) {
 		},
 	})
 }
+
+const testConfigFvEpMacTagMinDependencyWithFvTenantAllowExisting = testConfigFvTenantMin + `
+resource "aci_endpoint_tag_mac" "test" {
+  parent_dn = aci_tenant.test.id
+  bd_name = "test_bd_name"
+  mac = "00:00:00:00:00:01"
+}
+resource "aci_endpoint_tag_mac" "test_2" {
+  parent_dn = aci_tenant.test.id
+  bd_name = "test_bd_name"
+  mac = "00:00:00:00:00:01"
+  depends_on = [aci_endpoint_tag_mac.test]
+}
+`
 
 const testConfigFvEpMacTagMinDependencyWithFvTenant = testConfigFvTenantMin + `
 resource "aci_endpoint_tag_mac" "test" {

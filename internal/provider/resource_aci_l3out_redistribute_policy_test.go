@@ -5,12 +5,67 @@
 package provider
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
 func TestAccResourceL3extRsRedistributePolWithL3extOut(t *testing.T) {
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:             testConfigL3extRsRedistributePolMinDependencyWithL3extOutAllowExisting,
+				ExpectNonEmptyPlan: true,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "route_control_profile_name", "test_tn_rtctrl_profile_name"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test_2", "route_control_profile_name", "test_tn_rtctrl_profile_name"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "source", "direct"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test_2", "source", "direct"),
+				),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:      testConfigL3extRsRedistributePolMinDependencyWithL3extOutAllowExisting,
+				ExpectError: regexp.MustCompile("Object Already Exists"),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:             testConfigL3extRsRedistributePolMinDependencyWithL3extOutAllowExisting,
+				ExpectNonEmptyPlan: true,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "route_control_profile_name", "test_tn_rtctrl_profile_name"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test_2", "route_control_profile_name", "test_tn_rtctrl_profile_name"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "source", "direct"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test_2", "source", "direct"),
+				),
+			},
+		},
+	})
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -145,6 +200,20 @@ func TestAccResourceL3extRsRedistributePolWithL3extOut(t *testing.T) {
 		},
 	})
 }
+
+const testConfigL3extRsRedistributePolMinDependencyWithL3extOutAllowExisting = testConfigL3extOutMinDependencyWithFvTenant + `
+resource "aci_l3out_redistribute_policy" "test" {
+  parent_dn = aci_l3_outside.test.id
+  route_control_profile_name = "test_tn_rtctrl_profile_name"
+  source = "direct"
+}
+resource "aci_l3out_redistribute_policy" "test_2" {
+  parent_dn = aci_l3_outside.test.id
+  route_control_profile_name = "test_tn_rtctrl_profile_name"
+  source = "direct"
+  depends_on = [aci_l3out_redistribute_policy.test]
+}
+`
 
 const testConfigL3extRsRedistributePolMinDependencyWithL3extOut = testConfigL3extOutMinDependencyWithFvTenant + `
 resource "aci_l3out_redistribute_policy" "test" {

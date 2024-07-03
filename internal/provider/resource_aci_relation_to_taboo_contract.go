@@ -65,6 +65,29 @@ type FvRsProtByIdentifier struct {
 	TnVzTabooName types.String
 }
 
+func (r *FvRsProtByResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
+	if !req.Plan.Raw.IsNull() {
+		var planData, stateData *FvRsProtByResourceModel
+		resp.Diagnostics.Append(req.Plan.Get(ctx, &planData)...)
+		resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
+
+		if resp.Diagnostics.HasError() {
+			return
+		}
+
+		if stateData == nil && !globalAllowExistingOnCreate && !planData.ParentDn.IsUnknown() && !planData.TnVzTabooName.IsUnknown() {
+			var createCheckData *FvRsProtByResourceModel
+			resp.Diagnostics.Append(req.Plan.Get(ctx, &createCheckData)...)
+			setFvRsProtById(ctx, createCheckData)
+			CheckDn(ctx, &resp.Diagnostics, r.client, "fvRsProtBy", createCheckData.Id.ValueString())
+			if resp.Diagnostics.HasError() {
+				return
+			}
+		}
+
+	}
+}
+
 func (r *FvRsProtByResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	tflog.Debug(ctx, "Start metadata of resource: aci_relation_to_taboo_contract")
 	resp.TypeName = req.ProviderTypeName + "_relation_to_taboo_contract"
@@ -196,6 +219,13 @@ func (r *FvRsProtByResource) Create(ctx context.Context, req resource.CreateRequ
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
 	setFvRsProtById(ctx, stateData)
 	getAndSetFvRsProtByAttributes(ctx, &resp.Diagnostics, r.client, stateData)
+	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
+		resp.Diagnostics.AddError(
+			"Object Already Exists",
+			fmt.Sprintf("The fvRsProtBy object with DN '%s' already exists.", stateData.Id.ValueString()),
+		)
+		return
+	}
 
 	var data *FvRsProtByResourceModel
 
@@ -216,7 +246,7 @@ func (r *FvRsProtByResource) Create(ctx context.Context, req resource.CreateRequ
 	var tagTagPlan, tagTagState []TagTagFvRsProtByResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvRsProtByCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := getFvRsProtByCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -281,7 +311,7 @@ func (r *FvRsProtByResource) Update(ctx context.Context, req resource.UpdateRequ
 	var tagTagPlan, tagTagState []TagTagFvRsProtByResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvRsProtByCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := getFvRsProtByCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -516,9 +546,13 @@ func getFvRsProtByTagTagChildPayloads(ctx context.Context, diags *diag.Diagnosti
 	return childPayloads
 }
 
-func getFvRsProtByCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *FvRsProtByResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvRsProtByResourceModel, tagTagPlan, tagTagState []TagTagFvRsProtByResourceModel) *container.Container {
+func getFvRsProtByCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *FvRsProtByResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvRsProtByResourceModel, tagTagPlan, tagTagState []TagTagFvRsProtByResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
+
+	if createType && !globalAllowExistingOnCreate {
+		payloadMap["attributes"].(map[string]string)["status"] = "created"
+	}
 	childPayloads := []map[string]interface{}{}
 
 	TagAnnotationchildPayloads := getFvRsProtByTagAnnotationChildPayloads(ctx, diags, data, tagAnnotationPlan, tagAnnotationState)

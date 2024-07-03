@@ -85,6 +85,29 @@ type NetflowMonitorPolIdentifier struct {
 	Name types.String
 }
 
+func (r *NetflowMonitorPolResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
+	if !req.Plan.Raw.IsNull() {
+		var planData, stateData *NetflowMonitorPolResourceModel
+		resp.Diagnostics.Append(req.Plan.Get(ctx, &planData)...)
+		resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
+
+		if resp.Diagnostics.HasError() {
+			return
+		}
+
+		if stateData == nil && !globalAllowExistingOnCreate && !planData.ParentDn.IsUnknown() && !planData.Name.IsUnknown() {
+			var createCheckData *NetflowMonitorPolResourceModel
+			resp.Diagnostics.Append(req.Plan.Get(ctx, &createCheckData)...)
+			setNetflowMonitorPolId(ctx, createCheckData)
+			CheckDn(ctx, &resp.Diagnostics, r.client, "netflowMonitorPol", createCheckData.Id.ValueString())
+			if resp.Diagnostics.HasError() {
+				return
+			}
+		}
+
+	}
+}
+
 func (r *NetflowMonitorPolResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	tflog.Debug(ctx, "Start metadata of resource: aci_netflow_monitor_policy")
 	resp.TypeName = req.ProviderTypeName + "_netflow_monitor_policy"
@@ -308,6 +331,13 @@ func (r *NetflowMonitorPolResource) Create(ctx context.Context, req resource.Cre
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
 	setNetflowMonitorPolId(ctx, stateData)
 	getAndSetNetflowMonitorPolAttributes(ctx, &resp.Diagnostics, r.client, stateData)
+	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
+		resp.Diagnostics.AddError(
+			"Object Already Exists",
+			fmt.Sprintf("The netflowMonitorPol object with DN '%s' already exists.", stateData.Id.ValueString()),
+		)
+		return
+	}
 
 	var data *NetflowMonitorPolResourceModel
 
@@ -334,7 +364,7 @@ func (r *NetflowMonitorPolResource) Create(ctx context.Context, req resource.Cre
 	var tagTagPlan, tagTagState []TagTagNetflowMonitorPolResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getNetflowMonitorPolCreateJsonPayload(ctx, &resp.Diagnostics, data, netflowRsMonitorToExporterPlan, netflowRsMonitorToExporterState, netflowRsMonitorToRecordPlan, netflowRsMonitorToRecordState, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := getNetflowMonitorPolCreateJsonPayload(ctx, &resp.Diagnostics, true, data, netflowRsMonitorToExporterPlan, netflowRsMonitorToExporterState, netflowRsMonitorToRecordPlan, netflowRsMonitorToRecordState, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -405,7 +435,7 @@ func (r *NetflowMonitorPolResource) Update(ctx context.Context, req resource.Upd
 	var tagTagPlan, tagTagState []TagTagNetflowMonitorPolResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getNetflowMonitorPolCreateJsonPayload(ctx, &resp.Diagnostics, data, netflowRsMonitorToExporterPlan, netflowRsMonitorToExporterState, netflowRsMonitorToRecordPlan, netflowRsMonitorToRecordState, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := getNetflowMonitorPolCreateJsonPayload(ctx, &resp.Diagnostics, false, data, netflowRsMonitorToExporterPlan, netflowRsMonitorToExporterState, netflowRsMonitorToRecordPlan, netflowRsMonitorToRecordState, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -752,9 +782,13 @@ func getNetflowMonitorPolTagTagChildPayloads(ctx context.Context, diags *diag.Di
 	return childPayloads
 }
 
-func getNetflowMonitorPolCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *NetflowMonitorPolResourceModel, netflowRsMonitorToExporterPlan, netflowRsMonitorToExporterState []NetflowRsMonitorToExporterNetflowMonitorPolResourceModel, netflowRsMonitorToRecordPlan, netflowRsMonitorToRecordState []NetflowRsMonitorToRecordNetflowMonitorPolResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationNetflowMonitorPolResourceModel, tagTagPlan, tagTagState []TagTagNetflowMonitorPolResourceModel) *container.Container {
+func getNetflowMonitorPolCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *NetflowMonitorPolResourceModel, netflowRsMonitorToExporterPlan, netflowRsMonitorToExporterState []NetflowRsMonitorToExporterNetflowMonitorPolResourceModel, netflowRsMonitorToRecordPlan, netflowRsMonitorToRecordState []NetflowRsMonitorToRecordNetflowMonitorPolResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationNetflowMonitorPolResourceModel, tagTagPlan, tagTagState []TagTagNetflowMonitorPolResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
+
+	if createType && !globalAllowExistingOnCreate {
+		payloadMap["attributes"].(map[string]string)["status"] = "created"
+	}
 	childPayloads := []map[string]interface{}{}
 
 	NetflowRsMonitorToExporterchildPayloads := getNetflowMonitorPolNetflowRsMonitorToExporterChildPayloads(ctx, diags, data, netflowRsMonitorToExporterPlan, netflowRsMonitorToExporterState)

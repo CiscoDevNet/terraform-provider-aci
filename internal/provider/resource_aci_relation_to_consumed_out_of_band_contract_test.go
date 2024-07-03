@@ -5,12 +5,67 @@
 package provider
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
 func TestAccResourceMgmtRsOoBConsWithMgmtInstP(t *testing.T) {
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:             testConfigMgmtRsOoBConsMinDependencyWithMgmtInstPAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "out_of_band_contract_name", "test_tn_vz_oob_br_cp_name"),
+					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test_2", "out_of_band_contract_name", "test_tn_vz_oob_br_cp_name"),
+					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "priority", "unspecified"),
+					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test_2", "priority", "unspecified"),
+				),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:      testConfigMgmtRsOoBConsMinDependencyWithMgmtInstPAllowExisting,
+				ExpectError: regexp.MustCompile("Object Already Exists"),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:             testConfigMgmtRsOoBConsMinDependencyWithMgmtInstPAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "out_of_band_contract_name", "test_tn_vz_oob_br_cp_name"),
+					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test_2", "out_of_band_contract_name", "test_tn_vz_oob_br_cp_name"),
+					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "priority", "unspecified"),
+					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test_2", "priority", "unspecified"),
+				),
+			},
+		},
+	})
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -144,6 +199,18 @@ func TestAccResourceMgmtRsOoBConsWithMgmtInstP(t *testing.T) {
 		},
 	})
 }
+
+const testConfigMgmtRsOoBConsMinDependencyWithMgmtInstPAllowExisting = testConfigMgmtInstPMin + `
+resource "aci_relation_to_consumed_out_of_band_contract" "test" {
+  parent_dn = aci_external_management_network_instance_profile.test.id
+  out_of_band_contract_name = "test_tn_vz_oob_br_cp_name"
+}
+resource "aci_relation_to_consumed_out_of_band_contract" "test_2" {
+  parent_dn = aci_external_management_network_instance_profile.test.id
+  out_of_band_contract_name = "test_tn_vz_oob_br_cp_name"
+  depends_on = [aci_relation_to_consumed_out_of_band_contract.test]
+}
+`
 
 const testConfigMgmtRsOoBConsMinDependencyWithMgmtInstP = testConfigMgmtInstPMin + `
 resource "aci_relation_to_consumed_out_of_band_contract" "test" {

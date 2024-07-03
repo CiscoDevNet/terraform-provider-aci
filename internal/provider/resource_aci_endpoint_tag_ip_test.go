@@ -5,12 +5,79 @@
 package provider
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
 func TestAccResourceFvEpIpTagWithFvTenant(t *testing.T) {
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:             testConfigFvEpIpTagMinDependencyWithFvTenantAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "ip", "10.0.0.2"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test_2", "ip", "10.0.0.2"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "vrf_name", "test_ctx_name"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test_2", "vrf_name", "test_ctx_name"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "id_attribute", "0"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test_2", "id_attribute", "0"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "name", ""),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test_2", "name", ""),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test_2", "name_alias", ""),
+				),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:      testConfigFvEpIpTagMinDependencyWithFvTenantAllowExisting,
+				ExpectError: regexp.MustCompile("Object Already Exists"),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:             testConfigFvEpIpTagMinDependencyWithFvTenantAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "ip", "10.0.0.2"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test_2", "ip", "10.0.0.2"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "vrf_name", "test_ctx_name"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test_2", "vrf_name", "test_ctx_name"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "id_attribute", "0"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test_2", "id_attribute", "0"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "name", ""),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test_2", "name", ""),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test_2", "name_alias", ""),
+				),
+			},
+		},
+	})
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -163,6 +230,20 @@ func TestAccResourceFvEpIpTagWithFvTenant(t *testing.T) {
 		},
 	})
 }
+
+const testConfigFvEpIpTagMinDependencyWithFvTenantAllowExisting = testConfigFvTenantMin + `
+resource "aci_endpoint_tag_ip" "test" {
+  parent_dn = aci_tenant.test.id
+  ip = "10.0.0.2"
+  vrf_name = "test_ctx_name"
+}
+resource "aci_endpoint_tag_ip" "test_2" {
+  parent_dn = aci_tenant.test.id
+  ip = "10.0.0.2"
+  vrf_name = "test_ctx_name"
+  depends_on = [aci_endpoint_tag_ip.test]
+}
+`
 
 const testConfigFvEpIpTagMinDependencyWithFvTenant = testConfigFvTenantMin + `
 resource "aci_endpoint_tag_ip" "test" {

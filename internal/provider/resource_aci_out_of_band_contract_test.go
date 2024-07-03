@@ -5,12 +5,93 @@
 package provider
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
 func TestAccResourceVzOOBBrCP(t *testing.T) {
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config: testConfigVzOOBBrCPMinAllowExisting,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test_2", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "intent", "install"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test_2", "intent", "install"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test_2", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test_2", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "priority", "unspecified"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test_2", "priority", "unspecified"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "scope", "context"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test_2", "scope", "context"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "target_dscp", "unspecified"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test_2", "target_dscp", "unspecified"),
+				),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:      testConfigVzOOBBrCPMinAllowExisting,
+				ExpectError: regexp.MustCompile("Object Already Exists"),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config: testConfigVzOOBBrCPMinAllowExisting,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test_2", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "intent", "install"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test_2", "intent", "install"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test_2", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test_2", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "priority", "unspecified"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test_2", "priority", "unspecified"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "scope", "context"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test_2", "scope", "context"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "target_dscp", "unspecified"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test_2", "target_dscp", "unspecified"),
+				),
+			},
+		},
+	})
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -189,6 +270,16 @@ func TestAccResourceVzOOBBrCP(t *testing.T) {
 		},
 	})
 }
+
+const testConfigVzOOBBrCPMinAllowExisting = `
+resource "aci_out_of_band_contract" "test" {
+  name = "test_name"
+}
+resource "aci_out_of_band_contract" "test_2" {
+  name = "test_name"
+  depends_on = [aci_out_of_band_contract.test]
+}
+`
 
 const testConfigVzOOBBrCPMin = `
 resource "aci_out_of_band_contract" "test" {

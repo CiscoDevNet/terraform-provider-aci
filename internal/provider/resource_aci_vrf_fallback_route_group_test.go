@@ -5,12 +5,71 @@
 package provider
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
 func TestAccResourceFvFBRGroupWithFvCtx(t *testing.T) {
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:             testConfigFvFBRGroupMinDependencyWithFvCtxAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "name", "fallback_route_group"),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test_2", "name", "fallback_route_group"),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test_2", "name_alias", ""),
+				),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:      testConfigFvFBRGroupMinDependencyWithFvCtxAllowExisting,
+				ExpectError: regexp.MustCompile("Object Already Exists"),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:             testConfigFvFBRGroupMinDependencyWithFvCtxAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "name", "fallback_route_group"),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test_2", "name", "fallback_route_group"),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test_2", "name_alias", ""),
+				),
+			},
+		},
+	})
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -206,6 +265,18 @@ func TestAccResourceFvFBRGroupWithFvCtx(t *testing.T) {
 		},
 	})
 }
+
+const testConfigFvFBRGroupMinDependencyWithFvCtxAllowExisting = testConfigFvCtxMinDependencyWithFvTenant + `
+resource "aci_vrf_fallback_route_group" "test" {
+  parent_dn = aci_vrf.test.id
+  name = "fallback_route_group"
+}
+resource "aci_vrf_fallback_route_group" "test_2" {
+  parent_dn = aci_vrf.test.id
+  name = "fallback_route_group"
+  depends_on = [aci_vrf_fallback_route_group.test]
+}
+`
 
 const testConfigFvFBRGroupMinDependencyWithFvCtx = testConfigFvCtxMinDependencyWithFvTenant + `
 resource "aci_vrf_fallback_route_group" "test" {
