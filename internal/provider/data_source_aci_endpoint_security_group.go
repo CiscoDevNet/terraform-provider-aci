@@ -168,7 +168,7 @@ func (d *FvESgDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 					Attributes: map[string]schema.Attribute{
 						"annotation": schema.StringAttribute{
 							Computed:            true,
-							MarkdownDescription: `The annotation of the Relation To Intra Epg Contract object.`,
+							MarkdownDescription: `The annotation of the Relation To Intra EPG Contract object.`,
 						},
 						"contract_name": schema.StringAttribute{
 							Computed:            true,

@@ -13,11 +13,6 @@ default:
   precedence: "0"
   scope: "scope-bd"
 
-datasource_non_existing:
-
-datasource_required:
-
-resource_required:
 
 all:
   annotation: "annotation"

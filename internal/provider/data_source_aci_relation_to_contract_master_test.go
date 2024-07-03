@@ -62,11 +62,10 @@ data "aci_relation_to_contract_master" "test" {
 }
 `
 
-const testConfigFvRsSecInheritedNotExistingFvAEPg = testConfigFvRsSecInheritedMinDependencyWithFvAEPg + `
+const testConfigFvRsSecInheritedNotExistingFvAEPg = testConfigFvAEPgMinDependencyWithFvAp + `
 data "aci_relation_to_contract_master" "test_non_existing" {
   parent_dn = aci_application_epg.test.id
   target_dn = "uni/tn-test_tenant/ap-test_ap/epg-epg_2_not_existing"
-  depends_on = [aci_relation_to_contract_master.test]
 }
 `
 const testConfigFvRsSecInheritedDataSourceDependencyWithFvESg = testConfigFvRsSecInheritedMinDependencyWithFvESg + `
@@ -77,10 +76,9 @@ data "aci_relation_to_contract_master" "test" {
 }
 `
 
-const testConfigFvRsSecInheritedNotExistingFvESg = testConfigFvRsSecInheritedMinDependencyWithFvESg + `
+const testConfigFvRsSecInheritedNotExistingFvESg = testConfigFvESgMinDependencyWithFvAp + `
 data "aci_relation_to_contract_master" "test_non_existing" {
   parent_dn = aci_endpoint_security_group.test.id
   target_dn = "uni/tn-test_tenant/ap-test_ap/esg-esg_0_not_existing"
-  depends_on = [aci_relation_to_contract_master.test]
 }
 `
