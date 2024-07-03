@@ -122,6 +122,7 @@ All examples for the VRF Fallback Route Group resource can be found in the [exam
   * `name_alias` (nameAlias) - (string) The name alias of the VRF Fallback Route Group Member object.
 
 * `vrf_fallback_routes` - (list) A list of VRF Fallback Routes (ACI object [fvFBRoute](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvFBRoute/overview)). VRF Fallback Routes can also be configured using a separate [aci_vrf_fallback_route](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vrf_fallback_route) resource.
+    - Max Items: 1
   
   #### Required ####
   
