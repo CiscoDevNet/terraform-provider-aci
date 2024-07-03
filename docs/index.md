@@ -145,4 +145,4 @@ NOTE: either 'password' OR 'private_key' and 'cert_name' must be provided for th
 
   ~> The existence of an object in APIC can only be verified when the distinguished name (DN) can be constructed during plan. The verification <b>cannot</b> take place when a `parent_dn` attribute or any of the `naming` attributes ( attributes that are required to construct the DN ) of a resource are unknown ( known after apply ) during plan. An example of a unknown attribute input would be to use a DN reference ( `aci_tenant.example.id` ) to a resource that is being configured in the same plan. The DN of the object <b>cannot</b> be determined prior to apply and thus the existence of the object in APIC <b>cannot</b> be verified during plan. In these cases the verification will be performed during the apply operation.
 
-  -> Disabling this flag will suppress an additional API call during the plan phase for newly defined resources in the configuration.
+  -> Disabling this flag will add an API call during the plan phase for newly defined resources in the configuration.
