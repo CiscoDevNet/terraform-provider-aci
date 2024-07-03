@@ -86,8 +86,8 @@ func TestAccDataSource{{.resourceClassName}}(t *testing.T) {
 {{- end}}
 
 {{- if .parents}}
-{{- range .parents}}{{$target_classes := .target_classes}}
-{{- $parentClassName := capitalize .class_name }}
+	{{- range .parents}}{{$target_classes := .target_classes}}
+		{{- $parentClassName := capitalize .class_name }}
 const testConfig{{$.resourceClassName}}DataSourceDependencyWith{{capitalize .class_name}}  = testConfig{{$.resourceClassName}}MinDependencyWith{{capitalize .class_name}}  + `
 data "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}" {
   parent_dn = {{.parent_dn}}

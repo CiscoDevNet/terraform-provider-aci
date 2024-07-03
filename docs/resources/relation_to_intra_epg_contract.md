@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_relation_to_intra_epg_contract"
 sidebar_current: "docs-aci-resource-aci_relation_to_intra_epg_contract"
 description: |-
-  Manages ACI Relation To Intra Epg Contract
+  Manages ACI Relation To Intra EPG Contract
 ---
 
 # aci_relation_to_intra_epg_contract #
 
-Manages ACI Relation To Intra Epg Contract
+Manages ACI Relation To Intra EPG Contract
 
 
 
@@ -37,7 +37,7 @@ Manages ACI Relation To Intra Epg Contract
 
 ## Example Usage ##
 
-The configuration snippet below creates a Relation To Intra Epg Contract with only required attributes.
+The configuration snippet below creates a Relation To Intra EPG Contract with only required attributes.
 
 ```hcl
 
@@ -52,7 +52,7 @@ resource "aci_relation_to_intra_epg_contract" "example_endpoint_security_group" 
 }
 
 ```
-The configuration snippet below shows all possible attributes of the Relation To Intra Epg Contract.
+The configuration snippet below shows all possible attributes of the Relation To Intra EPG Contract.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
@@ -96,7 +96,7 @@ resource "aci_relation_to_intra_epg_contract" "full_example_endpoint_security_gr
 
 ```
 
-All examples for the Relation To Intra Epg Contract resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/resources/aci_relation_to_intra_epg_contract) folder.
+All examples for the Relation To Intra EPG Contract resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/resources/aci_relation_to_intra_epg_contract) folder.
 
 ## Schema ##
 
@@ -129,11 +129,11 @@ All examples for the Relation To Intra Epg Contract resource can be found in the
 
 ### Read-Only ###
 
-* `id` - (string) The distinguished name (DN) of the Relation To Intra Epg Contract object.
+* `id` - (string) The distinguished name (DN) of the Relation To Intra EPG Contract object.
 
 ### Optional ###
   
-* `annotation` (annotation) - (string) The annotation of the Relation To Intra Epg Contract object.
+* `annotation` (annotation) - (string) The annotation of the Relation To Intra EPG Contract object.
   - Default: `orchestrator:terraform`
 
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
@@ -152,13 +152,13 @@ All examples for the Relation To Intra Epg Contract resource can be found in the
 
 ## Importing
 
-An existing Relation To Intra Epg Contract can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
+An existing Relation To Intra EPG Contract can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
 terraform import aci_relation_to_intra_epg_contract.example_application_epg uni/tn-{name}/ap-{name}/epg-{name}/rsintraEpg-{tnVzBrCPName}
 ```
 
-Starting in Terraform version 1.5, an existing Relation To Intra Epg Contract can be imported
+Starting in Terraform version 1.5, an existing Relation To Intra EPG Contract can be imported
 using [import blocks](https://developer.hashicorp.com/terraform/language/import) via the following configuration:
 
 ```

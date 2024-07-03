@@ -14,8 +14,6 @@ import (
 {{- if .parents}}
 	{{- range .parents}}{{$target_classes := .target_classes}}
 		{{- $parentClassName := capitalize .class_name }}
-	{{- range .parents}}
-{{- $parentClassName := capitalize .class_name }}
 func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
@@ -252,9 +250,9 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 				{{- range $child_index, $child := $value}}
 					{{- range $child_key, $child_value := $child}}
 						{{- if eq $child_key "target_dn"}}
-	  				resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$child_index}}.{{$child_key}}", "{{getTestTargetDn $.child_targets $key $child_value false nil $child_index}}"),		
+	  				resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}.{{$child_index}}.{{$child_key}}", "{{getTestTargetDn $.child_targets $key $child_value false nil $child_index}}"),		
 						{{- else if ne $child_key "deletable_child"}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$child_index}}.{{$child_key}}", "{{$child_value}}"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}.{{$child_index}}.{{$child_key}}", "{{$child_value}}"),
 						{{- end}}
 					{{- end}}
 				{{- end}}
@@ -291,9 +289,9 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 			{{- range $child_index, $child := $value}}
 				{{- range $child_key, $child_value := $child}}
 					{{- if eq $child_key "target_dn"}}
-	  				resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$child_index}}.{{$child_key}}", "{{getTestTargetDn $.child_targets $key $child_value false nil $child_index}}"),		
+	  				resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}.{{$child_index}}.{{$child_key}}", "{{getTestTargetDn $.child_targets $key $child_value false nil $child_index}}"),		
 					{{- else if ne $child_key "deletable_child"}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$child_index}}.{{$child_key}}", "{{$child_value}}"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}.{{$child_index}}.{{$child_key}}", "{{$child_value}}"),
 					{{- end}}
 				{{- end}}
 			{{- end}}
@@ -325,9 +323,9 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 				{{- else}}
 					{{- range $child_key, $child_value := $child}}
 						{{- if eq $child_key "target_dn"}}
-	  				resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.0.{{$child_key}}", "{{getTestTargetDn $.child_targets $key $child_value false nil 0}}"),		
+	  				resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}.0.{{$child_key}}", "{{getTestTargetDn $.child_targets $key $child_value false nil 0}}"),		
 						{{- else if ne $child_key "deletable_child"}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.0.{{$child_key}}", "{{$child_value}}"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}.0.{{$child_key}}", "{{$child_value}}"),
 						{{- end}}
 					{{- end}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}.#", "1"),
@@ -336,9 +334,9 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 				{{- $child := index $value 1 }}
 				{{- range $child_key, $child_value := $child}}
 					{{- if eq $child_key "target_dn"}}
-	  				resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.0.{{$child_key}}", "{{getTestTargetDn $.child_targets $key $child_value false nil 1}}"),
+	  				resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}.0.{{$child_key}}", "{{getTestTargetDn $.child_targets $key $child_value false nil 1}}"),
 					{{- else}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.0.{{$child_key}}", "{{$child_value}}"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}.0.{{$child_key}}", "{{$child_value}}"),
 					{{- end}}
 				{{- end}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}.#", "1"),
@@ -778,7 +776,7 @@ resource "aci_{{$target.target_resource_name}}" "test_{{$index}}" {
 
 {{- if .parents}}
 	{{- range .parents}}{{$target_classes := .target_classes}}
-
+		{{ $parentClassName := capitalize .class_name }}
 const testConfig{{$.resourceClassName}}MinDependencyWith{{capitalize .class_name}}AllowExisting = {{- if $dependencies }} testDependencyConfig{{$.resourceClassName}} + {{- end }} testConfig{{capitalize .class_name}}Min{{- if ne .parent_dependency ""}}DependencyWith{{capitalize .parent_dependency}}{{if and (ne .parent_dependency_name nil) (ne .parent_dependency_name "")}}{{capitalize .parent_dependency_name }}{{- end }}{{- end}} + `
 resource "aci_{{$.resourceName}}" "test" {
   parent_dn = {{.parent_dn}}
@@ -804,7 +802,7 @@ resource "aci_{{$.resourceName}}" "test_2" {
 `
 
 const testConfig{{$.resourceClassName}}MinDependencyWith{{capitalize .class_name}} = {{- if $dependencies }} testDependencyConfig{{$.resourceClassName}} + {{- end }} testConfig{{capitalize .class_name}}Min{{- if ne .parent_dependency ""}}DependencyWith{{capitalize .parent_dependency}}{{if and (ne .parent_dependency_name nil) (ne .parent_dependency_name "")}}{{capitalize .parent_dependency_name }}{{- end }}{{- end}} + `
-resource "aci_{{$.resourceName}}" "test" {
+resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}" {
   parent_dn = {{.parent_dn}}
   		{{- range $key, $value := $.resource_required}}
   			{{- if eq $key "target_dn" }}
@@ -817,7 +815,7 @@ resource "aci_{{$.resourceName}}" "test" {
 `
 
 const testConfig{{$.resourceClassName}}AllDependencyWith{{capitalize .class_name}} = {{- if $dependencies }} testDependencyConfig{{$.resourceClassName}} + {{- end }} testConfig{{capitalize .class_name}}Min{{- if ne .parent_dependency ""}}DependencyWith{{capitalize .parent_dependency}}{{if and (ne .parent_dependency_name nil) (ne .parent_dependency_name "")}}{{capitalize .parent_dependency_name }}{{- end }}{{- end}} + `
-resource "aci_{{$.resourceName}}" "test" {
+resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}" {
   parent_dn = {{.parent_dn}}
 		{{- range $key, $value := $.resource_required}}{{$contains := definedInMap $key $.all}}
 			{{- if not $contains}}
@@ -843,7 +841,7 @@ resource "aci_{{$.resourceName}}" "test" {
 `
 
 const testConfig{{$.resourceClassName}}ResetDependencyWith{{capitalize .class_name}} = {{- if $dependencies }} testDependencyConfig{{$.resourceClassName}} + {{- end }} testConfig{{capitalize .class_name}}Min{{- if ne .parent_dependency ""}}DependencyWith{{capitalize .parent_dependency}}{{if and (ne .parent_dependency_name nil) (ne .parent_dependency_name "")}}{{capitalize .parent_dependency_name }}{{- end }}{{- end}} + `
-resource "aci_{{$.resourceName}}" "test" {
+resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}" {
   parent_dn = {{.parent_dn}}
 		{{- range $key, $value := $.resource_required}}{{$contains := definedInMap $key $.default}}
 			{{- if not $contains}}
@@ -870,7 +868,7 @@ resource "aci_{{$.resourceName}}" "test" {
 
 		{{- if $.children}}
 const testConfig{{$.resourceClassName}}ChildrenDependencyWith{{capitalize .class_name}} = {{- if $dependencies }} testDependencyConfig{{$.resourceClassName}} + {{- end }}{{- if $childDependencies }} testChildDependencyConfig{{$.resourceClassName}} + {{- end }} testConfig{{capitalize .class_name}}Min{{- if ne .parent_dependency ""}}DependencyWith{{capitalize .parent_dependency}}{{if and (ne .parent_dependency_name nil) (ne .parent_dependency_name "")}}{{capitalize .parent_dependency_name }}{{- end }}{{- end}} + `
-resource "aci_{{$.resourceName}}" "test" {
+resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}" {
   parent_dn = {{.parent_dn}}
   			{{- range $key, $value := $.resource_required}}
   				{{- if eq $key "target_dn" }}
@@ -898,7 +896,7 @@ resource "aci_{{$.resourceName}}" "test" {
 `
 
 const testConfig{{$.resourceClassName}}ChildrenRemoveFromConfigDependencyWith{{capitalize .class_name}} = {{- if $dependencies }} testDependencyConfig{{$.resourceClassName}} + {{- end }}{{- if $childDependencies }} testChildDependencyConfig{{$.resourceClassName}} + {{- end }} testConfig{{capitalize .class_name}}Min{{- if ne .parent_dependency ""}}DependencyWith{{capitalize .parent_dependency}}{{if and (ne .parent_dependency_name nil) (ne .parent_dependency_name "")}}{{capitalize .parent_dependency_name }}{{- end }}{{- end}} + `
-resource "aci_{{$.resourceName}}" "test" {
+resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}" {
   parent_dn = {{.parent_dn}}
   		{{- range $key, $value := $.resource_required}}
   			{{- if eq $key "target_dn" }}
@@ -911,7 +909,7 @@ resource "aci_{{$.resourceName}}" "test" {
 `
 
 const testConfig{{$.resourceClassName}}ChildrenRemoveOneDependencyWith{{capitalize .class_name}} = {{- if $dependencies }} testDependencyConfig{{$.resourceClassName}} + {{- end }}{{- if $childDependencies }} testChildDependencyConfig{{$.resourceClassName}} + {{- end }} testConfig{{capitalize .class_name}}Min{{- if ne .parent_dependency ""}}DependencyWith{{capitalize .parent_dependency}}{{if and (ne .parent_dependency_name nil) (ne .parent_dependency_name "")}}{{capitalize .parent_dependency_name }}{{- end }}{{- end}} + `
-resource "aci_{{$.resourceName}}" "test" {
+resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}" {
   parent_dn = {{.parent_dn}}
     	{{- range $key, $value := $.resource_required}}
   			{{- if eq $key "target_dn" }}
@@ -944,7 +942,7 @@ resource "aci_{{$.resourceName}}" "test" {
 `
 
 const testConfig{{$.resourceClassName}}ChildrenRemoveAllDependencyWith{{capitalize .class_name}} = {{- if $dependencies }} testDependencyConfig{{$.resourceClassName}} + {{- end }}{{- if $childDependencies }} testChildDependencyConfig{{$.resourceClassName}} + {{- end }} testConfig{{capitalize .class_name}}Min{{- if ne .parent_dependency ""}}DependencyWith{{capitalize .parent_dependency}}{{if and (ne .parent_dependency_name nil) (ne .parent_dependency_name "")}}{{capitalize .parent_dependency_name }}{{- end }}{{- end}} + `
-resource "aci_{{$.resourceName}}" "test" {
+resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}" {
   parent_dn = {{.parent_dn}}
     	{{- range $key, $value := $.resource_required}}
   			{{- if eq $key "target_dn" }}

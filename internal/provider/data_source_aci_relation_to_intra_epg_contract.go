@@ -42,7 +42,7 @@ func (d *FvRsIntraEpgDataSource) Schema(ctx context.Context, req datasource.Sche
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Relation To Intra Epg Contract object.",
+				MarkdownDescription: "The distinguished name (DN) of the Relation To Intra EPG Contract object.",
 			},
 			"parent_dn": schema.StringAttribute{
 				Required:            true,
@@ -50,7 +50,7 @@ func (d *FvRsIntraEpgDataSource) Schema(ctx context.Context, req datasource.Sche
 			},
 			"annotation": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The annotation of the Relation To Intra Epg Contract object.`,
+				MarkdownDescription: `The annotation of the Relation To Intra EPG Contract object.`,
 			},
 			"contract_name": schema.StringAttribute{
 				Required:            true,

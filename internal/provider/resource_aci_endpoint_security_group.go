@@ -1209,7 +1209,7 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
-							MarkdownDescription: `The annotation of the Relation To Intra Epg Contract object.`,
+							MarkdownDescription: `The annotation of the Relation To Intra EPG Contract object.`,
 						},
 						"contract_name": schema.StringAttribute{
 							Required: true,

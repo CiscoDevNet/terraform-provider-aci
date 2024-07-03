@@ -105,7 +105,7 @@ func (r *FvRsIntraEpgResource) Schema(ctx context.Context, req resource.SchemaRe
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Relation To Intra Epg Contract object.",
+				MarkdownDescription: "The distinguished name (DN) of the Relation To Intra EPG Contract object.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
@@ -125,7 +125,7 @@ func (r *FvRsIntraEpgResource) Schema(ctx context.Context, req resource.SchemaRe
 					stringplanmodifier.UseStateForUnknown(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
-				MarkdownDescription: `The annotation of the Relation To Intra Epg Contract object.`,
+				MarkdownDescription: `The annotation of the Relation To Intra EPG Contract object.`,
 			},
 			"contract_name": schema.StringAttribute{
 				Required: true,
