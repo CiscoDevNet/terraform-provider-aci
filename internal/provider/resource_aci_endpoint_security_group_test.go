@@ -5,12 +5,91 @@
 package provider
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
 func TestAccResourceFvESgWithFvAp(t *testing.T) {
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:             testConfigFvESgMinDependencyWithFvApAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test_2", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "admin_state", "no"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test_2", "admin_state", "no"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "exception_tag", ""),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test_2", "exception_tag", ""),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "intra_esg_isolation", "unenforced"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test_2", "intra_esg_isolation", "unenforced"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "match_criteria", "AtleastOne"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test_2", "match_criteria", "AtleastOne"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "preferred_group_member", "exclude"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test_2", "preferred_group_member", "exclude"),
+				),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:      testConfigFvESgMinDependencyWithFvApAllowExisting,
+				ExpectError: regexp.MustCompile("Object Already Exists"),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:             testConfigFvESgMinDependencyWithFvApAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test_2", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "admin_state", "no"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test_2", "admin_state", "no"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "exception_tag", ""),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test_2", "exception_tag", ""),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "intra_esg_isolation", "unenforced"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test_2", "intra_esg_isolation", "unenforced"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "match_criteria", "AtleastOne"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test_2", "match_criteria", "AtleastOne"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "preferred_group_member", "exclude"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test_2", "preferred_group_member", "exclude"),
+				),
+			},
+		},
+	})
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -315,6 +394,18 @@ resource "aci_endpoint_security_group" "test_0" {
 resource "aci_endpoint_security_group" "test_1" {
   application_profile_dn = aci_application_profile.test.id
   name = "esg_1"
+}
+`
+
+const testConfigFvESgMinDependencyWithFvApAllowExisting = testConfigFvApMinDependencyWithFvTenant + `
+resource "aci_endpoint_security_group" "test" {
+  parent_dn = aci_application_profile.test.id
+  name = "test_name"
+}
+resource "aci_endpoint_security_group" "test_2" {
+  parent_dn = aci_application_profile.test.id
+  name = "test_name"
+  depends_on = [aci_endpoint_security_group.test]
 }
 `
 

@@ -5,12 +5,75 @@
 package provider
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
 func TestAccResourceMgmtSubnetWithMgmtInstP(t *testing.T) {
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:             testConfigMgmtSubnetMinDependencyWithMgmtInstPAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "ip", "1.1.1.0/24"),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test_2", "ip", "1.1.1.0/24"),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "name", ""),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test_2", "name", ""),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test_2", "name_alias", ""),
+				),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:      testConfigMgmtSubnetMinDependencyWithMgmtInstPAllowExisting,
+				ExpectError: regexp.MustCompile("Object Already Exists"),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:             testConfigMgmtSubnetMinDependencyWithMgmtInstPAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "ip", "1.1.1.0/24"),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test_2", "ip", "1.1.1.0/24"),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "name", ""),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test_2", "name", ""),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test_2", "name_alias", ""),
+				),
+			},
+		},
+	})
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -156,6 +219,18 @@ func TestAccResourceMgmtSubnetWithMgmtInstP(t *testing.T) {
 		},
 	})
 }
+
+const testConfigMgmtSubnetMinDependencyWithMgmtInstPAllowExisting = testConfigMgmtInstPMin + `
+resource "aci_external_management_network_subnet" "test" {
+  parent_dn = aci_external_management_network_instance_profile.test.id
+  ip = "1.1.1.0/24"
+}
+resource "aci_external_management_network_subnet" "test_2" {
+  parent_dn = aci_external_management_network_instance_profile.test.id
+  ip = "1.1.1.0/24"
+  depends_on = [aci_external_management_network_subnet.test]
+}
+`
 
 const testConfigMgmtSubnetMinDependencyWithMgmtInstP = testConfigMgmtInstPMin + `
 resource "aci_external_management_network_subnet" "test" {

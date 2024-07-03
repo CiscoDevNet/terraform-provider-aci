@@ -5,12 +5,73 @@
 package provider
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
 func TestAccResourceMgmtInstP(t *testing.T) {
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config: testConfigMgmtInstPMinAllowExisting,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test_2", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "priority", "unspecified"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test_2", "priority", "unspecified"),
+				),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:      testConfigMgmtInstPMinAllowExisting,
+				ExpectError: regexp.MustCompile("Object Already Exists"),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config: testConfigMgmtInstPMinAllowExisting,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test_2", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "priority", "unspecified"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test_2", "priority", "unspecified"),
+				),
+			},
+		},
+	})
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -163,6 +224,16 @@ func TestAccResourceMgmtInstP(t *testing.T) {
 		},
 	})
 }
+
+const testConfigMgmtInstPMinAllowExisting = `
+resource "aci_external_management_network_instance_profile" "test" {
+  name = "test_name"
+}
+resource "aci_external_management_network_instance_profile" "test_2" {
+  name = "test_name"
+  depends_on = [aci_external_management_network_instance_profile.test]
+}
+`
 
 const testConfigMgmtInstPMin = `
 resource "aci_external_management_network_instance_profile" "test" {

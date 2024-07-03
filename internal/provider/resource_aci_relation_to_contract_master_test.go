@@ -5,12 +5,63 @@
 package provider
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
 func TestAccResourceFvRsSecInheritedWithFvAEPg(t *testing.T) {
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:             testConfigFvRsSecInheritedMinDependencyWithFvAEPgAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "target_dn", "uni/tn-test_tenant/ap-test_ap/epg-epg_2"),
+					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test_2", "target_dn", "uni/tn-test_tenant/ap-test_ap/epg-epg_2"),
+					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test_2", "annotation", "orchestrator:terraform"),
+				),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:      testConfigFvRsSecInheritedMinDependencyWithFvAEPgAllowExisting,
+				ExpectError: regexp.MustCompile("Object Already Exists"),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:             testConfigFvRsSecInheritedMinDependencyWithFvAEPgAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "target_dn", "uni/tn-test_tenant/ap-test_ap/epg-epg_2"),
+					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test_2", "target_dn", "uni/tn-test_tenant/ap-test_ap/epg-epg_2"),
+					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test_2", "annotation", "orchestrator:terraform"),
+				),
+			},
+		},
+	})
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -139,6 +190,56 @@ func TestAccResourceFvRsSecInheritedWithFvAEPg(t *testing.T) {
 	})
 }
 func TestAccResourceFvRsSecInheritedWithFvESg(t *testing.T) {
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:             testConfigFvRsSecInheritedMinDependencyWithFvESgAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "target_dn", "uni/tn-test_tenant/ap-test_ap/esg-esg_0"),
+					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test_2", "target_dn", "uni/tn-test_tenant/ap-test_ap/esg-esg_0"),
+					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test_2", "annotation", "orchestrator:terraform"),
+				),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:      testConfigFvRsSecInheritedMinDependencyWithFvESgAllowExisting,
+				ExpectError: regexp.MustCompile("Object Already Exists"),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:             testConfigFvRsSecInheritedMinDependencyWithFvESgAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "target_dn", "uni/tn-test_tenant/ap-test_ap/esg-esg_0"),
+					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test_2", "target_dn", "uni/tn-test_tenant/ap-test_ap/esg-esg_0"),
+					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test_2", "annotation", "orchestrator:terraform"),
+				),
+			},
+		},
+	})
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -286,6 +387,18 @@ resource "aci_application_epg" "test_3" {
 }
 `
 
+const testConfigFvRsSecInheritedMinDependencyWithFvAEPgAllowExisting = testDependencyConfigFvRsSecInherited + testConfigFvAEPgMinDependencyWithFvAp + `
+resource "aci_relation_to_contract_master" "test" {
+  parent_dn = aci_application_epg.test.id
+  target_dn = aci_application_epg.test_2.id
+}
+resource "aci_relation_to_contract_master" "test_2" {
+  parent_dn = aci_application_epg.test.id
+  target_dn = aci_application_epg.test_2.id
+  depends_on = [aci_relation_to_contract_master.test]
+}
+`
+
 const testConfigFvRsSecInheritedMinDependencyWithFvAEPg = testDependencyConfigFvRsSecInherited + testConfigFvAEPgMinDependencyWithFvAp + `
 resource "aci_relation_to_contract_master" "test" {
   parent_dn = aci_application_epg.test.id
@@ -367,6 +480,18 @@ resource "aci_relation_to_contract_master" "test" {
   target_dn = aci_application_epg.test_2.id
   annotations = []
   tags = []
+}
+`
+
+const testConfigFvRsSecInheritedMinDependencyWithFvESgAllowExisting = testDependencyConfigFvRsSecInherited + testConfigFvESgMinDependencyWithFvAp + `
+resource "aci_relation_to_contract_master" "test" {
+  parent_dn = aci_endpoint_security_group.test.id
+  target_dn = aci_endpoint_security_group.test_0.id
+}
+resource "aci_relation_to_contract_master" "test_2" {
+  parent_dn = aci_endpoint_security_group.test.id
+  target_dn = aci_endpoint_security_group.test_0.id
+  depends_on = [aci_relation_to_contract_master.test]
 }
 `
 

@@ -69,6 +69,29 @@ type MplsNodeSidPIdentifier struct {
 	Sidoffset types.String
 }
 
+func (r *MplsNodeSidPResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
+	if !req.Plan.Raw.IsNull() {
+		var planData, stateData *MplsNodeSidPResourceModel
+		resp.Diagnostics.Append(req.Plan.Get(ctx, &planData)...)
+		resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
+
+		if resp.Diagnostics.HasError() {
+			return
+		}
+
+		if stateData == nil && !globalAllowExistingOnCreate && !planData.ParentDn.IsUnknown() && !planData.Sidoffset.IsUnknown() {
+			var createCheckData *MplsNodeSidPResourceModel
+			resp.Diagnostics.Append(req.Plan.Get(ctx, &createCheckData)...)
+			setMplsNodeSidPId(ctx, createCheckData)
+			CheckDn(ctx, &resp.Diagnostics, r.client, "mplsNodeSidP", createCheckData.Id.ValueString())
+			if resp.Diagnostics.HasError() {
+				return
+			}
+		}
+
+	}
+}
+
 func (r *MplsNodeSidPResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	tflog.Debug(ctx, "Start metadata of resource: aci_l3out_node_sid_profile")
 	resp.TypeName = req.ProviderTypeName + "_l3out_node_sid_profile"
@@ -232,6 +255,13 @@ func (r *MplsNodeSidPResource) Create(ctx context.Context, req resource.CreateRe
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
 	setMplsNodeSidPId(ctx, stateData)
 	getAndSetMplsNodeSidPAttributes(ctx, &resp.Diagnostics, r.client, stateData)
+	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
+		resp.Diagnostics.AddError(
+			"Object Already Exists",
+			fmt.Sprintf("The mplsNodeSidP object with DN '%s' already exists.", stateData.Id.ValueString()),
+		)
+		return
+	}
 
 	var data *MplsNodeSidPResourceModel
 
@@ -252,7 +282,7 @@ func (r *MplsNodeSidPResource) Create(ctx context.Context, req resource.CreateRe
 	var tagTagPlan, tagTagState []TagTagMplsNodeSidPResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getMplsNodeSidPCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := getMplsNodeSidPCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -317,7 +347,7 @@ func (r *MplsNodeSidPResource) Update(ctx context.Context, req resource.UpdateRe
 	var tagTagPlan, tagTagState []TagTagMplsNodeSidPResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getMplsNodeSidPCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := getMplsNodeSidPCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -564,9 +594,13 @@ func getMplsNodeSidPTagTagChildPayloads(ctx context.Context, diags *diag.Diagnos
 	return childPayloads
 }
 
-func getMplsNodeSidPCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *MplsNodeSidPResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationMplsNodeSidPResourceModel, tagTagPlan, tagTagState []TagTagMplsNodeSidPResourceModel) *container.Container {
+func getMplsNodeSidPCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *MplsNodeSidPResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationMplsNodeSidPResourceModel, tagTagPlan, tagTagState []TagTagMplsNodeSidPResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
+
+	if createType && !globalAllowExistingOnCreate {
+		payloadMap["attributes"].(map[string]string)["status"] = "created"
+	}
 	childPayloads := []map[string]interface{}{}
 
 	TagAnnotationchildPayloads := getMplsNodeSidPTagAnnotationChildPayloads(ctx, diags, data, tagAnnotationPlan, tagAnnotationState)

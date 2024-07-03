@@ -5,12 +5,63 @@
 package provider
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
 func TestAccResourceNetflowRsMonitorToExporterWithNetflowMonitorPol(t *testing.T) {
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:             testConfigNetflowRsMonitorToExporterMinDependencyWithNetflowMonitorPolAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_relation_to_netflow_exporter.test", "netflow_exporter_policy_name", "test_tn_netflow_exporter_pol_name"),
+					resource.TestCheckResourceAttr("aci_relation_to_netflow_exporter.test_2", "netflow_exporter_policy_name", "test_tn_netflow_exporter_pol_name"),
+					resource.TestCheckResourceAttr("aci_relation_to_netflow_exporter.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_relation_to_netflow_exporter.test_2", "annotation", "orchestrator:terraform"),
+				),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:      testConfigNetflowRsMonitorToExporterMinDependencyWithNetflowMonitorPolAllowExisting,
+				ExpectError: regexp.MustCompile("Object Already Exists"),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:             testConfigNetflowRsMonitorToExporterMinDependencyWithNetflowMonitorPolAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_relation_to_netflow_exporter.test", "netflow_exporter_policy_name", "test_tn_netflow_exporter_pol_name"),
+					resource.TestCheckResourceAttr("aci_relation_to_netflow_exporter.test_2", "netflow_exporter_policy_name", "test_tn_netflow_exporter_pol_name"),
+					resource.TestCheckResourceAttr("aci_relation_to_netflow_exporter.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_relation_to_netflow_exporter.test_2", "annotation", "orchestrator:terraform"),
+				),
+			},
+		},
+	})
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -138,6 +189,18 @@ func TestAccResourceNetflowRsMonitorToExporterWithNetflowMonitorPol(t *testing.T
 		},
 	})
 }
+
+const testConfigNetflowRsMonitorToExporterMinDependencyWithNetflowMonitorPolAllowExisting = testConfigNetflowMonitorPolMinDependencyWithFvTenant + `
+resource "aci_relation_to_netflow_exporter" "test" {
+  parent_dn = aci_netflow_monitor_policy.test.id
+  netflow_exporter_policy_name = "test_tn_netflow_exporter_pol_name"
+}
+resource "aci_relation_to_netflow_exporter" "test_2" {
+  parent_dn = aci_netflow_monitor_policy.test.id
+  netflow_exporter_policy_name = "test_tn_netflow_exporter_pol_name"
+  depends_on = [aci_relation_to_netflow_exporter.test]
+}
+`
 
 const testConfigNetflowRsMonitorToExporterMinDependencyWithNetflowMonitorPol = testConfigNetflowMonitorPolMinDependencyWithFvTenant + `
 resource "aci_relation_to_netflow_exporter" "test" {

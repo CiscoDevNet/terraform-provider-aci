@@ -5,12 +5,67 @@
 package provider
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
 func TestAccResourceFvRsConsWithFvAEPg(t *testing.T) {
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:             testConfigFvRsConsMinDependencyWithFvAEPgAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "contract_name", "test_tn_vz_br_cp_name"),
+					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test_2", "contract_name", "test_tn_vz_br_cp_name"),
+					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "priority", "unspecified"),
+					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test_2", "priority", "unspecified"),
+				),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:      testConfigFvRsConsMinDependencyWithFvAEPgAllowExisting,
+				ExpectError: regexp.MustCompile("Object Already Exists"),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:             testConfigFvRsConsMinDependencyWithFvAEPgAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "contract_name", "test_tn_vz_br_cp_name"),
+					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test_2", "contract_name", "test_tn_vz_br_cp_name"),
+					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "priority", "unspecified"),
+					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test_2", "priority", "unspecified"),
+				),
+			},
+		},
+	})
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -152,6 +207,60 @@ func TestAccResourceFvRsConsWithFvESg(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
+				Config:             testConfigFvRsConsMinDependencyWithFvESgAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "contract_name", "test_tn_vz_br_cp_name"),
+					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test_2", "contract_name", "test_tn_vz_br_cp_name"),
+					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "priority", "unspecified"),
+					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test_2", "priority", "unspecified"),
+				),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:      testConfigFvRsConsMinDependencyWithFvESgAllowExisting,
+				ExpectError: regexp.MustCompile("Object Already Exists"),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:             testConfigFvRsConsMinDependencyWithFvESgAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "contract_name", "test_tn_vz_br_cp_name"),
+					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test_2", "contract_name", "test_tn_vz_br_cp_name"),
+					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "priority", "unspecified"),
+					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test_2", "priority", "unspecified"),
+				),
+			},
+		},
+	})
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
 				Config:             testConfigFvRsConsMinDependencyWithFvESg,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
@@ -279,6 +388,18 @@ func TestAccResourceFvRsConsWithFvESg(t *testing.T) {
 	})
 }
 
+const testConfigFvRsConsMinDependencyWithFvAEPgAllowExisting = testConfigFvAEPgMinDependencyWithFvAp + `
+resource "aci_relation_to_consumed_contract" "test" {
+  parent_dn = aci_application_epg.test.id
+  contract_name = "test_tn_vz_br_cp_name"
+}
+resource "aci_relation_to_consumed_contract" "test_2" {
+  parent_dn = aci_application_epg.test.id
+  contract_name = "test_tn_vz_br_cp_name"
+  depends_on = [aci_relation_to_consumed_contract.test]
+}
+`
+
 const testConfigFvRsConsMinDependencyWithFvAEPg = testConfigFvAEPgMinDependencyWithFvAp + `
 resource "aci_relation_to_consumed_contract" "test" {
   parent_dn = aci_application_epg.test.id
@@ -362,6 +483,18 @@ resource "aci_relation_to_consumed_contract" "test" {
   contract_name = "test_tn_vz_br_cp_name"
   annotations = []
   tags = []
+}
+`
+
+const testConfigFvRsConsMinDependencyWithFvESgAllowExisting = testConfigFvESgMinDependencyWithFvAp + `
+resource "aci_relation_to_consumed_contract" "test" {
+  parent_dn = aci_endpoint_security_group.test.id
+  contract_name = "test_tn_vz_br_cp_name"
+}
+resource "aci_relation_to_consumed_contract" "test_2" {
+  parent_dn = aci_endpoint_security_group.test.id
+  contract_name = "test_tn_vz_br_cp_name"
+  depends_on = [aci_relation_to_consumed_contract.test]
 }
 `
 

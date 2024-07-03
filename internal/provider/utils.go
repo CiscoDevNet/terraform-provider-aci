@@ -30,14 +30,12 @@ func GetMOName(dn string) string {
 	return splittedDn[0]
 }
 
-func CheckDn(ctx context.Context, client *client.Client, dn string, diags *diag.Diagnostics) {
-	tflog.Debug(ctx, fmt.Sprintf("validate relation dn: %s", dn))
-	_, err := client.Get(dn)
-	if err != nil {
-		tflog.Error(ctx, fmt.Sprintf("failed validate relation dn: %s", dn))
+func CheckDn(ctx context.Context, diags *diag.Diagnostics, client *client.Client, classname, dn string) {
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json", dn), "GET", nil)
+	if requestData.Search("imdata").Search(classname).Data() != nil {
 		diags.AddError(
-			"Relation target dn validation failed",
-			fmt.Sprintf("The relation target dn is not found: %s", dn),
+			"Object Already Exists",
+			fmt.Sprintf("The %s object with DN '%s' already exists.", classname, dn),
 		)
 	}
 }
@@ -70,7 +68,7 @@ func DoRestRequestEscapeHtml(ctx context.Context, diags *diag.Diagnostics, clien
 		if errCode != "1" && errCode != "103" && errCode != "107" && errCode != "120" {
 			diags.AddError(
 				fmt.Sprintf("The %s rest request failed", strings.ToLower(method)),
-				fmt.Sprintf("Code: %d Response: %s, err: %s. Please report this issue to the provider developers.", restResponse.StatusCode, cont.Data().(map[string]interface{})["imdata"], err),
+				fmt.Sprintf("Code: %d Response: %s, err: %s.", restResponse.StatusCode, cont.Data().(map[string]interface{})["imdata"], err),
 			)
 			return nil
 		}

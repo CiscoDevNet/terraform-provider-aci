@@ -5,12 +5,91 @@
 package provider
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
 func TestAccResourceNetflowRecordPolWithFvTenant(t *testing.T) {
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:             testConfigNetflowRecordPolMinDependencyWithFvTenantAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "name", "netfow_record"),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test_2", "name", "netfow_record"),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "collect_parameters.#", "1"),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test_2", "collect_parameters.#", "1"),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "collect_parameters.0", "src-intf"),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test_2", "collect_parameters.0", "src-intf"),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "match_parameters.#", "0"),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test_2", "match_parameters.#", "0"),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test_2", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test_2", "owner_tag", ""),
+				),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:      testConfigNetflowRecordPolMinDependencyWithFvTenantAllowExisting,
+				ExpectError: regexp.MustCompile("Object Already Exists"),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:             testConfigNetflowRecordPolMinDependencyWithFvTenantAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "name", "netfow_record"),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test_2", "name", "netfow_record"),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "collect_parameters.#", "1"),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test_2", "collect_parameters.#", "1"),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "collect_parameters.0", "src-intf"),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test_2", "collect_parameters.0", "src-intf"),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "match_parameters.#", "0"),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test_2", "match_parameters.#", "0"),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test_2", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_netflow_record_policy.test_2", "owner_tag", ""),
+				),
+			},
+		},
+	})
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -183,6 +262,18 @@ func TestAccResourceNetflowRecordPolWithFvTenant(t *testing.T) {
 		},
 	})
 }
+
+const testConfigNetflowRecordPolMinDependencyWithFvTenantAllowExisting = testConfigFvTenantMin + `
+resource "aci_netflow_record_policy" "test" {
+  parent_dn = aci_tenant.test.id
+  name = "netfow_record"
+}
+resource "aci_netflow_record_policy" "test_2" {
+  parent_dn = aci_tenant.test.id
+  name = "netfow_record"
+  depends_on = [aci_netflow_record_policy.test]
+}
+`
 
 const testConfigNetflowRecordPolMinDependencyWithFvTenant = testConfigFvTenantMin + `
 resource "aci_netflow_record_policy" "test" {

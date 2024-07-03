@@ -62,6 +62,6 @@ func testAccPreCheck(t *testing.T) {
 	}
 }
 
-func setGlobalAnnotationEnvVariable(t *testing.T, annotation string) {
-	t.Setenv("ACI_ANNOTATION", annotation)
+func setEnvVariable(t *testing.T, key, value string) {
+	t.Setenv(key, value)
 }

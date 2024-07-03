@@ -5,12 +5,63 @@
 package provider
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
 func TestAccResourceTagAnnotationWithFvTenant(t *testing.T) {
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:             testConfigTagAnnotationMinDependencyWithFvTenantAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_annotation.test", "key", "test_key"),
+					resource.TestCheckResourceAttr("aci_annotation.test_2", "key", "test_key"),
+					resource.TestCheckResourceAttr("aci_annotation.test", "value", "test_value"),
+					resource.TestCheckResourceAttr("aci_annotation.test_2", "value", "test_value"),
+				),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:      testConfigTagAnnotationMinDependencyWithFvTenantAllowExisting,
+				ExpectError: regexp.MustCompile("Object Already Exists"),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:             testConfigTagAnnotationMinDependencyWithFvTenantAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_annotation.test", "key", "test_key"),
+					resource.TestCheckResourceAttr("aci_annotation.test_2", "key", "test_key"),
+					resource.TestCheckResourceAttr("aci_annotation.test", "value", "test_value"),
+					resource.TestCheckResourceAttr("aci_annotation.test_2", "value", "test_value"),
+				),
+			},
+		},
+	})
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -73,6 +124,56 @@ func TestAccResourceTagAnnotationWithFvAEPg(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
+				Config:             testConfigTagAnnotationMinDependencyWithFvAEPgAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_annotation.test", "key", "test_key"),
+					resource.TestCheckResourceAttr("aci_annotation.test_2", "key", "test_key"),
+					resource.TestCheckResourceAttr("aci_annotation.test", "value", "test_value"),
+					resource.TestCheckResourceAttr("aci_annotation.test_2", "value", "test_value"),
+				),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:      testConfigTagAnnotationMinDependencyWithFvAEPgAllowExisting,
+				ExpectError: regexp.MustCompile("Object Already Exists"),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:             testConfigTagAnnotationMinDependencyWithFvAEPgAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_annotation.test", "key", "test_key"),
+					resource.TestCheckResourceAttr("aci_annotation.test_2", "key", "test_key"),
+					resource.TestCheckResourceAttr("aci_annotation.test", "value", "test_value"),
+					resource.TestCheckResourceAttr("aci_annotation.test_2", "value", "test_value"),
+				),
+			},
+		},
+	})
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
 				Config:             testConfigTagAnnotationMinDependencyWithFvAEPg,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
@@ -121,6 +222,20 @@ func TestAccResourceTagAnnotationWithFvAEPg(t *testing.T) {
 	})
 }
 
+const testConfigTagAnnotationMinDependencyWithFvTenantAllowExisting = testConfigFvTenantMin + `
+resource "aci_annotation" "test" {
+  parent_dn = aci_tenant.test.id
+  key = "test_key"
+  value = "test_value"
+}
+resource "aci_annotation" "test_2" {
+  parent_dn = aci_tenant.test.id
+  key = "test_key"
+  value = "test_value"
+  depends_on = [aci_annotation.test]
+}
+`
+
 const testConfigTagAnnotationMinDependencyWithFvTenant = testConfigFvTenantMin + `
 resource "aci_annotation" "test" {
   parent_dn = aci_tenant.test.id
@@ -142,6 +257,20 @@ resource "aci_annotation" "test" {
   parent_dn = aci_tenant.test.id
   key = "test_key"
   value = "test_value"
+}
+`
+
+const testConfigTagAnnotationMinDependencyWithFvAEPgAllowExisting = testConfigFvAEPgMin + `
+resource "aci_annotation" "test" {
+  parent_dn = aci_application_epg.test.id
+  key = "test_key"
+  value = "test_value"
+}
+resource "aci_annotation" "test_2" {
+  parent_dn = aci_application_epg.test.id
+  key = "test_key"
+  value = "test_value"
+  depends_on = [aci_annotation.test]
 }
 `
 

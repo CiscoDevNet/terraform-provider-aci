@@ -5,12 +5,91 @@
 package provider
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
 func TestAccResourcePimRouteMapEntryWithPimRouteMapPol(t *testing.T) {
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:             testConfigPimRouteMapEntryMinDependencyWithPimRouteMapPolAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "order", "1"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test_2", "order", "1"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "action", "permit"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test_2", "action", "permit"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "group_ip", "0.0.0.0"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test_2", "group_ip", "0.0.0.0"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "name", ""),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test_2", "name", ""),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "rendezvous_point_ip", "0.0.0.0"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test_2", "rendezvous_point_ip", "0.0.0.0"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "source_ip", "0.0.0.0"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test_2", "source_ip", "0.0.0.0"),
+				),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:      testConfigPimRouteMapEntryMinDependencyWithPimRouteMapPolAllowExisting,
+				ExpectError: regexp.MustCompile("Object Already Exists"),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:             testConfigPimRouteMapEntryMinDependencyWithPimRouteMapPolAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "order", "1"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test_2", "order", "1"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "action", "permit"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test_2", "action", "permit"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "group_ip", "0.0.0.0"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test_2", "group_ip", "0.0.0.0"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "name", ""),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test_2", "name", ""),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "rendezvous_point_ip", "0.0.0.0"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test_2", "rendezvous_point_ip", "0.0.0.0"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "source_ip", "0.0.0.0"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test_2", "source_ip", "0.0.0.0"),
+				),
+			},
+		},
+	})
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -180,6 +259,18 @@ func TestAccResourcePimRouteMapEntryWithPimRouteMapPol(t *testing.T) {
 		},
 	})
 }
+
+const testConfigPimRouteMapEntryMinDependencyWithPimRouteMapPolAllowExisting = testConfigPimRouteMapPolMinDependencyWithFvTenant + `
+resource "aci_pim_route_map_entry" "test" {
+  parent_dn = aci_pim_route_map_policy.test.id
+  order = "1"
+}
+resource "aci_pim_route_map_entry" "test_2" {
+  parent_dn = aci_pim_route_map_policy.test.id
+  order = "1"
+  depends_on = [aci_pim_route_map_entry.test]
+}
+`
 
 const testConfigPimRouteMapEntryMinDependencyWithPimRouteMapPol = testConfigPimRouteMapPolMinDependencyWithFvTenant + `
 resource "aci_pim_route_map_entry" "test" {

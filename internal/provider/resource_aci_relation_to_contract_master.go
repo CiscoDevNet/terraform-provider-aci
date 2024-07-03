@@ -65,6 +65,29 @@ type FvRsSecInheritedIdentifier struct {
 	TDn types.String
 }
 
+func (r *FvRsSecInheritedResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
+	if !req.Plan.Raw.IsNull() {
+		var planData, stateData *FvRsSecInheritedResourceModel
+		resp.Diagnostics.Append(req.Plan.Get(ctx, &planData)...)
+		resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
+
+		if resp.Diagnostics.HasError() {
+			return
+		}
+
+		if stateData == nil && !globalAllowExistingOnCreate && !planData.ParentDn.IsUnknown() && !planData.TDn.IsUnknown() {
+			var createCheckData *FvRsSecInheritedResourceModel
+			resp.Diagnostics.Append(req.Plan.Get(ctx, &createCheckData)...)
+			setFvRsSecInheritedId(ctx, createCheckData)
+			CheckDn(ctx, &resp.Diagnostics, r.client, "fvRsSecInherited", createCheckData.Id.ValueString())
+			if resp.Diagnostics.HasError() {
+				return
+			}
+		}
+
+	}
+}
+
 func (r *FvRsSecInheritedResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	tflog.Debug(ctx, "Start metadata of resource: aci_relation_to_contract_master")
 	resp.TypeName = req.ProviderTypeName + "_relation_to_contract_master"
@@ -196,6 +219,13 @@ func (r *FvRsSecInheritedResource) Create(ctx context.Context, req resource.Crea
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
 	setFvRsSecInheritedId(ctx, stateData)
 	getAndSetFvRsSecInheritedAttributes(ctx, &resp.Diagnostics, r.client, stateData)
+	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
+		resp.Diagnostics.AddError(
+			"Object Already Exists",
+			fmt.Sprintf("The fvRsSecInherited object with DN '%s' already exists.", stateData.Id.ValueString()),
+		)
+		return
+	}
 
 	var data *FvRsSecInheritedResourceModel
 
@@ -216,7 +246,7 @@ func (r *FvRsSecInheritedResource) Create(ctx context.Context, req resource.Crea
 	var tagTagPlan, tagTagState []TagTagFvRsSecInheritedResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvRsSecInheritedCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := getFvRsSecInheritedCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -281,7 +311,7 @@ func (r *FvRsSecInheritedResource) Update(ctx context.Context, req resource.Upda
 	var tagTagPlan, tagTagState []TagTagFvRsSecInheritedResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvRsSecInheritedCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := getFvRsSecInheritedCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -516,9 +546,13 @@ func getFvRsSecInheritedTagTagChildPayloads(ctx context.Context, diags *diag.Dia
 	return childPayloads
 }
 
-func getFvRsSecInheritedCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *FvRsSecInheritedResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvRsSecInheritedResourceModel, tagTagPlan, tagTagState []TagTagFvRsSecInheritedResourceModel) *container.Container {
+func getFvRsSecInheritedCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *FvRsSecInheritedResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvRsSecInheritedResourceModel, tagTagPlan, tagTagState []TagTagFvRsSecInheritedResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
+
+	if createType && !globalAllowExistingOnCreate {
+		payloadMap["attributes"].(map[string]string)["status"] = "created"
+	}
 	childPayloads := []map[string]interface{}{}
 
 	TagAnnotationchildPayloads := getFvRsSecInheritedTagAnnotationChildPayloads(ctx, diags, data, tagAnnotationPlan, tagAnnotationState)

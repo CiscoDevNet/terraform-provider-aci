@@ -49,6 +49,29 @@ type TagAnnotationIdentifier struct {
 	Key types.String
 }
 
+func (r *TagAnnotationResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
+	if !req.Plan.Raw.IsNull() {
+		var planData, stateData *TagAnnotationResourceModel
+		resp.Diagnostics.Append(req.Plan.Get(ctx, &planData)...)
+		resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
+
+		if resp.Diagnostics.HasError() {
+			return
+		}
+
+		if stateData == nil && !globalAllowExistingOnCreate && !planData.ParentDn.IsUnknown() && !planData.Key.IsUnknown() {
+			var createCheckData *TagAnnotationResourceModel
+			resp.Diagnostics.Append(req.Plan.Get(ctx, &createCheckData)...)
+			setTagAnnotationId(ctx, createCheckData)
+			CheckDn(ctx, &resp.Diagnostics, r.client, "tagAnnotation", createCheckData.Id.ValueString())
+			if resp.Diagnostics.HasError() {
+				return
+			}
+		}
+
+	}
+}
+
 func (r *TagAnnotationResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	tflog.Debug(ctx, "Start metadata of resource: aci_annotation")
 	resp.TypeName = req.ProviderTypeName + "_annotation"
@@ -135,7 +158,7 @@ func (r *TagAnnotationResource) Create(ctx context.Context, req resource.CreateR
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_annotation with id '%s'", data.Id.ValueString()))
 
-	jsonPayload := getTagAnnotationCreateJsonPayload(ctx, &resp.Diagnostics, data)
+	jsonPayload := getTagAnnotationCreateJsonPayload(ctx, &resp.Diagnostics, true, data)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -192,7 +215,7 @@ func (r *TagAnnotationResource) Update(ctx context.Context, req resource.UpdateR
 
 	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_annotation with id '%s'", data.Id.ValueString()))
 
-	jsonPayload := getTagAnnotationCreateJsonPayload(ctx, &resp.Diagnostics, data)
+	jsonPayload := getTagAnnotationCreateJsonPayload(ctx, &resp.Diagnostics, false, data)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -309,9 +332,13 @@ func setTagAnnotationId(ctx context.Context, data *TagAnnotationResourceModel) {
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
 
-func getTagAnnotationCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *TagAnnotationResourceModel) *container.Container {
+func getTagAnnotationCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *TagAnnotationResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
+
+	if createType && !globalAllowExistingOnCreate {
+		payloadMap["attributes"].(map[string]string)["status"] = "created"
+	}
 	if !data.Key.IsNull() && !data.Key.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["key"] = data.Key.ValueString()
 	}

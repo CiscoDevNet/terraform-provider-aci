@@ -448,18 +448,30 @@ func set{{ .ResourceClassName }}LegacyAttributes(ctx context.Context, diags *dia
 	}
 	{{- end }}
 }
+{{- end }}
 
 func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
     if !req.Plan.Raw.IsNull() {
-		var planData, stateData, configData *{{.ResourceClassName}}ResourceModel
+		var planData, stateData{{ if .LegacyAttributes}}, configData{{end}} *{{.ResourceClassName}}ResourceModel
 		resp.Diagnostics.Append(req.Plan.Get(ctx, &planData)...)
 		resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
-		resp.Diagnostics.Append(req.Config.Get(ctx, &configData)...)
+		{{ if .LegacyAttributes}}resp.Diagnostics.Append(req.Config.Get(ctx, &configData)...){{end}}
 
 		if resp.Diagnostics.HasError() {
 			return
 		}
 
+		if stateData == nil && !globalAllowExistingOnCreate {{if .HasParent }}&& !planData.ParentDn.IsUnknown() {{end}}{{range .Properties}}{{if .IsNaming}}&& !planData.{{ .Name }}.IsUnknown() {{end}}{{end}}{
+			var createCheckData *{{.ResourceClassName}}ResourceModel
+			resp.Diagnostics.Append(req.Plan.Get(ctx, &createCheckData)...)
+			set{{.ResourceClassName}}Id(ctx, createCheckData)
+			CheckDn(ctx, &resp.Diagnostics, r.client, "{{.PkgName}}", createCheckData.Id.ValueString())
+			if resp.Diagnostics.HasError() {
+				return
+			}
+		}
+
+		{{ if .LegacyAttributes}}
 		{{ range .LegacyAttributes}}{{$SetName := .Name}}
 			{{- if and (ne .ReplacedBy.AttributeName "") (eq (getMigrationType .ValueType) "String") (isNewAttributeStringType .ReplacedBy.AttributeName) }}
 		if !configData.{{ .Name }}.IsNull() {
@@ -706,11 +718,10 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 			{{- end }}
 		}
 		{{ end }}
-
 		resp.Diagnostics.Append(resp.Plan.Set(ctx, &planData)...)
+		{{ end }}
 	}
 }
-{{- end}}
 
 func (r *{{.ResourceClassName}}Resource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	tflog.Debug(ctx, "Start metadata of resource: aci_{{.ResourceName}}")
@@ -1011,6 +1022,13 @@ func (r *{{.ResourceClassName}}Resource) Create(ctx context.Context, req resourc
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
 	set{{.ResourceClassName}}Id(ctx, stateData)
 	getAndSet{{.ResourceClassName}}Attributes(ctx, &resp.Diagnostics, r.client, stateData)
+	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
+		resp.Diagnostics.AddError(
+			"Object Already Exists",
+			fmt.Sprintf("The {{.PkgName}} object with DN '%s' already exists.", stateData.Id.ValueString()),
+		)
+		return
+	} 
 	{{- end}}
 
 	var data *{{.ResourceClassName}}ResourceModel
@@ -1032,9 +1050,9 @@ func (r *{{.ResourceClassName}}Resource) Create(ctx context.Context, req resourc
 	data.{{ .ResourceClassName }}.ElementsAs(ctx, &{{.PkgName}}Plan, false)
 	stateData.{{ .ResourceClassName }}.ElementsAs(ctx, &{{.PkgName}}State, false)
 		{{- end}}
-	jsonPayload := get{{.ResourceClassName}}CreateJsonPayload(ctx, &resp.Diagnostics, data{{- range .Children}}, {{.PkgName}}Plan, {{.PkgName}}State{{- end}})	
+	jsonPayload := get{{.ResourceClassName}}CreateJsonPayload(ctx, &resp.Diagnostics, true, data{{- range .Children}}, {{.PkgName}}Plan, {{.PkgName}}State{{- end}})	
 	{{- else}}
-	jsonPayload := get{{.ResourceClassName}}CreateJsonPayload(ctx, &resp.Diagnostics, data)
+	jsonPayload := get{{.ResourceClassName}}CreateJsonPayload(ctx, &resp.Diagnostics, true, data)
 	{{- end}}
 
 	if resp.Diagnostics.HasError() {
@@ -1104,9 +1122,9 @@ func (r *{{.ResourceClassName}}Resource) Update(ctx context.Context, req resourc
 	data.{{ .ResourceClassName }}.ElementsAs(ctx, &{{.PkgName}}Plan, false)
 	stateData.{{ .ResourceClassName }}.ElementsAs(ctx, &{{.PkgName}}State, false)
 		{{- end}}
-	jsonPayload := get{{.ResourceClassName}}CreateJsonPayload(ctx, &resp.Diagnostics, data{{- range .Children}}, {{.PkgName}}Plan, {{.PkgName}}State{{- end}})	
+	jsonPayload := get{{.ResourceClassName}}CreateJsonPayload(ctx, &resp.Diagnostics, false, data{{- range .Children}}, {{.PkgName}}Plan, {{.PkgName}}State{{- end}})	
 	{{- else}}
-	jsonPayload := get{{.ResourceClassName}}CreateJsonPayload(ctx, &resp.Diagnostics, data)
+	jsonPayload := get{{.ResourceClassName}}CreateJsonPayload(ctx, &resp.Diagnostics, false, data)
 	{{- end}}
 	
 	if resp.Diagnostics.HasError() {
@@ -1432,9 +1450,14 @@ func get{{$.ResourceClassName}}{{ .ResourceClassName }}ChildPayloads(ctx context
 }
 {{- end}}
 
-func get{{.ResourceClassName}}CreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *{{.ResourceClassName}}ResourceModel{{- range .Children}}, {{.PkgName}}Plan, {{.PkgName}}State []{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel{{- end}}) *container.Container {
+func get{{.ResourceClassName}}CreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *{{.ResourceClassName}}ResourceModel{{- range .Children}}, {{.PkgName}}Plan, {{.PkgName}}State []{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel{{- end}}) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
+
+	if createType && !globalAllowExistingOnCreate {
+		payloadMap["attributes"].(map[string]string)["status"] = "created"
+	}
+
 	{{- if .HasChild}}
 	childPayloads := []map[string]interface{}{}
 		{{ range .Children}}

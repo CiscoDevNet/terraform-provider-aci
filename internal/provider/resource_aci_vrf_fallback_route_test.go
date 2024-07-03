@@ -5,12 +5,75 @@
 package provider
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
 func TestAccResourceFvFBRouteWithFvFBRGroup(t *testing.T) {
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:             testConfigFvFBRouteMinDependencyWithFvFBRGroupAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route.test", "prefix_address", "2.2.2.3/24"),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route.test_2", "prefix_address", "2.2.2.3/24"),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route.test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route.test", "name", ""),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route.test_2", "name", ""),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route.test_2", "name_alias", ""),
+				),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:      testConfigFvFBRouteMinDependencyWithFvFBRGroupAllowExisting,
+				ExpectError: regexp.MustCompile("Object Already Exists"),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:             testConfigFvFBRouteMinDependencyWithFvFBRGroupAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route.test", "prefix_address", "2.2.2.3/24"),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route.test_2", "prefix_address", "2.2.2.3/24"),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route.test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route.test", "name", ""),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route.test_2", "name", ""),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route.test_2", "name_alias", ""),
+				),
+			},
+		},
+	})
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -156,6 +219,18 @@ func TestAccResourceFvFBRouteWithFvFBRGroup(t *testing.T) {
 		},
 	})
 }
+
+const testConfigFvFBRouteMinDependencyWithFvFBRGroupAllowExisting = testConfigFvFBRGroupMinDependencyWithFvCtx + `
+resource "aci_vrf_fallback_route" "test" {
+  parent_dn = aci_vrf_fallback_route_group.test.id
+  prefix_address = "2.2.2.3/24"
+}
+resource "aci_vrf_fallback_route" "test_2" {
+  parent_dn = aci_vrf_fallback_route_group.test.id
+  prefix_address = "2.2.2.3/24"
+  depends_on = [aci_vrf_fallback_route.test]
+}
+`
 
 const testConfigFvFBRouteMinDependencyWithFvFBRGroup = testConfigFvFBRGroupMinDependencyWithFvCtx + `
 resource "aci_vrf_fallback_route" "test" {
