@@ -569,7 +569,7 @@ func TestAccAciRestManaged_globalAllowExistingOnCreate(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				Config:      testAccAciRestManagedConfig_globalAllowExisting(name),
-				ExpectError: regexp.MustCompile("object already exists"),
+				ExpectError: regexp.MustCompile("Object Already Exists"),
 			},
 		},
 	})
