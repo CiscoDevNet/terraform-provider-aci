@@ -78,16 +78,18 @@ func (r *FvFBRouteResource) ModifyPlan(ctx context.Context, req resource.ModifyP
 			return
 		}
 
-		if stateData == nil && !globalAllowExistingOnCreate && !planData.ParentDn.IsUnknown() && !planData.FbrPrefix.IsUnknown() {
-			var createCheckData *FvFBRouteResourceModel
-			resp.Diagnostics.Append(req.Plan.Get(ctx, &createCheckData)...)
-			setFvFBRouteId(ctx, createCheckData)
-			CheckDn(ctx, &resp.Diagnostics, r.client, "fvFBRoute", createCheckData.Id.ValueString())
+		if (planData.Id.IsUnknown() || planData.Id.IsNull()) && !planData.ParentDn.IsUnknown() && !planData.FbrPrefix.IsUnknown() {
+			setFvFBRouteId(ctx, planData)
+		}
+
+		if stateData == nil && !globalAllowExistingOnCreate && !planData.Id.IsUnknown() && !planData.Id.IsNull() {
+			CheckDn(ctx, &resp.Diagnostics, r.client, "fvFBRoute", planData.Id.ValueString())
 			if resp.Diagnostics.HasError() {
 				return
 			}
 		}
 
+		resp.Diagnostics.Append(resp.Plan.Set(ctx, &planData)...)
 	}
 }
 
@@ -244,7 +246,9 @@ func (r *FvFBRouteResource) Create(ctx context.Context, req resource.CreateReque
 	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
 	var stateData *FvFBRouteResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
-	setFvFBRouteId(ctx, stateData)
+	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
+		setFvFBRouteId(ctx, stateData)
+	}
 	getAndSetFvFBRouteAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
 		resp.Diagnostics.AddError(
@@ -263,7 +267,9 @@ func (r *FvFBRouteResource) Create(ctx context.Context, req resource.CreateReque
 		return
 	}
 
-	setFvFBRouteId(ctx, data)
+	if data.Id.IsUnknown() || data.Id.IsNull() {
+		setFvFBRouteId(ctx, data)
+	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_vrf_fallback_route with id '%s'", data.Id.ValueString()))
 

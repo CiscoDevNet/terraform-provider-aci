@@ -75,16 +75,18 @@ func (r *FvRsProtByResource) ModifyPlan(ctx context.Context, req resource.Modify
 			return
 		}
 
-		if stateData == nil && !globalAllowExistingOnCreate && !planData.ParentDn.IsUnknown() && !planData.TnVzTabooName.IsUnknown() {
-			var createCheckData *FvRsProtByResourceModel
-			resp.Diagnostics.Append(req.Plan.Get(ctx, &createCheckData)...)
-			setFvRsProtById(ctx, createCheckData)
-			CheckDn(ctx, &resp.Diagnostics, r.client, "fvRsProtBy", createCheckData.Id.ValueString())
+		if (planData.Id.IsUnknown() || planData.Id.IsNull()) && !planData.ParentDn.IsUnknown() && !planData.TnVzTabooName.IsUnknown() {
+			setFvRsProtById(ctx, planData)
+		}
+
+		if stateData == nil && !globalAllowExistingOnCreate && !planData.Id.IsUnknown() && !planData.Id.IsNull() {
+			CheckDn(ctx, &resp.Diagnostics, r.client, "fvRsProtBy", planData.Id.ValueString())
 			if resp.Diagnostics.HasError() {
 				return
 			}
 		}
 
+		resp.Diagnostics.Append(resp.Plan.Set(ctx, &planData)...)
 	}
 }
 
@@ -217,7 +219,9 @@ func (r *FvRsProtByResource) Create(ctx context.Context, req resource.CreateRequ
 	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
 	var stateData *FvRsProtByResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
-	setFvRsProtById(ctx, stateData)
+	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
+		setFvRsProtById(ctx, stateData)
+	}
 	getAndSetFvRsProtByAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
 		resp.Diagnostics.AddError(
@@ -236,7 +240,9 @@ func (r *FvRsProtByResource) Create(ctx context.Context, req resource.CreateRequ
 		return
 	}
 
-	setFvRsProtById(ctx, data)
+	if data.Id.IsUnknown() || data.Id.IsNull() {
+		setFvRsProtById(ctx, data)
+	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_relation_to_taboo_contract with id '%s'", data.Id.ValueString()))
 

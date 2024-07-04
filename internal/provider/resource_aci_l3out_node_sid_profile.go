@@ -79,16 +79,18 @@ func (r *MplsNodeSidPResource) ModifyPlan(ctx context.Context, req resource.Modi
 			return
 		}
 
-		if stateData == nil && !globalAllowExistingOnCreate && !planData.ParentDn.IsUnknown() && !planData.Sidoffset.IsUnknown() {
-			var createCheckData *MplsNodeSidPResourceModel
-			resp.Diagnostics.Append(req.Plan.Get(ctx, &createCheckData)...)
-			setMplsNodeSidPId(ctx, createCheckData)
-			CheckDn(ctx, &resp.Diagnostics, r.client, "mplsNodeSidP", createCheckData.Id.ValueString())
+		if (planData.Id.IsUnknown() || planData.Id.IsNull()) && !planData.ParentDn.IsUnknown() && !planData.Sidoffset.IsUnknown() {
+			setMplsNodeSidPId(ctx, planData)
+		}
+
+		if stateData == nil && !globalAllowExistingOnCreate && !planData.Id.IsUnknown() && !planData.Id.IsNull() {
+			CheckDn(ctx, &resp.Diagnostics, r.client, "mplsNodeSidP", planData.Id.ValueString())
 			if resp.Diagnostics.HasError() {
 				return
 			}
 		}
 
+		resp.Diagnostics.Append(resp.Plan.Set(ctx, &planData)...)
 	}
 }
 
@@ -253,7 +255,9 @@ func (r *MplsNodeSidPResource) Create(ctx context.Context, req resource.CreateRe
 	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
 	var stateData *MplsNodeSidPResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
-	setMplsNodeSidPId(ctx, stateData)
+	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
+		setMplsNodeSidPId(ctx, stateData)
+	}
 	getAndSetMplsNodeSidPAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
 		resp.Diagnostics.AddError(
@@ -272,7 +276,9 @@ func (r *MplsNodeSidPResource) Create(ctx context.Context, req resource.CreateRe
 		return
 	}
 
-	setMplsNodeSidPId(ctx, data)
+	if data.Id.IsUnknown() || data.Id.IsNull() {
+		setMplsNodeSidPId(ctx, data)
+	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_l3out_node_sid_profile with id '%s'", data.Id.ValueString()))
 

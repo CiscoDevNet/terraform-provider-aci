@@ -59,16 +59,18 @@ func (r *TagAnnotationResource) ModifyPlan(ctx context.Context, req resource.Mod
 			return
 		}
 
-		if stateData == nil && !globalAllowExistingOnCreate && !planData.ParentDn.IsUnknown() && !planData.Key.IsUnknown() {
-			var createCheckData *TagAnnotationResourceModel
-			resp.Diagnostics.Append(req.Plan.Get(ctx, &createCheckData)...)
-			setTagAnnotationId(ctx, createCheckData)
-			CheckDn(ctx, &resp.Diagnostics, r.client, "tagAnnotation", createCheckData.Id.ValueString())
+		if (planData.Id.IsUnknown() || planData.Id.IsNull()) && !planData.ParentDn.IsUnknown() && !planData.Key.IsUnknown() {
+			setTagAnnotationId(ctx, planData)
+		}
+
+		if stateData == nil && !globalAllowExistingOnCreate && !planData.Id.IsUnknown() && !planData.Id.IsNull() {
+			CheckDn(ctx, &resp.Diagnostics, r.client, "tagAnnotation", planData.Id.ValueString())
 			if resp.Diagnostics.HasError() {
 				return
 			}
 		}
 
+		resp.Diagnostics.Append(resp.Plan.Set(ctx, &planData)...)
 	}
 }
 
@@ -154,7 +156,9 @@ func (r *TagAnnotationResource) Create(ctx context.Context, req resource.CreateR
 		return
 	}
 
-	setTagAnnotationId(ctx, data)
+	if data.Id.IsUnknown() || data.Id.IsNull() {
+		setTagAnnotationId(ctx, data)
+	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_annotation with id '%s'", data.Id.ValueString()))
 

@@ -75,16 +75,18 @@ func (r *FvRsIntraEpgResource) ModifyPlan(ctx context.Context, req resource.Modi
 			return
 		}
 
-		if stateData == nil && !globalAllowExistingOnCreate && !planData.ParentDn.IsUnknown() && !planData.TnVzBrCPName.IsUnknown() {
-			var createCheckData *FvRsIntraEpgResourceModel
-			resp.Diagnostics.Append(req.Plan.Get(ctx, &createCheckData)...)
-			setFvRsIntraEpgId(ctx, createCheckData)
-			CheckDn(ctx, &resp.Diagnostics, r.client, "fvRsIntraEpg", createCheckData.Id.ValueString())
+		if (planData.Id.IsUnknown() || planData.Id.IsNull()) && !planData.ParentDn.IsUnknown() && !planData.TnVzBrCPName.IsUnknown() {
+			setFvRsIntraEpgId(ctx, planData)
+		}
+
+		if stateData == nil && !globalAllowExistingOnCreate && !planData.Id.IsUnknown() && !planData.Id.IsNull() {
+			CheckDn(ctx, &resp.Diagnostics, r.client, "fvRsIntraEpg", planData.Id.ValueString())
 			if resp.Diagnostics.HasError() {
 				return
 			}
 		}
 
+		resp.Diagnostics.Append(resp.Plan.Set(ctx, &planData)...)
 	}
 }
 
@@ -217,7 +219,9 @@ func (r *FvRsIntraEpgResource) Create(ctx context.Context, req resource.CreateRe
 	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
 	var stateData *FvRsIntraEpgResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
-	setFvRsIntraEpgId(ctx, stateData)
+	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
+		setFvRsIntraEpgId(ctx, stateData)
+	}
 	getAndSetFvRsIntraEpgAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
 		resp.Diagnostics.AddError(
@@ -236,7 +240,9 @@ func (r *FvRsIntraEpgResource) Create(ctx context.Context, req resource.CreateRe
 		return
 	}
 
-	setFvRsIntraEpgId(ctx, data)
+	if data.Id.IsUnknown() || data.Id.IsNull() {
+		setFvRsIntraEpgId(ctx, data)
+	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_relation_to_intra_epg_contract with id '%s'", data.Id.ValueString()))
 

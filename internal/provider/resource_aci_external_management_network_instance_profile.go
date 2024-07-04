@@ -87,16 +87,18 @@ func (r *MgmtInstPResource) ModifyPlan(ctx context.Context, req resource.ModifyP
 			return
 		}
 
-		if stateData == nil && !globalAllowExistingOnCreate && !planData.Name.IsUnknown() {
-			var createCheckData *MgmtInstPResourceModel
-			resp.Diagnostics.Append(req.Plan.Get(ctx, &createCheckData)...)
-			setMgmtInstPId(ctx, createCheckData)
-			CheckDn(ctx, &resp.Diagnostics, r.client, "mgmtInstP", createCheckData.Id.ValueString())
+		if (planData.Id.IsUnknown() || planData.Id.IsNull()) && !planData.Name.IsUnknown() {
+			setMgmtInstPId(ctx, planData)
+		}
+
+		if stateData == nil && !globalAllowExistingOnCreate && !planData.Id.IsUnknown() && !planData.Id.IsNull() {
+			CheckDn(ctx, &resp.Diagnostics, r.client, "mgmtInstP", planData.Id.ValueString())
 			if resp.Diagnostics.HasError() {
 				return
 			}
 		}
 
+		resp.Diagnostics.Append(resp.Plan.Set(ctx, &planData)...)
 	}
 }
 
@@ -286,7 +288,9 @@ func (r *MgmtInstPResource) Create(ctx context.Context, req resource.CreateReque
 	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
 	var stateData *MgmtInstPResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
-	setMgmtInstPId(ctx, stateData)
+	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
+		setMgmtInstPId(ctx, stateData)
+	}
 	getAndSetMgmtInstPAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
 		resp.Diagnostics.AddError(
@@ -305,7 +309,9 @@ func (r *MgmtInstPResource) Create(ctx context.Context, req resource.CreateReque
 		return
 	}
 
-	setMgmtInstPId(ctx, data)
+	if data.Id.IsUnknown() || data.Id.IsNull() {
+		setMgmtInstPId(ctx, data)
+	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_external_management_network_instance_profile with id '%s'", data.Id.ValueString()))
 

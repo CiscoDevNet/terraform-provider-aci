@@ -78,16 +78,18 @@ func (r *FvRsConsIfResource) ModifyPlan(ctx context.Context, req resource.Modify
 			return
 		}
 
-		if stateData == nil && !globalAllowExistingOnCreate && !planData.ParentDn.IsUnknown() && !planData.TnVzCPIfName.IsUnknown() {
-			var createCheckData *FvRsConsIfResourceModel
-			resp.Diagnostics.Append(req.Plan.Get(ctx, &createCheckData)...)
-			setFvRsConsIfId(ctx, createCheckData)
-			CheckDn(ctx, &resp.Diagnostics, r.client, "fvRsConsIf", createCheckData.Id.ValueString())
+		if (planData.Id.IsUnknown() || planData.Id.IsNull()) && !planData.ParentDn.IsUnknown() && !planData.TnVzCPIfName.IsUnknown() {
+			setFvRsConsIfId(ctx, planData)
+		}
+
+		if stateData == nil && !globalAllowExistingOnCreate && !planData.Id.IsUnknown() && !planData.Id.IsNull() {
+			CheckDn(ctx, &resp.Diagnostics, r.client, "fvRsConsIf", planData.Id.ValueString())
 			if resp.Diagnostics.HasError() {
 				return
 			}
 		}
 
+		resp.Diagnostics.Append(resp.Plan.Set(ctx, &planData)...)
 	}
 }
 
@@ -231,7 +233,9 @@ func (r *FvRsConsIfResource) Create(ctx context.Context, req resource.CreateRequ
 	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
 	var stateData *FvRsConsIfResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
-	setFvRsConsIfId(ctx, stateData)
+	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
+		setFvRsConsIfId(ctx, stateData)
+	}
 	getAndSetFvRsConsIfAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
 		resp.Diagnostics.AddError(
@@ -250,7 +254,9 @@ func (r *FvRsConsIfResource) Create(ctx context.Context, req resource.CreateRequ
 		return
 	}
 
-	setFvRsConsIfId(ctx, data)
+	if data.Id.IsUnknown() || data.Id.IsNull() {
+		setFvRsConsIfId(ctx, data)
+	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_relation_to_imported_contract with id '%s'", data.Id.ValueString()))
 

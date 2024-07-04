@@ -82,16 +82,18 @@ func (r *L3extProvLblResource) ModifyPlan(ctx context.Context, req resource.Modi
 			return
 		}
 
-		if stateData == nil && !globalAllowExistingOnCreate && !planData.ParentDn.IsUnknown() && !planData.Name.IsUnknown() {
-			var createCheckData *L3extProvLblResourceModel
-			resp.Diagnostics.Append(req.Plan.Get(ctx, &createCheckData)...)
-			setL3extProvLblId(ctx, createCheckData)
-			CheckDn(ctx, &resp.Diagnostics, r.client, "l3extProvLbl", createCheckData.Id.ValueString())
+		if (planData.Id.IsUnknown() || planData.Id.IsNull()) && !planData.ParentDn.IsUnknown() && !planData.Name.IsUnknown() {
+			setL3extProvLblId(ctx, planData)
+		}
+
+		if stateData == nil && !globalAllowExistingOnCreate && !planData.Id.IsUnknown() && !planData.Id.IsNull() {
+			CheckDn(ctx, &resp.Diagnostics, r.client, "l3extProvLbl", planData.Id.ValueString())
 			if resp.Diagnostics.HasError() {
 				return
 			}
 		}
 
+		resp.Diagnostics.Append(resp.Plan.Set(ctx, &planData)...)
 	}
 }
 
@@ -267,7 +269,9 @@ func (r *L3extProvLblResource) Create(ctx context.Context, req resource.CreateRe
 	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
 	var stateData *L3extProvLblResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
-	setL3extProvLblId(ctx, stateData)
+	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
+		setL3extProvLblId(ctx, stateData)
+	}
 	getAndSetL3extProvLblAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
 		resp.Diagnostics.AddError(
@@ -286,7 +290,9 @@ func (r *L3extProvLblResource) Create(ctx context.Context, req resource.CreateRe
 		return
 	}
 
-	setL3extProvLblId(ctx, data)
+	if data.Id.IsUnknown() || data.Id.IsNull() {
+		setL3extProvLblId(ctx, data)
+	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_l3out_provider_label with id '%s'", data.Id.ValueString()))
 

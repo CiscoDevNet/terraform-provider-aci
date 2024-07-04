@@ -79,16 +79,18 @@ func (r *L3extRsRedistributePolResource) ModifyPlan(ctx context.Context, req res
 			return
 		}
 
-		if stateData == nil && !globalAllowExistingOnCreate && !planData.ParentDn.IsUnknown() && !planData.Src.IsUnknown() && !planData.TnRtctrlProfileName.IsUnknown() {
-			var createCheckData *L3extRsRedistributePolResourceModel
-			resp.Diagnostics.Append(req.Plan.Get(ctx, &createCheckData)...)
-			setL3extRsRedistributePolId(ctx, createCheckData)
-			CheckDn(ctx, &resp.Diagnostics, r.client, "l3extRsRedistributePol", createCheckData.Id.ValueString())
+		if (planData.Id.IsUnknown() || planData.Id.IsNull()) && !planData.ParentDn.IsUnknown() && !planData.Src.IsUnknown() && !planData.TnRtctrlProfileName.IsUnknown() {
+			setL3extRsRedistributePolId(ctx, planData)
+		}
+
+		if stateData == nil && !globalAllowExistingOnCreate && !planData.Id.IsUnknown() && !planData.Id.IsNull() {
+			CheckDn(ctx, &resp.Diagnostics, r.client, "l3extRsRedistributePol", planData.Id.ValueString())
 			if resp.Diagnostics.HasError() {
 				return
 			}
 		}
 
+		resp.Diagnostics.Append(resp.Plan.Set(ctx, &planData)...)
 	}
 }
 
@@ -232,7 +234,9 @@ func (r *L3extRsRedistributePolResource) Create(ctx context.Context, req resourc
 	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
 	var stateData *L3extRsRedistributePolResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
-	setL3extRsRedistributePolId(ctx, stateData)
+	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
+		setL3extRsRedistributePolId(ctx, stateData)
+	}
 	getAndSetL3extRsRedistributePolAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
 		resp.Diagnostics.AddError(
@@ -251,7 +255,9 @@ func (r *L3extRsRedistributePolResource) Create(ctx context.Context, req resourc
 		return
 	}
 
-	setL3extRsRedistributePolId(ctx, data)
+	if data.Id.IsUnknown() || data.Id.IsNull() {
+		setL3extRsRedistributePolId(ctx, data)
+	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_l3out_redistribute_policy with id '%s'", data.Id.ValueString()))
 

@@ -84,16 +84,18 @@ func (r *PimRouteMapEntryResource) ModifyPlan(ctx context.Context, req resource.
 			return
 		}
 
-		if stateData == nil && !globalAllowExistingOnCreate && !planData.ParentDn.IsUnknown() && !planData.Order.IsUnknown() {
-			var createCheckData *PimRouteMapEntryResourceModel
-			resp.Diagnostics.Append(req.Plan.Get(ctx, &createCheckData)...)
-			setPimRouteMapEntryId(ctx, createCheckData)
-			CheckDn(ctx, &resp.Diagnostics, r.client, "pimRouteMapEntry", createCheckData.Id.ValueString())
+		if (planData.Id.IsUnknown() || planData.Id.IsNull()) && !planData.ParentDn.IsUnknown() && !planData.Order.IsUnknown() {
+			setPimRouteMapEntryId(ctx, planData)
+		}
+
+		if stateData == nil && !globalAllowExistingOnCreate && !planData.Id.IsUnknown() && !planData.Id.IsNull() {
+			CheckDn(ctx, &resp.Diagnostics, r.client, "pimRouteMapEntry", planData.Id.ValueString())
 			if resp.Diagnostics.HasError() {
 				return
 			}
 		}
 
+		resp.Diagnostics.Append(resp.Plan.Set(ctx, &planData)...)
 	}
 }
 
@@ -285,7 +287,9 @@ func (r *PimRouteMapEntryResource) Create(ctx context.Context, req resource.Crea
 	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
 	var stateData *PimRouteMapEntryResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
-	setPimRouteMapEntryId(ctx, stateData)
+	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
+		setPimRouteMapEntryId(ctx, stateData)
+	}
 	getAndSetPimRouteMapEntryAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
 		resp.Diagnostics.AddError(
@@ -304,7 +308,9 @@ func (r *PimRouteMapEntryResource) Create(ctx context.Context, req resource.Crea
 		return
 	}
 
-	setPimRouteMapEntryId(ctx, data)
+	if data.Id.IsUnknown() || data.Id.IsNull() {
+		setPimRouteMapEntryId(ctx, data)
+	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_pim_route_map_entry with id '%s'", data.Id.ValueString()))
 

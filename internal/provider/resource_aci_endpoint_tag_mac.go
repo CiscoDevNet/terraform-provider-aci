@@ -80,16 +80,18 @@ func (r *FvEpMacTagResource) ModifyPlan(ctx context.Context, req resource.Modify
 			return
 		}
 
-		if stateData == nil && !globalAllowExistingOnCreate && !planData.ParentDn.IsUnknown() && !planData.BdName.IsUnknown() && !planData.Mac.IsUnknown() {
-			var createCheckData *FvEpMacTagResourceModel
-			resp.Diagnostics.Append(req.Plan.Get(ctx, &createCheckData)...)
-			setFvEpMacTagId(ctx, createCheckData)
-			CheckDn(ctx, &resp.Diagnostics, r.client, "fvEpMacTag", createCheckData.Id.ValueString())
+		if (planData.Id.IsUnknown() || planData.Id.IsNull()) && !planData.ParentDn.IsUnknown() && !planData.BdName.IsUnknown() && !planData.Mac.IsUnknown() {
+			setFvEpMacTagId(ctx, planData)
+		}
+
+		if stateData == nil && !globalAllowExistingOnCreate && !planData.Id.IsUnknown() && !planData.Id.IsNull() {
+			CheckDn(ctx, &resp.Diagnostics, r.client, "fvEpMacTag", planData.Id.ValueString())
 			if resp.Diagnostics.HasError() {
 				return
 			}
 		}
 
+		resp.Diagnostics.Append(resp.Plan.Set(ctx, &planData)...)
 	}
 }
 
@@ -254,7 +256,9 @@ func (r *FvEpMacTagResource) Create(ctx context.Context, req resource.CreateRequ
 	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
 	var stateData *FvEpMacTagResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
-	setFvEpMacTagId(ctx, stateData)
+	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
+		setFvEpMacTagId(ctx, stateData)
+	}
 	getAndSetFvEpMacTagAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
 		resp.Diagnostics.AddError(
@@ -273,7 +277,9 @@ func (r *FvEpMacTagResource) Create(ctx context.Context, req resource.CreateRequ
 		return
 	}
 
-	setFvEpMacTagId(ctx, data)
+	if data.Id.IsUnknown() || data.Id.IsNull() {
+		setFvEpMacTagId(ctx, data)
+	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_endpoint_tag_mac with id '%s'", data.Id.ValueString()))
 

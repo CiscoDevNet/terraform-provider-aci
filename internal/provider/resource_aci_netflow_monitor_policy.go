@@ -95,16 +95,18 @@ func (r *NetflowMonitorPolResource) ModifyPlan(ctx context.Context, req resource
 			return
 		}
 
-		if stateData == nil && !globalAllowExistingOnCreate && !planData.ParentDn.IsUnknown() && !planData.Name.IsUnknown() {
-			var createCheckData *NetflowMonitorPolResourceModel
-			resp.Diagnostics.Append(req.Plan.Get(ctx, &createCheckData)...)
-			setNetflowMonitorPolId(ctx, createCheckData)
-			CheckDn(ctx, &resp.Diagnostics, r.client, "netflowMonitorPol", createCheckData.Id.ValueString())
+		if (planData.Id.IsUnknown() || planData.Id.IsNull()) && !planData.ParentDn.IsUnknown() && !planData.Name.IsUnknown() {
+			setNetflowMonitorPolId(ctx, planData)
+		}
+
+		if stateData == nil && !globalAllowExistingOnCreate && !planData.Id.IsUnknown() && !planData.Id.IsNull() {
+			CheckDn(ctx, &resp.Diagnostics, r.client, "netflowMonitorPol", planData.Id.ValueString())
 			if resp.Diagnostics.HasError() {
 				return
 			}
 		}
 
+		resp.Diagnostics.Append(resp.Plan.Set(ctx, &planData)...)
 	}
 }
 
@@ -329,7 +331,9 @@ func (r *NetflowMonitorPolResource) Create(ctx context.Context, req resource.Cre
 	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
 	var stateData *NetflowMonitorPolResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
-	setNetflowMonitorPolId(ctx, stateData)
+	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
+		setNetflowMonitorPolId(ctx, stateData)
+	}
 	getAndSetNetflowMonitorPolAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
 		resp.Diagnostics.AddError(
@@ -348,7 +352,9 @@ func (r *NetflowMonitorPolResource) Create(ctx context.Context, req resource.Cre
 		return
 	}
 
-	setNetflowMonitorPolId(ctx, data)
+	if data.Id.IsUnknown() || data.Id.IsNull() {
+		setNetflowMonitorPolId(ctx, data)
+	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_netflow_monitor_policy with id '%s'", data.Id.ValueString()))
 
