@@ -59,16 +59,18 @@ func (r *TagTagResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 			return
 		}
 
-		if stateData == nil && !globalAllowExistingOnCreate && !planData.ParentDn.IsUnknown() && !planData.Key.IsUnknown() {
-			var createCheckData *TagTagResourceModel
-			resp.Diagnostics.Append(req.Plan.Get(ctx, &createCheckData)...)
-			setTagTagId(ctx, createCheckData)
-			CheckDn(ctx, &resp.Diagnostics, r.client, "tagTag", createCheckData.Id.ValueString())
+		if (planData.Id.IsUnknown() || planData.Id.IsNull()) && !planData.ParentDn.IsUnknown() && !planData.Key.IsUnknown() {
+			setTagTagId(ctx, planData)
+		}
+
+		if stateData == nil && !globalAllowExistingOnCreate && !planData.Id.IsUnknown() && !planData.Id.IsNull() {
+			CheckDn(ctx, &resp.Diagnostics, r.client, "tagTag", planData.Id.ValueString())
 			if resp.Diagnostics.HasError() {
 				return
 			}
 		}
 
+		resp.Diagnostics.Append(resp.Plan.Set(ctx, &planData)...)
 	}
 }
 
@@ -154,7 +156,9 @@ func (r *TagTagResource) Create(ctx context.Context, req resource.CreateRequest,
 		return
 	}
 
-	setTagTagId(ctx, data)
+	if data.Id.IsUnknown() || data.Id.IsNull() {
+		setTagTagId(ctx, data)
+	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_tag with id '%s'", data.Id.ValueString()))
 

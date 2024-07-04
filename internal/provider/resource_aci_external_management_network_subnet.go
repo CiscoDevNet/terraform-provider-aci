@@ -78,16 +78,18 @@ func (r *MgmtSubnetResource) ModifyPlan(ctx context.Context, req resource.Modify
 			return
 		}
 
-		if stateData == nil && !globalAllowExistingOnCreate && !planData.ParentDn.IsUnknown() && !planData.Ip.IsUnknown() {
-			var createCheckData *MgmtSubnetResourceModel
-			resp.Diagnostics.Append(req.Plan.Get(ctx, &createCheckData)...)
-			setMgmtSubnetId(ctx, createCheckData)
-			CheckDn(ctx, &resp.Diagnostics, r.client, "mgmtSubnet", createCheckData.Id.ValueString())
+		if (planData.Id.IsUnknown() || planData.Id.IsNull()) && !planData.ParentDn.IsUnknown() && !planData.Ip.IsUnknown() {
+			setMgmtSubnetId(ctx, planData)
+		}
+
+		if stateData == nil && !globalAllowExistingOnCreate && !planData.Id.IsUnknown() && !planData.Id.IsNull() {
+			CheckDn(ctx, &resp.Diagnostics, r.client, "mgmtSubnet", planData.Id.ValueString())
 			if resp.Diagnostics.HasError() {
 				return
 			}
 		}
 
+		resp.Diagnostics.Append(resp.Plan.Set(ctx, &planData)...)
 	}
 }
 
@@ -244,7 +246,9 @@ func (r *MgmtSubnetResource) Create(ctx context.Context, req resource.CreateRequ
 	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
 	var stateData *MgmtSubnetResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
-	setMgmtSubnetId(ctx, stateData)
+	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
+		setMgmtSubnetId(ctx, stateData)
+	}
 	getAndSetMgmtSubnetAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
 		resp.Diagnostics.AddError(
@@ -263,7 +267,9 @@ func (r *MgmtSubnetResource) Create(ctx context.Context, req resource.CreateRequ
 		return
 	}
 
-	setMgmtSubnetId(ctx, data)
+	if data.Id.IsUnknown() || data.Id.IsNull() {
+		setMgmtSubnetId(ctx, data)
+	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_external_management_network_subnet with id '%s'", data.Id.ValueString()))
 

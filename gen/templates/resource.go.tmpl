@@ -461,11 +461,12 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 			return
 		}
 
-		if stateData == nil && !globalAllowExistingOnCreate {{if .HasParent }}&& !planData.ParentDn.IsUnknown() {{end}}{{range .Properties}}{{if .IsNaming}}&& !planData.{{ .Name }}.IsUnknown() {{end}}{{end}}{
-			var createCheckData *{{.ResourceClassName}}ResourceModel
-			resp.Diagnostics.Append(req.Plan.Get(ctx, &createCheckData)...)
-			set{{.ResourceClassName}}Id(ctx, createCheckData)
-			CheckDn(ctx, &resp.Diagnostics, r.client, "{{.PkgName}}", createCheckData.Id.ValueString())
+		if (planData.Id.IsUnknown() || planData.Id.IsNull()) {{if .HasParent }}&& !planData.ParentDn.IsUnknown() {{end}}{{range .Properties}}{{if .IsNaming}}&& !planData.{{ .Name }}.IsUnknown() {{end}}{{end}}{
+			set{{.ResourceClassName}}Id(ctx, planData)
+		}
+
+		if stateData == nil && !globalAllowExistingOnCreate && !planData.Id.IsUnknown() && !planData.Id.IsNull() {
+			CheckDn(ctx, &resp.Diagnostics, r.client, "{{.PkgName}}", planData.Id.ValueString())
 			if resp.Diagnostics.HasError() {
 				return
 			}
@@ -718,8 +719,8 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 			{{- end }}
 		}
 		{{ end }}
-		resp.Diagnostics.Append(resp.Plan.Set(ctx, &planData)...)
 		{{ end }}
+		resp.Diagnostics.Append(resp.Plan.Set(ctx, &planData)...)
 	}
 }
 
@@ -1020,7 +1021,9 @@ func (r *{{.ResourceClassName}}Resource) Create(ctx context.Context, req resourc
 	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
 	var stateData *{{.ResourceClassName}}ResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
-	set{{.ResourceClassName}}Id(ctx, stateData)
+	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
+		set{{.ResourceClassName}}Id(ctx, stateData)
+	}
 	getAndSet{{.ResourceClassName}}Attributes(ctx, &resp.Diagnostics, r.client, stateData)
 	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
 		resp.Diagnostics.AddError(
@@ -1040,7 +1043,9 @@ func (r *{{.ResourceClassName}}Resource) Create(ctx context.Context, req resourc
 		return
 	}
 	
-	set{{.ResourceClassName}}Id(ctx, data)
+	if data.Id.IsUnknown() || data.Id.IsNull() {
+		set{{.ResourceClassName}}Id(ctx, data)
+	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_{{.ResourceName}} with id '%s'", data.Id.ValueString()))
 

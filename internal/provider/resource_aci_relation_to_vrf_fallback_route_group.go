@@ -75,16 +75,18 @@ func (r *L3extRsOutToFBRGroupResource) ModifyPlan(ctx context.Context, req resou
 			return
 		}
 
-		if stateData == nil && !globalAllowExistingOnCreate && !planData.ParentDn.IsUnknown() && !planData.TDn.IsUnknown() {
-			var createCheckData *L3extRsOutToFBRGroupResourceModel
-			resp.Diagnostics.Append(req.Plan.Get(ctx, &createCheckData)...)
-			setL3extRsOutToFBRGroupId(ctx, createCheckData)
-			CheckDn(ctx, &resp.Diagnostics, r.client, "l3extRsOutToFBRGroup", createCheckData.Id.ValueString())
+		if (planData.Id.IsUnknown() || planData.Id.IsNull()) && !planData.ParentDn.IsUnknown() && !planData.TDn.IsUnknown() {
+			setL3extRsOutToFBRGroupId(ctx, planData)
+		}
+
+		if stateData == nil && !globalAllowExistingOnCreate && !planData.Id.IsUnknown() && !planData.Id.IsNull() {
+			CheckDn(ctx, &resp.Diagnostics, r.client, "l3extRsOutToFBRGroup", planData.Id.ValueString())
 			if resp.Diagnostics.HasError() {
 				return
 			}
 		}
 
+		resp.Diagnostics.Append(resp.Plan.Set(ctx, &planData)...)
 	}
 }
 
@@ -217,7 +219,9 @@ func (r *L3extRsOutToFBRGroupResource) Create(ctx context.Context, req resource.
 	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
 	var stateData *L3extRsOutToFBRGroupResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
-	setL3extRsOutToFBRGroupId(ctx, stateData)
+	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
+		setL3extRsOutToFBRGroupId(ctx, stateData)
+	}
 	getAndSetL3extRsOutToFBRGroupAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
 		resp.Diagnostics.AddError(
@@ -236,7 +240,9 @@ func (r *L3extRsOutToFBRGroupResource) Create(ctx context.Context, req resource.
 		return
 	}
 
-	setL3extRsOutToFBRGroupId(ctx, data)
+	if data.Id.IsUnknown() || data.Id.IsNull() {
+		setL3extRsOutToFBRGroupId(ctx, data)
+	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_relation_to_vrf_fallback_route_group with id '%s'", data.Id.ValueString()))
 

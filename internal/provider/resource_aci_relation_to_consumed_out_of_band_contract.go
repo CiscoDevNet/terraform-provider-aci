@@ -78,16 +78,18 @@ func (r *MgmtRsOoBConsResource) ModifyPlan(ctx context.Context, req resource.Mod
 			return
 		}
 
-		if stateData == nil && !globalAllowExistingOnCreate && !planData.ParentDn.IsUnknown() && !planData.TnVzOOBBrCPName.IsUnknown() {
-			var createCheckData *MgmtRsOoBConsResourceModel
-			resp.Diagnostics.Append(req.Plan.Get(ctx, &createCheckData)...)
-			setMgmtRsOoBConsId(ctx, createCheckData)
-			CheckDn(ctx, &resp.Diagnostics, r.client, "mgmtRsOoBCons", createCheckData.Id.ValueString())
+		if (planData.Id.IsUnknown() || planData.Id.IsNull()) && !planData.ParentDn.IsUnknown() && !planData.TnVzOOBBrCPName.IsUnknown() {
+			setMgmtRsOoBConsId(ctx, planData)
+		}
+
+		if stateData == nil && !globalAllowExistingOnCreate && !planData.Id.IsUnknown() && !planData.Id.IsNull() {
+			CheckDn(ctx, &resp.Diagnostics, r.client, "mgmtRsOoBCons", planData.Id.ValueString())
 			if resp.Diagnostics.HasError() {
 				return
 			}
 		}
 
+		resp.Diagnostics.Append(resp.Plan.Set(ctx, &planData)...)
 	}
 }
 
@@ -231,7 +233,9 @@ func (r *MgmtRsOoBConsResource) Create(ctx context.Context, req resource.CreateR
 	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
 	var stateData *MgmtRsOoBConsResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
-	setMgmtRsOoBConsId(ctx, stateData)
+	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
+		setMgmtRsOoBConsId(ctx, stateData)
+	}
 	getAndSetMgmtRsOoBConsAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
 		resp.Diagnostics.AddError(
@@ -250,7 +254,9 @@ func (r *MgmtRsOoBConsResource) Create(ctx context.Context, req resource.CreateR
 		return
 	}
 
-	setMgmtRsOoBConsId(ctx, data)
+	if data.Id.IsUnknown() || data.Id.IsNull() {
+		setMgmtRsOoBConsId(ctx, data)
+	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_relation_to_consumed_out_of_band_contract with id '%s'", data.Id.ValueString()))
 

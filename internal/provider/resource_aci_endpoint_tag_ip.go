@@ -80,16 +80,18 @@ func (r *FvEpIpTagResource) ModifyPlan(ctx context.Context, req resource.ModifyP
 			return
 		}
 
-		if stateData == nil && !globalAllowExistingOnCreate && !planData.ParentDn.IsUnknown() && !planData.CtxName.IsUnknown() && !planData.Ip.IsUnknown() {
-			var createCheckData *FvEpIpTagResourceModel
-			resp.Diagnostics.Append(req.Plan.Get(ctx, &createCheckData)...)
-			setFvEpIpTagId(ctx, createCheckData)
-			CheckDn(ctx, &resp.Diagnostics, r.client, "fvEpIpTag", createCheckData.Id.ValueString())
+		if (planData.Id.IsUnknown() || planData.Id.IsNull()) && !planData.ParentDn.IsUnknown() && !planData.CtxName.IsUnknown() && !planData.Ip.IsUnknown() {
+			setFvEpIpTagId(ctx, planData)
+		}
+
+		if stateData == nil && !globalAllowExistingOnCreate && !planData.Id.IsUnknown() && !planData.Id.IsNull() {
+			CheckDn(ctx, &resp.Diagnostics, r.client, "fvEpIpTag", planData.Id.ValueString())
 			if resp.Diagnostics.HasError() {
 				return
 			}
 		}
 
+		resp.Diagnostics.Append(resp.Plan.Set(ctx, &planData)...)
 	}
 }
 
@@ -254,7 +256,9 @@ func (r *FvEpIpTagResource) Create(ctx context.Context, req resource.CreateReque
 	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
 	var stateData *FvEpIpTagResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
-	setFvEpIpTagId(ctx, stateData)
+	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
+		setFvEpIpTagId(ctx, stateData)
+	}
 	getAndSetFvEpIpTagAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
 		resp.Diagnostics.AddError(
@@ -273,7 +277,9 @@ func (r *FvEpIpTagResource) Create(ctx context.Context, req resource.CreateReque
 		return
 	}
 
-	setFvEpIpTagId(ctx, data)
+	if data.Id.IsUnknown() || data.Id.IsNull() {
+		setFvEpIpTagId(ctx, data)
+	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_endpoint_tag_ip with id '%s'", data.Id.ValueString()))
 

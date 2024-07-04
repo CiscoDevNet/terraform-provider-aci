@@ -84,16 +84,18 @@ func (r *VzOOBBrCPResource) ModifyPlan(ctx context.Context, req resource.ModifyP
 			return
 		}
 
-		if stateData == nil && !globalAllowExistingOnCreate && !planData.Name.IsUnknown() {
-			var createCheckData *VzOOBBrCPResourceModel
-			resp.Diagnostics.Append(req.Plan.Get(ctx, &createCheckData)...)
-			setVzOOBBrCPId(ctx, createCheckData)
-			CheckDn(ctx, &resp.Diagnostics, r.client, "vzOOBBrCP", createCheckData.Id.ValueString())
+		if (planData.Id.IsUnknown() || planData.Id.IsNull()) && !planData.Name.IsUnknown() {
+			setVzOOBBrCPId(ctx, planData)
+		}
+
+		if stateData == nil && !globalAllowExistingOnCreate && !planData.Id.IsUnknown() && !planData.Id.IsNull() {
+			CheckDn(ctx, &resp.Diagnostics, r.client, "vzOOBBrCP", planData.Id.ValueString())
 			if resp.Diagnostics.HasError() {
 				return
 			}
 		}
 
+		resp.Diagnostics.Append(resp.Plan.Set(ctx, &planData)...)
 	}
 }
 
@@ -294,7 +296,9 @@ func (r *VzOOBBrCPResource) Create(ctx context.Context, req resource.CreateReque
 	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
 	var stateData *VzOOBBrCPResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
-	setVzOOBBrCPId(ctx, stateData)
+	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
+		setVzOOBBrCPId(ctx, stateData)
+	}
 	getAndSetVzOOBBrCPAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
 		resp.Diagnostics.AddError(
@@ -313,7 +317,9 @@ func (r *VzOOBBrCPResource) Create(ctx context.Context, req resource.CreateReque
 		return
 	}
 
-	setVzOOBBrCPId(ctx, data)
+	if data.Id.IsUnknown() || data.Id.IsNull() {
+		setVzOOBBrCPId(ctx, data)
+	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_out_of_band_contract with id '%s'", data.Id.ValueString()))
 

@@ -587,11 +587,12 @@ func (r *FvESgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanR
 			return
 		}
 
-		if stateData == nil && !globalAllowExistingOnCreate && !planData.ParentDn.IsUnknown() && !planData.Name.IsUnknown() {
-			var createCheckData *FvESgResourceModel
-			resp.Diagnostics.Append(req.Plan.Get(ctx, &createCheckData)...)
-			setFvESgId(ctx, createCheckData)
-			CheckDn(ctx, &resp.Diagnostics, r.client, "fvESg", createCheckData.Id.ValueString())
+		if (planData.Id.IsUnknown() || planData.Id.IsNull()) && !planData.ParentDn.IsUnknown() && !planData.Name.IsUnknown() {
+			setFvESgId(ctx, planData)
+		}
+
+		if stateData == nil && !globalAllowExistingOnCreate && !planData.Id.IsUnknown() && !planData.Id.IsNull() {
+			CheckDn(ctx, &resp.Diagnostics, r.client, "fvESg", planData.Id.ValueString())
 			if resp.Diagnostics.HasError() {
 				return
 			}
@@ -916,7 +917,6 @@ func (r *FvESgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanR
 		}
 
 		resp.Diagnostics.Append(resp.Plan.Set(ctx, &planData)...)
-
 	}
 }
 
@@ -1502,7 +1502,9 @@ func (r *FvESgResource) Create(ctx context.Context, req resource.CreateRequest, 
 	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
 	var stateData *FvESgResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
-	setFvESgId(ctx, stateData)
+	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
+		setFvESgId(ctx, stateData)
+	}
 	getAndSetFvESgAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
 		resp.Diagnostics.AddError(
@@ -1521,7 +1523,9 @@ func (r *FvESgResource) Create(ctx context.Context, req resource.CreateRequest, 
 		return
 	}
 
-	setFvESgId(ctx, data)
+	if data.Id.IsUnknown() || data.Id.IsNull() {
+		setFvESgId(ctx, data)
+	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_endpoint_security_group with id '%s'", data.Id.ValueString()))
 
