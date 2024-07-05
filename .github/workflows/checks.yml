@@ -41,6 +41,23 @@ jobs:
       - name: Check generated code for diffs
         run: git diff --exit-code
 
+  go-releaser:
+    name: Dry-Run GoReleaser Check
+    needs: [build, diff]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Unshallow
+        run: git fetch --prune --unshallow
+      - uses: actions/setup-go@v5
+      - name: Install GoReleaser
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          install-only: true
+          version: latest
+      - name: GoReleaser Release Check
+        run: goreleaser release --skip=publish,sign --snapshot --clean
+
   acceptance:
     name: Acceptance Tests
     if: github.repository_owner == 'CiscoDevNet'
