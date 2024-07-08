@@ -24,6 +24,7 @@ const testConfigFvApMinDependencyWithFvTenant = testConfigFvTenantMin + `
 resource "aci_application_epg" "test" {
   application_profile_dn = aci_application_profile.test.id
   name                   = "test_epg"
+}
 
 resource "aci_application_profile" "test" {
   tenant_dn = aci_tenant.test.id
