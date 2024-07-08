@@ -1126,7 +1126,7 @@ func (m *Model) SetClassChildren(classDetails interface{}, pkgNames []string) {
 			if key.(string) == "exclude_children" {
 				for _, child := range value.([]interface{}) {
 					if !slices.Contains(childClasses, child.(string)) {
-						excludeChildClasses = append(childClasses, child.(string))
+						excludeChildClasses = append(excludeChildClasses, child.(string))
 					}
 				}
 			}
