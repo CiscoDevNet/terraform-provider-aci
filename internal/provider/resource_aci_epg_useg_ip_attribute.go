@@ -52,7 +52,7 @@ type FvIpAttrResourceModel struct {
 	NameAlias     types.String `tfsdk:"name_alias"`
 	OwnerKey      types.String `tfsdk:"owner_key"`
 	OwnerTag      types.String `tfsdk:"owner_tag"`
-	UsefvSubnet   types.String `tfsdk:"use_fv_subnet"`
+	UsefvSubnet   types.String `tfsdk:"use_epg_subnet"`
 	TagAnnotation types.Set    `tfsdk:"annotations"`
 	TagTag        types.Set    `tfsdk:"tags"`
 }
@@ -157,7 +157,7 @@ func (r *FvIpAttrResource) Schema(ctx context.Context, req resource.SchemaReques
 				},
 				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
 			},
-			"use_fv_subnet": schema.StringAttribute{
+			"use_epg_subnet": schema.StringAttribute{
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
@@ -166,7 +166,7 @@ func (r *FvIpAttrResource) Schema(ctx context.Context, req resource.SchemaReques
 				Validators: []validator.String{
 					stringvalidator.OneOf("no", "yes"),
 				},
-				MarkdownDescription: `The usefvSubnet flag of the EPG uSeg IP Attribute object.`,
+				MarkdownDescription: `Parameter used to determine whether a previously configured subnet address should be used as the IP filter.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,

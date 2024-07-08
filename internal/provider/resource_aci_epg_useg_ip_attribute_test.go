@@ -28,7 +28,7 @@ func TestAccResourceFvIpAttrWithFvCrtrn(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "use_fv_subnet", "no"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "use_epg_subnet", "no"),
 				),
 			},
 			// Update with all config and verify default APIC values
@@ -43,7 +43,7 @@ func TestAccResourceFvIpAttrWithFvCrtrn(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "name_alias", "name_alias"),
 					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "owner_key", "owner_key"),
 					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "owner_tag", "owner_tag"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "use_fv_subnet", "yes"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "use_epg_subnet", "yes"),
 				),
 			},
 			// Update with minimum config and verify config is unchanged
@@ -67,7 +67,7 @@ func TestAccResourceFvIpAttrWithFvCrtrn(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "use_fv_subnet", "no"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "use_epg_subnet", "no"),
 				),
 			},
 			// Import testing
@@ -83,7 +83,7 @@ func TestAccResourceFvIpAttrWithFvCrtrn(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "use_fv_subnet", "no"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "use_epg_subnet", "no"),
 				),
 			},
 			// Update with children
@@ -98,7 +98,7 @@ func TestAccResourceFvIpAttrWithFvCrtrn(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "use_fv_subnet", "no"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "use_epg_subnet", "no"),
 					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "annotations.1.key", "key_1"),
@@ -122,7 +122,7 @@ func TestAccResourceFvIpAttrWithFvCrtrn(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "use_fv_subnet", "no"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "use_epg_subnet", "no"),
 					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "annotations.1.key", "key_1"),
@@ -194,7 +194,7 @@ resource "aci_epg_useg_ip_attribute" "test" {
   name_alias = "name_alias"
   owner_key = "owner_key"
   owner_tag = "owner_tag"
-  use_fv_subnet = "yes"
+  use_epg_subnet = "yes"
 }
 `
 
@@ -208,7 +208,7 @@ resource "aci_epg_useg_ip_attribute" "test" {
   name_alias = ""
   owner_key = ""
   owner_tag = ""
-  use_fv_subnet = "no"
+  use_epg_subnet = "no"
 }
 `
 const testConfigFvIpAttrChildrenDependencyWithFvCrtrn = testConfigFvCrtrnMinDependencyWithFvAEPg + `

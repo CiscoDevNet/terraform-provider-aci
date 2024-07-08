@@ -602,19 +602,19 @@ fvIpAttr:
   resource_required:
     - ip
   overwrites:
-    usefv_subnet: "use_fv_subnet"
+    usefv_subnet: "use_epg_subnet"
   documentation:
     ip: "The device IP address of the %s object."
-    usefvSubnet: "The usefvSubnet flag of the %s object."
+    usefvSubnet: "Parameter used to determine whether a previously configured subnet address should be used as the IP filter."
   default_values:
     usefvSubnet: "no"
   test_values:
     default:
-      use_fv_subnet: "no"
+      use_epg_subnet: "no"
       ip: "131.107.1.200"
       name: "131"
     all:
-      use_fv_subnet: "yes"
+      use_epg_subnet: "yes"
       ip: "0.0.0.0"
     resource_required:
       name: "131"

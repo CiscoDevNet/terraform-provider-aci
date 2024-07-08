@@ -48,15 +48,15 @@ The configuration snippet below shows all possible attributes of the EPG uSeg IP
 ```hcl
 
 resource "aci_epg_useg_ip_attribute" "full_example_epg_useg_block_statement" {
-  parent_dn     = aci_epg_useg_block_statement.example.id
-  annotation    = "annotation"
-  description   = "description"
-  ip            = "131.107.1.200"
-  name          = "131"
-  name_alias    = "name_alias"
-  owner_key     = "owner_key"
-  owner_tag     = "owner_tag"
-  use_fv_subnet = "yes"
+  parent_dn      = aci_epg_useg_block_statement.example.id
+  annotation     = "annotation"
+  description    = "description"
+  ip             = "131.107.1.200"
+  name           = "131"
+  name_alias     = "name_alias"
+  owner_key      = "owner_key"
+  owner_tag      = "owner_tag"
+  use_epg_subnet = "yes"
   annotations = [
     {
       key   = "key_0"
@@ -96,7 +96,7 @@ All examples for the EPG uSeg IP Attribute resource can be found in the [example
 * `name_alias` (nameAlias) - (string) The name alias of the EPG uSeg IP Attribute object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
-* `use_fv_subnet` (usefvSubnet) - (string) The usefvSubnet flag of the EPG uSeg IP Attribute object.
+* `use_epg_subnet` (usefvSubnet) - (string) Parameter used to determine whether a previously configured subnet address should be used as the IP filter.
   - Default: `no`
   - Valid Values: `no`, `yes`.
 

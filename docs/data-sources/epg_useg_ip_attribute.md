@@ -54,7 +54,7 @@ data "aci_epg_useg_ip_attribute" "example_epg_useg_block_statement" {
 * `name_alias` (nameAlias) - (string) The name alias of the EPG uSeg IP Attribute object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
-* `use_fv_subnet` (usefvSubnet) - (string) The usefvSubnet flag of the EPG uSeg IP Attribute object.
+* `use_epg_subnet` (usefvSubnet) - (string) Parameter used to determine whether a previously configured subnet address should be used as the IP filter.
 
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
   * `key` (key) - (string) The key used to uniquely identify this configuration object.
