@@ -83,9 +83,8 @@ data "aci_associated_site" "test" {
 }
 `
 
-const testConfigFvSiteAssociatedNotExistingFvBD = testConfigFvSiteAssociatedMinDependencyWithFvBD + `
+const testConfigFvSiteAssociatedNotExistingFvBD = testConfigFvBDMinDependencyWithFvTenant + `
 data "aci_associated_site" "test_non_existing" {
   parent_dn = aci_bridge_domain.test.id
-  depends_on = [aci_associated_site.test]
 }
 `
