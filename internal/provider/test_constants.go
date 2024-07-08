@@ -73,7 +73,7 @@ resource "aci_associated_site" "test" {
 }
 `
 
-const testConfigFvBDMinDependencyWithFvTenant = testConfigFvTenantMin + `
+const testConfigFvBDMinDependencyWithFvAp = testConfigFvTenantMin + `
 resource "aci_bridge_domain" "test" {
   tenant_dn = aci_tenant.test.id
   name      = "test_bd"

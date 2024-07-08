@@ -412,13 +412,13 @@ resource "aci_associated_site" "test" {
 }
 `
 
-const testConfigFvSiteAssociatedMinDependencyWithFvBD = testConfigFvBDMinDependencyWithFvTenant + `
+const testConfigFvSiteAssociatedMinDependencyWithFvBD = testConfigFvBDMinDependencyWithFvAp + `
 resource "aci_associated_site" "test" {
   parent_dn = aci_bridge_domain.test.id
 }
 `
 
-const testConfigFvSiteAssociatedAllDependencyWithFvBD = testConfigFvBDMinDependencyWithFvTenant + `
+const testConfigFvSiteAssociatedAllDependencyWithFvBD = testConfigFvBDMinDependencyWithFvAp + `
 resource "aci_associated_site" "test" {
   parent_dn = aci_bridge_domain.test.id
   annotation = "annotation"
@@ -431,7 +431,7 @@ resource "aci_associated_site" "test" {
 }
 `
 
-const testConfigFvSiteAssociatedResetDependencyWithFvBD = testConfigFvBDMinDependencyWithFvTenant + `
+const testConfigFvSiteAssociatedResetDependencyWithFvBD = testConfigFvBDMinDependencyWithFvAp + `
 resource "aci_associated_site" "test" {
   parent_dn = aci_bridge_domain.test.id
   annotation = "orchestrator:terraform"
@@ -443,7 +443,7 @@ resource "aci_associated_site" "test" {
   site_id = "0"
 }
 `
-const testConfigFvSiteAssociatedChildrenDependencyWithFvBD = testConfigFvBDMinDependencyWithFvTenant + `
+const testConfigFvSiteAssociatedChildrenDependencyWithFvBD = testConfigFvBDMinDependencyWithFvAp + `
 resource "aci_associated_site" "test" {
   parent_dn = aci_bridge_domain.test.id
   annotations = [
@@ -469,13 +469,13 @@ resource "aci_associated_site" "test" {
 }
 `
 
-const testConfigFvSiteAssociatedChildrenRemoveFromConfigDependencyWithFvBD = testConfigFvBDMinDependencyWithFvTenant + `
+const testConfigFvSiteAssociatedChildrenRemoveFromConfigDependencyWithFvBD = testConfigFvBDMinDependencyWithFvAp + `
 resource "aci_associated_site" "test" {
   parent_dn = aci_bridge_domain.test.id
 }
 `
 
-const testConfigFvSiteAssociatedChildrenRemoveOneDependencyWithFvBD = testConfigFvBDMinDependencyWithFvTenant + `
+const testConfigFvSiteAssociatedChildrenRemoveOneDependencyWithFvBD = testConfigFvBDMinDependencyWithFvAp + `
 resource "aci_associated_site" "test" {
   parent_dn = aci_bridge_domain.test.id
   annotations = [ 
@@ -493,7 +493,7 @@ resource "aci_associated_site" "test" {
 }
 `
 
-const testConfigFvSiteAssociatedChildrenRemoveAllDependencyWithFvBD = testConfigFvBDMinDependencyWithFvTenant + `
+const testConfigFvSiteAssociatedChildrenRemoveAllDependencyWithFvBD = testConfigFvBDMinDependencyWithFvAp + `
 resource "aci_associated_site" "test" {
   parent_dn = aci_bridge_domain.test.id
   annotations = []

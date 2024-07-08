@@ -20,6 +20,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
+
 	// temporary unused until muxing is removed
 	// "github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -212,7 +213,14 @@ func (p *AciProvider) Resources(ctx context.Context) []func() resource.Resource 
 		NewFvEpMacTagResource,
 		NewFvFBRGroupResource,
 		NewFvFBRMemberResource,
+		NewFvFBRouteResource,
 		NewFvRemoteIdResource,
+		NewFvRsConsResource,
+		NewFvRsConsIfResource,
+		NewFvRsIntraEpgResource,
+		NewFvRsProtByResource,
+		NewFvRsProvResource,
+		NewFvRsSecInheritedResource,
 		NewFvSiteAssociatedResource,
 		NewL3extConsLblResource,
 		NewL3extProvLblResource,
@@ -247,7 +255,14 @@ func (p *AciProvider) DataSources(ctx context.Context) []func() datasource.DataS
 		NewFvEpMacTagDataSource,
 		NewFvFBRGroupDataSource,
 		NewFvFBRMemberDataSource,
+		NewFvFBRouteDataSource,
 		NewFvRemoteIdDataSource,
+		NewFvRsConsDataSource,
+		NewFvRsConsIfDataSource,
+		NewFvRsIntraEpgDataSource,
+		NewFvRsProtByDataSource,
+		NewFvRsProvDataSource,
+		NewFvRsSecInheritedDataSource,
 		NewFvSiteAssociatedDataSource,
 		NewL3extConsLblDataSource,
 		NewL3extProvLblDataSource,
