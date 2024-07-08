@@ -76,9 +76,9 @@ func (d *FvIpAttrDataSource) Schema(ctx context.Context, req datasource.SchemaRe
 				Computed:            true,
 				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
 			},
-			"use_fv_subnet": schema.StringAttribute{
+			"use_epg_subnet": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The usefvSubnet flag of the EPG uSeg IP Attribute object.`,
+				MarkdownDescription: `Parameter used to determine whether a previously configured subnet address should be used as the IP filter.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,

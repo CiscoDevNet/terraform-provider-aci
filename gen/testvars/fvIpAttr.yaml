@@ -9,7 +9,7 @@ default:
   name_alias: ""
   owner_key: ""
   owner_tag: ""
-  use_fv_subnet: "no"
+  use_epg_subnet: "no"
 
 datasource_non_existing:
   name: "131_non_existing"
@@ -28,7 +28,7 @@ all:
   name_alias: "name_alias"
   owner_key: "owner_key"
   owner_tag: "owner_tag"
-  use_fv_subnet: "yes"
+  use_epg_subnet: "yes"
 
 children:
   annotations:

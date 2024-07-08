@@ -28,7 +28,7 @@ func TestAccDataSourceFvIpAttrWithFvCrtrn(t *testing.T) {
 					resource.TestCheckResourceAttr("data.aci_epg_useg_ip_attribute.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("data.aci_epg_useg_ip_attribute.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("data.aci_epg_useg_ip_attribute.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("data.aci_epg_useg_ip_attribute.test", "use_fv_subnet", "no"),
+					resource.TestCheckResourceAttr("data.aci_epg_useg_ip_attribute.test", "use_epg_subnet", "no"),
 				),
 			},
 			{
