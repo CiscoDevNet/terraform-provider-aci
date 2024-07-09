@@ -26,19 +26,19 @@ func TestAccDataSource{{$.resourceClassName}}With{{capitalize .class_name}} (t *
 				Check: resource.ComposeAggregateTestCheckFunc(
 					{{- range $key, $value := $.datasource_required}}
 						{{- if eq $key "target_dn" }}
-					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}", "{{getTestTargetDn $.targets $.resourceName $value false $target_classes 0}}"),
+					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}", "{{$key}}", "{{getTestTargetDn $.targets $.resourceName $value false $target_classes 0}}"),
 						{{- else }}
-					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}", "{{$value}}"),
+					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}", "{{$key}}", "{{$value}}"),
 						{{- end }}
 					{{- end}}
 					{{- range $key, $value := $.default}}
 						{{- if (isInterfaceSlice $value)}}
-					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}.#", "{{len $value}}"),
+					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}", "{{$key}}.#", "{{len $value}}"),
 							{{- range $index, $subvalue := $value}}
-					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}.{{$index}}", "{{$subvalue}}"),
+					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}", "{{$key}}.{{$index}}", "{{$subvalue}}"),
 							{{- end}}
 						{{- else}}
-					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}", "{{$key}}", "{{$value}}"),
+					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}", "{{$key}}", "{{$value}}"),
 						{{- end}}
 					{{- end}}
 				),
@@ -89,7 +89,7 @@ func TestAccDataSource{{.resourceClassName}}(t *testing.T) {
 	{{- range .parents}}{{$target_classes := .target_classes}}
 		{{- $parentClassName := capitalize .class_name }}
 const testConfig{{$.resourceClassName}}DataSourceDependencyWith{{capitalize .class_name}}  = testConfig{{$.resourceClassName}}MinDependencyWith{{capitalize .class_name}}  + `
-data "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}" {
+data "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}" {
   parent_dn = {{.parent_dn}}
   {{- range $key, $value := $.datasource_required}}
 		{{- if eq $key "target_dn" }}
@@ -98,7 +98,7 @@ data "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClassNam
   {{$key}} = "{{$value}}"
 		{{- end }}
   {{- end}}
-  depends_on = [aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}1{{- end }}]
+  depends_on = [aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}]
 }
 `
 

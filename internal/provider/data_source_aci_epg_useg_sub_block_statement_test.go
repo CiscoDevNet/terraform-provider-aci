@@ -47,13 +47,13 @@ func TestAccDataSourceFvSCrtrnWithFvSCrtrn(t *testing.T) {
 				Config:             testConfigFvSCrtrnDataSourceDependencyWithFvSCrtrn,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.aci_epg_useg_sub_block_statement.test1", "name", "sub_criterion"),
-					resource.TestCheckResourceAttr("data.aci_epg_useg_sub_block_statement.test1", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("data.aci_epg_useg_sub_block_statement.test1", "description", ""),
-					resource.TestCheckResourceAttr("data.aci_epg_useg_sub_block_statement.test1", "match", "any"),
-					resource.TestCheckResourceAttr("data.aci_epg_useg_sub_block_statement.test1", "name_alias", ""),
-					resource.TestCheckResourceAttr("data.aci_epg_useg_sub_block_statement.test1", "owner_key", ""),
-					resource.TestCheckResourceAttr("data.aci_epg_useg_sub_block_statement.test1", "owner_tag", ""),
+					resource.TestCheckResourceAttr("data.aci_epg_useg_sub_block_statement.test_1", "name", "sub_criterion"),
+					resource.TestCheckResourceAttr("data.aci_epg_useg_sub_block_statement.test_1", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("data.aci_epg_useg_sub_block_statement.test_1", "description", ""),
+					resource.TestCheckResourceAttr("data.aci_epg_useg_sub_block_statement.test_1", "match", "any"),
+					resource.TestCheckResourceAttr("data.aci_epg_useg_sub_block_statement.test_1", "name_alias", ""),
+					resource.TestCheckResourceAttr("data.aci_epg_useg_sub_block_statement.test_1", "owner_key", ""),
+					resource.TestCheckResourceAttr("data.aci_epg_useg_sub_block_statement.test_1", "owner_tag", ""),
 				),
 			},
 			{
@@ -79,10 +79,10 @@ data "aci_epg_useg_sub_block_statement" "test_non_existing" {
 }
 `
 const testConfigFvSCrtrnDataSourceDependencyWithFvSCrtrn = testConfigFvSCrtrnMinDependencyWithFvSCrtrn + `
-data "aci_epg_useg_sub_block_statement" "test1" {
+data "aci_epg_useg_sub_block_statement" "test_1" {
   parent_dn = aci_epg_useg_sub_block_statement.test.id
   name = "sub_criterion"
-  depends_on = [aci_epg_useg_sub_block_statement.test1]
+  depends_on = [aci_epg_useg_sub_block_statement.test_1]
 }
 `
 
