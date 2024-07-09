@@ -73,6 +73,31 @@ type FvIpAttrIdentifier struct {
 	Name types.String
 }
 
+func (r *FvIpAttrResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
+	if !req.Plan.Raw.IsNull() {
+		var planData, stateData *FvIpAttrResourceModel
+		resp.Diagnostics.Append(req.Plan.Get(ctx, &planData)...)
+		resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
+
+		if resp.Diagnostics.HasError() {
+			return
+		}
+
+		if (planData.Id.IsUnknown() || planData.Id.IsNull()) && !planData.ParentDn.IsUnknown() && !planData.Name.IsUnknown() {
+			setFvIpAttrId(ctx, planData)
+		}
+
+		if stateData == nil && !globalAllowExistingOnCreate && !planData.Id.IsUnknown() && !planData.Id.IsNull() {
+			CheckDn(ctx, &resp.Diagnostics, r.client, "fvIpAttr", planData.Id.ValueString())
+			if resp.Diagnostics.HasError() {
+				return
+			}
+		}
+
+		resp.Diagnostics.Append(resp.Plan.Set(ctx, &planData)...)
+	}
+}
+
 func (r *FvIpAttrResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	tflog.Debug(ctx, "Start metadata of resource: aci_epg_useg_ip_attribute")
 	resp.TypeName = req.ProviderTypeName + "_epg_useg_ip_attribute"
@@ -252,8 +277,17 @@ func (r *FvIpAttrResource) Create(ctx context.Context, req resource.CreateReques
 	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
 	var stateData *FvIpAttrResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
-	setFvIpAttrId(ctx, stateData)
+	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
+		setFvIpAttrId(ctx, stateData)
+	}
 	getAndSetFvIpAttrAttributes(ctx, &resp.Diagnostics, r.client, stateData)
+	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
+		resp.Diagnostics.AddError(
+			"Object Already Exists",
+			fmt.Sprintf("The fvIpAttr object with DN '%s' already exists.", stateData.Id.ValueString()),
+		)
+		return
+	}
 
 	var data *FvIpAttrResourceModel
 
@@ -264,7 +298,9 @@ func (r *FvIpAttrResource) Create(ctx context.Context, req resource.CreateReques
 		return
 	}
 
-	setFvIpAttrId(ctx, data)
+	if data.Id.IsUnknown() || data.Id.IsNull() {
+		setFvIpAttrId(ctx, data)
+	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_epg_useg_ip_attribute with id '%s'", data.Id.ValueString()))
 
@@ -274,7 +310,7 @@ func (r *FvIpAttrResource) Create(ctx context.Context, req resource.CreateReques
 	var tagTagPlan, tagTagState []TagTagFvIpAttrResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvIpAttrCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := getFvIpAttrCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -339,7 +375,7 @@ func (r *FvIpAttrResource) Update(ctx context.Context, req resource.UpdateReques
 	var tagTagPlan, tagTagState []TagTagFvIpAttrResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvIpAttrCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := getFvIpAttrCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -592,9 +628,13 @@ func getFvIpAttrTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics
 	return childPayloads
 }
 
-func getFvIpAttrCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *FvIpAttrResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvIpAttrResourceModel, tagTagPlan, tagTagState []TagTagFvIpAttrResourceModel) *container.Container {
+func getFvIpAttrCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *FvIpAttrResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvIpAttrResourceModel, tagTagPlan, tagTagState []TagTagFvIpAttrResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
+
+	if createType && !globalAllowExistingOnCreate {
+		payloadMap["attributes"].(map[string]string)["status"] = "created"
+	}
 	childPayloads := []map[string]interface{}{}
 
 	TagAnnotationchildPayloads := getFvIpAttrTagAnnotationChildPayloads(ctx, diags, data, tagAnnotationPlan, tagAnnotationState)

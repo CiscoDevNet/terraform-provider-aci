@@ -68,6 +68,31 @@ type TagTagFvCrtrnResourceModel struct {
 	Value types.String `tfsdk:"value"`
 }
 
+func (r *FvCrtrnResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
+	if !req.Plan.Raw.IsNull() {
+		var planData, stateData *FvCrtrnResourceModel
+		resp.Diagnostics.Append(req.Plan.Get(ctx, &planData)...)
+		resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
+
+		if resp.Diagnostics.HasError() {
+			return
+		}
+
+		if (planData.Id.IsUnknown() || planData.Id.IsNull()) && !planData.ParentDn.IsUnknown() {
+			setFvCrtrnId(ctx, planData)
+		}
+
+		if stateData == nil && !globalAllowExistingOnCreate && !planData.Id.IsUnknown() && !planData.Id.IsNull() {
+			CheckDn(ctx, &resp.Diagnostics, r.client, "fvCrtrn", planData.Id.ValueString())
+			if resp.Diagnostics.HasError() {
+				return
+			}
+		}
+
+		resp.Diagnostics.Append(resp.Plan.Set(ctx, &planData)...)
+	}
+}
+
 func (r *FvCrtrnResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	tflog.Debug(ctx, "Start metadata of resource: aci_epg_useg_block_statement")
 	resp.TypeName = req.ProviderTypeName + "_epg_useg_block_statement"
@@ -259,8 +284,17 @@ func (r *FvCrtrnResource) Create(ctx context.Context, req resource.CreateRequest
 	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
 	var stateData *FvCrtrnResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
-	setFvCrtrnId(ctx, stateData)
+	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
+		setFvCrtrnId(ctx, stateData)
+	}
 	getAndSetFvCrtrnAttributes(ctx, &resp.Diagnostics, r.client, stateData)
+	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
+		resp.Diagnostics.AddError(
+			"Object Already Exists",
+			fmt.Sprintf("The fvCrtrn object with DN '%s' already exists.", stateData.Id.ValueString()),
+		)
+		return
+	}
 
 	var data *FvCrtrnResourceModel
 
@@ -271,7 +305,9 @@ func (r *FvCrtrnResource) Create(ctx context.Context, req resource.CreateRequest
 		return
 	}
 
-	setFvCrtrnId(ctx, data)
+	if data.Id.IsUnknown() || data.Id.IsNull() {
+		setFvCrtrnId(ctx, data)
+	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_epg_useg_block_statement with id '%s'", data.Id.ValueString()))
 
@@ -281,7 +317,7 @@ func (r *FvCrtrnResource) Create(ctx context.Context, req resource.CreateRequest
 	var tagTagPlan, tagTagState []TagTagFvCrtrnResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvCrtrnCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := getFvCrtrnCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -346,7 +382,7 @@ func (r *FvCrtrnResource) Update(ctx context.Context, req resource.UpdateRequest
 	var tagTagPlan, tagTagState []TagTagFvCrtrnResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvCrtrnCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := getFvCrtrnCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -596,9 +632,13 @@ func getFvCrtrnTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics,
 	return childPayloads
 }
 
-func getFvCrtrnCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *FvCrtrnResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvCrtrnResourceModel, tagTagPlan, tagTagState []TagTagFvCrtrnResourceModel) *container.Container {
+func getFvCrtrnCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *FvCrtrnResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvCrtrnResourceModel, tagTagPlan, tagTagState []TagTagFvCrtrnResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
+
+	if createType && !globalAllowExistingOnCreate {
+		payloadMap["attributes"].(map[string]string)["status"] = "created"
+	}
 	childPayloads := []map[string]interface{}{}
 
 	TagAnnotationchildPayloads := getFvCrtrnTagAnnotationChildPayloads(ctx, diags, data, tagAnnotationPlan, tagAnnotationState)

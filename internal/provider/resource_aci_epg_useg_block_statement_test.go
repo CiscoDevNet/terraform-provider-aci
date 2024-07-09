@@ -5,12 +5,91 @@
 package provider
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
 func TestAccResourceFvCrtrnWithFvAEPg(t *testing.T) {
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:             testConfigFvCrtrnMinDependencyWithFvAEPgAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "match", "any"),
+					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test_2", "match", "any"),
+					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "name", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test_2", "name", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test_2", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test_2", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "precedence", "0"),
+					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test_2", "precedence", "0"),
+					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "scope", "scope-bd"),
+					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test_2", "scope", "scope-bd"),
+				),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:      testConfigFvCrtrnMinDependencyWithFvAEPgAllowExisting,
+				ExpectError: regexp.MustCompile("Object Already Exists"),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:             testConfigFvCrtrnMinDependencyWithFvAEPgAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "match", "any"),
+					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test_2", "match", "any"),
+					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "name", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test_2", "name", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test_2", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test_2", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "precedence", "0"),
+					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test_2", "precedence", "0"),
+					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "scope", "scope-bd"),
+					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test_2", "scope", "scope-bd"),
+				),
+			},
+		},
+	})
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -178,6 +257,16 @@ func TestAccResourceFvCrtrnWithFvAEPg(t *testing.T) {
 		},
 	})
 }
+
+const testConfigFvCrtrnMinDependencyWithFvAEPgAllowExisting = testConfigFvAEPgMin + `
+resource "aci_epg_useg_block_statement" "test" {
+  parent_dn = aci_application_epg.test.id
+}
+resource "aci_epg_useg_block_statement" "test_2" {
+  parent_dn = aci_application_epg.test.id
+  depends_on = [aci_epg_useg_block_statement.test]
+}
+`
 
 const testConfigFvCrtrnMinDependencyWithFvAEPg = testConfigFvAEPgMin + `
 resource "aci_epg_useg_block_statement" "test" {

@@ -5,12 +5,99 @@
 package provider
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
 func TestAccResourceFvVmAttrWithFvCrtrn(t *testing.T) {
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:             testConfigFvVmAttrMinDependencyWithFvCrtrnAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "name", "vm_attribute"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "name", "vm_attribute"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "category", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "category", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "label_name", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "label_name", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "operator", "equals"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "operator", "equals"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "type", "vm-name"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "type", "vm-name"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "value", "default_value"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "value", "default_value"),
+				),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:      testConfigFvVmAttrMinDependencyWithFvCrtrnAllowExisting,
+				ExpectError: regexp.MustCompile("Object Already Exists"),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:             testConfigFvVmAttrMinDependencyWithFvCrtrnAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "name", "vm_attribute"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "name", "vm_attribute"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "category", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "category", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "label_name", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "label_name", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "operator", "equals"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "operator", "equals"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "type", "vm-name"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "type", "vm-name"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "value", "default_value"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "value", "default_value"),
+				),
+			},
+		},
+	})
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -201,6 +288,92 @@ func TestAccResourceFvVmAttrWithFvSCrtrn(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
+				Config:             testConfigFvVmAttrMinDependencyWithFvSCrtrnAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "name", "vm_attribute"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "name", "vm_attribute"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "category", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "category", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "label_name", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "label_name", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "operator", "equals"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "operator", "equals"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "type", "vm-name"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "type", "vm-name"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "value", "default_value"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "value", "default_value"),
+				),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:      testConfigFvVmAttrMinDependencyWithFvSCrtrnAllowExisting,
+				ExpectError: regexp.MustCompile("Object Already Exists"),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:             testConfigFvVmAttrMinDependencyWithFvSCrtrnAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "name", "vm_attribute"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "name", "vm_attribute"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "category", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "category", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "label_name", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "label_name", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "operator", "equals"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "operator", "equals"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "type", "vm-name"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "type", "vm-name"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "value", "default_value"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "value", "default_value"),
+				),
+			},
+		},
+	})
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
 				Config:             testConfigFvVmAttrMinDependencyWithFvSCrtrn,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
@@ -377,6 +550,20 @@ func TestAccResourceFvVmAttrWithFvSCrtrn(t *testing.T) {
 	})
 }
 
+const testConfigFvVmAttrMinDependencyWithFvCrtrnAllowExisting = testConfigFvCrtrnMinDependencyWithFvAEPg + `
+resource "aci_epg_useg_vm_attribute" "test" {
+  parent_dn = aci_epg_useg_block_statement.test.id
+  name = "vm_attribute"
+  value = "default_value"
+}
+resource "aci_epg_useg_vm_attribute" "test_2" {
+  parent_dn = aci_epg_useg_block_statement.test.id
+  name = "vm_attribute"
+  value = "default_value"
+  depends_on = [aci_epg_useg_vm_attribute.test]
+}
+`
+
 const testConfigFvVmAttrMinDependencyWithFvCrtrn = testConfigFvCrtrnMinDependencyWithFvAEPg + `
 resource "aci_epg_useg_vm_attribute" "test" {
   parent_dn = aci_epg_useg_block_statement.test.id
@@ -481,6 +668,20 @@ resource "aci_epg_useg_vm_attribute" "test" {
   value = "default_value"
   annotations = []
   tags = []
+}
+`
+
+const testConfigFvVmAttrMinDependencyWithFvSCrtrnAllowExisting = testConfigFvSCrtrnMinDependencyWithFvCrtrn + `
+resource "aci_epg_useg_vm_attribute" "test" {
+  parent_dn = aci_epg_useg_sub_block_statement.test.id
+  name = "vm_attribute"
+  value = "default_value"
+}
+resource "aci_epg_useg_vm_attribute" "test_2" {
+  parent_dn = aci_epg_useg_sub_block_statement.test.id
+  name = "vm_attribute"
+  value = "default_value"
+  depends_on = [aci_epg_useg_vm_attribute.test]
 }
 `
 
