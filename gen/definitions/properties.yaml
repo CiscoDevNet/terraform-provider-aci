@@ -274,6 +274,8 @@ fvRemoteId:
       site_id: "0"
     resource_required:
       site_id: "0"
+    datasource_required:
+      site_id: "0"
   resource_required:
     - "site_id"
   datasource_required:

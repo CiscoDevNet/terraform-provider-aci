@@ -21,7 +21,7 @@ func TestAccDataSourceFvRemoteIdWithFvSiteAssociated(t *testing.T) {
 				Config:             testConfigFvRemoteIdDataSourceDependencyWithFvSiteAssociated,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.aci_remote_site_id_mappings.test", "site_id", "test_site_id"),
+					resource.TestCheckResourceAttr("data.aci_remote_site_id_mappings.test", "site_id", "0"),
 					resource.TestCheckResourceAttr("data.aci_remote_site_id_mappings.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("data.aci_remote_site_id_mappings.test", "description", ""),
 					resource.TestCheckResourceAttr("data.aci_remote_site_id_mappings.test", "name", ""),
@@ -44,7 +44,7 @@ func TestAccDataSourceFvRemoteIdWithFvSiteAssociated(t *testing.T) {
 const testConfigFvRemoteIdDataSourceDependencyWithFvSiteAssociated = testConfigFvRemoteIdMinDependencyWithFvSiteAssociated + `
 data "aci_remote_site_id_mappings" "test" {
   parent_dn = aci_associated_site.test.id
-  site_id = "test_site_id"
+  site_id = "0"
   depends_on = [aci_remote_site_id_mappings.test]
 }
 `
