@@ -6,14 +6,14 @@ default:
   annotation: "orchestrator:terraform"
   description: ""
   dscp: "CS2"
-  dst_addr: "2.2.2.1"
-  dst_port: "https"
+  destination_address: "2.2.2.1"
+  destination_port: "https"
   name_alias: ""
   owner_key: ""
   owner_tag: ""
   source_ip_type: "custom-src-ip"
-  src_addr: "1.1.1.1/10"
-  ver: "v9"
+  source_address: "1.1.1.1/10"
+  version: "v9"
 
 datasource_non_existing:
   name: "netfow_exporter_non_existing"
@@ -22,23 +22,23 @@ datasource_required:
   name: "netfow_exporter"
 
 resource_required:
-  dst_addr: "2.2.2.1"
-  dst_port: "https"
+  destination_address: "2.2.2.1"
+  destination_port: "https"
   name: "netfow_exporter"
-  src_addr: "1.1.1.1/10"
+  source_address: "1.1.1.1/10"
 
 all:
   annotation: "annotation"
   description: "description"
   dscp: "AF11"
-  dst_addr: "12.12.12.1"
-  dst_port: "ssh"
+  destination_address: "12.12.12.1"
+  destination_port: "ssh"
   name_alias: "name_alias"
   owner_key: "owner_key"
   owner_tag: "owner_tag"
   source_ip_type: "custom-src-ip"
-  src_addr: "11.11.11.1/11"
-  ver: "v9"
+  source_address: "11.11.11.1/11"
+  version: "v9"
 
 children:
   annotations:

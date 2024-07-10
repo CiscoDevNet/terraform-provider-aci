@@ -51,19 +51,19 @@ The configuration snippet below shows all possible attributes of the Netflow Exp
 ```hcl
 
 resource "aci_netflow_exporter_policy" "full_example_tenant" {
-  parent_dn      = aci_tenant.example.id
-  annotation     = "annotation"
-  description    = "description"
-  dscp           = "AF11"
-  dst_addr       = "2.2.2.1"
-  dst_port       = "https"
-  name           = "netfow_exporter"
-  name_alias     = "name_alias"
-  owner_key      = "owner_key"
-  owner_tag      = "owner_tag"
-  source_ip_type = "custom-src-ip"
-  src_addr       = "1.1.1.1/10"
-  ver            = "v9"
+  parent_dn           = aci_tenant.example.id
+  annotation          = "annotation"
+  description         = "description"
+  dscp                = "AF11"
+  destination_address = "2.2.2.1"
+  destination_port    = "https"
+  name                = "netfow_exporter"
+  name_alias          = "name_alias"
+  owner_key           = "owner_key"
+  owner_tag           = "owner_tag"
+  source_ip_type      = "custom-src-ip"
+  source_address      = "1.1.1.1/10"
+  version             = "v9"
   annotations = [
     {
       key   = "key_0"
@@ -86,11 +86,6 @@ All examples for the Netflow Exporter Policy resource can be found in the [examp
 
 ### Required ###
 
-* `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
-  - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
-  - The distinguished name (DN) of classes below can be used but currently there is no available resource for it:
-    - [infraInfra](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraInfra/overview)
-
 * `name` (name) - (string) The name of the Netflow Exporter Policy object.
 
 ### Read-Only ###
@@ -98,25 +93,31 @@ All examples for the Netflow Exporter Policy resource can be found in the [examp
 * `id` - (string) The distinguished name (DN) of the Netflow Exporter Policy object.
 
 ### Optional ###
+* `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
+  - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
+  - The distinguished name (DN) of classes below can be used but currently there is no available resource for it:
+    - [infraInfra](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraInfra/overview)
+
+  - Default: `uni/infra`
   
 * `annotation` (annotation) - (string) The annotation of the Netflow Exporter Policy object.
   - Default: `orchestrator:terraform`
 * `description` (descr) - (string) The description of the Netflow Exporter Policy object.
-* `dscp` (dscp) - (string) IP dscp value.
+* `dscp` (dscp) - (string) The DSCP value of the Netflow Exporter Policy object.
   - Default: `CS2`
   - Valid Values: `AF11`, `AF12`, `AF13`, `AF21`, `AF22`, `AF23`, `AF31`, `AF32`, `AF33`, `AF41`, `AF42`, `AF43`, `CS0`, `CS1`, `CS2`, `CS3`, `CS4`, `CS5`, `CS6`, `CS7`, `EF`, `VA`.
-* `dst_addr` (dstAddr) - (string) Remote node destination IP address.
-* `dst_port` (dstPort) - (string) Remote node destination port.
+* `destination_address` (dstAddr) - (string) The destination IP address of the remote node.
+* `destination_port` (dstPort) - (string) The destination port of the remote node.
   - Default: `unspecified`
   - Valid Values: `dns`, `ftpData`, `http`, `https`, `pop3`, `rtsp`, `smtp`, `ssh`, `unspecified`.
 * `name_alias` (nameAlias) - (string) The name alias of the Netflow Exporter Policy object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
-* `source_ip_type` (sourceIpType) - (string) Type of Exporter Src IP Address: Can be one of the available management IP Address for a given leaf or a custom IP Address.
+* `source_ip_type` (sourceIpType) - (string) The type of the source IP address: It can be one of the available management IP address for a given leaf or a custom IP Address.
   - Default: `custom-src-ip`
   - Valid Values: `custom-src-ip`, `inband-mgmt-ip`, `oob-mgmt-ip`, `ptep`.
-* `src_addr` (srcAddr) - (string) Source IP address.
-* `ver` (ver) - (string) Collector version.
+* `source_address` (srcAddr) - (string) The source IP address.
+* `version` (ver) - (string) The collector version.
   - Default: `v9`
   - Valid Values: `cisco-v1`, `v5`, `v9`.
 

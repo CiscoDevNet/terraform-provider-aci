@@ -5,6 +5,7 @@
 package provider
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
@@ -18,21 +19,111 @@ func TestAccResourceNetflowExporterPolWithFvTenant(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
+				Config:             testConfigNetflowExporterPolMinDependencyWithFvTenantAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "name", "netfow_exporter"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test_2", "name", "netfow_exporter"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "destination_address", "2.2.2.1"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test_2", "destination_address", "2.2.2.1"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "destination_port", "https"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test_2", "destination_port", "https"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "dscp", "CS2"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test_2", "dscp", "CS2"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test_2", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test_2", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "source_address", "1.1.1.1/10"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test_2", "source_address", "1.1.1.1/10"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "source_ip_type", "custom-src-ip"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test_2", "source_ip_type", "custom-src-ip"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "version", "v9"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test_2", "version", "v9"),
+				),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:      testConfigNetflowExporterPolMinDependencyWithFvTenantAllowExisting,
+				ExpectError: regexp.MustCompile("Object Already Exists"),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:             testConfigNetflowExporterPolMinDependencyWithFvTenantAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "name", "netfow_exporter"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test_2", "name", "netfow_exporter"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "destination_address", "2.2.2.1"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test_2", "destination_address", "2.2.2.1"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "destination_port", "https"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test_2", "destination_port", "https"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "dscp", "CS2"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test_2", "dscp", "CS2"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test_2", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test_2", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "source_address", "1.1.1.1/10"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test_2", "source_address", "1.1.1.1/10"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "source_ip_type", "custom-src-ip"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test_2", "source_ip_type", "custom-src-ip"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "version", "v9"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test_2", "version", "v9"),
+				),
+			},
+		},
+	})
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
 				Config:             testConfigNetflowExporterPolMinDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "name", "netfow_exporter"),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "destination_address", "2.2.2.1"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "destination_port", "https"),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "dscp", "CS2"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "dst_addr", "2.2.2.1"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "dst_port", "https"),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "source_address", "1.1.1.1/10"),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "source_ip_type", "custom-src-ip"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "src_addr", "1.1.1.1/10"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "ver", "v9"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "version", "v9"),
 				),
 			},
 			// Update with all config and verify default APIC values
@@ -43,15 +134,15 @@ func TestAccResourceNetflowExporterPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "name", "netfow_exporter"),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "annotation", "annotation"),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "description", "description"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "destination_address", "12.12.12.1"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "destination_port", "ssh"),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "dscp", "AF11"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "dst_addr", "12.12.12.1"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "dst_port", "ssh"),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "name_alias", "name_alias"),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "owner_key", "owner_key"),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "owner_tag", "owner_tag"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "source_address", "11.11.11.1/11"),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "source_ip_type", "custom-src-ip"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "src_addr", "11.11.11.1/11"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "ver", "v9"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "version", "v9"),
 				),
 			},
 			// Update with minimum config and verify config is unchanged
@@ -59,10 +150,10 @@ func TestAccResourceNetflowExporterPolWithFvTenant(t *testing.T) {
 				Config:             testConfigNetflowExporterPolMinDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "dst_addr", "2.2.2.1"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "dst_port", "https"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "destination_address", "2.2.2.1"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "destination_port", "https"),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "name", "netfow_exporter"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "src_addr", "1.1.1.1/10"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "source_address", "1.1.1.1/10"),
 				),
 			},
 			// Update with empty strings config or default value
@@ -70,10 +161,10 @@ func TestAccResourceNetflowExporterPolWithFvTenant(t *testing.T) {
 				Config:             testConfigNetflowExporterPolResetDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "dst_addr", "2.2.2.1"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "dst_port", "https"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "destination_address", "2.2.2.1"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "destination_port", "https"),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "name", "netfow_exporter"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "src_addr", "1.1.1.1/10"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "source_address", "1.1.1.1/10"),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "dscp", "CS2"),
@@ -81,7 +172,7 @@ func TestAccResourceNetflowExporterPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "source_ip_type", "custom-src-ip"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "ver", "v9"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "version", "v9"),
 				),
 			},
 			// Import testing
@@ -90,10 +181,10 @@ func TestAccResourceNetflowExporterPolWithFvTenant(t *testing.T) {
 				ImportState:       true,
 				ImportStateVerify: true,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "dst_addr", "2.2.2.1"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "dst_port", "https"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "destination_address", "2.2.2.1"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "destination_port", "https"),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "name", "netfow_exporter"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "src_addr", "1.1.1.1/10"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "source_address", "1.1.1.1/10"),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "dscp", "CS2"),
@@ -101,7 +192,7 @@ func TestAccResourceNetflowExporterPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "source_ip_type", "custom-src-ip"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "ver", "v9"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "version", "v9"),
 				),
 			},
 			// Update with children
@@ -109,10 +200,10 @@ func TestAccResourceNetflowExporterPolWithFvTenant(t *testing.T) {
 				Config:             testConfigNetflowExporterPolChildrenDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "dst_addr", "2.2.2.1"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "dst_port", "https"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "destination_address", "2.2.2.1"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "destination_port", "https"),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "name", "netfow_exporter"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "src_addr", "1.1.1.1/10"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "source_address", "1.1.1.1/10"),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "dscp", "CS2"),
@@ -120,7 +211,7 @@ func TestAccResourceNetflowExporterPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "source_ip_type", "custom-src-ip"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "ver", "v9"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "version", "v9"),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "annotations.1.key", "key_1"),
@@ -137,10 +228,10 @@ func TestAccResourceNetflowExporterPolWithFvTenant(t *testing.T) {
 				ImportState:       true,
 				ImportStateVerify: true,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "dst_addr", "2.2.2.1"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "dst_port", "https"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "destination_address", "2.2.2.1"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "destination_port", "https"),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "name", "netfow_exporter"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "src_addr", "1.1.1.1/10"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "source_address", "1.1.1.1/10"),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "dscp", "CS2"),
@@ -148,7 +239,7 @@ func TestAccResourceNetflowExporterPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "source_ip_type", "custom-src-ip"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "ver", "v9"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "version", "v9"),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "annotations.1.key", "key_1"),
@@ -202,13 +293,31 @@ func TestAccResourceNetflowExporterPolWithFvTenant(t *testing.T) {
 	})
 }
 
+const testConfigNetflowExporterPolMinDependencyWithFvTenantAllowExisting = testConfigFvTenantMin + `
+resource "aci_netflow_exporter_policy" "test" {
+  parent_dn = aci_tenant.test.id
+  destination_address = "2.2.2.1"
+  destination_port = "https"
+  name = "netfow_exporter"
+  source_address = "1.1.1.1/10"
+}
+resource "aci_netflow_exporter_policy" "test_2" {
+  parent_dn = aci_tenant.test.id
+  destination_address = "2.2.2.1"
+  destination_port = "https"
+  name = "netfow_exporter"
+  source_address = "1.1.1.1/10"
+  depends_on = [aci_netflow_exporter_policy.test]
+}
+`
+
 const testConfigNetflowExporterPolMinDependencyWithFvTenant = testConfigFvTenantMin + `
 resource "aci_netflow_exporter_policy" "test" {
   parent_dn = aci_tenant.test.id
-  dst_addr = "2.2.2.1"
-  dst_port = "https"
+  destination_address = "2.2.2.1"
+  destination_port = "https"
   name = "netfow_exporter"
-  src_addr = "1.1.1.1/10"
+  source_address = "1.1.1.1/10"
 }
 `
 
@@ -218,15 +327,15 @@ resource "aci_netflow_exporter_policy" "test" {
   name = "netfow_exporter"
   annotation = "annotation"
   description = "description"
+  destination_address = "12.12.12.1"
+  destination_port = "ssh"
   dscp = "AF11"
-  dst_addr = "12.12.12.1"
-  dst_port = "ssh"
   name_alias = "name_alias"
   owner_key = "owner_key"
   owner_tag = "owner_tag"
+  source_address = "11.11.11.1/11"
   source_ip_type = "custom-src-ip"
-  src_addr = "11.11.11.1/11"
-  ver = "v9"
+  version = "v9"
 }
 `
 
@@ -236,24 +345,24 @@ resource "aci_netflow_exporter_policy" "test" {
   name = "netfow_exporter"
   annotation = "orchestrator:terraform"
   description = ""
+  destination_address = "2.2.2.1"
+  destination_port = "https"
   dscp = "CS2"
-  dst_addr = "2.2.2.1"
-  dst_port = "https"
   name_alias = ""
   owner_key = ""
   owner_tag = ""
+  source_address = "1.1.1.1/10"
   source_ip_type = "custom-src-ip"
-  src_addr = "1.1.1.1/10"
-  ver = "v9"
+  version = "v9"
 }
 `
 const testConfigNetflowExporterPolChildrenDependencyWithFvTenant = testConfigFvTenantMin + `
 resource "aci_netflow_exporter_policy" "test" {
   parent_dn = aci_tenant.test.id
-  dst_addr = "2.2.2.1"
-  dst_port = "https"
+  destination_address = "2.2.2.1"
+  destination_port = "https"
   name = "netfow_exporter"
-  src_addr = "1.1.1.1/10"
+  source_address = "1.1.1.1/10"
   annotations = [
 	{
 	  key = "key_0"
@@ -280,20 +389,20 @@ resource "aci_netflow_exporter_policy" "test" {
 const testConfigNetflowExporterPolChildrenRemoveFromConfigDependencyWithFvTenant = testConfigFvTenantMin + `
 resource "aci_netflow_exporter_policy" "test" {
   parent_dn = aci_tenant.test.id
-  dst_addr = "2.2.2.1"
-  dst_port = "https"
+  destination_address = "2.2.2.1"
+  destination_port = "https"
   name = "netfow_exporter"
-  src_addr = "1.1.1.1/10"
+  source_address = "1.1.1.1/10"
 }
 `
 
 const testConfigNetflowExporterPolChildrenRemoveOneDependencyWithFvTenant = testConfigFvTenantMin + `
 resource "aci_netflow_exporter_policy" "test" {
   parent_dn = aci_tenant.test.id
-  dst_addr = "2.2.2.1"
-  dst_port = "https"
+  destination_address = "2.2.2.1"
+  destination_port = "https"
   name = "netfow_exporter"
-  src_addr = "1.1.1.1/10"
+  source_address = "1.1.1.1/10"
   annotations = [ 
 	{
 	  key = "key_1"
@@ -312,10 +421,10 @@ resource "aci_netflow_exporter_policy" "test" {
 const testConfigNetflowExporterPolChildrenRemoveAllDependencyWithFvTenant = testConfigFvTenantMin + `
 resource "aci_netflow_exporter_policy" "test" {
   parent_dn = aci_tenant.test.id
-  dst_addr = "2.2.2.1"
-  dst_port = "https"
+  destination_address = "2.2.2.1"
+  destination_port = "https"
   name = "netfow_exporter"
-  src_addr = "1.1.1.1/10"
+  source_address = "1.1.1.1/10"
   annotations = []
   tags = []
 }
