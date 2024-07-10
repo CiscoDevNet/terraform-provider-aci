@@ -64,6 +64,31 @@ type TagTagFvSiteAssociatedResourceModel struct {
 	Value types.String `tfsdk:"value"`
 }
 
+func (r *FvSiteAssociatedResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
+	if !req.Plan.Raw.IsNull() {
+		var planData, stateData *FvSiteAssociatedResourceModel
+		resp.Diagnostics.Append(req.Plan.Get(ctx, &planData)...)
+		resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
+
+		if resp.Diagnostics.HasError() {
+			return
+		}
+
+		if (planData.Id.IsUnknown() || planData.Id.IsNull()) && !planData.ParentDn.IsUnknown() {
+			setFvSiteAssociatedId(ctx, planData)
+		}
+
+		if stateData == nil && !globalAllowExistingOnCreate && !planData.Id.IsUnknown() && !planData.Id.IsNull() {
+			CheckDn(ctx, &resp.Diagnostics, r.client, "fvSiteAssociated", planData.Id.ValueString())
+			if resp.Diagnostics.HasError() {
+				return
+			}
+		}
+
+		resp.Diagnostics.Append(resp.Plan.Set(ctx, &planData)...)
+	}
+}
+
 func (r *FvSiteAssociatedResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	tflog.Debug(ctx, "Start metadata of resource: aci_associated_site")
 	resp.TypeName = req.ProviderTypeName + "_associated_site"
@@ -233,8 +258,17 @@ func (r *FvSiteAssociatedResource) Create(ctx context.Context, req resource.Crea
 	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
 	var stateData *FvSiteAssociatedResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
-	setFvSiteAssociatedId(ctx, stateData)
+	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
+		setFvSiteAssociatedId(ctx, stateData)
+	}
 	getAndSetFvSiteAssociatedAttributes(ctx, &resp.Diagnostics, r.client, stateData)
+	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
+		resp.Diagnostics.AddError(
+			"Object Already Exists",
+			fmt.Sprintf("The fvSiteAssociated object with DN '%s' already exists.", stateData.Id.ValueString()),
+		)
+		return
+	}
 
 	var data *FvSiteAssociatedResourceModel
 
@@ -245,7 +279,9 @@ func (r *FvSiteAssociatedResource) Create(ctx context.Context, req resource.Crea
 		return
 	}
 
-	setFvSiteAssociatedId(ctx, data)
+	if data.Id.IsUnknown() || data.Id.IsNull() {
+		setFvSiteAssociatedId(ctx, data)
+	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_associated_site with id '%s'", data.Id.ValueString()))
 
@@ -255,7 +291,7 @@ func (r *FvSiteAssociatedResource) Create(ctx context.Context, req resource.Crea
 	var tagTagPlan, tagTagState []TagTagFvSiteAssociatedResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvSiteAssociatedCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := getFvSiteAssociatedCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -320,7 +356,7 @@ func (r *FvSiteAssociatedResource) Update(ctx context.Context, req resource.Upda
 	var tagTagPlan, tagTagState []TagTagFvSiteAssociatedResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvSiteAssociatedCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := getFvSiteAssociatedCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -564,9 +600,13 @@ func getFvSiteAssociatedTagTagChildPayloads(ctx context.Context, diags *diag.Dia
 	return childPayloads
 }
 
-func getFvSiteAssociatedCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *FvSiteAssociatedResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvSiteAssociatedResourceModel, tagTagPlan, tagTagState []TagTagFvSiteAssociatedResourceModel) *container.Container {
+func getFvSiteAssociatedCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *FvSiteAssociatedResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvSiteAssociatedResourceModel, tagTagPlan, tagTagState []TagTagFvSiteAssociatedResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
+
+	if createType && !globalAllowExistingOnCreate {
+		payloadMap["attributes"].(map[string]string)["status"] = "created"
+	}
 	childPayloads := []map[string]interface{}{}
 
 	TagAnnotationchildPayloads := getFvSiteAssociatedTagAnnotationChildPayloads(ctx, diags, data, tagAnnotationPlan, tagAnnotationState)

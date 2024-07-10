@@ -5,12 +5,83 @@
 package provider
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
 func TestAccResourceFvSiteAssociatedWithFvAEPg(t *testing.T) {
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:             testConfigFvSiteAssociatedMinDependencyWithFvAEPgAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_associated_site.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_associated_site.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_associated_site.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_associated_site.test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_associated_site.test", "name", ""),
+					resource.TestCheckResourceAttr("aci_associated_site.test_2", "name", ""),
+					resource.TestCheckResourceAttr("aci_associated_site.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_associated_site.test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_associated_site.test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_associated_site.test_2", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_associated_site.test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_associated_site.test_2", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_associated_site.test", "site_id", "100"),
+					resource.TestCheckResourceAttr("aci_associated_site.test_2", "site_id", "100"),
+				),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:      testConfigFvSiteAssociatedMinDependencyWithFvAEPgAllowExisting,
+				ExpectError: regexp.MustCompile("Object Already Exists"),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:             testConfigFvSiteAssociatedMinDependencyWithFvAEPgAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_associated_site.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_associated_site.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_associated_site.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_associated_site.test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_associated_site.test", "name", ""),
+					resource.TestCheckResourceAttr("aci_associated_site.test_2", "name", ""),
+					resource.TestCheckResourceAttr("aci_associated_site.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_associated_site.test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_associated_site.test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_associated_site.test_2", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_associated_site.test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_associated_site.test_2", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_associated_site.test", "site_id", "100"),
+					resource.TestCheckResourceAttr("aci_associated_site.test_2", "site_id", "100"),
+				),
+			},
+		},
+	})
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -174,6 +245,76 @@ func TestAccResourceFvSiteAssociatedWithFvBD(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
+				Config:             testConfigFvSiteAssociatedMinDependencyWithFvBDAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_associated_site.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_associated_site.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_associated_site.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_associated_site.test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_associated_site.test", "name", ""),
+					resource.TestCheckResourceAttr("aci_associated_site.test_2", "name", ""),
+					resource.TestCheckResourceAttr("aci_associated_site.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_associated_site.test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_associated_site.test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_associated_site.test_2", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_associated_site.test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_associated_site.test_2", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_associated_site.test", "site_id", "100"),
+					resource.TestCheckResourceAttr("aci_associated_site.test_2", "site_id", "100"),
+				),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:      testConfigFvSiteAssociatedMinDependencyWithFvBDAllowExisting,
+				ExpectError: regexp.MustCompile("Object Already Exists"),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:             testConfigFvSiteAssociatedMinDependencyWithFvBDAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_associated_site.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_associated_site.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_associated_site.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_associated_site.test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_associated_site.test", "name", ""),
+					resource.TestCheckResourceAttr("aci_associated_site.test_2", "name", ""),
+					resource.TestCheckResourceAttr("aci_associated_site.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_associated_site.test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_associated_site.test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_associated_site.test_2", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_associated_site.test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_associated_site.test_2", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_associated_site.test", "site_id", "100"),
+					resource.TestCheckResourceAttr("aci_associated_site.test_2", "site_id", "100"),
+				),
+			},
+		},
+	})
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
 				Config:             testConfigFvSiteAssociatedMinDependencyWithFvBD,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
@@ -323,6 +464,16 @@ func TestAccResourceFvSiteAssociatedWithFvBD(t *testing.T) {
 	})
 }
 
+const testConfigFvSiteAssociatedMinDependencyWithFvAEPgAllowExisting = testConfigFvAEPgMinDependencyWithFvTenant + `
+resource "aci_associated_site" "test" {
+  parent_dn = aci_application_epg.test.id
+}
+resource "aci_associated_site" "test_2" {
+  parent_dn = aci_application_epg.test.id
+  depends_on = [aci_associated_site.test]
+}
+`
+
 const testConfigFvSiteAssociatedMinDependencyWithFvAEPg = testConfigFvAEPgMinDependencyWithFvTenant + `
 resource "aci_associated_site" "test" {
   parent_dn = aci_application_epg.test.id
@@ -409,6 +560,16 @@ resource "aci_associated_site" "test" {
   parent_dn = aci_application_epg.test.id
   annotations = []
   tags = []
+}
+`
+
+const testConfigFvSiteAssociatedMinDependencyWithFvBDAllowExisting = testConfigFvBDMinDependencyWithFvAp + `
+resource "aci_associated_site" "test" {
+  parent_dn = aci_bridge_domain.test.id
+}
+resource "aci_associated_site" "test_2" {
+  parent_dn = aci_bridge_domain.test.id
+  depends_on = [aci_associated_site.test]
 }
 `
 

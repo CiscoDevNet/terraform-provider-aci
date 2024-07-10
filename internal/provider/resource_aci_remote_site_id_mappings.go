@@ -72,6 +72,31 @@ type FvRemoteIdIdentifier struct {
 	SiteId types.String
 }
 
+func (r *FvRemoteIdResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
+	if !req.Plan.Raw.IsNull() {
+		var planData, stateData *FvRemoteIdResourceModel
+		resp.Diagnostics.Append(req.Plan.Get(ctx, &planData)...)
+		resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
+
+		if resp.Diagnostics.HasError() {
+			return
+		}
+
+		if (planData.Id.IsUnknown() || planData.Id.IsNull()) && !planData.ParentDn.IsUnknown() && !planData.SiteId.IsUnknown() {
+			setFvRemoteIdId(ctx, planData)
+		}
+
+		if stateData == nil && !globalAllowExistingOnCreate && !planData.Id.IsUnknown() && !planData.Id.IsNull() {
+			CheckDn(ctx, &resp.Diagnostics, r.client, "fvRemoteId", planData.Id.ValueString())
+			if resp.Diagnostics.HasError() {
+				return
+			}
+		}
+
+		resp.Diagnostics.Append(resp.Plan.Set(ctx, &planData)...)
+	}
+}
+
 func (r *FvRemoteIdResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	tflog.Debug(ctx, "Start metadata of resource: aci_remote_site_id_mappings")
 	resp.TypeName = req.ProviderTypeName + "_remote_site_id_mappings"
@@ -255,8 +280,17 @@ func (r *FvRemoteIdResource) Create(ctx context.Context, req resource.CreateRequ
 	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
 	var stateData *FvRemoteIdResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
-	setFvRemoteIdId(ctx, stateData)
+	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
+		setFvRemoteIdId(ctx, stateData)
+	}
 	getAndSetFvRemoteIdAttributes(ctx, &resp.Diagnostics, r.client, stateData)
+	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
+		resp.Diagnostics.AddError(
+			"Object Already Exists",
+			fmt.Sprintf("The fvRemoteId object with DN '%s' already exists.", stateData.Id.ValueString()),
+		)
+		return
+	}
 
 	var data *FvRemoteIdResourceModel
 
@@ -267,7 +301,9 @@ func (r *FvRemoteIdResource) Create(ctx context.Context, req resource.CreateRequ
 		return
 	}
 
-	setFvRemoteIdId(ctx, data)
+	if data.Id.IsUnknown() || data.Id.IsNull() {
+		setFvRemoteIdId(ctx, data)
+	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_remote_site_id_mappings with id '%s'", data.Id.ValueString()))
 
@@ -277,7 +313,7 @@ func (r *FvRemoteIdResource) Create(ctx context.Context, req resource.CreateRequ
 	var tagTagPlan, tagTagState []TagTagFvRemoteIdResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvRemoteIdCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := getFvRemoteIdCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -342,7 +378,7 @@ func (r *FvRemoteIdResource) Update(ctx context.Context, req resource.UpdateRequ
 	var tagTagPlan, tagTagState []TagTagFvRemoteIdResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvRemoteIdCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := getFvRemoteIdCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -598,9 +634,13 @@ func getFvRemoteIdTagTagChildPayloads(ctx context.Context, diags *diag.Diagnosti
 	return childPayloads
 }
 
-func getFvRemoteIdCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *FvRemoteIdResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvRemoteIdResourceModel, tagTagPlan, tagTagState []TagTagFvRemoteIdResourceModel) *container.Container {
+func getFvRemoteIdCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *FvRemoteIdResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvRemoteIdResourceModel, tagTagPlan, tagTagState []TagTagFvRemoteIdResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
+
+	if createType && !globalAllowExistingOnCreate {
+		payloadMap["attributes"].(map[string]string)["status"] = "created"
+	}
 	childPayloads := []map[string]interface{}{}
 
 	TagAnnotationchildPayloads := getFvRemoteIdTagAnnotationChildPayloads(ctx, diags, data, tagAnnotationPlan, tagAnnotationState)

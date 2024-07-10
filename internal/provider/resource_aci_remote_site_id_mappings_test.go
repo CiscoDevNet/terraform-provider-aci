@@ -5,12 +5,91 @@
 package provider
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
 func TestAccResourceFvRemoteIdWithFvSiteAssociated(t *testing.T) {
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:             testConfigFvRemoteIdMinDependencyWithFvSiteAssociatedAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "name", ""),
+					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test_2", "name", ""),
+					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test_2", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test_2", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "remote_pc_tag", "16386"),
+					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test_2", "remote_pc_tag", "16386"),
+					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "remote_vrf_pc_tag", "2818057"),
+					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test_2", "remote_vrf_pc_tag", "2818057"),
+					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "site_id", "100"),
+					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test_2", "site_id", "100"),
+				),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:      testConfigFvRemoteIdMinDependencyWithFvSiteAssociatedAllowExisting,
+				ExpectError: regexp.MustCompile("Object Already Exists"),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:             testConfigFvRemoteIdMinDependencyWithFvSiteAssociatedAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "name", ""),
+					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test_2", "name", ""),
+					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test_2", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test_2", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "remote_pc_tag", "16386"),
+					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test_2", "remote_pc_tag", "16386"),
+					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "remote_vrf_pc_tag", "2818057"),
+					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test_2", "remote_vrf_pc_tag", "2818057"),
+					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test", "site_id", "100"),
+					resource.TestCheckResourceAttr("aci_remote_site_id_mappings.test_2", "site_id", "100"),
+				),
+			},
+		},
+	})
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -182,6 +261,22 @@ func TestAccResourceFvRemoteIdWithFvSiteAssociated(t *testing.T) {
 		},
 	})
 }
+
+const testConfigFvRemoteIdMinDependencyWithFvSiteAssociatedAllowExisting = testConfigFvSiteAssociatedMinDependencyWithFvCtx + `
+resource "aci_remote_site_id_mappings" "test" {
+  parent_dn = aci_associated_site.test.id
+  remote_pc_tag = "16386"
+  remote_vrf_pc_tag = "2818057"
+  site_id = "100"
+}
+resource "aci_remote_site_id_mappings" "test_2" {
+  parent_dn = aci_associated_site.test.id
+  remote_pc_tag = "16386"
+  remote_vrf_pc_tag = "2818057"
+  site_id = "100"
+  depends_on = [aci_remote_site_id_mappings.test]
+}
+`
 
 const testConfigFvRemoteIdMinDependencyWithFvSiteAssociated = testConfigFvSiteAssociatedMinDependencyWithFvCtx + `
 resource "aci_remote_site_id_mappings" "test" {
