@@ -48,15 +48,15 @@ type NetflowExporterPolResourceModel struct {
 	Annotation    types.String `tfsdk:"annotation"`
 	Descr         types.String `tfsdk:"description"`
 	Dscp          types.String `tfsdk:"dscp"`
-	DstAddr       types.String `tfsdk:"dst_addr"`
-	DstPort       types.String `tfsdk:"dst_port"`
+	DstAddr       types.String `tfsdk:"destination_address"`
+	DstPort       types.String `tfsdk:"destination_port"`
 	Name          types.String `tfsdk:"name"`
 	NameAlias     types.String `tfsdk:"name_alias"`
 	OwnerKey      types.String `tfsdk:"owner_key"`
 	OwnerTag      types.String `tfsdk:"owner_tag"`
 	SourceIpType  types.String `tfsdk:"source_ip_type"`
-	SrcAddr       types.String `tfsdk:"src_addr"`
-	Ver           types.String `tfsdk:"ver"`
+	SrcAddr       types.String `tfsdk:"source_address"`
+	Ver           types.String `tfsdk:"version"`
 	TagAnnotation types.Set    `tfsdk:"annotations"`
 	TagTag        types.Set    `tfsdk:"tags"`
 }
@@ -75,6 +75,31 @@ type TagTagNetflowExporterPolResourceModel struct {
 
 type NetflowExporterPolIdentifier struct {
 	Name types.String
+}
+
+func (r *NetflowExporterPolResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
+	if !req.Plan.Raw.IsNull() {
+		var planData, stateData *NetflowExporterPolResourceModel
+		resp.Diagnostics.Append(req.Plan.Get(ctx, &planData)...)
+		resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
+
+		if resp.Diagnostics.HasError() {
+			return
+		}
+
+		if (planData.Id.IsUnknown() || planData.Id.IsNull()) && !planData.ParentDn.IsUnknown() && !planData.Name.IsUnknown() {
+			setNetflowExporterPolId(ctx, planData)
+		}
+
+		if stateData == nil && !globalAllowExistingOnCreate && !planData.Id.IsUnknown() && !planData.Id.IsNull() {
+			CheckDn(ctx, &resp.Diagnostics, r.client, "netflowExporterPol", planData.Id.ValueString())
+			if resp.Diagnostics.HasError() {
+				return
+			}
+		}
+
+		resp.Diagnostics.Append(resp.Plan.Set(ctx, &planData)...)
+	}
 }
 
 func (r *NetflowExporterPolResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -98,7 +123,9 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 				},
 			},
 			"parent_dn": schema.StringAttribute{
-				Required:            true,
+				Optional:            true,
+				Computed:            true,
+				Default:             stringdefault.StaticString("uni/infra"),
 				MarkdownDescription: "The distinguished name (DN) of the parent object.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
@@ -131,17 +158,17 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 				Validators: []validator.String{
 					stringvalidator.OneOf("AF11", "AF12", "AF13", "AF21", "AF22", "AF23", "AF31", "AF32", "AF33", "AF41", "AF42", "AF43", "CS0", "CS1", "CS2", "CS3", "CS4", "CS5", "CS6", "CS7", "EF", "VA"),
 				},
-				MarkdownDescription: `IP dscp value.`,
+				MarkdownDescription: `The DSCP value of the Netflow Exporter Policy object.`,
 			},
-			"dst_addr": schema.StringAttribute{
+			"destination_address": schema.StringAttribute{
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
-				MarkdownDescription: `Remote node destination IP address.`,
+				MarkdownDescription: `The destination IP address of the remote node.`,
 			},
-			"dst_port": schema.StringAttribute{
+			"destination_port": schema.StringAttribute{
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
@@ -150,7 +177,7 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 				Validators: []validator.String{
 					stringvalidator.OneOf("dns", "ftpData", "http", "https", "pop3", "rtsp", "smtp", "ssh", "unspecified"),
 				},
-				MarkdownDescription: `Remote node destination port.`,
+				MarkdownDescription: `The destination port of the remote node.`,
 			},
 			"name": schema.StringAttribute{
 				Required: true,
@@ -193,17 +220,17 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 				Validators: []validator.String{
 					stringvalidator.OneOf("custom-src-ip", "inband-mgmt-ip", "oob-mgmt-ip", "ptep"),
 				},
-				MarkdownDescription: `Type of Exporter Src IP Address: Can be one of the available management IP Address for a given leaf or a custom IP Address.`,
+				MarkdownDescription: `The type of the source IP address: It can be one of the available management IP address for a given leaf or a custom IP Address.`,
 			},
-			"src_addr": schema.StringAttribute{
+			"source_address": schema.StringAttribute{
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
-				MarkdownDescription: `Source IP address.`,
+				MarkdownDescription: `The source IP address.`,
 			},
-			"ver": schema.StringAttribute{
+			"version": schema.StringAttribute{
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
@@ -212,7 +239,7 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 				Validators: []validator.String{
 					stringvalidator.OneOf("cisco-v1", "v5", "v9"),
 				},
-				MarkdownDescription: `Collector version.`,
+				MarkdownDescription: `The collector version.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,
@@ -298,8 +325,17 @@ func (r *NetflowExporterPolResource) Create(ctx context.Context, req resource.Cr
 	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
 	var stateData *NetflowExporterPolResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
-	setNetflowExporterPolId(ctx, stateData)
+	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
+		setNetflowExporterPolId(ctx, stateData)
+	}
 	getAndSetNetflowExporterPolAttributes(ctx, &resp.Diagnostics, r.client, stateData)
+	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
+		resp.Diagnostics.AddError(
+			"Object Already Exists",
+			fmt.Sprintf("The netflowExporterPol object with DN '%s' already exists.", stateData.Id.ValueString()),
+		)
+		return
+	}
 
 	var data *NetflowExporterPolResourceModel
 
@@ -310,7 +346,9 @@ func (r *NetflowExporterPolResource) Create(ctx context.Context, req resource.Cr
 		return
 	}
 
-	setNetflowExporterPolId(ctx, data)
+	if data.Id.IsUnknown() || data.Id.IsNull() {
+		setNetflowExporterPolId(ctx, data)
+	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_netflow_exporter_policy with id '%s'", data.Id.ValueString()))
 
@@ -320,7 +358,7 @@ func (r *NetflowExporterPolResource) Create(ctx context.Context, req resource.Cr
 	var tagTagPlan, tagTagState []TagTagNetflowExporterPolResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getNetflowExporterPolCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := getNetflowExporterPolCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -385,7 +423,7 @@ func (r *NetflowExporterPolResource) Update(ctx context.Context, req resource.Up
 	var tagTagPlan, tagTagState []TagTagNetflowExporterPolResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getNetflowExporterPolCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := getNetflowExporterPolCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -650,9 +688,13 @@ func getNetflowExporterPolTagTagChildPayloads(ctx context.Context, diags *diag.D
 	return childPayloads
 }
 
-func getNetflowExporterPolCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *NetflowExporterPolResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationNetflowExporterPolResourceModel, tagTagPlan, tagTagState []TagTagNetflowExporterPolResourceModel) *container.Container {
+func getNetflowExporterPolCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *NetflowExporterPolResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationNetflowExporterPolResourceModel, tagTagPlan, tagTagState []TagTagNetflowExporterPolResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
+
+	if createType && !globalAllowExistingOnCreate {
+		payloadMap["attributes"].(map[string]string)["status"] = "created"
+	}
 	childPayloads := []map[string]interface{}{}
 
 	TagAnnotationchildPayloads := getNetflowExporterPolTagAnnotationChildPayloads(ctx, diags, data, tagAnnotationPlan, tagAnnotationState)

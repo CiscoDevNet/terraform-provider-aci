@@ -12,6 +12,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
@@ -45,7 +46,7 @@ func (d *NetflowExporterPolDataSource) Schema(ctx context.Context, req datasourc
 				MarkdownDescription: "The distinguished name (DN) of the Netflow Exporter Policy object.",
 			},
 			"parent_dn": schema.StringAttribute{
-				Required:            true,
+				Optional:            true,
 				MarkdownDescription: "The distinguished name (DN) of the parent object.",
 			},
 			"annotation": schema.StringAttribute{
@@ -58,15 +59,15 @@ func (d *NetflowExporterPolDataSource) Schema(ctx context.Context, req datasourc
 			},
 			"dscp": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `IP dscp value.`,
+				MarkdownDescription: `The DSCP value of the Netflow Exporter Policy object.`,
 			},
-			"dst_addr": schema.StringAttribute{
+			"destination_address": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `Remote node destination IP address.`,
+				MarkdownDescription: `The destination IP address of the remote node.`,
 			},
-			"dst_port": schema.StringAttribute{
+			"destination_port": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `Remote node destination port.`,
+				MarkdownDescription: `The destination port of the remote node.`,
 			},
 			"name": schema.StringAttribute{
 				Required:            true,
@@ -86,15 +87,15 @@ func (d *NetflowExporterPolDataSource) Schema(ctx context.Context, req datasourc
 			},
 			"source_ip_type": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `Type of Exporter Src IP Address: Can be one of the available management IP Address for a given leaf or a custom IP Address.`,
+				MarkdownDescription: `The type of the source IP address: It can be one of the available management IP address for a given leaf or a custom IP Address.`,
 			},
-			"src_addr": schema.StringAttribute{
+			"source_address": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `Source IP address.`,
+				MarkdownDescription: `The source IP address.`,
 			},
-			"ver": schema.StringAttribute{
+			"version": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `Collector version.`,
+				MarkdownDescription: `The collector version.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,
@@ -164,6 +165,10 @@ func (d *NetflowExporterPolDataSource) Read(ctx context.Context, req datasource.
 
 	if resp.Diagnostics.HasError() {
 		return
+	}
+
+	if data.ParentDn.IsNull() || data.ParentDn.IsUnknown() {
+		data.ParentDn = basetypes.NewStringValue("uni/infra")
 	}
 
 	setNetflowExporterPolId(ctx, data)
