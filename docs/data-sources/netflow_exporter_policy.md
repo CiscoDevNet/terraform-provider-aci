@@ -50,6 +50,8 @@ data "aci_netflow_exporter_policy" "example_tenant" {
   - The distinguished name (DN) of classes below can be used but currently there is no available resource for it:
     - [infraInfra](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraInfra/overview)
 
+  - Default: `uni/infra`
+  
 * `name` (name) - (string) The name of the Netflow Exporter Policy object.
 
 ### Read-Only ###
@@ -57,15 +59,15 @@ data "aci_netflow_exporter_policy" "example_tenant" {
 * `id` - (string) The distinguished name (DN) of the Netflow Exporter Policy object.
 * `annotation` (annotation) - (string) The annotation of the Netflow Exporter Policy object.
 * `description` (descr) - (string) The description of the Netflow Exporter Policy object.
-* `dscp` (dscp) - (string) IP dscp value.
-* `dst_addr` (dstAddr) - (string) Remote node destination IP address.
-* `dst_port` (dstPort) - (string) Remote node destination port.
+* `dscp` (dscp) - (string) The DSCP value of the Netflow Exporter Policy object.
+* `destination_address` (dstAddr) - (string) The destination IP address of the remote node.
+* `destination_port` (dstPort) - (string) The destination port of the remote node.
 * `name_alias` (nameAlias) - (string) The name alias of the Netflow Exporter Policy object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
-* `source_ip_type` (sourceIpType) - (string) Type of Exporter Src IP Address: Can be one of the available management IP Address for a given leaf or a custom IP Address.
-* `src_addr` (srcAddr) - (string) Source IP address.
-* `ver` (ver) - (string) Collector version.
+* `source_ip_type` (sourceIpType) - (string) The type of the source IP address: It can be one of the available management IP address for a given leaf or a custom IP Address.
+* `source_address` (srcAddr) - (string) The source IP address.
+* `version` (ver) - (string) The collector version.
 
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
   * `key` (key) - (string) The key used to uniquely identify this configuration object.
