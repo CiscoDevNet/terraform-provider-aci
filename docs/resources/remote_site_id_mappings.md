@@ -41,8 +41,10 @@ The configuration snippet below creates a Remote Site Id Mappings with only requ
 ```hcl
 
 resource "aci_remote_site_id_mappings" "example_associated_site" {
-  parent_dn = aci_associated_site.example.id
-  site_id   = "0"
+  parent_dn         = aci_associated_site.example.id
+  remote_vrf_pc_tag = "2818057"
+  remote_pc_tag     = "16386"
+  site_id           = "100"
 }
 
 ```
@@ -60,9 +62,9 @@ resource "aci_remote_site_id_mappings" "full_example_associated_site" {
   name_alias        = "name_alias"
   owner_key         = "owner_key"
   owner_tag         = "owner_tag"
-  remote_vrf_pc_tag = "remote_vrf_pc_tag"
-  remote_pc_tag     = "remote_pc_tag"
-  site_id           = "0"
+  remote_vrf_pc_tag = "2818057"
+  remote_pc_tag     = "16386"
+  site_id           = "100"
   annotations = [
     {
       key   = "key_0"
@@ -87,6 +89,8 @@ All examples for the Remote Site Id Mappings resource can be found in the [examp
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_associated_site](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/associated_site) ([fvSiteAssociated](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvSiteAssociated/overview))
+* `remote_vrf_pc_tag` (remoteCtxPcTag) - (string) Remote context's *pcTag*, mapping required for default route case.
+* `remote_pc_tag` (remotePcTag) - (string) Remote Class ID.
 * `site_id` (siteId) - (string) A number between 0 and 1000 to identify the remote site being associated with the primary site.
 
 ### Read-Only ###
@@ -102,8 +106,6 @@ All examples for the Remote Site Id Mappings resource can be found in the [examp
 * `name_alias` (nameAlias) - (string) The name alias of the Remote Site Id Mappings object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
-* `remote_vrf_pc_tag` (remoteCtxPcTag) - (string) Remote context's *pcTag*, mapping required for default route case.
-* `remote_pc_tag` (remotePcTag) - (string) Remote Class ID.
 
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   

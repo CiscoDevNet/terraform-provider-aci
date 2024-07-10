@@ -21,16 +21,16 @@ func TestAccDataSourceFvRemoteIdWithFvSiteAssociated(t *testing.T) {
 				Config:             testConfigFvRemoteIdDataSourceDependencyWithFvSiteAssociated,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.aci_remote_site_id_mappings.test", "site_id", "0"),
+					resource.TestCheckResourceAttr("data.aci_remote_site_id_mappings.test", "site_id", "test_site_id"),
 					resource.TestCheckResourceAttr("data.aci_remote_site_id_mappings.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("data.aci_remote_site_id_mappings.test", "description", ""),
 					resource.TestCheckResourceAttr("data.aci_remote_site_id_mappings.test", "name", ""),
 					resource.TestCheckResourceAttr("data.aci_remote_site_id_mappings.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("data.aci_remote_site_id_mappings.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("data.aci_remote_site_id_mappings.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("data.aci_remote_site_id_mappings.test", "remote_pc_tag", ""),
-					resource.TestCheckResourceAttr("data.aci_remote_site_id_mappings.test", "remote_vrf_pc_tag", ""),
-					resource.TestCheckResourceAttr("data.aci_remote_site_id_mappings.test", "site_id", "0"),
+					resource.TestCheckResourceAttr("data.aci_remote_site_id_mappings.test", "remote_pc_tag", "16386"),
+					resource.TestCheckResourceAttr("data.aci_remote_site_id_mappings.test", "remote_vrf_pc_tag", "2818057"),
+					resource.TestCheckResourceAttr("data.aci_remote_site_id_mappings.test", "site_id", "100"),
 				),
 			},
 			{
@@ -44,7 +44,7 @@ func TestAccDataSourceFvRemoteIdWithFvSiteAssociated(t *testing.T) {
 const testConfigFvRemoteIdDataSourceDependencyWithFvSiteAssociated = testConfigFvRemoteIdMinDependencyWithFvSiteAssociated + `
 data "aci_remote_site_id_mappings" "test" {
   parent_dn = aci_associated_site.test.id
-  site_id = "0"
+  site_id = "test_site_id"
   depends_on = [aci_remote_site_id_mappings.test]
 }
 `
@@ -52,7 +52,7 @@ data "aci_remote_site_id_mappings" "test" {
 const testConfigFvRemoteIdNotExistingFvSiteAssociated = testConfigFvRemoteIdMinDependencyWithFvSiteAssociated + `
 data "aci_remote_site_id_mappings" "test_non_existing" {
   parent_dn = aci_associated_site.test.id
-  site_id = "non_existing_site_id"
+  site_id = "102"
   depends_on = [aci_remote_site_id_mappings.test]
 }
 `

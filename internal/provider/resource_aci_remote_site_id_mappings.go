@@ -150,16 +150,14 @@ func (r *FvRemoteIdResource) Schema(ctx context.Context, req resource.SchemaRequ
 				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
 			},
 			"remote_vrf_pc_tag": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
+				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
 				MarkdownDescription: `Remote context's *pcTag*, mapping required for default route case.`,
 			},
 			"remote_pc_tag": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
+				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
