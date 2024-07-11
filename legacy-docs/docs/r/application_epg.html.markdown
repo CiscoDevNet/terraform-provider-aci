@@ -37,6 +37,7 @@ resource "aci_application_epg" "fooapplication_epg" {
 ## Argument Reference ##
 * `application_profile_dn` - (Required) Distinguished Name of the parent application profile. Type - String.
 * `name` - (Required) Name of Object application epg. Type - String.
+* `pc_tag` - (Read-Only) A numeric ID to represent a policy enforcement group.
 * `annotation` - (Optional) Annotation for object application epg. Type - String.
 * `description` - (Optional) Description for object application epg. Type - String.
 * `exception_tag` - (Optional) Exception tag for object application epg. Range: "0" - "512" . Type - String.
@@ -47,7 +48,6 @@ resource "aci_application_epg" "fooapplication_epg" {
 * `match_t` - (Optional) The provider label match criteria for EPG. Allowed values are "All", "AtleastOne", "AtmostOne", "None". Default is "AtleastOne". Type - String.
 * `name_alias` - (Optional) Name alias for object application epg. Type - String.
 * `pc_enf_pref` - (Optional) The preferred policy control. Allowed values are "unenforced" and "enforced". Default is "unenforced". Type - String.
-* `pc_tag` - (Read-Only) A numeric ID to represent a policy enforcement group.
 * `pref_gr_memb` - (Optional) Represents parameter used to determine if EPg is part of a group that does not a contract for communication. Allowed values are "exclude" and "include". Default is "exclude". Type - String.
 * `prio` - (Optional) QoS priority class id. Allowed values are "unspecified", "level1", "level2", "level3", "level4","level5" and "level6". By default the value is inherited from the parent application profile. Type - String.
 * `shutdown` - (Optional) Shutdown for object application epg. Allowed values are "yes" and "no". Default is "no". Type - String.

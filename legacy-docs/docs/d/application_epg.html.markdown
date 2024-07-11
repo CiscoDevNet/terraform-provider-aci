@@ -27,6 +27,7 @@ data "aci_application_epg" "foo_epg" {
 ## Attribute Reference
 
 * `id` - Attribute id set to the Dn of the Application EPG.
+* `pc_tag` - (Read-Only) A numeric ID to represent a policy enforcement group.
 * `annotation` - (Optional) Annotation for object application epg.
 * `description` - (Optional) Description for object application epg.
 * `exception_tag` - (Optional) Exception tag for object application epg. Range: "0" - "512" .
@@ -37,7 +38,6 @@ data "aci_application_epg" "foo_epg" {
 * `match_t` - (Optional) The provider label match criteria for EPG. 
 * `name_alias` - (Optional) Name alias for object application epg.
 * `pc_enf_pref` - (Optional) The preferred policy control.
-* `pc_tag` - (Read-Only) A numeric ID to represent a policy enforcement group.
 * `pref_gr_memb` - (Optional) Represents parameter used to determine if EPg is part of a group that does not a contract for communication.
 * `prio` - (Optional) QoS priority class id. 
 * `shutdown` - (Optional) Shutdown for object application epg.
