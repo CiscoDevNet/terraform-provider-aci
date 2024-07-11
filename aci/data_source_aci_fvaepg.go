@@ -75,6 +75,11 @@ func dataSourceAciApplicationEPG() *schema.Resource {
 				Computed: true,
 			},
 
+			"pc_tag": &schema.Schema{
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+
 			"pref_gr_memb": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
