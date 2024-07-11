@@ -108,6 +108,11 @@ func resourceAciApplicationEPG() *schema.Resource {
 				}, false),
 			},
 
+			"pc_tag": &schema.Schema{
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+
 			"pref_gr_memb": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -307,6 +312,7 @@ func setApplicationEPGAttributes(fvAEPg *models.ApplicationEPG, d *schema.Resour
 	d.Set("match_t", fvAEPgMap["matchT"])
 	d.Set("name_alias", fvAEPgMap["nameAlias"])
 	d.Set("pc_enf_pref", fvAEPgMap["pcEnfPref"])
+	d.Set("pc_tag", fvAEPgMap["pcTag"])
 	d.Set("pref_gr_memb", fvAEPgMap["prefGrMemb"])
 	d.Set("prio", fvAEPgMap["prio"])
 	d.Set("shutdown", fvAEPgMap["shutdown"])
