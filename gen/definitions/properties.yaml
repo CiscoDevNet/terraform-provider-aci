@@ -241,7 +241,7 @@ fvSiteAssociated:
   documentation:
     siteId: "A number between 0 and 1000 to identify the primary site being associated"
   default_values:
-    site_id: "0"
+    site_id: "100"
   resource_required:
     - "site_id"
   test_values:
@@ -272,7 +272,6 @@ fvRemoteId:
     remote_ctx_pc_tag: "2818057"
     remote_pc_tag: "16386"
   resource_required:
-    - "remoteCtxPcTag"
     - "remotePcTag"
   test_values:
     all:
@@ -289,6 +288,8 @@ fvRemoteId:
       remote_pc_tag: "16386"
     datasource_non_existing:
       site_id: "102"
+    datasource_required:
+      site_id: "100"
   parents:
     - class_name: "fvSiteAssociated"
       parent_dependency: "fvCtx"
