@@ -35,6 +35,8 @@ type ApplicationEPGAttributes struct {
 
 	PcEnfPref string `json:",omitempty"`
 
+	PcTag string `json:",omitempty"`
+
 	PrefGrMemb string `json:",omitempty"`
 
 	Prio string `json:",omitempty"`
@@ -83,6 +85,8 @@ func (fvAEPg *ApplicationEPG) ToMap() (map[string]string, error) {
 
 	A(fvAEPgMap, "pcEnfPref", fvAEPg.PcEnfPref)
 
+	A(fvAEPgMap, "pcTag", fvAEPg.PcTag)
+
 	A(fvAEPgMap, "prefGrMemb", fvAEPg.PrefGrMemb)
 
 	A(fvAEPgMap, "prio", fvAEPg.Prio)
@@ -125,6 +129,8 @@ func ApplicationEPGFromContainerList(cont *container.Container, index int) *Appl
 			NameAlias: G(ApplicationEPGCont, "nameAlias"),
 
 			PcEnfPref: G(ApplicationEPGCont, "pcEnfPref"),
+
+			PcTag: G(ApplicationEPGCont, "pcTag"),
 
 			PrefGrMemb: G(ApplicationEPGCont, "prefGrMemb"),
 
