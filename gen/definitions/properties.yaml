@@ -269,7 +269,7 @@ fvRemoteId:
     siteId: "A number between 0 and 1000 to identify the remote site being associated with the primary site"
   default_values:
     siteId: "100"
-    remote_ctx_pc_tag: "2818057"
+    remote_ctx_pc_tag: "any"
     remote_pc_tag: "16386"
   resource_required:
     - "remotePcTag"
