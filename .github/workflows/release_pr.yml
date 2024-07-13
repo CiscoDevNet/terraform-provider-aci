@@ -31,11 +31,20 @@ jobs:
       - name: Prepend new changelog entry
         run: git cliff --bump --unreleased -p CHANGELOG.md
 
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
+      
+      - name: Generate annotation unsupported provider code
+        run: go generate
+        env:
+          GEN_ANNOTATION_UNSUPPORTED: '1'
+
       - name: Set git config
         run: git config user.email "dcn-ecosystem@cisco.com" && git config user.name "dcn-ecosystem"
 
       - name: Commit
-        run: git add -u && git status && git commit -m "[ignore] Update Changelog for new release (${{ steps.vars.outputs.version }})"
+        run: git add -u && git status && git commit -m "[ignore] Update Changelog and annotation_unsupported.go for new release (${{ steps.vars.outputs.version }})"
 
       - name: Branch & Push
         run: git checkout -b release_pr && git push --set-upstream origin release_pr --force && git clean -f -d
