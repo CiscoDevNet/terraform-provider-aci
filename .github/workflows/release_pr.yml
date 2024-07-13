@@ -6,55 +6,50 @@ on:
       - release-pr-test
 
 jobs:
-  git-cliff:
+  release-pr:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Unshallow
         run: git fetch --prune --unshallow
-
+      
+      # git-cliff to generate CHANGELOG.md
       - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-      
       - run: pip install git-cliff
-
       - name: Get next version
         id: vars
         run: echo "version=$(git cliff --bumped-version)" >> $GITHUB_OUTPUT
-
       - name: Generate changelog output
         run: git cliff --bump --unreleased
-
       - name: Prepend new changelog entry
         run: git cliff --bump --unreleased -p CHANGELOG.md
 
+      # Generate annotation_unsupported.go
       - uses: actions/setup-go@v5
         with:
           go-version-file: 'go.mod'
-      
       - name: Generate annotation unsupported provider code
         run: go generate
         env:
           GEN_ANNOTATION_UNSUPPORTED: '1'
 
+      # Commit changes to release_pr branch
       - name: Set git config
         run: git config user.email "dcn-ecosystem@cisco.com" && git config user.name "dcn-ecosystem"
-
       - name: Commit
         run: git add -u && git status && git commit -m "[ignore] Update Changelog and annotation_unsupported.go for new release (${{ steps.vars.outputs.version }})"
-
       - name: Branch & Push
         run: git checkout -b release_pr && git push --set-upstream origin release_pr --force && git clean -f -d
 
+      # Create or update release PR
       - run: gh pr create --base master --head release_pr --title "Pre-Release PR (${{ steps.vars.outputs.version }})" --body ""
         id: pr
         continue-on-error: true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      
       - run: gh pr edit release_pr --title "Pre-Release PR (${{ steps.vars.outputs.version }})"
         if: steps.pr.outcome == 'failure'
         env:
