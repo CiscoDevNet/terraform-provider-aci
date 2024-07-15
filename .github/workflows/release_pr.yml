@@ -3,7 +3,7 @@ name: release_pr
 on:
   push:
     branches:
-      - release-pr-test
+      - master
 
 jobs:
   release-pr:
