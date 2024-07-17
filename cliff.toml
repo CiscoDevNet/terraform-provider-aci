@@ -44,13 +44,21 @@ split_commits = false
 commit_preprocessors = []
 commit_parsers = [
   { message = "^.[I|i]gnore", skip = true },
-  { message = "[D|d]eprecat", group = "<!-- 0 -->DEPRECATIONS" },
-  { message = "^.[B|b]ug", group = "<!-- 1 -->BUG FIXES" },
-  { message = "^.[M|m]inor", group = "<!-- 3 -->IMPROVEMENTS" },
-  { message = "^.[M|m]ajor", group = "<!-- 3 -->IMPROVEMENTS" },
-#  { message = ".*", group = "<!-- 5 -->OTHER" },
+  { message = "^Bump", skip = true }, # Ignore Dependabot version bumps
+  { message = "^Merge.branch", skip = true }, # Ignore merge commits
+  { message = "^.[M|m]ajor", group = "<!-- 0 -->BREAKING CHANGES" },
+  { message = "[D|d]eprecat", group = "<!-- 1 -->DEPRECATIONS" },
+  { message = "^.[M|m]inor", group = "<!-- 2 -->IMPROVEMENTS" },
+  { message = "^.[B|b]ug", group = "<!-- 3 -->BUG FIXES" },
+  { message = ".*", group = "<!-- 4 -->OTHER" },
 ]
 protect_breaking_commits = false
 filter_commits = true
 topo_order = false
 sort_commits = "oldest"
+
+[bump]
+features_always_bump_minor = true
+breaking_always_bump_major = true
+custom_major_increment_regex = "major"
+custom_minor_increment_regex = "minor"
