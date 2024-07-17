@@ -1,0 +1,64 @@
+# git-cliff ~ configuration file
+# https://git-cliff.org/docs/configuration
+
+[changelog]
+header = """
+# Terraform Provider ACI - Changelog\n
+All notable changes to this project will be documented in this file.\n
+"""
+# template for the changelog body
+# https://keats.github.io/tera/docs/#introduction
+# TODO find a nicer way to remove the [something] tags from the start of commits.
+body = """
+{% if version %}\
+    ## {{ version | trim_start_matches(pat="v") }} ({{ timestamp | date(format="%B %d, %Y") }})
+{% else %}\
+    ## [unreleased]
+{% endif %}\
+{% for group, commits in commits | group_by(attribute="group") %}
+    {{ group | striptags | trim | upper_first }}:
+    {% for commit in commits -%}
+        - {{ commit.message | trim 
+        | trim_start_matches(pat="[bugfix]") 
+        | trim_start_matches(pat="[bug_fix]") 
+        | trim_start_matches(pat="[bugfixes]") 
+        | trim_start_matches(pat="[minor_change]") 
+        | trim_start_matches(pat="[minor_changes]") 
+        | trim_start_matches(pat="[major_change]") 
+        | trim_start_matches(pat="[major_changes]") 
+        | trim | capitalize }}
+    {% endfor -%}
+{% endfor %}\n
+"""
+footer = """
+"""
+trim = true
+postprocessors = [
+  { pattern = '.*', replace_command = 'typos --write-changes -' }
+]
+
+[git]
+conventional_commits = false
+filter_unconventional = false
+split_commits = false
+commit_preprocessors = []
+commit_parsers = [
+  { message = "^.[I|i]gnore", skip = true },
+  { message = "^Bump", skip = true }, # Ignore Dependabot version bumps
+  { message = "^Merge.branch", skip = true }, # Ignore merge commits
+  { message = "^.[M|m]ajor", group = "<!-- 0 -->BREAKING CHANGES" },
+  { message = "[D|d]eprecat", group = "<!-- 1 -->DEPRECATIONS" },
+  { message = "^.[M|m]inor", group = "<!-- 2 -->IMPROVEMENTS" },
+  { message = "^.[B|b]ug", group = "<!-- 3 -->BUG FIXES" },
+  { message = ".*", group = "<!-- 4 -->OTHER" },
+]
+protect_breaking_commits = false
+filter_commits = true
+topo_order = false
+sort_commits = "oldest"
+
+[bump]
+features_always_bump_minor = true
+breaking_always_bump_major = true
+custom_major_increment_regex = "major"
+custom_minor_increment_regex = "minor"
