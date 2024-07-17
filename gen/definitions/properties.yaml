@@ -280,7 +280,7 @@ fvRemoteId:
       remote_pc_tag: "16386"
     default:
       site_id: "100"
-      remote_vrf_pc_tag: "2818057"
+      remote_vrf_pc_tag: "any"
       remote_pc_tag: "16386"
     resource_required:
       site_id: "100"

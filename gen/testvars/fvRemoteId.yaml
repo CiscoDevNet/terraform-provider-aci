@@ -9,7 +9,7 @@ default:
   name_alias: ""
   owner_key: ""
   owner_tag: ""
-  remote_vrf_pc_tag: "2818057"
+  remote_vrf_pc_tag: "any"
   remote_pc_tag: "16386"
   site_id: "100"
 
