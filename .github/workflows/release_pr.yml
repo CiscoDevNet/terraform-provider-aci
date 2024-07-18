@@ -14,18 +14,42 @@ jobs:
       - name: Unshallow
         run: git fetch --prune --unshallow
       
-      # git-cliff to generate CHANGELOG.md
+      # git-cliff generates CHANGELOG.md
       - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
       - run: pip install git-cliff typos
+      - name: Check new changlog entry for version bump type
+        id: type
+        run: |
+          changelog=$(git cliff --unreleased)
+          case $changelog in
+              *"BREAKING CHANGES:"* )
+                  echo "MAJOR"
+                  echo "bump="MAJOR: version change"" >> $GITHUB_OUTPUT
+                  ;;
+              *"IMPROVEMENTS:"* )
+                  echo "MINOR"
+                  echo "bump="MINOR: version change"" >> $GITHUB_OUTPUT
+                  ;;
+              *"DEPRECATIONS:"* )
+                  echo "MINOR"
+                  echo "bump="MINOR: version change"" >> $GITHUB_OUTPUT
+                  ;;
+              * )
+                  echo "PATCH"
+                  echo "bump="PATCH: version change"" >> $GITHUB_OUTPUT
+                  ;;
+          esac
+      # The --with-commit inserts a commit message to git-cliff without it being in the history.
+      # It is used here to dynamically add version bump commands.
       - name: Get next version
         id: vars
-        run: echo "version=$(git cliff --bumped-version)" >> $GITHUB_OUTPUT
+        run: echo "version=$(git cliff --bumped-version --with-commit "${{ steps.type.outputs.bump }}")" >> $GITHUB_OUTPUT
       - name: Generate changelog output
-        run: git cliff --bump --unreleased
+        run: git cliff --bump --unreleased --with-commit "${{ steps.type.outputs.bump }}"
       - name: Prepend new changelog entry
-        run: git cliff --bump --unreleased -p CHANGELOG.md
+        run: git cliff --bump --unreleased -p CHANGELOG.md --with-commit "${{ steps.type.outputs.bump }}"
 
       # Generate annotation_unsupported.go
       - uses: actions/setup-go@v5

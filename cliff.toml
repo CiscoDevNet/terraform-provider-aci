@@ -50,6 +50,9 @@ commit_parsers = [
   { message = "[D|d]eprecat", group = "<!-- 1 -->DEPRECATIONS" },
   { message = "^.[M|m]inor", group = "<!-- 2 -->IMPROVEMENTS" },
   { message = "^.[B|b]ug", group = "<!-- 3 -->BUG FIXES" },
+  # Not skipped so version bumps are registered.
+  # However, not grouped so they don't show up in the changelog.
+  { message = ".*[MAJOR|MINOR|PATCH].*version change" },
   { message = ".*", group = "<!-- 4 -->OTHER" },
 ]
 protect_breaking_commits = false
