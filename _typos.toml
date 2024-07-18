@@ -1,0 +1,6 @@
+[default.extend-words]
+# Don't correct the following words or acronyms
+aci = "aci"
+nd = "nd"
+mso = "mso"
+useg = "useg"
