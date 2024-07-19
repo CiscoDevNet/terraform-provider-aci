@@ -77,8 +77,8 @@ All examples for the {{.ResourceNameAsDescription}} resource can be found in the
 {{- range .Properties}}
     {{- if or .IsNaming .IsRequired}}
 * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}}{{if ne .NamedPropertyClass ""}}{{$RName := getResourceName .NamedPropertyClass $.Definitions}} This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{$RName}}) with `aci_{{$RName}}.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/{{$RName}}) with `data.aci_{{$RName}}.example.name`.{{end}}{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
-      {{- if .ValidValues }}{{$i := 1}}{{$length := len .ValidValues}}
-  - Valid Values:{{ range .ValidValues}} `{{ . }}`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
+      {{- if .ValidValuesNames }}{{$i := 1}}{{$length := len .ValidValuesNames}}
+  - Valid Values:{{ range .ValidValuesNames}} `{{ . }}`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
       {{- end}}
     {{- end}}
 {{- end}}
@@ -103,16 +103,16 @@ All examples for the {{.ResourceNameAsDescription}} resource can be found in the
         {{- if .DefaultValue }}
   - Default: `{{ .DefaultValue }}`.
         {{- end}}
-        {{- if .ValidValues }}{{$i := 1}}{{$length := len .ValidValues}}
-  - Valid Values:{{ range .ValidValues}} `{{ . }}`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
+        {{- if .ValidValuesNames }}{{$i := 1}}{{$length := len .ValidValuesNames}}
+  - Valid Values:{{ range .ValidValuesNames}} `{{ . }}`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
         {{- end}}
       {{- else}}
 * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}}{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
         {{- if .DefaultValue }}
   - Default: `{{ .DefaultValue }}`
         {{- end}}
-        {{- if .ValidValues }}{{$i := 1}}{{$length := len .ValidValues}}
-  - Valid Values:{{ range .ValidValues}} `{{ . }}`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
+        {{- if .ValidValuesNames }}{{$i := 1}}{{$length := len .ValidValuesNames}}
+  - Valid Values:{{ range .ValidValuesNames}} `{{ . }}`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
         {{- end}}
       {{- end}}
     {{- end}}
@@ -164,8 +164,8 @@ All examples for the {{.ResourceNameAsDescription}} resource can be found in the
         {{- if .DefaultValue }}
       - Default: `{{ .DefaultValue }}`
         {{- end}}
-        {{- if .ValidValues }}{{$i := 1}}{{$length := len .ValidValues}}
-      - Valid Values:{{ range .ValidValues}} `{{ . }}`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
+        {{- if .ValidValuesNames }}{{$i := 1}}{{$length := len .ValidValuesNames}}
+      - Valid Values:{{ range .ValidValuesNames}} `{{ . }}`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
         {{- end}}
       {{- end}}
     {{- end}}
