@@ -318,7 +318,7 @@ func (r *L3extConsLblResource) Create(ctx context.Context, req resource.CreateRe
 		setL3extConsLblId(ctx, data)
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_l3out_consumer_label with id '%s'", data.Id.ValueString()))
+	setL3extConsLblId(ctx, data)
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationL3extConsLblResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
@@ -399,6 +399,12 @@ func (r *L3extConsLblResource) Update(ctx context.Context, req resource.UpdateRe
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_l3out_consumer_label with id '%s'", data.Id.ValueString()))
 
 	if resp.Diagnostics.HasError() {
 		return

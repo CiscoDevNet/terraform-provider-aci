@@ -290,7 +290,7 @@ func (r *MplsNodeSidPResource) Create(ctx context.Context, req resource.CreateRe
 		setMplsNodeSidPId(ctx, data)
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_l3out_node_sid_profile with id '%s'", data.Id.ValueString()))
+	setMplsNodeSidPId(ctx, data)
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationMplsNodeSidPResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
@@ -371,6 +371,12 @@ func (r *MplsNodeSidPResource) Update(ctx context.Context, req resource.UpdateRe
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_l3out_node_sid_profile with id '%s'", data.Id.ValueString()))
 
 	if resp.Diagnostics.HasError() {
 		return

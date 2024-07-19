@@ -33,7 +33,7 @@ func TestAccResourceNetflowRsMonitorToExporterWithNetflowMonitorPol(t *testing.T
 
 	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "3.2(1l)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -46,7 +46,7 @@ func TestAccResourceNetflowRsMonitorToExporterWithNetflowMonitorPol(t *testing.T
 
 	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "3.2(1l)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -64,7 +64,7 @@ func TestAccResourceNetflowRsMonitorToExporterWithNetflowMonitorPol(t *testing.T
 	})
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "3.2(1l)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -136,6 +136,7 @@ func TestAccResourceNetflowRsMonitorToExporterWithNetflowMonitorPol(t *testing.T
 				ImportStateVerify: true,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_netflow_exporter.test", "netflow_exporter_policy_name", "test_tn_netflow_exporter_pol_name"),
+					resource.TestCheckResourceAttr("aci_relation_to_netflow_exporter.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_relation_to_netflow_exporter.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_relation_to_netflow_exporter.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_relation_to_netflow_exporter.test", "annotations.0.value", "value_1"),
@@ -266,16 +267,16 @@ resource "aci_relation_to_netflow_exporter" "test" {
   parent_dn = aci_netflow_monitor_policy.test.id
   netflow_exporter_policy_name = "test_tn_netflow_exporter_pol_name"
   annotations = [ 
-    {
+	{
 	  key = "key_1"
 	  value = "value_2"
-    },
+	},
   ]
   tags = [ 
-    {
+	{
 	  key = "key_1"
 	  value = "value_2"
-    },
+	},
   ]
 }
 `

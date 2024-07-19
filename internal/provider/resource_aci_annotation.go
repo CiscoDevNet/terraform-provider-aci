@@ -162,7 +162,7 @@ func (r *TagAnnotationResource) Create(ctx context.Context, req resource.CreateR
 		setTagAnnotationId(ctx, data)
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_annotation with id '%s'", data.Id.ValueString()))
+	setTagAnnotationId(ctx, data)
 
 	jsonPayload := getTagAnnotationCreateJsonPayload(ctx, &resp.Diagnostics, true, data)
 
@@ -229,6 +229,12 @@ func (r *TagAnnotationResource) Update(ctx context.Context, req resource.UpdateR
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_annotation with id '%s'", data.Id.ValueString()))
 
 	if resp.Diagnostics.HasError() {
 		return

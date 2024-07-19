@@ -257,6 +257,7 @@ var targetRelationalPropertyClasses = map[string]string{}
 var alwaysIncludeChildren = []string{"tag:Annotation", "tag:Tag"}
 var excludeChildResourceNamesFromDocs = []string{"", "annotation", "tag"}
 var testCloudApic, testApic, resourceIdentifier, excludeResources []interface{}
+var multiLineTypes = []string{"pkiCert", "pkiPrivateKey"}
 
 func GetResourceNameAsDescription(s string, definitions Definitions) string {
 	resourceName := cases.Title(language.English).String(strings.ReplaceAll(s, "_", " "))
@@ -324,7 +325,12 @@ func ListToString(stringList []string) string {
 	return fmt.Sprintf("%s", strings.Join(stringList, ","))
 }
 
-func isMultiLine(propertyName, classPkgName string, definitions Definitions) bool {
+func isMultiLine(propertyName, classPkgName string, definitions Definitions, modelProperties map[string]Property) bool {
+	for _, property := range modelProperties {
+		if propertyName == property.SnakeCaseName && slices.Contains(multiLineTypes, property.ModelType) {
+			return true
+		}
+	}
 	precedenceList := []string{classPkgName, "global"}
 	for _, precedence := range precedenceList {
 		if classDetails, ok := definitions.Properties[precedence]; ok {
@@ -364,20 +370,23 @@ func CreateParentDnValue(className, caller string, definitions Definitions) stri
 
 // Retrieves a value for a attribute of a aci class when defined in the testVars YAML file of the class
 // Returns "test_value" if no value is defined in the testVars YAML file
-func LookupTestValue(classPkgName, propertyName string, testVars map[string]interface{}, definitions Definitions) interface{} {
+func LookupTestValue(classPkgName, originalPropertyName string, testVars map[string]interface{}, definitions Definitions, modelProperties map[string]Property) interface{} {
 	var lookupValue interface{} = "test_value"
-	propertyName = GetOverwriteAttributeName(classPkgName, propertyName, definitions)
+	propertyName := GetOverwriteAttributeName(classPkgName, originalPropertyName, definitions)
 
 	if allVars, ok := testVars["all"].(map[interface{}]interface{}); ok {
 		if val, ok := allVars[propertyName]; ok {
-			if strVal, ok := val.(string); ok {
-				if isMultiLine(propertyName, classPkgName, definitions) {
-					lookupValue = processMultiLine(strVal)
-				} else if isAttributeATerraformReference(strVal) {
-					lookupValue = fmt.Sprintf(`%s`, strVal)
+			switch val := val.(type) {
+			case string:
+				if isMultiLine(originalPropertyName, classPkgName, definitions, modelProperties) {
+					lookupValue = processMultiLine(val)
+				} else if isAttributeATerraformReference(val) {
+					lookupValue = fmt.Sprintf(`%s`, val)
 				} else {
-					lookupValue = fmt.Sprintf(`"%s"`, strVal)
+					lookupValue = fmt.Sprintf(`"%s"`, val)
 				}
+			case []interface{}:
+				lookupValue = val
 			}
 		}
 	}
@@ -385,7 +394,7 @@ func LookupTestValue(classPkgName, propertyName string, testVars map[string]inte
 	if resourceVars, ok := testVars["resource_required"].(map[interface{}]interface{}); ok {
 		if val, ok := resourceVars[propertyName]; ok {
 			if strVal, ok := val.(string); ok {
-				if isMultiLine(propertyName, classPkgName, definitions) {
+				if isMultiLine(originalPropertyName, classPkgName, definitions, modelProperties) {
 					lookupValue = processMultiLine(strVal)
 				} else if isAttributeATerraformReference(strVal) {
 					lookupValue = fmt.Sprintf(`%s`, strVal)
@@ -1055,6 +1064,7 @@ type Model struct {
 	ExampleResource             string
 	ExampleResourceFull         string
 	SubCategory                 string
+	TestApplicableFromVersion   string
 	RelationshipClasses         []string
 	RelationshipResourceNames   []string
 	Versions                    string
@@ -1159,6 +1169,7 @@ type Property struct {
 	Versions           string
 	NamedPropertyClass string
 	RawVersion         string
+	ModelType          string
 	ValidValues        []string
 	IdentifiedBy       []interface{}
 	Validators         []interface{}
@@ -1683,6 +1694,10 @@ func (m *Model) SetClassProperties(classDetails interface{}) {
 
 			if propertyValue.(map[string]interface{})["versions"] != nil {
 				property.RawVersion = strings.TrimSuffix(propertyValue.(map[string]interface{})["versions"].(string), "-")
+			}
+
+			if propertyValue.(map[string]interface{})["modelType"] != nil {
+				property.ModelType = strings.Replace(propertyValue.(map[string]interface{})["modelType"].(string), ":", "", -1)
 			}
 
 			properties[propertyName] = property

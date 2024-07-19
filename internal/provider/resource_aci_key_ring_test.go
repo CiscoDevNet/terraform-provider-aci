@@ -5,12 +5,112 @@
 package provider
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
 func TestAccResourcePkiKeyRing(t *testing.T) {
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t, "both", "6.0(2h)") },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:             testConfigPkiKeyRingMinAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					waitForApicBeforeRefresh,
+					resource.TestCheckResourceAttr("aci_key_ring.test", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "admin_state", "started"),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "admin_state", "started"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "certificate", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "certificate", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "certificate_authority", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "certificate_authority", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "elliptic_curve", "none"),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "elliptic_curve", "none"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "key_type", "RSA"),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "key_type", "RSA"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "modulus", "mod2048"),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "modulus", "mod2048"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "regenerate", "no"),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "regenerate", "no"),
+				),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t, "both", "6.0(2h)") },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config: testConfigPkiKeyRingMinAllowExisting,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					waitForApicBeforeRefresh,
+				),
+				ExpectError: regexp.MustCompile("Object Already Exists"),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t, "both", "6.0(2h)") },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:             testConfigPkiKeyRingMinAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					waitForApicBeforeRefresh,
+					resource.TestCheckResourceAttr("aci_key_ring.test", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "admin_state", "started"),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "admin_state", "started"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "certificate", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "certificate", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "certificate_authority", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "certificate_authority", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "elliptic_curve", "none"),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "elliptic_curve", "none"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "key_type", "RSA"),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "key_type", "RSA"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "modulus", "mod2048"),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "modulus", "mod2048"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "regenerate", "no"),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "regenerate", "no"),
+				),
+			},
+		},
+	})
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t, "both", "6.0(2h)") },
@@ -161,6 +261,18 @@ func TestAccResourcePkiKeyRing(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_key_ring.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "regenerate", "no"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "admin_state", "started"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "certificate", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "certificate_authority", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "elliptic_curve", "none"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "key_type", "RSA"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "modulus", "mod2048"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "regenerate", "no"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.key", "key_1"),
@@ -221,6 +333,105 @@ func TestAccResourcePkiKeyRing(t *testing.T) {
 	})
 }
 func TestAccResourcePkiKeyRingWithFvTenant(t *testing.T) {
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t, "cloud", "6.0(2h)") },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:             testConfigPkiKeyRingMinDependencyWithFvTenantAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					waitForApicBeforeRefresh,
+					resource.TestCheckResourceAttr("aci_key_ring.test", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "admin_state", "started"),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "admin_state", "started"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "certificate", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "certificate", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "certificate_authority", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "certificate_authority", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "elliptic_curve", "none"),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "elliptic_curve", "none"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "key_type", "RSA"),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "key_type", "RSA"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "modulus", "mod2048"),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "modulus", "mod2048"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "regenerate", "no"),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "regenerate", "no"),
+				),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t, "cloud", "6.0(2h)") },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config: testConfigPkiKeyRingMinDependencyWithFvTenantAllowExisting,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					waitForApicBeforeRefresh,
+				),
+				ExpectError: regexp.MustCompile("Object Already Exists"),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t, "cloud", "6.0(2h)") },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:             testConfigPkiKeyRingMinDependencyWithFvTenantAllowExisting,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					waitForApicBeforeRefresh,
+					resource.TestCheckResourceAttr("aci_key_ring.test", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "admin_state", "started"),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "admin_state", "started"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "certificate", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "certificate", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "certificate_authority", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "certificate_authority", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "elliptic_curve", "none"),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "elliptic_curve", "none"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "key_type", "RSA"),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "key_type", "RSA"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "modulus", "mod2048"),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "modulus", "mod2048"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "regenerate", "no"),
+					resource.TestCheckResourceAttr("aci_key_ring.test_2", "regenerate", "no"),
+				),
+			},
+		},
+	})
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t, "cloud", "6.0(2h)") },
@@ -371,6 +582,18 @@ func TestAccResourcePkiKeyRingWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_key_ring.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "regenerate", "no"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "admin_state", "started"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "certificate", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "certificate_authority", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "elliptic_curve", "none"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "key_type", "RSA"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "modulus", "mod2048"),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_key_ring.test", "regenerate", "no"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.key", "key_1"),
@@ -431,13 +654,30 @@ func TestAccResourcePkiKeyRingWithFvTenant(t *testing.T) {
 	})
 }
 
-const testConfigPkiKeyRingMin = `
+const testDependencyConfigPkiKeyRing = `
+resource "aci_certificate_authority" "test_0" {
+  certificate_chain = "-----BEGIN CERTIFICATE-----\nMIICODCCAaGgAwIBAgIJAIt8XMntue0VMA0GCSqGSIb3DQEBCwUAMDQxDjAMBgNV\nBAMMBUFkbWluMRUwEwYDVQQKDAxZb3VyIENvbXBhbnkxCzAJBgNVBAYTAlVTMCAX\nDTE4MDEwOTAwNTk0NFoYDzIxMTcxMjE2MDA1OTQ0WjA0MQ4wDAYDVQQDDAVBZG1p\nbjEVMBMGA1UECgwMWW91ciBDb21wYW55MQswCQYDVQQGEwJVUzCBnzANBgkqhkiG\n9w0BAQEFAAOBjQAwgYkCgYEAohG/7axtt7CbSaMP7r+2mhTKbNgh0Ww36C7Ta14i\nv+VmLyKkQHnXinKGhp6uy3Nug+15a+eIu7CrgpBVMQeCiWfsnwRocKcQJWIYDrWl\nXHxGQn31yYKR6mylE7Dcj3rMFybnyhezr5D8GcP85YRPmwG9H2hO/0Y1FUnWu9Iw\nAQkCAwEAAaNQME4wHQYDVR0OBBYEFD0jLXfpkrU/ChzRvfruRs/fy1VXMB8GA1Ud\nIwQYMBaAFD0jLXfpkrU/ChzRvfruRs/fy1VXMAwGA1UdEwQFMAMBAf8wDQYJKoZI\nhvcNAQELBQADgYEAOmvre+5tgZ0+F3DgsfxNQqLTrGiBgGCIymPkP/cBXXkNuJyl\n3ac7tArHQc7WEA4U2R2rZbEq8FC3UJJm4nUVtCPvEh3G9OhN2xwYev79yt6pIn/l\nKU0Td2OpVyo0eLqjoX5u2G90IBWzhyjFbo+CcKMrSVKj1YOdG0E3OuiJf00=\n-----END CERTIFICATE-----"
+  name = "test_name"
+}
+`
+
+const testConfigPkiKeyRingMinAllowExisting = testDependencyConfigPkiKeyRing + `
+resource "aci_key_ring" "test" {
+  name = "test_name"
+}
+resource "aci_key_ring" "test_2" {
+  name = "test_name"
+  depends_on = [aci_key_ring.test]
+}
+`
+
+const testConfigPkiKeyRingMin = testDependencyConfigPkiKeyRing + `
 resource "aci_key_ring" "test" {
   name = "test_name"
 }
 `
 
-const testConfigPkiKeyRingAll = `
+const testConfigPkiKeyRingAll = testDependencyConfigPkiKeyRing + `
 resource "aci_key_ring" "test" {
   name = "test_name"
   admin_state = "completed"
@@ -456,7 +696,7 @@ resource "aci_key_ring" "test" {
 }
 `
 
-const testConfigPkiKeyRingReset = `
+const testConfigPkiKeyRingReset = testDependencyConfigPkiKeyRing + `
 resource "aci_key_ring" "test" {
   name = "test_name"
   admin_state = "started"
@@ -474,7 +714,7 @@ resource "aci_key_ring" "test" {
   regenerate = "no"
 }
 `
-const testConfigPkiKeyRingChildren = `
+const testConfigPkiKeyRingChildren = testDependencyConfigPkiKeyRing + `
 resource "aci_key_ring" "test" {
   name = "test_name"
   annotations = [
@@ -500,31 +740,31 @@ resource "aci_key_ring" "test" {
 }
 `
 
-const testConfigPkiKeyRingChildrenRemoveFromConfig = `
+const testConfigPkiKeyRingChildrenRemoveFromConfig = testDependencyConfigPkiKeyRing + `
 resource "aci_key_ring" "test" {
   name = "test_name"
 }
 `
 
-const testConfigPkiKeyRingChildrenRemoveOne = `
+const testConfigPkiKeyRingChildrenRemoveOne = testDependencyConfigPkiKeyRing + `
 resource "aci_key_ring" "test" {
   name = "test_name"
   annotations = [ 
-    {
+	{
 	  key = "key_1"
 	  value = "value_2"
-    },
+	},
   ]
   tags = [ 
-    {
+	{
 	  key = "key_1"
 	  value = "value_2"
-    },
+	},
   ]
 }
 `
 
-const testConfigPkiKeyRingChildrenRemoveAll = `
+const testConfigPkiKeyRingChildrenRemoveAll = testDependencyConfigPkiKeyRing + `
 resource "aci_key_ring" "test" {
   name = "test_name"
   annotations = []
@@ -532,14 +772,26 @@ resource "aci_key_ring" "test" {
 }
 `
 
-const testConfigPkiKeyRingMinDependencyWithFvTenant = testConfigFvTenantMinDependencyWithPkiTP + `
+const testConfigPkiKeyRingMinDependencyWithFvTenantAllowExisting = testDependencyConfigPkiKeyRing + testConfigFvTenantMin + `
+resource "aci_key_ring" "test" {
+  parent_dn = aci_tenant.test.id
+  name = "test_name"
+}
+resource "aci_key_ring" "test_2" {
+  parent_dn = aci_tenant.test.id
+  name = "test_name"
+  depends_on = [aci_key_ring.test]
+}
+`
+
+const testConfigPkiKeyRingMinDependencyWithFvTenant = testDependencyConfigPkiKeyRing + testConfigFvTenantMin + `
 resource "aci_key_ring" "test" {
   parent_dn = aci_tenant.test.id
   name = "test_name"
 }
 `
 
-const testConfigPkiKeyRingAllDependencyWithFvTenant = testConfigFvTenantMinDependencyWithPkiTP + `
+const testConfigPkiKeyRingAllDependencyWithFvTenant = testDependencyConfigPkiKeyRing + testConfigFvTenantMin + `
 resource "aci_key_ring" "test" {
   parent_dn = aci_tenant.test.id
   name = "test_name"
@@ -559,7 +811,7 @@ resource "aci_key_ring" "test" {
 }
 `
 
-const testConfigPkiKeyRingResetDependencyWithFvTenant = testConfigFvTenantMinDependencyWithPkiTP + `
+const testConfigPkiKeyRingResetDependencyWithFvTenant = testDependencyConfigPkiKeyRing + testConfigFvTenantMin + `
 resource "aci_key_ring" "test" {
   parent_dn = aci_tenant.test.id
   name = "test_name"
@@ -578,7 +830,7 @@ resource "aci_key_ring" "test" {
   regenerate = "no"
 }
 `
-const testConfigPkiKeyRingChildrenDependencyWithFvTenant = testConfigFvTenantMinDependencyWithPkiTP + `
+const testConfigPkiKeyRingChildrenDependencyWithFvTenant = testDependencyConfigPkiKeyRing + testConfigFvTenantMin + `
 resource "aci_key_ring" "test" {
   parent_dn = aci_tenant.test.id
   name = "test_name"
@@ -605,33 +857,33 @@ resource "aci_key_ring" "test" {
 }
 `
 
-const testConfigPkiKeyRingChildrenRemoveFromConfigDependencyWithFvTenant = testConfigFvTenantMinDependencyWithPkiTP + `
+const testConfigPkiKeyRingChildrenRemoveFromConfigDependencyWithFvTenant = testDependencyConfigPkiKeyRing + testConfigFvTenantMin + `
 resource "aci_key_ring" "test" {
   parent_dn = aci_tenant.test.id
   name = "test_name"
 }
 `
 
-const testConfigPkiKeyRingChildrenRemoveOneDependencyWithFvTenant = testConfigFvTenantMinDependencyWithPkiTP + `
+const testConfigPkiKeyRingChildrenRemoveOneDependencyWithFvTenant = testDependencyConfigPkiKeyRing + testConfigFvTenantMin + `
 resource "aci_key_ring" "test" {
   parent_dn = aci_tenant.test.id
   name = "test_name"
   annotations = [ 
-    {
+	{
 	  key = "key_1"
 	  value = "value_2"
-    },
+	},
   ]
   tags = [ 
-    {
+	{
 	  key = "key_1"
 	  value = "value_2"
-    },
+	},
   ]
 }
 `
 
-const testConfigPkiKeyRingChildrenRemoveAllDependencyWithFvTenant = testConfigFvTenantMinDependencyWithPkiTP + `
+const testConfigPkiKeyRingChildrenRemoveAllDependencyWithFvTenant = testDependencyConfigPkiKeyRing + testConfigFvTenantMin + `
 resource "aci_key_ring" "test" {
   parent_dn = aci_tenant.test.id
   name = "test_name"

@@ -134,6 +134,7 @@ func (r *NetflowRecordPolResource) Schema(ctx context.Context, req resource.Sche
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
 				MarkdownDescription: `The annotation of the Netflow Record Policy object.`,
@@ -144,6 +145,7 @@ func (r *NetflowRecordPolResource) Schema(ctx context.Context, req resource.Sche
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.Set{
 					setvalidator.SizeAtMost(8),
@@ -158,6 +160,7 @@ func (r *NetflowRecordPolResource) Schema(ctx context.Context, req resource.Sche
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The description of the Netflow Record Policy object.`,
 			},
@@ -167,6 +170,7 @@ func (r *NetflowRecordPolResource) Schema(ctx context.Context, req resource.Sche
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.Set{
 					setvalidator.SizeAtMost(14),
@@ -180,6 +184,7 @@ func (r *NetflowRecordPolResource) Schema(ctx context.Context, req resource.Sche
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
 				MarkdownDescription: `The name of the Netflow Record Policy object.`,
@@ -189,6 +194,7 @@ func (r *NetflowRecordPolResource) Schema(ctx context.Context, req resource.Sche
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The name alias of the Netflow Record Policy object.`,
 			},
@@ -197,6 +203,7 @@ func (r *NetflowRecordPolResource) Schema(ctx context.Context, req resource.Sche
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The key for enabling clients to own their data for entity correlation.`,
 			},
@@ -205,6 +212,7 @@ func (r *NetflowRecordPolResource) Schema(ctx context.Context, req resource.Sche
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
 			},
@@ -221,6 +229,7 @@ func (r *NetflowRecordPolResource) Schema(ctx context.Context, req resource.Sche
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
@@ -228,6 +237,7 @@ func (r *NetflowRecordPolResource) Schema(ctx context.Context, req resource.Sche
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -247,6 +257,7 @@ func (r *NetflowRecordPolResource) Schema(ctx context.Context, req resource.Sche
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
@@ -254,6 +265,7 @@ func (r *NetflowRecordPolResource) Schema(ctx context.Context, req resource.Sche
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -317,7 +329,7 @@ func (r *NetflowRecordPolResource) Create(ctx context.Context, req resource.Crea
 		setNetflowRecordPolId(ctx, data)
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_netflow_record_policy with id '%s'", data.Id.ValueString()))
+	setNetflowRecordPolId(ctx, data)
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationNetflowRecordPolResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
@@ -332,6 +344,7 @@ func (r *NetflowRecordPolResource) Create(ctx context.Context, req resource.Crea
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -397,6 +410,12 @@ func (r *NetflowRecordPolResource) Update(ctx context.Context, req resource.Upda
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_netflow_record_policy with id '%s'", data.Id.ValueString()))
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -492,6 +511,30 @@ func getAndSetNetflowRecordPolAttributes(ctx context.Context, diags *diag.Diagno
 				if attributeName == "ownerTag" {
 					data.OwnerTag = basetypes.NewStringValue(attributeValue.(string))
 				}
+			}
+			if data.Annotation.IsUnknown() {
+				data.Annotation = types.StringNull()
+			}
+			if data.Collect.IsUnknown() {
+				data.Collect = types.SetNull(data.Collect.ElementType(ctx))
+			}
+			if data.Descr.IsUnknown() {
+				data.Descr = types.StringNull()
+			}
+			if data.Match.IsUnknown() {
+				data.Match = types.SetNull(data.Match.ElementType(ctx))
+			}
+			if data.Name.IsUnknown() {
+				data.Name = types.StringNull()
+			}
+			if data.NameAlias.IsUnknown() {
+				data.NameAlias = types.StringNull()
+			}
+			if data.OwnerKey.IsUnknown() {
+				data.OwnerKey = types.StringNull()
+			}
+			if data.OwnerTag.IsUnknown() {
+				data.OwnerTag = types.StringNull()
 			}
 			TagAnnotationNetflowRecordPolList := make([]TagAnnotationNetflowRecordPolResourceModel, 0)
 			TagTagNetflowRecordPolList := make([]TagTagNetflowRecordPolResourceModel, 0)
@@ -703,7 +746,6 @@ func getNetflowRecordPolCreateJsonPayload(ctx context.Context, diags *diag.Diagn
 	if !data.OwnerTag.IsNull() && !data.OwnerTag.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["ownerTag"] = data.OwnerTag.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"netflowRecordPol": payloadMap})
 	if err != nil {
 		diags.AddError(

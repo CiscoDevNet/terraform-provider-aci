@@ -335,7 +335,7 @@ func (r *VzOOBBrCPResource) Create(ctx context.Context, req resource.CreateReque
 		setVzOOBBrCPId(ctx, data)
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_out_of_band_contract with id '%s'", data.Id.ValueString()))
+	setVzOOBBrCPId(ctx, data)
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationVzOOBBrCPResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
@@ -416,6 +416,12 @@ func (r *VzOOBBrCPResource) Update(ctx context.Context, req resource.UpdateReque
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_out_of_band_contract with id '%s'", data.Id.ValueString()))
 
 	if resp.Diagnostics.HasError() {
 		return

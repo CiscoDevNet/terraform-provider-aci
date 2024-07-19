@@ -39,6 +39,8 @@ parents:
     class_in_parent: false
     target_classes:
         - "fvFBRGroup"
+    test_type: both
+    test_applicable_from_version: 5.2(4d)
 targets:
   - class_name: "fvFBRGroup"
     target_dn: "uni/tn-test_tenant/ctx-test_vrf/fbrg-vrf_fallback_route_group_0"
@@ -50,3 +52,4 @@ targets:
     parent_dn_key: "parent_dn"
     properties:
         name: "vrf_fallback_route_group_0"
+

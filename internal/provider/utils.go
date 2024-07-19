@@ -126,3 +126,26 @@ func (m setToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate) PlanModifyStrin
 	}
 	return
 }
+
+type setToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate struct{}
+
+func SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate() planmodifier.Set {
+	return setToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate{}
+}
+
+func (m setToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate) Description(_ context.Context) string {
+	return "During the update phase, set the value of this attribute to StringNull when the state value is null and the plan value is unknown."
+}
+
+func (m setToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate) MarkdownDescription(_ context.Context) string {
+	return "During the update phase, set the value of this attribute to StringNull when the state value is null and the plan value is unknown."
+}
+
+// Custom plan modifier to set the plan value to null under certain conditions
+func (m setToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate) PlanModifySet(ctx context.Context, req planmodifier.SetRequest, resp *planmodifier.SetResponse) {
+	// Set the plan value to SetType null when state value is null and plan value is unknown during an Update
+	if !req.State.Raw.IsNull() && req.StateValue.IsNull() && req.PlanValue.IsUnknown() {
+		resp.PlanValue = types.SetNull(req.StateValue.ElementType(ctx))
+	}
+	return
+}

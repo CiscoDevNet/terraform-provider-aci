@@ -126,6 +126,7 @@ func (r *FvRsConsResource) Schema(ctx context.Context, req resource.SchemaReques
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
 				MarkdownDescription: `The annotation of the Relation To Consumed Contract object.`,
@@ -135,6 +136,7 @@ func (r *FvRsConsResource) Schema(ctx context.Context, req resource.SchemaReques
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
 					stringvalidator.OneOf("level1", "level2", "level3", "level4", "level5", "level6", "unspecified"),
@@ -145,6 +147,7 @@ func (r *FvRsConsResource) Schema(ctx context.Context, req resource.SchemaReques
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
 				MarkdownDescription: `The consumer contract name.`,
@@ -162,6 +165,7 @@ func (r *FvRsConsResource) Schema(ctx context.Context, req resource.SchemaReques
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
@@ -169,6 +173,7 @@ func (r *FvRsConsResource) Schema(ctx context.Context, req resource.SchemaReques
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -188,6 +193,7 @@ func (r *FvRsConsResource) Schema(ctx context.Context, req resource.SchemaReques
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
@@ -195,6 +201,7 @@ func (r *FvRsConsResource) Schema(ctx context.Context, req resource.SchemaReques
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -258,7 +265,7 @@ func (r *FvRsConsResource) Create(ctx context.Context, req resource.CreateReques
 		setFvRsConsId(ctx, data)
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_relation_to_consumed_contract with id '%s'", data.Id.ValueString()))
+	setFvRsConsId(ctx, data)
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationFvRsConsResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
@@ -273,6 +280,7 @@ func (r *FvRsConsResource) Create(ctx context.Context, req resource.CreateReques
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -343,6 +351,12 @@ func (r *FvRsConsResource) Update(ctx context.Context, req resource.UpdateReques
 		return
 	}
 
+	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_relation_to_consumed_contract with id '%s'", data.Id.ValueString()))
+
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	getAndSetFvRsConsAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save updated data into Terraform state
@@ -408,6 +422,15 @@ func getAndSetFvRsConsAttributes(ctx context.Context, diags *diag.Diagnostics, c
 				if attributeName == "tnVzBrCPName" {
 					data.TnVzBrCPName = basetypes.NewStringValue(attributeValue.(string))
 				}
+			}
+			if data.Annotation.IsUnknown() {
+				data.Annotation = types.StringNull()
+			}
+			if data.Prio.IsUnknown() {
+				data.Prio = types.StringNull()
+			}
+			if data.TnVzBrCPName.IsUnknown() {
+				data.TnVzBrCPName = types.StringNull()
 			}
 			TagAnnotationFvRsConsList := make([]TagAnnotationFvRsConsResourceModel, 0)
 			TagTagFvRsConsList := make([]TagTagFvRsConsResourceModel, 0)
@@ -600,7 +623,6 @@ func getFvRsConsCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, 
 	if !data.TnVzBrCPName.IsNull() && !data.TnVzBrCPName.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["tnVzBrCPName"] = data.TnVzBrCPName.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"fvRsCons": payloadMap})
 	if err != nil {
 		diags.AddError(

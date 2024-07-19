@@ -123,6 +123,7 @@ func (r *FvRsProtByResource) Schema(ctx context.Context, req resource.SchemaRequ
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
 				MarkdownDescription: `The annotation of the Relation To Taboo Contract object.`,
@@ -131,6 +132,7 @@ func (r *FvRsProtByResource) Schema(ctx context.Context, req resource.SchemaRequ
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
 				MarkdownDescription: `A contract for denying specific classes of traffic. Taboo rules are applied in the hardware before applying the rules of regular contracts. Without a contract, the default forwarding policy is to not allow any communication between EPGs.`,
@@ -148,6 +150,7 @@ func (r *FvRsProtByResource) Schema(ctx context.Context, req resource.SchemaRequ
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
@@ -155,6 +158,7 @@ func (r *FvRsProtByResource) Schema(ctx context.Context, req resource.SchemaRequ
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -174,6 +178,7 @@ func (r *FvRsProtByResource) Schema(ctx context.Context, req resource.SchemaRequ
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
@@ -181,6 +186,7 @@ func (r *FvRsProtByResource) Schema(ctx context.Context, req resource.SchemaRequ
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -244,7 +250,7 @@ func (r *FvRsProtByResource) Create(ctx context.Context, req resource.CreateRequ
 		setFvRsProtById(ctx, data)
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_relation_to_taboo_contract with id '%s'", data.Id.ValueString()))
+	setFvRsProtById(ctx, data)
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationFvRsProtByResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
@@ -259,6 +265,7 @@ func (r *FvRsProtByResource) Create(ctx context.Context, req resource.CreateRequ
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -329,6 +336,12 @@ func (r *FvRsProtByResource) Update(ctx context.Context, req resource.UpdateRequ
 		return
 	}
 
+	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_relation_to_taboo_contract with id '%s'", data.Id.ValueString()))
+
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	getAndSetFvRsProtByAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save updated data into Terraform state
@@ -391,6 +404,12 @@ func getAndSetFvRsProtByAttributes(ctx context.Context, diags *diag.Diagnostics,
 				if attributeName == "tnVzTabooName" {
 					data.TnVzTabooName = basetypes.NewStringValue(attributeValue.(string))
 				}
+			}
+			if data.Annotation.IsUnknown() {
+				data.Annotation = types.StringNull()
+			}
+			if data.TnVzTabooName.IsUnknown() {
+				data.TnVzTabooName = types.StringNull()
 			}
 			TagAnnotationFvRsProtByList := make([]TagAnnotationFvRsProtByResourceModel, 0)
 			TagTagFvRsProtByList := make([]TagTagFvRsProtByResourceModel, 0)
@@ -580,7 +599,6 @@ func getFvRsProtByCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics
 	if !data.TnVzTabooName.IsNull() && !data.TnVzTabooName.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["tnVzTabooName"] = data.TnVzTabooName.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"fvRsProtBy": payloadMap})
 	if err != nil {
 		diags.AddError(

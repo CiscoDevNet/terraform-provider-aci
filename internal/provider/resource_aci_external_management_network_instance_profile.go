@@ -325,7 +325,7 @@ func (r *MgmtInstPResource) Create(ctx context.Context, req resource.CreateReque
 		setMgmtInstPId(ctx, data)
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_external_management_network_instance_profile with id '%s'", data.Id.ValueString()))
+	setMgmtInstPId(ctx, data)
 
 	var mgmtRsOoBConsPlan, mgmtRsOoBConsState []MgmtRsOoBConsMgmtInstPResourceModel
 	data.MgmtRsOoBCons.ElementsAs(ctx, &mgmtRsOoBConsPlan, false)
@@ -412,6 +412,12 @@ func (r *MgmtInstPResource) Update(ctx context.Context, req resource.UpdateReque
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_external_management_network_instance_profile with id '%s'", data.Id.ValueString()))
 
 	if resp.Diagnostics.HasError() {
 		return

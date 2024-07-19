@@ -48,7 +48,7 @@ func TestAccResourceVzOOBBrCP(t *testing.T) {
 
 	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "4.2(1i)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -61,7 +61,7 @@ func TestAccResourceVzOOBBrCP(t *testing.T) {
 
 	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "4.2(1i)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -94,7 +94,7 @@ func TestAccResourceVzOOBBrCP(t *testing.T) {
 	})
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "4.2(1i)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -323,25 +323,25 @@ const testConfigVzOOBBrCPChildren = `
 resource "aci_out_of_band_contract" "test" {
   name = "test_name"
   annotations = [
-  {
-	 key = "key_0"
-	 value = "value_1"
-  },
-  {
-	 key = "key_1"
-	 value = "value_2"
-  },
- ]
+	{
+	  key = "key_0"
+	  value = "value_1"
+	},
+	{
+	  key = "key_1"
+	  value = "value_2"
+	},
+  ]
   tags = [
-  {
-	 key = "key_0"
-	 value = "value_1"
-  },
-  {
-	 key = "key_1"
-	 value = "value_2"
-  },
- ]
+	{
+	  key = "key_0"
+	  value = "value_1"
+	},
+	{
+	  key = "key_1"
+	  value = "value_2"
+	},
+  ]
 }
 `
 
@@ -355,17 +355,17 @@ const testConfigVzOOBBrCPChildrenRemoveOne = `
 resource "aci_out_of_band_contract" "test" {
   name = "test_name"
   annotations = [ 
-    {
-      key = "key_1"
-      value = "value_2"
-    },
-   ]
+	{
+	  key = "key_1"
+	  value = "value_2"
+	},
+  ]
   tags = [ 
-    {
-      key = "key_1"
-      value = "value_2"
-    },
-   ]
+	{
+	  key = "key_1"
+	  value = "value_2"
+	},
+  ]
 }
 `
 

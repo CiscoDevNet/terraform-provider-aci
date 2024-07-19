@@ -280,7 +280,7 @@ func (r *MgmtSubnetResource) Create(ctx context.Context, req resource.CreateRequ
 		setMgmtSubnetId(ctx, data)
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_external_management_network_subnet with id '%s'", data.Id.ValueString()))
+	setMgmtSubnetId(ctx, data)
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationMgmtSubnetResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
@@ -361,6 +361,12 @@ func (r *MgmtSubnetResource) Update(ctx context.Context, req resource.UpdateRequ
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_external_management_network_subnet with id '%s'", data.Id.ValueString()))
 
 	if resp.Diagnostics.HasError() {
 		return

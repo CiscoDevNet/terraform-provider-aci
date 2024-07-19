@@ -61,3 +61,6 @@ parents:
     parent_dependency: "fvTenant"
     parent_dn: "aci_vrf.test.id"
     class_in_parent: false
+    test_type: both
+    test_applicable_from_version: 5.2(4d)
+

@@ -291,7 +291,7 @@ func (r *FvEpMacTagResource) Create(ctx context.Context, req resource.CreateRequ
 		setFvEpMacTagId(ctx, data)
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_endpoint_tag_mac with id '%s'", data.Id.ValueString()))
+	setFvEpMacTagId(ctx, data)
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationFvEpMacTagResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
@@ -372,6 +372,12 @@ func (r *FvEpMacTagResource) Update(ctx context.Context, req resource.UpdateRequ
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_endpoint_tag_mac with id '%s'", data.Id.ValueString()))
 
 	if resp.Diagnostics.HasError() {
 		return

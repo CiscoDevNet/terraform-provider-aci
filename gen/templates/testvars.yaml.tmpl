@@ -116,6 +116,8 @@ parents:
     target_classes:
         {{- range $parentDependency.target_classes}}
         - "{{ . }}"
+        {{- end }}
+      {{- end }}
     {{$test := getTestType $.PkgName}}
       {{- if $test -}}
     test_type: {{$test}}
@@ -123,9 +125,6 @@ parents:
     test_type: both
       {{- end}}
     test_applicable_from_version: {{$.TestApplicableFromVersion}}
-    {{- end}}
-        {{- end}}
-      {{- end}}
     {{- end}}
     {{- if .TestDependencies}}
 targets:
@@ -161,6 +160,7 @@ child_targets:
             {{- end }}
         {{- end }}
     {{- end }}
+{{- end }}
 
 {{- if .MultiParentFormats}}
 parents:
@@ -170,6 +170,10 @@ parents:
     parent_dependency: "{{ $parentDependency.parent_dependency }}"
     parent_dn: {{ if eq $key "default" }}""{{ else }}"{{ createParentDnValue $value.ContainedBy "test" $topContext.Definitions }}"{{ end }}
     class_in_parent: false
+    target_classes:
+        {{- range $parentDependency.target_classes}}
+        - "{{ . }}"
+        {{- end}}
     {{- $testType := $value.TestType }}
     {{- if $testType }}
     test_type: {{ $testType }}
@@ -177,6 +181,24 @@ parents:
     test_type: both
     {{- end }}
     test_applicable_from_version: {{$topContext.TestApplicableFromVersion}}
+{{- end }}
+
+{{- if .TestDependencies}}
+targets:
+    {{- range .TestDependencies }}
+  - class_name: "{{ .ClassName }}"
+    target_dn: "{{ .TargetDn }}"
+    target_dn_ref: "{{ .TargetDnRef }}"
+    parent_dependency: "{{ .ParentDependency}}"
+    parent_dependency_dn_ref: "{{.ParentDependencyDnRef}}"
+    target_resource_name: "{{ .TargetResourceName }}"
+    relation_resource_name: "{{ .RelationResourceName }}"
+    parent_dn_key: "{{ .ParentDnKey }}"
+    properties:
+            {{- range $key, $value := .Properties}}
+        {{ $key }}: "{{ $value }}"
+            {{- end }}
+        {{- end }}
 {{- end }}
 {{- end }}
 {{- if and (not .ContainedBy) (not .MultiParentFormats) -}}

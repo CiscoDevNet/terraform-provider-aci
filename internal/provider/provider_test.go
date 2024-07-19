@@ -89,7 +89,21 @@ func getACIClientTest(t *testing.T) *client.Client {
 }
 
 func testAccPreCheck(t *testing.T, testType string, TestApplicableFromVersion string) {
-	infoCloud, _ := getACIClientTest(t).GetViaURL("/api/node/class/cloudProvP.json")
+	// retryGetCall is an anonymous function to retry the API call for getting the environment/controller value if the APIC is down
+	retryGetCall := func(getCall func() (*container.Container, error)) (*container.Container, error) {
+		data, err := getCall()
+		if err != nil {
+			waitErr := waitForApicBeforeRefresh(nil)
+			if waitErr != nil {
+				return nil, waitErr
+			}
+			data, err = getCall()
+		}
+		return data, err
+	}
+	infoCloud, _ := retryGetCall(func() (*container.Container, error) {
+		return getACIClientTest(t).GetViaURL("/api/node/class/cloudProvP.json")
+	})
 	environment, _ := extractEnvironmentValue(infoCloud)
 	if environment == "public-cloud" && testType == "apic" {
 		t.Skip("[WARNING] Test skipped because it is not supported on a cloud APIC.")
@@ -97,7 +111,12 @@ func testAccPreCheck(t *testing.T, testType string, TestApplicableFromVersion st
 		t.Skip("[WARNING] Test skipped because it is not supported on an on-prem APIC")
 	}
 
-	infoController, _ := getACIClientTest(t).GetViaURL("/api/node/class/firmwareCtrlrRunning.json")
+	infoController, err := retryGetCall(func() (*container.Container, error) {
+		return getACIClientTest(t).GetViaURL("/api/node/class/firmwareCtrlrRunning.json")
+	})
+	if err != nil {
+		t.Fatalf("Error fetching APIC controller information: %v", err)
+	}
 	apicVersion := extractControllerVersion(infoController)
 	if apicVersion != TestApplicableFromVersion {
 		if isVersionGreater(parseVersion(TestApplicableFromVersion), parseVersion(apicVersion)) {

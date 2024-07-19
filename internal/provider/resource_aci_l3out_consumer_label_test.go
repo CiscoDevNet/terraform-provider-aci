@@ -45,7 +45,7 @@ func TestAccResourceL3extConsLblWithL3extOut(t *testing.T) {
 
 	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "3.2(1l)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -58,7 +58,7 @@ func TestAccResourceL3extConsLblWithL3extOut(t *testing.T) {
 
 	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "3.2(1l)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -88,7 +88,7 @@ func TestAccResourceL3extConsLblWithL3extOut(t *testing.T) {
 	})
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "3.2(1l)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -190,6 +190,13 @@ func TestAccResourceL3extConsLblWithL3extOut(t *testing.T) {
 				ImportStateVerify: true,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "owner", "infra"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "tag", "yellow-green"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "name_alias", ""),
@@ -338,16 +345,16 @@ resource "aci_l3out_consumer_label" "test" {
   parent_dn = aci_l3_outside.test.id
   name = "test_name"
   annotations = [ 
-    {
+	{
 	  key = "key_1"
 	  value = "value_2"
-    },
+	},
   ]
   tags = [ 
-    {
+	{
 	  key = "key_1"
 	  value = "value_2"
-    },
+	},
   ]
 }
 `

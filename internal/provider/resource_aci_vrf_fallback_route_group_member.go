@@ -280,7 +280,7 @@ func (r *FvFBRMemberResource) Create(ctx context.Context, req resource.CreateReq
 		setFvFBRMemberId(ctx, data)
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_vrf_fallback_route_group_member with id '%s'", data.Id.ValueString()))
+	setFvFBRMemberId(ctx, data)
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationFvFBRMemberResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
@@ -361,6 +361,12 @@ func (r *FvFBRMemberResource) Update(ctx context.Context, req resource.UpdateReq
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_vrf_fallback_route_group_member with id '%s'", data.Id.ValueString()))
 
 	if resp.Diagnostics.HasError() {
 		return

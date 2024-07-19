@@ -250,7 +250,7 @@ func (r *NetflowRsMonitorToExporterResource) Create(ctx context.Context, req res
 		setNetflowRsMonitorToExporterId(ctx, data)
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_relation_to_netflow_exporter with id '%s'", data.Id.ValueString()))
+	setNetflowRsMonitorToExporterId(ctx, data)
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationNetflowRsMonitorToExporterResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
@@ -331,6 +331,12 @@ func (r *NetflowRsMonitorToExporterResource) Update(ctx context.Context, req res
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_relation_to_netflow_exporter with id '%s'", data.Id.ValueString()))
 
 	if resp.Diagnostics.HasError() {
 		return

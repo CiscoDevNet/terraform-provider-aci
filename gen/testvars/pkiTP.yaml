@@ -48,12 +48,14 @@ parents:
     parent_dependency: ""
     parent_dn: ""
     class_in_parent: false
+    target_classes:
     test_type: both
     test_applicable_from_version: 3.2(1l)
   - class_name: "fvTenant"
     parent_dependency: ""
     parent_dn: "aci_tenant.test.id"
     class_in_parent: false
+    target_classes:
     test_type: cloud
     test_applicable_from_version: 3.2(1l)
 

@@ -265,7 +265,7 @@ func (r *MgmtRsOoBConsResource) Create(ctx context.Context, req resource.CreateR
 		setMgmtRsOoBConsId(ctx, data)
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_relation_to_consumed_out_of_band_contract with id '%s'", data.Id.ValueString()))
+	setMgmtRsOoBConsId(ctx, data)
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationMgmtRsOoBConsResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
@@ -346,6 +346,12 @@ func (r *MgmtRsOoBConsResource) Update(ctx context.Context, req resource.UpdateR
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_relation_to_consumed_out_of_band_contract with id '%s'", data.Id.ValueString()))
 
 	if resp.Diagnostics.HasError() {
 		return

@@ -39,7 +39,7 @@ func TestAccResourceMgmtSubnetWithMgmtInstP(t *testing.T) {
 
 	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "3.2(1l)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -52,7 +52,7 @@ func TestAccResourceMgmtSubnetWithMgmtInstP(t *testing.T) {
 
 	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "3.2(1l)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -76,7 +76,7 @@ func TestAccResourceMgmtSubnetWithMgmtInstP(t *testing.T) {
 	})
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "3.2(1l)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -163,6 +163,10 @@ func TestAccResourceMgmtSubnetWithMgmtInstP(t *testing.T) {
 				ImportStateVerify: true,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "ip", "1.1.1.0/24"),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "name", ""),
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "name", ""),
@@ -302,16 +306,16 @@ resource "aci_external_management_network_subnet" "test" {
   parent_dn = aci_external_management_network_instance_profile.test.id
   ip = "1.1.1.0/24"
   annotations = [ 
-    {
+	{
 	  key = "key_1"
 	  value = "value_2"
-    },
+	},
   ]
   tags = [ 
-    {
+	{
 	  key = "key_1"
 	  value = "value_2"
-    },
+	},
   ]
 }
 `

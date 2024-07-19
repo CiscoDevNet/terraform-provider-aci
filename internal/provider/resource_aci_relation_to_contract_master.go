@@ -123,6 +123,7 @@ func (r *FvRsSecInheritedResource) Schema(ctx context.Context, req resource.Sche
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
 				MarkdownDescription: `The annotation of the Relation To Contract Master object.`,
@@ -131,6 +132,7 @@ func (r *FvRsSecInheritedResource) Schema(ctx context.Context, req resource.Sche
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
 				MarkdownDescription: `The distinguished name of the target.`,
@@ -148,6 +150,7 @@ func (r *FvRsSecInheritedResource) Schema(ctx context.Context, req resource.Sche
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
@@ -155,6 +158,7 @@ func (r *FvRsSecInheritedResource) Schema(ctx context.Context, req resource.Sche
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -174,6 +178,7 @@ func (r *FvRsSecInheritedResource) Schema(ctx context.Context, req resource.Sche
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
@@ -181,6 +186,7 @@ func (r *FvRsSecInheritedResource) Schema(ctx context.Context, req resource.Sche
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -244,7 +250,7 @@ func (r *FvRsSecInheritedResource) Create(ctx context.Context, req resource.Crea
 		setFvRsSecInheritedId(ctx, data)
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_relation_to_contract_master with id '%s'", data.Id.ValueString()))
+	setFvRsSecInheritedId(ctx, data)
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationFvRsSecInheritedResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
@@ -259,6 +265,7 @@ func (r *FvRsSecInheritedResource) Create(ctx context.Context, req resource.Crea
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -329,6 +336,12 @@ func (r *FvRsSecInheritedResource) Update(ctx context.Context, req resource.Upda
 		return
 	}
 
+	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_relation_to_contract_master with id '%s'", data.Id.ValueString()))
+
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	getAndSetFvRsSecInheritedAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save updated data into Terraform state
@@ -391,6 +404,12 @@ func getAndSetFvRsSecInheritedAttributes(ctx context.Context, diags *diag.Diagno
 				if attributeName == "tDn" {
 					data.TDn = basetypes.NewStringValue(attributeValue.(string))
 				}
+			}
+			if data.Annotation.IsUnknown() {
+				data.Annotation = types.StringNull()
+			}
+			if data.TDn.IsUnknown() {
+				data.TDn = types.StringNull()
 			}
 			TagAnnotationFvRsSecInheritedList := make([]TagAnnotationFvRsSecInheritedResourceModel, 0)
 			TagTagFvRsSecInheritedList := make([]TagTagFvRsSecInheritedResourceModel, 0)
@@ -580,7 +599,6 @@ func getFvRsSecInheritedCreateJsonPayload(ctx context.Context, diags *diag.Diagn
 	if !data.TDn.IsNull() && !data.TDn.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["tDn"] = data.TDn.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"fvRsSecInherited": payloadMap})
 	if err != nil {
 		diags.AddError(

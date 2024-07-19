@@ -834,7 +834,8 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 				{{- end}}
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
+
 				},
 					{{- if .ValidValues}}
 				Validators: []validator.Set{
@@ -1171,22 +1172,22 @@ if resp.Diagnostics.HasError() {
 tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_{{ .ResourceName }} with id '%s'", data.Id.ValueString()))
 
 {{ if not .MultiParentFormats }}
-	{{- if .HasChild }}
-        {{- range .Children }}
-    var {{ .PkgName }}Plan, {{ .PkgName }}State []{{ .ResourceClassName }}{{ $.ResourceClassName }}ResourceModel
-    data.{{ .ResourceClassName }}.ElementsAs(ctx, &{{ .PkgName }}Plan, false)
-    stateData.{{ .ResourceClassName }}.ElementsAs(ctx, &{{ .PkgName }}State, false)
-        {{- end }}
-    jsonPayload := get{{ .ResourceClassName }}CreateJsonPayload(ctx, &resp.Diagnostics, data{{- range .Children }}, {{ .PkgName }}Plan, {{ .PkgName }}State{{- end }})
-    {{- else }}
-    jsonPayload := get{{ .ResourceClassName }}CreateJsonPayload(ctx, &resp.Diagnostics, data)
-    {{- end }}
+	{{ if .HasChild}}
+		{{- range .Children}}
+	var {{.PkgName}}Plan, {{.PkgName}}State []{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel
+	data.{{ .ResourceClassName }}.ElementsAs(ctx, &{{.PkgName}}Plan, false)
+	stateData.{{ .ResourceClassName }}.ElementsAs(ctx, &{{.PkgName}}State, false)
+		{{- end}}
+	jsonPayload := get{{.ResourceClassName}}CreateJsonPayload(ctx, &resp.Diagnostics, false, data{{- range .Children}}, {{.PkgName}}Plan, {{.PkgName}}State{{- end}})	
+	{{- else}}
+	jsonPayload := get{{.ResourceClassName}}CreateJsonPayload(ctx, &resp.Diagnostics, false, data)
+	{{- end}}
+	
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
-    if resp.Diagnostics.HasError() {
-        return
-    }
-
-    DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
 {{- else }}
 	{{- if .HasChild }}
         {{- range .Children }}
@@ -1224,23 +1225,6 @@ tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_{{ .ResourceName }} with id
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_{{.ResourceName}} with id '%s'", data.Id.ValueString()))
-	
-	{{ if .HasChild}}
-		{{- range .Children}}
-	var {{.PkgName}}Plan, {{.PkgName}}State []{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel
-	data.{{ .ResourceClassName }}.ElementsAs(ctx, &{{.PkgName}}Plan, false)
-	stateData.{{ .ResourceClassName }}.ElementsAs(ctx, &{{.PkgName}}State, false)
-		{{- end}}
-	jsonPayload := get{{.ResourceClassName}}CreateJsonPayload(ctx, &resp.Diagnostics, false, data{{- range .Children}}, {{.PkgName}}Plan, {{.PkgName}}State{{- end}})	
-	{{- else}}
-	jsonPayload := get{{.ResourceClassName}}CreateJsonPayload(ctx, &resp.Diagnostics, false, data)
-	{{- end}}
-	
-	if resp.Diagnostics.HasError() {
-		return
-	}
-
-	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
 	
 	if resp.Diagnostics.HasError() {
 		return
@@ -1350,7 +1334,11 @@ func getAndSet{{.ResourceClassName}}Attributes(ctx context.Context, diags *diag.
 
 			{{- range .Properties}}
 			if data.{{.Name}}.IsUnknown() {
+			{{- if eq .ValueType "bitmask"}}
+				data.{{.Name}} = types.SetNull(data.{{.Name}}.ElementType(ctx))
+				{{- else}}
 				data.{{.Name}} = types.StringNull()
+				{{- end}}
 			}
 			{{- end}}
 

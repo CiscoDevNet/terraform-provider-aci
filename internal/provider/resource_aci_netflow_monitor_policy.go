@@ -370,7 +370,7 @@ func (r *NetflowMonitorPolResource) Create(ctx context.Context, req resource.Cre
 		setNetflowMonitorPolId(ctx, data)
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_netflow_monitor_policy with id '%s'", data.Id.ValueString()))
+	setNetflowMonitorPolId(ctx, data)
 
 	var netflowRsMonitorToExporterPlan, netflowRsMonitorToExporterState []NetflowRsMonitorToExporterNetflowMonitorPolResourceModel
 	data.NetflowRsMonitorToExporter.ElementsAs(ctx, &netflowRsMonitorToExporterPlan, false)
@@ -463,6 +463,12 @@ func (r *NetflowMonitorPolResource) Update(ctx context.Context, req resource.Upd
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_netflow_monitor_policy with id '%s'", data.Id.ValueString()))
 
 	if resp.Diagnostics.HasError() {
 		return

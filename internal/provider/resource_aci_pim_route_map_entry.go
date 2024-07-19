@@ -325,7 +325,7 @@ func (r *PimRouteMapEntryResource) Create(ctx context.Context, req resource.Crea
 		setPimRouteMapEntryId(ctx, data)
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_pim_route_map_entry with id '%s'", data.Id.ValueString()))
+	setPimRouteMapEntryId(ctx, data)
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationPimRouteMapEntryResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
@@ -406,6 +406,12 @@ func (r *PimRouteMapEntryResource) Update(ctx context.Context, req resource.Upda
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_pim_route_map_entry with id '%s'", data.Id.ValueString()))
 
 	if resp.Diagnostics.HasError() {
 		return

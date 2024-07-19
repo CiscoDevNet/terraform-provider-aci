@@ -41,7 +41,7 @@ func TestAccResourceFvEpMacTagWithFvTenant(t *testing.T) {
 
 	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(1g)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -54,7 +54,7 @@ func TestAccResourceFvEpMacTagWithFvTenant(t *testing.T) {
 
 	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(1g)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -80,7 +80,7 @@ func TestAccResourceFvEpMacTagWithFvTenant(t *testing.T) {
 	})
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(1g)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -174,6 +174,10 @@ func TestAccResourceFvEpMacTagWithFvTenant(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "bd_name", "test_bd_name"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "mac", "00:00:00:00:00:01"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "id_attribute", "0"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "name", ""),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "id_attribute", "0"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "name", ""),
@@ -321,16 +325,16 @@ resource "aci_endpoint_tag_mac" "test" {
   bd_name = "test_bd_name"
   mac = "00:00:00:00:00:01"
   annotations = [ 
-    {
+	{
 	  key = "key_1"
 	  value = "value_2"
-    },
+	},
   ]
   tags = [ 
-    {
+	{
 	  key = "key_1"
 	  value = "value_2"
-    },
+	},
   ]
 }
 `

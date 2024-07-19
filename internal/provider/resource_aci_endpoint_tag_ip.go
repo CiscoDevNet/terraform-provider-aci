@@ -291,7 +291,7 @@ func (r *FvEpIpTagResource) Create(ctx context.Context, req resource.CreateReque
 		setFvEpIpTagId(ctx, data)
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_endpoint_tag_ip with id '%s'", data.Id.ValueString()))
+	setFvEpIpTagId(ctx, data)
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationFvEpIpTagResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
@@ -372,6 +372,12 @@ func (r *FvEpIpTagResource) Update(ctx context.Context, req resource.UpdateReque
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_endpoint_tag_ip with id '%s'", data.Id.ValueString()))
 
 	if resp.Diagnostics.HasError() {
 		return

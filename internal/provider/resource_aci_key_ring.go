@@ -79,6 +79,31 @@ type PkiKeyRingIdentifier struct {
 	Name types.String
 }
 
+func (r *PkiKeyRingResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
+	if !req.Plan.Raw.IsNull() {
+		var planData, stateData *PkiKeyRingResourceModel
+		resp.Diagnostics.Append(req.Plan.Get(ctx, &planData)...)
+		resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
+
+		if resp.Diagnostics.HasError() {
+			return
+		}
+
+		if (planData.Id.IsUnknown() || planData.Id.IsNull()) && !planData.ParentDn.IsUnknown() && !planData.Name.IsUnknown() {
+			setPkiKeyRingId(ctx, planData)
+		}
+
+		if stateData == nil && !globalAllowExistingOnCreate && !planData.Id.IsUnknown() && !planData.Id.IsNull() {
+			CheckDn(ctx, &resp.Diagnostics, r.client, "pkiKeyRing", planData.Id.ValueString())
+			if resp.Diagnostics.HasError() {
+				return
+			}
+		}
+
+		resp.Diagnostics.Append(resp.Plan.Set(ctx, &planData)...)
+	}
+}
+
 func (r *PkiKeyRingResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	tflog.Debug(ctx, "Start metadata of resource: aci_key_ring")
 	resp.TypeName = req.ProviderTypeName + "_key_ring"
@@ -339,8 +364,17 @@ func (r *PkiKeyRingResource) Create(ctx context.Context, req resource.CreateRequ
 	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
 	var stateData *PkiKeyRingResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
-	setPkiKeyRingId(ctx, stateData)
+	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
+		setPkiKeyRingId(ctx, stateData)
+	}
 	getAndSetPkiKeyRingAttributes(ctx, &resp.Diagnostics, r.client, stateData)
+	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
+		resp.Diagnostics.AddError(
+			"Object Already Exists",
+			fmt.Sprintf("The pkiKeyRing object with DN '%s' already exists.", stateData.Id.ValueString()),
+		)
+		return
+	}
 
 	var data *PkiKeyRingResourceModel
 
@@ -351,9 +385,11 @@ func (r *PkiKeyRingResource) Create(ctx context.Context, req resource.CreateRequ
 		return
 	}
 
-	setPkiKeyRingId(ctx, data)
+	if data.Id.IsUnknown() || data.Id.IsNull() {
+		setPkiKeyRingId(ctx, data)
+	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_key_ring with id '%s'", data.Id.ValueString()))
+	setPkiKeyRingId(ctx, data)
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationPkiKeyRingResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
@@ -455,6 +491,12 @@ func (r *PkiKeyRingResource) Update(ctx context.Context, req resource.UpdateRequ
 			break
 		}
 	}
+
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_key_ring with id '%s'", data.Id.ValueString()))
 
 	if resp.Diagnostics.HasError() {
 		return

@@ -39,7 +39,7 @@ func TestAccResourceFvFBRMemberWithFvFBRGroup(t *testing.T) {
 
 	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(4d)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -52,7 +52,7 @@ func TestAccResourceFvFBRMemberWithFvFBRGroup(t *testing.T) {
 
 	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(4d)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -76,7 +76,7 @@ func TestAccResourceFvFBRMemberWithFvFBRGroup(t *testing.T) {
 	})
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(4d)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -163,6 +163,10 @@ func TestAccResourceFvFBRMemberWithFvFBRGroup(t *testing.T) {
 				ImportStateVerify: true,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "fallback_member", "2.2.2.3"),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "name", ""),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "name", ""),
@@ -302,16 +306,16 @@ resource "aci_vrf_fallback_route_group_member" "test" {
   parent_dn = aci_vrf_fallback_route_group.test.id
   fallback_member = "2.2.2.3"
   annotations = [ 
-    {
+	{
 	  key = "key_1"
 	  value = "value_2"
-    },
+	},
   ]
   tags = [ 
-    {
+	{
 	  key = "key_1"
 	  value = "value_2"
-    },
+	},
   ]
 }
 `

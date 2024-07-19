@@ -41,7 +41,7 @@ func TestAccResourceNetflowMonitorPolWithFvTenant(t *testing.T) {
 
 	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "3.2(1l)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -54,7 +54,7 @@ func TestAccResourceNetflowMonitorPolWithFvTenant(t *testing.T) {
 
 	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "3.2(1l)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -80,7 +80,7 @@ func TestAccResourceNetflowMonitorPolWithFvTenant(t *testing.T) {
 	})
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "3.2(1l)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -180,6 +180,11 @@ func TestAccResourceNetflowMonitorPolWithFvTenant(t *testing.T) {
 				ImportStateVerifyIgnore: []string{"parent_dn"},
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "name", "netfow_monitor"),
+					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "name_alias", ""),
@@ -362,22 +367,22 @@ resource "aci_netflow_monitor_policy" "test" {
   parent_dn = aci_tenant.test.id
   name = "netfow_monitor"
   annotations = [ 
-    {
+	{
 	  key = "key_1"
 	  value = "value_2"
-    },
+	},
   ]
   relation_to_netflow_exporters = [ 
-    {
+	{
 	  annotation = "annotation_2"
 	  netflow_exporter_policy_name = "netflow_exporter_policy_name_1"
-    },
+	},
   ]
   tags = [ 
-    {
+	{
 	  key = "key_1"
 	  value = "value_2"
-    },
+	},
   ]
 }
 `

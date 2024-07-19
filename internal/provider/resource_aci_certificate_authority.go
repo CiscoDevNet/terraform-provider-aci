@@ -70,6 +70,31 @@ type PkiTPIdentifier struct {
 	Name types.String
 }
 
+func (r *PkiTPResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
+	if !req.Plan.Raw.IsNull() {
+		var planData, stateData *PkiTPResourceModel
+		resp.Diagnostics.Append(req.Plan.Get(ctx, &planData)...)
+		resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
+
+		if resp.Diagnostics.HasError() {
+			return
+		}
+
+		if (planData.Id.IsUnknown() || planData.Id.IsNull()) && !planData.ParentDn.IsUnknown() && !planData.Name.IsUnknown() {
+			setPkiTPId(ctx, planData)
+		}
+
+		if stateData == nil && !globalAllowExistingOnCreate && !planData.Id.IsUnknown() && !planData.Id.IsNull() {
+			CheckDn(ctx, &resp.Diagnostics, r.client, "pkiTP", planData.Id.ValueString())
+			if resp.Diagnostics.HasError() {
+				return
+			}
+		}
+
+		resp.Diagnostics.Append(resp.Plan.Set(ctx, &planData)...)
+	}
+}
+
 func (r *PkiTPResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	tflog.Debug(ctx, "Start metadata of resource: aci_certificate_authority")
 	resp.TypeName = req.ProviderTypeName + "_certificate_authority"
@@ -251,8 +276,17 @@ func (r *PkiTPResource) Create(ctx context.Context, req resource.CreateRequest, 
 	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
 	var stateData *PkiTPResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
-	setPkiTPId(ctx, stateData)
+	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
+		setPkiTPId(ctx, stateData)
+	}
 	getAndSetPkiTPAttributes(ctx, &resp.Diagnostics, r.client, stateData)
+	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
+		resp.Diagnostics.AddError(
+			"Object Already Exists",
+			fmt.Sprintf("The pkiTP object with DN '%s' already exists.", stateData.Id.ValueString()),
+		)
+		return
+	}
 
 	var data *PkiTPResourceModel
 
@@ -263,9 +297,11 @@ func (r *PkiTPResource) Create(ctx context.Context, req resource.CreateRequest, 
 		return
 	}
 
-	setPkiTPId(ctx, data)
+	if data.Id.IsUnknown() || data.Id.IsNull() {
+		setPkiTPId(ctx, data)
+	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_certificate_authority with id '%s'", data.Id.ValueString()))
+	setPkiTPId(ctx, data)
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationPkiTPResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
@@ -367,6 +403,12 @@ func (r *PkiTPResource) Update(ctx context.Context, req resource.UpdateRequest, 
 			break
 		}
 	}
+
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_certificate_authority with id '%s'", data.Id.ValueString()))
 
 	if resp.Diagnostics.HasError() {
 		return
