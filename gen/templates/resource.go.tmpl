@@ -911,9 +911,9 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 					{{- end}}
 					{{- if .ValidValues}}
 				Validators: []validator.Set{
-					setvalidator.SizeAtMost({{ len .ValidValues }}),
+					setvalidator.SizeAtMost({{ len .ValidValuesNames }}),
 					setvalidator.ValueStringsAre(
-						stringvalidator.OneOf({{- validatorString .ValidValues}}),
+						stringvalidator.OneOf({{- validatorString .ValidValuesNames}}),
 					),
 				},
 					{{- end}}
@@ -948,10 +948,10 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 					{{- if eq .Name "Annotation"}}
 				Default: stringdefault.StaticString(globalAnnotation),
 					{{- end}}
-					{{- if or .ValidValues (ne $LegacyAttributeName "")}}
+					{{- if or .ValidValuesNames (ne $LegacyAttributeName "")}}
 				Validators: []validator.String{
-						{{- if .ValidValues}}
-					stringvalidator.OneOf({{- validatorString .ValidValues}}),
+						{{- if .ValidValuesNames}}
+					stringvalidator.OneOf({{- validatorString .ValidValuesNames}}),
 						{{- end}}
 						{{- if and (ne $LegacyAttributeName "") (or .IsNaming .IsRequired)}}
 					stringvalidator.AtLeastOneOf(path.Expressions{
@@ -994,9 +994,9 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 							{{- end }}
 							{{- if .ValidValues}}
 							Validators: []validator.Set{
-								setvalidator.SizeAtMost({{ len .ValidValues }}),
+								setvalidator.SizeAtMost({{ len .ValidValuesNames }}),
 								setvalidator.ValueStringsAre(
-									stringvalidator.OneOf({{- validatorString .ValidValues}}),
+									stringvalidator.OneOf({{- validatorString .ValidValuesNames}}),
 								),
 							},
 							{{- end}}
@@ -1327,7 +1327,7 @@ func getAndSet{{.ResourceClassName}}Attributes(ctx context.Context, diags *diag.
 					data.{{.Name}} = {{.PropertyName}}Set
 				}
 					{{- else}}
-						{{- if containsNoneAttributeValue .ValidValues}}
+						{{- if containsNoneAttributeValue .ValidValuesNames}}
 				if attributeName == "{{.PropertyName}}" && attributeValue.(string) == "" {
 					data.{{.Name}} = basetypes.NewStringValue("none")
 				} else if attributeName == "{{.PropertyName}}" {
@@ -1358,7 +1358,7 @@ func getAndSet{{.ResourceClassName}}Attributes(ctx context.Context, diags *diag.
 							for childAttributeName, childAttributeValue := range childAttributes {
 								{{- range .Properties}}
 									{{- if eq .ValueType "bitmask"}}
-										{{- if containsNoneAttributeValue .ValidValues}}
+										{{- if containsNoneAttributeValue .ValidValuesNames}}
 								if childAttributeName == "{{.PropertyName}}" && childAttributeValue.(string) == "" {
 									{{.PropertyName}}Set, _ := types.SetValueFrom(ctx, {{.ResourceClassName}}{{$.ResourceClassName}}.{{.Name}}.ElementType(ctx), []string{"none"})
 									{{.ResourceClassName}}{{$.ResourceClassName}}.{{.Name}} = {{.PropertyName}}Set
@@ -1375,7 +1375,7 @@ func getAndSet{{.ResourceClassName}}Attributes(ctx context.Context, diags *diag.
 								}
 										{{- end}}
 									{{- else}}
-										{{- if containsNoneAttributeValue .ValidValues}}
+										{{- if containsNoneAttributeValue .ValidValuesNames}}
 								if childAttributeName == "{{.PropertyName}}" && childAttributeValue.(string) == "" {
 									{{.ResourceClassName}}{{$.ResourceClassName}}.{{.Name}} = basetypes.NewStringValue("none")
 								} else if childAttributeName == "{{.PropertyName}}" {

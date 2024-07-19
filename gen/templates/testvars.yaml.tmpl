@@ -64,7 +64,7 @@ all:
   {{- range .Properties}}{{- if and (not .IgnoreInTest) (not .ReadOnly)}}{{$overwritePropertyName := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
     {{- if overwriteProperty .PkgName .SnakeCaseName $.Definitions | eq "annotation"}}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "annotation"
-    {{- else if .DefaultValue}}{{$length := len .ValidValues}}
+    {{- else if .DefaultValue}}{{$length := len .ValidValuesNames}}
       {{- if eq .ValueType "bitmask"}}
         {{- if lt 0 (len (overwritePropertyValue .PkgName $overwritePropertyName .DefaultValue "all" 0 $.Definitions))}}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: {{range $index, $value := (overwritePropertyValue .PkgName $overwritePropertyName .DefaultValue "all" 0 $.Definitions)}}
@@ -75,7 +75,7 @@ all:
         {{- end}}
       {{- else if eq $length 0}}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName .DefaultValue "all" 0 $.Definitions}}"
-      {{- else }}{{$testValue := index .ValidValues 0 }}
+      {{- else }}{{$testValue := index .ValidValuesNames 0 }}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName $testValue "all" 0 $.Definitions}}"
       {{- end}}
     {{- else if not .IsNaming}}
