@@ -120,6 +120,7 @@ var templateFuncs = template.FuncMap{
 	"getChildAttributesFromBlocks":      GetChildAttributesFromBlocks,
 	"getNewChildAttributes":             GetNewChildAttributes,
 	"containsRequired":                  ContainsRequired,
+	"validValuesToMap":                  ValidValuesToMap,
 }
 
 func ContainsRequired(properties map[string]Property) bool {
@@ -410,6 +411,8 @@ func renderTemplate(templateName, outputFileName, outputPath string, outputData 
 		err = tmpl.Execute(&buffer, outputData.(Model).TestVars)
 	} else if strings.Contains(templateName, "annotation_unsupported.go.tmpl") {
 		err = tmpl.Execute(&buffer, outputData.([]string))
+	} else if strings.Contains(templateName, "custom_type.go.tmpl") {
+		err = tmpl.Execute(&buffer, outputData.(Property))
 	} else {
 		err = tmpl.Execute(&buffer, outputData.(Model))
 	}
@@ -588,6 +591,7 @@ func cleanDirectories() {
 	cleanDirectory(resourcesDocsPath, []string{})
 	cleanDirectory(datasourcesDocsPath, []string{})
 	cleanDirectory(testVarsPath, []string{})
+	cleanDirectory("./internal/custom_types", []string{})
 
 	// The *ExamplesPath directories are removed and recreated to ensure all previously rendered files are removed
 	// The provider example file is not removed because it contains static provider configuration
@@ -752,6 +756,11 @@ func main() {
 				panic(err)
 			}
 			model.TestVars = testVarsMap
+			for propertyName, property := range model.Properties {
+				if len(property.ValidValues) > 0 && len(property.Validators) > 0 {
+					renderTemplate("custom_type.go.tmpl", fmt.Sprintf("custom_type_%s_%s_%s.go", providerName, model.ResourceName, propertyName), "./internal/custom_types", property)
+				}
+			}
 			renderTemplate("resource.go.tmpl", fmt.Sprintf("resource_%s_%s.go", providerName, model.ResourceName), providerPath, model)
 			renderTemplate("datasource.go.tmpl", fmt.Sprintf("data_source_%s_%s.go", providerName, model.ResourceName), providerPath, model)
 
@@ -910,7 +919,8 @@ type Property struct {
 	DefaultValue       string
 	Versions           string
 	NamedPropertyClass string
-	ValidValues        []string
+	ValidValues        []interface{}
+	ValidValuesNames   []string
 	IdentifiedBy       []interface{}
 	Validators         []interface{}
 	IdentifyProperties []Property
@@ -1360,9 +1370,10 @@ func (m *Model) SetClassProperties(classDetails interface{}) {
 			if propertyValue.(map[string]interface{})["validValues"] != nil {
 				removedValidValuesList := GetValidValuesToRemove(m.PkgName, propertyName, m.Definitions)
 				for _, details := range propertyValue.(map[string]interface{})["validValues"].([]interface{}) {
-					validValue := details.(map[string]interface{})["localName"].(string)
-					if validValue != "defaultValue" && !isInSlice(removedValidValuesList, validValue) {
-						property.ValidValues = append(property.ValidValues, validValue)
+					validValueName := details.(map[string]interface{})["localName"].(string)
+					if validValueName != "defaultValue" && !isInSlice(removedValidValuesList, validValueName) {
+						property.ValidValuesNames = append(property.ValidValuesNames, validValueName)
+						property.ValidValues = append(property.ValidValues, details)
 					}
 				}
 				if len(property.ValidValues) > 0 {
@@ -2246,4 +2257,14 @@ func IsInRequiredTestValues(classPkgName, propertyName string, definitions Defin
 		}
 	}
 	return false
+}
+
+func ValidValuesToMap(validValues []interface{}) map[string]string {
+	validValuesMap := make(map[string]string)
+	if len(validValues) > 0 {
+		for _, details := range validValues {
+			validValuesMap[details.(map[string]interface{})["value"].(string)] = details.(map[string]interface{})["localName"].(string)
+		}
+	}
+	return validValuesMap
 }

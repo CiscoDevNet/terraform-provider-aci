@@ -57,7 +57,7 @@ all:
   {{- range .Properties}}{{$overwritePropertyName := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
     {{- if overwriteProperty .PkgName .SnakeCaseName $.Definitions | eq "annotation"}}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "annotation"
-    {{- else if .DefaultValue}}{{$length := len .ValidValues}}
+    {{- else if .DefaultValue}}{{$length := len .ValidValuesNames}}
       {{- if eq .ValueType "bitmask"}}
         {{- if lt 0 (len (overwritePropertyValue .PkgName $overwritePropertyName .DefaultValue "all" 0 $.Definitions))}}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: {{range $index, $value := (overwritePropertyValue .PkgName $overwritePropertyName .DefaultValue "all" 0 $.Definitions)}}
@@ -68,7 +68,7 @@ all:
         {{- end}}
       {{- else if eq $length 0}}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName .DefaultValue "all" 0 $.Definitions}}"
-      {{- else }}{{$testValue := index .ValidValues 0 }}
+      {{- else }}{{$testValue := index .ValidValuesNames 0 }}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName $testValue "all" 0 $.Definitions}}"
       {{- end}}
     {{- else if not .IsNaming}}
@@ -90,7 +90,7 @@ children:
   {{- range $key, $value := .Children}}{{$name := .ResourceName}}{{$child_deletable := .AllowDelete}}
   {{.ResourceName}}:
   {{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
-    - {{ range .Properties}}{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: {{$length := len .ValidValues}}{{if ne $length 0}}"{{ index .ValidValues 0 }}"{{else if not .IsNaming}}"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}_1"{{- else}}"{{lookupChildTestValue .PkgName $.ResourceName .SnakeCaseName $.TestVars 0 $.Definitions}}"{{- end}}
+    - {{ range .Properties}}{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: {{$length := len .ValidValuesNames}}{{if ne $length 0}}"{{ index .ValidValuesNames 0 }}"{{else if not .IsNaming}}"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}_1"{{- else}}"{{lookupChildTestValue .PkgName $.ResourceName .SnakeCaseName $.TestVars 0 $.Definitions}}"{{- end}}
       {{ end}}
       {{- if $child_deletable -}}
       deletable_child: true
@@ -98,9 +98,9 @@ children:
       deletable_child: false
       {{ end}}
   {{- else}}
-    - {{ range .Properties}}{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: {{$length := len .ValidValues}}{{if ne $length 0}}"{{ index .ValidValues 0 }}"{{else if not .IsNaming}}"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}_1"{{- else}}"{{lookupChildTestValue .PkgName $.ResourceName .SnakeCaseName $.TestVars 0 $.Definitions}}"{{- end}}
+    - {{ range .Properties}}{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: {{$length := len .ValidValuesNames}}{{if ne $length 0}}"{{ index .ValidValuesNames 0 }}"{{else if not .IsNaming}}"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}_1"{{- else}}"{{lookupChildTestValue .PkgName $.ResourceName .SnakeCaseName $.TestVars 0 $.Definitions}}"{{- end}}
       {{ end}}
-    - {{ range .Properties}}{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: {{$length := len .ValidValues}}{{if ge $length 2}}"{{ index .ValidValues 1 }}"{{else if not .IsNaming}}"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}_2"{{- else}}"{{lookupChildTestValue .PkgName $.ResourceName .SnakeCaseName $.TestVars 1 $.Definitions}}"{{- end}}
+    - {{ range .Properties}}{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: {{$length := len .ValidValuesNames}}{{if ge $length 2}}"{{ index .ValidValuesNames 1 }}"{{else if not .IsNaming}}"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}_2"{{- else}}"{{lookupChildTestValue .PkgName $.ResourceName .SnakeCaseName $.TestVars 1 $.Definitions}}"{{- end}}
       {{ end}}{{- end}}{{- end}}{{- end}}
 {{- if .ContainedBy}}
 parents:

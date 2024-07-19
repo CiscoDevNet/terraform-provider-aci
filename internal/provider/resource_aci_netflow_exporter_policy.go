@@ -11,8 +11,6 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/validators"
-	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/customtypes"
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
@@ -51,7 +49,7 @@ type NetflowExporterPolResourceModel struct {
 	Descr         types.String `tfsdk:"description"`
 	Dscp          types.String `tfsdk:"dscp"`
 	DstAddr       types.String `tfsdk:"destination_address"`
-	DstPort       customtypes.DstPortStringValue `tfsdk:"destination_port"`
+	DstPort       types.String `tfsdk:"destination_port"`
 	Name          types.String `tfsdk:"name"`
 	NameAlias     types.String `tfsdk:"name_alias"`
 	OwnerKey      types.String `tfsdk:"owner_key"`
@@ -82,12 +80,6 @@ type NetflowExporterPolIdentifier struct {
 func (r *NetflowExporterPolResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
 	if !req.Plan.Raw.IsNull() {
 		var planData, stateData *NetflowExporterPolResourceModel
-		// var DstPortValue string
-		// matchMappingDstPort := map[string]string{"443": "https"}
-		// req.Plan.GetAttribute(ctx, path.Root("DstPort"), DstPortValue)
-		// if value, ok := matchMappingDstPort[DstPortValue]; ok {
-		// 	req.Plan.SetAttribute(ctx, path.Root("DstPort"), value)
-		// }
 		resp.Diagnostics.Append(req.Plan.Get(ctx, &planData)...)
 		resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
 
@@ -177,17 +169,13 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 				MarkdownDescription: `The destination IP address of the remote node.`,
 			},
 			"destination_port": schema.StringAttribute{
-				CustomType: customtypes.DstPortStringType{},
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
 				Validators: []validator.String{
-					stringvalidator.Any(
-						stringvalidator.OneOf("dns", "ftpData", "http", "https", "pop3", "rtsp", "smtp", "ssh", "unspecified"),
-						validators.InBetweenFromString(0, 65535),
-					),
+					stringvalidator.OneOf("dns", "ftpData", "http", "https", "pop3", "rtsp", "smtp", "ssh", "unspecified"),
 				},
 				MarkdownDescription: `The destination port of the remote node.`,
 			},
@@ -516,7 +504,7 @@ func getAndSetNetflowExporterPolAttributes(ctx context.Context, diags *diag.Diag
 					data.DstAddr = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "dstPort" {
-					data.DstPort = customtypes.NewDstPortStringValue(attributeValue.(string))
+					data.DstPort = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "name" {
 					data.Name = basetypes.NewStringValue(attributeValue.(string))
