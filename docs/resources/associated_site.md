@@ -14,6 +14,7 @@ description: |-
 
 Manages ACI Associated Site
 
+  -> This resource should only be used to accomplish multi-site orchestration. Manually assigning a value to attribute `site_id` may lead to unexpected behaviour.
 
 
 ## API Information ##

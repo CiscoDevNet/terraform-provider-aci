@@ -65,29 +65,6 @@ resource "aci_vrf" "test" {
   name      = "test_vrf"
 }
 `
-const testConfigFvAEPgMinDependencyWithFvTenant = testConfigFvAEPgMin
-
-const testConfigFvSiteAssociatedMinDependencyWithFvCtx = testConfigFvTenantMin + `
-resource "aci_vrf" "test" {
-  tenant_dn = aci_tenant.test.id
-  name      = "test_vrf"
-}
-
-resource "aci_associated_site" "test" {
-  parent_dn = aci_vrf.test.id
-  site_id = "102"
-  name   = "test_associated_site"
-}
-`
-
-const testConfigFvBDMinDependencyWithFvAp = testConfigFvTenantMin + `
-resource "aci_bridge_domain" "test" {
-  tenant_dn = aci_tenant.test.id
-  name      = "test_bd"
-}
-`
-
-const testConfigFvBDMinDependencyWithFvTenant = testConfigFvBDMinDependencyWithFvAp
 
 const testConfigFvTenantInfraMin = `
 data "aci_tenant" "test" {
@@ -132,5 +109,3 @@ resource "aci_bridge_domain" "test" {
   name      = "test_bd"
 }
 `
-
-const testConfigFvBDMin = testConfigFvBDMinDependencyWithFvTenant

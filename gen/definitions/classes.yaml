@@ -323,6 +323,8 @@ fvSiteAssociated:
   ui_locations:
     - "Not shown in UI"
   sub_category: "Multi-Site"
+  resource_notes:
+    - "This resource should only be used to accomplish multi-site orchestration. Manually assigning a value to attribute `site_id` may lead to unexpected behaviour."
   dn_formats:
     - "uni/tn-{name}/ap-{name}/epg-{name}/stAsc"
     - "uni/tn-{name}/ctx-{name}/stAsc"
@@ -337,6 +339,8 @@ fvRemoteId:
   ui_locations:
     - "Not shown in UI"
   sub_category: "Multi-Site"
+  resource_notes:
+    - "This resource should only be used to accomplish multi-site orchestration. Manually assigning values to attributes `remote_vrf_pc_tag` and `remote_pc_tag` may lead to unexpected behaviour."
   dn_formats:
   - "uni/tn-{name}/ctx-{name}/stAsc/site-{siteId}"
   - "uni/tn-{name}/ap-{name}/epg-{name}/stAsc/site-{siteId}"

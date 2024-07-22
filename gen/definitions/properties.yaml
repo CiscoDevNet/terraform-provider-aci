@@ -254,12 +254,12 @@ fvSiteAssociated:
   datasource_required:
     - "site_id"
   parents:
-    - class_name: "fvCtx"
-      parent_dependency: "fvTenant"
-      parent_dn: "aci_vrf.test.id"
     - class_name: "fvAEPg"
       parent_dependency: "fvAp"
-      parent_dn: "aci_application_epg.test.id"
+      parent_dn: "aci_application_epg.test.id"  
+    - class_name: "fvBD"
+      parent_dependency: "fvTenant"
+      parent_dn: "aci_bridge_domain.test.id"  
 
 fvRemoteId:
   overwrites:
@@ -292,7 +292,7 @@ fvRemoteId:
       site_id: "100"
   parents:
     - class_name: "fvSiteAssociated"
-      parent_dependency: "fvCtx"
+      parent_dependency: "fvBD"
       parent_dn: "aci_associated_site.test.id"
 
 l3extRsOutToFBRGroup:

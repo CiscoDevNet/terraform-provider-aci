@@ -14,6 +14,7 @@ description: |-
 
 Manages ACI Remote Site Id Mappings
 
+  -> This resource should only be used to accomplish multi-site orchestration. Manually assigning values to attributes `remote_vrf_pc_tag` and `remote_pc_tag` may lead to unexpected behaviour.
 
 
 ## API Information ##

@@ -105,13 +105,7 @@ data "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClassNam
 }
 `
 
-{{- if (eq $.resourceClassName "FvSiteAssociated") }}
-
-const testConfig{{$.resourceClassName}}NotExisting{{capitalize .class_name}}  = testConfig{{capitalize .class_name}}MinDependencyWithFvTenant  + `
-{{- else}}
-
 const testConfig{{$.resourceClassName}}NotExisting{{capitalize .class_name}}  = testConfig{{$.resourceClassName}}MinDependencyWith{{capitalize .class_name}}  + `
-{{- end }}
 data "aci_{{$.resourceName}}" "test_non_existing" {
   parent_dn = {{.parent_dn}}
   {{- range $key, $value := $.datasource_non_existing}}
@@ -121,9 +115,7 @@ data "aci_{{$.resourceName}}" "test_non_existing" {
   {{$key}} = "{{$value}}"
 		{{- end }}
   {{- end}}
-  {{- if $.datasource_required }}
   depends_on = [aci_{{$.resourceName}}.test]
-  {{- end }}
 }
 `
 	{{- end}}

@@ -38,10 +38,10 @@ children:
       
 parents:
   - class_name: "fvAEPg"
-    parent_dependency: "fvTenant"
+    parent_dependency: "fvAp"
     parent_dn: "aci_application_epg.test.id"
     class_in_parent: false
   - class_name: "fvBD"
-    parent_dependency: "fvAp"
+    parent_dependency: "fvTenant"
     parent_dn: "aci_bridge_domain.test.id"
     class_in_parent: false

@@ -261,7 +261,7 @@ func TestAccResourceFvRemoteIdWithFvSiteAssociated(t *testing.T) {
 	})
 }
 
-const testConfigFvRemoteIdMinDependencyWithFvSiteAssociatedAllowExisting = testConfigFvSiteAssociatedMinDependencyWithFvCtx + `
+const testConfigFvRemoteIdMinDependencyWithFvSiteAssociatedAllowExisting = testConfigFvSiteAssociatedMinDependencyWithFvBD + `
 resource "aci_remote_site_id_mappings" "test" {
   parent_dn = aci_associated_site.test.id
   remote_pc_tag = "16386"
@@ -275,7 +275,7 @@ resource "aci_remote_site_id_mappings" "test_2" {
 }
 `
 
-const testConfigFvRemoteIdMinDependencyWithFvSiteAssociated = testConfigFvSiteAssociatedMinDependencyWithFvCtx + `
+const testConfigFvRemoteIdMinDependencyWithFvSiteAssociated = testConfigFvSiteAssociatedMinDependencyWithFvBD + `
 resource "aci_remote_site_id_mappings" "test" {
   parent_dn = aci_associated_site.test.id
   remote_pc_tag = "16386"
@@ -283,7 +283,7 @@ resource "aci_remote_site_id_mappings" "test" {
 }
 `
 
-const testConfigFvRemoteIdAllDependencyWithFvSiteAssociated = testConfigFvSiteAssociatedMinDependencyWithFvCtx + `
+const testConfigFvRemoteIdAllDependencyWithFvSiteAssociated = testConfigFvSiteAssociatedMinDependencyWithFvBD + `
 resource "aci_remote_site_id_mappings" "test" {
   parent_dn = aci_associated_site.test.id
   annotation = "annotation"
@@ -298,7 +298,7 @@ resource "aci_remote_site_id_mappings" "test" {
 }
 `
 
-const testConfigFvRemoteIdResetDependencyWithFvSiteAssociated = testConfigFvSiteAssociatedMinDependencyWithFvCtx + `
+const testConfigFvRemoteIdResetDependencyWithFvSiteAssociated = testConfigFvSiteAssociatedMinDependencyWithFvBD + `
 resource "aci_remote_site_id_mappings" "test" {
   parent_dn = aci_associated_site.test.id
   annotation = "orchestrator:terraform"
@@ -312,7 +312,7 @@ resource "aci_remote_site_id_mappings" "test" {
   site_id = "100"
 }
 `
-const testConfigFvRemoteIdChildrenDependencyWithFvSiteAssociated = testConfigFvSiteAssociatedMinDependencyWithFvCtx + `
+const testConfigFvRemoteIdChildrenDependencyWithFvSiteAssociated = testConfigFvSiteAssociatedMinDependencyWithFvBD + `
 resource "aci_remote_site_id_mappings" "test" {
   parent_dn = aci_associated_site.test.id
   remote_pc_tag = "16386"
@@ -340,7 +340,7 @@ resource "aci_remote_site_id_mappings" "test" {
 }
 `
 
-const testConfigFvRemoteIdChildrenRemoveFromConfigDependencyWithFvSiteAssociated = testConfigFvSiteAssociatedMinDependencyWithFvCtx + `
+const testConfigFvRemoteIdChildrenRemoveFromConfigDependencyWithFvSiteAssociated = testConfigFvSiteAssociatedMinDependencyWithFvBD + `
 resource "aci_remote_site_id_mappings" "test" {
   parent_dn = aci_associated_site.test.id
   remote_pc_tag = "16386"
@@ -348,7 +348,7 @@ resource "aci_remote_site_id_mappings" "test" {
 }
 `
 
-const testConfigFvRemoteIdChildrenRemoveOneDependencyWithFvSiteAssociated = testConfigFvSiteAssociatedMinDependencyWithFvCtx + `
+const testConfigFvRemoteIdChildrenRemoveOneDependencyWithFvSiteAssociated = testConfigFvSiteAssociatedMinDependencyWithFvBD + `
 resource "aci_remote_site_id_mappings" "test" {
   parent_dn = aci_associated_site.test.id
   remote_pc_tag = "16386"
@@ -368,7 +368,7 @@ resource "aci_remote_site_id_mappings" "test" {
 }
 `
 
-const testConfigFvRemoteIdChildrenRemoveAllDependencyWithFvSiteAssociated = testConfigFvSiteAssociatedMinDependencyWithFvCtx + `
+const testConfigFvRemoteIdChildrenRemoveAllDependencyWithFvSiteAssociated = testConfigFvSiteAssociatedMinDependencyWithFvBD + `
 resource "aci_remote_site_id_mappings" "test" {
   parent_dn = aci_associated_site.test.id
   remote_pc_tag = "16386"

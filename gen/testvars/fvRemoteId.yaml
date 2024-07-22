@@ -51,6 +51,6 @@ children:
       
 parents:
   - class_name: "fvSiteAssociated"
-    parent_dependency: "fvCtx"
+    parent_dependency: "fvBD"
     parent_dn: "aci_associated_site.test.id"
     class_in_parent: false
