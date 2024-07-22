@@ -918,3 +918,13 @@ qosDppPol:
   parents:
     - class_name: "fvTenant"
       parent_dn: "aci_tenant.test.id"
+
+rtctrlProfile:
+  default_values:
+    autoContinue: "no"
+  overwrites:
+    type: "route_control_profile_type"
+    auto_continue: "route_map_continue"
+  documentation:
+    autoContinue: "This action will be applied on all the entries which are part of per Peer BGP Route-Map. Only available on 'Tenants -> Policies -> Protocol -> Route Maps for Route Control'."
+    type: "The route control policy type of the %s object. Only available on 'Tenants -> Networking -> L3Outs -> Route map for import and export route control'."
