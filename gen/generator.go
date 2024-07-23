@@ -607,7 +607,7 @@ func main() {
 			renderTemplate("datasource.md.tmpl", fmt.Sprintf("%s.md", model.ResourceName), datasourcesDocsPath, model)
 			renderTemplate("resource_test.go.tmpl", fmt.Sprintf("resource_%s_%s_test.go", providerName, model.ResourceName), providerPath, model)
 			renderTemplate("datasource_test.go.tmpl", fmt.Sprintf("data_source_%s_%s_test.go", providerName, model.ResourceName), providerPath, model)
-			renderTemplate("processing.go.tmpl", fmt.Sprintf("%s.md", model.ResourceName), conversion_path, model)
+			renderTemplate("processing.go.tmpl", fmt.Sprintf("%s.go", model.ResourceName), conversion_path, model)
 		}
 	}
 

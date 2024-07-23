@@ -43,70 +43,40 @@ func extractNestedObjects(attributes map[string]interface{}) map[string]interfac
 }
 {{end}}
 
-{{define "createItem"}}
-func createItem(resourceType string, resourceValues map[string]interface{}, status string) map[string]Item {
+{{define "processResource"}}
+func processResource(resourceName string, resourceValues map[string]interface{}) map[string]Item {
 	attributes := make(map[string]interface{})
+	var children []map[string]Item
 
-	// Extract nested objects
-	nestedObjects := extractNestedObjects(resourceValues)
-
-	for key, val := range resourceValues {
-		if key == "source" {
-			attributes["src"] = val
-		} else {
-			attributes[key] = val
-		}
-	}
-	if status == "deleted" {
-		attributes["status"] = status
-	}
-
-	var item map[string]Item
-	switch resourceType {
+	switch resourceName {
 	{{range .Resources}}
 	case "{{.ResourceName}}":
-		resourceAttributes := make(map[string]interface{})
 		{{range .Attributes}}
-		if val, exists := attributes["{{.TerraformFieldName}}"].(string); exists {
-			resourceAttributes["{{.ACIFieldName}}"] = val
+		if val, exists := resourceValues["{{.TerraformFieldName}}"].(string); exists && val != "" {
+			attributes["{{.ACIFieldName}}"] = val
 		}
 		{{end}}
-		if val, exists := attributes["parent_dn"].(string); exists {
-			resourceAttributes["dn"] = fmt.Sprintf("{{.DnFormat}}", val{{range .DnFields}}, attributes["{{.}}"]{{end}})
-			resourceAttributes["parent_dn"] = val
+		if val, exists := resourceValues["parent_dn"].(string); exists && val != "" {
+			attributes["dn"] = fmt.Sprintf("{{.DnFormat}}", val{{range .DnFields}}, attributes["{{.}}"]{{end}})
+			attributes["parent_dn"] = val
 		}
 		if status, exists := attributes["status"].(string); exists {
-			resourceAttributes["status"] = status
+			attributes["status"] = status
 		}
-		children := createChildrenFromAttributes(resourceAttributes)
-		item = map[string]Item{
+		children = createChildrenFromAttributes(attributes)
+		return map[string]Item{
 			"{{.ItemName}}": {
-				Attributes: resourceAttributes,
+				Attributes: attributes,
 				Children:   children,
 			},
 		}
 	{{end}}
 	}
-
-	// Add nested objects back to the attributes
-	for key, val := range nestedObjects {
-		attributes[key] = val
-	}
-
-	children := createChildrenFromAttributes(attributes)
-	if len(children) > 0 {
-		for resourceType := range item {
-			resource := item[resourceType]
-			resource.Children = append(resource.Children, children...)
-			item[resourceType] = resource
-		}
-	}
-
-	return item
+	return nil
 }
 {{end}}
 
 {{template "extractRelations"}}
 {{template "createChildrenFromAttributes"}}
 {{template "extractNestedObjects"}}
-{{template "createItem"}}
+{{template "processResource"}}
