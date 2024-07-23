@@ -15,44 +15,98 @@ func extractRelations(relationType string, relations []interface{}) []map[string
 }
 {{end}}
 
-{{define "processResource"}}
-func processResource(resourceName string, resourceValues map[string]interface{}) map[string]Item {
-	attributes := make(map[string]interface{})
+{{define "createChildrenFromAttributes"}}
+func createChildrenFromAttributes(attributes map[string]interface{}) []map[string]Item {
 	var children []map[string]Item
 
-	switch resourceName {
+	for key, value := range attributes {
+		if nestedObjects, exists := value.([]interface{}); exists {
+			children = append(children, extractRelations(key, nestedObjects)...)
+		}
+	}
+	return children
+}
+{{end}}
+
+{{define "extractNestedObjects"}}
+func extractNestedObjects(attributes map[string]interface{}) map[string]interface{} {
+	nestedObjects := make(map[string]interface{})
+	for key, val := range attributes {
+		if _, ok := val.([]interface{}); ok {
+			nestedObjects[key] = val
+		}
+	}
+	for key := range nestedObjects {
+		delete(attributes, key)
+	}
+	return nestedObjects
+}
+{{end}}
+
+{{define "createItem"}}
+func createItem(resourceType string, resourceValues map[string]interface{}, status string) map[string]Item {
+	attributes := make(map[string]interface{})
+
+	// Extract nested objects
+	nestedObjects := extractNestedObjects(resourceValues)
+
+	for key, val := range resourceValues {
+		if key == "source" {
+			attributes["src"] = val
+		} else {
+			attributes[key] = val
+		}
+	}
+	if status == "deleted" {
+		attributes["status"] = status
+	}
+
+	var item map[string]Item
+	switch resourceType {
 	{{range .Resources}}
 	case "{{.ResourceName}}":
+		resourceAttributes := make(map[string]interface{})
 		{{range .Attributes}}
-		if val, exists := resourceValues["{{.TerraformFieldName}}"].(string); exists && val != "" {
-			attributes["{{.ACIFieldName}}"] = val
+		if val, exists := attributes["{{.TerraformFieldName}}"].(string); exists {
+			resourceAttributes["{{.ACIFieldName}}"] = val
 		}
 		{{end}}
-		if val, exists := resourceValues["parent_dn"].(string); exists && val != "" {
-			attributes["dn"] = fmt.Sprintf("%s/{{.DnFormat}}", val{{range .DnFields}}, attributes["{{.}}"]{{end}})
-			attributes["parent_dn"] = val
+		if val, exists := attributes["parent_dn"].(string); exists {
+			resourceAttributes["dn"] = fmt.Sprintf("{{.DnFormat}}", val{{range .DnFields}}, attributes["{{.}}"]{{end}})
+			resourceAttributes["parent_dn"] = val
 		}
 		if status, exists := attributes["status"].(string); exists {
-			attributes["status"] = status
+			resourceAttributes["status"] = status
 		}
-		
-		{{range .NestedAttributes}}
-		if nestedValues, exists := resourceValues["{{.TerraformFieldName}}"].([]interface{}); exists {
-			children = append(children, extractRelations("{{.ACIFieldName}}", nestedValues)...)
-		}
-		{{end}}
-
-		return map[string]Item{
+		children := createChildrenFromAttributes(resourceAttributes)
+		item = map[string]Item{
 			"{{.ItemName}}": {
-				Attributes: attributes,
-				Children: children,
+				Attributes: resourceAttributes,
+				Children:   children,
 			},
 		}
 	{{end}}
 	}
-	return nil
+
+	// Add nested objects back to the attributes
+	for key, val := range nestedObjects {
+		attributes[key] = val
+	}
+
+	children := createChildrenFromAttributes(attributes)
+	if len(children) > 0 {
+		for resourceType := range item {
+			resource := item[resourceType]
+			resource.Children = append(resource.Children, children...)
+			item[resourceType] = resource
+		}
+	}
+
+	return item
 }
 {{end}}
 
 {{template "extractRelations"}}
-{{template "processResource"}}
+{{template "createChildrenFromAttributes"}}
+{{template "extractNestedObjects"}}
+{{template "createItem"}}
