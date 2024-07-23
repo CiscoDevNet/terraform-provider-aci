@@ -7,12 +7,12 @@ func processResource(resourceName string, resourceValues map[string]interface{})
 	{{range $resource := .Resources}}
 	case "{{$resource.ResourceName}}":
 		{{range $attribute := $resource.Properties}}
-		if val, exists := resourceValues["{{$attribute.PropertyName}}"].(string); exists && val != "" {
-			attributes["{{$attribute.SnakeCaseName}}"] = val
+		if val, exists := resourceValues["{{.PropertyName}}"].(string); exists && val != "" {
+			attributes["{{.SnakeCaseName}}"] = val
 		}
 		{{end}}
 		if val, exists := resourceValues["parent_dn"].(string); exists && val != "" {
-			attributes["dn"] = fmt.Sprintf("{{$resource.RnFormat}}", val{{range $field := $resource.IdentifiedBy}}, attributes["{{$field}}"]{{end}})
+			attributes["dn"] = fmt.Sprintf("{{.RnFormat}}", val{{range $field := .IdentifiedBy}}, attributes["{{$field}}"]{{end}})
 			attributes["parent_dn"] = val
 		}
 		if status, exists := attributes["status"].(string); exists {
@@ -21,7 +21,7 @@ func processResource(resourceName string, resourceValues map[string]interface{})
 
 		children = createChildrenFromAttributes(resourceValues)
 		return map[string]Item{
-			"{{$resource.ResourceClassName}}": {
+			"{{ResourceClassName}}": {
 				Attributes: attributes,
 				Children:   children,
 			},
@@ -45,23 +45,6 @@ func createChildrenFromAttributes(attributes map[string]interface{}) []map[strin
 }
 {{end}}
 
-{{define "extractRelations"}}
-func extractRelations(relationType string, relations []interface{}) []map[string]Item {
-	var children []map[string]Item
-	for _, relation := range relations {
-		if relationMap, ok := relation.(map[string]interface{}); ok {
-			child := map[string]Item{
-				relationType: {
-					Attributes: relationMap,
-				},
-			}
-			children = append(children, child)
-		}
-	}
-	return children
-}
-{{end}}
 
-{{template "extractRelations"}}
 {{template "createChildrenFromAttributes"}}
 {{template "processResource"}}
