@@ -305,8 +305,6 @@ func createItem(resourceType string, resourceValues map[string]interface{}, stat
 			attributes["status"] = status
 		}
 
-		//uni/tn-{name}/extmgmt-{name}/instp-{name}
-
 		item = map[string]Item{
 			"mgmtInstP": {
 				Attributes: attributes,
@@ -591,7 +589,7 @@ func createItem(resourceType string, resourceValues map[string]interface{}, stat
 		if val, exists := resourceValues["prio"].(string); exists && val != "" {
 			attributes["prio"] = val
 		}
-		if val, exists := resourceValues["tnVzOOBBrCPName"].(string); exists && val != "" {
+		if val, exists := resourceValues["out_of_band_contract_name"].(string); exists && val != "" {
 			attributes["tnVzOOBBrCPName"] = val
 		}
 		if val, exists := resourceValues["parent_dn"].(string); exists && val != "" {
@@ -762,11 +760,14 @@ func createItem(resourceType string, resourceValues map[string]interface{}, stat
 			resource.Children = append(resource.Children, children...)
 			item[resourceType] = resource
 		}
-		delete(attributes, "annotations")
-		delete(attributes, "tags")
-		delete(attributes, "relation_to_netflow_exporters")
-		delete(attributes, "relation_to_netflow_record")
 	}
+
+	// Remove attributes that should not appear in the final output
+	delete(attributes, "annotations")
+	delete(attributes, "tags")
+	delete(attributes, "relation_to_netflow_exporters")
+	delete(attributes, "relation_to_netflow_record")
+	delete(attributes, "relation_to_consumed_out_of_band_contracts")
 
 	return item
 }
@@ -814,17 +815,11 @@ func createChildrenFromAttributes(attributes map[string]interface{}) []map[strin
 	}
 
 	if rel_oobc, exists := attributes["relation_to_consumed_out_of_band_contracts"].([]interface{}); exists {
-		children = append(children, extractRelations("tnVzOOBBrCPName", rel_oobc)...)
+		children = append(children, extractRelations("mgmtRsOoBCons", rel_oobc)...)
 	}
 
 	return children
 }
-
-//able to create the child object payloads
-//create PCV succuessfully
-//revised constructTree() function to create the parent child relations more reliably for resources where
-// there are generic parts to the dn
-// revise template to create payloads for child objects
 
 func createTagAnnotation(annotation map[string]interface{}) map[string]Item {
 	attributes := make(map[string]interface{})
@@ -875,13 +870,19 @@ func extractRelations(relationType string, relations interface{}) []map[string]I
 				for key, value := range relMap {
 					attributes[key] = value
 				}
-				if relationType == "netflowRsMonitorToExporter" {
+
+				switch relationType {
+				case "netflowRsMonitorToExporter":
 					attributes["tnNetflowExporterPolName"] = attributes["netflow_exporter_policy_name"]
 					delete(attributes, "netflow_exporter_policy_name")
-				} else if relationType == "netflowRsMonitorToRecord" {
+				case "netflowRsMonitorToRecord":
 					attributes["tnNetflowRecordPolName"] = attributes["netflow_record_policy_name"]
 					delete(attributes, "netflow_record_policy_name")
+				case "mgmtRsOoBCons":
+					attributes["tnVzOOBBrCPName"] = attributes["out_of_band_contract_name"]
+					delete(attributes, "out_of_band_contract_name")
 				}
+
 				children = append(children, map[string]Item{
 					relationType: {
 						Attributes: attributes,
@@ -912,8 +913,6 @@ func constructTree(itemList []map[string]Item) []map[string]Item {
 
 	// Second pass: Establish parent-child relationships using parent_dn
 	for _, resource := range dnMap {
-
-		//dn := resource.Attributes["dn"].(string)
 		parentDn, parentExists := resource.Attributes["parent_dn"].(string)
 		if parentExists {
 			if parent, exists := dnMap[parentDn]; exists {

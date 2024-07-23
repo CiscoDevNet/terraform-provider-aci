@@ -9,14 +9,7 @@
         "name": "test_name",
         "nameAlias": "name_alias",
         "name_alias": "name_alias",
-        "priority": "level1",
-        "relation_to_consumed_out_of_band_contracts": [
-          {
-            "annotation": "annotation_1",
-            "out_of_band_contract_name": "aci_out_of_band_contract.example.name",
-            "priority": "level1"
-          }
-        ]
+        "priority": "level1"
       },
       "children": [
         {
@@ -36,11 +29,11 @@
           }
         },
         {
-          "tnVzOOBBrCPName": {
+          "mgmtRsOoBCons": {
             "attributes": {
               "annotation": "annotation_1",
-              "out_of_band_contract_name": "aci_out_of_band_contract.example.name",
-              "priority": "level1"
+              "priority": "level1",
+              "tnVzOOBBrCPName": "aci_out_of_band_contract.example.name"
             }
           }
         }
