@@ -1,5 +1,15 @@
 [
   {
+    "fvTenant": {
+      "attributes": {
+        "annotation": "orchestrator:terraform",
+        "descr": "This tenant is created by terraform",
+        "dn": "uni/tn-example_tenant",
+        "name": "example_tenant"
+      }
+    }
+  },
+  {
     "mgmtInstP": {
       "attributes": {
         "annotation": "annotation",
@@ -38,16 +48,6 @@
           }
         }
       ]
-    }
-  },
-  {
-    "fvTenant": {
-      "attributes": {
-        "annotation": "orchestrator:terraform",
-        "descr": "This tenant is created by terraform",
-        "dn": "uni/tn-example_tenant",
-        "name": "example_tenant"
-      }
     }
   }
 ]

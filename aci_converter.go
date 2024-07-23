@@ -29,7 +29,7 @@ type ResourceChange struct {
 	Change  struct {
 		Actions []string               `json:"actions"`
 		Before  map[string]interface{} `json:"before"`
-		After   map[string]interface{} `json:"after"`
+		//		After   map[string]interface{} `json:"after"`
 	} `json:"change"`
 }
 
@@ -38,18 +38,7 @@ type Item struct {
 	Children   []map[string]Item      `json:"children,omitempty"`
 }
 
-func (i Item) MarshalJSON() ([]byte, error) {
-	type Alias Item
-	alias := struct {
-		Attributes map[string]interface{} `json:"attributes"`
-		Children   []map[string]Item      `json:"children,omitempty"`
-	}{
-		Attributes: i.Attributes,
-		Children:   i.Children,
-	}
-	return json.Marshal(alias)
-}
-
+// automates TF commands used to create input for conversion
 func runTerraformCommands() (string, error) {
 	planFile := "plan.bin"
 	jsonFile := "plan.json"
@@ -74,6 +63,7 @@ func runTerraformCommands() (string, error) {
 	return jsonFile, nil
 }
 
+// writes finalTree to file
 func outputToFile(outputFile string, data interface{}) error {
 	outputData, err := json.MarshalIndent(data, "", "  ")
 	if err != nil {
@@ -88,6 +78,7 @@ func outputToFile(outputFile string, data interface{}) error {
 	return nil
 }
 
+// all resource cases are generated
 func processResources(terraformPlan TerraformPlan) []map[string]Item {
 	var itemList []map[string]Item
 
@@ -898,7 +889,7 @@ func constructTree(itemList []map[string]Item) []map[string]Item {
 	dnMap := make(map[string]*Item)
 	var root []map[string]Item
 
-	// First pass: Create all resources and store them in a map by their dn
+	// Create all resources and store them in a map by their dn
 	for _, item := range itemList {
 		for resourceType, resource := range item {
 			dn, ok := resource.Attributes["dn"].(string)
@@ -911,7 +902,7 @@ func constructTree(itemList []map[string]Item) []map[string]Item {
 		}
 	}
 
-	// Second pass: Establish parent-child relationships using parent_dn
+	// Create parent-child relationships using parent_dn
 	for _, resource := range dnMap {
 		parentDn, parentExists := resource.Attributes["parent_dn"].(string)
 		if parentExists {
@@ -932,6 +923,7 @@ func constructTree(itemList []map[string]Item) []map[string]Item {
 	return root
 }
 
+// Items are first created with their DN to ensure correct tree construction, replaced with Resource Type after
 func replaceDnWithResourceType(data []map[string]Item) []map[string]Item {
 	var result []map[string]Item
 
@@ -948,6 +940,7 @@ func replaceDnWithResourceType(data []map[string]Item) []map[string]Item {
 	return result
 }
 
+// Helper function for some cases
 func removeDnAndResourceTypeFromAttributes(data []map[string]Item) {
 	for _, item := range data {
 		for _, resource := range item {
@@ -959,6 +952,7 @@ func removeDnAndResourceTypeFromAttributes(data []map[string]Item) {
 	}
 }
 
+// Helper function for some cases
 func removeParentDnFromAttributes(data []map[string]Item) {
 	for _, item := range data {
 		for _, resource := range item {
@@ -970,6 +964,7 @@ func removeParentDnFromAttributes(data []map[string]Item) {
 	}
 }
 
+// adds polUni for multiple tenants so they can be posted at once
 func countTenants(itemList []map[string]Item) int {
 	count := 0
 	for _, item := range itemList {
@@ -980,6 +975,7 @@ func countTenants(itemList []map[string]Item) int {
 	return count
 }
 
+// Removes array brackets to uphold correct format
 func unwrapOuterArray(data []map[string]Item) interface{} {
 	if len(data) == 1 {
 		return data[0]
@@ -987,6 +983,7 @@ func unwrapOuterArray(data []map[string]Item) interface{} {
 	return data
 }
 
+// used for correct output confirmation
 func countResources(itemList []map[string]Item) int {
 	count := 0
 	for _, item := range itemList {
