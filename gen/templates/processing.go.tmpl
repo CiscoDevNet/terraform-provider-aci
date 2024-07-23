@@ -32,36 +32,4 @@ func processResource(resourceName string, resourceValues map[string]interface{})
 }
 {{end}}
 
-{{define "createChildrenFromAttributes"}}
-func createChildrenFromAttributes(attributes map[string]interface{}) []map[string]Item {
-	var children []map[string]Item
-
-	for key, value := range attributes {
-		if nestedObjects, exists := value.([]interface{}); exists {
-			children = append(children, extractRelations(key, nestedObjects)...)
-		}
-	}
-	return children
-}
-{{end}}
-
-{{define "extractRelations"}}
-func extractRelations(relationType string, relations []interface{}) []map[string]Item {
-	var children []map[string]Item
-	for _, relation := range relations {
-		if relationMap, ok := relation.(map[string]interface{}); ok {
-			child := map[string]Item{
-				relationType: {
-					Attributes: relationMap,
-				},
-			}
-			children = append(children, child)
-		}
-	}
-	return children
-}
-{{end}}
-
-{{template "extractRelations"}}
-{{template "createChildrenFromAttributes"}}
 {{template "processResource"}}
