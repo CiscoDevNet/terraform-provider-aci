@@ -1,14 +1,15 @@
 
-resource "aci_l3out_consumer_label" "full_example_l3_outside" {
-  parent_dn   = aci_l3_outside.example.id
+resource "aci_out_of_band_contract" "full_example" {
   annotation  = "annotation"
   description = "description"
+  intent      = "estimate_add"
   name        = "test_name"
   name_alias  = "name_alias"
-  owner       = "infra"
   owner_key   = "owner_key"
   owner_tag   = "owner_tag"
-  tag         = "lemon-chiffon"
+  priority    = "level1"
+  scope       = "application-profile"
+  target_dscp = "AF11"
   annotations = [
     {
       key   = "key_0"
