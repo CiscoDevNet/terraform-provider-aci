@@ -27,7 +27,7 @@ func TestAccDataSourceFvSiteAssociatedWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("data.aci_associated_site.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("data.aci_associated_site.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("data.aci_associated_site.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("data.aci_associated_site.test", "site_id", "0"),
+					resource.TestCheckResourceAttr("data.aci_associated_site.test", "site_id", "100"),
 				),
 			},
 			{
@@ -53,7 +53,7 @@ func TestAccDataSourceFvSiteAssociatedWithFvBD(t *testing.T) {
 					resource.TestCheckResourceAttr("data.aci_associated_site.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("data.aci_associated_site.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("data.aci_associated_site.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("data.aci_associated_site.test", "site_id", "0"),
+					resource.TestCheckResourceAttr("data.aci_associated_site.test", "site_id", "100"),
 				),
 			},
 			{
@@ -74,7 +74,6 @@ data "aci_associated_site" "test" {
 const testConfigFvSiteAssociatedNotExistingFvAEPg = testConfigFvSiteAssociatedMinDependencyWithFvAEPg + `
 data "aci_associated_site" "test_non_existing" {
   parent_dn = aci_application_epg.test.id
-  depends_on = [aci_associated_site.test]
 }
 `
 const testConfigFvSiteAssociatedDataSourceDependencyWithFvBD = testConfigFvSiteAssociatedMinDependencyWithFvBD + `
@@ -87,6 +86,5 @@ data "aci_associated_site" "test" {
 const testConfigFvSiteAssociatedNotExistingFvBD = testConfigFvSiteAssociatedMinDependencyWithFvBD + `
 data "aci_associated_site" "test_non_existing" {
   parent_dn = aci_bridge_domain.test.id
-  depends_on = [aci_associated_site.test]
 }
 `

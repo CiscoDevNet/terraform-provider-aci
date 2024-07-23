@@ -115,7 +115,9 @@ data "aci_{{$.resourceName}}" "test_non_existing" {
   {{$key}} = "{{$value}}"
 		{{- end }}
   {{- end}}
+  {{- if $.datasource_required }}
   depends_on = [aci_{{$.resourceName}}.test]
+  {{- end }}
 }
 `
 	{{- end}}
