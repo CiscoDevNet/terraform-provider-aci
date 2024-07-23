@@ -34,8 +34,8 @@ func TestAccResourceFvSiteAssociatedWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_associated_site.test_2", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_associated_site.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_associated_site.test_2", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "site_id", "100"),
-					resource.TestCheckResourceAttr("aci_associated_site.test_2", "site_id", "100"),
+					resource.TestCheckResourceAttr("aci_associated_site.test", "site_id", "0"),
+					resource.TestCheckResourceAttr("aci_associated_site.test_2", "site_id", "0"),
 				),
 			},
 		},
@@ -76,8 +76,8 @@ func TestAccResourceFvSiteAssociatedWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_associated_site.test_2", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_associated_site.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_associated_site.test_2", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "site_id", "100"),
-					resource.TestCheckResourceAttr("aci_associated_site.test_2", "site_id", "100"),
+					resource.TestCheckResourceAttr("aci_associated_site.test", "site_id", "0"),
+					resource.TestCheckResourceAttr("aci_associated_site.test_2", "site_id", "0"),
 				),
 			},
 		},
@@ -98,7 +98,7 @@ func TestAccResourceFvSiteAssociatedWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_associated_site.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_associated_site.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_associated_site.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "site_id", "100"),
+					resource.TestCheckResourceAttr("aci_associated_site.test", "site_id", "0"),
 				),
 			},
 			// Update with all config and verify default APIC values
@@ -112,7 +112,7 @@ func TestAccResourceFvSiteAssociatedWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_associated_site.test", "name_alias", "name_alias"),
 					resource.TestCheckResourceAttr("aci_associated_site.test", "owner_key", "owner_key"),
 					resource.TestCheckResourceAttr("aci_associated_site.test", "owner_tag", "owner_tag"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "site_id", "100"),
+					resource.TestCheckResourceAttr("aci_associated_site.test", "site_id", "0"),
 				),
 			},
 			// Update with minimum config and verify config is unchanged
@@ -132,7 +132,7 @@ func TestAccResourceFvSiteAssociatedWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_associated_site.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_associated_site.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_associated_site.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "site_id", "100"),
+					resource.TestCheckResourceAttr("aci_associated_site.test", "site_id", "0"),
 				),
 			},
 			// Import testing
@@ -147,7 +147,7 @@ func TestAccResourceFvSiteAssociatedWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_associated_site.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_associated_site.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_associated_site.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "site_id", "100"),
+					resource.TestCheckResourceAttr("aci_associated_site.test", "site_id", "0"),
 				),
 			},
 			// Update with children
@@ -161,7 +161,7 @@ func TestAccResourceFvSiteAssociatedWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_associated_site.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_associated_site.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_associated_site.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "site_id", "100"),
+					resource.TestCheckResourceAttr("aci_associated_site.test", "site_id", "0"),
 					resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.1.key", "key_1"),
@@ -184,7 +184,7 @@ func TestAccResourceFvSiteAssociatedWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_associated_site.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_associated_site.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_associated_site.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "site_id", "100"),
+					resource.TestCheckResourceAttr("aci_associated_site.test", "site_id", "0"),
 					resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.1.key", "key_1"),
@@ -260,8 +260,8 @@ func TestAccResourceFvSiteAssociatedWithFvBD(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_associated_site.test_2", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_associated_site.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_associated_site.test_2", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "site_id", "100"),
-					resource.TestCheckResourceAttr("aci_associated_site.test_2", "site_id", "100"),
+					resource.TestCheckResourceAttr("aci_associated_site.test", "site_id", "0"),
+					resource.TestCheckResourceAttr("aci_associated_site.test_2", "site_id", "0"),
 				),
 			},
 		},
@@ -302,8 +302,8 @@ func TestAccResourceFvSiteAssociatedWithFvBD(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_associated_site.test_2", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_associated_site.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_associated_site.test_2", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "site_id", "100"),
-					resource.TestCheckResourceAttr("aci_associated_site.test_2", "site_id", "100"),
+					resource.TestCheckResourceAttr("aci_associated_site.test", "site_id", "0"),
+					resource.TestCheckResourceAttr("aci_associated_site.test_2", "site_id", "0"),
 				),
 			},
 		},
@@ -324,7 +324,7 @@ func TestAccResourceFvSiteAssociatedWithFvBD(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_associated_site.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_associated_site.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_associated_site.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "site_id", "100"),
+					resource.TestCheckResourceAttr("aci_associated_site.test", "site_id", "0"),
 				),
 			},
 			// Update with all config and verify default APIC values
@@ -338,7 +338,7 @@ func TestAccResourceFvSiteAssociatedWithFvBD(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_associated_site.test", "name_alias", "name_alias"),
 					resource.TestCheckResourceAttr("aci_associated_site.test", "owner_key", "owner_key"),
 					resource.TestCheckResourceAttr("aci_associated_site.test", "owner_tag", "owner_tag"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "site_id", "100"),
+					resource.TestCheckResourceAttr("aci_associated_site.test", "site_id", "0"),
 				),
 			},
 			// Update with minimum config and verify config is unchanged
@@ -358,7 +358,7 @@ func TestAccResourceFvSiteAssociatedWithFvBD(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_associated_site.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_associated_site.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_associated_site.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "site_id", "100"),
+					resource.TestCheckResourceAttr("aci_associated_site.test", "site_id", "0"),
 				),
 			},
 			// Import testing
@@ -373,7 +373,7 @@ func TestAccResourceFvSiteAssociatedWithFvBD(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_associated_site.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_associated_site.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_associated_site.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "site_id", "100"),
+					resource.TestCheckResourceAttr("aci_associated_site.test", "site_id", "0"),
 				),
 			},
 			// Update with children
@@ -387,7 +387,7 @@ func TestAccResourceFvSiteAssociatedWithFvBD(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_associated_site.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_associated_site.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_associated_site.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "site_id", "100"),
+					resource.TestCheckResourceAttr("aci_associated_site.test", "site_id", "0"),
 					resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.1.key", "key_1"),
@@ -410,7 +410,7 @@ func TestAccResourceFvSiteAssociatedWithFvBD(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_associated_site.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_associated_site.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_associated_site.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "site_id", "100"),
+					resource.TestCheckResourceAttr("aci_associated_site.test", "site_id", "0"),
 					resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.1.key", "key_1"),
@@ -489,7 +489,7 @@ resource "aci_associated_site" "test" {
   name_alias = "name_alias"
   owner_key = "owner_key"
   owner_tag = "owner_tag"
-  site_id = "100"
+  site_id = "0"
 }
 `
 
@@ -502,7 +502,7 @@ resource "aci_associated_site" "test" {
   name_alias = ""
   owner_key = ""
   owner_tag = ""
-  site_id = "100"
+  site_id = "0"
 }
 `
 const testConfigFvSiteAssociatedChildrenDependencyWithFvAEPg = testConfigFvAEPgMinDependencyWithFvAp + `
@@ -588,7 +588,7 @@ resource "aci_associated_site" "test" {
   name_alias = "name_alias"
   owner_key = "owner_key"
   owner_tag = "owner_tag"
-  site_id = "100"
+  site_id = "0"
 }
 `
 
@@ -601,7 +601,7 @@ resource "aci_associated_site" "test" {
   name_alias = ""
   owner_key = ""
   owner_tag = ""
-  site_id = "100"
+  site_id = "0"
 }
 `
 const testConfigFvSiteAssociatedChildrenDependencyWithFvBD = testConfigFvBDMinDependencyWithFvTenant + `

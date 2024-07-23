@@ -246,11 +246,11 @@ fvSiteAssociated:
     - "site_id"
   test_values:
     all:
-      site_id: "100" 
+      site_id: "0" 
     default:
-      site_id: "100"
+      site_id: "0"
     resource_required:
-      site_id: "100"
+      site_id: "0"
   datasource_required:
     - "site_id"
   parents:
