@@ -42,13 +42,12 @@ func processResource(resourceName string, resourceValues map[string]interface{})
 		}
 		{{end}}
 
-		item := map[string]Item{
+		return map[string]Item{
 			"{{.ItemName}}": {
 				Attributes: attributes,
 				Children: children,
 			},
 		}
-		return item
 	{{end}}
 	}
 	return nil
