@@ -6,13 +6,13 @@ func processResource(resourceName string, resourceValues map[string]interface{})
 	switch resourceName {
 	{{range $resource := .Resources}}
 	case "{{$resource.ResourceName}}":
-		{{range $attribute := $resource.Attributes}}
-		if val, exists := resourceValues["{{$attribute.TerraformFieldName}}"].(string); exists && val != "" {
-			attributes["{{$attribute.ACIFieldName}}"] = val
+		{{range $attribute := $resource.Properties}}
+		if val, exists := resourceValues["{{$attribute.PropertyName}}"].(string); exists && val != "" {
+			attributes["{{$attribute.SnakeCaseName}}"] = val
 		}
 		{{end}}
 		if val, exists := resourceValues["parent_dn"].(string); exists && val != "" {
-			attributes["dn"] = fmt.Sprintf("{{$resource.DnFormat}}", val{{range $field := $resource.DnFields}}, attributes["{{$field}}"]{{end}})
+			attributes["dn"] = fmt.Sprintf("{{$resource.RnFormat}}", val{{range $field := $resource.IdentifiedBy}}, attributes["{{$field}}"]{{end}})
 			attributes["parent_dn"] = val
 		}
 		if status, exists := attributes["status"].(string); exists {
@@ -21,7 +21,7 @@ func processResource(resourceName string, resourceValues map[string]interface{})
 
 		children = createChildrenFromAttributes(resourceValues)
 		return map[string]Item{
-			"{{$resource.ItemName}}": {
+			"{{$resource.ResourceClassName}}": {
 				Attributes: attributes,
 				Children:   children,
 			},
@@ -32,4 +32,36 @@ func processResource(resourceName string, resourceValues map[string]interface{})
 }
 {{end}}
 
+{{define "createChildrenFromAttributes"}}
+func createChildrenFromAttributes(attributes map[string]interface{}) []map[string]Item {
+	var children []map[string]Item
+
+	for key, value := range attributes {
+		if nestedObjects, exists := value.([]interface{}); exists {
+			children = append(children, extractRelations(key, nestedObjects)...)
+		}
+	}
+	return children
+}
+{{end}}
+
+{{define "extractRelations"}}
+func extractRelations(relationType string, relations []interface{}) []map[string]Item {
+	var children []map[string]Item
+	for _, relation := range relations {
+		if relationMap, ok := relation.(map[string]interface{}); ok {
+			child := map[string]Item{
+				relationType: {
+					Attributes: relationMap,
+				},
+			}
+			children = append(children, child)
+		}
+	}
+	return children
+}
+{{end}}
+
+{{template "extractRelations"}}
+{{template "createChildrenFromAttributes"}}
 {{template "processResource"}}
