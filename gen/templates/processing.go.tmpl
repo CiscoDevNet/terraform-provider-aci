@@ -1,48 +1,3 @@
-{{define "extractRelations"}}
-func extractRelations(relationType string, relations []interface{}) []map[string]Item {
-	var children []map[string]Item
-	for _, relation := range relations {
-		if relationMap, ok := relation.(map[string]interface{}); ok {
-			child := map[string]Item{
-				relationType: {
-					Attributes: relationMap,
-				},
-			}
-			children = append(children, child)
-		}
-	}
-	return children
-}
-{{end}}
-
-{{define "createChildrenFromAttributes"}}
-func createChildrenFromAttributes(attributes map[string]interface{}) []map[string]Item {
-	var children []map[string]Item
-
-	for key, value := range attributes {
-		if nestedObjects, exists := value.([]interface{}); exists {
-			children = append(children, extractRelations(key, nestedObjects)...)
-		}
-	}
-	return children
-}
-{{end}}
-
-{{define "extractNestedObjects"}}
-func extractNestedObjects(attributes map[string]interface{}) map[string]interface{} {
-	nestedObjects := make(map[string]interface{})
-	for key, val := range attributes {
-		if _, ok := val.([]interface{}); ok {
-			nestedObjects[key] = val
-		}
-	}
-	for key := range nestedObjects {
-		delete(attributes, key)
-	}
-	return nestedObjects
-}
-{{end}}
-
 {{define "processResource"}}
 func processResource(resourceName string, resourceValues map[string]interface{}) map[string]Item {
 	attributes := make(map[string]interface{})
@@ -63,7 +18,8 @@ func processResource(resourceName string, resourceValues map[string]interface{})
 		if status, exists := attributes["status"].(string); exists {
 			attributes["status"] = status
 		}
-		children = createChildrenFromAttributes(attributes)
+
+		children = createChildrenFromAttributes(resourceValues)
 		return map[string]Item{
 			"{{.ItemName}}": {
 				Attributes: attributes,
@@ -76,7 +32,36 @@ func processResource(resourceName string, resourceValues map[string]interface{})
 }
 {{end}}
 
+{{define "createChildrenFromAttributes"}}
+func createChildrenFromAttributes(attributes map[string]interface{}) []map[string]Item {
+	var children []map[string]Item
+
+	for key, value := range attributes {
+		if nestedObjects, exists := value.([]interface{}); exists {
+			children = append(children, extractRelations(key, nestedObjects)...)
+		}
+	}
+	return children
+}
+{{end}}
+
+{{define "extractRelations"}}
+func extractRelations(relationType string, relations []interface{}) []map[string]Item {
+	var children []map[string]Item
+	for _, relation := range relations {
+		if relationMap, ok := relation.(map[string]interface{}); ok {
+			child := map[string]Item{
+				relationType: {
+					Attributes: relationMap,
+				},
+			}
+			children = append(children, child)
+		}
+	}
+	return children
+}
+{{end}}
+
 {{template "extractRelations"}}
 {{template "createChildrenFromAttributes"}}
-{{template "extractNestedObjects"}}
 {{template "processResource"}}

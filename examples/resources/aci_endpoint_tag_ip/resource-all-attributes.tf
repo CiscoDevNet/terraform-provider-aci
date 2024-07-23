@@ -1,21 +1,21 @@
 
 resource "aci_endpoint_tag_ip" "full_example_tenant" {
-  parent_dn = aci_tenant.example.id
-  annotation = "annotation"
-  vrf_name = "test_ctx_name"
+  parent_dn    = aci_tenant.example.id
+  annotation   = "annotation"
+  vrf_name     = "test_ctx_name"
   id_attribute = "1"
-  ip = "10.0.0.2"
-  name = "name"
-  name_alias = "name_alias"
+  ip           = "10.0.0.2"
+  name         = "name"
+  name_alias   = "name_alias"
   annotations = [
     {
-      key = "key_0"
+      key   = "key_0"
       value = "value_1"
     }
   ]
   tags = [
     {
-      key = "key_0"
+      key   = "key_0"
       value = "value_1"
     }
   ]
