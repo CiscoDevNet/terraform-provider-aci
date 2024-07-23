@@ -4,15 +4,15 @@ func processResource(resourceName string, resourceValues map[string]interface{})
 	var children []map[string]Item
 
 	switch resourceName {
-	{{range .Resources}}
-	case "{{.ResourceName}}":
-		{{range .Attributes}}
-		if val, exists := resourceValues["{{.TerraformFieldName}}"].(string); exists && val != "" {
-			attributes["{{.ACIFieldName}}"] = val
+	{{range $resource := .Resources}}
+	case "{{$resource.ResourceName}}":
+		{{range $attribute := $resource.Attributes}}
+		if val, exists := resourceValues["{{$attribute.TerraformFieldName}}"].(string); exists && val != "" {
+			attributes["{{$attribute.ACIFieldName}}"] = val
 		}
 		{{end}}
 		if val, exists := resourceValues["parent_dn"].(string); exists && val != "" {
-			attributes["dn"] = fmt.Sprintf("{{.DnFormat}}", val{{range .DnFields}}, attributes["{{.}}"]{{end}})
+			attributes["dn"] = fmt.Sprintf("{{$resource.DnFormat}}", val{{range $field := $resource.DnFields}}, attributes["{{$field}}"]{{end}})
 			attributes["parent_dn"] = val
 		}
 		if status, exists := attributes["status"].(string); exists {
@@ -21,7 +21,7 @@ func processResource(resourceName string, resourceValues map[string]interface{})
 
 		children = createChildrenFromAttributes(resourceValues)
 		return map[string]Item{
-			"{{.ItemName}}": {
+			"{{$resource.ItemName}}": {
 				Attributes: attributes,
 				Children:   children,
 			},
