@@ -1,0 +1,60 @@
+[
+  {
+    "mgmtInstP": {
+      "attributes": {
+        "annotation": "annotation",
+        "descr": "description",
+        "description": "description",
+        "dn": "uni/tn-test_name/extmgmt-test_name/instp-test_name",
+        "name": "test_name",
+        "nameAlias": "name_alias",
+        "name_alias": "name_alias",
+        "priority": "level1",
+        "relation_to_consumed_out_of_band_contracts": [
+          {
+            "annotation": "annotation_1",
+            "out_of_band_contract_name": "aci_out_of_band_contract.example.name",
+            "priority": "level1"
+          }
+        ]
+      },
+      "children": [
+        {
+          "tagAnnotation": {
+            "attributes": {
+              "key": "key_0",
+              "value": "value_1"
+            }
+          }
+        },
+        {
+          "tagTag": {
+            "attributes": {
+              "key": "key_0",
+              "value": "value_1"
+            }
+          }
+        },
+        {
+          "tnVzOOBBrCPName": {
+            "attributes": {
+              "annotation": "annotation_1",
+              "out_of_band_contract_name": "aci_out_of_band_contract.example.name",
+              "priority": "level1"
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "fvTenant": {
+      "attributes": {
+        "annotation": "orchestrator:terraform",
+        "descr": "This tenant is created by terraform",
+        "dn": "uni/tn-example_tenant",
+        "name": "example_tenant"
+      }
+    }
+  }
+]

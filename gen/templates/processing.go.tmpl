@@ -1,0 +1,59 @@
+{{define "extractRelations"}}
+func extractRelations(relationType string, relations []interface{}) []map[string]Item {
+	var children []map[string]Item
+	for _, relation := range relations {
+		if relationMap, ok := relation.(map[string]interface{}); ok {
+			child := map[string]Item{
+				relationType: {
+					Attributes: relationMap,
+				},
+			}
+			children = append(children, child)
+		}
+	}
+	return children
+}
+{{end}}
+
+{{define "processResource"}}
+func processResource(resourceName string, resourceValues map[string]interface{}) map[string]Item {
+	attributes := make(map[string]interface{})
+	var children []map[string]Item
+
+	switch resourceName {
+	{{range .Resources}}
+	case "{{.ResourceName}}":
+		{{range .Attributes}}
+		if val, exists := resourceValues["{{.TerraformFieldName}}"].(string); exists && val != "" {
+			attributes["{{.ACIFieldName}}"] = val
+		}
+		{{end}}
+		if val, exists := resourceValues["parent_dn"].(string); exists && val != "" {
+			attributes["dn"] = fmt.Sprintf("%s/{{.DnFormat}}", val{{range .DnFields}}, attributes["{{.}}"]{{end}})
+			attributes["parent_dn"] = val
+		}
+		if status, exists := attributes["status"].(string); exists {
+			attributes["status"] = status
+		}
+		
+		{{range .NestedAttributes}}
+		if nestedValues, exists := resourceValues["{{.TerraformFieldName}}"].([]interface{}); exists {
+			children = append(children, extractRelations("{{.ACIFieldName}}", nestedValues)...)
+		}
+		{{end}}
+
+		item := map[string]Item{
+			"{{.ItemName}}": {
+				Attributes: attributes,
+				Children: children,
+			},
+		}
+		return item
+	{{end}}
+	}
+	return nil
+}
+{{end}}
+
+{{template "extractRelations"}}
+{{template "processResource"}}
