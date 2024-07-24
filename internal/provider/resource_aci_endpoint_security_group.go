@@ -11,6 +11,8 @@ import (
 	"reflect"
 	"strings"
 
+	customtypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/validators"
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework-validators/setvalidator"
@@ -78,16 +80,16 @@ type FvESgResourceModel struct {
 
 // FvRsConsFvESgResourceModel describes the resource data model for the children without relation ships.
 type FvRsConsFvESgResourceModel struct {
-	Annotation   types.String `tfsdk:"annotation"`
-	Prio         types.String `tfsdk:"priority"`
-	TnVzBrCPName types.String `tfsdk:"contract_name"`
+	Annotation   types.String                        `tfsdk:"annotation"`
+	Prio         customtypes.FvRsConsprioStringValue `tfsdk:"priority"`
+	TnVzBrCPName types.String                        `tfsdk:"contract_name"`
 }
 
 // FvRsConsIfFvESgResourceModel describes the resource data model for the children without relation ships.
 type FvRsConsIfFvESgResourceModel struct {
-	Annotation   types.String `tfsdk:"annotation"`
-	Prio         types.String `tfsdk:"priority"`
-	TnVzCPIfName types.String `tfsdk:"imported_contract_name"`
+	Annotation   types.String                          `tfsdk:"annotation"`
+	Prio         customtypes.FvRsConsIfprioStringValue `tfsdk:"priority"`
+	TnVzCPIfName types.String                          `tfsdk:"imported_contract_name"`
 }
 
 // FvRsIntraEpgFvESgResourceModel describes the resource data model for the children without relation ships.
@@ -98,10 +100,10 @@ type FvRsIntraEpgFvESgResourceModel struct {
 
 // FvRsProvFvESgResourceModel describes the resource data model for the children without relation ships.
 type FvRsProvFvESgResourceModel struct {
-	Annotation   types.String `tfsdk:"annotation"`
-	MatchT       types.String `tfsdk:"match_criteria"`
-	Prio         types.String `tfsdk:"priority"`
-	TnVzBrCPName types.String `tfsdk:"contract_name"`
+	Annotation   types.String                        `tfsdk:"annotation"`
+	MatchT       types.String                        `tfsdk:"match_criteria"`
+	Prio         customtypes.FvRsProvprioStringValue `tfsdk:"priority"`
+	TnVzBrCPName types.String                        `tfsdk:"contract_name"`
 }
 
 // FvRsScopeFvESgResourceModel describes the resource data model for the children without relation ships.
@@ -359,7 +361,7 @@ func (r *FvESgResource) UpgradeState(ctx context.Context) map[int64]resource.Sta
 				for _, priorStateDataFvRsCons := range priorStateDataFvRsConsList {
 					FvRsCons := FvRsConsFvESgResourceModel{
 						Annotation:   basetypes.NewStringNull(),
-						Prio:         priorStateDataFvRsCons.Prio,
+						Prio:         customtypes.FvRsConsprioStringValue{StringValue: priorStateDataFvRsCons.Prio},
 						TnVzBrCPName: priorStateDataFvRsCons.TargetDn,
 					}
 					FvRsConsList = append(FvRsConsList, FvRsCons)
@@ -380,7 +382,7 @@ func (r *FvESgResource) UpgradeState(ctx context.Context) map[int64]resource.Sta
 				for _, priorStateDataFvRsConsIf := range priorStateDataFvRsConsIfList {
 					FvRsConsIf := FvRsConsIfFvESgResourceModel{
 						Annotation:   basetypes.NewStringNull(),
-						Prio:         priorStateDataFvRsConsIf.Prio,
+						Prio:         customtypes.FvRsConsIfprioStringValue{StringValue: priorStateDataFvRsConsIf.Prio},
 						TnVzCPIfName: priorStateDataFvRsConsIf.TargetDn,
 					}
 					FvRsConsIfList = append(FvRsConsIfList, FvRsConsIf)
@@ -421,7 +423,7 @@ func (r *FvESgResource) UpgradeState(ctx context.Context) map[int64]resource.Sta
 					FvRsProv := FvRsProvFvESgResourceModel{
 						Annotation:   basetypes.NewStringNull(),
 						MatchT:       priorStateDataFvRsProv.MatchT,
-						Prio:         priorStateDataFvRsProv.Prio,
+						Prio:         customtypes.FvRsProvprioStringValue{StringValue: priorStateDataFvRsProv.Prio},
 						TnVzBrCPName: priorStateDataFvRsProv.TargetDn,
 					}
 					FvRsProvList = append(FvRsProvList, FvRsProv)
@@ -805,7 +807,7 @@ func (r *FvESgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanR
 
 				FvRsCons := FvRsConsFvESgResourceModel{
 					Annotation: planData.Annotation,
-					Prio:       attributeValue.Prio,
+					Prio:       customtypes.FvRsConsprioStringValue{StringValue: attributeValue.Prio},
 				}
 
 				if foundAttributeValue {
@@ -848,7 +850,7 @@ func (r *FvESgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanR
 
 				FvRsConsIf := FvRsConsIfFvESgResourceModel{
 					Annotation: planData.Annotation,
-					Prio:       attributeValue.Prio,
+					Prio:       customtypes.FvRsConsIfprioStringValue{StringValue: attributeValue.Prio},
 				}
 
 				if foundAttributeValue {
@@ -892,7 +894,7 @@ func (r *FvESgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanR
 				FvRsProv := FvRsProvFvESgResourceModel{
 					Annotation: planData.Annotation,
 					MatchT:     attributeValue.MatchT,
-					Prio:       attributeValue.Prio,
+					Prio:       customtypes.FvRsProvprioStringValue{StringValue: attributeValue.Prio},
 				}
 
 				if foundAttributeValue {
@@ -1132,13 +1134,17 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							MarkdownDescription: `The annotation of the Relation To Consumed Contract object.`,
 						},
 						"priority": schema.StringAttribute{
-							Optional: true,
-							Computed: true,
+							CustomType: customtypes.FvRsConsprioStringType{},
+							Optional:   true,
+							Computed:   true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
 							Validators: []validator.String{
-								stringvalidator.OneOf("level1", "level2", "level3", "level4", "level5", "level6", "unspecified"),
+								stringvalidator.Any(
+									stringvalidator.OneOf("level1", "level2", "level3", "level4", "level5", "level6", "unspecified"),
+									validators.InBetweenFromString(0, 9),
+								),
 							},
 							MarkdownDescription: `The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.`,
 						},
@@ -1170,13 +1176,17 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							MarkdownDescription: `The annotation of the Relation To Imported Contract object.`,
 						},
 						"priority": schema.StringAttribute{
-							Optional: true,
-							Computed: true,
+							CustomType: customtypes.FvRsConsIfprioStringType{},
+							Optional:   true,
+							Computed:   true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
 							Validators: []validator.String{
-								stringvalidator.OneOf("level1", "level2", "level3", "level4", "level5", "level6", "unspecified"),
+								stringvalidator.Any(
+									stringvalidator.OneOf("level1", "level2", "level3", "level4", "level5", "level6", "unspecified"),
+									validators.InBetweenFromString(0, 9),
+								),
 							},
 							MarkdownDescription: `The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.`,
 						},
@@ -1250,13 +1260,17 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							MarkdownDescription: `The provider label match criteria.`,
 						},
 						"priority": schema.StringAttribute{
-							Optional: true,
-							Computed: true,
+							CustomType: customtypes.FvRsProvprioStringType{},
+							Optional:   true,
+							Computed:   true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
 							Validators: []validator.String{
-								stringvalidator.OneOf("level1", "level2", "level3", "level4", "level5", "level6", "unspecified"),
+								stringvalidator.Any(
+									stringvalidator.OneOf("level1", "level2", "level3", "level4", "level5", "level6", "unspecified"),
+									validators.InBetweenFromString(0, 9),
+								),
 							},
 							MarkdownDescription: `The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.`,
 						},
@@ -1753,7 +1767,7 @@ func getAndSetFvESgAttributes(ctx context.Context, diags *diag.Diagnostics, clie
 									FvRsConsFvESg.Annotation = basetypes.NewStringValue(childAttributeValue.(string))
 								}
 								if childAttributeName == "prio" {
-									FvRsConsFvESg.Prio = basetypes.NewStringValue(childAttributeValue.(string))
+									FvRsConsFvESg.Prio = customtypes.NewFvRsConsprioStringValue(childAttributeValue.(string))
 								}
 								if childAttributeName == "tnVzBrCPName" {
 									FvRsConsFvESg.TnVzBrCPName = basetypes.NewStringValue(childAttributeValue.(string))
@@ -1768,7 +1782,7 @@ func getAndSetFvESgAttributes(ctx context.Context, diags *diag.Diagnostics, clie
 									FvRsConsIfFvESg.Annotation = basetypes.NewStringValue(childAttributeValue.(string))
 								}
 								if childAttributeName == "prio" {
-									FvRsConsIfFvESg.Prio = basetypes.NewStringValue(childAttributeValue.(string))
+									FvRsConsIfFvESg.Prio = customtypes.NewFvRsConsIfprioStringValue(childAttributeValue.(string))
 								}
 								if childAttributeName == "tnVzCPIfName" {
 									FvRsConsIfFvESg.TnVzCPIfName = basetypes.NewStringValue(childAttributeValue.(string))
@@ -1798,7 +1812,7 @@ func getAndSetFvESgAttributes(ctx context.Context, diags *diag.Diagnostics, clie
 									FvRsProvFvESg.MatchT = basetypes.NewStringValue(childAttributeValue.(string))
 								}
 								if childAttributeName == "prio" {
-									FvRsProvFvESg.Prio = basetypes.NewStringValue(childAttributeValue.(string))
+									FvRsProvFvESg.Prio = customtypes.NewFvRsProvprioStringValue(childAttributeValue.(string))
 								}
 								if childAttributeName == "tnVzBrCPName" {
 									FvRsProvFvESg.TnVzBrCPName = basetypes.NewStringValue(childAttributeValue.(string))
