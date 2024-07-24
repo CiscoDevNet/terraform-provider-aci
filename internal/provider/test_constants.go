@@ -109,3 +109,5 @@ resource "aci_bridge_domain" "test" {
   name      = "test_bd"
 }
 `
+
+const testConfigFvBDMin = testConfigFvBDMinDependencyWithFvTenant

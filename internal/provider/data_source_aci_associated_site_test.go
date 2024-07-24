@@ -71,7 +71,7 @@ data "aci_associated_site" "test" {
 }
 `
 
-const testConfigFvSiteAssociatedNotExistingFvAEPg = testConfigFvSiteAssociatedMinDependencyWithFvAEPg + `
+const testConfigFvSiteAssociatedNotExistingFvAEPg = testConfigFvAEPgMin + `
 data "aci_associated_site" "test_non_existing" {
   parent_dn = aci_application_epg.test.id
 }
@@ -83,7 +83,7 @@ data "aci_associated_site" "test" {
 }
 `
 
-const testConfigFvSiteAssociatedNotExistingFvBD = testConfigFvSiteAssociatedMinDependencyWithFvBD + `
+const testConfigFvSiteAssociatedNotExistingFvBD = testConfigFvBDMin + `
 data "aci_associated_site" "test_non_existing" {
   parent_dn = aci_bridge_domain.test.id
 }
