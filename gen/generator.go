@@ -769,7 +769,7 @@ func main() {
 			model.TestVars = testVarsMap
 			for propertyName, property := range model.Properties {
 				if len(property.ValidValues) > 0 && len(property.Validators) > 0 {
-					renderTemplate("custom_type.go.tmpl", fmt.Sprintf("custom_type_%s_%s_%s.go", providerName, model.ResourceName, propertyName), "./internal/custom_types", property)
+					renderTemplate("custom_type.go.tmpl", fmt.Sprintf("%s_%s.go", model.PkgName, propertyName), "./internal/custom_types", property)
 				}
 			}
 			renderTemplate("resource.go.tmpl", fmt.Sprintf("resource_%s_%s.go", providerName, model.ResourceName), providerPath, model)

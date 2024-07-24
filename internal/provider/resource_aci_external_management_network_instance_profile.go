@@ -11,6 +11,8 @@ import (
 	"reflect"
 	"strings"
 
+	customtypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/validators"
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
@@ -44,15 +46,15 @@ type MgmtInstPResource struct {
 
 // MgmtInstPResourceModel describes the resource data model.
 type MgmtInstPResourceModel struct {
-	Id            types.String `tfsdk:"id"`
-	Annotation    types.String `tfsdk:"annotation"`
-	Descr         types.String `tfsdk:"description"`
-	Name          types.String `tfsdk:"name"`
-	NameAlias     types.String `tfsdk:"name_alias"`
-	Prio          types.String `tfsdk:"priority"`
-	MgmtRsOoBCons types.Set    `tfsdk:"relation_to_consumed_out_of_band_contracts"`
-	TagAnnotation types.Set    `tfsdk:"annotations"`
-	TagTag        types.Set    `tfsdk:"tags"`
+	Id            types.String                         `tfsdk:"id"`
+	Annotation    types.String                         `tfsdk:"annotation"`
+	Descr         types.String                         `tfsdk:"description"`
+	Name          types.String                         `tfsdk:"name"`
+	NameAlias     types.String                         `tfsdk:"name_alias"`
+	Prio          customtypes.MgmtInstPprioStringValue `tfsdk:"priority"`
+	MgmtRsOoBCons types.Set                            `tfsdk:"relation_to_consumed_out_of_band_contracts"`
+	TagAnnotation types.Set                            `tfsdk:"annotations"`
+	TagTag        types.Set                            `tfsdk:"tags"`
 }
 
 func getEmptyMgmtInstPResourceModel() *MgmtInstPResourceModel {
@@ -87,9 +89,9 @@ func getEmptyMgmtInstPResourceModel() *MgmtInstPResourceModel {
 
 // MgmtRsOoBConsMgmtInstPResourceModel describes the resource data model for the children without relation ships.
 type MgmtRsOoBConsMgmtInstPResourceModel struct {
-	Annotation      types.String `tfsdk:"annotation"`
-	Prio            types.String `tfsdk:"priority"`
-	TnVzOOBBrCPName types.String `tfsdk:"out_of_band_contract_name"`
+	Annotation      types.String                             `tfsdk:"annotation"`
+	Prio            customtypes.MgmtRsOoBConsprioStringValue `tfsdk:"priority"`
+	TnVzOOBBrCPName types.String                             `tfsdk:"out_of_band_contract_name"`
 }
 
 func getEmptyMgmtRsOoBConsMgmtInstPResourceModel() MgmtRsOoBConsMgmtInstPResourceModel {
@@ -213,14 +215,18 @@ func (r *MgmtInstPResource) Schema(ctx context.Context, req resource.SchemaReque
 				MarkdownDescription: `The name alias of the External Management Network Instance Profile object.`,
 			},
 			"priority": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
+				CustomType: customtypes.MgmtInstPprioStringType{},
+				Optional:   true,
+				Computed:   true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
-					stringvalidator.OneOf("level1", "level2", "level3", "level4", "level5", "level6", "unspecified"),
+					stringvalidator.Any(
+						stringvalidator.OneOf("level1", "level2", "level3", "level4", "level5", "level6", "unspecified"),
+						validators.InBetweenFromString(0, 9),
+					),
 				},
 				MarkdownDescription: `The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.`,
 			},
@@ -242,13 +248,17 @@ func (r *MgmtInstPResource) Schema(ctx context.Context, req resource.SchemaReque
 							MarkdownDescription: `The annotation of the Relation To Consumed Out Of Band Contract object.`,
 						},
 						"priority": schema.StringAttribute{
-							Optional: true,
-							Computed: true,
+							CustomType: customtypes.MgmtRsOoBConsprioStringType{},
+							Optional:   true,
+							Computed:   true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
 							Validators: []validator.String{
-								stringvalidator.OneOf("level1", "level2", "level3", "level4", "level5", "level6", "unspecified"),
+								stringvalidator.Any(
+									stringvalidator.OneOf("level1", "level2", "level3", "level4", "level5", "level6", "unspecified"),
+									validators.InBetweenFromString(0, 9),
+								),
 							},
 							MarkdownDescription: `The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.`,
 						},
@@ -532,7 +542,7 @@ func getAndSetMgmtInstPAttributes(ctx context.Context, diags *diag.Diagnostics, 
 					data.NameAlias = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "prio" {
-					data.Prio = basetypes.NewStringValue(attributeValue.(string))
+					data.Prio = customtypes.NewMgmtInstPprioStringValue(attributeValue.(string))
 				}
 			}
 			MgmtRsOoBConsMgmtInstPList := make([]MgmtRsOoBConsMgmtInstPResourceModel, 0)
@@ -551,7 +561,7 @@ func getAndSetMgmtInstPAttributes(ctx context.Context, diags *diag.Diagnostics, 
 									MgmtRsOoBConsMgmtInstP.Annotation = basetypes.NewStringValue(childAttributeValue.(string))
 								}
 								if childAttributeName == "prio" {
-									MgmtRsOoBConsMgmtInstP.Prio = basetypes.NewStringValue(childAttributeValue.(string))
+									MgmtRsOoBConsMgmtInstP.Prio = customtypes.NewMgmtRsOoBConsprioStringValue(childAttributeValue.(string))
 								}
 								if childAttributeName == "tnVzOOBBrCPName" {
 									MgmtRsOoBConsMgmtInstP.TnVzOOBBrCPName = basetypes.NewStringValue(childAttributeValue.(string))

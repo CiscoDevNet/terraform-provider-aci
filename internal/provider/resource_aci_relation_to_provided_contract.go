@@ -11,6 +11,8 @@ import (
 	"reflect"
 	"strings"
 
+	customtypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/validators"
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
@@ -44,14 +46,14 @@ type FvRsProvResource struct {
 
 // FvRsProvResourceModel describes the resource data model.
 type FvRsProvResourceModel struct {
-	Id            types.String `tfsdk:"id"`
-	ParentDn      types.String `tfsdk:"parent_dn"`
-	Annotation    types.String `tfsdk:"annotation"`
-	MatchT        types.String `tfsdk:"match_criteria"`
-	Prio          types.String `tfsdk:"priority"`
-	TnVzBrCPName  types.String `tfsdk:"contract_name"`
-	TagAnnotation types.Set    `tfsdk:"annotations"`
-	TagTag        types.Set    `tfsdk:"tags"`
+	Id            types.String                        `tfsdk:"id"`
+	ParentDn      types.String                        `tfsdk:"parent_dn"`
+	Annotation    types.String                        `tfsdk:"annotation"`
+	MatchT        types.String                        `tfsdk:"match_criteria"`
+	Prio          customtypes.FvRsProvprioStringValue `tfsdk:"priority"`
+	TnVzBrCPName  types.String                        `tfsdk:"contract_name"`
+	TagAnnotation types.Set                           `tfsdk:"annotations"`
+	TagTag        types.Set                           `tfsdk:"tags"`
 }
 
 func getEmptyFvRsProvResourceModel() *FvRsProvResourceModel {
@@ -183,14 +185,18 @@ func (r *FvRsProvResource) Schema(ctx context.Context, req resource.SchemaReques
 				MarkdownDescription: `The provider label match criteria.`,
 			},
 			"priority": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
+				CustomType: customtypes.FvRsProvprioStringType{},
+				Optional:   true,
+				Computed:   true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
-					stringvalidator.OneOf("level1", "level2", "level3", "level4", "level5", "level6", "unspecified"),
+					stringvalidator.Any(
+						stringvalidator.OneOf("level1", "level2", "level3", "level4", "level5", "level6", "unspecified"),
+						validators.InBetweenFromString(0, 9),
+					),
 				},
 				MarkdownDescription: `The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.`,
 			},
@@ -462,7 +468,7 @@ func getAndSetFvRsProvAttributes(ctx context.Context, diags *diag.Diagnostics, c
 					data.MatchT = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "prio" {
-					data.Prio = basetypes.NewStringValue(attributeValue.(string))
+					data.Prio = customtypes.NewFvRsProvprioStringValue(attributeValue.(string))
 				}
 				if attributeName == "tnVzBrCPName" {
 					data.TnVzBrCPName = basetypes.NewStringValue(attributeValue.(string))

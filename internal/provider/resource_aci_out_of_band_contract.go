@@ -11,6 +11,8 @@ import (
 	"reflect"
 	"strings"
 
+	customtypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/validators"
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
@@ -44,19 +46,19 @@ type VzOOBBrCPResource struct {
 
 // VzOOBBrCPResourceModel describes the resource data model.
 type VzOOBBrCPResourceModel struct {
-	Id            types.String `tfsdk:"id"`
-	Annotation    types.String `tfsdk:"annotation"`
-	Descr         types.String `tfsdk:"description"`
-	Intent        types.String `tfsdk:"intent"`
-	Name          types.String `tfsdk:"name"`
-	NameAlias     types.String `tfsdk:"name_alias"`
-	OwnerKey      types.String `tfsdk:"owner_key"`
-	OwnerTag      types.String `tfsdk:"owner_tag"`
-	Prio          types.String `tfsdk:"priority"`
-	Scope         types.String `tfsdk:"scope"`
-	TargetDscp    types.String `tfsdk:"target_dscp"`
-	TagAnnotation types.Set    `tfsdk:"annotations"`
-	TagTag        types.Set    `tfsdk:"tags"`
+	Id            types.String                               `tfsdk:"id"`
+	Annotation    types.String                               `tfsdk:"annotation"`
+	Descr         types.String                               `tfsdk:"description"`
+	Intent        types.String                               `tfsdk:"intent"`
+	Name          types.String                               `tfsdk:"name"`
+	NameAlias     types.String                               `tfsdk:"name_alias"`
+	OwnerKey      types.String                               `tfsdk:"owner_key"`
+	OwnerTag      types.String                               `tfsdk:"owner_tag"`
+	Prio          customtypes.VzOOBBrCPprioStringValue       `tfsdk:"priority"`
+	Scope         types.String                               `tfsdk:"scope"`
+	TargetDscp    customtypes.VzOOBBrCPtargetDscpStringValue `tfsdk:"target_dscp"`
+	TagAnnotation types.Set                                  `tfsdk:"annotations"`
+	TagTag        types.Set                                  `tfsdk:"tags"`
 }
 
 func getEmptyVzOOBBrCPResourceModel() *VzOOBBrCPResourceModel {
@@ -230,14 +232,18 @@ func (r *VzOOBBrCPResource) Schema(ctx context.Context, req resource.SchemaReque
 				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
 			},
 			"priority": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
+				CustomType: customtypes.VzOOBBrCPprioStringType{},
+				Optional:   true,
+				Computed:   true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
-					stringvalidator.OneOf("level1", "level2", "level3", "level4", "level5", "level6", "unspecified"),
+					stringvalidator.Any(
+						stringvalidator.OneOf("level1", "level2", "level3", "level4", "level5", "level6", "unspecified"),
+						validators.InBetweenFromString(0, 9),
+					),
 				},
 				MarkdownDescription: `The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.`,
 			},
@@ -254,14 +260,18 @@ func (r *VzOOBBrCPResource) Schema(ctx context.Context, req resource.SchemaReque
 				MarkdownDescription: `Represents the scope of this contract. If the scope is set as application-profile, the epg can only communicate with epgs in the same application-profile.`,
 			},
 			"target_dscp": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
+				CustomType: customtypes.VzOOBBrCPtargetDscpStringType{},
+				Optional:   true,
+				Computed:   true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
-					stringvalidator.OneOf("AF11", "AF12", "AF13", "AF21", "AF22", "AF23", "AF31", "AF32", "AF33", "AF41", "AF42", "AF43", "CS0", "CS1", "CS2", "CS3", "CS4", "CS5", "CS6", "CS7", "EF", "VA", "unspecified"),
+					stringvalidator.Any(
+						stringvalidator.OneOf("AF11", "AF12", "AF13", "AF21", "AF22", "AF23", "AF31", "AF32", "AF33", "AF41", "AF42", "AF43", "CS0", "CS1", "CS2", "CS3", "CS4", "CS5", "CS6", "CS7", "EF", "VA", "unspecified"),
+						validators.InBetweenFromString(0, 64),
+					),
 				},
 				MarkdownDescription: `The target DSCP value of the Out Of Band Contract object.`,
 			},
@@ -538,13 +548,13 @@ func getAndSetVzOOBBrCPAttributes(ctx context.Context, diags *diag.Diagnostics, 
 					data.OwnerTag = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "prio" {
-					data.Prio = basetypes.NewStringValue(attributeValue.(string))
+					data.Prio = customtypes.NewVzOOBBrCPprioStringValue(attributeValue.(string))
 				}
 				if attributeName == "scope" {
 					data.Scope = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "targetDscp" {
-					data.TargetDscp = basetypes.NewStringValue(attributeValue.(string))
+					data.TargetDscp = customtypes.NewVzOOBBrCPtargetDscpStringValue(attributeValue.(string))
 				}
 			}
 			TagAnnotationVzOOBBrCPList := make([]TagAnnotationVzOOBBrCPResourceModel, 0)
