@@ -11,6 +11,8 @@ import (
 	"reflect"
 	"strings"
 
+	customtypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/validators"
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
@@ -43,22 +45,22 @@ type NetflowExporterPolResource struct {
 
 // NetflowExporterPolResourceModel describes the resource data model.
 type NetflowExporterPolResourceModel struct {
-	Id            types.String `tfsdk:"id"`
-	ParentDn      types.String `tfsdk:"parent_dn"`
-	Annotation    types.String `tfsdk:"annotation"`
-	Descr         types.String `tfsdk:"description"`
-	Dscp          types.String `tfsdk:"dscp"`
-	DstAddr       types.String `tfsdk:"destination_address"`
-	DstPort       types.String `tfsdk:"destination_port"`
-	Name          types.String `tfsdk:"name"`
-	NameAlias     types.String `tfsdk:"name_alias"`
-	OwnerKey      types.String `tfsdk:"owner_key"`
-	OwnerTag      types.String `tfsdk:"owner_tag"`
-	SourceIpType  types.String `tfsdk:"source_ip_type"`
-	SrcAddr       types.String `tfsdk:"source_address"`
-	Ver           types.String `tfsdk:"version"`
-	TagAnnotation types.Set    `tfsdk:"annotations"`
-	TagTag        types.Set    `tfsdk:"tags"`
+	Id            types.String                                     `tfsdk:"id"`
+	ParentDn      types.String                                     `tfsdk:"parent_dn"`
+	Annotation    types.String                                     `tfsdk:"annotation"`
+	Descr         types.String                                     `tfsdk:"description"`
+	Dscp          customtypes.NetflowExporterPoldscpStringValue    `tfsdk:"dscp"`
+	DstAddr       types.String                                     `tfsdk:"destination_address"`
+	DstPort       customtypes.NetflowExporterPoldstPortStringValue `tfsdk:"destination_port"`
+	Name          types.String                                     `tfsdk:"name"`
+	NameAlias     types.String                                     `tfsdk:"name_alias"`
+	OwnerKey      types.String                                     `tfsdk:"owner_key"`
+	OwnerTag      types.String                                     `tfsdk:"owner_tag"`
+	SourceIpType  types.String                                     `tfsdk:"source_ip_type"`
+	SrcAddr       types.String                                     `tfsdk:"source_address"`
+	Ver           types.String                                     `tfsdk:"version"`
+	TagAnnotation types.Set                                        `tfsdk:"annotations"`
+	TagTag        types.Set                                        `tfsdk:"tags"`
 }
 
 // TagAnnotationNetflowExporterPolResourceModel describes the resource data model for the children without relation ships.
@@ -150,13 +152,17 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 				MarkdownDescription: `The description of the Netflow Exporter Policy object.`,
 			},
 			"dscp": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
+				CustomType: customtypes.NetflowExporterPoldscpStringType{},
+				Optional:   true,
+				Computed:   true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
 				Validators: []validator.String{
-					stringvalidator.OneOf("AF11", "AF12", "AF13", "AF21", "AF22", "AF23", "AF31", "AF32", "AF33", "AF41", "AF42", "AF43", "CS0", "CS1", "CS2", "CS3", "CS4", "CS5", "CS6", "CS7", "EF", "VA"),
+					stringvalidator.Any(
+						stringvalidator.OneOf("AF11", "AF12", "AF13", "AF21", "AF22", "AF23", "AF31", "AF32", "AF33", "AF41", "AF42", "AF43", "CS0", "CS1", "CS2", "CS3", "CS4", "CS5", "CS6", "CS7", "EF", "VA"),
+						validators.InBetweenFromString(0, 63),
+					),
 				},
 				MarkdownDescription: `The DSCP value of the Netflow Exporter Policy object.`,
 			},
@@ -169,13 +175,17 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 				MarkdownDescription: `The destination IP address of the remote node.`,
 			},
 			"destination_port": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
+				CustomType: customtypes.NetflowExporterPoldstPortStringType{},
+				Optional:   true,
+				Computed:   true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
 				Validators: []validator.String{
-					stringvalidator.OneOf("dns", "ftpData", "http", "https", "pop3", "rtsp", "smtp", "ssh", "unspecified"),
+					stringvalidator.Any(
+						stringvalidator.OneOf("dns", "ftpData", "http", "https", "pop3", "rtsp", "smtp", "ssh", "unspecified"),
+						validators.InBetweenFromString(0, 65535),
+					),
 				},
 				MarkdownDescription: `The destination port of the remote node.`,
 			},
@@ -498,13 +508,13 @@ func getAndSetNetflowExporterPolAttributes(ctx context.Context, diags *diag.Diag
 					data.Descr = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "dscp" {
-					data.Dscp = basetypes.NewStringValue(attributeValue.(string))
+					data.Dscp = customtypes.NewNetflowExporterPoldscpStringValue(attributeValue.(string))
 				}
 				if attributeName == "dstAddr" {
 					data.DstAddr = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "dstPort" {
-					data.DstPort = basetypes.NewStringValue(attributeValue.(string))
+					data.DstPort = customtypes.NewNetflowExporterPoldstPortStringValue(attributeValue.(string))
 				}
 				if attributeName == "name" {
 					data.Name = basetypes.NewStringValue(attributeValue.(string))
