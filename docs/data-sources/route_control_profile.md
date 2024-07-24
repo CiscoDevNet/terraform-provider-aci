@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_route_control_profile"
 sidebar_current: "docs-aci-data-source-aci_route_control_profile"
 description: |-
-  Data source for Route Control Profile
+  Data source for ACI Route Control Profile
 ---
 
 # aci_route_control_profile #
 
-Data source for Route Control Profile
+Data source for ACI Route Control Profile
 
 ## API Information ##
 
