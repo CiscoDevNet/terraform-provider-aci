@@ -7,7 +7,7 @@ resource "aci_remote_site_id_mappings" "full_example_associated_site" {
   name_alias        = "name_alias"
   owner_key         = "owner_key"
   owner_tag         = "owner_tag"
-  remote_vrf_pc_tag = "2818057"
+  remote_vrf_pc_tag = "any"
   remote_pc_tag     = "16386"
   site_id           = "100"
   annotations = [

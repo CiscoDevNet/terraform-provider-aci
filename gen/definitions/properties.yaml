@@ -276,7 +276,7 @@ fvRemoteId:
   test_values:
     all:
       site_id: "100"
-      remote_vrf_pc_tag: "2818057"
+      remote_vrf_pc_tag: "any"
       remote_pc_tag: "16386"
     default:
       site_id: "100"
@@ -284,7 +284,7 @@ fvRemoteId:
       remote_pc_tag: "16386"
     resource_required:
       site_id: "100"
-      remote_vrf_pc_tag: "2818057"
+      remote_vrf_pc_tag: "any"
       remote_pc_tag: "16386"
     datasource_non_existing:
       site_id: "102"

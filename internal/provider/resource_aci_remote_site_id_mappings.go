@@ -92,7 +92,7 @@ func (r *FvRemoteIdResource) ModifyPlan(ctx context.Context, req resource.Modify
 				return
 			}
 		}
-
+		// fmt.Sprintf()
 		resp.Diagnostics.Append(resp.Plan.Set(ctx, &planData)...)
 	}
 }
