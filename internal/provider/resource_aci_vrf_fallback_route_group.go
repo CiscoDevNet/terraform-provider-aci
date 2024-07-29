@@ -298,7 +298,7 @@ func (r *FvFBRGroupResource) Create(ctx context.Context, req resource.CreateRequ
 	var tagTagPlan, tagTagState []TagTagFvFBRGroupResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvFBRGroupCreateJsonPayload(ctx, &resp.Diagnostics, data, fvFBRMemberPlan, fvFBRMemberState, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetFvFBRGroupCreateJsonPayload(ctx, &resp.Diagnostics, data, fvFBRMemberPlan, fvFBRMemberState, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -366,7 +366,7 @@ func (r *FvFBRGroupResource) Update(ctx context.Context, req resource.UpdateRequ
 	var tagTagPlan, tagTagState []TagTagFvFBRGroupResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvFBRGroupCreateJsonPayload(ctx, &resp.Diagnostics, data, fvFBRMemberPlan, fvFBRMemberState, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetFvFBRGroupCreateJsonPayload(ctx, &resp.Diagnostics, data, fvFBRMemberPlan, fvFBRMemberState, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -552,7 +552,7 @@ func setFvFBRGroupId(ctx context.Context, data *FvFBRGroupResourceModel) {
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
 
-func getFvFBRGroupFvFBRMemberChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvFBRGroupResourceModel, fvFBRMemberPlan, fvFBRMemberState []FvFBRMemberFvFBRGroupResourceModel) []map[string]interface{} {
+func GetFvFBRGroupFvFBRMemberChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvFBRGroupResourceModel, fvFBRMemberPlan, fvFBRMemberState []FvFBRMemberFvFBRGroupResourceModel) []map[string]interface{} {
 
 	childPayloads := []map[string]interface{}{}
 	if !data.FvFBRMember.IsUnknown() {
@@ -602,7 +602,7 @@ func getFvFBRGroupFvFBRMemberChildPayloads(ctx context.Context, diags *diag.Diag
 
 	return childPayloads
 }
-func getFvFBRGroupTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvFBRGroupResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvFBRGroupResourceModel) []map[string]interface{} {
+func GetFvFBRGroupTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvFBRGroupResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvFBRGroupResourceModel) []map[string]interface{} {
 
 	childPayloads := []map[string]interface{}{}
 	if !data.TagAnnotation.IsUnknown() {
@@ -641,7 +641,7 @@ func getFvFBRGroupTagAnnotationChildPayloads(ctx context.Context, diags *diag.Di
 
 	return childPayloads
 }
-func getFvFBRGroupTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvFBRGroupResourceModel, tagTagPlan, tagTagState []TagTagFvFBRGroupResourceModel) []map[string]interface{} {
+func GetFvFBRGroupTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvFBRGroupResourceModel, tagTagPlan, tagTagState []TagTagFvFBRGroupResourceModel) []map[string]interface{} {
 
 	childPayloads := []map[string]interface{}{}
 	if !data.TagTag.IsUnknown() {
@@ -681,24 +681,24 @@ func getFvFBRGroupTagTagChildPayloads(ctx context.Context, diags *diag.Diagnosti
 	return childPayloads
 }
 
-func getFvFBRGroupCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *FvFBRGroupResourceModel, fvFBRMemberPlan, fvFBRMemberState []FvFBRMemberFvFBRGroupResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvFBRGroupResourceModel, tagTagPlan, tagTagState []TagTagFvFBRGroupResourceModel) *container.Container {
+func GetFvFBRGroupCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *FvFBRGroupResourceModel, fvFBRMemberPlan, fvFBRMemberState []FvFBRMemberFvFBRGroupResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvFBRGroupResourceModel, tagTagPlan, tagTagState []TagTagFvFBRGroupResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 	childPayloads := []map[string]interface{}{}
 
-	FvFBRMemberchildPayloads := getFvFBRGroupFvFBRMemberChildPayloads(ctx, diags, data, fvFBRMemberPlan, fvFBRMemberState)
+	FvFBRMemberchildPayloads := GetFvFBRGroupFvFBRMemberChildPayloads(ctx, diags, data, fvFBRMemberPlan, fvFBRMemberState)
 	if FvFBRMemberchildPayloads == nil {
 		return nil
 	}
 	childPayloads = append(childPayloads, FvFBRMemberchildPayloads...)
 
-	TagAnnotationchildPayloads := getFvFBRGroupTagAnnotationChildPayloads(ctx, diags, data, tagAnnotationPlan, tagAnnotationState)
+	TagAnnotationchildPayloads := GetFvFBRGroupTagAnnotationChildPayloads(ctx, diags, data, tagAnnotationPlan, tagAnnotationState)
 	if TagAnnotationchildPayloads == nil {
 		return nil
 	}
 	childPayloads = append(childPayloads, TagAnnotationchildPayloads...)
 
-	TagTagchildPayloads := getFvFBRGroupTagTagChildPayloads(ctx, diags, data, tagTagPlan, tagTagState)
+	TagTagchildPayloads := GetFvFBRGroupTagTagChildPayloads(ctx, diags, data, tagTagPlan, tagTagState)
 	if TagTagchildPayloads == nil {
 		return nil
 	}

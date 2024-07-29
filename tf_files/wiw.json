@@ -1,0 +1,23 @@
+{
+  "fvTenant": {
+    "attributes": {
+      "annotation": "orchestrator:terraform",
+      "descr": "This tenant is created by terraform",
+      "dn": "uni/tn-example_tenant",
+      "name": "example_tenant"
+    },
+    "children": [
+      {
+        "fvFBRGroup": {
+          "attributes": {
+            "annotation": "annotation",
+            "descr": "description",
+            "dn": "uni/tn-example_tenant/fbrg-fallback_route_group",
+            "name": "fallback_route_group",
+            "nameAlias": "name_alias"
+          }
+        }
+      }
+    ]
+  }
+}

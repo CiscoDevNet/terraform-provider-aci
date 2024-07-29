@@ -522,7 +522,7 @@ func setMgmtInstPId(ctx context.Context, data *MgmtInstPResourceModel) {
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", strings.Split([]string{"uni/tn-mgmt/extmgmt-default/instp-{name}"}[0], "/")[0], rn))
 }
 
-func getMgmtInstPMgmtRsOoBConsChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *MgmtInstPResourceModel, mgmtRsOoBConsPlan, mgmtRsOoBConsState []MgmtRsOoBConsMgmtInstPResourceModel) []map[string]interface{} {
+func GetMgmtInstPMgmtRsOoBConsChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *MgmtInstPResourceModel, mgmtRsOoBConsPlan, mgmtRsOoBConsState []MgmtRsOoBConsMgmtInstPResourceModel) []map[string]interface{} {
 
 	childPayloads := []map[string]interface{}{}
 	if !data.MgmtRsOoBCons.IsUnknown() {
@@ -566,7 +566,7 @@ func getMgmtInstPMgmtRsOoBConsChildPayloads(ctx context.Context, diags *diag.Dia
 
 	return childPayloads
 }
-func getMgmtInstPTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *MgmtInstPResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationMgmtInstPResourceModel) []map[string]interface{} {
+func GetMgmtInstPTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *MgmtInstPResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationMgmtInstPResourceModel) []map[string]interface{} {
 
 	childPayloads := []map[string]interface{}{}
 	if !data.TagAnnotation.IsUnknown() {
@@ -605,7 +605,7 @@ func getMgmtInstPTagAnnotationChildPayloads(ctx context.Context, diags *diag.Dia
 
 	return childPayloads
 }
-func getMgmtInstPTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *MgmtInstPResourceModel, tagTagPlan, tagTagState []TagTagMgmtInstPResourceModel) []map[string]interface{} {
+func GetMgmtInstPTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *MgmtInstPResourceModel, tagTagPlan, tagTagState []TagTagMgmtInstPResourceModel) []map[string]interface{} {
 
 	childPayloads := []map[string]interface{}{}
 	if !data.TagTag.IsUnknown() {
@@ -650,19 +650,19 @@ func getMgmtInstPCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics,
 	payloadMap["attributes"] = map[string]string{}
 	childPayloads := []map[string]interface{}{}
 
-	MgmtRsOoBConschildPayloads := getMgmtInstPMgmtRsOoBConsChildPayloads(ctx, diags, data, mgmtRsOoBConsPlan, mgmtRsOoBConsState)
+	MgmtRsOoBConschildPayloads := GetMgmtInstPMgmtRsOoBConsChildPayloads(ctx, diags, data, mgmtRsOoBConsPlan, mgmtRsOoBConsState)
 	if MgmtRsOoBConschildPayloads == nil {
 		return nil
 	}
 	childPayloads = append(childPayloads, MgmtRsOoBConschildPayloads...)
 
-	TagAnnotationchildPayloads := getMgmtInstPTagAnnotationChildPayloads(ctx, diags, data, tagAnnotationPlan, tagAnnotationState)
+	TagAnnotationchildPayloads := GetMgmtInstPTagAnnotationChildPayloads(ctx, diags, data, tagAnnotationPlan, tagAnnotationState)
 	if TagAnnotationchildPayloads == nil {
 		return nil
 	}
 	childPayloads = append(childPayloads, TagAnnotationchildPayloads...)
 
-	TagTagchildPayloads := getMgmtInstPTagTagChildPayloads(ctx, diags, data, tagTagPlan, tagTagState)
+	TagTagchildPayloads := GetMgmtInstPTagTagChildPayloads(ctx, diags, data, tagTagPlan, tagTagState)
 	if TagTagchildPayloads == nil {
 		return nil
 	}

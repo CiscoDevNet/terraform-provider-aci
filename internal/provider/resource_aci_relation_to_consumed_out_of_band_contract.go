@@ -454,7 +454,7 @@ func setMgmtRsOoBConsId(ctx context.Context, data *MgmtRsOoBConsResourceModel) {
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
 
-func getMgmtRsOoBConsTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *MgmtRsOoBConsResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationMgmtRsOoBConsResourceModel) []map[string]interface{} {
+func GetMgmtRsOoBConsTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *MgmtRsOoBConsResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationMgmtRsOoBConsResourceModel) []map[string]interface{} {
 
 	childPayloads := []map[string]interface{}{}
 	if !data.TagAnnotation.IsUnknown() {
@@ -493,7 +493,7 @@ func getMgmtRsOoBConsTagAnnotationChildPayloads(ctx context.Context, diags *diag
 
 	return childPayloads
 }
-func getMgmtRsOoBConsTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *MgmtRsOoBConsResourceModel, tagTagPlan, tagTagState []TagTagMgmtRsOoBConsResourceModel) []map[string]interface{} {
+func GetMgmtRsOoBConsTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *MgmtRsOoBConsResourceModel, tagTagPlan, tagTagState []TagTagMgmtRsOoBConsResourceModel) []map[string]interface{} {
 
 	childPayloads := []map[string]interface{}{}
 	if !data.TagTag.IsUnknown() {
@@ -538,13 +538,13 @@ func getMgmtRsOoBConsCreateJsonPayload(ctx context.Context, diags *diag.Diagnost
 	payloadMap["attributes"] = map[string]string{}
 	childPayloads := []map[string]interface{}{}
 
-	TagAnnotationchildPayloads := getMgmtRsOoBConsTagAnnotationChildPayloads(ctx, diags, data, tagAnnotationPlan, tagAnnotationState)
+	TagAnnotationchildPayloads := GetMgmtRsOoBConsTagAnnotationChildPayloads(ctx, diags, data, tagAnnotationPlan, tagAnnotationState)
 	if TagAnnotationchildPayloads == nil {
 		return nil
 	}
 	childPayloads = append(childPayloads, TagAnnotationchildPayloads...)
 
-	TagTagchildPayloads := getMgmtRsOoBConsTagTagChildPayloads(ctx, diags, data, tagTagPlan, tagTagState)
+	TagTagchildPayloads := GetMgmtRsOoBConsTagTagChildPayloads(ctx, diags, data, tagTagPlan, tagTagState)
 	if TagTagchildPayloads == nil {
 		return nil
 	}

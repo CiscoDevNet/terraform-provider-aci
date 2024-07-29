@@ -603,7 +603,7 @@ func setNetflowMonitorPolId(ctx context.Context, data *NetflowMonitorPolResource
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
 
-func getNetflowMonitorPolNetflowRsMonitorToExporterChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *NetflowMonitorPolResourceModel, netflowRsMonitorToExporterPlan, netflowRsMonitorToExporterState []NetflowRsMonitorToExporterNetflowMonitorPolResourceModel) []map[string]interface{} {
+func GetNetflowMonitorPolNetflowRsMonitorToExporterChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *NetflowMonitorPolResourceModel, netflowRsMonitorToExporterPlan, netflowRsMonitorToExporterState []NetflowRsMonitorToExporterNetflowMonitorPolResourceModel) []map[string]interface{} {
 
 	childPayloads := []map[string]interface{}{}
 	if !data.NetflowRsMonitorToExporter.IsUnknown() {
@@ -644,7 +644,7 @@ func getNetflowMonitorPolNetflowRsMonitorToExporterChildPayloads(ctx context.Con
 
 	return childPayloads
 }
-func getNetflowMonitorPolNetflowRsMonitorToRecordChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *NetflowMonitorPolResourceModel, netflowRsMonitorToRecordPlan, netflowRsMonitorToRecordState []NetflowRsMonitorToRecordNetflowMonitorPolResourceModel) []map[string]interface{} {
+func GetNetflowMonitorPolNetflowRsMonitorToRecordChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *NetflowMonitorPolResourceModel, netflowRsMonitorToRecordPlan, netflowRsMonitorToRecordState []NetflowRsMonitorToRecordNetflowMonitorPolResourceModel) []map[string]interface{} {
 
 	childPayloads := []map[string]interface{}{}
 	if !data.NetflowRsMonitorToRecord.IsUnknown() {
@@ -673,7 +673,7 @@ func getNetflowMonitorPolNetflowRsMonitorToRecordChildPayloads(ctx context.Conte
 
 	return childPayloads
 }
-func getNetflowMonitorPolTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *NetflowMonitorPolResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationNetflowMonitorPolResourceModel) []map[string]interface{} {
+func GetNetflowMonitorPolTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *NetflowMonitorPolResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationNetflowMonitorPolResourceModel) []map[string]interface{} {
 
 	childPayloads := []map[string]interface{}{}
 	if !data.TagAnnotation.IsUnknown() {
@@ -712,7 +712,7 @@ func getNetflowMonitorPolTagAnnotationChildPayloads(ctx context.Context, diags *
 
 	return childPayloads
 }
-func getNetflowMonitorPolTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *NetflowMonitorPolResourceModel, tagTagPlan, tagTagState []TagTagNetflowMonitorPolResourceModel) []map[string]interface{} {
+func GetNetflowMonitorPolTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *NetflowMonitorPolResourceModel, tagTagPlan, tagTagState []TagTagNetflowMonitorPolResourceModel) []map[string]interface{} {
 
 	childPayloads := []map[string]interface{}{}
 	if !data.TagTag.IsUnknown() {
@@ -757,25 +757,25 @@ func getNetflowMonitorPolCreateJsonPayload(ctx context.Context, diags *diag.Diag
 	payloadMap["attributes"] = map[string]string{}
 	childPayloads := []map[string]interface{}{}
 
-	NetflowRsMonitorToExporterchildPayloads := getNetflowMonitorPolNetflowRsMonitorToExporterChildPayloads(ctx, diags, data, netflowRsMonitorToExporterPlan, netflowRsMonitorToExporterState)
+	NetflowRsMonitorToExporterchildPayloads := GetNetflowMonitorPolNetflowRsMonitorToExporterChildPayloads(ctx, diags, data, netflowRsMonitorToExporterPlan, netflowRsMonitorToExporterState)
 	if NetflowRsMonitorToExporterchildPayloads == nil {
 		return nil
 	}
 	childPayloads = append(childPayloads, NetflowRsMonitorToExporterchildPayloads...)
 
-	NetflowRsMonitorToRecordchildPayloads := getNetflowMonitorPolNetflowRsMonitorToRecordChildPayloads(ctx, diags, data, netflowRsMonitorToRecordPlan, netflowRsMonitorToRecordState)
+	NetflowRsMonitorToRecordchildPayloads := GetNetflowMonitorPolNetflowRsMonitorToRecordChildPayloads(ctx, diags, data, netflowRsMonitorToRecordPlan, netflowRsMonitorToRecordState)
 	if NetflowRsMonitorToRecordchildPayloads == nil {
 		return nil
 	}
 	childPayloads = append(childPayloads, NetflowRsMonitorToRecordchildPayloads...)
 
-	TagAnnotationchildPayloads := getNetflowMonitorPolTagAnnotationChildPayloads(ctx, diags, data, tagAnnotationPlan, tagAnnotationState)
+	TagAnnotationchildPayloads := GetNetflowMonitorPolTagAnnotationChildPayloads(ctx, diags, data, tagAnnotationPlan, tagAnnotationState)
 	if TagAnnotationchildPayloads == nil {
 		return nil
 	}
 	childPayloads = append(childPayloads, TagAnnotationchildPayloads...)
 
-	TagTagchildPayloads := getNetflowMonitorPolTagTagChildPayloads(ctx, diags, data, tagTagPlan, tagTagState)
+	TagTagchildPayloads := GetNetflowMonitorPolTagTagChildPayloads(ctx, diags, data, tagTagPlan, tagTagState)
 	if TagTagchildPayloads == nil {
 		return nil
 	}

@@ -1,0 +1,78 @@
+{
+  "fvTenant": {
+    "attributes": {
+      "annotation": "orchestrator:terraform",
+      "descr": "This tenant is created by terraform",
+      "dn": "uni/tn-example_tenant",
+      "name": "example_tenant",
+      "resourceType": "fvTenant"
+    },
+    "children": [
+      {
+        "netflowMonitorPol": {
+          "attributes": {
+            "annotation": "annotation",
+            "descr": "description",
+            "dn": "uni/tn-example_tenant/monitorpol-netfow_monitor",
+            "name": "netfow_monitor",
+            "nameAlias": "name_alias",
+            "ownerKey": "owner_key",
+            "ownerTag": "owner_tag",
+            "parent_dn": "uni/tn-example_tenant",
+            "resourceType": "netflowMonitorPol"
+          },
+          "children": [
+            {
+              "netflowRsMonitorToExporter": {
+                "attributes": {
+                  "netflowRsMonitorToExporter": {
+                    "attributes": {
+                      "annotation": "annotation_1",
+                      "tnNetflowExporterPolName": "aci_netflow_exporter_policy.example.name"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "netflowRsMonitorToRecord": {
+                "attributes": {
+                  "netflowRsMonitorToRecord": {
+                    "attributes": {
+                      "annotation": "annotation_1",
+                      "tnNetflowRecordPolName": "aci_netflow_record_policy.example.name"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "tagAnnotation": {
+                "attributes": {
+                  "tagAnnotation": {
+                    "attributes": {
+                      "key": "key_0",
+                      "value": "value_1"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "tagTag": {
+                "attributes": {
+                  "tagTag": {
+                    "attributes": {
+                      "key": "key_0",
+                      "value": "value_1"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
