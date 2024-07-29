@@ -389,7 +389,7 @@ func (r *PkiKeyRingResource) Create(ctx context.Context, req resource.CreateRequ
 		setPkiKeyRingId(ctx, data)
 	}
 
-	setPkiKeyRingId(ctx, data)
+	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_key_ring with id '%s'", data.Id.ValueString()))
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationPkiKeyRingResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)

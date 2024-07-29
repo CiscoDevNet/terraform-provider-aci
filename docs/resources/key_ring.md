@@ -218,7 +218,7 @@ All examples for the Key Ring resource can be found in the [examples](https://gi
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `regenerate` (regen) - (string) Forces regeneration of the keypair. Each PKI device holds a pair of asymmetric Rivest-Shamir-Adleman (RSA) or Elliptic Curve Cryptography (ECC) encryption keys, one kept private and one made public, stored in an internal key ring.
-  - Default: `false`
+  - Default: `no`
   - Valid Values: `no`, `yes`.
 * `certificate_authority` (tp) - (string) A third-party certificate from a trusted source, or trusted point, that affirms the identity of your device. The third-party certificate is signed by the issuing certificate authority (CA or trustpoint), which can be a root CA, an intermediate CA, or a trust anchor that is part of a trust chain that leads to a root CA.
 

@@ -291,7 +291,7 @@ func (r *FvEpIpTagResource) Create(ctx context.Context, req resource.CreateReque
 		setFvEpIpTagId(ctx, data)
 	}
 
-	setFvEpIpTagId(ctx, data)
+	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_endpoint_tag_ip with id '%s'", data.Id.ValueString()))
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationFvEpIpTagResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)

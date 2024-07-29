@@ -250,7 +250,7 @@ func (r *FvRsProtByResource) Create(ctx context.Context, req resource.CreateRequ
 		setFvRsProtById(ctx, data)
 	}
 
-	setFvRsProtById(ctx, data)
+	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_relation_to_taboo_contract with id '%s'", data.Id.ValueString()))
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationFvRsProtByResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)

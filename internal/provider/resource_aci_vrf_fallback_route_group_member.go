@@ -280,7 +280,7 @@ func (r *FvFBRMemberResource) Create(ctx context.Context, req resource.CreateReq
 		setFvFBRMemberId(ctx, data)
 	}
 
-	setFvFBRMemberId(ctx, data)
+	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_vrf_fallback_route_group_member with id '%s'", data.Id.ValueString()))
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationFvFBRMemberResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)

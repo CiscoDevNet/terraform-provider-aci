@@ -21,7 +21,6 @@ func TestAccDataSourcePkiKeyRing(t *testing.T) {
 				Config:             testConfigPkiKeyRingDataSource,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("data.aci_key_ring.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("data.aci_key_ring.test", "admin_state", "started"),
 					resource.TestCheckResourceAttr("data.aci_key_ring.test", "annotation", "orchestrator:terraform"),
@@ -38,16 +37,10 @@ func TestAccDataSourcePkiKeyRing(t *testing.T) {
 				),
 			},
 			{
-				Config: testConfigPkiKeyRingNotExisting,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
-				),
+				Config:      testConfigPkiKeyRingNotExisting,
 				ExpectError: regexp.MustCompile("Failed to read aci_key_ring data source"),
 			},
 		},
-		CheckDestroy: resource.ComposeAggregateTestCheckFunc(
-			waitForApicBeforeRefresh,
-		),
 	})
 }
 func TestAccDataSourcePkiKeyRingWithFvTenant(t *testing.T) {
@@ -60,7 +53,6 @@ func TestAccDataSourcePkiKeyRingWithFvTenant(t *testing.T) {
 				Config:             testConfigPkiKeyRingDataSourceDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("data.aci_key_ring.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("data.aci_key_ring.test", "admin_state", "started"),
 					resource.TestCheckResourceAttr("data.aci_key_ring.test", "annotation", "orchestrator:terraform"),
@@ -77,16 +69,10 @@ func TestAccDataSourcePkiKeyRingWithFvTenant(t *testing.T) {
 				),
 			},
 			{
-				Config: testConfigPkiKeyRingNotExistingFvTenant,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
-				),
+				Config:      testConfigPkiKeyRingNotExistingFvTenant,
 				ExpectError: regexp.MustCompile("Failed to read aci_key_ring data source"),
 			},
 		},
-		CheckDestroy: resource.ComposeAggregateTestCheckFunc(
-			waitForApicBeforeRefresh,
-		),
 	})
 }
 

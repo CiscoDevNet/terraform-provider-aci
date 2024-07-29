@@ -280,7 +280,7 @@ func (r *FvFBRouteResource) Create(ctx context.Context, req resource.CreateReque
 		setFvFBRouteId(ctx, data)
 	}
 
-	setFvFBRouteId(ctx, data)
+	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_vrf_fallback_route with id '%s'", data.Id.ValueString()))
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationFvFBRouteResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)

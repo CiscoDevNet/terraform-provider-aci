@@ -325,7 +325,7 @@ func (r *PimRouteMapEntryResource) Create(ctx context.Context, req resource.Crea
 		setPimRouteMapEntryId(ctx, data)
 	}
 
-	setPimRouteMapEntryId(ctx, data)
+	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_pim_route_map_entry with id '%s'", data.Id.ValueString()))
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationPimRouteMapEntryResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)

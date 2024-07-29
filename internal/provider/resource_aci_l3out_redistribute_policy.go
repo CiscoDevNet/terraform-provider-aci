@@ -266,7 +266,7 @@ func (r *L3extRsRedistributePolResource) Create(ctx context.Context, req resourc
 		setL3extRsRedistributePolId(ctx, data)
 	}
 
-	setL3extRsRedistributePolId(ctx, data)
+	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_l3out_redistribute_policy with id '%s'", data.Id.ValueString()))
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationL3extRsRedistributePolResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)

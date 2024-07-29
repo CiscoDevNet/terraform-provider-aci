@@ -473,6 +473,7 @@ fvRsSecInherited:
 pkiKeyRing:
   default_values:
     parent_dn: "uni/userext/pkiext"
+    regen : "no"
   overwrites:
     cert: "certificate"
     regen: "regenerate"

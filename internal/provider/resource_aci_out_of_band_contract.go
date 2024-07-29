@@ -335,7 +335,7 @@ func (r *VzOOBBrCPResource) Create(ctx context.Context, req resource.CreateReque
 		setVzOOBBrCPId(ctx, data)
 	}
 
-	setVzOOBBrCPId(ctx, data)
+	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_out_of_band_contract with id '%s'", data.Id.ValueString()))
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationVzOOBBrCPResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)

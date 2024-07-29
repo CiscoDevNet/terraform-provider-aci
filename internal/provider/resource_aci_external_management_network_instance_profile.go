@@ -325,7 +325,7 @@ func (r *MgmtInstPResource) Create(ctx context.Context, req resource.CreateReque
 		setMgmtInstPId(ctx, data)
 	}
 
-	setMgmtInstPId(ctx, data)
+	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_external_management_network_instance_profile with id '%s'", data.Id.ValueString()))
 
 	var mgmtRsOoBConsPlan, mgmtRsOoBConsState []MgmtRsOoBConsMgmtInstPResourceModel
 	data.MgmtRsOoBCons.ElementsAs(ctx, &mgmtRsOoBConsPlan, false)

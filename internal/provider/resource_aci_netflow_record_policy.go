@@ -329,7 +329,7 @@ func (r *NetflowRecordPolResource) Create(ctx context.Context, req resource.Crea
 		setNetflowRecordPolId(ctx, data)
 	}
 
-	setNetflowRecordPolId(ctx, data)
+	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_netflow_record_policy with id '%s'", data.Id.ValueString()))
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationNetflowRecordPolResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)

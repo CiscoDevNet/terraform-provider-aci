@@ -305,7 +305,7 @@ func (r *L3extProvLblResource) Create(ctx context.Context, req resource.CreateRe
 		setL3extProvLblId(ctx, data)
 	}
 
-	setL3extProvLblId(ctx, data)
+	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_l3out_provider_label with id '%s'", data.Id.ValueString()))
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationL3extProvLblResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)

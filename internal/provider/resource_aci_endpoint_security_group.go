@@ -1556,7 +1556,7 @@ func (r *FvESgResource) Create(ctx context.Context, req resource.CreateRequest, 
 		setFvESgId(ctx, data)
 	}
 
-	setFvESgId(ctx, data)
+	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_endpoint_security_group with id '%s'", data.Id.ValueString()))
 
 	var fvRsConsPlan, fvRsConsState []FvRsConsFvESgResourceModel
 	data.FvRsCons.ElementsAs(ctx, &fvRsConsPlan, false)

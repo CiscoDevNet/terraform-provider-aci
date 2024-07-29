@@ -370,7 +370,7 @@ func (r *NetflowMonitorPolResource) Create(ctx context.Context, req resource.Cre
 		setNetflowMonitorPolId(ctx, data)
 	}
 
-	setNetflowMonitorPolId(ctx, data)
+	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_netflow_monitor_policy with id '%s'", data.Id.ValueString()))
 
 	var netflowRsMonitorToExporterPlan, netflowRsMonitorToExporterState []NetflowRsMonitorToExporterNetflowMonitorPolResourceModel
 	data.NetflowRsMonitorToExporter.ElementsAs(ctx, &netflowRsMonitorToExporterPlan, false)

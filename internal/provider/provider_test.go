@@ -9,7 +9,6 @@ import (
 	"strings"
 	"sync"
 	"testing"
-	"time"
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/aci"
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
@@ -83,27 +82,14 @@ func getACIClientTest(t *testing.T) *client.Client {
 			}
 		}
 
-		aciClientTest = client.NewClient(aci_url, aci_username, client.Password(aci_password), client.Insecure(true))
+		aciClientTest = client.NewClient(aci_url, aci_username, client.Password(aci_password), client.Insecure(true), client.MaxRetries(2))
 	})
 	return aciClientTest
 }
 
 func testAccPreCheck(t *testing.T, testType string, TestApplicableFromVersion string) {
-	// retryGetCall is an anonymous function to retry the API call for getting the environment/controller value if the APIC is down
-	retryGetCall := func(getCall func() (*container.Container, error)) (*container.Container, error) {
-		data, err := getCall()
-		if err != nil {
-			waitErr := waitForApicBeforeRefresh(nil)
-			if waitErr != nil {
-				return nil, waitErr
-			}
-			data, err = getCall()
-		}
-		return data, err
-	}
-	infoCloud, _ := retryGetCall(func() (*container.Container, error) {
-		return getACIClientTest(t).GetViaURL("/api/node/class/cloudProvP.json")
-	})
+
+	infoCloud, _ := getACIClientTest(t).GetViaURL("/api/node/class/cloudProvP.json")
 	environment, _ := extractEnvironmentValue(infoCloud)
 	if environment == "public-cloud" && testType == "apic" {
 		t.Skip("[WARNING] Test skipped because it is not supported on a cloud APIC.")
@@ -111,9 +97,7 @@ func testAccPreCheck(t *testing.T, testType string, TestApplicableFromVersion st
 		t.Skip("[WARNING] Test skipped because it is not supported on an on-prem APIC")
 	}
 
-	infoController, err := retryGetCall(func() (*container.Container, error) {
-		return getACIClientTest(t).GetViaURL("/api/node/class/firmwareCtrlrRunning.json")
-	})
+	infoController, err := getACIClientTest(t).GetViaURL("/api/node/class/firmwareCtrlrRunning.json")
 	if err != nil {
 		t.Fatalf("Error fetching APIC controller information: %v", err)
 	}
@@ -190,31 +174,6 @@ func isVersionGreater(v1, v2 Version) bool {
 	return v1.Tag > v2.Tag
 }
 
-// waitForApicBeforeRefresh ensures the APIC is available by polling the API until it responds or times out before Terraform refresh is applied in the test.
-func waitForApicBeforeRefresh(s *terraform.State) error {
-	aciClient := getACIClientTest(nil)
-
-	timeoutTimer := time.NewTimer(50 * time.Second)
-	defer timeoutTimer.Stop()
-
-	pollTimer := time.NewTimer(5 * time.Second)
-	defer pollTimer.Stop()
-
-	for {
-		select {
-		case <-timeoutTimer.C:
-			return fmt.Errorf("timeout reached while waiting for APIC to become available")
-		case <-pollTimer.C:
-			_, err := aciClient.GetViaURL("/api/aaaListDomains.json")
-			if err != nil {
-				pollTimer.Reset(5 * time.Second)
-			} else {
-				return nil
-			}
-		}
-	}
-}
-
 func testCheckResourceAttr(resourceName, attribute, value1 string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 
@@ -240,7 +199,7 @@ func testCheckResourceDestroy(s *terraform.State) error {
 	aciClient := getACIClientTest(nil)
 
 	for name, rs := range s.RootModule().Resources {
-		if !strings.HasPrefix(name, "data.") {
+		if strings.HasPrefix(name, "aci_") {
 			_, err := aciClient.Get(rs.Primary.ID)
 			if err != nil {
 				if strings.Contains(err.Error(), "Error retrieving Object: Object may not exist") {

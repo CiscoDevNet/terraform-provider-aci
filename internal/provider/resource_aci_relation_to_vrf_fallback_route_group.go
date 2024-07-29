@@ -250,7 +250,7 @@ func (r *L3extRsOutToFBRGroupResource) Create(ctx context.Context, req resource.
 		setL3extRsOutToFBRGroupId(ctx, data)
 	}
 
-	setL3extRsOutToFBRGroupId(ctx, data)
+	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_relation_to_vrf_fallback_route_group with id '%s'", data.Id.ValueString()))
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationL3extRsOutToFBRGroupResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)

@@ -301,7 +301,7 @@ func (r *PkiTPResource) Create(ctx context.Context, req resource.CreateRequest, 
 		setPkiTPId(ctx, data)
 	}
 
-	setPkiTPId(ctx, data)
+	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_certificate_authority with id '%s'", data.Id.ValueString()))
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationPkiTPResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)

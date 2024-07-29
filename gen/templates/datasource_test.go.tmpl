@@ -4,13 +4,6 @@
 
 package provider
 
-{{- $found_cert := false -}}
-{{- range $key, $value := $.all}}
-  {{- if contains $key "cert" }}
-    {{- $found_cert = true -}}
-  {{- end}}
-{{- end}}
-
 import (
 	"testing"
 	"regexp"
@@ -30,9 +23,6 @@ func TestAccDataSource{{$.resourceClassName}}{{if .class_name}}With{{capitalize 
 				Config: testConfig{{$.resourceClassName}}DataSource{{if .class_name}}DependencyWith{{capitalize .class_name}}{{end}} ,
 				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
-					{{- if $found_cert }}
-					waitForApicBeforeRefresh,
-					{{- end}}
 					{{- range $key, $value := $.datasource_required}}
 						{{- if eq $key "target_dn" }}
 					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$key}}", "{{getTestTargetDn $.targets $.resourceName $value false $target_classes 0}}"),
@@ -58,19 +48,9 @@ func TestAccDataSource{{$.resourceClassName}}{{if .class_name}}With{{capitalize 
 			},
 			{
 				Config:      testConfig{{$.resourceClassName}}NotExisting{{if .class_name}}{{capitalize .class_name}}{{end}},
-				{{- if $found_cert }}
-				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
-				),
-				{{- end}}
 				ExpectError: regexp.MustCompile("Failed to read aci_{{$.resourceName}} data source"),
 			},
 		},
-		{{- if $found_cert }}
-		CheckDestroy: resource.ComposeAggregateTestCheckFunc(
-			waitForApicBeforeRefresh,
-	    ),
-		{{- end}}
 	})
 }
 	{{- end}}
@@ -84,9 +64,6 @@ func TestAccDataSource{{.resourceClassName}}(t *testing.T) {
 			{
 				Config: testConfig{{.resourceClassName}}DataSource,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					{{- if $found_cert }}
-					waitForApicBeforeRefresh,
-					{{- end}}
 					{{- range $key, $value := .min}}
 					{{- if not (definedInList $.exclude_attributes $key) }}
 					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
@@ -108,19 +85,9 @@ func TestAccDataSource{{.resourceClassName}}(t *testing.T) {
 			},
 			{
 				Config:      testConfig{{.resourceClassName}}NotExisting,
-				{{- if $found_cert }}
-				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
-				),
-				{{- end}}
 				ExpectError: regexp.MustCompile("Failed to read aci_{{$.resourceName}} data source"),
 			},
 		},
-		{{- if $found_cert }}
-		CheckDestroy: resource.ComposeAggregateTestCheckFunc(
-			waitForApicBeforeRefresh,
-		),
-		{{- end}}
 	})
 }
 {{- end}}

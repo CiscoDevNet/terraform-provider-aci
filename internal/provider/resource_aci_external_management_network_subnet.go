@@ -280,7 +280,7 @@ func (r *MgmtSubnetResource) Create(ctx context.Context, req resource.CreateRequ
 		setMgmtSubnetId(ctx, data)
 	}
 
-	setMgmtSubnetId(ctx, data)
+	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_external_management_network_subnet with id '%s'", data.Id.ValueString()))
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationMgmtSubnetResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)

@@ -1067,7 +1067,7 @@ func (r *{{.ResourceClassName}}Resource) Create(ctx context.Context, req resourc
 		set{{.ResourceClassName}}Id(ctx, data)
 	}
 
-	set{{ .ResourceClassName }}Id(ctx, data)
+	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_{{.ResourceName}} with id '%s'", data.Id.ValueString()))
 
 	{{ if not .MultiParentFormats }}
 	{{ if .HasChild}}

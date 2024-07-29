@@ -22,7 +22,6 @@ func TestAccResourcePkiKeyRing(t *testing.T) {
 				Config:             testConfigPkiKeyRingMinAllowExisting,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("aci_key_ring.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_key_ring.test_2", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "admin_state", "started"),
@@ -61,10 +60,7 @@ func TestAccResourcePkiKeyRing(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config: testConfigPkiKeyRingMinAllowExisting,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
-				),
+				Config:      testConfigPkiKeyRingMinAllowExisting,
 				ExpectError: regexp.MustCompile("Object Already Exists"),
 			},
 		},
@@ -80,7 +76,6 @@ func TestAccResourcePkiKeyRing(t *testing.T) {
 				Config:             testConfigPkiKeyRingMinAllowExisting,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("aci_key_ring.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_key_ring.test_2", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "admin_state", "started"),
@@ -121,7 +116,6 @@ func TestAccResourcePkiKeyRing(t *testing.T) {
 				Config:             testConfigPkiKeyRingMin,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("aci_key_ring.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "admin_state", "started"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotation", "orchestrator:terraform"),
@@ -142,7 +136,6 @@ func TestAccResourcePkiKeyRing(t *testing.T) {
 				Config:             testConfigPkiKeyRingAll,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("aci_key_ring.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "admin_state", "completed"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotation", "annotation"),
@@ -163,7 +156,6 @@ func TestAccResourcePkiKeyRing(t *testing.T) {
 				Config:             testConfigPkiKeyRingMin,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("aci_key_ring.test", "name", "test_name"),
 				),
 			},
@@ -172,7 +164,6 @@ func TestAccResourcePkiKeyRing(t *testing.T) {
 				Config:             testConfigPkiKeyRingReset,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("aci_key_ring.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "admin_state", "started"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotation", "orchestrator:terraform"),
@@ -195,7 +186,6 @@ func TestAccResourcePkiKeyRing(t *testing.T) {
 				ImportStateVerify:       true,
 				ImportStateVerifyIgnore: []string{"key", "parent_dn"},
 				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("aci_key_ring.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "admin_state", "started"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotation", "orchestrator:terraform"),
@@ -217,7 +207,6 @@ func TestAccResourcePkiKeyRing(t *testing.T) {
 				Config:             testConfigPkiKeyRingChildren,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("aci_key_ring.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "admin_state", "started"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotation", "orchestrator:terraform"),
@@ -288,7 +277,6 @@ func TestAccResourcePkiKeyRing(t *testing.T) {
 				Config:             testConfigPkiKeyRingChildrenRemoveFromConfig,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.key", "key_1"),
@@ -306,7 +294,6 @@ func TestAccResourcePkiKeyRing(t *testing.T) {
 				Config:             testConfigPkiKeyRingChildrenRemoveOne,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.#", "1"),
@@ -320,14 +307,12 @@ func TestAccResourcePkiKeyRing(t *testing.T) {
 				Config:             testConfigPkiKeyRingChildrenRemoveAll,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.#", "0"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.#", "0"),
 				),
 			},
 		},
 		CheckDestroy: resource.ComposeAggregateTestCheckFunc(
-			waitForApicBeforeRefresh,
 			testCheckResourceDestroy,
 		),
 	})
@@ -343,7 +328,6 @@ func TestAccResourcePkiKeyRingWithFvTenant(t *testing.T) {
 				Config:             testConfigPkiKeyRingMinDependencyWithFvTenantAllowExisting,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("aci_key_ring.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_key_ring.test_2", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "admin_state", "started"),
@@ -382,10 +366,7 @@ func TestAccResourcePkiKeyRingWithFvTenant(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config: testConfigPkiKeyRingMinDependencyWithFvTenantAllowExisting,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
-				),
+				Config:      testConfigPkiKeyRingMinDependencyWithFvTenantAllowExisting,
 				ExpectError: regexp.MustCompile("Object Already Exists"),
 			},
 		},
@@ -401,7 +382,6 @@ func TestAccResourcePkiKeyRingWithFvTenant(t *testing.T) {
 				Config:             testConfigPkiKeyRingMinDependencyWithFvTenantAllowExisting,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("aci_key_ring.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_key_ring.test_2", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "admin_state", "started"),
@@ -442,7 +422,6 @@ func TestAccResourcePkiKeyRingWithFvTenant(t *testing.T) {
 				Config:             testConfigPkiKeyRingMinDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("aci_key_ring.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "admin_state", "started"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotation", "orchestrator:terraform"),
@@ -463,7 +442,6 @@ func TestAccResourcePkiKeyRingWithFvTenant(t *testing.T) {
 				Config:             testConfigPkiKeyRingAllDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("aci_key_ring.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "admin_state", "completed"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotation", "annotation"),
@@ -484,7 +462,6 @@ func TestAccResourcePkiKeyRingWithFvTenant(t *testing.T) {
 				Config:             testConfigPkiKeyRingMinDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("aci_key_ring.test", "name", "test_name"),
 				),
 			},
@@ -493,7 +470,6 @@ func TestAccResourcePkiKeyRingWithFvTenant(t *testing.T) {
 				Config:             testConfigPkiKeyRingResetDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("aci_key_ring.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "admin_state", "started"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotation", "orchestrator:terraform"),
@@ -516,7 +492,6 @@ func TestAccResourcePkiKeyRingWithFvTenant(t *testing.T) {
 				ImportStateVerify:       true,
 				ImportStateVerifyIgnore: []string{"key", "parent_dn"},
 				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("aci_key_ring.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "admin_state", "started"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotation", "orchestrator:terraform"),
@@ -538,7 +513,6 @@ func TestAccResourcePkiKeyRingWithFvTenant(t *testing.T) {
 				Config:             testConfigPkiKeyRingChildrenDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("aci_key_ring.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "admin_state", "started"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotation", "orchestrator:terraform"),
@@ -609,7 +583,6 @@ func TestAccResourcePkiKeyRingWithFvTenant(t *testing.T) {
 				Config:             testConfigPkiKeyRingChildrenRemoveFromConfigDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.key", "key_1"),
@@ -627,7 +600,6 @@ func TestAccResourcePkiKeyRingWithFvTenant(t *testing.T) {
 				Config:             testConfigPkiKeyRingChildrenRemoveOneDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.#", "1"),
@@ -641,14 +613,12 @@ func TestAccResourcePkiKeyRingWithFvTenant(t *testing.T) {
 				Config:             testConfigPkiKeyRingChildrenRemoveAllDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.#", "0"),
 					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.#", "0"),
 				),
 			},
 		},
 		CheckDestroy: resource.ComposeAggregateTestCheckFunc(
-			waitForApicBeforeRefresh,
 			testCheckResourceDestroy,
 		),
 	})

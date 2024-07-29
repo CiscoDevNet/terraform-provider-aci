@@ -250,7 +250,7 @@ func (r *FvRsSecInheritedResource) Create(ctx context.Context, req resource.Crea
 		setFvRsSecInheritedId(ctx, data)
 	}
 
-	setFvRsSecInheritedId(ctx, data)
+	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_relation_to_contract_master with id '%s'", data.Id.ValueString()))
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationFvRsSecInheritedResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)

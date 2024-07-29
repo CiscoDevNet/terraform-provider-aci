@@ -407,7 +407,7 @@ func (r *FvFBRGroupResource) Create(ctx context.Context, req resource.CreateRequ
 		setFvFBRGroupId(ctx, data)
 	}
 
-	setFvFBRGroupId(ctx, data)
+	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_vrf_fallback_route_group with id '%s'", data.Id.ValueString()))
 
 	var fvFBRMemberPlan, fvFBRMemberState []FvFBRMemberFvFBRGroupResourceModel
 	data.FvFBRMember.ElementsAs(ctx, &fvFBRMemberPlan, false)

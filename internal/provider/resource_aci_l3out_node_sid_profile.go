@@ -290,7 +290,7 @@ func (r *MplsNodeSidPResource) Create(ctx context.Context, req resource.CreateRe
 		setMplsNodeSidPId(ctx, data)
 	}
 
-	setMplsNodeSidPId(ctx, data)
+	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_l3out_node_sid_profile with id '%s'", data.Id.ValueString()))
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationMplsNodeSidPResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)

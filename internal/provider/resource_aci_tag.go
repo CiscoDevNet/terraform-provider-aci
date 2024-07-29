@@ -162,7 +162,7 @@ func (r *TagTagResource) Create(ctx context.Context, req resource.CreateRequest,
 		setTagTagId(ctx, data)
 	}
 
-	setTagTagId(ctx, data)
+	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_tag with id '%s'", data.Id.ValueString()))
 
 	jsonPayload := getTagTagCreateJsonPayload(ctx, &resp.Diagnostics, true, data)
 

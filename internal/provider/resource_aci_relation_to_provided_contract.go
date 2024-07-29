@@ -278,7 +278,7 @@ func (r *FvRsProvResource) Create(ctx context.Context, req resource.CreateReques
 		setFvRsProvId(ctx, data)
 	}
 
-	setFvRsProvId(ctx, data)
+	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_relation_to_provided_contract with id '%s'", data.Id.ValueString()))
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationFvRsProvResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)

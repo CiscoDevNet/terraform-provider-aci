@@ -162,7 +162,7 @@ func (r *TagAnnotationResource) Create(ctx context.Context, req resource.CreateR
 		setTagAnnotationId(ctx, data)
 	}
 
-	setTagAnnotationId(ctx, data)
+	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_annotation with id '%s'", data.Id.ValueString()))
 
 	jsonPayload := getTagAnnotationCreateJsonPayload(ctx, &resp.Diagnostics, true, data)
 

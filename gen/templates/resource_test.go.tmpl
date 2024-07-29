@@ -4,13 +4,6 @@
 
 package provider
 
-{{- $found_cert := false -}}
-{{- range $key, $value := $.all}}
-  {{- if contains $key "cert" }}
-    {{- $found_cert = true -}}
-  {{- end}}
-{{- end}}
-
 import (
 	"testing"
 	"regexp"
@@ -31,9 +24,6 @@ PreCheck: func() { testAccPreCheck(t, "{{.test_type}}", "{{.test_applicable_from
 				Config: testConfig{{$.resourceClassName}}Min{{if .class_name}}DependencyWith{{capitalize .class_name}}{{end}}AllowExisting,
 				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
-				{{- if $found_cert }}
-				waitForApicBeforeRefresh,
-				{{- end}}
 		{{- range $key, $value := $.resource_required}}{{$contains := definedInMap $key $.default}}
 			{{- if not $contains}}
 				{{- if eq $key "target_dn" }}
@@ -75,11 +65,6 @@ PreCheck: func() { testAccPreCheck(t, "{{.test_type}}", "{{.test_applicable_from
 			// Create with minimum config and verify default APIC values
 			{
 				Config: testConfig{{$.resourceClassName}}Min{{if .class_name}}DependencyWith{{capitalize .class_name}}{{end}}AllowExisting,
-				{{- if $found_cert }}
-				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
-				),
-				{{- end}}
 				ExpectError: regexp.MustCompile("Object Already Exists"),
 			},
 		},
@@ -95,9 +80,6 @@ PreCheck: func() { testAccPreCheck(t, "{{.test_type}}", "{{.test_applicable_from
 				Config: testConfig{{$.resourceClassName}}Min{{if .class_name}}DependencyWith{{capitalize .class_name}}{{end}}AllowExisting,
 				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
-				{{- if $found_cert }}
-				waitForApicBeforeRefresh,
-				{{- end}}
 		{{- range $key, $value := $.resource_required}}{{$contains := definedInMap $key $.default}}
 			{{- if not $contains}}
 				{{- if eq $key "target_dn" }}
@@ -140,9 +122,6 @@ PreCheck: func() { testAccPreCheck(t, "{{.test_type}}", "{{.test_applicable_from
 				Config: testConfig{{$.resourceClassName}}Min{{if .class_name}}DependencyWith{{capitalize .class_name}}{{end}},
 				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
-				{{- if $found_cert }}
-				waitForApicBeforeRefresh,
-				{{- end}}
 		{{- range $key, $value := $.resource_required}}{{$contains := definedInMap $key $.default}}
 			{{- if not $contains}}
 				{{- if eq $key "target_dn" }}
@@ -173,9 +152,6 @@ PreCheck: func() { testAccPreCheck(t, "{{.test_type}}", "{{.test_applicable_from
 				Config: testConfig{{$.resourceClassName}}All{{ if .class_name}}DependencyWith{{capitalize .class_name}}{{end}},
 				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
-				{{- if $found_cert }}
-				waitForApicBeforeRefresh,
-				{{- end}}
 		{{- range $key, $value := $.resource_required}}{{$contains := definedInMap $key $.all}}
 			{{- if not $contains}}
 				{{- if eq $key "target_dn" }}
@@ -206,9 +182,6 @@ PreCheck: func() { testAccPreCheck(t, "{{.test_type}}", "{{.test_applicable_from
 				Config: testConfig{{$.resourceClassName}}Min{{if .class_name}}DependencyWith{{capitalize .class_name}}{{end}},
 				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
-				{{- if $found_cert }}
-				waitForApicBeforeRefresh,
-				{{- end}}
 		{{- range $key, $value := $.resource_required}}
 			{{- if eq $key "target_dn" }}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{getTestTargetDn $.targets $.resourceName $value false $target_classes 0}}"),
@@ -238,9 +211,6 @@ PreCheck: func() { testAccPreCheck(t, "{{.test_type}}", "{{.test_applicable_from
 				Config: testConfig{{$.resourceClassName}}Reset{{ if .class_name}}DependencyWith{{capitalize .class_name}}{{end}},
 				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
-				{{- if $found_cert }}
-				waitForApicBeforeRefresh,
-				{{- end}}
 		{{- range $key, $value := $.resource_required}}
 			{{- if eq $key "target_dn" }}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{getTestTargetDn $.targets $.resourceName $value false $target_classes 0}}"),
@@ -279,9 +249,6 @@ PreCheck: func() { testAccPreCheck(t, "{{.test_type}}", "{{.test_applicable_from
             	},
 				{{- end}}
 				Check: resource.ComposeAggregateTestCheckFunc(
-				{{- if $found_cert }}
-				waitForApicBeforeRefresh,
-				{{- end}}
 		{{- range $key, $value := $.resource_required}}
 			{{- if eq $key "target_dn" }}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{getTestTargetDn $.targets $.resourceName $value false $target_classes 0}}"),
@@ -313,9 +280,6 @@ PreCheck: func() { testAccPreCheck(t, "{{.test_type}}", "{{.test_applicable_from
 				Config: testConfig{{$.resourceClassName}}Children{{ if .class_name}}DependencyWith{{capitalize .class_name}}{{end}},
 				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
-				{{- if $found_cert }}
-				waitForApicBeforeRefresh,
-				{{- end}}
 		{{- range $key, $value := $.resource_required}}
 			{{- if eq $key "target_dn" }}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{getTestTargetDn $.targets $.resourceName $value false $target_classes 0}}"),
@@ -413,9 +377,6 @@ PreCheck: func() { testAccPreCheck(t, "{{.test_type}}", "{{.test_applicable_from
 				Config: testConfig{{$.resourceClassName}}ChildrenRemoveFromConfig{{ if .class_name}}DependencyWith{{capitalize .class_name}}{{end}},
 				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
-				{{- if $found_cert }}
-				waitForApicBeforeRefresh,
-				{{- end}}
 		{{- range $key, $value := .min}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
 		{{- end}}
@@ -456,9 +417,6 @@ PreCheck: func() { testAccPreCheck(t, "{{.test_type}}", "{{.test_applicable_from
 				Config: testConfig{{$.resourceClassName}}ChildrenRemoveOne{{ if .class_name}}DependencyWith{{capitalize .class_name}}{{end}},
 				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
-				{{- if $found_cert }}
-				waitForApicBeforeRefresh,
-				{{- end}}
 		{{- range $key, $value := .min}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
 		{{- end}}
@@ -500,9 +458,6 @@ PreCheck: func() { testAccPreCheck(t, "{{.test_type}}", "{{.test_applicable_from
 				Config: testConfig{{$.resourceClassName}}ChildrenRemoveAll{{ if .class_name}}DependencyWith{{capitalize .class_name}}{{end}},
 				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
-				{{- if $found_cert }}
-				waitForApicBeforeRefresh,
-				{{- end}}
 		{{- range $key, $value := .min}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
 		{{- end}}
@@ -532,9 +487,6 @@ PreCheck: func() { testAccPreCheck(t, "{{.test_type}}", "{{.test_applicable_from
 		{{- end}}
 		},
 		CheckDestroy: resource.ComposeAggregateTestCheckFunc(
-			{{- if $found_cert }}
-			waitForApicBeforeRefresh,
-			{{- end}}
 			testCheckResourceDestroy,
 		),
 	})
@@ -578,11 +530,6 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 			// Create with minimum config and verify default APIC values
 			{
 				Config: testConfig{{.resourceClassName}}MinAllowExisting,
-				{{- if $found_cert }}
-				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
-				),
-				{{- end}}
 				ExpectError: regexp.MustCompile("Object Already Exists"),
 			},
 		},
@@ -625,9 +572,6 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 			{
 				Config: testConfig{{.resourceClassName}}Min,
 				Check: resource.ComposeAggregateTestCheckFunc(
-				{{- if $found_cert }}
-				waitForApicBeforeRefresh,
-				{{- end}}
 	{{- range $key, $value := .resource_required}}{{$contains := definedInMap $key $.default}}
 		{{- if not $contains}}
 			{{- if eq $key "target_dn" }}
@@ -653,9 +597,6 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 			{
 				Config: testConfig{{.resourceClassName}}All,
 				Check: resource.ComposeAggregateTestCheckFunc(
-				{{- if $found_cert }}
-				waitForApicBeforeRefresh,
-				{{- end}}
 	{{- range $key, $value := .resource_required}}{{$contains := definedInMap $key $.all}}
 		{{- if not $contains}}
 			{{- if eq $key "target_dn" }}
@@ -681,9 +622,6 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 			{
 				Config: testConfig{{.resourceClassName}}Min,
 				Check: resource.ComposeAggregateTestCheckFunc(
-				{{- if $found_cert }}
-				waitForApicBeforeRefresh,
-				{{- end}}
 	{{- range $key, $value := .resource_required}}{{$contains := definedInMap $key $.all}}
 		{{- if not $contains}}
 			{{- if eq $key "target_dn" }}
@@ -717,9 +655,6 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 			{
 				Config: testConfig{{.resourceClassName}}Reset,
 				Check: resource.ComposeAggregateTestCheckFunc(
-				{{- if $found_cert }}
-				waitForApicBeforeRefresh,
-				{{- end}}
 	{{- range $key, $value := $.resource_required}}
 			{{- if eq $key "target_dn" }}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{getTestTargetDn $.targets $.resourceName $value false nil 0}}"),
@@ -847,9 +782,6 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 			{
 				Config: testConfig{{.resourceClassName}}ChildrenRemoveOne,
 				Check: resource.ComposeAggregateTestCheckFunc(
-				{{- if $found_cert }}
-				waitForApicBeforeRefresh,
-				{{- end}}
 		{{- range $key, $value := .min}}
 			{{- if eq $key "target_dn" }}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{getTestTargetDn $.targets $.resourceName $value false nil 0}}"),
@@ -895,9 +827,6 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 			{
 				Config: testConfig{{.resourceClassName}}ChildrenRemoveAll,
 				Check: resource.ComposeAggregateTestCheckFunc(
-				{{- if $found_cert }}
-				waitForApicBeforeRefresh,
-				{{- end}}
 		{{- range $key, $value := .min}}
 			{{- if eq $key "target_dn" }}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{getTestTargetDn $.targets $.resourceName $value false nil 0}}"),
@@ -938,9 +867,6 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 	{{- end}}
 		},
 		CheckDestroy: resource.ComposeAggregateTestCheckFunc(
-			{{- if $found_cert }}
-			waitForApicBeforeRefresh,
-			{{- end}}
 			testCheckResourceDestroy,
 		),
 	})

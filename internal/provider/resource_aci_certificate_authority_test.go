@@ -22,7 +22,6 @@ func TestAccResourcePkiTP(t *testing.T) {
 				Config:             testConfigPkiTPMinAllowExisting,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test_2", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotation", "orchestrator:terraform"),
@@ -49,10 +48,7 @@ func TestAccResourcePkiTP(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config: testConfigPkiTPMinAllowExisting,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
-				),
+				Config:      testConfigPkiTPMinAllowExisting,
 				ExpectError: regexp.MustCompile("Object Already Exists"),
 			},
 		},
@@ -68,7 +64,6 @@ func TestAccResourcePkiTP(t *testing.T) {
 				Config:             testConfigPkiTPMinAllowExisting,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test_2", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotation", "orchestrator:terraform"),
@@ -97,7 +92,6 @@ func TestAccResourcePkiTP(t *testing.T) {
 				Config:             testConfigPkiTPMin,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "certificate_chain", "-----BEGIN CERTIFICATE-----\nMIICODCCAaGgAwIBAgIJAIt8XMntue0VMA0GCSqGSIb3DQEBCwUAMDQxDjAMBgNV\nBAMMBUFkbWluMRUwEwYDVQQKDAxZb3VyIENvbXBhbnkxCzAJBgNVBAYTAlVTMCAX\nDTE4MDEwOTAwNTk0NFoYDzIxMTcxMjE2MDA1OTQ0WjA0MQ4wDAYDVQQDDAVBZG1p\nbjEVMBMGA1UECgwMWW91ciBDb21wYW55MQswCQYDVQQGEwJVUzCBnzANBgkqhkiG\n9w0BAQEFAAOBjQAwgYkCgYEAohG/7axtt7CbSaMP7r+2mhTKbNgh0Ww36C7Ta14i\nv+VmLyKkQHnXinKGhp6uy3Nug+15a+eIu7CrgpBVMQeCiWfsnwRocKcQJWIYDrWl\nXHxGQn31yYKR6mylE7Dcj3rMFybnyhezr5D8GcP85YRPmwG9H2hO/0Y1FUnWu9Iw\nAQkCAwEAAaNQME4wHQYDVR0OBBYEFD0jLXfpkrU/ChzRvfruRs/fy1VXMB8GA1Ud\nIwQYMBaAFD0jLXfpkrU/ChzRvfruRs/fy1VXMAwGA1UdEwQFMAMBAf8wDQYJKoZI\nhvcNAQELBQADgYEAOmvre+5tgZ0+F3DgsfxNQqLTrGiBgGCIymPkP/cBXXkNuJyl\n3ac7tArHQc7WEA4U2R2rZbEq8FC3UJJm4nUVtCPvEh3G9OhN2xwYev79yt6pIn/l\nKU0Td2OpVyo0eLqjoX5u2G90IBWzhyjFbo+CcKMrSVKj1YOdG0E3OuiJf00=\n-----END CERTIFICATE-----"),
@@ -112,7 +106,6 @@ func TestAccResourcePkiTP(t *testing.T) {
 				Config:             testConfigPkiTPAll,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotation", "annotation"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "certificate_chain", "-----BEGIN CERTIFICATE-----\nMIICODCCAaGgAwIBAgIJAIt8XMntue0VMA0GCSqGSIb3DQEBCwUAMDQxDjAMBgNV\nBAMMBUFkbWluMRUwEwYDVQQKDAxZb3VyIENvbXBhbnkxCzAJBgNVBAYTAlVTMCAX\nDTE4MDEwOTAwNTk0NFoYDzIxMTcxMjE2MDA1OTQ0WjA0MQ4wDAYDVQQDDAVBZG1p\nbjEVMBMGA1UECgwMWW91ciBDb21wYW55MQswCQYDVQQGEwJVUzCBnzANBgkqhkiG\n9w0BAQEFAAOBjQAwgYkCgYEAohG/7axtt7CbSaMP7r+2mhTKbNgh0Ww36C7Ta14i\nv+VmLyKkQHnXinKGhp6uy3Nug+15a+eIu7CrgpBVMQeCiWfsnwRocKcQJWIYDrWl\nXHxGQn31yYKR6mylE7Dcj3rMFybnyhezr5D8GcP85YRPmwG9H2hO/0Y1FUnWu9Iw\nAQkCAwEAAaNQME4wHQYDVR0OBBYEFD0jLXfpkrU/ChzRvfruRs/fy1VXMB8GA1Ud\nIwQYMBaAFD0jLXfpkrU/ChzRvfruRs/fy1VXMAwGA1UdEwQFMAMBAf8wDQYJKoZI\nhvcNAQELBQADgYEAOmvre+5tgZ0+F3DgsfxNQqLTrGiBgGCIymPkP/cBXXkNuJyl\n3ac7tArHQc7WEA4U2R2rZbEq8FC3UJJm4nUVtCPvEh3G9OhN2xwYev79yt6pIn/l\nKU0Td2OpVyo0eLqjoX5u2G90IBWzhyjFbo+CcKMrSVKj1YOdG0E3OuiJf00=\n-----END CERTIFICATE-----"),
@@ -127,7 +120,6 @@ func TestAccResourcePkiTP(t *testing.T) {
 				Config:             testConfigPkiTPMin,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "certificate_chain", "-----BEGIN CERTIFICATE-----\nMIICODCCAaGgAwIBAgIJAIt8XMntue0VMA0GCSqGSIb3DQEBCwUAMDQxDjAMBgNV\nBAMMBUFkbWluMRUwEwYDVQQKDAxZb3VyIENvbXBhbnkxCzAJBgNVBAYTAlVTMCAX\nDTE4MDEwOTAwNTk0NFoYDzIxMTcxMjE2MDA1OTQ0WjA0MQ4wDAYDVQQDDAVBZG1p\nbjEVMBMGA1UECgwMWW91ciBDb21wYW55MQswCQYDVQQGEwJVUzCBnzANBgkqhkiG\n9w0BAQEFAAOBjQAwgYkCgYEAohG/7axtt7CbSaMP7r+2mhTKbNgh0Ww36C7Ta14i\nv+VmLyKkQHnXinKGhp6uy3Nug+15a+eIu7CrgpBVMQeCiWfsnwRocKcQJWIYDrWl\nXHxGQn31yYKR6mylE7Dcj3rMFybnyhezr5D8GcP85YRPmwG9H2hO/0Y1FUnWu9Iw\nAQkCAwEAAaNQME4wHQYDVR0OBBYEFD0jLXfpkrU/ChzRvfruRs/fy1VXMB8GA1Ud\nIwQYMBaAFD0jLXfpkrU/ChzRvfruRs/fy1VXMAwGA1UdEwQFMAMBAf8wDQYJKoZI\nhvcNAQELBQADgYEAOmvre+5tgZ0+F3DgsfxNQqLTrGiBgGCIymPkP/cBXXkNuJyl\n3ac7tArHQc7WEA4U2R2rZbEq8FC3UJJm4nUVtCPvEh3G9OhN2xwYev79yt6pIn/l\nKU0Td2OpVyo0eLqjoX5u2G90IBWzhyjFbo+CcKMrSVKj1YOdG0E3OuiJf00=\n-----END CERTIFICATE-----"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "name", "test_name"),
 				),
@@ -137,7 +129,6 @@ func TestAccResourcePkiTP(t *testing.T) {
 				Config:             testConfigPkiTPReset,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "certificate_chain", "-----BEGIN CERTIFICATE-----\nMIICODCCAaGgAwIBAgIJAIt8XMntue0VMA0GCSqGSIb3DQEBCwUAMDQxDjAMBgNV\nBAMMBUFkbWluMRUwEwYDVQQKDAxZb3VyIENvbXBhbnkxCzAJBgNVBAYTAlVTMCAX\nDTE4MDEwOTAwNTk0NFoYDzIxMTcxMjE2MDA1OTQ0WjA0MQ4wDAYDVQQDDAVBZG1p\nbjEVMBMGA1UECgwMWW91ciBDb21wYW55MQswCQYDVQQGEwJVUzCBnzANBgkqhkiG\n9w0BAQEFAAOBjQAwgYkCgYEAohG/7axtt7CbSaMP7r+2mhTKbNgh0Ww36C7Ta14i\nv+VmLyKkQHnXinKGhp6uy3Nug+15a+eIu7CrgpBVMQeCiWfsnwRocKcQJWIYDrWl\nXHxGQn31yYKR6mylE7Dcj3rMFybnyhezr5D8GcP85YRPmwG9H2hO/0Y1FUnWu9Iw\nAQkCAwEAAaNQME4wHQYDVR0OBBYEFD0jLXfpkrU/ChzRvfruRs/fy1VXMB8GA1Ud\nIwQYMBaAFD0jLXfpkrU/ChzRvfruRs/fy1VXMAwGA1UdEwQFMAMBAf8wDQYJKoZI\nhvcNAQELBQADgYEAOmvre+5tgZ0+F3DgsfxNQqLTrGiBgGCIymPkP/cBXXkNuJyl\n3ac7tArHQc7WEA4U2R2rZbEq8FC3UJJm4nUVtCPvEh3G9OhN2xwYev79yt6pIn/l\nKU0Td2OpVyo0eLqjoX5u2G90IBWzhyjFbo+CcKMrSVKj1YOdG0E3OuiJf00=\n-----END CERTIFICATE-----"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotation", "orchestrator:terraform"),
@@ -154,7 +145,6 @@ func TestAccResourcePkiTP(t *testing.T) {
 				ImportStateVerify:       true,
 				ImportStateVerifyIgnore: []string{"parent_dn"},
 				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "certificate_chain", "-----BEGIN CERTIFICATE-----\nMIICODCCAaGgAwIBAgIJAIt8XMntue0VMA0GCSqGSIb3DQEBCwUAMDQxDjAMBgNV\nBAMMBUFkbWluMRUwEwYDVQQKDAxZb3VyIENvbXBhbnkxCzAJBgNVBAYTAlVTMCAX\nDTE4MDEwOTAwNTk0NFoYDzIxMTcxMjE2MDA1OTQ0WjA0MQ4wDAYDVQQDDAVBZG1p\nbjEVMBMGA1UECgwMWW91ciBDb21wYW55MQswCQYDVQQGEwJVUzCBnzANBgkqhkiG\n9w0BAQEFAAOBjQAwgYkCgYEAohG/7axtt7CbSaMP7r+2mhTKbNgh0Ww36C7Ta14i\nv+VmLyKkQHnXinKGhp6uy3Nug+15a+eIu7CrgpBVMQeCiWfsnwRocKcQJWIYDrWl\nXHxGQn31yYKR6mylE7Dcj3rMFybnyhezr5D8GcP85YRPmwG9H2hO/0Y1FUnWu9Iw\nAQkCAwEAAaNQME4wHQYDVR0OBBYEFD0jLXfpkrU/ChzRvfruRs/fy1VXMB8GA1Ud\nIwQYMBaAFD0jLXfpkrU/ChzRvfruRs/fy1VXMAwGA1UdEwQFMAMBAf8wDQYJKoZI\nhvcNAQELBQADgYEAOmvre+5tgZ0+F3DgsfxNQqLTrGiBgGCIymPkP/cBXXkNuJyl\n3ac7tArHQc7WEA4U2R2rZbEq8FC3UJJm4nUVtCPvEh3G9OhN2xwYev79yt6pIn/l\nKU0Td2OpVyo0eLqjoX5u2G90IBWzhyjFbo+CcKMrSVKj1YOdG0E3OuiJf00=\n-----END CERTIFICATE-----"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotation", "orchestrator:terraform"),
@@ -169,7 +159,6 @@ func TestAccResourcePkiTP(t *testing.T) {
 				Config:             testConfigPkiTPChildren,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "certificate_chain", "-----BEGIN CERTIFICATE-----\nMIICODCCAaGgAwIBAgIJAIt8XMntue0VMA0GCSqGSIb3DQEBCwUAMDQxDjAMBgNV\nBAMMBUFkbWluMRUwEwYDVQQKDAxZb3VyIENvbXBhbnkxCzAJBgNVBAYTAlVTMCAX\nDTE4MDEwOTAwNTk0NFoYDzIxMTcxMjE2MDA1OTQ0WjA0MQ4wDAYDVQQDDAVBZG1p\nbjEVMBMGA1UECgwMWW91ciBDb21wYW55MQswCQYDVQQGEwJVUzCBnzANBgkqhkiG\n9w0BAQEFAAOBjQAwgYkCgYEAohG/7axtt7CbSaMP7r+2mhTKbNgh0Ww36C7Ta14i\nv+VmLyKkQHnXinKGhp6uy3Nug+15a+eIu7CrgpBVMQeCiWfsnwRocKcQJWIYDrWl\nXHxGQn31yYKR6mylE7Dcj3rMFybnyhezr5D8GcP85YRPmwG9H2hO/0Y1FUnWu9Iw\nAQkCAwEAAaNQME4wHQYDVR0OBBYEFD0jLXfpkrU/ChzRvfruRs/fy1VXMB8GA1Ud\nIwQYMBaAFD0jLXfpkrU/ChzRvfruRs/fy1VXMAwGA1UdEwQFMAMBAf8wDQYJKoZI\nhvcNAQELBQADgYEAOmvre+5tgZ0+F3DgsfxNQqLTrGiBgGCIymPkP/cBXXkNuJyl\n3ac7tArHQc7WEA4U2R2rZbEq8FC3UJJm4nUVtCPvEh3G9OhN2xwYev79yt6pIn/l\nKU0Td2OpVyo0eLqjoX5u2G90IBWzhyjFbo+CcKMrSVKj1YOdG0E3OuiJf00=\n-----END CERTIFICATE-----"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotation", "orchestrator:terraform"),
@@ -221,7 +210,6 @@ func TestAccResourcePkiTP(t *testing.T) {
 				Config:             testConfigPkiTPChildrenRemoveFromConfig,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.key", "key_1"),
@@ -239,7 +227,6 @@ func TestAccResourcePkiTP(t *testing.T) {
 				Config:             testConfigPkiTPChildrenRemoveOne,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.#", "1"),
@@ -253,14 +240,12 @@ func TestAccResourcePkiTP(t *testing.T) {
 				Config:             testConfigPkiTPChildrenRemoveAll,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.#", "0"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.#", "0"),
 				),
 			},
 		},
 		CheckDestroy: resource.ComposeAggregateTestCheckFunc(
-			waitForApicBeforeRefresh,
 			testCheckResourceDestroy,
 		),
 	})
@@ -276,7 +261,6 @@ func TestAccResourcePkiTPWithFvTenant(t *testing.T) {
 				Config:             testConfigPkiTPMinDependencyWithFvTenantAllowExisting,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test_2", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotation", "orchestrator:terraform"),
@@ -303,10 +287,7 @@ func TestAccResourcePkiTPWithFvTenant(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config: testConfigPkiTPMinDependencyWithFvTenantAllowExisting,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
-				),
+				Config:      testConfigPkiTPMinDependencyWithFvTenantAllowExisting,
 				ExpectError: regexp.MustCompile("Object Already Exists"),
 			},
 		},
@@ -322,7 +303,6 @@ func TestAccResourcePkiTPWithFvTenant(t *testing.T) {
 				Config:             testConfigPkiTPMinDependencyWithFvTenantAllowExisting,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test_2", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotation", "orchestrator:terraform"),
@@ -351,7 +331,6 @@ func TestAccResourcePkiTPWithFvTenant(t *testing.T) {
 				Config:             testConfigPkiTPMinDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "certificate_chain", "-----BEGIN CERTIFICATE-----\nMIICODCCAaGgAwIBAgIJAIt8XMntue0VMA0GCSqGSIb3DQEBCwUAMDQxDjAMBgNV\nBAMMBUFkbWluMRUwEwYDVQQKDAxZb3VyIENvbXBhbnkxCzAJBgNVBAYTAlVTMCAX\nDTE4MDEwOTAwNTk0NFoYDzIxMTcxMjE2MDA1OTQ0WjA0MQ4wDAYDVQQDDAVBZG1p\nbjEVMBMGA1UECgwMWW91ciBDb21wYW55MQswCQYDVQQGEwJVUzCBnzANBgkqhkiG\n9w0BAQEFAAOBjQAwgYkCgYEAohG/7axtt7CbSaMP7r+2mhTKbNgh0Ww36C7Ta14i\nv+VmLyKkQHnXinKGhp6uy3Nug+15a+eIu7CrgpBVMQeCiWfsnwRocKcQJWIYDrWl\nXHxGQn31yYKR6mylE7Dcj3rMFybnyhezr5D8GcP85YRPmwG9H2hO/0Y1FUnWu9Iw\nAQkCAwEAAaNQME4wHQYDVR0OBBYEFD0jLXfpkrU/ChzRvfruRs/fy1VXMB8GA1Ud\nIwQYMBaAFD0jLXfpkrU/ChzRvfruRs/fy1VXMAwGA1UdEwQFMAMBAf8wDQYJKoZI\nhvcNAQELBQADgYEAOmvre+5tgZ0+F3DgsfxNQqLTrGiBgGCIymPkP/cBXXkNuJyl\n3ac7tArHQc7WEA4U2R2rZbEq8FC3UJJm4nUVtCPvEh3G9OhN2xwYev79yt6pIn/l\nKU0Td2OpVyo0eLqjoX5u2G90IBWzhyjFbo+CcKMrSVKj1YOdG0E3OuiJf00=\n-----END CERTIFICATE-----"),
@@ -366,7 +345,6 @@ func TestAccResourcePkiTPWithFvTenant(t *testing.T) {
 				Config:             testConfigPkiTPAllDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotation", "annotation"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "certificate_chain", "-----BEGIN CERTIFICATE-----\nMIICODCCAaGgAwIBAgIJAIt8XMntue0VMA0GCSqGSIb3DQEBCwUAMDQxDjAMBgNV\nBAMMBUFkbWluMRUwEwYDVQQKDAxZb3VyIENvbXBhbnkxCzAJBgNVBAYTAlVTMCAX\nDTE4MDEwOTAwNTk0NFoYDzIxMTcxMjE2MDA1OTQ0WjA0MQ4wDAYDVQQDDAVBZG1p\nbjEVMBMGA1UECgwMWW91ciBDb21wYW55MQswCQYDVQQGEwJVUzCBnzANBgkqhkiG\n9w0BAQEFAAOBjQAwgYkCgYEAohG/7axtt7CbSaMP7r+2mhTKbNgh0Ww36C7Ta14i\nv+VmLyKkQHnXinKGhp6uy3Nug+15a+eIu7CrgpBVMQeCiWfsnwRocKcQJWIYDrWl\nXHxGQn31yYKR6mylE7Dcj3rMFybnyhezr5D8GcP85YRPmwG9H2hO/0Y1FUnWu9Iw\nAQkCAwEAAaNQME4wHQYDVR0OBBYEFD0jLXfpkrU/ChzRvfruRs/fy1VXMB8GA1Ud\nIwQYMBaAFD0jLXfpkrU/ChzRvfruRs/fy1VXMAwGA1UdEwQFMAMBAf8wDQYJKoZI\nhvcNAQELBQADgYEAOmvre+5tgZ0+F3DgsfxNQqLTrGiBgGCIymPkP/cBXXkNuJyl\n3ac7tArHQc7WEA4U2R2rZbEq8FC3UJJm4nUVtCPvEh3G9OhN2xwYev79yt6pIn/l\nKU0Td2OpVyo0eLqjoX5u2G90IBWzhyjFbo+CcKMrSVKj1YOdG0E3OuiJf00=\n-----END CERTIFICATE-----"),
@@ -381,7 +359,6 @@ func TestAccResourcePkiTPWithFvTenant(t *testing.T) {
 				Config:             testConfigPkiTPMinDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "certificate_chain", "-----BEGIN CERTIFICATE-----\nMIICODCCAaGgAwIBAgIJAIt8XMntue0VMA0GCSqGSIb3DQEBCwUAMDQxDjAMBgNV\nBAMMBUFkbWluMRUwEwYDVQQKDAxZb3VyIENvbXBhbnkxCzAJBgNVBAYTAlVTMCAX\nDTE4MDEwOTAwNTk0NFoYDzIxMTcxMjE2MDA1OTQ0WjA0MQ4wDAYDVQQDDAVBZG1p\nbjEVMBMGA1UECgwMWW91ciBDb21wYW55MQswCQYDVQQGEwJVUzCBnzANBgkqhkiG\n9w0BAQEFAAOBjQAwgYkCgYEAohG/7axtt7CbSaMP7r+2mhTKbNgh0Ww36C7Ta14i\nv+VmLyKkQHnXinKGhp6uy3Nug+15a+eIu7CrgpBVMQeCiWfsnwRocKcQJWIYDrWl\nXHxGQn31yYKR6mylE7Dcj3rMFybnyhezr5D8GcP85YRPmwG9H2hO/0Y1FUnWu9Iw\nAQkCAwEAAaNQME4wHQYDVR0OBBYEFD0jLXfpkrU/ChzRvfruRs/fy1VXMB8GA1Ud\nIwQYMBaAFD0jLXfpkrU/ChzRvfruRs/fy1VXMAwGA1UdEwQFMAMBAf8wDQYJKoZI\nhvcNAQELBQADgYEAOmvre+5tgZ0+F3DgsfxNQqLTrGiBgGCIymPkP/cBXXkNuJyl\n3ac7tArHQc7WEA4U2R2rZbEq8FC3UJJm4nUVtCPvEh3G9OhN2xwYev79yt6pIn/l\nKU0Td2OpVyo0eLqjoX5u2G90IBWzhyjFbo+CcKMrSVKj1YOdG0E3OuiJf00=\n-----END CERTIFICATE-----"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "name", "test_name"),
 				),
@@ -391,7 +368,6 @@ func TestAccResourcePkiTPWithFvTenant(t *testing.T) {
 				Config:             testConfigPkiTPResetDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "certificate_chain", "-----BEGIN CERTIFICATE-----\nMIICODCCAaGgAwIBAgIJAIt8XMntue0VMA0GCSqGSIb3DQEBCwUAMDQxDjAMBgNV\nBAMMBUFkbWluMRUwEwYDVQQKDAxZb3VyIENvbXBhbnkxCzAJBgNVBAYTAlVTMCAX\nDTE4MDEwOTAwNTk0NFoYDzIxMTcxMjE2MDA1OTQ0WjA0MQ4wDAYDVQQDDAVBZG1p\nbjEVMBMGA1UECgwMWW91ciBDb21wYW55MQswCQYDVQQGEwJVUzCBnzANBgkqhkiG\n9w0BAQEFAAOBjQAwgYkCgYEAohG/7axtt7CbSaMP7r+2mhTKbNgh0Ww36C7Ta14i\nv+VmLyKkQHnXinKGhp6uy3Nug+15a+eIu7CrgpBVMQeCiWfsnwRocKcQJWIYDrWl\nXHxGQn31yYKR6mylE7Dcj3rMFybnyhezr5D8GcP85YRPmwG9H2hO/0Y1FUnWu9Iw\nAQkCAwEAAaNQME4wHQYDVR0OBBYEFD0jLXfpkrU/ChzRvfruRs/fy1VXMB8GA1Ud\nIwQYMBaAFD0jLXfpkrU/ChzRvfruRs/fy1VXMAwGA1UdEwQFMAMBAf8wDQYJKoZI\nhvcNAQELBQADgYEAOmvre+5tgZ0+F3DgsfxNQqLTrGiBgGCIymPkP/cBXXkNuJyl\n3ac7tArHQc7WEA4U2R2rZbEq8FC3UJJm4nUVtCPvEh3G9OhN2xwYev79yt6pIn/l\nKU0Td2OpVyo0eLqjoX5u2G90IBWzhyjFbo+CcKMrSVKj1YOdG0E3OuiJf00=\n-----END CERTIFICATE-----"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotation", "orchestrator:terraform"),
@@ -408,7 +384,6 @@ func TestAccResourcePkiTPWithFvTenant(t *testing.T) {
 				ImportStateVerify:       true,
 				ImportStateVerifyIgnore: []string{"parent_dn"},
 				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "certificate_chain", "-----BEGIN CERTIFICATE-----\nMIICODCCAaGgAwIBAgIJAIt8XMntue0VMA0GCSqGSIb3DQEBCwUAMDQxDjAMBgNV\nBAMMBUFkbWluMRUwEwYDVQQKDAxZb3VyIENvbXBhbnkxCzAJBgNVBAYTAlVTMCAX\nDTE4MDEwOTAwNTk0NFoYDzIxMTcxMjE2MDA1OTQ0WjA0MQ4wDAYDVQQDDAVBZG1p\nbjEVMBMGA1UECgwMWW91ciBDb21wYW55MQswCQYDVQQGEwJVUzCBnzANBgkqhkiG\n9w0BAQEFAAOBjQAwgYkCgYEAohG/7axtt7CbSaMP7r+2mhTKbNgh0Ww36C7Ta14i\nv+VmLyKkQHnXinKGhp6uy3Nug+15a+eIu7CrgpBVMQeCiWfsnwRocKcQJWIYDrWl\nXHxGQn31yYKR6mylE7Dcj3rMFybnyhezr5D8GcP85YRPmwG9H2hO/0Y1FUnWu9Iw\nAQkCAwEAAaNQME4wHQYDVR0OBBYEFD0jLXfpkrU/ChzRvfruRs/fy1VXMB8GA1Ud\nIwQYMBaAFD0jLXfpkrU/ChzRvfruRs/fy1VXMAwGA1UdEwQFMAMBAf8wDQYJKoZI\nhvcNAQELBQADgYEAOmvre+5tgZ0+F3DgsfxNQqLTrGiBgGCIymPkP/cBXXkNuJyl\n3ac7tArHQc7WEA4U2R2rZbEq8FC3UJJm4nUVtCPvEh3G9OhN2xwYev79yt6pIn/l\nKU0Td2OpVyo0eLqjoX5u2G90IBWzhyjFbo+CcKMrSVKj1YOdG0E3OuiJf00=\n-----END CERTIFICATE-----"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotation", "orchestrator:terraform"),
@@ -423,7 +398,6 @@ func TestAccResourcePkiTPWithFvTenant(t *testing.T) {
 				Config:             testConfigPkiTPChildrenDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "certificate_chain", "-----BEGIN CERTIFICATE-----\nMIICODCCAaGgAwIBAgIJAIt8XMntue0VMA0GCSqGSIb3DQEBCwUAMDQxDjAMBgNV\nBAMMBUFkbWluMRUwEwYDVQQKDAxZb3VyIENvbXBhbnkxCzAJBgNVBAYTAlVTMCAX\nDTE4MDEwOTAwNTk0NFoYDzIxMTcxMjE2MDA1OTQ0WjA0MQ4wDAYDVQQDDAVBZG1p\nbjEVMBMGA1UECgwMWW91ciBDb21wYW55MQswCQYDVQQGEwJVUzCBnzANBgkqhkiG\n9w0BAQEFAAOBjQAwgYkCgYEAohG/7axtt7CbSaMP7r+2mhTKbNgh0Ww36C7Ta14i\nv+VmLyKkQHnXinKGhp6uy3Nug+15a+eIu7CrgpBVMQeCiWfsnwRocKcQJWIYDrWl\nXHxGQn31yYKR6mylE7Dcj3rMFybnyhezr5D8GcP85YRPmwG9H2hO/0Y1FUnWu9Iw\nAQkCAwEAAaNQME4wHQYDVR0OBBYEFD0jLXfpkrU/ChzRvfruRs/fy1VXMB8GA1Ud\nIwQYMBaAFD0jLXfpkrU/ChzRvfruRs/fy1VXMAwGA1UdEwQFMAMBAf8wDQYJKoZI\nhvcNAQELBQADgYEAOmvre+5tgZ0+F3DgsfxNQqLTrGiBgGCIymPkP/cBXXkNuJyl\n3ac7tArHQc7WEA4U2R2rZbEq8FC3UJJm4nUVtCPvEh3G9OhN2xwYev79yt6pIn/l\nKU0Td2OpVyo0eLqjoX5u2G90IBWzhyjFbo+CcKMrSVKj1YOdG0E3OuiJf00=\n-----END CERTIFICATE-----"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotation", "orchestrator:terraform"),
@@ -475,7 +449,6 @@ func TestAccResourcePkiTPWithFvTenant(t *testing.T) {
 				Config:             testConfigPkiTPChildrenRemoveFromConfigDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.key", "key_1"),
@@ -493,7 +466,6 @@ func TestAccResourcePkiTPWithFvTenant(t *testing.T) {
 				Config:             testConfigPkiTPChildrenRemoveOneDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.#", "1"),
@@ -507,14 +479,12 @@ func TestAccResourcePkiTPWithFvTenant(t *testing.T) {
 				Config:             testConfigPkiTPChildrenRemoveAllDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					waitForApicBeforeRefresh,
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.#", "0"),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.#", "0"),
 				),
 			},
 		},
 		CheckDestroy: resource.ComposeAggregateTestCheckFunc(
-			waitForApicBeforeRefresh,
 			testCheckResourceDestroy,
 		),
 	})

@@ -250,7 +250,7 @@ func (r *NetflowRsMonitorToExporterResource) Create(ctx context.Context, req res
 		setNetflowRsMonitorToExporterId(ctx, data)
 	}
 
-	setNetflowRsMonitorToExporterId(ctx, data)
+	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_relation_to_netflow_exporter with id '%s'", data.Id.ValueString()))
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationNetflowRsMonitorToExporterResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)

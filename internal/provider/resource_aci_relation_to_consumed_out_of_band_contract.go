@@ -265,7 +265,7 @@ func (r *MgmtRsOoBConsResource) Create(ctx context.Context, req resource.CreateR
 		setMgmtRsOoBConsId(ctx, data)
 	}
 
-	setMgmtRsOoBConsId(ctx, data)
+	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_relation_to_consumed_out_of_band_contract with id '%s'", data.Id.ValueString()))
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationMgmtRsOoBConsResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)

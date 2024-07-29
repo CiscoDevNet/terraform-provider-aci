@@ -291,7 +291,7 @@ func (r *FvEpMacTagResource) Create(ctx context.Context, req resource.CreateRequ
 		setFvEpMacTagId(ctx, data)
 	}
 
-	setFvEpMacTagId(ctx, data)
+	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_endpoint_tag_mac with id '%s'", data.Id.ValueString()))
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationFvEpMacTagResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)

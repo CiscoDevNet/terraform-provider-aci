@@ -257,7 +257,7 @@ var targetRelationalPropertyClasses = map[string]string{}
 var alwaysIncludeChildren = []string{"tag:Annotation", "tag:Tag"}
 var excludeChildResourceNamesFromDocs = []string{"", "annotation", "tag"}
 var testCloudApic, testApic, resourceIdentifier, excludeResources []interface{}
-var multiLineTypes = []string{"pkiCert", "pkiPrivateKey"}
+var alwaysMultiLineTypes = []string{"pkiCert", "pkiPrivateKey"}
 
 func GetResourceNameAsDescription(s string, definitions Definitions) string {
 	resourceName := cases.Title(language.English).String(strings.ReplaceAll(s, "_", " "))
@@ -327,7 +327,7 @@ func ListToString(stringList []string) string {
 
 func isMultiLine(propertyName, classPkgName string, definitions Definitions, modelProperties map[string]Property) bool {
 	for _, property := range modelProperties {
-		if propertyName == property.SnakeCaseName && slices.Contains(multiLineTypes, property.ModelType) {
+		if propertyName == property.SnakeCaseName && slices.Contains(alwaysMultiLineTypes, property.ModelType) {
 			return true
 		}
 	}
