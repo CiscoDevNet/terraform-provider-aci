@@ -150,7 +150,7 @@ func (d *FvIpAttrDataSource) Read(ctx context.Context, req datasource.ReadReques
 		return
 	}
 
-	setFvIpAttrId(ctx, data)
+	SetFvIpAttrId(ctx, data)
 
 	// Create a copy of the Id for when not found during getAndSetFvIpAttrAttributes
 	cachedId := data.Id.ValueString()

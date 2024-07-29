@@ -142,7 +142,7 @@ func (d *FvRsNodeAttDataSource) Read(ctx context.Context, req datasource.ReadReq
 		return
 	}
 
-	setFvRsNodeAttId(ctx, data)
+	SetFvRsNodeAttId(ctx, data)
 
 	// Create a copy of the Id for when not found during getAndSetFvRsNodeAttAttributes
 	cachedId := data.Id.ValueString()

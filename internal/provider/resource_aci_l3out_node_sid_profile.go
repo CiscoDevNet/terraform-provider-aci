@@ -302,7 +302,7 @@ func (r *MplsNodeSidPResource) Create(ctx context.Context, req resource.CreateRe
 	var stateData *MplsNodeSidPResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
 	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
-		setMplsNodeSidPId(ctx, stateData)
+		SetMplsNodeSidPId(ctx, stateData)
 	}
 	getAndSetMplsNodeSidPAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
@@ -323,7 +323,7 @@ func (r *MplsNodeSidPResource) Create(ctx context.Context, req resource.CreateRe
 	}
 
 	if data.Id.IsUnknown() || data.Id.IsNull() {
-		setMplsNodeSidPId(ctx, data)
+		SetMplsNodeSidPId(ctx, data)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_l3out_node_sid_profile with id '%s'", data.Id.ValueString()))
@@ -334,7 +334,7 @@ func (r *MplsNodeSidPResource) Create(ctx context.Context, req resource.CreateRe
 	var tagTagPlan, tagTagState []TagTagMplsNodeSidPResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getMplsNodeSidPCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetMplsNodeSidPCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -399,7 +399,7 @@ func (r *MplsNodeSidPResource) Update(ctx context.Context, req resource.UpdateRe
 	var tagTagPlan, tagTagState []TagTagMplsNodeSidPResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getMplsNodeSidPCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetMplsNodeSidPCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -564,7 +564,7 @@ func setMplsNodeSidPParentDn(ctx context.Context, dn string, data *MplsNodeSidPR
 	data.ParentDn = basetypes.NewStringValue(dn[:rnIndex])
 }
 
-func setMplsNodeSidPId(ctx context.Context, data *MplsNodeSidPResourceModel) {
+func SetMplsNodeSidPId(ctx context.Context, data *MplsNodeSidPResourceModel) {
 	rn := getMplsNodeSidPRn(ctx, data)
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
@@ -648,7 +648,7 @@ func getMplsNodeSidPTagTagChildPayloads(ctx context.Context, diags *diag.Diagnos
 	return childPayloads
 }
 
-func getMplsNodeSidPCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *MplsNodeSidPResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationMplsNodeSidPResourceModel, tagTagPlan, tagTagState []TagTagMplsNodeSidPResourceModel) *container.Container {
+func GetMplsNodeSidPCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *MplsNodeSidPResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationMplsNodeSidPResourceModel, tagTagPlan, tagTagState []TagTagMplsNodeSidPResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 

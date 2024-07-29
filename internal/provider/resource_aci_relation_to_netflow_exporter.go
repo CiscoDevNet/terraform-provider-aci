@@ -258,7 +258,7 @@ func (r *NetflowRsMonitorToExporterResource) Create(ctx context.Context, req res
 	var stateData *NetflowRsMonitorToExporterResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
 	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
-		setNetflowRsMonitorToExporterId(ctx, stateData)
+		SetNetflowRsMonitorToExporterId(ctx, stateData)
 	}
 	getAndSetNetflowRsMonitorToExporterAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
@@ -279,7 +279,7 @@ func (r *NetflowRsMonitorToExporterResource) Create(ctx context.Context, req res
 	}
 
 	if data.Id.IsUnknown() || data.Id.IsNull() {
-		setNetflowRsMonitorToExporterId(ctx, data)
+		SetNetflowRsMonitorToExporterId(ctx, data)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_relation_to_netflow_exporter with id '%s'", data.Id.ValueString()))
@@ -290,7 +290,7 @@ func (r *NetflowRsMonitorToExporterResource) Create(ctx context.Context, req res
 	var tagTagPlan, tagTagState []TagTagNetflowRsMonitorToExporterResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getNetflowRsMonitorToExporterCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetNetflowRsMonitorToExporterCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -355,7 +355,7 @@ func (r *NetflowRsMonitorToExporterResource) Update(ctx context.Context, req res
 	var tagTagPlan, tagTagState []TagTagNetflowRsMonitorToExporterResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getNetflowRsMonitorToExporterCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetNetflowRsMonitorToExporterCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -508,7 +508,7 @@ func setNetflowRsMonitorToExporterParentDn(ctx context.Context, dn string, data 
 	data.ParentDn = basetypes.NewStringValue(dn[:rnIndex])
 }
 
-func setNetflowRsMonitorToExporterId(ctx context.Context, data *NetflowRsMonitorToExporterResourceModel) {
+func SetNetflowRsMonitorToExporterId(ctx context.Context, data *NetflowRsMonitorToExporterResourceModel) {
 	rn := getNetflowRsMonitorToExporterRn(ctx, data)
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
@@ -592,7 +592,7 @@ func getNetflowRsMonitorToExporterTagTagChildPayloads(ctx context.Context, diags
 	return childPayloads
 }
 
-func getNetflowRsMonitorToExporterCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *NetflowRsMonitorToExporterResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationNetflowRsMonitorToExporterResourceModel, tagTagPlan, tagTagState []TagTagNetflowRsMonitorToExporterResourceModel) *container.Container {
+func GetNetflowRsMonitorToExporterCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *NetflowRsMonitorToExporterResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationNetflowRsMonitorToExporterResourceModel, tagTagPlan, tagTagState []TagTagNetflowRsMonitorToExporterResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 

@@ -258,7 +258,7 @@ func (r *FvRsProtByResource) Create(ctx context.Context, req resource.CreateRequ
 	var stateData *FvRsProtByResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
 	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
-		setFvRsProtById(ctx, stateData)
+		SetFvRsProtById(ctx, stateData)
 	}
 	getAndSetFvRsProtByAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
@@ -279,7 +279,7 @@ func (r *FvRsProtByResource) Create(ctx context.Context, req resource.CreateRequ
 	}
 
 	if data.Id.IsUnknown() || data.Id.IsNull() {
-		setFvRsProtById(ctx, data)
+		SetFvRsProtById(ctx, data)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_relation_to_taboo_contract with id '%s'", data.Id.ValueString()))
@@ -290,7 +290,7 @@ func (r *FvRsProtByResource) Create(ctx context.Context, req resource.CreateRequ
 	var tagTagPlan, tagTagState []TagTagFvRsProtByResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvRsProtByCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetFvRsProtByCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -355,7 +355,7 @@ func (r *FvRsProtByResource) Update(ctx context.Context, req resource.UpdateRequ
 	var tagTagPlan, tagTagState []TagTagFvRsProtByResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvRsProtByCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetFvRsProtByCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -508,7 +508,7 @@ func setFvRsProtByParentDn(ctx context.Context, dn string, data *FvRsProtByResou
 	data.ParentDn = basetypes.NewStringValue(dn[:rnIndex])
 }
 
-func setFvRsProtById(ctx context.Context, data *FvRsProtByResourceModel) {
+func SetFvRsProtById(ctx context.Context, data *FvRsProtByResourceModel) {
 	rn := getFvRsProtByRn(ctx, data)
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
@@ -592,7 +592,7 @@ func getFvRsProtByTagTagChildPayloads(ctx context.Context, diags *diag.Diagnosti
 	return childPayloads
 }
 
-func getFvRsProtByCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *FvRsProtByResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvRsProtByResourceModel, tagTagPlan, tagTagState []TagTagFvRsProtByResourceModel) *container.Container {
+func GetFvRsProtByCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *FvRsProtByResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvRsProtByResourceModel, tagTagPlan, tagTagState []TagTagFvRsProtByResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 

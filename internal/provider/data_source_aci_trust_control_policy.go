@@ -166,7 +166,7 @@ func (d *FhsTrustCtrlPolDataSource) Read(ctx context.Context, req datasource.Rea
 		return
 	}
 
-	setFhsTrustCtrlPolId(ctx, data)
+	SetFhsTrustCtrlPolId(ctx, data)
 
 	// Create a copy of the Id for when not found during getAndSetFhsTrustCtrlPolAttributes
 	cachedId := data.Id.ValueString()

@@ -313,7 +313,7 @@ func (r *FvIdGroupAttrResource) Create(ctx context.Context, req resource.CreateR
 	var stateData *FvIdGroupAttrResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
 	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
-		setFvIdGroupAttrId(ctx, stateData)
+		SetFvIdGroupAttrId(ctx, stateData)
 	}
 	getAndSetFvIdGroupAttrAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
@@ -334,7 +334,7 @@ func (r *FvIdGroupAttrResource) Create(ctx context.Context, req resource.CreateR
 	}
 
 	if data.Id.IsUnknown() || data.Id.IsNull() {
-		setFvIdGroupAttrId(ctx, data)
+		SetFvIdGroupAttrId(ctx, data)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_epg_useg_ad_group_attribute with id '%s'", data.Id.ValueString()))
@@ -345,7 +345,7 @@ func (r *FvIdGroupAttrResource) Create(ctx context.Context, req resource.CreateR
 	var tagTagPlan, tagTagState []TagTagFvIdGroupAttrResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvIdGroupAttrCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetFvIdGroupAttrCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -410,7 +410,7 @@ func (r *FvIdGroupAttrResource) Update(ctx context.Context, req resource.UpdateR
 	var tagTagPlan, tagTagState []TagTagFvIdGroupAttrResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvIdGroupAttrCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetFvIdGroupAttrCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -578,7 +578,7 @@ func setFvIdGroupAttrParentDn(ctx context.Context, dn string, data *FvIdGroupAtt
 	data.ParentDn = basetypes.NewStringValue(dn[:rnIndex])
 }
 
-func setFvIdGroupAttrId(ctx context.Context, data *FvIdGroupAttrResourceModel) {
+func SetFvIdGroupAttrId(ctx context.Context, data *FvIdGroupAttrResourceModel) {
 	rn := getFvIdGroupAttrRn(ctx, data)
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
@@ -662,7 +662,7 @@ func getFvIdGroupAttrTagTagChildPayloads(ctx context.Context, diags *diag.Diagno
 	return childPayloads
 }
 
-func getFvIdGroupAttrCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *FvIdGroupAttrResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvIdGroupAttrResourceModel, tagTagPlan, tagTagState []TagTagFvIdGroupAttrResourceModel) *container.Container {
+func GetFvIdGroupAttrCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *FvIdGroupAttrResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvIdGroupAttrResourceModel, tagTagPlan, tagTagState []TagTagFvIdGroupAttrResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 

@@ -94,7 +94,7 @@ func (d *TagTagDataSource) Read(ctx context.Context, req datasource.ReadRequest,
 		return
 	}
 
-	setTagTagId(ctx, data)
+	SetTagTagId(ctx, data)
 
 	// Create a copy of the Id for when not found during getAndSetTagTagAttributes
 	cachedId := data.Id.ValueString()

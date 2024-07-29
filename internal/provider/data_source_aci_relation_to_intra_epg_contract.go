@@ -126,7 +126,7 @@ func (d *FvRsIntraEpgDataSource) Read(ctx context.Context, req datasource.ReadRe
 		return
 	}
 
-	setFvRsIntraEpgId(ctx, data)
+	SetFvRsIntraEpgId(ctx, data)
 
 	// Create a copy of the Id for when not found during getAndSetFvRsIntraEpgAttributes
 	cachedId := data.Id.ValueString()

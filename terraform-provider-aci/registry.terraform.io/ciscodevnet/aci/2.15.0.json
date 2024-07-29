@@ -1,0 +1,10 @@
+{
+  "archives": {
+    "darwin_arm64": {
+      "hashes": [
+        "h1:1KNQy+3Y7h7dI3ORPK/M/iC/cOTlOerMilyJ/t/bYcY="
+      ],
+      "url": "terraform-provider-aci_2.15.0_darwin_arm64.zip"
+    }
+  }
+}

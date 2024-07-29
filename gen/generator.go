@@ -71,6 +71,7 @@ const (
 	resourcesDocsPath       = "./docs/resources"
 	datasourcesDocsPath     = "./docs/data-sources"
 	providerPath            = "./internal/provider/"
+	conversionPath          = "./convert_funcs/"
 )
 
 const providerName = "aci"
@@ -80,6 +81,7 @@ const pubhupDevnetBaseUrl = "https://pubhub.devnetcloud.com/media/model-doc-late
 // The map contains a key which is the name of the function used in the template and a value which is the function itself
 // The functions itself are defined in the current file
 var templateFuncs = template.FuncMap{
+	"lowercaseFirst":                    LowercaseFirst,
 	"snakeCase":                         Underscore,
 	"validatorString":                   ValidatorString,
 	"containsString":                    ContainsString,
@@ -473,6 +475,13 @@ func getTestVars(model Model) (map[string]interface{}, error) {
 	return testVarsMap, nil
 }
 
+func LowercaseFirst(s string) string {
+	if len(s) == 0 {
+		return s
+	}
+	return strings.ToLower(s[:1]) + s[1:]
+}
+
 // Retrieves the property and classs overwrite definitions from the definitions YAML files
 func getDefinitions() Definitions {
 	definitions := Definitions{}
@@ -587,6 +596,9 @@ func cleanDirectories() {
 	os.Mkdir(resourcesExamplesPath, 0755)
 	os.RemoveAll(datasourcesExamplesPath)
 	os.Mkdir(datasourcesExamplesPath, 0755)
+	// Converter directory
+	os.RemoveAll(conversionPath)
+	os.Mkdir(conversionPath, 0755)
 
 	// Migrate legacy documentation directory ( /website/docs ) format ( .html.markdown ) to new documentation directory ( /docs ) and format ( .md )
 	migrateLegacyDocumentation()
@@ -773,7 +785,7 @@ func main() {
 			renderTemplate("datasource.md.tmpl", fmt.Sprintf("%s.md", model.ResourceName), datasourcesDocsPath, model)
 			renderTemplate("resource_test.go.tmpl", fmt.Sprintf("resource_%s_%s_test.go", providerName, model.ResourceName), providerPath, model)
 			renderTemplate("datasource_test.go.tmpl", fmt.Sprintf("data_source_%s_%s_test.go", providerName, model.ResourceName), providerPath, model)
-
+			renderTemplate("conversion.go.tmpl", fmt.Sprintf("conversion_%s.go", model.ResourceName), conversionPath, model)
 		}
 	}
 

@@ -142,7 +142,7 @@ func (d *MplsNodeSidPDataSource) Read(ctx context.Context, req datasource.ReadRe
 		return
 	}
 
-	setMplsNodeSidPId(ctx, data)
+	SetMplsNodeSidPId(ctx, data)
 
 	// Create a copy of the Id for when not found during getAndSetMplsNodeSidPAttributes
 	cachedId := data.Id.ValueString()

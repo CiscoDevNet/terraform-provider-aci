@@ -3931,7 +3931,7 @@ func (r *FvAEPgResource) Create(ctx context.Context, req resource.CreateRequest,
 	var stateData *FvAEPgResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
 	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
-		setFvAEPgId(ctx, stateData)
+		SetFvAEPgId(ctx, stateData)
 	}
 	getAndSetFvAEPgAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
@@ -3952,7 +3952,7 @@ func (r *FvAEPgResource) Create(ctx context.Context, req resource.CreateRequest,
 	}
 
 	if data.Id.IsUnknown() || data.Id.IsNull() {
-		setFvAEPgId(ctx, data)
+		SetFvAEPgId(ctx, data)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_application_epg with id '%s'", data.Id.ValueString()))
@@ -4011,7 +4011,7 @@ func (r *FvAEPgResource) Create(ctx context.Context, req resource.CreateRequest,
 	var tagTagPlan, tagTagState []TagTagFvAEPgResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvAEPgCreateJsonPayload(ctx, &resp.Diagnostics, true, data, fvCrtrnPlan, fvCrtrnState, fvRsAEPgMonPolPlan, fvRsAEPgMonPolState, fvRsBdPlan, fvRsBdState, fvRsConsPlan, fvRsConsState, fvRsConsIfPlan, fvRsConsIfState, fvRsCustQosPolPlan, fvRsCustQosPolState, fvRsDomAttPlan, fvRsDomAttState, fvRsDppPolPlan, fvRsDppPolState, fvRsFcPathAttPlan, fvRsFcPathAttState, fvRsIntraEpgPlan, fvRsIntraEpgState, fvRsNodeAttPlan, fvRsNodeAttState, fvRsPathAttPlan, fvRsPathAttState, fvRsProtByPlan, fvRsProtByState, fvRsProvPlan, fvRsProvState, fvRsSecInheritedPlan, fvRsSecInheritedState, fvRsTrustCtrlPlan, fvRsTrustCtrlState, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetFvAEPgCreateJsonPayload(ctx, &resp.Diagnostics, true, data, fvCrtrnPlan, fvCrtrnState, fvRsAEPgMonPolPlan, fvRsAEPgMonPolState, fvRsBdPlan, fvRsBdState, fvRsConsPlan, fvRsConsState, fvRsConsIfPlan, fvRsConsIfState, fvRsCustQosPolPlan, fvRsCustQosPolState, fvRsDomAttPlan, fvRsDomAttState, fvRsDppPolPlan, fvRsDppPolState, fvRsFcPathAttPlan, fvRsFcPathAttState, fvRsIntraEpgPlan, fvRsIntraEpgState, fvRsNodeAttPlan, fvRsNodeAttState, fvRsPathAttPlan, fvRsPathAttState, fvRsProtByPlan, fvRsProtByState, fvRsProvPlan, fvRsProvState, fvRsSecInheritedPlan, fvRsSecInheritedState, fvRsTrustCtrlPlan, fvRsTrustCtrlState, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -4124,7 +4124,7 @@ func (r *FvAEPgResource) Update(ctx context.Context, req resource.UpdateRequest,
 	var tagTagPlan, tagTagState []TagTagFvAEPgResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvAEPgCreateJsonPayload(ctx, &resp.Diagnostics, false, data, fvCrtrnPlan, fvCrtrnState, fvRsAEPgMonPolPlan, fvRsAEPgMonPolState, fvRsBdPlan, fvRsBdState, fvRsConsPlan, fvRsConsState, fvRsConsIfPlan, fvRsConsIfState, fvRsCustQosPolPlan, fvRsCustQosPolState, fvRsDomAttPlan, fvRsDomAttState, fvRsDppPolPlan, fvRsDppPolState, fvRsFcPathAttPlan, fvRsFcPathAttState, fvRsIntraEpgPlan, fvRsIntraEpgState, fvRsNodeAttPlan, fvRsNodeAttState, fvRsPathAttPlan, fvRsPathAttState, fvRsProtByPlan, fvRsProtByState, fvRsProvPlan, fvRsProvState, fvRsSecInheritedPlan, fvRsSecInheritedState, fvRsTrustCtrlPlan, fvRsTrustCtrlState, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetFvAEPgCreateJsonPayload(ctx, &resp.Diagnostics, false, data, fvCrtrnPlan, fvCrtrnState, fvRsAEPgMonPolPlan, fvRsAEPgMonPolState, fvRsBdPlan, fvRsBdState, fvRsConsPlan, fvRsConsState, fvRsConsIfPlan, fvRsConsIfState, fvRsCustQosPolPlan, fvRsCustQosPolState, fvRsDomAttPlan, fvRsDomAttState, fvRsDppPolPlan, fvRsDppPolState, fvRsFcPathAttPlan, fvRsFcPathAttState, fvRsIntraEpgPlan, fvRsIntraEpgState, fvRsNodeAttPlan, fvRsNodeAttState, fvRsPathAttPlan, fvRsPathAttState, fvRsProtByPlan, fvRsProtByState, fvRsProvPlan, fvRsProvState, fvRsSecInheritedPlan, fvRsSecInheritedState, fvRsTrustCtrlPlan, fvRsTrustCtrlState, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -4704,7 +4704,7 @@ func setFvAEPgParentDn(ctx context.Context, dn string, data *FvAEPgResourceModel
 	data.ParentDn = basetypes.NewStringValue(dn[:rnIndex])
 }
 
-func setFvAEPgId(ctx context.Context, data *FvAEPgResourceModel) {
+func SetFvAEPgId(ctx context.Context, data *FvAEPgResourceModel) {
 	rn := getFvAEPgRn(ctx, data)
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
@@ -5505,7 +5505,7 @@ func getFvAEPgTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, 
 	return childPayloads
 }
 
-func getFvAEPgCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *FvAEPgResourceModel, fvCrtrnPlan, fvCrtrnState []FvCrtrnFvAEPgResourceModel, fvRsAEPgMonPolPlan, fvRsAEPgMonPolState []FvRsAEPgMonPolFvAEPgResourceModel, fvRsBdPlan, fvRsBdState []FvRsBdFvAEPgResourceModel, fvRsConsPlan, fvRsConsState []FvRsConsFvAEPgResourceModel, fvRsConsIfPlan, fvRsConsIfState []FvRsConsIfFvAEPgResourceModel, fvRsCustQosPolPlan, fvRsCustQosPolState []FvRsCustQosPolFvAEPgResourceModel, fvRsDomAttPlan, fvRsDomAttState []FvRsDomAttFvAEPgResourceModel, fvRsDppPolPlan, fvRsDppPolState []FvRsDppPolFvAEPgResourceModel, fvRsFcPathAttPlan, fvRsFcPathAttState []FvRsFcPathAttFvAEPgResourceModel, fvRsIntraEpgPlan, fvRsIntraEpgState []FvRsIntraEpgFvAEPgResourceModel, fvRsNodeAttPlan, fvRsNodeAttState []FvRsNodeAttFvAEPgResourceModel, fvRsPathAttPlan, fvRsPathAttState []FvRsPathAttFvAEPgResourceModel, fvRsProtByPlan, fvRsProtByState []FvRsProtByFvAEPgResourceModel, fvRsProvPlan, fvRsProvState []FvRsProvFvAEPgResourceModel, fvRsSecInheritedPlan, fvRsSecInheritedState []FvRsSecInheritedFvAEPgResourceModel, fvRsTrustCtrlPlan, fvRsTrustCtrlState []FvRsTrustCtrlFvAEPgResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvAEPgResourceModel, tagTagPlan, tagTagState []TagTagFvAEPgResourceModel) *container.Container {
+func GetFvAEPgCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *FvAEPgResourceModel, fvCrtrnPlan, fvCrtrnState []FvCrtrnFvAEPgResourceModel, fvRsAEPgMonPolPlan, fvRsAEPgMonPolState []FvRsAEPgMonPolFvAEPgResourceModel, fvRsBdPlan, fvRsBdState []FvRsBdFvAEPgResourceModel, fvRsConsPlan, fvRsConsState []FvRsConsFvAEPgResourceModel, fvRsConsIfPlan, fvRsConsIfState []FvRsConsIfFvAEPgResourceModel, fvRsCustQosPolPlan, fvRsCustQosPolState []FvRsCustQosPolFvAEPgResourceModel, fvRsDomAttPlan, fvRsDomAttState []FvRsDomAttFvAEPgResourceModel, fvRsDppPolPlan, fvRsDppPolState []FvRsDppPolFvAEPgResourceModel, fvRsFcPathAttPlan, fvRsFcPathAttState []FvRsFcPathAttFvAEPgResourceModel, fvRsIntraEpgPlan, fvRsIntraEpgState []FvRsIntraEpgFvAEPgResourceModel, fvRsNodeAttPlan, fvRsNodeAttState []FvRsNodeAttFvAEPgResourceModel, fvRsPathAttPlan, fvRsPathAttState []FvRsPathAttFvAEPgResourceModel, fvRsProtByPlan, fvRsProtByState []FvRsProtByFvAEPgResourceModel, fvRsProvPlan, fvRsProvState []FvRsProvFvAEPgResourceModel, fvRsSecInheritedPlan, fvRsSecInheritedState []FvRsSecInheritedFvAEPgResourceModel, fvRsTrustCtrlPlan, fvRsTrustCtrlState []FvRsTrustCtrlFvAEPgResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvAEPgResourceModel, tagTagPlan, tagTagState []TagTagFvAEPgResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 

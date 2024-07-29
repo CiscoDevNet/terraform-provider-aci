@@ -764,7 +764,7 @@ func (d *FvAEPgDataSource) Read(ctx context.Context, req datasource.ReadRequest,
 		return
 	}
 
-	setFvAEPgId(ctx, data)
+	SetFvAEPgId(ctx, data)
 
 	// Create a copy of the Id for when not found during getAndSetFvAEPgAttributes
 	cachedId := data.Id.ValueString()

@@ -258,7 +258,7 @@ func (r *FvRsIntraEpgResource) Create(ctx context.Context, req resource.CreateRe
 	var stateData *FvRsIntraEpgResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
 	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
-		setFvRsIntraEpgId(ctx, stateData)
+		SetFvRsIntraEpgId(ctx, stateData)
 	}
 	getAndSetFvRsIntraEpgAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
@@ -279,7 +279,7 @@ func (r *FvRsIntraEpgResource) Create(ctx context.Context, req resource.CreateRe
 	}
 
 	if data.Id.IsUnknown() || data.Id.IsNull() {
-		setFvRsIntraEpgId(ctx, data)
+		SetFvRsIntraEpgId(ctx, data)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_relation_to_intra_epg_contract with id '%s'", data.Id.ValueString()))
@@ -290,7 +290,7 @@ func (r *FvRsIntraEpgResource) Create(ctx context.Context, req resource.CreateRe
 	var tagTagPlan, tagTagState []TagTagFvRsIntraEpgResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvRsIntraEpgCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetFvRsIntraEpgCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -355,7 +355,7 @@ func (r *FvRsIntraEpgResource) Update(ctx context.Context, req resource.UpdateRe
 	var tagTagPlan, tagTagState []TagTagFvRsIntraEpgResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvRsIntraEpgCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetFvRsIntraEpgCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -508,7 +508,7 @@ func setFvRsIntraEpgParentDn(ctx context.Context, dn string, data *FvRsIntraEpgR
 	data.ParentDn = basetypes.NewStringValue(dn[:rnIndex])
 }
 
-func setFvRsIntraEpgId(ctx context.Context, data *FvRsIntraEpgResourceModel) {
+func SetFvRsIntraEpgId(ctx context.Context, data *FvRsIntraEpgResourceModel) {
 	rn := getFvRsIntraEpgRn(ctx, data)
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
@@ -592,7 +592,7 @@ func getFvRsIntraEpgTagTagChildPayloads(ctx context.Context, diags *diag.Diagnos
 	return childPayloads
 }
 
-func getFvRsIntraEpgCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *FvRsIntraEpgResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvRsIntraEpgResourceModel, tagTagPlan, tagTagState []TagTagFvRsIntraEpgResourceModel) *container.Container {
+func GetFvRsIntraEpgCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *FvRsIntraEpgResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvRsIntraEpgResourceModel, tagTagPlan, tagTagState []TagTagFvRsIntraEpgResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 

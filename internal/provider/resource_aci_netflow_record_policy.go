@@ -341,7 +341,7 @@ func (r *NetflowRecordPolResource) Create(ctx context.Context, req resource.Crea
 	var stateData *NetflowRecordPolResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
 	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
-		setNetflowRecordPolId(ctx, stateData)
+		SetNetflowRecordPolId(ctx, stateData)
 	}
 	getAndSetNetflowRecordPolAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
@@ -362,7 +362,7 @@ func (r *NetflowRecordPolResource) Create(ctx context.Context, req resource.Crea
 	}
 
 	if data.Id.IsUnknown() || data.Id.IsNull() {
-		setNetflowRecordPolId(ctx, data)
+		SetNetflowRecordPolId(ctx, data)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_netflow_record_policy with id '%s'", data.Id.ValueString()))
@@ -373,7 +373,7 @@ func (r *NetflowRecordPolResource) Create(ctx context.Context, req resource.Crea
 	var tagTagPlan, tagTagState []TagTagNetflowRecordPolResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getNetflowRecordPolCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetNetflowRecordPolCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -438,7 +438,7 @@ func (r *NetflowRecordPolResource) Update(ctx context.Context, req resource.Upda
 	var tagTagPlan, tagTagState []TagTagNetflowRecordPolResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getNetflowRecordPolCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetNetflowRecordPolCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -619,7 +619,7 @@ func setNetflowRecordPolParentDn(ctx context.Context, dn string, data *NetflowRe
 	data.ParentDn = basetypes.NewStringValue(dn[:rnIndex])
 }
 
-func setNetflowRecordPolId(ctx context.Context, data *NetflowRecordPolResourceModel) {
+func SetNetflowRecordPolId(ctx context.Context, data *NetflowRecordPolResourceModel) {
 	rn := getNetflowRecordPolRn(ctx, data)
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
@@ -703,7 +703,7 @@ func getNetflowRecordPolTagTagChildPayloads(ctx context.Context, diags *diag.Dia
 	return childPayloads
 }
 
-func getNetflowRecordPolCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *NetflowRecordPolResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationNetflowRecordPolResourceModel, tagTagPlan, tagTagState []TagTagNetflowRecordPolResourceModel) *container.Container {
+func GetNetflowRecordPolCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *NetflowRecordPolResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationNetflowRecordPolResourceModel, tagTagPlan, tagTagState []TagTagNetflowRecordPolResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 

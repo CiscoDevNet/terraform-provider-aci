@@ -1,0 +1,62 @@
+{{- $resourceClassName := .ResourceClassName }}
+{{- $resourceName := .ResourceName }}
+{{- $properties := .Properties }}
+{{- $children := .Children }}
+
+func create{{ $resourceClassName }}(attributes map[string]interface{}) map[string]interface{} {
+	ctx := context.Background()
+	var diags diag.Diagnostics
+	data := &provider.{{ $resourceClassName }}ResourceModel{}
+
+	{{- if .HasParent }}
+	if v, ok := attributes["parent_dn"].(string); ok && v != "" {
+		data.ParentDn = types.StringValue(v)
+	}
+	{{- end }}
+
+	{{- range $properties }}
+	if v, ok := attributes["{{ .SnakeCaseName }}"].(string); ok && v != "" {
+		data.{{- if eq .Name "Id" }}{{ $resourceClassName }}{{ .Name }}{{- else }}{{ .Name }}{{- end }} = types.StringValue(v)
+	}
+	{{- end }}
+
+	{{- range $children }}
+	plan{{ .ResourceClassName }} := convertTo{{ .ResourceClassName }}{{ $resourceClassName }}(attributes["{{ .ResourceName }}"])
+	{{- end }}
+
+	newAci{{ $resourceClassName }} := provider.Get{{ $resourceClassName }}CreateJsonPayload(ctx, &diags, data
+		{{- range $children }}, plan{{ .ResourceClassName }}, plan{{ .ResourceClassName }}{{- end }})
+
+	jsonPayload := newAci{{ $resourceClassName }}.EncodeJSON(container.EncodeOptIndent("", "  "))
+	payload, err := parseCustomJSON(jsonPayload)
+	if err != nil {
+		log.Fatalf("Error unmarshalling JSON: %v\n", err)
+	}
+
+	provider.Set{{ $resourceClassName }}Id(ctx, data)
+	attrs := payload["{{lowercaseFirst $resourceClassName }}"].(map[string]interface{})["attributes"].(map[string]interface{})
+	attrs["dn"] = data.Id.ValueString()
+
+	if status, ok := attributes["status"].(string); ok && status != "" {
+		attrs["status"] = status
+	}
+
+	return payload
+}
+
+{{- range $children }}
+func convertTo{{ .ResourceClassName }}{{ $resourceClassName }}(resources interface{}) []provider.{{ .ResourceClassName }}{{ $resourceClassName }}ResourceModel {
+	var planResources []provider.{{ .ResourceClassName }}{{ $resourceClassName }}ResourceModel
+	if resources, ok := resources.([]interface{}); ok {
+		for _, resource := range resources {
+			resourceMap := resource.(map[string]interface{})
+			planResources = append(planResources, provider.{{ .ResourceClassName }}{{ $resourceClassName }}ResourceModel{
+				{{- range .Properties }}
+				{{ .Name }}: types.StringValue(resourceMap["{{ .SnakeCaseName }}"].(string)),
+				{{- end }}
+			})
+		}
+	}
+	return planResources
+}
+{{- end }}

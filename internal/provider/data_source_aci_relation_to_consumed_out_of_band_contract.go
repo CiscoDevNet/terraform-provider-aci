@@ -130,7 +130,7 @@ func (d *MgmtRsOoBConsDataSource) Read(ctx context.Context, req datasource.ReadR
 		return
 	}
 
-	setMgmtRsOoBConsId(ctx, data)
+	SetMgmtRsOoBConsId(ctx, data)
 
 	// Create a copy of the Id for when not found during getAndSetMgmtRsOoBConsAttributes
 	cachedId := data.Id.ValueString()

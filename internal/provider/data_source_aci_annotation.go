@@ -94,7 +94,7 @@ func (d *TagAnnotationDataSource) Read(ctx context.Context, req datasource.ReadR
 		return
 	}
 
-	setTagAnnotationId(ctx, data)
+	SetTagAnnotationId(ctx, data)
 
 	// Create a copy of the Id for when not found during getAndSetTagAnnotationAttributes
 	cachedId := data.Id.ValueString()

@@ -337,7 +337,7 @@ func (r *FvCrtrnResource) Create(ctx context.Context, req resource.CreateRequest
 	var stateData *FvCrtrnResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
 	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
-		setFvCrtrnId(ctx, stateData)
+		SetFvCrtrnId(ctx, stateData)
 	}
 	getAndSetFvCrtrnAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
@@ -358,7 +358,7 @@ func (r *FvCrtrnResource) Create(ctx context.Context, req resource.CreateRequest
 	}
 
 	if data.Id.IsUnknown() || data.Id.IsNull() {
-		setFvCrtrnId(ctx, data)
+		SetFvCrtrnId(ctx, data)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_epg_useg_block_statement with id '%s'", data.Id.ValueString()))
@@ -369,7 +369,7 @@ func (r *FvCrtrnResource) Create(ctx context.Context, req resource.CreateRequest
 	var tagTagPlan, tagTagState []TagTagFvCrtrnResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvCrtrnCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetFvCrtrnCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -434,7 +434,7 @@ func (r *FvCrtrnResource) Update(ctx context.Context, req resource.UpdateRequest
 	var tagTagPlan, tagTagState []TagTagFvCrtrnResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvCrtrnCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetFvCrtrnCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -602,7 +602,7 @@ func setFvCrtrnParentDn(ctx context.Context, dn string, data *FvCrtrnResourceMod
 	data.ParentDn = basetypes.NewStringValue(dn[:rnIndex])
 }
 
-func setFvCrtrnId(ctx context.Context, data *FvCrtrnResourceModel) {
+func SetFvCrtrnId(ctx context.Context, data *FvCrtrnResourceModel) {
 	rn := getFvCrtrnRn(ctx, data)
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
@@ -686,7 +686,7 @@ func getFvCrtrnTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics,
 	return childPayloads
 }
 
-func getFvCrtrnCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *FvCrtrnResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvCrtrnResourceModel, tagTagPlan, tagTagState []TagTagFvCrtrnResourceModel) *container.Container {
+func GetFvCrtrnCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *FvCrtrnResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvCrtrnResourceModel, tagTagPlan, tagTagState []TagTagFvCrtrnResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 

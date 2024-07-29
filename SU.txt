@@ -1,0 +1,31 @@
+7/29
+- implement the getChildpayload functions from the provider to create child object payloads
+
+- all items are being created successfully
+
+- I am going to test the PCV simulations to make sure that the formatting is correct
+
+- Once that is done I will make the template for the revised create() function
+
+- I will put out a PR later today for some feedback
+
+
+
+
+
+
+Fix constructTree() -- FIXED tentitvely
+
+Fix duplicate headers
+
+
+Create template for create() --
+1. Dn representation needed, check meta for definitions
+
+Push PR, assign Akini
+
+7/30
+
+
+
+

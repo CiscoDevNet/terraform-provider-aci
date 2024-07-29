@@ -594,7 +594,7 @@ func (r *QosDppPolResource) Create(ctx context.Context, req resource.CreateReque
 	var stateData *QosDppPolResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
 	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
-		setQosDppPolId(ctx, stateData)
+		SetQosDppPolId(ctx, stateData)
 	}
 	getAndSetQosDppPolAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
@@ -615,7 +615,7 @@ func (r *QosDppPolResource) Create(ctx context.Context, req resource.CreateReque
 	}
 
 	if data.Id.IsUnknown() || data.Id.IsNull() {
-		setQosDppPolId(ctx, data)
+		SetQosDppPolId(ctx, data)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_data_plane_policing_policy with id '%s'", data.Id.ValueString()))
@@ -626,7 +626,7 @@ func (r *QosDppPolResource) Create(ctx context.Context, req resource.CreateReque
 	var tagTagPlan, tagTagState []TagTagQosDppPolResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getQosDppPolCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetQosDppPolCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -691,7 +691,7 @@ func (r *QosDppPolResource) Update(ctx context.Context, req resource.UpdateReque
 	var tagTagPlan, tagTagState []TagTagQosDppPolResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getQosDppPolCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetQosDppPolCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -919,7 +919,7 @@ func setQosDppPolParentDn(ctx context.Context, dn string, data *QosDppPolResourc
 	data.ParentDn = basetypes.NewStringValue(dn[:rnIndex])
 }
 
-func setQosDppPolId(ctx context.Context, data *QosDppPolResourceModel) {
+func SetQosDppPolId(ctx context.Context, data *QosDppPolResourceModel) {
 	rn := getQosDppPolRn(ctx, data)
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
@@ -1003,7 +1003,7 @@ func getQosDppPolTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostic
 	return childPayloads
 }
 
-func getQosDppPolCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *QosDppPolResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationQosDppPolResourceModel, tagTagPlan, tagTagState []TagTagQosDppPolResourceModel) *container.Container {
+func GetQosDppPolCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *QosDppPolResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationQosDppPolResourceModel, tagTagPlan, tagTagState []TagTagQosDppPolResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 

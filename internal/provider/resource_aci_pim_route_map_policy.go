@@ -302,7 +302,7 @@ func (r *PimRouteMapPolResource) Create(ctx context.Context, req resource.Create
 	var stateData *PimRouteMapPolResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
 	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
-		setPimRouteMapPolId(ctx, stateData)
+		SetPimRouteMapPolId(ctx, stateData)
 	}
 	getAndSetPimRouteMapPolAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
@@ -323,7 +323,7 @@ func (r *PimRouteMapPolResource) Create(ctx context.Context, req resource.Create
 	}
 
 	if data.Id.IsUnknown() || data.Id.IsNull() {
-		setPimRouteMapPolId(ctx, data)
+		SetPimRouteMapPolId(ctx, data)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_pim_route_map_policy with id '%s'", data.Id.ValueString()))
@@ -334,7 +334,7 @@ func (r *PimRouteMapPolResource) Create(ctx context.Context, req resource.Create
 	var tagTagPlan, tagTagState []TagTagPimRouteMapPolResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getPimRouteMapPolCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetPimRouteMapPolCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -399,7 +399,7 @@ func (r *PimRouteMapPolResource) Update(ctx context.Context, req resource.Update
 	var tagTagPlan, tagTagState []TagTagPimRouteMapPolResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getPimRouteMapPolCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetPimRouteMapPolCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -564,7 +564,7 @@ func setPimRouteMapPolParentDn(ctx context.Context, dn string, data *PimRouteMap
 	data.ParentDn = basetypes.NewStringValue(dn[:rnIndex])
 }
 
-func setPimRouteMapPolId(ctx context.Context, data *PimRouteMapPolResourceModel) {
+func SetPimRouteMapPolId(ctx context.Context, data *PimRouteMapPolResourceModel) {
 	rn := getPimRouteMapPolRn(ctx, data)
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
@@ -648,7 +648,7 @@ func getPimRouteMapPolTagTagChildPayloads(ctx context.Context, diags *diag.Diagn
 	return childPayloads
 }
 
-func getPimRouteMapPolCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *PimRouteMapPolResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationPimRouteMapPolResourceModel, tagTagPlan, tagTagState []TagTagPimRouteMapPolResourceModel) *container.Container {
+func GetPimRouteMapPolCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *PimRouteMapPolResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationPimRouteMapPolResourceModel, tagTagPlan, tagTagState []TagTagPimRouteMapPolResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 

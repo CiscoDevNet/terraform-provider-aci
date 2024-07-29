@@ -158,7 +158,7 @@ func (d *NetflowRecordPolDataSource) Read(ctx context.Context, req datasource.Re
 		data.ParentDn = basetypes.NewStringValue("uni/infra")
 	}
 
-	setNetflowRecordPolId(ctx, data)
+	SetNetflowRecordPolId(ctx, data)
 
 	// Create a copy of the Id for when not found during getAndSetNetflowRecordPolAttributes
 	cachedId := data.Id.ValueString()

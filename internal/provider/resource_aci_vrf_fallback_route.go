@@ -291,7 +291,7 @@ func (r *FvFBRouteResource) Create(ctx context.Context, req resource.CreateReque
 	var stateData *FvFBRouteResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
 	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
-		setFvFBRouteId(ctx, stateData)
+		SetFvFBRouteId(ctx, stateData)
 	}
 	getAndSetFvFBRouteAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
@@ -312,7 +312,7 @@ func (r *FvFBRouteResource) Create(ctx context.Context, req resource.CreateReque
 	}
 
 	if data.Id.IsUnknown() || data.Id.IsNull() {
-		setFvFBRouteId(ctx, data)
+		SetFvFBRouteId(ctx, data)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_vrf_fallback_route with id '%s'", data.Id.ValueString()))
@@ -323,7 +323,7 @@ func (r *FvFBRouteResource) Create(ctx context.Context, req resource.CreateReque
 	var tagTagPlan, tagTagState []TagTagFvFBRouteResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvFBRouteCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetFvFBRouteCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -388,7 +388,7 @@ func (r *FvFBRouteResource) Update(ctx context.Context, req resource.UpdateReque
 	var tagTagPlan, tagTagState []TagTagFvFBRouteResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvFBRouteCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetFvFBRouteCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -550,7 +550,7 @@ func setFvFBRouteParentDn(ctx context.Context, dn string, data *FvFBRouteResourc
 	data.ParentDn = basetypes.NewStringValue(dn[:rnIndex])
 }
 
-func setFvFBRouteId(ctx context.Context, data *FvFBRouteResourceModel) {
+func SetFvFBRouteId(ctx context.Context, data *FvFBRouteResourceModel) {
 	rn := getFvFBRouteRn(ctx, data)
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
@@ -634,7 +634,7 @@ func getFvFBRouteTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostic
 	return childPayloads
 }
 
-func getFvFBRouteCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *FvFBRouteResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvFBRouteResourceModel, tagTagPlan, tagTagState []TagTagFvFBRouteResourceModel) *container.Container {
+func GetFvFBRouteCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *FvFBRouteResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvFBRouteResourceModel, tagTagPlan, tagTagState []TagTagFvFBRouteResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 

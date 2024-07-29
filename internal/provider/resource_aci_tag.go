@@ -168,12 +168,12 @@ func (r *TagTagResource) Create(ctx context.Context, req resource.CreateRequest,
 	}
 
 	if data.Id.IsUnknown() || data.Id.IsNull() {
-		setTagTagId(ctx, data)
+		SetTagTagId(ctx, data)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_tag with id '%s'", data.Id.ValueString()))
 
-	jsonPayload := getTagTagCreateJsonPayload(ctx, &resp.Diagnostics, true, data)
+	jsonPayload := GetTagTagCreateJsonPayload(ctx, &resp.Diagnostics, true, data)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -230,7 +230,7 @@ func (r *TagTagResource) Update(ctx context.Context, req resource.UpdateRequest,
 
 	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_tag with id '%s'", data.Id.ValueString()))
 
-	jsonPayload := getTagTagCreateJsonPayload(ctx, &resp.Diagnostics, false, data)
+	jsonPayload := GetTagTagCreateJsonPayload(ctx, &resp.Diagnostics, false, data)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -344,12 +344,12 @@ func setTagTagParentDn(ctx context.Context, dn string, data *TagTagResourceModel
 	data.ParentDn = basetypes.NewStringValue(dn[:rnIndex])
 }
 
-func setTagTagId(ctx context.Context, data *TagTagResourceModel) {
+func SetTagTagId(ctx context.Context, data *TagTagResourceModel) {
 	rn := getTagTagRn(ctx, data)
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
 
-func getTagTagCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *TagTagResourceModel) *container.Container {
+func GetTagTagCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *TagTagResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 

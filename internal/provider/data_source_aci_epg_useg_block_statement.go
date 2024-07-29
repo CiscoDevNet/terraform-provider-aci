@@ -154,7 +154,7 @@ func (d *FvCrtrnDataSource) Read(ctx context.Context, req datasource.ReadRequest
 		return
 	}
 
-	setFvCrtrnId(ctx, data)
+	SetFvCrtrnId(ctx, data)
 
 	// Create a copy of the Id for when not found during getAndSetFvCrtrnAttributes
 	cachedId := data.Id.ValueString()
