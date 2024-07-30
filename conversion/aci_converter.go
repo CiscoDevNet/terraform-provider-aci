@@ -905,7 +905,9 @@ func main() {
 			}
 
 			fmt.Printf("ACI Payload written to %s\n", outputFile)
+
 			return
+
 		}
 
 	}
