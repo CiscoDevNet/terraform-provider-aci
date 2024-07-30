@@ -107,10 +107,6 @@ func TestAccResourceFvRsSecInheritedWithFvAEPg(t *testing.T) {
 				ResourceName:      "aci_relation_to_contract_master.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "target_dn", "uni/tn-test_tenant/ap-test_ap/epg-epg_2"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotation", "orchestrator:terraform"),
-				),
 			},
 			// Update with children
 			{
@@ -134,18 +130,6 @@ func TestAccResourceFvRsSecInheritedWithFvAEPg(t *testing.T) {
 				ResourceName:      "aci_relation_to_contract_master.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "target_dn", "uni/tn-test_tenant/ap-test_ap/epg-epg_2"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.1.value", "value_2"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.1.value", "value_2"),
-				),
 			},
 			// Update with children removed from config
 			{
@@ -285,10 +269,6 @@ func TestAccResourceFvRsSecInheritedWithFvESg(t *testing.T) {
 				ResourceName:      "aci_relation_to_contract_master.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "target_dn", "uni/tn-test_tenant/ap-test_ap/esg-esg_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotation", "orchestrator:terraform"),
-				),
 			},
 			// Update with children
 			{
@@ -312,18 +292,6 @@ func TestAccResourceFvRsSecInheritedWithFvESg(t *testing.T) {
 				ResourceName:      "aci_relation_to_contract_master.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "target_dn", "uni/tn-test_tenant/ap-test_ap/esg-esg_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.1.value", "value_2"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.1.value", "value_2"),
-				),
 			},
 			// Update with children removed from config
 			{

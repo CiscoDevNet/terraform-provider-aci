@@ -126,13 +126,6 @@ func TestAccResourceMgmtInstP(t *testing.T) {
 				ResourceName:      "aci_external_management_network_instance_profile.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "name", "test_name"),
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "priority", "unspecified"),
-				),
 			},
 			// Update with children
 			{

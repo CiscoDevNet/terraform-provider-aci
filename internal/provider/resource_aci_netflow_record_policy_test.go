@@ -159,17 +159,6 @@ func TestAccResourceNetflowRecordPolWithFvTenant(t *testing.T) {
 				ResourceName:      "aci_netflow_record_policy.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "name", "netfow_record"),
-					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "collect_parameters.#", "1"),
-					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "collect_parameters.0", "src-intf"),
-					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "match_parameters.#", "0"),
-					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "owner_tag", ""),
-				),
 			},
 			// Update with children
 			{
@@ -200,25 +189,6 @@ func TestAccResourceNetflowRecordPolWithFvTenant(t *testing.T) {
 				ResourceName:      "aci_netflow_record_policy.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "name", "netfow_record"),
-					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "collect_parameters.#", "1"),
-					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "collect_parameters.0", "src-intf"),
-					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "match_parameters.#", "0"),
-					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "annotations.1.value", "value_2"),
-					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_netflow_record_policy.test", "tags.1.value", "value_2"),
-				),
 			},
 			// Update with children removed from config
 			{

@@ -108,10 +108,6 @@ func TestAccResourceTagAnnotationWithFvTenant(t *testing.T) {
 				ResourceName:      "aci_annotation.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_annotation.test", "key", "test_key"),
-					resource.TestCheckResourceAttr("aci_annotation.test", "value", "test_value"),
-				),
 			},
 		},
 	})
@@ -213,10 +209,6 @@ func TestAccResourceTagAnnotationWithFvAEPg(t *testing.T) {
 				ResourceName:      "aci_annotation.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_annotation.test", "key", "test_key"),
-					resource.TestCheckResourceAttr("aci_annotation.test", "value", "test_value"),
-				),
 			},
 		},
 	})

@@ -219,27 +219,6 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 				ResourceName:      "aci_{{$.resourceName}}.test",
 				ImportState:       true,
         		ImportStateVerify: true,
-				Check: resource.ComposeAggregateTestCheckFunc(
-		{{- range $key, $value := $.resource_required}}
-			{{- if eq $key "target_dn" }}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{getTestTargetDn $.targets $.resourceName $value false $target_classes 0}}"),
-			{{- else }}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
-			{{- end }}
-		{{- end}}
-		{{- range $key, $value := $.default}}{{$contains := definedInMap $key $.resource_required}}
-			{{- if not $contains}}
-				{{- if (isInterfaceSlice $value)}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "{{len $value}}"),
-					{{- range $index, $subvalue := $value}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$index}}", "{{$subvalue}}"),
-					{{- end}}
-				{{- else}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
-				{{- end}}
-			{{- end}}
-		{{- end}}
-				),
 			},
 		{{- if $.children}}
 			// Update with children
@@ -284,38 +263,6 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 				ResourceName:      "aci_{{$.resourceName}}.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				Check: resource.ComposeAggregateTestCheckFunc(
-		{{- range $key, $value := $.resource_required}}
-			{{- if eq $key "target_dn" }}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{getTestTargetDn $.targets $.resourceName $value false $target_classes 0}}"),
-			{{- else }}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
-			{{- end }}
-		{{- end}}
-			{{- range $key, $value := $.default}}{{$contains := definedInMap $key $.resource_required}}
-				{{- if not $contains}}
-					{{- if (isInterfaceSlice $value)}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "{{len $value}}"),
-						{{- range $index, $subvalue := $value}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$index}}", "{{$subvalue}}"),
-						{{- end}}
-					{{- else}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
-					{{- end}}
-				{{- end}}
-			{{- end}}
-			{{- range $key, $value := $.children}}
-				{{- range $child_index, $child := $value}}
-					{{- range $child_key, $child_value := $child}}
-						{{- if eq $child_key "target_dn"}}
-	  				resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$child_index}}.{{$child_key}}", "{{getTestTargetDn $.child_targets $key $child_value false nil $child_index}}"),		
-						{{- else if ne $child_key "deletable_child"}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$child_index}}.{{$child_key}}", "{{$child_value}}"),
-						{{- end}}
-					{{- end}}
-				{{- end}}
-			{{- end}}
-				),
 			},
 			// Update with children removed from config
 			{
@@ -622,27 +569,6 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 				ResourceName:      "aci_{{$.resourceName}}.test",
 				ImportState:       true,
         		ImportStateVerify: true,
-				Check: resource.ComposeAggregateTestCheckFunc(
-	{{- range $key, $value := $.resource_required}}
-			{{- if eq $key "target_dn" }}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{getTestTargetDn $.targets $.resourceName $value false nil 0}}"),
-			{{- else }}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
-			{{- end }}
-	{{- end}}
-	{{- range $key, $value := $.default}}{{$contains := definedInMap $key $.resource_required}}
-		{{- if not $contains}}
-			{{- if (isInterfaceSlice $value)}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "{{len $value}}"),
-				{{- range $index, $subvalue := $value}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$index}}", "{{$subvalue}}"),
-				{{- end}}
-			{{- else}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
-			{{- end}}
-		{{- end}}
-	{{- end}}
-				),
 			},
 	{{- if $.children}}
 			// Update with children

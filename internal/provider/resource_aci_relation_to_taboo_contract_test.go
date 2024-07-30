@@ -107,10 +107,6 @@ func TestAccResourceFvRsProtByWithFvAEPg(t *testing.T) {
 				ResourceName:      "aci_relation_to_taboo_contract.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_taboo_contract.test", "taboo_contract_name", "test_tn_vz_taboo_name"),
-					resource.TestCheckResourceAttr("aci_relation_to_taboo_contract.test", "annotation", "orchestrator:terraform"),
-				),
 			},
 			// Update with children
 			{
@@ -134,18 +130,6 @@ func TestAccResourceFvRsProtByWithFvAEPg(t *testing.T) {
 				ResourceName:      "aci_relation_to_taboo_contract.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_taboo_contract.test", "taboo_contract_name", "test_tn_vz_taboo_name"),
-					resource.TestCheckResourceAttr("aci_relation_to_taboo_contract.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_relation_to_taboo_contract.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_taboo_contract.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_taboo_contract.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_taboo_contract.test", "annotations.1.value", "value_2"),
-					resource.TestCheckResourceAttr("aci_relation_to_taboo_contract.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_taboo_contract.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_taboo_contract.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_taboo_contract.test", "tags.1.value", "value_2"),
-				),
 			},
 			// Update with children removed from config
 			{

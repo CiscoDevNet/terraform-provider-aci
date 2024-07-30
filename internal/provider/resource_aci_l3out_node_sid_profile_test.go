@@ -135,14 +135,6 @@ func TestAccResourceMplsNodeSidPWithL3extLoopBackIfP(t *testing.T) {
 				ResourceName:      "aci_l3out_node_sid_profile.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "segment_id", "1"),
-					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "loopback_address", "0.0.0.0"),
-					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "name", ""),
-					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "name_alias", ""),
-				),
 			},
 			// Update with children
 			{
@@ -170,22 +162,6 @@ func TestAccResourceMplsNodeSidPWithL3extLoopBackIfP(t *testing.T) {
 				ResourceName:      "aci_l3out_node_sid_profile.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "segment_id", "1"),
-					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "loopback_address", "0.0.0.0"),
-					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "name", ""),
-					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "annotations.1.value", "value_2"),
-					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "tags.1.value", "value_2"),
-				),
 			},
 			// Update with children removed from config
 			{
