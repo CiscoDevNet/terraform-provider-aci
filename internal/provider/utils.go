@@ -40,7 +40,7 @@ func CheckDn(ctx context.Context, diags *diag.Diagnostics, client *client.Client
 	}
 }
 
-func DoRestRequestEscapeHtml(ctx context.Context, diags *diag.Diagnostics, client *client.Client, path, method string, payload *container.Container, escapeHtml bool) *container.Container {
+func DoRestRequestEscapeHtml(ctx context.Context, diags *diag.Diagnostics, aciClient *client.Client, path, method string, payload *container.Container, escapeHtml bool) *container.Container {
 
 	// Ensure path starts with a slash to assure signature is created correctly
 	if !strings.HasPrefix("/", path) {
@@ -49,9 +49,9 @@ func DoRestRequestEscapeHtml(ctx context.Context, diags *diag.Diagnostics, clien
 	var restRequest *http.Request
 	var err error
 	if escapeHtml {
-		restRequest, err = client.MakeRestRequest(method, path, payload, true)
+		restRequest, err = aciClient.MakeRestRequest(method, path, payload, true)
 	} else {
-		restRequest, err = client.MakeRestRequestRaw(method, path, payload.EncodeJSON(), true)
+		restRequest, err = aciClient.MakeRestRequestRaw(method, path, payload.EncodeJSON(), true)
 	}
 	if err != nil {
 		diags.AddError(
@@ -61,24 +61,34 @@ func DoRestRequestEscapeHtml(ctx context.Context, diags *diag.Diagnostics, clien
 		return nil
 	}
 
-	cont, restResponse, err := client.Do(restRequest)
+	cont, restResponse, err := aciClient.Do(restRequest)
+
+	if err != nil {
+		diags.AddError(
+			fmt.Sprintf("The %s rest request failed", strings.ToLower(method)),
+			fmt.Sprintf("err: %s. Please report this issue to the provider developers.", err),
+		)
+		return nil
+	}
 
 	if restResponse != nil && cont.Data() != nil && restResponse.StatusCode != 200 {
 		errCode := models.StripQuotes(models.StripSquareBrackets(cont.Search("imdata", "error", "attributes", "code").String()))
-		if errCode != "1" && errCode != "103" && errCode != "107" && errCode != "120" {
+		errText := models.StripQuotes(models.StripSquareBrackets(cont.Search("imdata", "error", "attributes", "text").String()))
+		if errCode == "103" || errCode == "107" || errCode == "202" {
+			tflog.Debug(ctx, errText)
+			return nil
+		} else if (errText == "" && errCode == "403") || errCode == "401" {
+			diags.AddError(
+				"Unable to authenticate. Please check your credentials",
+				fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
+			)
+		} else {
 			diags.AddError(
 				fmt.Sprintf("The %s rest request failed", strings.ToLower(method)),
-				fmt.Sprintf("Code: %d Response: %s, err: %s.", restResponse.StatusCode, cont.Data().(map[string]interface{})["imdata"], err),
+				fmt.Sprintf("Response Status Code: %d Error Code: %s, Error Message: %s.", restResponse.StatusCode, errCode, errText),
 			)
 			return nil
 		}
-		tflog.Debug(ctx, models.StripQuotes(models.StripSquareBrackets(cont.Search("imdata", "error", "attributes", "text").String())))
-	} else if err != nil {
-		diags.AddError(
-			fmt.Sprintf("The %s rest request failed", strings.ToLower(method)),
-			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
-		)
-		return nil
 	}
 
 	return cont
