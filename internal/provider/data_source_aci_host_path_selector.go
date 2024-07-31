@@ -73,6 +73,38 @@ func (d *InfraHPathSDataSource) Schema(ctx context.Context, req datasource.Schem
 				Computed:            true,
 				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
 			},
+			"relation_to_host_paths": schema.SetNestedAttribute{
+				MarkdownDescription: ``,
+				Computed:            true,
+				NestedObject: schema.NestedAttributeObject{
+					Attributes: map[string]schema.Attribute{
+						"annotation": schema.StringAttribute{
+							Computed:            true,
+							MarkdownDescription: `The annotation of the Relation To Host Path object.`,
+						},
+						"target_dn": schema.StringAttribute{
+							Computed:            true,
+							MarkdownDescription: `The distinguished name of the target.`,
+						},
+					},
+				},
+			},
+			"relation_to_access_base_group": schema.SetNestedAttribute{
+				MarkdownDescription: ``,
+				Computed:            true,
+				NestedObject: schema.NestedAttributeObject{
+					Attributes: map[string]schema.Attribute{
+						"annotation": schema.StringAttribute{
+							Computed:            true,
+							MarkdownDescription: `The annotation of the Relation To Access Base Group object.`,
+						},
+						"target_dn": schema.StringAttribute{
+							Computed:            true,
+							MarkdownDescription: `The distinguished name of the target.`,
+						},
+					},
+				},
+			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,
 				Computed:            true,

@@ -919,3 +919,30 @@ infraHPathS:
     - class_name: "infraInfra"
       parent_dependency: ""
       parent_dn: "uni/infra"
+
+infraRsHPathAtt:
+  parents:
+    - class_name: "infraHPathS"
+      target_classes:
+        - "fabricPathEp"
+  targets:
+    - class_name: "fabricPathEp"
+      target_dn: "topology/pod-1/paths-101/pathep-[eth1/1]"
+      relation_resource_name: "host_path"
+      static: true
+    - class_name: "fabricPathEp"
+      target_dn: "topology/pod-1/paths-101/pathep-[eth1/2]"
+      relation_resource_name: "host_path"
+      static: true
+    
+infraRsPathToAccBaseGrp:
+  parents:
+    - class_name: "infraHPathS"
+      target_classes:
+        - "infraAccPortGrp"
+  targets:
+    - class_name: "infraAccPortGrp"
+      target_dn: "uni/infra/funcprof/accportgrp-interface_policy_group"
+      relation_resource_name: "access_base_group"
+      static: true
+
