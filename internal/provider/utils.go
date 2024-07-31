@@ -75,7 +75,7 @@ func DoRestRequestEscapeHtml(ctx context.Context, diags *diag.Diagnostics, aciCl
 
 	if restResponse != nil && cont.Data() != nil && restResponse.StatusCode != 200 {
 		errCode := models.StripQuotes(models.StripSquareBrackets(cont.Search("imdata", "error", "attributes", "code").String()))
-		if errCode != "1" && errCode != "103" && errCode != "107" && errCode != "120" {
+		if errCode != "103" && errCode != "107" && errCode != "120" {
 			diags.AddError(
 				fmt.Sprintf("The %s rest request failed", strings.ToLower(method)),
 				fmt.Sprintf("Response Status Code: %d, Error Code: %s, Error Message: %s.", restResponse.StatusCode, errCode, errText),
