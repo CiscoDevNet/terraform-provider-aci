@@ -76,9 +76,7 @@ func DoRestRequestEscapeHtml(ctx context.Context, diags *diag.Diagnostics, aciCl
 		errText := models.StripQuotes(models.StripSquareBrackets(cont.Search("imdata", "error", "attributes", "text").String()))
 		// Ignore errors of type "Cannot create object", "Cannot delete object", "Request in progress" and error text containing "can not be deleted." when the error code is 120
 		if errCode == "103" || errCode == "107" || errCode == "202" || (errCode == "120" && strings.HasSuffix(errText, "can not be deleted.")) {
-			tflog.Debug(ctx, errText, map[string]interface{}{
-				"Error Code": errCode,
-			})
+			tflog.Debug(ctx, fmt.Sprintf("Exiting from error: Code: %s, Message: %s", errCode, errText))
 			return nil
 		} else if (errText == "" && errCode == "403") || errCode == "401" {
 			diags.AddError(
