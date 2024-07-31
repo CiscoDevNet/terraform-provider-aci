@@ -124,14 +124,14 @@ All examples for the Route Control Profile resource can be found in the [example
   
 * `annotation` (annotation) - (string) The annotation of the Route Control Profile object.
   - Default: `orchestrator:terraform`
-* `route_map_continue` (autoContinue) - (string) This action will be applied on all the entries which are part of per Peer BGP Route-Map. Only available on 'Tenants -> Policies -> Protocol -> Route Maps for Route Control'.
+* `route_map_continue` (autoContinue) - (string) The route_map_continue applies a continue statement for all user-configured sequences (contexts) in a given BGP route profile so that switches will continue to find matches with subsequent user-configured sequences in the route map. Without the continue statement, after a route matches one of the sequences in a route map, switches will not continue to check other sequences.
   - Default: `no`
   - Valid Values: `no`, `yes`.
 * `description` (descr) - (string) The description of the Route Control Profile object.
 * `name_alias` (nameAlias) - (string) The name alias of the Route Control Profile object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
-* `route_control_profile_type` (type) - (string) The route control policy type of the Route Control Profile object. Only available on 'Tenants -> Networking -> L3Outs -> Route map for import and export route control'.
+* `route_control_profile_type` (type) - (string) When the type is Match Prefix and Routing Policy (combinable), it is the default value. Pervasive subnets (fvSubnet) and external subnets (l3extSubnet) are combined with a route profile and merged into a single route map (or route map entry). To use an explicit prefix list, the type should be set to Match Routing Policy Only (global). The route profile is the only source of information to generate a route map, and it will overwrite other policy attributes.
   - Default: `combinable`
   - Valid Values: `combinable`, `global`.
 
