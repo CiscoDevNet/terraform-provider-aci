@@ -11,27 +11,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
-func TestAccDataSourceFvRsSecInheritedWithFvAEPg(t *testing.T) {
-
-	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
-		Steps: []resource.TestStep{
-			{
-				Config:             testConfigFvRsSecInheritedDataSourceDependencyWithFvAEPg,
-				ExpectNonEmptyPlan: false,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.aci_relation_to_contract_master.test", "target_dn", "uni/tn-test_tenant/ap-test_ap/epg-epg_2"),
-					resource.TestCheckResourceAttr("data.aci_relation_to_contract_master.test", "annotation", "orchestrator:terraform"),
-				),
-			},
-			{
-				Config:      testConfigFvRsSecInheritedNotExistingFvAEPg,
-				ExpectError: regexp.MustCompile("Failed to read aci_relation_to_contract_master data source"),
-			},
-		},
-	})
-}
 func TestAccDataSourceFvRsSecInheritedWithFvESg(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
