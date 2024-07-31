@@ -567,3 +567,9 @@ physDomP:
 
 infraHPathS:
   resource_name: "host_path_selector"
+
+infraRsHPathAtt:
+  resource_name: "relation_to_host_path"
+
+infraRsPathToAccBaseGrp:
+  resource_name: "relation_to_access_base_group"

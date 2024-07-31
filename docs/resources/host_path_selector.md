@@ -52,6 +52,18 @@ resource "aci_host_path_selector" "full_example" {
   name_alias  = "name_alias_1"
   owner_key   = "owner_key_1"
   owner_tag   = "owner_tag_1"
+  relation_to_host_paths = [
+    {
+      annotation = "annotation_1"
+      target_dn  = "target_dn_0"
+    }
+  ]
+  relation_to_access_base_group = [
+    {
+      annotation = "annotation_1"
+      target_dn  = "target_dn_1"
+    }
+  ]
   annotations = [
     {
       key   = "key_0"
@@ -93,6 +105,27 @@ All examples for the Host Path Selector resource can be found in the [examples](
 * `name_alias` (nameAlias) - (string) The name alias of the Host Path Selector object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
+
+* `relation_to_host_paths` - (list) A list of Relation To Host Paths (ACI object [infraRsHPathAtt](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraRsHPathAtt/overview)) pointing to  (ACI Object [fabricPathEp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fabricPathEp/overview)) which can be configured using the [aci_](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/) resource.
+  
+  #### Required ####
+  
+  * `target_dn` (tDn) - (string) The distinguished name of the target.
+
+  #### Optional ####
+    
+  * `annotation` (annotation) - (string) The annotation of the Relation To Host Path object.
+      - Default: `orchestrator:terraform`
+
+* `relation_to_access_base_group` - (list) A list of Relation To Access Base Group (ACI object [infraRsPathToAccBaseGrp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraRsPathToAccBaseGrp/overview)) pointing to  (ACI Object [infraAccBaseGrp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraAccBaseGrp/overview)) which can be configured using the [aci_](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/) resource.
+    - Max Items: 1
+  
+
+  #### Optional ####
+    
+  * `annotation` (annotation) - (string) The annotation of the Relation To Access Base Group object.
+      - Default: `orchestrator:terraform`
+  * `target_dn` (tDn) - (string) The distinguished name of the target.
 
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   

@@ -149,6 +149,14 @@ func TestAccResourceInfraHPathS(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_host_path_selector.test", "annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_host_path_selector.test", "annotations.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_host_path_selector.test", "annotations.#", "2"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test", "relation_to_access_base_group.0.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test", "relation_to_access_base_group.0.target_dn", "target_dn_1"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test", "relation_to_access_base_group.#", "2"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test", "relation_to_host_paths.0.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test", "relation_to_host_paths.0.target_dn", "target_dn_0"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test", "relation_to_host_paths.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test", "relation_to_host_paths.1.target_dn", "target_dn_1"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test", "relation_to_host_paths.#", "2"),
 					resource.TestCheckResourceAttr("aci_host_path_selector.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_host_path_selector.test", "tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_host_path_selector.test", "tags.1.key", "key_1"),
@@ -170,6 +178,14 @@ func TestAccResourceInfraHPathS(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_host_path_selector.test", "annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_host_path_selector.test", "annotations.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_host_path_selector.test", "annotations.#", "2"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test", "relation_to_access_base_group.0.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test", "relation_to_access_base_group.0.target_dn", "target_dn_1"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test", "relation_to_access_base_group.#", "1"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test", "relation_to_host_paths.0.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test", "relation_to_host_paths.0.target_dn", "target_dn_0"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test", "relation_to_host_paths.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test", "relation_to_host_paths.1.target_dn", "target_dn_1"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test", "relation_to_host_paths.#", "2"),
 					resource.TestCheckResourceAttr("aci_host_path_selector.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_host_path_selector.test", "tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_host_path_selector.test", "tags.1.key", "key_1"),
@@ -189,6 +205,10 @@ func TestAccResourceInfraHPathS(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_host_path_selector.test", "annotations.0.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_host_path_selector.test", "annotations.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_host_path_selector.test", "annotations.#", "1"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test", "relation_to_access_base_group.#", "0"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test", "relation_to_host_paths.0.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test", "relation_to_host_paths.0.target_dn", "target_dn_1"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test", "relation_to_host_paths.#", "1"),
 					resource.TestCheckResourceAttr("aci_host_path_selector.test", "tags.0.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_host_path_selector.test", "tags.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_host_path_selector.test", "tags.#", "1"),
@@ -204,12 +224,17 @@ func TestAccResourceInfraHPathS(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_host_path_selector.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_host_path_selector.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_host_path_selector.test", "annotations.#", "0"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test", "relation_to_access_base_group.#", "0"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test", "relation_to_host_paths.#", "0"),
 					resource.TestCheckResourceAttr("aci_host_path_selector.test", "tags.#", "0"),
 				),
 			},
 		},
 	})
 }
+
+const testChildDependencyConfigInfraHPathS = `
+`
 
 const testConfigInfraHPathSMinAllowExisting = `
 resource "aci_host_path_selector" "allow_test" {
@@ -248,7 +273,7 @@ resource "aci_host_path_selector" "test" {
   owner_tag = ""
 }
 `
-const testConfigInfraHPathSChildren = `
+const testConfigInfraHPathSChildren = testChildDependencyConfigInfraHPathS + `
 resource "aci_host_path_selector" "test" {
   name = "host_path_selector"
   annotations = [
@@ -259,6 +284,22 @@ resource "aci_host_path_selector" "test" {
 	{
 	  key = "key_1"
 	  value = "test_value"
+	},
+  ]
+  relation_to_access_base_group = [
+	{
+	  annotation = "annotation_1"
+	  target_dn = uni/infra/funcprof/accportgrp-interface_policy_group
+	},
+  ]
+  relation_to_host_paths = [
+	{
+	  annotation = "annotation_1"
+	  target_dn = topology/pod-1/paths-101/pathep-[eth1/1]
+	},
+	{
+	  annotation = "annotation_2"
+	  target_dn = topology/pod-1/paths-101/pathep-[eth1/2]
 	},
   ]
   tags = [
@@ -274,19 +315,26 @@ resource "aci_host_path_selector" "test" {
 }
 `
 
-const testConfigInfraHPathSChildrenRemoveFromConfig = `
+const testConfigInfraHPathSChildrenRemoveFromConfig = testChildDependencyConfigInfraHPathS + `
 resource "aci_host_path_selector" "test" {
   name = "host_path_selector"
 }
 `
 
-const testConfigInfraHPathSChildrenRemoveOne = `
+const testConfigInfraHPathSChildrenRemoveOne = testChildDependencyConfigInfraHPathS + `
 resource "aci_host_path_selector" "test" {
   name = "host_path_selector"
   annotations = [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
+	},
+  ]
+  relation_to_access_base_group = []
+  relation_to_host_paths = [ 
+	{
+	  annotation = "annotation_2"
+	  target_dn = "topology/pod-1/paths-101/pathep-[eth1/2]"
 	},
   ]
   tags = [ 
@@ -298,10 +346,12 @@ resource "aci_host_path_selector" "test" {
 }
 `
 
-const testConfigInfraHPathSChildrenRemoveAll = `
+const testConfigInfraHPathSChildrenRemoveAll = testChildDependencyConfigInfraHPathS + `
 resource "aci_host_path_selector" "test" {
   name = "host_path_selector"
   annotations = []
+  relation_to_access_base_group = []
+  relation_to_host_paths = []
   tags = []
 }
 `
