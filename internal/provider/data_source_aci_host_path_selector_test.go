@@ -21,10 +21,10 @@ func TestAccDataSourceInfraHPathS(t *testing.T) {
 				Config: testConfigInfraHPathSDataSource,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("data.aci_host_path_selector.test", "annotation", "annotation"),
-					resource.TestCheckResourceAttr("data.aci_host_path_selector.test", "description", "description"),
-					resource.TestCheckResourceAttr("data.aci_host_path_selector.test", "name_alias", "name_alias"),
-					resource.TestCheckResourceAttr("data.aci_host_path_selector.test", "owner_key", "owner_key"),
-					resource.TestCheckResourceAttr("data.aci_host_path_selector.test", "owner_tag", "owner_tag"),
+					resource.TestCheckResourceAttr("data.aci_host_path_selector.test", "description", "description_1"),
+					resource.TestCheckResourceAttr("data.aci_host_path_selector.test", "name_alias", "name_alias_1"),
+					resource.TestCheckResourceAttr("data.aci_host_path_selector.test", "owner_key", "owner_key_1"),
+					resource.TestCheckResourceAttr("data.aci_host_path_selector.test", "owner_tag", "owner_tag_1"),
 				),
 			},
 			{
@@ -45,6 +45,5 @@ data "aci_host_path_selector" "test" {
 const testConfigInfraHPathSNotExisting = testConfigInfraHPathSAll + `
 data "aci_host_path_selector" "test" {
   name = "host_path_selector_non_existing"
-  depends_on = [aci_host_path_selector.test]
 }
 `

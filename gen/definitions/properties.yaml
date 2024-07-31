@@ -405,8 +405,6 @@ fvRsCons:
   parents:
     - class_name: "fvESg"
       parent_dependency: "fvAp"
-    - class_name: "fvAEPg"
-      parent_dependency: "fvAp"
 
 fvRsProv:
   ignores:
@@ -414,14 +412,10 @@ fvRsProv:
   parents:
     - class_name: "fvESg"
       parent_dependency: "fvAp"
-    - class_name: "fvAEPg"
-      parent_dependency: "fvAp"
 
 fvRsConsIf:
   parents:
     - class_name: "fvESg"
-      parent_dependency: "fvAp"
-    - class_name: "fvAEPg"
       parent_dependency: "fvAp"
 
 fvRsProtBy:
@@ -439,15 +433,9 @@ fvRsIntraEpg:
   parents:
     - class_name: "fvESg"
       parent_dependency: "fvAp"
-    - class_name: "fvAEPg"
-      parent_dependency: "fvAp"
 
 fvRsSecInherited:
   parents:
-    - class_name: "fvAEPg"
-      parent_dependency: "fvAp"
-      target_classes:
-        - "fvAEPg"
     - class_name: "fvESg"
       parent_dependency: "fvAp"
       target_classes:
@@ -467,20 +455,6 @@ fvRsSecInherited:
       relation_resource_name: "contract_master"
       properties:
         name: "esg_1"
-    - class_name: "fvAEPg"
-      parent_dependency: "fvAp"
-      overwrite_parent_dn_key: "application_profile_dn"
-      target_dn: "uni/tn-test_tenant/ap-test_ap/epg-epg_2"
-      relation_resource_name: "contract_master"
-      properties:
-        name: "epg_2"
-    - class_name: "fvAEPg"
-      parent_dependency: "fvAp"
-      overwrite_parent_dn_key: "application_profile_dn"
-      target_dn: "uni/tn-test_tenant/ap-test_ap/epg-epg_3"
-      relation_resource_name: "contract_master"
-      properties:
-        name: "epg_3"
 
 fvCrtrn:
   overwrites:

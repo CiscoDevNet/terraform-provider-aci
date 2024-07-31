@@ -41,11 +41,6 @@ The configuration snippet below creates a Relation To Intra EPG Contract with on
 
 ```hcl
 
-resource "aci_relation_to_intra_epg_contract" "example_application_epg" {
-  parent_dn     = aci_application_epg.example.id
-  contract_name = aci_contract.example.name
-}
-
 resource "aci_relation_to_intra_epg_contract" "example_endpoint_security_group" {
   parent_dn     = aci_endpoint_security_group.example.id
   contract_name = aci_contract.example.name
@@ -57,24 +52,6 @@ The configuration snippet below shows all possible attributes of the Relation To
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
 ```hcl
-
-resource "aci_relation_to_intra_epg_contract" "full_example_application_epg" {
-  parent_dn     = aci_application_epg.example.id
-  annotation    = "annotation"
-  contract_name = aci_contract.example.name
-  annotations = [
-    {
-      key   = "key_0"
-      value = "value_1"
-    }
-  ]
-  tags = [
-    {
-      key   = "key_0"
-      value = "value_1"
-    }
-  ]
-}
 
 resource "aci_relation_to_intra_epg_contract" "full_example_endpoint_security_group" {
   parent_dn     = aci_endpoint_security_group.example.id
@@ -155,7 +132,7 @@ All examples for the Relation To Intra EPG Contract resource can be found in the
 An existing Relation To Intra EPG Contract can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_relation_to_intra_epg_contract.example_application_epg uni/tn-{name}/ap-{name}/epg-{name}/rsintraEpg-{tnVzBrCPName}
+terraform import aci_relation_to_intra_epg_contract.example_endpoint_security_group uni/tn-{name}/ap-{name}/epg-{name}/rsintraEpg-{tnVzBrCPName}
 ```
 
 Starting in Terraform version 1.5, an existing Relation To Intra EPG Contract can be imported
@@ -164,6 +141,6 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/tn-{name}/ap-{name}/epg-{name}/rsintraEpg-{tnVzBrCPName}"
-  to = aci_relation_to_intra_epg_contract.example_application_epg
+  to = aci_relation_to_intra_epg_contract.example_endpoint_security_group
 }
 ```
