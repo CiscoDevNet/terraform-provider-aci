@@ -5,12 +5,77 @@
 package provider
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
 func TestAccResourceInfraHPathS(t *testing.T) {
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config: testConfigInfraHPathSMinAllowExisting,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_host_path_selector.test", "name", "host_path_selector"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test_2", "name", "host_path_selector"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test_2", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test_2", "owner_tag", ""),
+				),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config:      testConfigInfraHPathSMinAllowExisting,
+				ExpectError: regexp.MustCompile("Object Already Exists"),
+			},
+		},
+	})
+
+	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with minimum config and verify default APIC values
+			{
+				Config: testConfigInfraHPathSMinAllowExisting,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_host_path_selector.test", "name", "host_path_selector"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test_2", "name", "host_path_selector"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test_2", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test_2", "owner_tag", ""),
+				),
+			},
+		},
+	})
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -153,6 +218,16 @@ func TestAccResourceInfraHPathS(t *testing.T) {
 		},
 	})
 }
+
+const testConfigInfraHPathSMinAllowExisting = `
+resource "aci_host_path_selector" "test" {
+  name = "host_path_selector"
+}
+resource "aci_host_path_selector" "test_2" {
+  name = "host_path_selector"
+  depends_on = [aci_host_path_selector.test]
+}
+`
 
 const testConfigInfraHPathSMin = `
 resource "aci_host_path_selector" "test" {

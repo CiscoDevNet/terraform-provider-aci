@@ -79,7 +79,6 @@ data "aci_annotation" "example_application_epg" {
   - [aci_relation_to_vrf](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/relation_to_vrf) ([fvRsScope](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsScope/overview))
   - [aci_relation_to_contract_master](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/relation_to_contract_master) ([fvRsSecInherited](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsSecInherited/overview))
   - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
-  - [aci_host_path_selector](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/host_path_selector) ([infraHPathS](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraHPathS/overview))
 * `key` (key) - (string) The key used to uniquely identify this configuration object.
 
 ### Read-Only ###
