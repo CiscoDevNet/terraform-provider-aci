@@ -74,18 +74,22 @@ func DoRestRequestEscapeHtml(ctx context.Context, diags *diag.Diagnostics, aciCl
 	if restResponse != nil && cont.Data() != nil && restResponse.StatusCode != 200 {
 		errCode := models.StripQuotes(models.StripSquareBrackets(cont.Search("imdata", "error", "attributes", "code").String()))
 		errText := models.StripQuotes(models.StripSquareBrackets(cont.Search("imdata", "error", "attributes", "text").String()))
-		if errCode == "103" || errCode == "107" || errCode == "202" {
-			tflog.Debug(ctx, errText)
+		// Ignore errors of type "Cannot create object", "Cannot delete object", "Request in progress" and error text containing "can not be deleted." when the error code is 120
+		if errCode == "103" || errCode == "107" || errCode == "202" || (errCode == "120" && strings.HasSuffix(errText, "can not be deleted.")) {
+			tflog.Debug(ctx, errText, map[string]interface{}{
+				"Error Code": errCode,
+			})
 			return nil
 		} else if (errText == "" && errCode == "403") || errCode == "401" {
 			diags.AddError(
 				"Unable to authenticate. Please check your credentials",
-				fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
+				fmt.Sprintf("Response Status Code: %d, Error Code: %s, Error Message: %s.", restResponse.StatusCode, errCode, errText),
 			)
+			return nil
 		} else {
 			diags.AddError(
 				fmt.Sprintf("The %s rest request failed", strings.ToLower(method)),
-				fmt.Sprintf("Response Status Code: %d Error Code: %s, Error Message: %s.", restResponse.StatusCode, errCode, errText),
+				fmt.Sprintf("Response Status Code: %d, Error Code: %s, Error Message: %s.", restResponse.StatusCode, errCode, errText),
 			)
 			return nil
 		}
