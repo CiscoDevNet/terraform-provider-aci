@@ -280,6 +280,7 @@ func (p *AciProvider) DataSources(ctx context.Context) []func() datasource.DataS
 		NewFvRsSecInheritedDataSource,
 		NewFvSCrtrnDataSource,
 		NewFvVmAttrDataSource,
+		NewInfraHPathSDataSource,
 		NewL3extConsLblDataSource,
 		NewL3extProvLblDataSource,
 		NewL3extRsOutToFBRGroupDataSource,
