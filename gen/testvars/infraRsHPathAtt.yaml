@@ -4,39 +4,20 @@
 
 default:
   annotation: "orchestrator:terraform"
-  description: ""
-  name_alias: ""
-  owner_key: ""
-  owner_tag: ""
 
 datasource_non_existing:
-  name: "host_path_selector_non_existing"
+  target_dn: "non_existing_t_dn"
 
 datasource_required:
-  name: "host_path_selector"
+  target_dn: "test_t_dn"
 
 resource_required:
-  name: "host_path_selector"
+  target_dn: "test_t_dn"
 
 all:
   annotation: "annotation"
-  description: "description_1"
-  name_alias: "name_alias_1"
-  owner_key: "owner_key_1"
-  owner_tag: "owner_tag_1"
 
 children:
-  relation_to_host_paths:
-    - annotation: "annotation_1"
-      target_dn: "target_dn_0"
-      
-    - annotation: "annotation_2"
-      target_dn: "target_dn_1"
-      
-  relation_to_access_base_group:
-    - annotation: "annotation_1"
-      target_dn: "target_dn_1"
-      deletable_child: true
   annotations:
     - key: "key_0"
       value: "value_1"
@@ -52,16 +33,30 @@ children:
       value: "test_value"
       
 parents:
-child_targets:
+  - class_name: "infraHPathS"
+    parent_dependency: ""
+    parent_dn: "aci_host_path_selector.test.id"
+    class_in_parent: false
+    target_classes:
+        - "fabricPathEp"
+targets:
   - class_name: "fabricPathEp"
     target_dn: "topology/pod-1/paths-101/pathep-[eth1/1]"
+    target_dn_ref: "aci_.test__0.id"
+    parent_dependency: ""
+    parent_dependency_dn_ref: ""
+    target_resource_name: ""
     relation_resource_name: "host_path"
+    parent_dn_key: "parent_dn"
     static: true
+    properties:
   - class_name: "fabricPathEp"
     target_dn: "topology/pod-1/paths-101/pathep-[eth1/2]"
+    target_dn_ref: "aci_.test__1.id"
+    parent_dependency: ""
+    parent_dependency_dn_ref: ""
+    target_resource_name: ""
     relation_resource_name: "host_path"
+    parent_dn_key: "parent_dn"
     static: true
-  - class_name: "infraAccPortGrp"
-    target_dn: "uni/infra/funcprof/accportgrp-interface_policy_group"
-    relation_resource_name: "access_base_group"
-    static: true
+    properties:
