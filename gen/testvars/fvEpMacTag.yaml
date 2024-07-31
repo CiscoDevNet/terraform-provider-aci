@@ -23,8 +23,8 @@ resource_required:
 all:
   annotation: "annotation"
   id_attribute: "1"
-  name: "name"
-  name_alias: "name_alias"
+  name: "name_1"
+  name_alias: "name_alias_1"
 
 children:
   annotations:
@@ -32,14 +32,14 @@ children:
       value: "value_1"
       
     - key: "key_1"
-      value: "value_2"
+      value: "test_value"
       
   tags:
     - key: "key_0"
       value: "value_1"
       
     - key: "key_1"
-      value: "value_2"
+      value: "test_value"
       
 parents:
   - class_name: "fvTenant"

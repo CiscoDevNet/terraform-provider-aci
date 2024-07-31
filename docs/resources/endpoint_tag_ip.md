@@ -53,8 +53,8 @@ resource "aci_endpoint_tag_ip" "full_example_tenant" {
   vrf_name     = "test_ctx_name"
   id_attribute = "1"
   ip           = "10.0.0.2"
-  name         = "name"
-  name_alias   = "name_alias"
+  name         = "name_1"
+  name_alias   = "name_alias_1"
   annotations = [
     {
       key   = "key_0"

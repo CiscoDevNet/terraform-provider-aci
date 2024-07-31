@@ -43,14 +43,9 @@ The configuration snippet below creates a Relation To Contract Master with only 
 
 ```hcl
 
-resource "aci_relation_to_contract_master" "example_application_epg" {
-  parent_dn = aci_application_epg.example.id
-  target_dn = aci_application_epg.example_2.id
-}
-
 resource "aci_relation_to_contract_master" "example_endpoint_security_group" {
   parent_dn = aci_endpoint_security_group.example.id
-  target_dn = aci_endpoint_security_group.example_2.id
+  target_dn = aci_endpoint_security_group.example_endpoint_security_group.id
 }
 
 ```
@@ -60,28 +55,10 @@ The configuration snippet below shows all possible attributes of the Relation To
 
 ```hcl
 
-resource "aci_relation_to_contract_master" "full_example_application_epg" {
-  parent_dn  = aci_application_epg.example.id
-  annotation = "annotation"
-  target_dn  = aci_application_epg.example_2.id
-  annotations = [
-    {
-      key   = "key_0"
-      value = "value_1"
-    }
-  ]
-  tags = [
-    {
-      key   = "key_0"
-      value = "value_1"
-    }
-  ]
-}
-
 resource "aci_relation_to_contract_master" "full_example_endpoint_security_group" {
   parent_dn  = aci_endpoint_security_group.example.id
   annotation = "annotation"
-  target_dn  = aci_endpoint_security_group.example_2.id
+  target_dn  = aci_endpoint_security_group.example_endpoint_security_group.id
   annotations = [
     {
       key   = "key_0"
@@ -157,7 +134,7 @@ All examples for the Relation To Contract Master resource can be found in the [e
 An existing Relation To Contract Master can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_relation_to_contract_master.example_application_epg uni/tn-{name}/ap-{name}/epg-{name}/rssecInherited-[{tDn}]
+terraform import aci_relation_to_contract_master.example_endpoint_security_group uni/tn-{name}/ap-{name}/epg-{name}/rssecInherited-[{tDn}]
 ```
 
 Starting in Terraform version 1.5, an existing Relation To Contract Master can be imported
@@ -166,6 +143,6 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/tn-{name}/ap-{name}/epg-{name}/rssecInherited-[{tDn}]"
-  to = aci_relation_to_contract_master.example_application_epg
+  to = aci_relation_to_contract_master.example_endpoint_security_group
 }
 ```

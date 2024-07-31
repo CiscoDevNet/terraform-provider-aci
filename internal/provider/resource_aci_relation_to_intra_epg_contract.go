@@ -13,6 +13,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -49,16 +50,51 @@ type FvRsIntraEpgResourceModel struct {
 	TagTag        types.Set    `tfsdk:"tags"`
 }
 
+func getEmptyFvRsIntraEpgResourceModel() *FvRsIntraEpgResourceModel {
+	return &FvRsIntraEpgResourceModel{
+		Id:           basetypes.NewStringNull(),
+		ParentDn:     basetypes.NewStringNull(),
+		Annotation:   basetypes.NewStringNull(),
+		TnVzBrCPName: basetypes.NewStringNull(),
+		TagAnnotation: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"key":   types.StringType,
+				"value": types.StringType,
+			},
+		}),
+		TagTag: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"key":   types.StringType,
+				"value": types.StringType,
+			},
+		}),
+	}
+}
+
 // TagAnnotationFvRsIntraEpgResourceModel describes the resource data model for the children without relation ships.
 type TagAnnotationFvRsIntraEpgResourceModel struct {
 	Key   types.String `tfsdk:"key"`
 	Value types.String `tfsdk:"value"`
 }
 
+func getEmptyTagAnnotationFvRsIntraEpgResourceModel() TagAnnotationFvRsIntraEpgResourceModel {
+	return TagAnnotationFvRsIntraEpgResourceModel{
+		Key:   basetypes.NewStringNull(),
+		Value: basetypes.NewStringNull(),
+	}
+}
+
 // TagTagFvRsIntraEpgResourceModel describes the resource data model for the children without relation ships.
 type TagTagFvRsIntraEpgResourceModel struct {
 	Key   types.String `tfsdk:"key"`
 	Value types.String `tfsdk:"value"`
+}
+
+func getEmptyTagTagFvRsIntraEpgResourceModel() TagTagFvRsIntraEpgResourceModel {
+	return TagTagFvRsIntraEpgResourceModel{
+		Key:   basetypes.NewStringNull(),
+		Value: basetypes.NewStringNull(),
+	}
 }
 
 type FvRsIntraEpgIdentifier struct {
@@ -123,6 +159,7 @@ func (r *FvRsIntraEpgResource) Schema(ctx context.Context, req resource.SchemaRe
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
 				MarkdownDescription: `The annotation of the Relation To Intra EPG Contract object.`,
@@ -131,6 +168,7 @@ func (r *FvRsIntraEpgResource) Schema(ctx context.Context, req resource.SchemaRe
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
 				MarkdownDescription: `The contract name.`,
@@ -373,6 +411,8 @@ func (r *FvRsIntraEpgResource) ImportState(ctx context.Context, req resource.Imp
 func getAndSetFvRsIntraEpgAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvRsIntraEpgResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "fvRsIntraEpg,tagAnnotation,tagTag"), "GET", nil)
 
+	*data = *getEmptyFvRsIntraEpgResourceModel()
+
 	if diags.HasError() {
 		return
 	}
@@ -401,7 +441,7 @@ func getAndSetFvRsIntraEpgAttributes(ctx context.Context, diags *diag.Diagnostic
 					for childClassName, childClassDetails := range child.(map[string]interface{}) {
 						childAttributes := childClassDetails.(map[string]interface{})["attributes"].(map[string]interface{})
 						if childClassName == "tagAnnotation" {
-							TagAnnotationFvRsIntraEpg := TagAnnotationFvRsIntraEpgResourceModel{}
+							TagAnnotationFvRsIntraEpg := getEmptyTagAnnotationFvRsIntraEpgResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "key" {
 									TagAnnotationFvRsIntraEpg.Key = basetypes.NewStringValue(childAttributeValue.(string))
@@ -413,7 +453,7 @@ func getAndSetFvRsIntraEpgAttributes(ctx context.Context, diags *diag.Diagnostic
 							TagAnnotationFvRsIntraEpgList = append(TagAnnotationFvRsIntraEpgList, TagAnnotationFvRsIntraEpg)
 						}
 						if childClassName == "tagTag" {
-							TagTagFvRsIntraEpg := TagTagFvRsIntraEpgResourceModel{}
+							TagTagFvRsIntraEpg := getEmptyTagTagFvRsIntraEpgResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "key" {
 									TagTagFvRsIntraEpg.Key = basetypes.NewStringValue(childAttributeValue.(string))
@@ -480,10 +520,10 @@ func getFvRsIntraEpgTagAnnotationChildPayloads(ctx context.Context, diags *diag.
 		tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
 		for _, tagAnnotation := range tagAnnotationPlan {
 			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagAnnotation.Key.IsUnknown() {
+			if !tagAnnotation.Key.IsUnknown() && !tagAnnotation.Key.IsNull() {
 				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
 			}
-			if !tagAnnotation.Value.IsUnknown() {
+			if !tagAnnotation.Value.IsUnknown() && !tagAnnotation.Value.IsNull() {
 				childMap["attributes"]["value"] = tagAnnotation.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
@@ -519,10 +559,10 @@ func getFvRsIntraEpgTagTagChildPayloads(ctx context.Context, diags *diag.Diagnos
 		tagTagIdentifiers := []TagTagIdentifier{}
 		for _, tagTag := range tagTagPlan {
 			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagTag.Key.IsUnknown() {
+			if !tagTag.Key.IsUnknown() && !tagTag.Key.IsNull() {
 				childMap["attributes"]["key"] = tagTag.Key.ValueString()
 			}
-			if !tagTag.Value.IsUnknown() {
+			if !tagTag.Value.IsUnknown() && !tagTag.Value.IsNull() {
 				childMap["attributes"]["value"] = tagTag.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})

@@ -21,18 +21,18 @@ func TestAccResourceInfraHPathS(t *testing.T) {
 			{
 				Config: testConfigInfraHPathSMinAllowExisting,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_host_path_selector.test", "name", "host_path_selector"),
-					resource.TestCheckResourceAttr("aci_host_path_selector.test_2", "name", "host_path_selector"),
-					resource.TestCheckResourceAttr("aci_host_path_selector.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_host_path_selector.test_2", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_host_path_selector.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_host_path_selector.test_2", "description", ""),
-					resource.TestCheckResourceAttr("aci_host_path_selector.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_host_path_selector.test_2", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_host_path_selector.test", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_host_path_selector.test_2", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_host_path_selector.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_host_path_selector.test_2", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_host_path_selector.allow_test", "name", "host_path_selector"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.allow_test_2", "name", "host_path_selector"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.allow_test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.allow_test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.allow_test", "description", ""),
+					resource.TestCheckResourceAttr("aci_host_path_selector.allow_test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_host_path_selector.allow_test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_host_path_selector.allow_test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_host_path_selector.allow_test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_host_path_selector.allow_test_2", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_host_path_selector.allow_test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_host_path_selector.allow_test_2", "owner_tag", ""),
 				),
 			},
 		},
@@ -60,18 +60,18 @@ func TestAccResourceInfraHPathS(t *testing.T) {
 			{
 				Config: testConfigInfraHPathSMinAllowExisting,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_host_path_selector.test", "name", "host_path_selector"),
-					resource.TestCheckResourceAttr("aci_host_path_selector.test_2", "name", "host_path_selector"),
-					resource.TestCheckResourceAttr("aci_host_path_selector.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_host_path_selector.test_2", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_host_path_selector.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_host_path_selector.test_2", "description", ""),
-					resource.TestCheckResourceAttr("aci_host_path_selector.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_host_path_selector.test_2", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_host_path_selector.test", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_host_path_selector.test_2", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_host_path_selector.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_host_path_selector.test_2", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_host_path_selector.allow_test", "name", "host_path_selector"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.allow_test_2", "name", "host_path_selector"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.allow_test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.allow_test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.allow_test", "description", ""),
+					resource.TestCheckResourceAttr("aci_host_path_selector.allow_test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_host_path_selector.allow_test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_host_path_selector.allow_test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_host_path_selector.allow_test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_host_path_selector.allow_test_2", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_host_path_selector.allow_test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_host_path_selector.allow_test_2", "owner_tag", ""),
 				),
 			},
 		},
@@ -99,10 +99,10 @@ func TestAccResourceInfraHPathS(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_host_path_selector.test", "name", "host_path_selector"),
 					resource.TestCheckResourceAttr("aci_host_path_selector.test", "annotation", "annotation"),
-					resource.TestCheckResourceAttr("aci_host_path_selector.test", "description", "description"),
-					resource.TestCheckResourceAttr("aci_host_path_selector.test", "name_alias", "name_alias"),
-					resource.TestCheckResourceAttr("aci_host_path_selector.test", "owner_key", "owner_key"),
-					resource.TestCheckResourceAttr("aci_host_path_selector.test", "owner_tag", "owner_tag"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test", "description", "description_1"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test", "name_alias", "name_alias_1"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test", "owner_key", "owner_key_1"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test", "owner_tag", "owner_tag_1"),
 				),
 			},
 			// Update with minimum config and verify config is unchanged
@@ -111,10 +111,10 @@ func TestAccResourceInfraHPathS(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_host_path_selector.test", "name", "host_path_selector"),
 					resource.TestCheckResourceAttr("aci_host_path_selector.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_host_path_selector.test", "description", "description"),
-					resource.TestCheckResourceAttr("aci_host_path_selector.test", "name_alias", "name_alias"),
-					resource.TestCheckResourceAttr("aci_host_path_selector.test", "owner_key", "owner_key"),
-					resource.TestCheckResourceAttr("aci_host_path_selector.test", "owner_tag", "owner_tag"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test", "description", "description_1"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test", "name_alias", "name_alias_1"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test", "owner_key", "owner_key_1"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test", "owner_tag", "owner_tag_1"),
 				),
 			},
 			// Update with empty strings config or default value
@@ -134,14 +134,6 @@ func TestAccResourceInfraHPathS(t *testing.T) {
 				ResourceName:      "aci_host_path_selector.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_host_path_selector.test", "name", "host_path_selector"),
-					resource.TestCheckResourceAttr("aci_host_path_selector.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_host_path_selector.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_host_path_selector.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_host_path_selector.test", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_host_path_selector.test", "owner_tag", ""),
-				),
 			},
 			// Update with children
 			{
@@ -155,12 +147,12 @@ func TestAccResourceInfraHPathS(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_host_path_selector.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_host_path_selector.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_host_path_selector.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_host_path_selector.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test", "annotations.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_host_path_selector.test", "annotations.#", "2"),
 					resource.TestCheckResourceAttr("aci_host_path_selector.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_host_path_selector.test", "tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_host_path_selector.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_host_path_selector.test", "tags.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test", "tags.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_host_path_selector.test", "tags.#", "2"),
 				),
 			},
@@ -176,12 +168,12 @@ func TestAccResourceInfraHPathS(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_host_path_selector.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_host_path_selector.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_host_path_selector.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_host_path_selector.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test", "annotations.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_host_path_selector.test", "annotations.#", "2"),
 					resource.TestCheckResourceAttr("aci_host_path_selector.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_host_path_selector.test", "tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_host_path_selector.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_host_path_selector.test", "tags.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test", "tags.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_host_path_selector.test", "tags.#", "2"),
 				),
 			},
@@ -195,10 +187,10 @@ func TestAccResourceInfraHPathS(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_host_path_selector.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_host_path_selector.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_host_path_selector.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_host_path_selector.test", "annotations.0.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test", "annotations.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_host_path_selector.test", "annotations.#", "1"),
 					resource.TestCheckResourceAttr("aci_host_path_selector.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_host_path_selector.test", "tags.0.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_host_path_selector.test", "tags.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_host_path_selector.test", "tags.#", "1"),
 				),
 			},
@@ -220,12 +212,12 @@ func TestAccResourceInfraHPathS(t *testing.T) {
 }
 
 const testConfigInfraHPathSMinAllowExisting = `
-resource "aci_host_path_selector" "test" {
+resource "aci_host_path_selector" "allow_test" {
   name = "host_path_selector"
 }
-resource "aci_host_path_selector" "test_2" {
+resource "aci_host_path_selector" "allow_test_2" {
   name = "host_path_selector"
-  depends_on = [aci_host_path_selector.test]
+  depends_on = [aci_host_path_selector.allow_test]
 }
 `
 
@@ -239,10 +231,10 @@ const testConfigInfraHPathSAll = `
 resource "aci_host_path_selector" "test" {
   name = "host_path_selector"
   annotation = "annotation"
-  description = "description"
-  name_alias = "name_alias"
-  owner_key = "owner_key"
-  owner_tag = "owner_tag"
+  description = "description_1"
+  name_alias = "name_alias_1"
+  owner_key = "owner_key_1"
+  owner_tag = "owner_tag_1"
 }
 `
 
@@ -266,7 +258,7 @@ resource "aci_host_path_selector" "test" {
 	},
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
   tags = [
@@ -276,7 +268,7 @@ resource "aci_host_path_selector" "test" {
 	},
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
 }
@@ -294,13 +286,13 @@ resource "aci_host_path_selector" "test" {
   annotations = [ 
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
   tags = [ 
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
 }

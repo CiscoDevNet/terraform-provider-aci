@@ -22,18 +22,18 @@ func TestAccResourceFvEpIpTagWithFvTenant(t *testing.T) {
 				Config:             testConfigFvEpIpTagMinDependencyWithFvTenantAllowExisting,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "ip", "10.0.0.2"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test_2", "ip", "10.0.0.2"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "vrf_name", "test_ctx_name"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test_2", "vrf_name", "test_ctx_name"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test_2", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "id_attribute", "0"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test_2", "id_attribute", "0"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "name", ""),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test_2", "name", ""),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.allow_test", "ip", "10.0.0.2"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.allow_test_2", "ip", "10.0.0.2"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.allow_test", "vrf_name", "test_ctx_name"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.allow_test_2", "vrf_name", "test_ctx_name"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.allow_test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.allow_test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.allow_test", "id_attribute", "0"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.allow_test_2", "id_attribute", "0"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.allow_test", "name", ""),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.allow_test_2", "name", ""),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.allow_test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.allow_test_2", "name_alias", ""),
 				),
 			},
 		},
@@ -62,18 +62,18 @@ func TestAccResourceFvEpIpTagWithFvTenant(t *testing.T) {
 				Config:             testConfigFvEpIpTagMinDependencyWithFvTenantAllowExisting,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "ip", "10.0.0.2"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test_2", "ip", "10.0.0.2"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "vrf_name", "test_ctx_name"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test_2", "vrf_name", "test_ctx_name"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test_2", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "id_attribute", "0"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test_2", "id_attribute", "0"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "name", ""),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test_2", "name", ""),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.allow_test", "ip", "10.0.0.2"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.allow_test_2", "ip", "10.0.0.2"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.allow_test", "vrf_name", "test_ctx_name"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.allow_test_2", "vrf_name", "test_ctx_name"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.allow_test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.allow_test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.allow_test", "id_attribute", "0"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.allow_test_2", "id_attribute", "0"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.allow_test", "name", ""),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.allow_test_2", "name", ""),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.allow_test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.allow_test_2", "name_alias", ""),
 				),
 			},
 		},
@@ -105,8 +105,8 @@ func TestAccResourceFvEpIpTagWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "vrf_name", "test_ctx_name"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotation", "annotation"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "id_attribute", "1"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "name", "name"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "name_alias", "name_alias"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "name", "name_1"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "name_alias", "name_alias_1"),
 				),
 			},
 			// Update with minimum config and verify config is unchanged
@@ -151,11 +151,11 @@ func TestAccResourceFvEpIpTagWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.1.value", "test_value"),
 				),
 			},
 			// Import testing with children
@@ -172,12 +172,12 @@ func TestAccResourceFvEpIpTagWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.#", "2"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.#", "2"),
 				),
 			},
@@ -187,10 +187,10 @@ func TestAccResourceFvEpIpTagWithFvTenant(t *testing.T) {
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.0.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.#", "1"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.0.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.#", "1"),
 				),
 			},
@@ -208,16 +208,16 @@ func TestAccResourceFvEpIpTagWithFvTenant(t *testing.T) {
 }
 
 const testConfigFvEpIpTagMinDependencyWithFvTenantAllowExisting = testConfigFvTenantMin + `
-resource "aci_endpoint_tag_ip" "test" {
+resource "aci_endpoint_tag_ip" "allow_test" {
   parent_dn = aci_tenant.test.id
   ip = "10.0.0.2"
   vrf_name = "test_ctx_name"
 }
-resource "aci_endpoint_tag_ip" "test_2" {
+resource "aci_endpoint_tag_ip" "allow_test_2" {
   parent_dn = aci_tenant.test.id
   ip = "10.0.0.2"
   vrf_name = "test_ctx_name"
-  depends_on = [aci_endpoint_tag_ip.test]
+  depends_on = [aci_endpoint_tag_ip.allow_test]
 }
 `
 
@@ -236,8 +236,8 @@ resource "aci_endpoint_tag_ip" "test" {
   vrf_name = "test_ctx_name"
   annotation = "annotation"
   id_attribute = "1"
-  name = "name"
-  name_alias = "name_alias"
+  name = "name_1"
+  name_alias = "name_alias_1"
 }
 `
 
@@ -264,7 +264,7 @@ resource "aci_endpoint_tag_ip" "test" {
 	},
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
   tags = [
@@ -274,7 +274,7 @@ resource "aci_endpoint_tag_ip" "test" {
 	},
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
 }
@@ -296,13 +296,13 @@ resource "aci_endpoint_tag_ip" "test" {
   annotations = [ 
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
   tags = [ 
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
 }

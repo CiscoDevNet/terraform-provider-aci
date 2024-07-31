@@ -2,10 +2,10 @@
 resource "aci_vrf_fallback_route" "full_example_vrf_fallback_route_group" {
   parent_dn      = aci_vrf_fallback_route_group.example.id
   annotation     = "annotation"
-  description    = "description"
+  description    = "description_1"
   prefix_address = "2.2.2.3/24"
-  name           = "name"
-  name_alias     = "name_alias"
+  name           = "name_1"
+  name_alias     = "name_alias_1"
   annotations = [
     {
       key   = "key_0"
