@@ -43,7 +43,15 @@ func mergeMultipleMaps(maps ...map[string]interface{}) map[string]interface{} {
 	result := make(map[string]interface{})
 	for _, m := range maps {
 		for k, v := range m {
-			result[k] = v
+			if existing, ok := result[k].(map[string]interface{}); ok {
+				if vMap, ok := v.(map[string]interface{}); ok {
+					result[k] = mergeMultipleMaps(existing, vMap)
+				} else {
+					result[k] = v
+				}
+			} else {
+				result[k] = v
+			}
 		}
 	}
 	return result
@@ -153,9 +161,6 @@ var createItemFuncMap = map[string]createItemFunc{
 	"aci_vrf_fallback_route_group":                     createAciVrfFallbackRouteGroup,
 }
 
-// EXCECUTES Terraform plan -out=plan.bin
-// EXECUTES Terraform show -json plan.bin > plan.json
-
 func runTerraformCommands() (string, error) {
 	planFile := "plan.bin"
 	jsonFile := "plan.json"
@@ -207,7 +212,12 @@ func processResources(terraformPlan TerraformPlan) map[string]interface{} {
 	for _, resourceChange := range terraformPlan.ResourceChanges {
 		if len(resourceChange.Change.Actions) > 0 && resourceChange.Change.Actions[0] == "delete" {
 			resourceType := resourceChange.Type
-			item := createItem(resourceType, resourceChange.Change.Before, "deleted")
+			beforeAttributes := resourceChange.Change.Before
+			if beforeAttributes == nil {
+				beforeAttributes = make(map[string]interface{})
+			}
+			beforeAttributes["status"] = "deleted"
+			item := createItem(resourceType, beforeAttributes, "deleted")
 			if item != nil {
 				mergedData = mergeMultipleMaps(mergedData, item)
 			}
@@ -231,19 +241,45 @@ func createItem(resourceType string, resourceValues map[string]interface{}, stat
 	for key, val := range resourceValues {
 		attributes[key] = val
 	}
-	if status == "deleted" {
-		attributes["status"] = status
-	}
 
 	var item map[string]interface{}
 	switch resourceType {
 	case "aci_tenant":
 		item = createAciTenant(attributes)
+	case "aci_endpoint_tag_ip":
+		item = createAciEndpointTagIP(attributes)
+	case "aci_external_management_network_instance_profile":
+		item = createAciExternalManagementNetworkInstanceProfile(attributes)
+	case "aci_vrf_fallback_route_group":
+		item = createAciVrfFallbackRouteGroup(attributes)
 	default:
 		item = createProviderItem(resourceType, attributes)
 	}
 
+	if status == "deleted" && item != nil {
+		if attributes, ok := item[resourceTypeToMapKey(resourceType)].(map[string]interface{}); ok {
+			if attrs, ok := attributes["attributes"].(map[string]interface{}); ok {
+				attrs["status"] = status
+			}
+		}
+	}
+
 	return item
+}
+
+func resourceTypeToMapKey(resourceType string) string {
+	switch resourceType {
+	case "aci_tenant":
+		return "fvTenant"
+	case "aci_endpoint_tag_ip":
+		return "fvEpIpTag"
+	case "aci_external_management_network_instance_profile":
+		return "mgmtInstP"
+	case "aci_vrf_fallback_route_group":
+		return "fvFBRGroup"
+	default:
+		return resourceType
+	}
 }
 
 func createProviderItem(resourceType string, attributes map[string]interface{}) map[string]interface{} {
@@ -272,7 +308,9 @@ func createAciTenant(attributes map[string]interface{}) map[string]interface{} {
 		tenantAttributes["status"] = status
 	}
 	return map[string]interface{}{
-		"fvTenant": tenantAttributes,
+		"fvTenant": map[string]interface{}{
+			"attributes": tenantAttributes,
+		},
 	}
 }
 
@@ -298,9 +336,6 @@ func createAciEndpointTagIP(attributes map[string]interface{}) map[string]interf
 	}
 	if val, exists := attributes["name_alias"].(string); exists && val != "" {
 		data.NameAlias = types.StringValue(val)
-	}
-	if status, exists := attributes["status"].(string); exists {
-		data.Status = types.StringValue(status)
 	}
 
 	var planAnnotations []provider.TagAnnotationFvEpIpTagResourceModel
@@ -338,6 +373,15 @@ func createAciEndpointTagIP(attributes map[string]interface{}) map[string]interf
 		log.Fatalf("Error unmarshalling JSON: %v\n", err)
 	}
 
+	// Adding status to customData if exists
+	if status, exists := attributes["status"].(string); exists {
+		if attributes, ok := customData["fvEpIpTag"].(map[string]interface{}); ok {
+			if attrs, ok := attributes["attributes"].(map[string]interface{}); ok {
+				attrs["status"] = status
+			}
+		}
+	}
+
 	printMap(customData, 0)
 
 	return customData
@@ -362,9 +406,6 @@ func createAciExternalManagementNetworkInstanceProfile(attributes map[string]int
 	}
 	if nameAlias, exists := attributes["name_alias"].(string); exists && nameAlias != "" {
 		data.NameAlias = types.StringValue(nameAlias)
-	}
-	if status, exists := attributes["status"].(string); exists {
-		profileAttributes["status"] = status
 	}
 
 	ctx := context.Background()
@@ -419,6 +460,15 @@ func createAciExternalManagementNetworkInstanceProfile(attributes map[string]int
 		log.Fatalf("Error unmarshalling JSON: %v\n", err)
 	}
 
+	// Adding status to customData if exists
+	if status, exists := attributes["status"].(string); exists {
+		if attributes, ok := customData["mgmtInstP"].(map[string]interface{}); ok {
+			if attrs, ok := attributes["attributes"].(map[string]interface{}); ok {
+				attrs["status"] = status
+			}
+		}
+	}
+
 	printMap(customData, 0)
 
 	return customData
@@ -443,9 +493,6 @@ func createAciVrfFallbackRouteGroup(attributes map[string]interface{}) map[strin
 	}
 	if nameAlias, exists := attributes["name_alias"].(string); exists && nameAlias != "" {
 		data.NameAlias = types.StringValue(nameAlias)
-	}
-	if status, exists := attributes["status"].(string); exists {
-		data.Status = types.StringValue(status)
 	}
 
 	ctx := context.Background()
@@ -502,10 +549,24 @@ func createAciVrfFallbackRouteGroup(attributes map[string]interface{}) map[strin
 		log.Fatalf("Error unmarshalling JSON: %v\n", err)
 	}
 
+	// Adding status to customData if exists
+	if status, exists := attributes["status"].(string); exists {
+		if attributes, ok := customData["fvFBRGroup"].(map[string]interface{}); ok {
+			if attrs, ok := attributes["attributes"].(map[string]interface{}); ok {
+				attrs["status"] = status
+			}
+		}
+	}
+
 	// Print the map (for debugging purposes)
 	printMap(customData, 0)
 
+	provider.SetFvFBRGroupId(ctx, &data)
+
+	fmt.Printf("Current DN: %s\n", data.Id.ValueString())
+
 	return customData
+
 }
 
 func main() {

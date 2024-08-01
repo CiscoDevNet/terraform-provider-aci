@@ -26,6 +26,7 @@ resource "aci_tenant" "example" {
   name_alias  = "tenant"
 }
 
+
 resource "aci_vrf_fallback_route_group" "full_example_vrf" {
   parent_dn   = "uni/tn-demo_tenant"
   annotation  = "annotation"
@@ -56,6 +57,7 @@ resource "aci_vrf_fallback_route_group" "full_example_vrf" {
 }
 
 
+/*
 
 resource "aci_external_management_network_instance_profile" "full_example" {
   annotation  = "annotation"
@@ -84,10 +86,10 @@ resource "aci_external_management_network_instance_profile" "full_example" {
   ]
 }
 
-
-
+*/
+/*
 resource "aci_endpoint_tag_ip" "full_example_tenant" {
-  parent_dn    = "uni/tn-example_tenant"
+  parent_dn    = "uni/tn-demo_tenant"
   annotation   = "annotation"
   vrf_name     = "test_ctx_name"
   id_attribute = "1"
@@ -107,7 +109,7 @@ resource "aci_endpoint_tag_ip" "full_example_tenant" {
     }
   ]
 }
-
+*/
 
 /*
 resource "aci_netflow_monitor_policy" "full_example_tenant" {
