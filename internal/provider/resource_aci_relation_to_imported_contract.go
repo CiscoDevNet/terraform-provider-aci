@@ -165,7 +165,6 @@ func (r *FvRsConsIfResource) Schema(ctx context.Context, req resource.SchemaRequ
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
-								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
@@ -173,7 +172,6 @@ func (r *FvRsConsIfResource) Schema(ctx context.Context, req resource.SchemaRequ
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
-								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -193,7 +191,6 @@ func (r *FvRsConsIfResource) Schema(ctx context.Context, req resource.SchemaRequ
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
-								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
@@ -201,7 +198,6 @@ func (r *FvRsConsIfResource) Schema(ctx context.Context, req resource.SchemaRequ
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
-								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -346,12 +342,6 @@ func (r *FvRsConsIfResource) Update(ctx context.Context, req resource.UpdateRequ
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
-
-	if resp.Diagnostics.HasError() {
-		return
-	}
-
-	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_relation_to_imported_contract with id '%s'", data.Id.ValueString()))
 
 	if resp.Diagnostics.HasError() {
 		return

@@ -234,12 +234,6 @@ func (r *TagAnnotationResource) Update(ctx context.Context, req resource.UpdateR
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_annotation with id '%s'", data.Id.ValueString()))
-
-	if resp.Diagnostics.HasError() {
-		return
-	}
-
 	getAndSetTagAnnotationAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save updated data into Terraform state

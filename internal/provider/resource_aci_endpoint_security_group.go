@@ -1137,7 +1137,6 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
-								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The annotation of the Relation To Consumed Contract object.`,
 						},
@@ -1146,7 +1145,6 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
-								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							Validators: []validator.String{
 								stringvalidator.OneOf("level1", "level2", "level3", "level4", "level5", "level6", "unspecified"),
@@ -1157,7 +1155,6 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
-								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The consumer contract name.`,
 						},
@@ -1178,7 +1175,6 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
-								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The annotation of the Relation To Imported Contract object.`,
 						},
@@ -1187,7 +1183,6 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
-								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							Validators: []validator.String{
 								stringvalidator.OneOf("level1", "level2", "level3", "level4", "level5", "level6", "unspecified"),
@@ -1198,7 +1193,6 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
-								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The contract interface name.`,
 						},
@@ -1223,7 +1217,6 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
-								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The annotation of the Relation To Intra Epg Contract object.`,
 						},
@@ -1231,7 +1224,6 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
-								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The contract name.`,
 						},
@@ -1252,7 +1244,6 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
-								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The annotation of the Relation To Provided Contract object.`,
 						},
@@ -1261,7 +1252,6 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
-								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							Validators: []validator.String{
 								stringvalidator.OneOf("All", "AtleastOne", "AtmostOne", "None"),
@@ -1273,7 +1263,6 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
-								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							Validators: []validator.String{
 								stringvalidator.OneOf("level1", "level2", "level3", "level4", "level5", "level6", "unspecified"),
@@ -1284,7 +1273,6 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
-								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The provider contract name.`,
 						},
@@ -1308,7 +1296,6 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
-								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The annotation of the Relation To VRF object.`,
 						},
@@ -1317,7 +1304,6 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
-								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The name of the VRF object.`,
 						},
@@ -1338,7 +1324,6 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
-								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The annotation of the Relation To Contract Master object.`,
 						},
@@ -1346,7 +1331,6 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
-								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The distinguished name of the target.`,
 						},
@@ -1366,7 +1350,6 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
-								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
@@ -1374,7 +1357,6 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
-								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -1394,7 +1376,6 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
-								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
@@ -1402,7 +1383,6 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
-								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -1673,12 +1653,6 @@ func (r *FvESgResource) Update(ctx context.Context, req resource.UpdateRequest, 
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
-
-	if resp.Diagnostics.HasError() {
-		return
-	}
-
-	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_endpoint_security_group with id '%s'", data.Id.ValueString()))
 
 	if resp.Diagnostics.HasError() {
 		return

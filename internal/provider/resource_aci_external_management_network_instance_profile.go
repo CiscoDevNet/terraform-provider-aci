@@ -185,7 +185,6 @@ func (r *MgmtInstPResource) Schema(ctx context.Context, req resource.SchemaReque
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
-								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The annotation of the Relation To Consumed Out Of Band Contract object.`,
 						},
@@ -194,7 +193,6 @@ func (r *MgmtInstPResource) Schema(ctx context.Context, req resource.SchemaReque
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
-								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							Validators: []validator.String{
 								stringvalidator.OneOf("level1", "level2", "level3", "level4", "level5", "level6", "unspecified"),
@@ -205,7 +203,6 @@ func (r *MgmtInstPResource) Schema(ctx context.Context, req resource.SchemaReque
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
-								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The name of the Out Of Band Contract object.`,
 						},
@@ -225,7 +222,6 @@ func (r *MgmtInstPResource) Schema(ctx context.Context, req resource.SchemaReque
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
-								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
@@ -233,7 +229,6 @@ func (r *MgmtInstPResource) Schema(ctx context.Context, req resource.SchemaReque
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
-								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -253,7 +248,6 @@ func (r *MgmtInstPResource) Schema(ctx context.Context, req resource.SchemaReque
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
-								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
@@ -261,7 +255,6 @@ func (r *MgmtInstPResource) Schema(ctx context.Context, req resource.SchemaReque
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
-								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -412,12 +405,6 @@ func (r *MgmtInstPResource) Update(ctx context.Context, req resource.UpdateReque
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
-
-	if resp.Diagnostics.HasError() {
-		return
-	}
-
-	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_external_management_network_instance_profile with id '%s'", data.Id.ValueString()))
 
 	if resp.Diagnostics.HasError() {
 		return

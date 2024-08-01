@@ -193,7 +193,6 @@ func (r *FvFBRGroupResource) Schema(ctx context.Context, req resource.SchemaRequ
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
-								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The annotation of the VRF Fallback Route Group Member object.`,
 						},
@@ -202,7 +201,6 @@ func (r *FvFBRGroupResource) Schema(ctx context.Context, req resource.SchemaRequ
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
-								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The description of the VRF Fallback Route Group Member object.`,
 						},
@@ -211,7 +209,6 @@ func (r *FvFBRGroupResource) Schema(ctx context.Context, req resource.SchemaRequ
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
-								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The name of the VRF Fallback Route Group Member object.`,
 						},
@@ -220,7 +217,6 @@ func (r *FvFBRGroupResource) Schema(ctx context.Context, req resource.SchemaRequ
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
-								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The name alias of the VRF Fallback Route Group Member object.`,
 						},
@@ -228,7 +224,6 @@ func (r *FvFBRGroupResource) Schema(ctx context.Context, req resource.SchemaRequ
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
-								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The address of the VRF Fallback Route Group Member object.`,
 						},
@@ -252,7 +247,6 @@ func (r *FvFBRGroupResource) Schema(ctx context.Context, req resource.SchemaRequ
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
-								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The annotation of the VRF Fallback Route object.`,
 						},
@@ -261,7 +255,6 @@ func (r *FvFBRGroupResource) Schema(ctx context.Context, req resource.SchemaRequ
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
-								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The description of the VRF Fallback Route object.`,
 						},
@@ -269,7 +262,6 @@ func (r *FvFBRGroupResource) Schema(ctx context.Context, req resource.SchemaRequ
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
-								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The prefix address of the VRF Fallback Route object.`,
 						},
@@ -278,7 +270,6 @@ func (r *FvFBRGroupResource) Schema(ctx context.Context, req resource.SchemaRequ
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
-								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The name of the VRF Fallback Route object.`,
 						},
@@ -287,7 +278,6 @@ func (r *FvFBRGroupResource) Schema(ctx context.Context, req resource.SchemaRequ
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
-								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The name alias of the VRF Fallback Route object.`,
 						},
@@ -307,7 +297,6 @@ func (r *FvFBRGroupResource) Schema(ctx context.Context, req resource.SchemaRequ
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
-								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
@@ -315,7 +304,6 @@ func (r *FvFBRGroupResource) Schema(ctx context.Context, req resource.SchemaRequ
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
-								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -335,7 +323,6 @@ func (r *FvFBRGroupResource) Schema(ctx context.Context, req resource.SchemaRequ
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
-								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
@@ -343,7 +330,6 @@ func (r *FvFBRGroupResource) Schema(ctx context.Context, req resource.SchemaRequ
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
-								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -500,12 +486,6 @@ func (r *FvFBRGroupResource) Update(ctx context.Context, req resource.UpdateRequ
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
-
-	if resp.Diagnostics.HasError() {
-		return
-	}
-
-	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_vrf_fallback_route_group with id '%s'", data.Id.ValueString()))
 
 	if resp.Diagnostics.HasError() {
 		return

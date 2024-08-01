@@ -201,7 +201,6 @@ func (r *PkiTPResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
-								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
@@ -209,7 +208,6 @@ func (r *PkiTPResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
-								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -229,7 +227,6 @@ func (r *PkiTPResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
-								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
@@ -237,7 +234,6 @@ func (r *PkiTPResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
-								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -403,12 +399,6 @@ func (r *PkiTPResource) Update(ctx context.Context, req resource.UpdateRequest, 
 			break
 		}
 	}
-
-	if resp.Diagnostics.HasError() {
-		return
-	}
-
-	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_certificate_authority with id '%s'", data.Id.ValueString()))
 
 	if resp.Diagnostics.HasError() {
 		return

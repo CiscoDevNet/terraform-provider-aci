@@ -102,6 +102,9 @@ func testAccPreCheck(t *testing.T, testType string, TestApplicableFromVersion st
 		t.Fatalf("Error fetching APIC controller information: %v", err)
 	}
 	apicVersion := extractControllerVersion(infoController)
+	if TestApplicableFromVersion == "unknown" {
+		t.Skip("[WARNING] Test skipped because it contains a property whose version is unknown")
+	}
 	if apicVersion != TestApplicableFromVersion {
 		if isVersionGreater(parseVersion(TestApplicableFromVersion), parseVersion(apicVersion)) {
 			t.Skip("[WARNING] Test skipped because it contains a property that is not supported on APIC version:", apicVersion)

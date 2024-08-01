@@ -942,7 +942,6 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 							{{- end}}
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
-								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							{{- if .ValidValues}}
 							Validators: []validator.String{
@@ -1220,12 +1219,6 @@ tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_{{ .ResourceName }} with id
     }
 {{- end }}
 
-	if resp.Diagnostics.HasError() {
-		return
-	}
-
-	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_{{.ResourceName}} with id '%s'", data.Id.ValueString()))
-	
 	if resp.Diagnostics.HasError() {
 		return
 	}

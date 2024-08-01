@@ -982,18 +982,23 @@ type Version struct {
 	Tag   int
 }
 
-func parseVersion(rawVersion string) Version {
+type VersionResult struct {
+	Version *Version
+	Error   string
+}
+
+func parseVersion(rawVersion string) VersionResult {
 	versionRegex := regexp.MustCompile(`(\d+)\.(\d+)\((\d+)([a-z])\)`)
 	matches := versionRegex.FindStringSubmatch(rawVersion)
 	if matches == nil {
-		panic("The files included in the metadata do not contain the version of APIC where the properties were first introduced. Please ensure that only the correct metadata files are included.")
+		return VersionResult{Error: "unknown"}
 	}
 	major, _ := strconv.Atoi(matches[1])
 	minor, _ := strconv.Atoi(matches[2])
 	patch, _ := strconv.Atoi(matches[3])
 	tag := int(matches[4][0])
 
-	return Version{Major: major, Minor: minor, Patch: patch, Tag: tag}
+	return VersionResult{Version: &Version{Major: major, Minor: minor, Patch: patch, Tag: tag}}
 
 }
 
@@ -1016,8 +1021,13 @@ func setTestApplicableFromVersion(model *Model) {
 	var checkLatestVersion func(*Model)
 	checkLatestVersion = func(m *Model) {
 		for _, property := range m.Properties {
-			version := parseVersion(property.RawVersion)
+			versionResult := parseVersion(property.RawVersion)
+			if versionResult.Error == "unknown" {
+				m.TestApplicableFromVersion = "unknown"
+				break
+			}
 
+			version := *versionResult.Version
 			if isVersionGreater(version, latestVersion) {
 				latestVersion = version
 				m.TestApplicableFromVersion = property.RawVersion
