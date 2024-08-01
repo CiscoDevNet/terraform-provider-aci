@@ -123,6 +123,7 @@ func (r *L3extRsOutToFBRGroupResource) Schema(ctx context.Context, req resource.
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
 				MarkdownDescription: `The annotation of the Relation To VRF Fallback Route Group object.`,
@@ -131,6 +132,7 @@ func (r *L3extRsOutToFBRGroupResource) Schema(ctx context.Context, req resource.
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
 				MarkdownDescription: `The distinguished name of the VRF Fallback Route Group object.`,
@@ -259,6 +261,7 @@ func (r *L3extRsOutToFBRGroupResource) Create(ctx context.Context, req resource.
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -391,6 +394,12 @@ func getAndSetL3extRsOutToFBRGroupAttributes(ctx context.Context, diags *diag.Di
 				if attributeName == "tDn" {
 					data.TDn = basetypes.NewStringValue(attributeValue.(string))
 				}
+			}
+			if data.Annotation.IsUnknown() {
+				data.Annotation = types.StringNull()
+			}
+			if data.TDn.IsUnknown() {
+				data.TDn = types.StringNull()
 			}
 			TagAnnotationL3extRsOutToFBRGroupList := make([]TagAnnotationL3extRsOutToFBRGroupResourceModel, 0)
 			TagTagL3extRsOutToFBRGroupList := make([]TagTagL3extRsOutToFBRGroupResourceModel, 0)
@@ -580,7 +589,6 @@ func getL3extRsOutToFBRGroupCreateJsonPayload(ctx context.Context, diags *diag.D
 	if !data.TDn.IsNull() && !data.TDn.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["tDn"] = data.TDn.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"l3extRsOutToFBRGroup": payloadMap})
 	if err != nil {
 		diags.AddError(

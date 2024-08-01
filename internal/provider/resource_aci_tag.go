@@ -106,6 +106,7 @@ func (r *TagTagResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
 				MarkdownDescription: `The key used to uniquely identify this configuration object.`,
@@ -114,6 +115,7 @@ func (r *TagTagResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The value of the property.`,
 			},
@@ -169,6 +171,7 @@ func (r *TagTagResource) Create(ctx context.Context, req resource.CreateRequest,
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -294,6 +297,12 @@ func getAndSetTagTagAttributes(ctx context.Context, diags *diag.Diagnostics, cli
 					data.Value = basetypes.NewStringValue(attributeValue.(string))
 				}
 			}
+			if data.Key.IsUnknown() {
+				data.Key = types.StringNull()
+			}
+			if data.Value.IsUnknown() {
+				data.Value = types.StringNull()
+			}
 		} else {
 			diags.AddError(
 				"too many results in response",
@@ -349,7 +358,6 @@ func getTagTagCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, cr
 	if !data.Value.IsNull() && !data.Value.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["value"] = data.Value.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"tagTag": payloadMap})
 	if err != nil {
 		diags.AddError(

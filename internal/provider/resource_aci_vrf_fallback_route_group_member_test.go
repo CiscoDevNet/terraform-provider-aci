@@ -14,7 +14,7 @@ import (
 func TestAccResourceFvFBRMemberWithFvFBRGroup(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(4d)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -39,7 +39,7 @@ func TestAccResourceFvFBRMemberWithFvFBRGroup(t *testing.T) {
 
 	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(4d)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -52,7 +52,7 @@ func TestAccResourceFvFBRMemberWithFvFBRGroup(t *testing.T) {
 
 	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(4d)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -76,7 +76,7 @@ func TestAccResourceFvFBRMemberWithFvFBRGroup(t *testing.T) {
 	})
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(4d)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -167,6 +167,10 @@ func TestAccResourceFvFBRMemberWithFvFBRGroup(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "name", ""),
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "name", ""),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "annotations.1.key", "key_1"),
@@ -217,6 +221,9 @@ func TestAccResourceFvFBRMemberWithFvFBRGroup(t *testing.T) {
 				),
 			},
 		},
+		CheckDestroy: resource.ComposeAggregateTestCheckFunc(
+			testCheckResourceDestroy,
+		),
 	})
 }
 

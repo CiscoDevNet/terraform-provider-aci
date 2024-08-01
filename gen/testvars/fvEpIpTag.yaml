@@ -46,3 +46,6 @@ parents:
     parent_dependency: ""
     parent_dn: "aci_tenant.test.id"
     class_in_parent: false
+    test_type: both
+    test_applicable_from_version: 5.2(1g)
+

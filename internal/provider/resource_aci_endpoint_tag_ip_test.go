@@ -14,7 +14,7 @@ import (
 func TestAccResourceFvEpIpTagWithFvTenant(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(1g)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -41,7 +41,7 @@ func TestAccResourceFvEpIpTagWithFvTenant(t *testing.T) {
 
 	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(1g)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -54,7 +54,7 @@ func TestAccResourceFvEpIpTagWithFvTenant(t *testing.T) {
 
 	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(1g)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -80,7 +80,7 @@ func TestAccResourceFvEpIpTagWithFvTenant(t *testing.T) {
 	})
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(1g)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -178,6 +178,10 @@ func TestAccResourceFvEpIpTagWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "id_attribute", "0"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "name", ""),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "id_attribute", "0"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "name", ""),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.1.key", "key_1"),
@@ -228,6 +232,9 @@ func TestAccResourceFvEpIpTagWithFvTenant(t *testing.T) {
 				),
 			},
 		},
+		CheckDestroy: resource.ComposeAggregateTestCheckFunc(
+			testCheckResourceDestroy,
+		),
 	})
 }
 

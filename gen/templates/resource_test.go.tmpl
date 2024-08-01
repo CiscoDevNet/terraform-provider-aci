@@ -13,15 +13,15 @@ import (
 
 {{- if .parents}}
 	{{- range .parents}}{{$target_classes := .target_classes}}
-func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *testing.T) {
+func TestAccResource{{$.resourceClassName}}{{if .class_name}}With{{capitalize .class_name}}{{end}}(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+PreCheck: func() { testAccPreCheck(t, "{{.test_type}}", "{{.test_applicable_from_version}}") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config: testConfig{{$.resourceClassName}}MinDependencyWith{{capitalize .class_name}}AllowExisting,
+				Config: testConfig{{$.resourceClassName}}Min{{if .class_name}}DependencyWith{{capitalize .class_name}}{{end}}AllowExisting,
 				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
 		{{- range $key, $value := $.resource_required}}{{$contains := definedInMap $key $.default}}
@@ -30,23 +30,27 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{getTestTargetDn $.targets $.resourceName $value false $target_classes 0}}"),
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test_2", "{{$key}}", "{{getTestTargetDn $.targets $.resourceName $value false $target_classes 0}}"),
 				{{- else }}
+					{{- if not (definedInList $.exclude_attributes $key) }}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test_2", "{{$key}}", "{{$value}}"),
+					{{- end }}
 				{{- end }}
 			{{- end}}
 		{{- end}}
 		{{- range $key, $value := $.default}}
-			{{- if (isInterfaceSlice $value)}}
+			{{- if not (definedInList $.exclude_attributes $key) }}
+				{{- if (isInterfaceSlice $value)}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "{{len $value}}"),
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test_2", "{{$key}}.#", "{{len $value}}"),
-				{{- range $index, $subvalue := $value}}
+					{{- range $index, $subvalue := $value}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$index}}", "{{$subvalue}}"),
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test_2", "{{$key}}.{{$index}}", "{{$subvalue}}"),
-				{{- end}}
-			{{- else}}
+					{{- end}}
+				{{- else}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test_2", "{{$key}}", "{{$value}}"),
-			{{- end}}
+				{{- end}}
+			{{- end }}
 		{{- end}}
 				),
 			},
@@ -55,12 +59,12 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 
 	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "{{.test_type}}", "{{.test_applicable_from_version}}") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config: testConfig{{$.resourceClassName}}MinDependencyWith{{capitalize .class_name}}AllowExisting,
+				Config: testConfig{{$.resourceClassName}}Min{{if .class_name}}DependencyWith{{capitalize .class_name}}{{end}}AllowExisting,
 				ExpectError: regexp.MustCompile("Object Already Exists"),
 			},
 		},
@@ -68,12 +72,12 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 
 	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "{{.test_type}}", "{{.test_applicable_from_version}}") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config: testConfig{{$.resourceClassName}}MinDependencyWith{{capitalize .class_name}}AllowExisting,
+				Config: testConfig{{$.resourceClassName}}Min{{if .class_name}}DependencyWith{{capitalize .class_name}}{{end}}AllowExisting,
 				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
 		{{- range $key, $value := $.resource_required}}{{$contains := definedInMap $key $.default}}
@@ -82,22 +86,26 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{getTestTargetDn $.targets $.resourceName $value false $target_classes 0}}"),
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test_2", "{{$key}}", "{{getTestTargetDn $.targets $.resourceName $value false $target_classes 0}}"),
 				{{- else }}
+				    {{- if not (definedInList $.exclude_attributes $key) }}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test_2", "{{$key}}", "{{$value}}"),
+					{{- end }}
 				{{- end }}
 			{{- end}}
 		{{- end}}
 		{{- range $key, $value := $.default}}
-			{{- if (isInterfaceSlice $value)}}
+			{{- if not (definedInList $.exclude_attributes $key) }}
+				{{- if (isInterfaceSlice $value)}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "{{len $value}}"),
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test_2", "{{$key}}.#", "{{len $value}}"),
-				{{- range $index, $subvalue := $value}}
+					{{- range $index, $subvalue := $value}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$index}}", "{{$subvalue}}"),
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test_2", "{{$key}}.{{$index}}", "{{$subvalue}}"),
-				{{- end}}
-			{{- else}}
+					{{- end}}
+				{{- else}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test_2", "{{$key}}", "{{$value}}"),
+				{{- end}}
 			{{- end}}
 		{{- end}}
 				),
@@ -106,12 +114,12 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 	})
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "{{.test_type}}", "{{.test_applicable_from_version}}") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config: testConfig{{$.resourceClassName}}MinDependencyWith{{capitalize .class_name}},
+				Config: testConfig{{$.resourceClassName}}Min{{if .class_name}}DependencyWith{{capitalize .class_name}}{{end}},
 				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
 		{{- range $key, $value := $.resource_required}}{{$contains := definedInMap $key $.default}}
@@ -119,25 +127,29 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 				{{- if eq $key "target_dn" }}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{getTestTargetDn $.targets $.resourceName $value false $target_classes 0}}"),
 				{{- else }}
+					{{- if not (definedInList $.exclude_attributes $key) }}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
 				{{- end }}
 			{{- end}}
+			{{- end}}
 		{{- end}}
 		{{- range $key, $value := $.default}}
-			{{- if (isInterfaceSlice $value)}}
+			{{- if not (definedInList $.exclude_attributes $key) }}
+				{{- if (isInterfaceSlice $value)}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "{{len $value}}"),
-				{{- range $index, $subvalue := $value}}
+					{{- range $index, $subvalue := $value}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$index}}", "{{$subvalue}}"),
-				{{- end}}
-			{{- else}}
+					{{- end}}
+				{{- else}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
-			{{- end}}
+				{{- end}}
+			{{- end}}		
 		{{- end}}
 				),
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config: testConfig{{$.resourceClassName}}AllDependencyWith{{capitalize .class_name}},
+				Config: testConfig{{$.resourceClassName}}All{{ if .class_name}}DependencyWith{{capitalize .class_name}}{{end}},
 				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
 		{{- range $key, $value := $.resource_required}}{{$contains := definedInMap $key $.all}}
@@ -145,32 +157,38 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 				{{- if eq $key "target_dn" }}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{getTestTargetDn $.targets $.resourceName $value false $target_classes 0}}"),
 				{{- else }}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
-				{{- end }}
+					{{- if not (definedInList $.exclude_attributes $key) }}
+					   resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+				    {{- end }}
+				{{- end}}
 			{{- end}}
 		{{- end}}
 		{{- range $key, $value := $.all}}
-			{{- if (isInterfaceSlice $value)}}
+			{{- if not (definedInList $.exclude_attributes $key) }}
+				{{- if (isInterfaceSlice $value)}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "{{len $value}}"),
-				{{- range $index, $subvalue := $value}}
+					{{- range $index, $subvalue := $value}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$index}}", "{{$subvalue}}"),
-				{{- end}}
-			{{- else}}
+					{{- end}}
+				{{- else}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+				{{- end}}
 			{{- end}}
 		{{- end}}
 				),
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config: testConfig{{$.resourceClassName}}MinDependencyWith{{capitalize .class_name}},
+				Config: testConfig{{$.resourceClassName}}Min{{if .class_name}}DependencyWith{{capitalize .class_name}}{{end}},
 				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
 		{{- range $key, $value := $.resource_required}}
 			{{- if eq $key "target_dn" }}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{getTestTargetDn $.targets $.resourceName $value false $target_classes 0}}"),
 			{{- else }}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+					{{- if not (definedInList $.exclude_attributes $key) }}
+						resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+					{{- end}}
 			{{- end }}
 		{{- end}}
 		{{- range $key, $value := $.all}}{{$contains := definedInMap $key $.all}}
@@ -190,72 +208,22 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 			},
 			// Update with empty strings config or default value
 			{
-				Config: testConfig{{$.resourceClassName}}ResetDependencyWith{{capitalize .class_name}},
+				Config: testConfig{{$.resourceClassName}}Reset{{ if .class_name}}DependencyWith{{capitalize .class_name}}{{end}},
 				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
 		{{- range $key, $value := $.resource_required}}
 			{{- if eq $key "target_dn" }}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{getTestTargetDn $.targets $.resourceName $value false $target_classes 0}}"),
 			{{- else }}
+				{{- if not (definedInList $.exclude_attributes $key) }}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+				{{- end }}
 			{{- end }}
 		{{- end}}
+	{{- if $.resource_required }}
 		{{- range $key, $value := $.default}}{{$contains := definedInMap $key $.resource_required}}
 			{{- if not $contains}}
-				{{- if (isInterfaceSlice $value)}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "{{len $value}}"),
-					{{- range $index, $subvalue := $value}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$index}}", "{{$subvalue}}"),
-					{{- end}}
-				{{- else}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
-				{{- end}}
-			{{- end}}
-		{{- end}}
-				),
-			},
-			// Import testing
-			{
-				ResourceName:      "aci_{{$.resourceName}}.test",
-				ImportState:       true,
-        		ImportStateVerify: true,
-				Check: resource.ComposeAggregateTestCheckFunc(
-		{{- range $key, $value := $.resource_required}}
-			{{- if eq $key "target_dn" }}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{getTestTargetDn $.targets $.resourceName $value false $target_classes 0}}"),
-			{{- else }}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
-			{{- end }}
-		{{- end}}
-		{{- range $key, $value := $.default}}{{$contains := definedInMap $key $.resource_required}}
-			{{- if not $contains}}
-				{{- if (isInterfaceSlice $value)}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "{{len $value}}"),
-					{{- range $index, $subvalue := $value}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$index}}", "{{$subvalue}}"),
-					{{- end}}
-				{{- else}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
-				{{- end}}
-			{{- end}}
-		{{- end}}
-				),
-			},
-		{{- if $.children}}
-			// Update with children
-			{
-				Config: testConfig{{$.resourceClassName}}ChildrenDependencyWith{{capitalize .class_name}},
-				ExpectNonEmptyPlan: {{.class_in_parent}},
-				Check: resource.ComposeAggregateTestCheckFunc(
-		{{- range $key, $value := $.resource_required}}
-			{{- if eq $key "target_dn" }}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{getTestTargetDn $.targets $.resourceName $value false $target_classes 0}}"),
-			{{- else }}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
-			{{- end }}
-		{{- end}}
-			{{- range $key, $value := $.default}}{{$contains := definedInMap $key $.resource_required}}
-				{{- if not $contains}}
+				{{- if not (definedInList $.exclude_attributes $key) }}
 					{{- if (isInterfaceSlice $value)}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "{{len $value}}"),
 						{{- range $index, $subvalue := $value}}
@@ -266,6 +234,77 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 					{{- end}}
 				{{- end}}
 			{{- end}}
+		{{- end}}
+	{{- end}}
+				),
+			},
+			// Import testing
+			{
+				ResourceName:      "aci_{{$.resourceName}}.test",
+				ImportState:       true,
+        		ImportStateVerify: true,
+				{{- if $.exclude_attributes }}
+				ImportStateVerifyIgnore: []string{
+                {{- range $.exclude_attributes }}"{{.}}",{{- end}}
+            	},
+				{{- end}}
+				Check: resource.ComposeAggregateTestCheckFunc(
+		{{- range $key, $value := $.resource_required}}
+			{{- if eq $key "target_dn" }}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{getTestTargetDn $.targets $.resourceName $value false $target_classes 0}}"),
+			{{- else }}
+			    {{- if not (definedInList $.exclude_attributes $key) }}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+				{{- end }}
+			{{- end }}
+		{{- end}}
+		{{- if $.resource_required }}
+		{{- range $key, $value := $.default}}{{$contains := definedInMap $key $.resource_required}}
+			{{- if not $contains}}
+				{{- if (isInterfaceSlice $value)}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "{{len $value}}"),
+					{{- range $index, $subvalue := $value}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$index}}", "{{$subvalue}}"),
+					{{- end}}
+				{{- else}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+				{{- end}}
+			{{- end}}
+		{{- end}}
+		{{- end}}
+				),
+			},
+		{{- if $.children}}
+			// Update with children
+			{
+				Config: testConfig{{$.resourceClassName}}Children{{ if .class_name}}DependencyWith{{capitalize .class_name}}{{end}},
+				ExpectNonEmptyPlan: {{.class_in_parent}},
+				Check: resource.ComposeAggregateTestCheckFunc(
+		{{- range $key, $value := $.resource_required}}
+			{{- if eq $key "target_dn" }}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{getTestTargetDn $.targets $.resourceName $value false $target_classes 0}}"),
+			{{- else }}
+			    {{- if not (definedInList $.exclude_attributes $key) }}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+				{{- end }}
+			{{- end }}
+		{{- end}}
+		{{- if $.resource_required }}
+			{{- range $key, $value := $.default}}{{$contains := definedInMap $key $.resource_required}}
+				{{- if not $contains}}
+					{{- if not (definedInList $.exclude_attributes $key) }}
+						{{- if (isInterfaceSlice $value)}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "{{len $value}}"),
+							{{- range $index, $subvalue := $value}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$index}}", "{{$subvalue}}"),
+							{{- end}}
+						{{- else}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+						{{- end}}
+					{{- end}}
+				{{- end}}
+			{{- end}}
+		{{- end}}
 			{{- range $key, $value := $.children}}
 				{{- range $child_index, $child := $value}}
 					{{- range $child_key, $child_value := $child}}
@@ -284,6 +323,11 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 				ResourceName:      "aci_{{$.resourceName}}.test",
 				ImportState:       true,
 				ImportStateVerify: true,
+				{{- if $.exclude_attributes }}
+				ImportStateVerifyIgnore: []string{
+                {{- range $.exclude_attributes }}"{{.}}",{{- end}}
+            	},
+				{{- end}}
 				Check: resource.ComposeAggregateTestCheckFunc(
 		{{- range $key, $value := $.resource_required}}
 			{{- if eq $key "target_dn" }}
@@ -294,16 +338,27 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 		{{- end}}
 			{{- range $key, $value := $.default}}{{$contains := definedInMap $key $.resource_required}}
 				{{- if not $contains}}
-					{{- if (isInterfaceSlice $value)}}
+					{{- if not (definedInList $.exclude_attributes $key) }}
+						{{- if (isInterfaceSlice $value)}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "{{len $value}}"),
-						{{- range $index, $subvalue := $value}}
+							{{- range $index, $subvalue := $value}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$index}}", "{{$subvalue}}"),
+							{{- end}}
+						{{- else}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
 						{{- end}}
-					{{- else}}
+					{{- end}}
+				{{- end }}
+			{{- end}}
+		{{- if $.resource_required }}
+			{{- range $key, $value := $.default}}{{$contains := definedInMap $key $.resource_required}}
+				{{- if not $contains}}
+					{{- if not (definedInList $.exclude_attributes $key) }}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
 					{{- end}}
 				{{- end}}
 			{{- end}}
+		{{- end}}
 			{{- range $key, $value := $.children}}
 				{{- range $child_index, $child := $value}}
 					{{- range $child_key, $child_value := $child}}
@@ -319,12 +374,13 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 			},
 			// Update with children removed from config
 			{
-				Config: testConfig{{$.resourceClassName}}ChildrenRemoveFromConfigDependencyWith{{capitalize .class_name}},
+				Config: testConfig{{$.resourceClassName}}ChildrenRemoveFromConfig{{ if .class_name}}DependencyWith{{capitalize .class_name}}{{end}},
 				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
 		{{- range $key, $value := .min}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
 		{{- end}}
+		{{- if $.resource_required }}
 		{{- range $key, $value := .default}}{{$contains := definedInMap $key $.resource_required}}
 			{{- if not $contains}}
 				{{- if (isInterfaceSlice $value)}}
@@ -336,6 +392,7 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
 				{{- end}}
 			{{- end}}
+		{{- end}}
 		{{- end}}
 		{{- range $key, $value := $.children}}
 			{{- range $child_index, $child := $value}}
@@ -357,7 +414,7 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 			},
 			// Update with children first child removed
 			{
-				Config: testConfig{{$.resourceClassName}}ChildrenRemoveOneDependencyWith{{capitalize .class_name}},
+				Config: testConfig{{$.resourceClassName}}ChildrenRemoveOne{{ if .class_name}}DependencyWith{{capitalize .class_name}}{{end}},
 				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
 		{{- range $key, $value := .min}}
@@ -366,7 +423,7 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 		{{- range $key, $value := .default}}{{$contains := definedInMap $key $.resource_required}}
 				{{- if not $contains}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
-			{{- end}}
+				{{- end}}
 		{{- end}}
 		{{- range $key, $value := $.children}}
 			{{- if eq (len $value) 1}}{{- $child := index $value 0 }}
@@ -398,7 +455,7 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 			},
 			// Update with all children removed
 			{
-				Config: testConfig{{$.resourceClassName}}ChildrenRemoveAllDependencyWith{{capitalize .class_name}},
+				Config: testConfig{{$.resourceClassName}}ChildrenRemoveAll{{ if .class_name}}DependencyWith{{capitalize .class_name}}{{end}},
 				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
 		{{- range $key, $value := .min}}
@@ -429,14 +486,16 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 			},
 		{{- end}}
 		},
+		CheckDestroy: resource.ComposeAggregateTestCheckFunc(
+			testCheckResourceDestroy,
+		),
 	})
 }	{{- end}}
-
 {{- else}}
 func TestAccResource{{.resourceClassName}}(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "{{.test_type}}", "{{.test_applicable_from_version}}") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -465,7 +524,7 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 
 	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "{{.test_type}}", "{{.test_applicable_from_version}}") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -478,7 +537,7 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 
 	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "{{.test_type}}", "{{.test_applicable_from_version}}") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -506,7 +565,7 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 	})
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "{{.test_type}}", "{{.test_applicable_from_version}}") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -807,6 +866,9 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 			},
 	{{- end}}
 		},
+		CheckDestroy: resource.ComposeAggregateTestCheckFunc(
+			testCheckResourceDestroy,
+		),
 	})
 }
 {{end}}
@@ -816,15 +878,15 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 {{ $dependencies = true }}
 const testDependencyConfig{{$.resourceClassName}} = `
 	{{- range $index, $target := .targets}}
-		{{- if ne .parent_dependency "" }}
 resource "aci_{{$target.target_resource_name}}" "test_{{$index}}" {
+  {{- if ne $target.parent_dependency_dn_ref ""}}
   {{$target.parent_dn_key}} = {{$target.parent_dependency_dn_ref}}
+  {{- end}}
   			{{- range $key, $value := $target.properties}}
   {{$key}} = "{{$value}}"
   			{{- end}}
 }
 
-		{{- end }}
 	{{- end }}
 `
 {{- end }}
@@ -850,9 +912,11 @@ resource "aci_{{$target.target_resource_name}}" "test_{{$index}}" {
 {{- if .parents}}
 	{{- range .parents}}{{$target_classes := .target_classes}}
 
-const testConfig{{$.resourceClassName}}MinDependencyWith{{capitalize .class_name}}AllowExisting = {{- if $dependencies }} testDependencyConfig{{$.resourceClassName}} + {{- end }} testConfig{{capitalize .class_name}}Min{{- if ne .parent_dependency ""}}DependencyWith{{capitalize .parent_dependency}}{{if and (ne .parent_dependency_name nil) (ne .parent_dependency_name "")}}{{capitalize .parent_dependency_name }}{{- end }}{{- end}} + `
+const testConfig{{$.resourceClassName}}Min{{if .class_name}}DependencyWith{{capitalize .class_name}}{{- end}}AllowExisting = {{- if $dependencies }} testDependencyConfig{{$.resourceClassName}} + {{- end }} {{if .class_name}}testConfig{{capitalize .class_name}}Min{{- if ne .parent_dependency ""}}DependencyWith{{capitalize .parent_dependency}}{{if and (ne .parent_dependency_name nil) (ne .parent_dependency_name "")}}{{capitalize .parent_dependency_name }}{{- end }}{{- end}} + {{- end}} `
 resource "aci_{{$.resourceName}}" "test" {
+  {{- if ne .parent_dn ""}}
   parent_dn = {{.parent_dn}}
+  {{- end}}
 		{{- range $key, $value := $.resource_required}}
   			{{- if eq $key "target_dn" }}
   {{$key}} = {{getTestTargetDn $.targets $.resourceName $value true $target_classes 0}}
@@ -862,7 +926,9 @@ resource "aci_{{$.resourceName}}" "test" {
   		{{- end}}
 }
 resource "aci_{{$.resourceName}}" "test_2" {
+  {{- if ne .parent_dn ""}}
   parent_dn = {{.parent_dn}}
+  {{- end}}
   		{{- range $key, $value := $.resource_required}}
   			{{- if eq $key "target_dn" }}
   {{$key}} = {{getTestTargetDn $.targets $.resourceName $value true $target_classes 0}}
@@ -874,9 +940,11 @@ resource "aci_{{$.resourceName}}" "test_2" {
 }
 `
 
-const testConfig{{$.resourceClassName}}MinDependencyWith{{capitalize .class_name}} = {{- if $dependencies }} testDependencyConfig{{$.resourceClassName}} + {{- end }} testConfig{{capitalize .class_name}}Min{{- if ne .parent_dependency ""}}DependencyWith{{capitalize .parent_dependency}}{{if and (ne .parent_dependency_name nil) (ne .parent_dependency_name "")}}{{capitalize .parent_dependency_name }}{{- end }}{{- end}} + `
+const testConfig{{$.resourceClassName}}Min{{if .class_name}}DependencyWith{{capitalize .class_name}}{{end}} = {{- if $dependencies }} testDependencyConfig{{$.resourceClassName}} + {{- end }} {{if .class_name}}testConfig{{capitalize .class_name}}Min{{- if ne .parent_dependency ""}}DependencyWith{{capitalize .parent_dependency}}{{if and (ne .parent_dependency_name nil) (ne .parent_dependency_name "")}}{{capitalize .parent_dependency_name }}{{- end }}{{- end}} + {{- end}} `
 resource "aci_{{$.resourceName}}" "test" {
+  {{- if ne .parent_dn ""}}
   parent_dn = {{.parent_dn}}
+  {{- end}}
   		{{- range $key, $value := $.resource_required}}
   			{{- if eq $key "target_dn" }}
   {{$key}} = {{getTestTargetDn $.targets $.resourceName $value true $target_classes 0}}
@@ -887,9 +955,11 @@ resource "aci_{{$.resourceName}}" "test" {
 }
 `
 
-const testConfig{{$.resourceClassName}}AllDependencyWith{{capitalize .class_name}} = {{- if $dependencies }} testDependencyConfig{{$.resourceClassName}} + {{- end }} testConfig{{capitalize .class_name}}Min{{- if ne .parent_dependency ""}}DependencyWith{{capitalize .parent_dependency}}{{if and (ne .parent_dependency_name nil) (ne .parent_dependency_name "")}}{{capitalize .parent_dependency_name }}{{- end }}{{- end}} + `
+const testConfig{{$.resourceClassName}}All{{ if .class_name}}DependencyWith{{capitalize .class_name}}{{end}} = {{- if $dependencies }} testDependencyConfig{{$.resourceClassName}} + {{- end }} {{if .class_name}}testConfig{{capitalize .class_name}}Min{{- if ne .parent_dependency ""}}DependencyWith{{capitalize .parent_dependency}}{{if and (ne .parent_dependency_name nil) (ne .parent_dependency_name "")}}{{capitalize .parent_dependency_name }}{{- end }}{{- end}} + {{- end}} `
 resource "aci_{{$.resourceName}}" "test" {
+  {{- if ne .parent_dn ""}}
   parent_dn = {{.parent_dn}}
+  {{- end}}
 		{{- range $key, $value := $.resource_required}}{{$contains := definedInMap $key $.all}}
 			{{- if not $contains}}
   				{{- if eq $key "target_dn" }}
@@ -913,9 +983,11 @@ resource "aci_{{$.resourceName}}" "test" {
 }
 `
 
-const testConfig{{$.resourceClassName}}ResetDependencyWith{{capitalize .class_name}} = {{- if $dependencies }} testDependencyConfig{{$.resourceClassName}} + {{- end }} testConfig{{capitalize .class_name}}Min{{- if ne .parent_dependency ""}}DependencyWith{{capitalize .parent_dependency}}{{if and (ne .parent_dependency_name nil) (ne .parent_dependency_name "")}}{{capitalize .parent_dependency_name }}{{- end }}{{- end}} + `
+const testConfig{{$.resourceClassName}}Reset{{if .class_name}}DependencyWith{{capitalize .class_name}}{{end}} = {{- if $dependencies }} testDependencyConfig{{$.resourceClassName}} + {{- end }} {{if .class_name}}testConfig{{capitalize .class_name}}Min{{- if ne .parent_dependency ""}}DependencyWith{{capitalize .parent_dependency}}{{if and (ne .parent_dependency_name nil) (ne .parent_dependency_name "")}}{{capitalize .parent_dependency_name }}{{- end }}{{- end}} + {{- end}} `
 resource "aci_{{$.resourceName}}" "test" {
+{{- if ne .parent_dn ""}}
   parent_dn = {{.parent_dn}}
+  {{- end}}
 		{{- range $key, $value := $.resource_required}}{{$contains := definedInMap $key $.default}}
 			{{- if not $contains}}
   				{{- if eq $key "target_dn" }}
@@ -940,9 +1012,11 @@ resource "aci_{{$.resourceName}}" "test" {
 `
 
 		{{- if $.children}}
-const testConfig{{$.resourceClassName}}ChildrenDependencyWith{{capitalize .class_name}} = {{- if $dependencies }} testDependencyConfig{{$.resourceClassName}} + {{- end }}{{- if $childDependencies }} testChildDependencyConfig{{$.resourceClassName}} + {{- end }} testConfig{{capitalize .class_name}}Min{{- if ne .parent_dependency ""}}DependencyWith{{capitalize .parent_dependency}}{{if and (ne .parent_dependency_name nil) (ne .parent_dependency_name "")}}{{capitalize .parent_dependency_name }}{{- end }}{{- end}} + `
+const testConfig{{$.resourceClassName}}Children{{ if .class_name}}DependencyWith{{capitalize .class_name}}{{end}} = {{- if $dependencies }} testDependencyConfig{{$.resourceClassName}} + {{- end }}{{- if $childDependencies }} testChildDependencyConfig{{$.resourceClassName}} + {{- end }} {{if .class_name}}testConfig{{capitalize .class_name}}Min{{- if ne .parent_dependency ""}}DependencyWith{{capitalize .parent_dependency}}{{if and (ne .parent_dependency_name nil) (ne .parent_dependency_name "")}}{{capitalize .parent_dependency_name }}{{- end }}{{- end}} + {{- end}} `
 resource "aci_{{$.resourceName}}" "test" {
+  {{- if ne .parent_dn ""}}
   parent_dn = {{.parent_dn}}
+  {{- end}}
   			{{- range $key, $value := $.resource_required}}
   				{{- if eq $key "target_dn" }}
   {{$key}} = {{getTestTargetDn $.targets $.resourceName $value true $target_classes 0}}
@@ -964,13 +1038,15 @@ resource "aci_{{$.resourceName}}" "test" {
 	},
 				{{- end}}
   ]
-  			{{- end}}
+{{- end}}
 }
 `
 
-const testConfig{{$.resourceClassName}}ChildrenRemoveFromConfigDependencyWith{{capitalize .class_name}} = {{- if $dependencies }} testDependencyConfig{{$.resourceClassName}} + {{- end }}{{- if $childDependencies }} testChildDependencyConfig{{$.resourceClassName}} + {{- end }} testConfig{{capitalize .class_name}}Min{{- if ne .parent_dependency ""}}DependencyWith{{capitalize .parent_dependency}}{{if and (ne .parent_dependency_name nil) (ne .parent_dependency_name "")}}{{capitalize .parent_dependency_name }}{{- end }}{{- end}} + `
+const testConfig{{$.resourceClassName}}ChildrenRemoveFromConfig{{ if .class_name}}DependencyWith{{capitalize .class_name}}{{end}} = {{- if $dependencies }} testDependencyConfig{{$.resourceClassName}} + {{- end }}{{- if $childDependencies }} testChildDependencyConfig{{$.resourceClassName}} + {{- end }} {{if .class_name}}testConfig{{capitalize .class_name}}Min{{- if ne .parent_dependency ""}}DependencyWith{{capitalize .parent_dependency}}{{if and (ne .parent_dependency_name nil) (ne .parent_dependency_name "")}}{{capitalize .parent_dependency_name }}{{- end }}{{- end}} + {{- end}} `
 resource "aci_{{$.resourceName}}" "test" {
+  {{- if ne .parent_dn ""}}
   parent_dn = {{.parent_dn}}
+  {{- end}}
   		{{- range $key, $value := $.resource_required}}
   			{{- if eq $key "target_dn" }}
   {{$key}} = {{getTestTargetDn $.targets $.resourceName $value true $target_classes 0}}
@@ -981,9 +1057,11 @@ resource "aci_{{$.resourceName}}" "test" {
 }
 `
 
-const testConfig{{$.resourceClassName}}ChildrenRemoveOneDependencyWith{{capitalize .class_name}} = {{- if $dependencies }} testDependencyConfig{{$.resourceClassName}} + {{- end }}{{- if $childDependencies }} testChildDependencyConfig{{$.resourceClassName}} + {{- end }} testConfig{{capitalize .class_name}}Min{{- if ne .parent_dependency ""}}DependencyWith{{capitalize .parent_dependency}}{{if and (ne .parent_dependency_name nil) (ne .parent_dependency_name "")}}{{capitalize .parent_dependency_name }}{{- end }}{{- end}} + `
+const testConfig{{$.resourceClassName}}ChildrenRemoveOne{{ if .class_name}}DependencyWith{{capitalize .class_name}}{{end}} = {{- if $dependencies }} testDependencyConfig{{$.resourceClassName}} + {{- end }}{{- if $childDependencies }} testChildDependencyConfig{{$.resourceClassName}} + {{- end }} {{if .class_name}}testConfig{{capitalize .class_name}}Min{{- if ne .parent_dependency ""}}DependencyWith{{capitalize .parent_dependency}}{{if and (ne .parent_dependency_name nil) (ne .parent_dependency_name "")}}{{capitalize .parent_dependency_name }}{{- end }}{{- end}} + {{- end}} `
 resource "aci_{{$.resourceName}}" "test" {
+{{- if ne .parent_dn ""}}
   parent_dn = {{.parent_dn}}
+{{- end}}
     	{{- range $key, $value := $.resource_required}}
   			{{- if eq $key "target_dn" }}
   {{$key}} = {{getTestTargetDn $.targets $.resourceName $value true $target_classes 0}}
@@ -1014,9 +1092,11 @@ resource "aci_{{$.resourceName}}" "test" {
 }
 `
 
-const testConfig{{$.resourceClassName}}ChildrenRemoveAllDependencyWith{{capitalize .class_name}} = {{- if $dependencies }} testDependencyConfig{{$.resourceClassName}} + {{- end }}{{- if $childDependencies }} testChildDependencyConfig{{$.resourceClassName}} + {{- end }} testConfig{{capitalize .class_name}}Min{{- if ne .parent_dependency ""}}DependencyWith{{capitalize .parent_dependency}}{{if and (ne .parent_dependency_name nil) (ne .parent_dependency_name "")}}{{capitalize .parent_dependency_name }}{{- end }}{{- end}} + `
+const testConfig{{$.resourceClassName}}ChildrenRemoveAll{{ if .class_name}}DependencyWith{{capitalize .class_name}}{{end}} = {{- if $dependencies }} testDependencyConfig{{$.resourceClassName}} + {{- end }}{{- if $childDependencies }} testChildDependencyConfig{{$.resourceClassName}} + {{- end }} {{if .class_name}}testConfig{{capitalize .class_name}}Min{{- if ne .parent_dependency ""}}DependencyWith{{capitalize .parent_dependency}}{{if and (ne .parent_dependency_name nil) (ne .parent_dependency_name "")}}{{capitalize .parent_dependency_name }}{{- end }}{{- end}} + {{- end}} `
 resource "aci_{{$.resourceName}}" "test" {
+  {{- if ne .parent_dn ""}}
   parent_dn = {{.parent_dn}}
+  {{- end}}
     	{{- range $key, $value := $.resource_required}}
   			{{- if eq $key "target_dn" }}
   {{$key}} = {{getTestTargetDn $.targets $.resourceName $value true $target_classes 0}}
@@ -1064,8 +1144,8 @@ resource "aci_{{$.resourceName}}" "test" {
 
 const testConfig{{.resourceClassName}}All = `
 resource "aci_{{$.resourceName}}" "test" {
-  	{{- range $key, $value := $.resource_required}}{{$contains := definedInMap $key $.all}}
-		{{- if not $contains}}
+{{- range $key, $value := $.resource_required}}{{$contains := definedInMap $key $.all}}
+  {{- if not $contains}}
   {{$key}} = "{{$value}}"
 		{{- end}}
   	{{- end}}
@@ -1085,8 +1165,8 @@ resource "aci_{{$.resourceName}}" "test" {
 
 const testConfig{{.resourceClassName}}Reset = `
 resource "aci_{{$.resourceName}}" "test" {
-  	{{- range $key, $value := $.resource_required}}{{$contains := definedInMap $key $.default}}
-		{{- if not $contains}}
+{{- range $key, $value := $.resource_required}}{{$contains := definedInMap $key $.default}}
+  {{- if not $contains}}
   {{$key}} = "{{$value}}"
 		{{- end}}
   	{{- end}}
@@ -1187,7 +1267,7 @@ resource "aci_{{$.resourceName}}" "test" {
   		{{- end}}
   		{{- range $key, $value := $.children}}
   {{$key}} = []
-		{{- end}}
+{{- end}}
 }
 `
 

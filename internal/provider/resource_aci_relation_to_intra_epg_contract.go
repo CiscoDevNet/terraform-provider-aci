@@ -123,6 +123,7 @@ func (r *FvRsIntraEpgResource) Schema(ctx context.Context, req resource.SchemaRe
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
 				MarkdownDescription: `The annotation of the Relation To Intra Epg Contract object.`,
@@ -131,6 +132,7 @@ func (r *FvRsIntraEpgResource) Schema(ctx context.Context, req resource.SchemaRe
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
 				MarkdownDescription: `The contract name.`,
@@ -259,6 +261,7 @@ func (r *FvRsIntraEpgResource) Create(ctx context.Context, req resource.CreateRe
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -391,6 +394,12 @@ func getAndSetFvRsIntraEpgAttributes(ctx context.Context, diags *diag.Diagnostic
 				if attributeName == "tnVzBrCPName" {
 					data.TnVzBrCPName = basetypes.NewStringValue(attributeValue.(string))
 				}
+			}
+			if data.Annotation.IsUnknown() {
+				data.Annotation = types.StringNull()
+			}
+			if data.TnVzBrCPName.IsUnknown() {
+				data.TnVzBrCPName = types.StringNull()
 			}
 			TagAnnotationFvRsIntraEpgList := make([]TagAnnotationFvRsIntraEpgResourceModel, 0)
 			TagTagFvRsIntraEpgList := make([]TagTagFvRsIntraEpgResourceModel, 0)
@@ -580,7 +589,6 @@ func getFvRsIntraEpgCreateJsonPayload(ctx context.Context, diags *diag.Diagnosti
 	if !data.TnVzBrCPName.IsNull() && !data.TnVzBrCPName.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["tnVzBrCPName"] = data.TnVzBrCPName.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"fvRsIntraEpg": payloadMap})
 	if err != nil {
 		diags.AddError(

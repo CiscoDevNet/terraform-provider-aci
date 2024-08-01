@@ -7,6 +7,7 @@ global:
 
 fvTenant:
   resource_name: "tenant"
+  resource_identifier: "tn"
 
 fvAEPg:
   resource_name: "application_epg"
@@ -128,6 +129,7 @@ tagAnnotation:
     - "uni/tn-{name}/BD-{name}/annotationKey-[{key}]"
     - "uni/tn-{name}/ctx-{name}/annotationKey-[{key}]"
     - "Too many DN formats to display, see model documentation for all possible parents of [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)."
+  test_type: "apic"
 
 tagTag:
   ui_locations:
@@ -395,3 +397,32 @@ vzBrCP:
 
 vzTaboo:
   resource_name: "taboo_contract"
+    
+pkiTP:
+  sub_category: "AAA"
+  ui_locations:
+    - "Admin -> AAA -> Security -> Certificate Authorities"
+    - "Cloud Network Controller -> Administrative -> Security -> Certificate Authorities"
+  multi_parents: 
+    - rn_prepend: "certstore"
+      contained_by: "fvTenant"
+      wrapper_class: "cloudCertStore"
+      test_type: "cloud"
+  dn_formats:
+    - "uni/userext/pkiext/tp-{name}"
+    - "uni/tn-{name}/certstore/tp-{name}"
+
+pkiKeyRing:
+  sub_category: "AAA"
+  ui_locations:
+    - "Admin -> AAA -> Security -> Key Rings"
+    - "Cloud Network Controller -> Administrative -> Security -> Key Rings"
+  multi_parents: 
+    - rn_prepend: "certstore"
+      contained_by: "fvTenant"
+      wrapper_class: "cloudCertStore"
+      test_type: "cloud"
+  dn_formats:
+    - "uni/userext/pkiext/keyring-{name}"
+    - "uni/tn-{name}/certstore/keyring-{name}"
+  

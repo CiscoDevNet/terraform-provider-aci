@@ -71,9 +71,10 @@ data "aci_annotation" "example_application_epg" {
   - [aci_relation_to_intra_epg_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/relation_to_intra_epg_contract) ([fvRsIntraEpg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsIntraEpg/overview))
   - [aci_relation_to_taboo_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/relation_to_taboo_contract) ([fvRsProtBy](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsProtBy/overview))
   - [aci_relation_to_provided_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/relation_to_provided_contract) ([fvRsProv](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsProv/overview))
-  - [aci_relation_to_vrf](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/relation_to_vrf) ([fvRsScope](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsScope/overview))
   - [aci_relation_to_contract_master](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/relation_to_contract_master) ([fvRsSecInherited](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsSecInherited/overview))
   - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
+  - [aci_l2out_extepg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l2out_extepg) ([l2extInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l2extInstP/overview))
+  - Too many classes to display, see model documentation for all possible classes of [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview).
 * `key` (key) - (string) The key used to uniquely identify this configuration object.
 
 ### Read-Only ###

@@ -10,6 +10,8 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
@@ -65,7 +67,7 @@ func DoRestRequestEscapeHtml(ctx context.Context, diags *diag.Diagnostics, clien
 
 	if restResponse != nil && cont.Data() != nil && restResponse.StatusCode != 200 {
 		errCode := models.StripQuotes(models.StripSquareBrackets(cont.Search("imdata", "error", "attributes", "code").String()))
-		if errCode != "1" && errCode != "103" && errCode != "107" && errCode != "120" {
+		if (method == "DELETE" && (errCode == "1" || errCode == "107" || errCode == "120")) || errCode == "103" || errCode == "202" {
 			diags.AddError(
 				fmt.Sprintf("The %s rest request failed", strings.ToLower(method)),
 				fmt.Sprintf("Code: %d Response: %s, err: %s.", restResponse.StatusCode, cont.Data().(map[string]interface{})["imdata"], err),
@@ -100,4 +102,50 @@ func GetDeleteJsonPayload(ctx context.Context, diags *diag.Diagnostics, classNam
 		return nil
 	}
 	return jsonPayload
+}
+
+type setToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate struct{}
+
+func SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate() planmodifier.String {
+	return setToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate{}
+}
+
+func (m setToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate) Description(_ context.Context) string {
+	return "During the update phase, set the value of this attribute to StringNull when the state value is null and the plan value is unknown."
+}
+
+func (m setToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate) MarkdownDescription(_ context.Context) string {
+	return "During the update phase, set the value of this attribute to StringNull when the state value is null and the plan value is unknown."
+}
+
+// Custom plan modifier to set the plan value to null under certain conditions
+func (m setToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate) PlanModifyString(ctx context.Context, req planmodifier.StringRequest, resp *planmodifier.StringResponse) {
+	// Set the plan value to StringType null when state value is null and plan value is unknown during an Update
+	if !req.State.Raw.IsNull() && req.StateValue.IsNull() && req.PlanValue.IsUnknown() {
+		resp.PlanValue = types.StringNull()
+	}
+	return
+}
+
+type setToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate struct{}
+
+func SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate() planmodifier.Set {
+	return setToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate{}
+}
+
+func (m setToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate) Description(_ context.Context) string {
+	return "During the update phase, set the value of this attribute to StringNull when the state value is null and the plan value is unknown."
+}
+
+func (m setToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate) MarkdownDescription(_ context.Context) string {
+	return "During the update phase, set the value of this attribute to StringNull when the state value is null and the plan value is unknown."
+}
+
+// Custom plan modifier to set the plan value to null under certain conditions
+func (m setToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate) PlanModifySet(ctx context.Context, req planmodifier.SetRequest, resp *planmodifier.SetResponse) {
+	// Set the plan value to SetType null when state value is null and plan value is unknown during an Update
+	if !req.State.Raw.IsNull() && req.StateValue.IsNull() && req.PlanValue.IsUnknown() {
+		resp.PlanValue = types.SetNull(req.StateValue.ElementType(ctx))
+	}
+	return
 }
