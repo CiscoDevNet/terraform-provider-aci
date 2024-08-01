@@ -11,22 +11,23 @@ provider "aci" {
   # APIC Username
   username = "admin"
   # APIC Password
-  password = "ins3965!"
+  password = "!v3G@!4@Y"
   # APIC URL
-  url      = "https://173.36.219.79"
+  url      = "https://sandboxapicdc.cisco.com"
   insecure = true
 }
 
 # Define an ACI Tenant Resource.
-resource "aci_tenant" "terraform_tenant" {
-    name        = "example_tenant"
-    description = "This tenant is created by terraform"
+
+resource "aci_tenant" "example" {
+  name        = "demo_tenant"
+  description = "from terraform"
+  annotation  = "tag"
+  name_alias  = "tenant"
 }
 
-
-
 resource "aci_vrf_fallback_route_group" "full_example_vrf" {
-  parent_dn   = "uni/tn-example_tenant"
+  parent_dn   = "uni/tn-demo_tenant"
   annotation  = "annotation"
   description = "description"
   name        = "fallback_route_group"
@@ -55,6 +56,60 @@ resource "aci_vrf_fallback_route_group" "full_example_vrf" {
 }
 
 
+
+resource "aci_external_management_network_instance_profile" "full_example" {
+  annotation  = "annotation"
+  description = "description"
+  name        = "test_name"
+  name_alias  = "name_alias"
+  priority    = "level1"
+  relation_to_consumed_out_of_band_contracts = [
+    {
+      annotation                = "annotation_1"
+      priority                  = "level1"
+      out_of_band_contract_name = "aci_out_of_band_contract.example.name"
+    }
+  ]
+  annotations = [
+    {
+      key   = "key_0"
+      value = "value_1"
+    }
+  ]
+  tags = [
+    {
+      key   = "key_0"
+      value = "value_1"
+    }
+  ]
+}
+
+
+
+resource "aci_endpoint_tag_ip" "full_example_tenant" {
+  parent_dn    = "uni/tn-example_tenant"
+  annotation   = "annotation"
+  vrf_name     = "test_ctx_name"
+  id_attribute = "1"
+  ip           = "10.0.0.2"
+  name         = "WOW"
+  name_alias   = "name_alias"
+  annotations = [
+    {
+      key   = "key_0"
+      value = "value_1"
+    }
+  ]
+  tags = [
+    {
+      key   = "key_0"
+      value = "value_1"
+    }
+  ]
+}
+
+
+/*
 resource "aci_netflow_monitor_policy" "full_example_tenant" {
   parent_dn   = "uni/tn-example_tenant"
   annotation  = "annotation"
@@ -88,33 +143,8 @@ resource "aci_netflow_monitor_policy" "full_example_tenant" {
     }
   ]
 }
-
-
-/*
-
-
-resource "aci_endpoint_tag_ip" "full_example_tenant" {
-  parent_dn    = "uni/tn-example_tenant"
-  annotation   = "annotation"
-  vrf_name     = "test_ctx_name"
-  id_attribute = "1"
-  ip           = "10.0.0.2"
-  name         = "name"
-  name_alias   = "name_alias"
-  annotations = [
-    {
-      key   = "key_0"
-      value = "value_1"
-    }
-  ]
-  tags = [
-    {
-      key   = "key_0"
-      value = "value_1"
-    }
-  ]
-}
 */
+
 
 /*
 resource "aci_tag" "example_tenant" {
@@ -127,10 +157,6 @@ resource "aci_tag" "example_tenant" {
 
 /*
 
-resource "aci_tenant" "terraform2_tenant" {
-    name        = "example2__tenant"
-    description = "This is the second tenant is created by terraform"
-}
 
 
 */

@@ -9,6 +9,7 @@ import (
 	"os/exec"
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider"
+	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -38,13 +39,123 @@ type ResourceChange struct {
 	} `json:"change"`
 }
 
-type Item struct {
-	Attributes map[string]interface{} `json:"attributes"`
-	Children   []map[string]Item      `json:"children,omitempty"`
+func mergeMultipleMaps(maps ...map[string]interface{}) map[string]interface{} {
+	result := make(map[string]interface{})
+	for _, m := range maps {
+		for k, v := range m {
+			result[k] = v
+		}
+	}
+	return result
+}
+
+type CustomJSON map[string]interface{}
+
+func (c *CustomJSON) UnmarshalJSON(data []byte) error {
+	var raw map[string]interface{}
+	if err := json.Unmarshal(data, &raw); err != nil {
+		return err
+	}
+	*c = parseMap(raw)
+	return nil
+}
+
+func parseMap(raw map[string]interface{}) map[string]interface{} {
+	parsed := make(map[string]interface{})
+	for k, v := range raw {
+		switch value := v.(type) {
+		case map[string]interface{}:
+			parsed[k] = parseMap(value)
+		case []interface{}:
+			parsed[k] = parseSlice(value)
+		default:
+			parsed[k] = value
+		}
+	}
+	return parsed
+}
+
+func parseSlice(raw []interface{}) []interface{} {
+	parsed := make([]interface{}, len(raw))
+	for i, v := range raw {
+		switch value := v.(type) {
+		case map[string]interface{}:
+			parsed[i] = parseMap(value)
+		case []interface{}:
+			parsed[i] = parseSlice(value)
+		default:
+			parsed[i] = value
+		}
+	}
+	return parsed
+}
+
+func parseCustomJSON(jsonPayload []byte) (map[string]interface{}, error) {
+	var customData CustomJSON
+	err := json.Unmarshal(jsonPayload, &customData)
+	if err != nil {
+		return nil, err
+	}
+	return customData, nil
+}
+
+func printMap(data map[string]interface{}, indent int) {
+	for k, v := range data {
+		printIndent(indent)
+		switch val := v.(type) {
+		case map[string]interface{}:
+			fmt.Printf("%s: {\n", k)
+			printMap(val, indent+2)
+			printIndent(indent)
+			fmt.Println("}")
+		case []interface{}:
+			fmt.Printf("%s: [\n", k)
+			printSlice(val, indent+2)
+			printIndent(indent)
+			fmt.Println("]")
+		default:
+			fmt.Printf("%s: %v\n", k, val)
+		}
+	}
+}
+
+func printSlice(data []interface{}, indent int) {
+	for _, v := range data {
+		printIndent(indent)
+		switch val := v.(type) {
+		case map[string]interface{}:
+			fmt.Println("{")
+			printMap(val, indent+2)
+			printIndent(indent)
+			fmt.Println("},")
+		case []interface{}:
+			fmt.Println("[")
+			printSlice(val, indent+2)
+			printIndent(indent)
+			fmt.Println("],")
+		default:
+			fmt.Printf("%v,\n", val)
+		}
+	}
+}
+
+func printIndent(indent int) {
+	for i := 0; i < indent; i++ {
+		fmt.Print(" ")
+	}
+}
+
+type createItemFunc func(map[string]interface{}) map[string]interface{}
+
+var createItemFuncMap = map[string]createItemFunc{
+	"aci_endpoint_tag_ip":                              createAciEndpointTagIP,
+	"aci_external_management_network_instance_profile": createAciExternalManagementNetworkInstanceProfile,
+	"aci_vrf_fallback_route_group":                     createAciVrfFallbackRouteGroup,
 }
 
 // EXCECUTES Terraform plan -out=plan.bin
 // EXECUTES Terraform show -json plan.bin > plan.json
+
 func runTerraformCommands() (string, error) {
 	planFile := "plan.bin"
 	jsonFile := "plan.json"
@@ -83,8 +194,8 @@ func outputToFile(outputFile string, data interface{}) error {
 	return nil
 }
 
-func processResources(terraformPlan TerraformPlan) []map[string]Item {
-	var itemList []map[string]Item
+func processResources(terraformPlan TerraformPlan) map[string]interface{} {
+	mergedData := make(map[string]interface{})
 
 	resourceStatusMap := make(map[string]string)
 	for _, resourceChange := range terraformPlan.ResourceChanges {
@@ -98,7 +209,7 @@ func processResources(terraformPlan TerraformPlan) []map[string]Item {
 			resourceType := resourceChange.Type
 			item := createItem(resourceType, resourceChange.Change.Before, "deleted")
 			if item != nil {
-				itemList = append(itemList, item)
+				mergedData = mergeMultipleMaps(mergedData, item)
 			}
 		}
 	}
@@ -107,14 +218,14 @@ func processResources(terraformPlan TerraformPlan) []map[string]Item {
 		status := resourceStatusMap[fmt.Sprintf("%s.%s", resource.Type, resource.Name)]
 		item := createItem(resource.Type, resource.Values, status)
 		if item != nil {
-			itemList = append(itemList, item)
+			mergedData = mergeMultipleMaps(mergedData, item)
 		}
 	}
 
-	return itemList
+	return mergedData
 }
 
-func createItem(resourceType string, resourceValues map[string]interface{}, status string) map[string]Item {
+func createItem(resourceType string, resourceValues map[string]interface{}, status string) map[string]interface{} {
 	attributes := make(map[string]interface{})
 
 	for key, val := range resourceValues {
@@ -124,7 +235,7 @@ func createItem(resourceType string, resourceValues map[string]interface{}, stat
 		attributes["status"] = status
 	}
 
-	var item map[string]Item
+	var item map[string]interface{}
 	switch resourceType {
 	case "aci_tenant":
 		item = createAciTenant(attributes)
@@ -132,21 +243,17 @@ func createItem(resourceType string, resourceValues map[string]interface{}, stat
 		item = createProviderItem(resourceType, attributes)
 	}
 
-	if resourceType == "aci_tenant" {
-		children := createChildrenFromAttributes(attributes)
-		if len(children) > 0 {
-			for resourceType := range item {
-				resource := item[resourceType]
-				resource.Children = append(resource.Children, children...)
-				item[resourceType] = resource
-			}
-		}
-	}
-
 	return item
 }
 
-func createAciTenant(attributes map[string]interface{}) map[string]Item {
+func createProviderItem(resourceType string, attributes map[string]interface{}) map[string]interface{} {
+	if createFunc, exists := createItemFuncMap[resourceType]; exists {
+		return createFunc(attributes)
+	}
+	return nil
+}
+
+func createAciTenant(attributes map[string]interface{}) map[string]interface{} {
 	tenantAttributes := make(map[string]interface{})
 	if name, exists := attributes["name"].(string); exists {
 		tenantAttributes["dn"] = fmt.Sprintf("uni/tn-%s", name)
@@ -164,73 +271,38 @@ func createAciTenant(attributes map[string]interface{}) map[string]Item {
 	if status, exists := attributes["status"].(string); exists {
 		tenantAttributes["status"] = status
 	}
-	return map[string]Item{
-		"fvTenant": {
-			Attributes: tenantAttributes,
-			Children:   []map[string]Item{},
-		},
+	return map[string]interface{}{
+		"fvTenant": tenantAttributes,
 	}
 }
 
-func createProviderItem(resourceType string, attributes map[string]interface{}) map[string]Item {
-	var item map[string]Item
-
-	switch resourceType {
-	case "aci_endpoint_tag_ip":
-		item = createAciEndpointTagIP(attributes)
-	case "aci_external_management_network_instance_profile":
-		item = createAciExternalManagementNetworkInstanceProfile(attributes)
-	case "aci_vrf_fallback_route_group":
-		item = createAciVrfFallbackRouteGroup(attributes)
-	case "aci_endpoint_tag_mac":
-		item = createAciEndpointTagMac(attributes)
-	case "aci_netflow_monitor_policy":
-		item = createAciNetflowMonitorPolicy(attributes)
-	default:
-		return nil
-	}
-
-	return item
-}
-
-func createAciEndpointTagIP(attributes map[string]interface{}) map[string]Item {
-	endpointTagIPAttributes := make(map[string]interface{})
-	if val, exists := attributes["annotation"].(string); exists && val != "" {
-		endpointTagIPAttributes["annotation"] = val
-	}
-	if val, exists := attributes["ctxName"].(string); exists && val != "" {
-		endpointTagIPAttributes["ctxName"] = val
-	}
-	if val, exists := attributes["id"].(string); exists && val != "" {
-		endpointTagIPAttributes["id"] = val
-	}
-	if val, exists := attributes["ip"].(string); exists && val != "" {
-		endpointTagIPAttributes["ip"] = val
-	}
-	if val, exists := attributes["name"].(string); exists && val != "" {
-		endpointTagIPAttributes["name"] = val
-	}
-	if val, exists := attributes["nameAlias"].(string); exists && val != "" {
-		endpointTagIPAttributes["nameAlias"] = val
-	}
-	if status, exists := attributes["status"].(string); exists {
-		endpointTagIPAttributes["status"] = status
-	}
-
-	endpointTagIPAttributes["dn"] = fmt.Sprintf("%s/eptags/epiptag-[%s]-%s", attributes["parent_dn"], endpointTagIPAttributes["ip"], endpointTagIPAttributes["ctxName"])
-
-	item := map[string]Item{
-		"fvEpIpTag": {
-			Attributes: endpointTagIPAttributes,
-			Children:   []map[string]Item{},
-		},
-	}
-
+func createAciEndpointTagIP(attributes map[string]interface{}) map[string]interface{} {
 	ctx := context.Background()
 	var diags diag.Diagnostics
 	data := &provider.FvEpIpTagResourceModel{}
 
-	// Process TagAnnotation child objects
+	if val, exists := attributes["annotation"].(string); exists && val != "" {
+		data.Annotation = types.StringValue(val)
+	}
+	if val, exists := attributes["vrf_name"].(string); exists && val != "" {
+		data.CtxName = types.StringValue(val)
+	}
+	if val, exists := attributes["id_attribute"].(string); exists && val != "" {
+		data.Id = types.StringValue(val)
+	}
+	if val, exists := attributes["ip"].(string); exists && val != "" {
+		data.Ip = types.StringValue(val)
+	}
+	if val, exists := attributes["name"].(string); exists && val != "" {
+		data.Name = types.StringValue(val)
+	}
+	if val, exists := attributes["name_alias"].(string); exists && val != "" {
+		data.NameAlias = types.StringValue(val)
+	}
+	if status, exists := attributes["status"].(string); exists {
+		data.Status = types.StringValue(status)
+	}
+
 	var planAnnotations []provider.TagAnnotationFvEpIpTagResourceModel
 	if annotations, exists := attributes["annotations"].([]interface{}); exists {
 		for _, annotation := range annotations {
@@ -242,111 +314,145 @@ func createAciEndpointTagIP(attributes map[string]interface{}) map[string]Item {
 		}
 	}
 
-	var stateAnnotations []provider.TagAnnotationFvEpIpTagResourceModel
-	tagAnnotationChildren := provider.GetFvEpIpTagTagAnnotationChildPayloads(ctx, &diags, data, planAnnotations, stateAnnotations)
+	stateAnnotations := planAnnotations
 
-	for _, child := range tagAnnotationChildren {
-		epIpTagItem := item["fvEpIpTag"]
-		epIpTagItem.Children = append(epIpTagItem.Children, map[string]Item{"tagAnnotation": {Attributes: child}})
-		item["fvEpIpTag"] = epIpTagItem
-
+	var planTags []provider.TagTagFvEpIpTagResourceModel
+	if tags, exists := attributes["tags"].([]interface{}); exists {
+		for _, tag := range tags {
+			tagMap := tag.(map[string]interface{})
+			planTags = append(planTags, provider.TagTagFvEpIpTagResourceModel{
+				Key:   types.StringValue(tagMap["key"].(string)),
+				Value: types.StringValue(tagMap["value"].(string)),
+			})
+		}
 	}
 
-	return item
+	stateTags := planTags
+
+	newEndpointTag := provider.GetFvEpIpTagCreateJsonPayload(ctx, &diags, data, planAnnotations, stateAnnotations, planTags, stateTags)
+
+	jsonPayload := newEndpointTag.EncodeJSON(container.EncodeOptIndent("", "  "))
+
+	customData, err := parseCustomJSON(jsonPayload)
+	if err != nil {
+		log.Fatalf("Error unmarshalling JSON: %v\n", err)
+	}
+
+	printMap(customData, 0)
+
+	return customData
 }
 
-func createAciExternalManagementNetworkInstanceProfile(attributes map[string]interface{}) map[string]Item {
+func createAciExternalManagementNetworkInstanceProfile(attributes map[string]interface{}) map[string]interface{} {
+	var data = provider.MgmtInstPResourceModel{}
+
 	profileAttributes := make(map[string]interface{})
 	if name, exists := attributes["name"].(string); exists {
+		data.Name = types.StringValue(name)
 		profileAttributes["dn"] = fmt.Sprintf("%s/extmgmt-default/instp-%s", attributes["parent_dn"], name)
-		profileAttributes["name"] = name
 	}
 	if descr, exists := attributes["description"].(string); exists && descr != "" {
-		profileAttributes["descr"] = descr
+		data.Descr = types.StringValue(descr)
+	}
+	if prio, exists := attributes["priority"].(string); exists && prio != "" {
+		data.Prio = types.StringValue(prio)
 	}
 	if annotation, exists := attributes["annotation"].(string); exists && annotation != "" {
-		profileAttributes["annotation"] = annotation
+		data.Annotation = types.StringValue(annotation)
 	}
 	if nameAlias, exists := attributes["name_alias"].(string); exists && nameAlias != "" {
-		profileAttributes["nameAlias"] = nameAlias
+		data.NameAlias = types.StringValue(nameAlias)
 	}
 	if status, exists := attributes["status"].(string); exists {
 		profileAttributes["status"] = status
 	}
 
-	item := map[string]Item{
-		"mgmtInstP": {
-			Attributes: profileAttributes,
-			Children:   []map[string]Item{},
-		},
-	}
-
 	ctx := context.Background()
 	var diags diag.Diagnostics
-	data := &provider.MgmtInstPResourceModel{}
 
 	var planOoBCons []provider.MgmtRsOoBConsMgmtInstPResourceModel
-	if oobCons, exists := attributes["oob_cons"].([]interface{}); exists {
+	if oobCons, exists := attributes["relation_to_consumed_out_of_band_contracts"].([]interface{}); exists {
 		for _, oobCon := range oobCons {
 			oobConMap := oobCon.(map[string]interface{})
 			planOoBCons = append(planOoBCons, provider.MgmtRsOoBConsMgmtInstPResourceModel{
-				Annotation: types.StringValue(oobConMap["annotation"].(string)),
+				Annotation:      types.StringValue(oobConMap["annotation"].(string)),
+				Prio:            types.StringValue(oobConMap["priority"].(string)),
+				TnVzOOBBrCPName: types.StringValue(oobConMap["out_of_band_contract_name"].(string)),
 			})
 		}
 	}
 
-	var stateOoBCons []provider.MgmtRsOoBConsMgmtInstPResourceModel
-	oobConsChildren := provider.GetMgmtInstPMgmtRsOoBConsChildPayloads(ctx, &diags, data, planOoBCons, stateOoBCons)
-	for _, child := range oobConsChildren {
-		children := item["mgmtInstP"].Children
-		children = append(children, map[string]Item{"mgmtRsOoBCons": {Attributes: child}})
-		item["mgmtInstP"] = Item{
-			Attributes: item["mgmtInstP"].Attributes,
-			Children:   children,
+	stateOoBCons := planOoBCons
+
+	var planAnnotations []provider.TagAnnotationMgmtInstPResourceModel
+	if annotations, exists := attributes["annotations"].([]interface{}); exists {
+		for _, annotation := range annotations {
+			annotationMap := annotation.(map[string]interface{})
+			planAnnotations = append(planAnnotations, provider.TagAnnotationMgmtInstPResourceModel{
+				Key:   types.StringValue(annotationMap["key"].(string)),
+				Value: types.StringValue(annotationMap["value"].(string)),
+			})
 		}
 	}
 
-	return item
+	stateAnnotations := planAnnotations
+
+	var planTags []provider.TagTagMgmtInstPResourceModel
+	if tags, exists := attributes["tags"].([]interface{}); exists {
+		for _, tag := range tags {
+			tagMap := tag.(map[string]interface{})
+			planTags = append(planTags, provider.TagTagMgmtInstPResourceModel{
+				Key:   types.StringValue(tagMap["key"].(string)),
+				Value: types.StringValue(tagMap["value"].(string)),
+			})
+		}
+	}
+
+	stateTags := planTags
+
+	newExtItem := provider.GetMgmtInstPCreateJsonPayload(ctx, &diags, &data, planOoBCons, stateOoBCons, planAnnotations, stateAnnotations, planTags, stateTags)
+
+	jsonPayload := newExtItem.EncodeJSON(container.EncodeOptIndent("", "  "))
+
+	customData, err := parseCustomJSON(jsonPayload)
+	if err != nil {
+		log.Fatalf("Error unmarshalling JSON: %v\n", err)
+	}
+
+	printMap(customData, 0)
+
+	return customData
 }
 
-func createAciVrfFallbackRouteGroup(attributes map[string]interface{}) map[string]Item {
+func createAciVrfFallbackRouteGroup(attributes map[string]interface{}) map[string]interface{} {
 
-	vrfAttributes := make(map[string]interface{})
+	var data = provider.FvFBRGroupResourceModel{}
 
+	// Set attributes
 	if val, exists := attributes["parent_dn"].(string); exists {
-		vrfAttributes["parent_dn"] = val
+		data.ParentDn = types.StringValue(val)
 	}
-
 	if name, exists := attributes["name"].(string); exists {
-		vrfAttributes["name"] = name
-		vrfAttributes["dn"] = fmt.Sprintf("%s/fbrg-%s", vrfAttributes["parent_dn"], name)
+		data.Name = types.StringValue(name)
 	}
 	if descr, exists := attributes["description"].(string); exists && descr != "" {
-		vrfAttributes["descr"] = descr
+		data.Descr = types.StringValue(descr)
 	}
 	if annotation, exists := attributes["annotation"].(string); exists && annotation != "" {
-		vrfAttributes["annotation"] = annotation
+		data.Annotation = types.StringValue(annotation)
 	}
 	if nameAlias, exists := attributes["name_alias"].(string); exists && nameAlias != "" {
-		vrfAttributes["nameAlias"] = nameAlias
+		data.NameAlias = types.StringValue(nameAlias)
 	}
 	if status, exists := attributes["status"].(string); exists {
-		vrfAttributes["status"] = status
-	}
-
-	item := map[string]Item{
-		"fvFBRGroup": {
-			Attributes: vrfAttributes,
-			Children:   []map[string]Item{},
-		},
+		data.Status = types.StringValue(status)
 	}
 
 	ctx := context.Background()
 	var diags diag.Diagnostics
-	data := &provider.FvFBRGroupResourceModel{}
 
+	// Set plan members
 	var planMembers []provider.FvFBRMemberFvFBRGroupResourceModel
-
 	if members, exists := attributes["vrf_fallback_route_group_members"].([]interface{}); exists {
 		for _, member := range members {
 			memberMap := member.(map[string]interface{})
@@ -360,17 +466,7 @@ func createAciVrfFallbackRouteGroup(attributes map[string]interface{}) map[strin
 		}
 	}
 
-	var stateMembers []provider.FvFBRMemberFvFBRGroupResourceModel
-	memberChildren := provider.GetFvFBRGroupFvFBRMemberChildPayloads(ctx, &diags, data, planMembers, stateMembers)
-	for _, child := range memberChildren {
-		children := item["fvFBRGroup"].Children
-		children = append(children, map[string]Item{"fvFBRMember": {Attributes: child}})
-		item["fvFBRGroup"] = Item{
-			Attributes: item["fvFBRGroup"].Attributes,
-			Children:   children,
-		}
-	}
-
+	// Set plan annotations
 	var planAnnotations []provider.TagAnnotationFvFBRGroupResourceModel
 	if annotations, exists := attributes["annotations"].([]interface{}); exists {
 		for _, annotation := range annotations {
@@ -381,18 +477,8 @@ func createAciVrfFallbackRouteGroup(attributes map[string]interface{}) map[strin
 			})
 		}
 	}
-	var stateAnnotations []provider.TagAnnotationFvFBRGroupResourceModel
-	tagAnnotationChildren := provider.GetFvFBRGroupTagAnnotationChildPayloads(ctx, &diags, data, planAnnotations, stateAnnotations)
 
-	for _, child := range tagAnnotationChildren {
-		children := item["fvFBRGroup"].Children
-		children = append(children, map[string]Item{"tagAnnotation": {Attributes: child}})
-		item["fvFBRGroup"] = Item{
-			Attributes: item["fvFBRGroup"].Attributes,
-			Children:   children,
-		}
-	}
-
+	// Set plan tags
 	var planTags []provider.TagTagFvFBRGroupResourceModel
 	if tags, exists := attributes["tags"].([]interface{}); exists {
 		for _, tag := range tags {
@@ -404,449 +490,25 @@ func createAciVrfFallbackRouteGroup(attributes map[string]interface{}) map[strin
 		}
 	}
 
-	var stateTags []provider.TagTagFvFBRGroupResourceModel
-	tagTagChildren := provider.GetFvFBRGroupTagTagChildPayloads(ctx, &diags, data, planTags, stateTags)
-	for _, child := range tagTagChildren {
-		children := item["fvFBRGroup"].Children
-		children = append(children, map[string]Item{"tagTag": {Attributes: child}})
-		item["fvFBRGroup"] = Item{
-			Attributes: item["fvFBRGroup"].Attributes,
-			Children:   children,
-		}
+	// Get the JSON payload
+	newAciVrf := provider.GetFvFBRGroupCreateJsonPayload(ctx, &diags, &data, planMembers, planMembers, planAnnotations, planAnnotations, planTags, planTags)
+
+	// Encode the JSON payload
+	jsonPayload := newAciVrf.EncodeJSON(container.EncodeOptIndent("", "  "))
+
+	// Parse the custom JSON
+	customData, err := parseCustomJSON(jsonPayload)
+	if err != nil {
+		log.Fatalf("Error unmarshalling JSON: %v\n", err)
 	}
 
-	return item
-}
+	// Print the map (for debugging purposes)
+	printMap(customData, 0)
 
-func createAciEndpointTagMac(attributes map[string]interface{}) map[string]Item {
-	endpointTagMacAttributes := make(map[string]interface{})
-
-	if val, exists := attributes["parent_dn"].(string); exists && val != "" {
-		endpointTagMacAttributes["parent_dn"] = val
-	}
-	if val, exists := attributes["annotation"].(string); exists && val != "" {
-		endpointTagMacAttributes["annotation"] = val
-	}
-	if val, exists := attributes["bd_name"].(string); exists && val != "" {
-		endpointTagMacAttributes["bd_name"] = val
-	}
-	if val, exists := attributes["id_attribute"].(string); exists && val != "" {
-		endpointTagMacAttributes["id_attribute"] = val
-	}
-	if val, exists := attributes["mac"].(string); exists && val != "" {
-		endpointTagMacAttributes["mac"] = val
-	}
-	if val, exists := attributes["name"].(string); exists && val != "" {
-		endpointTagMacAttributes["name"] = val
-	}
-	if val, exists := attributes["name_alias"].(string); exists && val != "" {
-		endpointTagMacAttributes["name_alias"] = val
-	}
-	if status, exists := attributes["status"].(string); exists {
-		endpointTagMacAttributes["status"] = status
-	}
-
-	endpointTagMacAttributes["dn"] = fmt.Sprintf("%s/eptags/epmactag-[%s]-[%s]", endpointTagMacAttributes["parent_dn"], endpointTagMacAttributes["mac"], endpointTagMacAttributes["bd_name"])
-
-	item := map[string]Item{
-		"fvEpMacTag": {
-			Attributes: endpointTagMacAttributes,
-			Children:   []map[string]Item{},
-		},
-	}
-
-	ctx := context.Background()
-	var diags diag.Diagnostics
-	data := &provider.FvEpMacTagResourceModel{}
-
-	var planAnnotations []provider.TagAnnotationFvEpMacTagResourceModel
-	if annotations, exists := attributes["annotations"].([]interface{}); exists {
-		for _, annotation := range annotations {
-			annotationMap := annotation.(map[string]interface{})
-			planAnnotations = append(planAnnotations, provider.TagAnnotationFvEpMacTagResourceModel{
-				Key:   types.StringValue(annotationMap["key"].(string)),
-				Value: types.StringValue(annotationMap["value"].(string)),
-			})
-		}
-	}
-
-	var stateAnnotations []provider.TagAnnotationFvEpMacTagResourceModel
-	tagAnnotationChildren := provider.GetFvEpMacTagTagAnnotationChildPayloads(ctx, &diags, data, planAnnotations, stateAnnotations)
-	for _, child := range tagAnnotationChildren {
-		children := item["fvEpMacTag"].Children
-		children = append(children, map[string]Item{"tagAnnotation": {Attributes: child}})
-		item["fvEpMacTag"] = Item{
-			Attributes: item["fvEpMacTag"].Attributes,
-			Children:   children,
-		}
-	}
-
-	return item
-}
-
-func createAciNetflowMonitorPolicy(attributes map[string]interface{}) map[string]Item {
-	monitorPolicyAttributes := make(map[string]interface{})
-
-	if val, exists := attributes["annotation"].(string); exists {
-		monitorPolicyAttributes["annotation"] = val
-	}
-
-	if val, exists := attributes["parent_dn"].(string); exists {
-		monitorPolicyAttributes["parent_dn"] = val
-	}
-
-	if val, exists := attributes["description"].(string); exists {
-		monitorPolicyAttributes["descr"] = val
-	}
-	if val, exists := attributes["name"].(string); exists {
-		monitorPolicyAttributes["name"] = val
-		monitorPolicyAttributes["dn"] = fmt.Sprintf("%s/monitorpol-%s", monitorPolicyAttributes["parent_dn"], val)
-	}
-	if val, exists := attributes["name_alias"].(string); exists {
-		monitorPolicyAttributes["nameAlias"] = val
-	}
-	if val, exists := attributes["owner_key"].(string); exists {
-		monitorPolicyAttributes["ownerKey"] = val
-	}
-	if val, exists := attributes["owner_tag"].(string); exists {
-		monitorPolicyAttributes["ownerTag"] = val
-	}
-	if status, exists := attributes["status"].(string); exists {
-		monitorPolicyAttributes["status"] = status
-	}
-
-	item := map[string]Item{
-		"netflowMonitorPol": {
-			Attributes: monitorPolicyAttributes,
-			Children:   []map[string]Item{},
-		},
-	}
-
-	ctx := context.Background()
-	var diags diag.Diagnostics
-	data := &provider.NetflowMonitorPolResourceModel{}
-
-	var planExporters []provider.NetflowRsMonitorToExporterNetflowMonitorPolResourceModel
-	if exporters, exists := attributes["relation_to_netflow_exporters"].([]interface{}); exists {
-		for _, exporter := range exporters {
-			exporterMap := exporter.(map[string]interface{})
-			planExporters = append(planExporters, provider.NetflowRsMonitorToExporterNetflowMonitorPolResourceModel{
-				Annotation:               types.StringValue(exporterMap["annotation"].(string)),
-				TnNetflowExporterPolName: types.StringValue(exporterMap["netflow_exporter_policy_name"].(string)),
-			})
-		}
-	}
-
-	var stateExporters []provider.NetflowRsMonitorToExporterNetflowMonitorPolResourceModel
-	exporterChildren := provider.GetNetflowMonitorPolNetflowRsMonitorToExporterChildPayloads(ctx, &diags, data, planExporters, stateExporters)
-
-	for _, child := range exporterChildren {
-		children := item["netflowMonitorPol"].Children
-		children = append(children, map[string]Item{"netflowRsMonitorToExporter": {Attributes: child}})
-		item["netflowMonitorPol"] = Item{
-			Attributes: item["netflowMonitorPol"].Attributes,
-			Children:   children,
-		}
-
-	}
-
-	var planRecords []provider.NetflowRsMonitorToRecordNetflowMonitorPolResourceModel
-	if records, exists := attributes["relation_to_netflow_record"].([]interface{}); exists {
-		for _, record := range records {
-			recordMap := record.(map[string]interface{})
-			planRecords = append(planRecords, provider.NetflowRsMonitorToRecordNetflowMonitorPolResourceModel{
-				Annotation:             types.StringValue(recordMap["annotation"].(string)),
-				TnNetflowRecordPolName: types.StringValue(recordMap["netflow_record_policy_name"].(string)),
-			})
-		}
-	}
-
-	var stateRecords []provider.NetflowRsMonitorToRecordNetflowMonitorPolResourceModel
-	recordChildren := provider.GetNetflowMonitorPolNetflowRsMonitorToRecordChildPayloads(ctx, &diags, data, planRecords, stateRecords)
-
-	for _, child := range recordChildren {
-		children := item["netflowMonitorPol"].Children
-		children = append(children, map[string]Item{"netflowRsMonitorToRecord": {Attributes: child}})
-		item["netflowMonitorPol"] = Item{
-			Attributes: item["netflowMonitorPol"].Attributes,
-			Children:   children,
-		}
-	}
-
-	for _, child := range recordChildren {
-		children := item["netflowMonitorPol"].Children
-		children = append(children, map[string]Item{"netflowRsMonitorToRecord": {Attributes: child}})
-		item["netflowMonitorPol"] = Item{
-			Attributes: item["netflowMonitorPol"].Attributes,
-			Children:   children,
-		}
-	}
-
-	var planAnnotations []provider.TagAnnotationNetflowMonitorPolResourceModel
-	if annotations, exists := attributes["annotations"].([]interface{}); exists {
-		for _, annotation := range annotations {
-			annotationMap := annotation.(map[string]interface{})
-			planAnnotations = append(planAnnotations, provider.TagAnnotationNetflowMonitorPolResourceModel{
-				Key:   types.StringValue(annotationMap["key"].(string)),
-				Value: types.StringValue(annotationMap["value"].(string)),
-			})
-		}
-	}
-
-	var stateAnnotations []provider.TagAnnotationNetflowMonitorPolResourceModel
-	tagAnnotationChildren := provider.GetNetflowMonitorPolTagAnnotationChildPayloads(ctx, &diags, data, planAnnotations, stateAnnotations)
-
-	for _, child := range tagAnnotationChildren {
-		children := item["netflowMonitorPol"].Children
-		children = append(children, map[string]Item{"tagAnnotation": {Attributes: child}})
-		item["netflowMonitorPol"] = Item{
-			Attributes: item["netflowMonitorPol"].Attributes,
-			Children:   children,
-		}
-	}
-
-	var planTags []provider.TagTagNetflowMonitorPolResourceModel
-	if tags, exists := attributes["tags"].([]interface{}); exists {
-		for _, tag := range tags {
-			tagMap := tag.(map[string]interface{})
-			planTags = append(planTags, provider.TagTagNetflowMonitorPolResourceModel{
-				Key:   types.StringValue(tagMap["key"].(string)),
-				Value: types.StringValue(tagMap["value"].(string)),
-			})
-		}
-	}
-
-	var stateTags []provider.TagTagNetflowMonitorPolResourceModel
-	tagTagChildren := provider.GetNetflowMonitorPolTagTagChildPayloads(ctx, &diags, data, planTags, stateTags)
-	for _, child := range tagTagChildren {
-		children := item["netflowMonitorPol"].Children
-		children = append(children, map[string]Item{"tagTag": {Attributes: child}})
-		item["netflowMonitorPol"] = Item{
-			Attributes: item["netflowMonitorPol"].Attributes,
-			Children:   children,
-		}
-	}
-	return item
-}
-
-func createChildrenFromAttributes(attributes map[string]interface{}) []map[string]Item {
-	var children []map[string]Item
-
-	if annotations, exists := attributes["annotations"].([]interface{}); exists {
-		for _, annotation := range annotations {
-			if annotationMap, ok := annotation.(map[string]interface{}); ok {
-				child := createTagAnnotation(annotationMap)
-				children = append(children, child)
-			}
-		}
-	}
-
-	if tags, exists := attributes["tags"].([]interface{}); exists {
-		for _, tag := range tags {
-			if tagMap, ok := tag.(map[string]interface{}); ok {
-				child := createTag(tagMap)
-				children = append(children, child)
-			}
-		}
-	}
-
-	return children
-}
-
-func createTagAnnotation(annotation map[string]interface{}) map[string]Item {
-	attributes := make(map[string]interface{})
-	if key, exists := annotation["key"].(string); exists && key != "" {
-		attributes["key"] = key
-	}
-	if value, exists := annotation["value"].(string); exists && value != "" {
-		attributes["value"] = value
-	}
-	if parentDN, exists := annotation["parent_dn"].(string); exists && parentDN != "" {
-		attributes["dn"] = fmt.Sprintf("%s/annotation-%s", parentDN, attributes["key"])
-		attributes["parent_dn"] = parentDN
-	}
-
-	return map[string]Item{
-		"tagAnnotation": {
-			Attributes: attributes,
-		},
-	}
-}
-
-func createTag(tag map[string]interface{}) map[string]Item {
-	attributes := make(map[string]interface{})
-	if key, exists := tag["key"].(string); exists && key != "" {
-		attributes["key"] = key
-	}
-	if value, exists := tag["value"].(string); exists && value != "" {
-		attributes["value"] = value
-	}
-	if parentDN, exists := tag["parent_dn"].(string); exists && parentDN != "" {
-		attributes["dn"] = fmt.Sprintf("%s/tag-%s", parentDN, attributes["key"])
-		attributes["parent_dn"] = parentDN
-	}
-
-	return map[string]Item{
-		"tagTag": {
-			Attributes: attributes,
-		},
-	}
-}
-
-func removeChildAttributes(attributes map[string]interface{}, childKeys []string) {
-	for _, key := range childKeys {
-		delete(attributes, key)
-	}
-}
-
-func constructTree(itemList []map[string]Item) []map[string]Item {
-	dnMap := make(map[string]*Item)
-	var root []map[string]Item
-
-	for _, item := range itemList {
-		for resourceType, resource := range item {
-			dn, ok := resource.Attributes["dn"].(string)
-			if !ok {
-				log.Printf("Missing dn in resource of type %s", resourceType)
-				continue
-			}
-			dnMap[dn] = &resource
-			resource.Attributes["resourceType"] = resourceType
-		}
-	}
-
-	for _, resource := range dnMap {
-		parentDn, parentExists := resource.Attributes["parent_dn"].(string)
-		if parentExists {
-			if parent, exists := dnMap[parentDn]; exists {
-				if parent.Children == nil {
-					parent.Children = []map[string]Item{}
-				}
-				childType := resource.Attributes["resourceType"].(string)
-				parent.Children = append(parent.Children, map[string]Item{childType: *resource})
-			} else {
-				root = append(root, map[string]Item{resource.Attributes["resourceType"].(string): *resource})
-			}
-		} else {
-			root = append(root, map[string]Item{resource.Attributes["resourceType"].(string): *resource})
-		}
-	}
-
-	return root
-}
-
-func replaceDnWithResourceType(data []map[string]Item) []map[string]Item {
-	var result []map[string]Item
-
-	for _, item := range data {
-		for resourceType, resource := range item {
-			if resource.Children != nil {
-				resource.Children = replaceDnWithResourceType(resource.Children)
-			}
-			newItem := map[string]Item{resourceType: resource}
-			result = append(result, newItem)
-		}
-	}
-
-	return result
-}
-
-func removeDnAndResourceTypeFromAttributes(data []map[string]Item) {
-	for _, item := range data {
-		for _, resource := range item {
-			delete(resource.Attributes, "resourceType")
-			if resource.Children != nil {
-				removeDnAndResourceTypeFromAttributes(resource.Children)
-			}
-		}
-	}
-}
-
-func removeDuplicateHeaders(item map[string]Item) map[string]Item {
-	cleanedItem := make(map[string]Item)
-	for key, val := range item {
-		if attributes, exists := val.Attributes["attributes"]; exists {
-			if nestedAttributes, ok := attributes.(map[string]interface{}); ok {
-				val.Attributes = nestedAttributes
-			}
-		}
-		if val.Children != nil {
-			for i, child := range val.Children {
-				for childKey, childVal := range child {
-					val.Children[i][childKey] = removeDuplicateHeaders(map[string]Item{childKey: childVal})[childKey]
-				}
-			}
-		}
-		cleanedItem[key] = val
-	}
-	return cleanedItem
-}
-
-func cleanFinalTree(tree []map[string]Item) []map[string]Item {
-	for i, item := range tree {
-		for key, val := range item {
-			tree[i][key] = removeDuplicateHeaders(map[string]Item{key: val})[key]
-		}
-	}
-	return tree
-}
-
-func removeParentDnFromAttributes(data []map[string]Item) {
-	for _, item := range data {
-		for _, resource := range item {
-			delete(resource.Attributes, "parent_dn")
-			if resource.Children != nil {
-				removeParentDnFromAttributes(resource.Children)
-			}
-		}
-	}
-}
-
-func removeNestedObjectsWithoutResources(data []map[string]Item) {
-	for i := len(data) - 1; i >= 0; i-- {
-		for _, resource := range data[i] {
-			if resource.Children != nil {
-				removeNestedObjectsWithoutResources(resource.Children)
-				if len(resource.Children) == 0 {
-					data = append(data[:i], data[i+1:]...)
-				}
-			}
-		}
-	}
-}
-
-func countTenants(itemList []map[string]Item) int {
-	count := 0
-	for _, item := range itemList {
-		if _, exists := item["fvTenant"]; exists {
-			count++
-		}
-	}
-	return count
-}
-
-func unwrapOuterArray(data []map[string]Item) interface{} {
-	if len(data) == 1 {
-		return data[0]
-	}
-	return data
-}
-
-func countResources(itemList []map[string]Item) int {
-	count := 0
-	for _, item := range itemList {
-		count++
-		for _, resource := range item {
-			if resource.Children != nil {
-				count += countResources(resource.Children)
-			}
-		}
-	}
-	return count
+	return customData
 }
 
 func main() {
-
 	if len(os.Args) != 2 {
 		fmt.Println("Usage: go run converter.go <output.json>")
 		os.Exit(1)
@@ -870,46 +532,12 @@ func main() {
 		log.Fatalf("Error parsing input file: %v", err)
 	}
 
-	itemList := processResources(terraformPlan)
-	itemCount := countResources(itemList)
+	mergedData := processResources(terraformPlan)
 
-	for attempts := 0; attempts < 10; attempts++ {
-		tree := constructTree(itemList)
-		finalTree := replaceDnWithResourceType(tree)
-		//removeDnAndResourceTypeFromAttributes(finalTree)
-		//removeParentDnFromAttributes(finalTree)
-		//removeNestedObjectsWithoutResources(finalTree)
-
-		finalTreeCount := countResources(finalTree)
-
-		if itemCount == finalTreeCount {
-			tenantCount := countTenants(finalTree)
-
-			var output interface{}
-			if tenantCount > 1 {
-				output = map[string]interface{}{
-					"polUni": map[string]interface{}{
-						"attributes": map[string]interface{}{},
-						"children":   finalTree,
-					},
-				}
-			} else {
-				output = finalTree
-			}
-
-			output = unwrapOuterArray(finalTree)
-
-			err = outputToFile(outputFile, output)
-			if err != nil {
-				log.Fatalf("Error writing output file: %v", err)
-			}
-
-			fmt.Printf("ACI Payload written to %s\n", outputFile)
-
-			return
-
-		}
-
+	err = outputToFile(outputFile, mergedData)
+	if err != nil {
+		log.Fatalf("Error writing output file: %v", err)
 	}
-	log.Fatalf("Failed to create matching item list and final tree after 10 attempts")
+
+	fmt.Printf("ACI Payload written to %s\n", outputFile)
 }
