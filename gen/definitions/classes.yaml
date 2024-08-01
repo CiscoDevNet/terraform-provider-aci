@@ -154,7 +154,7 @@ mgmtInB:
 
 rtctrlProfile:
   ui_locations:
-    - "Tenants -> Networking -> L3Outs -> Route map for import and export route control"
+    - "Tenants -> Networking -> L3Outs -> Route map for import and export Route Control"
     - "Tenants -> Policies -> Protocol -> Route Maps for Route Control"
   sub_category: "L3Out"
 
