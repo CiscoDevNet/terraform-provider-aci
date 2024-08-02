@@ -156,17 +156,6 @@ func TestAccResourcePimRouteMapEntryWithPimRouteMapPol(t *testing.T) {
 				ResourceName:      "aci_pim_route_map_entry.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "order", "1"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "action", "permit"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "group_ip", "0.0.0.0"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "name", ""),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "rendezvous_point_ip", "0.0.0.0"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "source_ip", "0.0.0.0"),
-				),
 			},
 			// Update with children
 			{
@@ -197,25 +186,6 @@ func TestAccResourcePimRouteMapEntryWithPimRouteMapPol(t *testing.T) {
 				ResourceName:      "aci_pim_route_map_entry.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "order", "1"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "action", "permit"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "group_ip", "0.0.0.0"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "name", ""),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "rendezvous_point_ip", "0.0.0.0"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "source_ip", "0.0.0.0"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.1.value", "value_2"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "tags.1.value", "value_2"),
-				),
 			},
 			// Update with children removed from config
 			{

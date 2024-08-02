@@ -107,10 +107,6 @@ func TestAccResourceNetflowRsMonitorToExporterWithNetflowMonitorPol(t *testing.T
 				ResourceName:      "aci_relation_to_netflow_exporter.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_netflow_exporter.test", "netflow_exporter_policy_name", "test_tn_netflow_exporter_pol_name"),
-					resource.TestCheckResourceAttr("aci_relation_to_netflow_exporter.test", "annotation", "orchestrator:terraform"),
-				),
 			},
 			// Update with children
 			{
@@ -134,18 +130,6 @@ func TestAccResourceNetflowRsMonitorToExporterWithNetflowMonitorPol(t *testing.T
 				ResourceName:      "aci_relation_to_netflow_exporter.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_netflow_exporter.test", "netflow_exporter_policy_name", "test_tn_netflow_exporter_pol_name"),
-					resource.TestCheckResourceAttr("aci_relation_to_netflow_exporter.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_relation_to_netflow_exporter.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_netflow_exporter.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_netflow_exporter.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_netflow_exporter.test", "annotations.1.value", "value_2"),
-					resource.TestCheckResourceAttr("aci_relation_to_netflow_exporter.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_netflow_exporter.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_netflow_exporter.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_netflow_exporter.test", "tags.1.value", "value_2"),
-				),
 			},
 			// Update with children removed from config
 			{

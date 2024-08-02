@@ -149,16 +149,6 @@ func TestAccResourceL3extConsLblWithL3extOut(t *testing.T) {
 				ResourceName:      "aci_l3out_consumer_label.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "name", "test_name"),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "owner", "infra"),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "tag", "yellow-green"),
-				),
 			},
 			// Update with children
 			{
@@ -188,24 +178,6 @@ func TestAccResourceL3extConsLblWithL3extOut(t *testing.T) {
 				ResourceName:      "aci_l3out_consumer_label.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "name", "test_name"),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "owner", "infra"),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "tag", "yellow-green"),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.1.value", "value_2"),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "tags.1.value", "value_2"),
-				),
 			},
 			// Update with children removed from config
 			{

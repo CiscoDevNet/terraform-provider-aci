@@ -136,14 +136,6 @@ func TestAccResourceFvEpMacTagWithFvTenant(t *testing.T) {
 				ResourceName:      "aci_endpoint_tag_mac.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "bd_name", "test_bd_name"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "mac", "00:00:00:00:00:01"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "id_attribute", "0"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "name", ""),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "name_alias", ""),
-				),
 			},
 			// Update with children
 			{
@@ -171,22 +163,6 @@ func TestAccResourceFvEpMacTagWithFvTenant(t *testing.T) {
 				ResourceName:      "aci_endpoint_tag_mac.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "bd_name", "test_bd_name"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "mac", "00:00:00:00:00:01"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "id_attribute", "0"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "name", ""),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "annotations.1.value", "value_2"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "tags.1.value", "value_2"),
-				),
 			},
 			// Update with children removed from config
 			{

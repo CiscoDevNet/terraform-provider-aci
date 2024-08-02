@@ -114,11 +114,6 @@ func TestAccResourceFvRsConsIfWithFvAEPg(t *testing.T) {
 				ResourceName:      "aci_relation_to_imported_contract.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_imported_contract.test", "imported_contract_name", "test_tn_vz_cp_if_name"),
-					resource.TestCheckResourceAttr("aci_relation_to_imported_contract.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_relation_to_imported_contract.test", "priority", "unspecified"),
-				),
 			},
 			// Update with children
 			{
@@ -143,19 +138,6 @@ func TestAccResourceFvRsConsIfWithFvAEPg(t *testing.T) {
 				ResourceName:      "aci_relation_to_imported_contract.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_imported_contract.test", "imported_contract_name", "test_tn_vz_cp_if_name"),
-					resource.TestCheckResourceAttr("aci_relation_to_imported_contract.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_relation_to_imported_contract.test", "priority", "unspecified"),
-					resource.TestCheckResourceAttr("aci_relation_to_imported_contract.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_imported_contract.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_imported_contract.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_imported_contract.test", "annotations.1.value", "value_2"),
-					resource.TestCheckResourceAttr("aci_relation_to_imported_contract.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_imported_contract.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_imported_contract.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_imported_contract.test", "tags.1.value", "value_2"),
-				),
 			},
 			// Update with children removed from config
 			{
@@ -302,11 +284,6 @@ func TestAccResourceFvRsConsIfWithFvESg(t *testing.T) {
 				ResourceName:      "aci_relation_to_imported_contract.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_imported_contract.test", "imported_contract_name", "test_tn_vz_cp_if_name"),
-					resource.TestCheckResourceAttr("aci_relation_to_imported_contract.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_relation_to_imported_contract.test", "priority", "unspecified"),
-				),
 			},
 			// Update with children
 			{
@@ -331,19 +308,6 @@ func TestAccResourceFvRsConsIfWithFvESg(t *testing.T) {
 				ResourceName:      "aci_relation_to_imported_contract.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_imported_contract.test", "imported_contract_name", "test_tn_vz_cp_if_name"),
-					resource.TestCheckResourceAttr("aci_relation_to_imported_contract.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_relation_to_imported_contract.test", "priority", "unspecified"),
-					resource.TestCheckResourceAttr("aci_relation_to_imported_contract.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_imported_contract.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_imported_contract.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_imported_contract.test", "annotations.1.value", "value_2"),
-					resource.TestCheckResourceAttr("aci_relation_to_imported_contract.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_imported_contract.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_imported_contract.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_imported_contract.test", "tags.1.value", "value_2"),
-				),
 			},
 			// Update with children removed from config
 			{

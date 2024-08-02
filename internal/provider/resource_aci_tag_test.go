@@ -108,10 +108,6 @@ func TestAccResourceTagTagWithFvTenant(t *testing.T) {
 				ResourceName:      "aci_tag.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_tag.test", "key", "test_key"),
-					resource.TestCheckResourceAttr("aci_tag.test", "value", "test_value"),
-				),
 			},
 		},
 	})
@@ -213,10 +209,6 @@ func TestAccResourceTagTagWithFvAEPg(t *testing.T) {
 				ResourceName:      "aci_tag.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_tag.test", "key", "test_key"),
-					resource.TestCheckResourceAttr("aci_tag.test", "value", "test_value"),
-				),
 			},
 		},
 	})

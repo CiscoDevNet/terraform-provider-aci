@@ -128,13 +128,6 @@ func TestAccResourceFvFBRouteWithFvFBRGroup(t *testing.T) {
 				ResourceName:      "aci_vrf_fallback_route.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route.test", "prefix_address", "2.2.2.3/24"),
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route.test", "name", ""),
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route.test", "name_alias", ""),
-				),
 			},
 			// Update with children
 			{
@@ -161,21 +154,6 @@ func TestAccResourceFvFBRouteWithFvFBRGroup(t *testing.T) {
 				ResourceName:      "aci_vrf_fallback_route.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route.test", "prefix_address", "2.2.2.3/24"),
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route.test", "name", ""),
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route.test", "annotations.1.value", "value_2"),
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route.test", "tags.1.value", "value_2"),
-				),
 			},
 			// Update with children removed from config
 			{
