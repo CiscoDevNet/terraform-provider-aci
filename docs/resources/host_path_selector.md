@@ -55,13 +55,13 @@ resource "aci_host_path_selector" "full_example" {
   relation_to_host_paths = [
     {
       annotation = "annotation_1"
-      target_dn  = "target_dn_0"
+      target_dn  = "topology/pod-1/paths-101/pathep-[eth1/1]"
     }
   ]
   relation_to_access_base_group = [
     {
       annotation = "annotation_1"
-      target_dn  = "target_dn_1"
+      target_dn  = "uni/infra/funcprof/accportgrp-access_interface_policy_group"
     }
   ]
   annotations = [
