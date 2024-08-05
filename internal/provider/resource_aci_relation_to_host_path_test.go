@@ -179,11 +179,11 @@ const testDependencyConfigInfraRsHPathAtt = `
 
 const testConfigInfraRsHPathAttMinDependencyWithInfraHPathSAllowExisting = testDependencyConfigInfraRsHPathAtt + testConfigInfraHPathSMin + `
 resource "aci_relation_to_host_path" "allow_test" {
-  parent_dn = aci_host_path_selector.test.id
+  parent_dn = aci_access_interface_override.test.id
   target_dn = "topology/pod-1/paths-101/pathep-[eth1/1]"
 }
 resource "aci_relation_to_host_path" "allow_test_2" {
-  parent_dn = aci_host_path_selector.test.id
+  parent_dn = aci_access_interface_override.test.id
   target_dn = "topology/pod-1/paths-101/pathep-[eth1/1]"
   depends_on = [aci_relation_to_host_path.allow_test]
 }
@@ -191,14 +191,14 @@ resource "aci_relation_to_host_path" "allow_test_2" {
 
 const testConfigInfraRsHPathAttMinDependencyWithInfraHPathS = testDependencyConfigInfraRsHPathAtt + testConfigInfraHPathSMin + `
 resource "aci_relation_to_host_path" "test" {
-  parent_dn = aci_host_path_selector.test.id
+  parent_dn = aci_access_interface_override.test.id
   target_dn = "topology/pod-1/paths-101/pathep-[eth1/1]"
 }
 `
 
 const testConfigInfraRsHPathAttAllDependencyWithInfraHPathS = testDependencyConfigInfraRsHPathAtt + testConfigInfraHPathSMin + `
 resource "aci_relation_to_host_path" "test" {
-  parent_dn = aci_host_path_selector.test.id
+  parent_dn = aci_access_interface_override.test.id
   target_dn = "topology/pod-1/paths-101/pathep-[eth1/1]"
   annotation = "annotation"
 }
@@ -206,14 +206,14 @@ resource "aci_relation_to_host_path" "test" {
 
 const testConfigInfraRsHPathAttResetDependencyWithInfraHPathS = testDependencyConfigInfraRsHPathAtt + testConfigInfraHPathSMin + `
 resource "aci_relation_to_host_path" "test" {
-  parent_dn = aci_host_path_selector.test.id
+  parent_dn = aci_access_interface_override.test.id
   target_dn = "topology/pod-1/paths-101/pathep-[eth1/1]"
   annotation = "orchestrator:terraform"
 }
 `
 const testConfigInfraRsHPathAttChildrenDependencyWithInfraHPathS = testDependencyConfigInfraRsHPathAtt + testConfigInfraHPathSMin + `
 resource "aci_relation_to_host_path" "test" {
-  parent_dn = aci_host_path_selector.test.id
+  parent_dn = aci_access_interface_override.test.id
   target_dn = "topology/pod-1/paths-101/pathep-[eth1/1]"
   annotations = [
 	{
@@ -240,14 +240,14 @@ resource "aci_relation_to_host_path" "test" {
 
 const testConfigInfraRsHPathAttChildrenRemoveFromConfigDependencyWithInfraHPathS = testDependencyConfigInfraRsHPathAtt + testConfigInfraHPathSMin + `
 resource "aci_relation_to_host_path" "test" {
-  parent_dn = aci_host_path_selector.test.id
+  parent_dn = aci_access_interface_override.test.id
   target_dn = "topology/pod-1/paths-101/pathep-[eth1/1]"
 }
 `
 
 const testConfigInfraRsHPathAttChildrenRemoveOneDependencyWithInfraHPathS = testDependencyConfigInfraRsHPathAtt + testConfigInfraHPathSMin + `
 resource "aci_relation_to_host_path" "test" {
-  parent_dn = aci_host_path_selector.test.id
+  parent_dn = aci_access_interface_override.test.id
   target_dn = "topology/pod-1/paths-101/pathep-[eth1/1]"
   annotations = [ 
 	{
@@ -266,7 +266,7 @@ resource "aci_relation_to_host_path" "test" {
 
 const testConfigInfraRsHPathAttChildrenRemoveAllDependencyWithInfraHPathS = testDependencyConfigInfraRsHPathAtt + testConfigInfraHPathSMin + `
 resource "aci_relation_to_host_path" "test" {
-  parent_dn = aci_host_path_selector.test.id
+  parent_dn = aci_access_interface_override.test.id
   target_dn = "topology/pod-1/paths-101/pathep-[eth1/1]"
   annotations = []
   tags = []

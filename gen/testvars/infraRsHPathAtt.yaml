@@ -35,7 +35,7 @@ children:
 parents:
   - class_name: "infraHPathS"
     parent_dependency: ""
-    parent_dn: "aci_host_path_selector.test.id"
+    parent_dn: "aci_access_interface_override.test.id"
     class_in_parent: false
     target_classes:
         - "fabricPathEp"
@@ -43,16 +43,6 @@ targets:
   - class_name: "fabricPathEp"
     target_dn: "topology/pod-1/paths-101/pathep-[eth1/1]"
     target_dn_ref: "aci_.test__0.id"
-    parent_dependency: ""
-    parent_dependency_dn_ref: ""
-    target_resource_name: ""
-    relation_resource_name: "host_path"
-    parent_dn_key: "parent_dn"
-    static: true
-    properties:
-  - class_name: "fabricPathEp"
-    target_dn: "topology/pod-1/paths-101/pathep-[eth1/2]"
-    target_dn_ref: "aci_.test__1.id"
     parent_dependency: ""
     parent_dependency_dn_ref: ""
     target_resource_name: ""

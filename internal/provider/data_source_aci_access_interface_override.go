@@ -29,21 +29,21 @@ type InfraHPathSDataSource struct {
 }
 
 func (d *InfraHPathSDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
-	tflog.Debug(ctx, "Start metadata of datasource: aci_host_path_selector")
-	resp.TypeName = req.ProviderTypeName + "_host_path_selector"
-	tflog.Debug(ctx, "End metadata of datasource: aci_host_path_selector")
+	tflog.Debug(ctx, "Start metadata of datasource: aci_access_interface_override")
+	resp.TypeName = req.ProviderTypeName + "_access_interface_override"
+	tflog.Debug(ctx, "End metadata of datasource: aci_access_interface_override")
 }
 
 func (d *InfraHPathSDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
-	tflog.Debug(ctx, "Start schema of datasource: aci_host_path_selector")
+	tflog.Debug(ctx, "Start schema of datasource: aci_access_interface_override")
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "The host_path_selector datasource for the 'infraHPathS' class",
+		MarkdownDescription: "The access_interface_override datasource for the 'infraHPathS' class",
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Host Path Selector object.",
+				MarkdownDescription: "The distinguished name (DN) of the Access Interface Override object.",
 			},
 			"parent_dn": schema.StringAttribute{
 				Optional:            true,
@@ -51,19 +51,19 @@ func (d *InfraHPathSDataSource) Schema(ctx context.Context, req datasource.Schem
 			},
 			"annotation": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The annotation of the Host Path Selector object.`,
+				MarkdownDescription: `The annotation of the Access Interface Override object.`,
 			},
 			"description": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The description of the Host Path Selector object.`,
+				MarkdownDescription: `The description of the Access Interface Override object.`,
 			},
 			"name": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: `The name of the Host Path Selector object.`,
+				MarkdownDescription: `The name of the Access Interface Override object.`,
 			},
 			"name_alias": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The name alias of the Host Path Selector object.`,
+				MarkdownDescription: `The name alias of the Access Interface Override object.`,
 			},
 			"owner_key": schema.StringAttribute{
 				Computed:            true,
@@ -89,14 +89,14 @@ func (d *InfraHPathSDataSource) Schema(ctx context.Context, req datasource.Schem
 					},
 				},
 			},
-			"relation_to_access_base_group": schema.SetNestedAttribute{
+			"relation_to_access_interface_policy_group": schema.SetNestedAttribute{
 				MarkdownDescription: ``,
 				Computed:            true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"annotation": schema.StringAttribute{
 							Computed:            true,
-							MarkdownDescription: `The annotation of the Relation To Access Base Group object.`,
+							MarkdownDescription: `The annotation of the Relation To Access Interface Policy Group object.`,
 						},
 						"target_dn": schema.StringAttribute{
 							Computed:            true,
@@ -139,11 +139,11 @@ func (d *InfraHPathSDataSource) Schema(ctx context.Context, req datasource.Schem
 			},
 		},
 	}
-	tflog.Debug(ctx, "End schema of datasource: aci_host_path_selector")
+	tflog.Debug(ctx, "End schema of datasource: aci_access_interface_override")
 }
 
 func (d *InfraHPathSDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	tflog.Debug(ctx, "Start configure of datasource: aci_host_path_selector")
+	tflog.Debug(ctx, "Start configure of datasource: aci_access_interface_override")
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
 		return
@@ -161,11 +161,11 @@ func (d *InfraHPathSDataSource) Configure(ctx context.Context, req datasource.Co
 	}
 
 	d.client = client
-	tflog.Debug(ctx, "End configure of datasource: aci_host_path_selector")
+	tflog.Debug(ctx, "End configure of datasource: aci_access_interface_override")
 }
 
 func (d *InfraHPathSDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	tflog.Debug(ctx, "Start read of datasource: aci_host_path_selector")
+	tflog.Debug(ctx, "Start read of datasource: aci_access_interface_override")
 	var data *InfraHPathSResourceModel
 
 	// Read Terraform configuration data into the model
@@ -184,19 +184,19 @@ func (d *InfraHPathSDataSource) Read(ctx context.Context, req datasource.ReadReq
 	// Create a copy of the Id for when not found during getAndSetInfraHPathSAttributes
 	cachedId := data.Id.ValueString()
 
-	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_host_path_selector with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_access_interface_override with id '%s'", data.Id.ValueString()))
 
 	getAndSetInfraHPathSAttributes(ctx, &resp.Diagnostics, d.client, data)
 
 	if data.Id.IsNull() {
 		resp.Diagnostics.AddError(
-			"Failed to read aci_host_path_selector data source",
-			fmt.Sprintf("The aci_host_path_selector data source with id '%s' has not been found", cachedId),
+			"Failed to read aci_access_interface_override data source",
+			fmt.Sprintf("The aci_access_interface_override data source with id '%s' has not been found", cachedId),
 		)
 		return
 	}
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_host_path_selector with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_access_interface_override with id '%s'", data.Id.ValueString()))
 }

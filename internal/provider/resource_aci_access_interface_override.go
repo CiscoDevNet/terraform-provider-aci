@@ -53,7 +53,7 @@ type InfraHPathSResourceModel struct {
 	OwnerKey                types.String `tfsdk:"owner_key"`
 	OwnerTag                types.String `tfsdk:"owner_tag"`
 	InfraRsHPathAtt         types.Set    `tfsdk:"relation_to_host_paths"`
-	InfraRsPathToAccBaseGrp types.Set    `tfsdk:"relation_to_access_base_group"`
+	InfraRsPathToAccBaseGrp types.Set    `tfsdk:"relation_to_access_interface_policy_group"`
 	TagAnnotation           types.Set    `tfsdk:"annotations"`
 	TagTag                  types.Set    `tfsdk:"tags"`
 }
@@ -177,21 +177,21 @@ func (r *InfraHPathSResource) ModifyPlan(ctx context.Context, req resource.Modif
 }
 
 func (r *InfraHPathSResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	tflog.Debug(ctx, "Start metadata of resource: aci_host_path_selector")
-	resp.TypeName = req.ProviderTypeName + "_host_path_selector"
-	tflog.Debug(ctx, "End metadata of resource: aci_host_path_selector")
+	tflog.Debug(ctx, "Start metadata of resource: aci_access_interface_override")
+	resp.TypeName = req.ProviderTypeName + "_access_interface_override"
+	tflog.Debug(ctx, "End metadata of resource: aci_access_interface_override")
 }
 
 func (r *InfraHPathSResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
-	tflog.Debug(ctx, "Start schema of resource: aci_host_path_selector")
+	tflog.Debug(ctx, "Start schema of resource: aci_access_interface_override")
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "The host_path_selector resource for the 'infraHPathS' class",
+		MarkdownDescription: "The access_interface_override resource for the 'infraHPathS' class",
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Host Path Selector object.",
+				MarkdownDescription: "The distinguished name (DN) of the Access Interface Override object.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
@@ -214,7 +214,7 @@ func (r *InfraHPathSResource) Schema(ctx context.Context, req resource.SchemaReq
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
-				MarkdownDescription: `The annotation of the Host Path Selector object.`,
+				MarkdownDescription: `The annotation of the Access Interface Override object.`,
 			},
 			"description": schema.StringAttribute{
 				Optional: true,
@@ -223,7 +223,7 @@ func (r *InfraHPathSResource) Schema(ctx context.Context, req resource.SchemaReq
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The description of the Host Path Selector object.`,
+				MarkdownDescription: `The description of the Access Interface Override object.`,
 			},
 			"name": schema.StringAttribute{
 				Required: true,
@@ -232,7 +232,7 @@ func (r *InfraHPathSResource) Schema(ctx context.Context, req resource.SchemaReq
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
-				MarkdownDescription: `The name of the Host Path Selector object.`,
+				MarkdownDescription: `The name of the Access Interface Override object.`,
 			},
 			"name_alias": schema.StringAttribute{
 				Optional: true,
@@ -241,7 +241,7 @@ func (r *InfraHPathSResource) Schema(ctx context.Context, req resource.SchemaReq
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The name alias of the Host Path Selector object.`,
+				MarkdownDescription: `The name alias of the Access Interface Override object.`,
 			},
 			"owner_key": schema.StringAttribute{
 				Optional: true,
@@ -268,6 +268,9 @@ func (r *InfraHPathSResource) Schema(ctx context.Context, req resource.SchemaReq
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
 				},
+				Validators: []validator.Set{
+					setvalidator.SizeAtMost(1),
+				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"annotation": schema.StringAttribute{
@@ -288,7 +291,7 @@ func (r *InfraHPathSResource) Schema(ctx context.Context, req resource.SchemaReq
 					},
 				},
 			},
-			"relation_to_access_base_group": schema.SetNestedAttribute{
+			"relation_to_access_interface_policy_group": schema.SetNestedAttribute{
 				MarkdownDescription: ``,
 				Optional:            true,
 				Computed:            true,
@@ -306,7 +309,7 @@ func (r *InfraHPathSResource) Schema(ctx context.Context, req resource.SchemaReq
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
-							MarkdownDescription: `The annotation of the Relation To Access Base Group object.`,
+							MarkdownDescription: `The annotation of the Relation To Access Interface Policy Group object.`,
 						},
 						"target_dn": schema.StringAttribute{
 							Optional: true,
@@ -373,11 +376,11 @@ func (r *InfraHPathSResource) Schema(ctx context.Context, req resource.SchemaReq
 			},
 		},
 	}
-	tflog.Debug(ctx, "End schema of resource: aci_host_path_selector")
+	tflog.Debug(ctx, "End schema of resource: aci_access_interface_override")
 }
 
 func (r *InfraHPathSResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	tflog.Debug(ctx, "Start configure of resource: aci_host_path_selector")
+	tflog.Debug(ctx, "Start configure of resource: aci_access_interface_override")
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
 		return
@@ -395,11 +398,11 @@ func (r *InfraHPathSResource) Configure(ctx context.Context, req resource.Config
 	}
 
 	r.client = client
-	tflog.Debug(ctx, "End configure of resource: aci_host_path_selector")
+	tflog.Debug(ctx, "End configure of resource: aci_access_interface_override")
 }
 
 func (r *InfraHPathSResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	tflog.Debug(ctx, "Start create of resource: aci_host_path_selector")
+	tflog.Debug(ctx, "Start create of resource: aci_access_interface_override")
 	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
 	var stateData *InfraHPathSResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
@@ -428,7 +431,7 @@ func (r *InfraHPathSResource) Create(ctx context.Context, req resource.CreateReq
 		setInfraHPathSId(ctx, data)
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_host_path_selector with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_access_interface_override with id '%s'", data.Id.ValueString()))
 
 	var infraRsHPathAttPlan, infraRsHPathAttState []InfraRsHPathAttInfraHPathSResourceModel
 	data.InfraRsHPathAtt.ElementsAs(ctx, &infraRsHPathAttPlan, false)
@@ -457,11 +460,11 @@ func (r *InfraHPathSResource) Create(ctx context.Context, req resource.CreateReq
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_host_path_selector with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_access_interface_override with id '%s'", data.Id.ValueString()))
 }
 
 func (r *InfraHPathSResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
-	tflog.Debug(ctx, "Start read of resource: aci_host_path_selector")
+	tflog.Debug(ctx, "Start read of resource: aci_access_interface_override")
 	var data *InfraHPathSResourceModel
 
 	// Read Terraform prior state data into the model
@@ -471,7 +474,7 @@ func (r *InfraHPathSResource) Read(ctx context.Context, req resource.ReadRequest
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Read of resource aci_host_path_selector with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Read of resource aci_access_interface_override with id '%s'", data.Id.ValueString()))
 
 	getAndSetInfraHPathSAttributes(ctx, &resp.Diagnostics, r.client, data)
 
@@ -483,11 +486,11 @@ func (r *InfraHPathSResource) Read(ctx context.Context, req resource.ReadRequest
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_host_path_selector with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_access_interface_override with id '%s'", data.Id.ValueString()))
 }
 
 func (r *InfraHPathSResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	tflog.Debug(ctx, "Start update of resource: aci_host_path_selector")
+	tflog.Debug(ctx, "Start update of resource: aci_access_interface_override")
 	var data *InfraHPathSResourceModel
 	var stateData *InfraHPathSResourceModel
 
@@ -499,7 +502,7 @@ func (r *InfraHPathSResource) Update(ctx context.Context, req resource.UpdateReq
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_host_path_selector with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_access_interface_override with id '%s'", data.Id.ValueString()))
 
 	var infraRsHPathAttPlan, infraRsHPathAttState []InfraRsHPathAttInfraHPathSResourceModel
 	data.InfraRsHPathAtt.ElementsAs(ctx, &infraRsHPathAttPlan, false)
@@ -529,11 +532,11 @@ func (r *InfraHPathSResource) Update(ctx context.Context, req resource.UpdateReq
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_host_path_selector with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_access_interface_override with id '%s'", data.Id.ValueString()))
 }
 
 func (r *InfraHPathSResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	tflog.Debug(ctx, "Start delete of resource: aci_host_path_selector")
+	tflog.Debug(ctx, "Start delete of resource: aci_access_interface_override")
 	var data *InfraHPathSResourceModel
 
 	// Read Terraform prior state data into the model
@@ -543,7 +546,7 @@ func (r *InfraHPathSResource) Delete(ctx context.Context, req resource.DeleteReq
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Delete of resource aci_host_path_selector with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Delete of resource aci_access_interface_override with id '%s'", data.Id.ValueString()))
 	jsonPayload := GetDeleteJsonPayload(ctx, &resp.Diagnostics, "infraHPathS", data.Id.ValueString())
 	if resp.Diagnostics.HasError() {
 		return
@@ -552,18 +555,18 @@ func (r *InfraHPathSResource) Delete(ctx context.Context, req resource.DeleteReq
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_host_path_selector with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_access_interface_override with id '%s'", data.Id.ValueString()))
 }
 
 func (r *InfraHPathSResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	tflog.Debug(ctx, "Start import state of resource: aci_host_path_selector")
+	tflog.Debug(ctx, "Start import state of resource: aci_access_interface_override")
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 
 	var stateData *InfraHPathSResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
-	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_host_path_selector with id '%s'", stateData.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_access_interface_override with id '%s'", stateData.Id.ValueString()))
 
-	tflog.Debug(ctx, "End import of state resource: aci_host_path_selector")
+	tflog.Debug(ctx, "End import of state resource: aci_access_interface_override")
 }
 
 func getAndSetInfraHPathSAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *InfraHPathSResourceModel) {

@@ -30,8 +30,8 @@ Data source for Relation To Host Path
 
 ```hcl
 
-data "aci_relation_to_host_path" "example_host_path_selector" {
-  parent_dn = aci_host_path_selector.example.id
+data "aci_relation_to_host_path" "example_access_interface_override" {
+  parent_dn = aci_access_interface_override.example.id
   target_dn = "topology/pod-1/paths-101/pathep-[eth1/1]"
 }
 
@@ -42,7 +42,7 @@ data "aci_relation_to_host_path" "example_host_path_selector" {
 ### Required ###
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
-  - [aci_host_path_selector](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/host_path_selector) ([infraHPathS](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraHPathS/overview))
+  - [aci_access_interface_override](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/access_interface_override) ([infraHPathS](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraHPathS/overview))
 * `target_dn` (tDn) - (string) The distinguished name of the target.
 
 ### Read-Only ###

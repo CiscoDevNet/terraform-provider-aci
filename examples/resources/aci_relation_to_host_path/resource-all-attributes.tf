@@ -1,6 +1,6 @@
 
-resource "aci_relation_to_host_path" "full_example_host_path_selector" {
-  parent_dn  = aci_host_path_selector.example.id
+resource "aci_relation_to_host_path" "full_example_access_interface_override" {
+  parent_dn  = aci_access_interface_override.example.id
   annotation = "annotation"
   target_dn  = "topology/pod-1/paths-101/pathep-[eth1/1]"
   annotations = [

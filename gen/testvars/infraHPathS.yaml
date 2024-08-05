@@ -29,11 +29,8 @@ children:
   relation_to_host_paths:
     - annotation: "annotation_1"
       target_dn: "target_dn_0"
-      
-    - annotation: "annotation_2"
-      target_dn: "target_dn_1"
-      
-  relation_to_access_base_group:
+      deletable_child: true
+  relation_to_access_interface_policy_group:
     - annotation: "annotation_1"
       target_dn: "target_dn_1"
       deletable_child: true
@@ -57,11 +54,7 @@ child_targets:
     target_dn: "topology/pod-1/paths-101/pathep-[eth1/1]"
     relation_resource_name: "host_path"
     static: true
-  - class_name: "fabricPathEp"
-    target_dn: "topology/pod-1/paths-101/pathep-[eth1/2]"
-    relation_resource_name: "host_path"
-    static: true
   - class_name: "infraAccPortGrp"
-    target_dn: "uni/infra/funcprof/accportgrp-interface_policy_group"
-    relation_resource_name: "access_base_group"
+    target_dn: "uni/infra/funcprof/accportgrp-access_interface_policy_group"
+    relation_resource_name: "access_interface_policy_group"
     static: true

@@ -34,8 +34,8 @@ The configuration snippet below creates a Relation To Host Path with only requir
 
 ```hcl
 
-resource "aci_relation_to_host_path" "example_host_path_selector" {
-  parent_dn = aci_host_path_selector.example.id
+resource "aci_relation_to_host_path" "example_access_interface_override" {
+  parent_dn = aci_access_interface_override.example.id
   target_dn = "topology/pod-1/paths-101/pathep-[eth1/1]"
 }
 
@@ -46,8 +46,8 @@ The configuration snippet below shows all possible attributes of the Relation To
 
 ```hcl
 
-resource "aci_relation_to_host_path" "full_example_host_path_selector" {
-  parent_dn  = aci_host_path_selector.example.id
+resource "aci_relation_to_host_path" "full_example_access_interface_override" {
+  parent_dn  = aci_access_interface_override.example.id
   annotation = "annotation"
   target_dn  = "topology/pod-1/paths-101/pathep-[eth1/1]"
   annotations = [
@@ -73,7 +73,7 @@ All examples for the Relation To Host Path resource can be found in the [example
 ### Required ###
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
-  - [aci_host_path_selector](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/host_path_selector) ([infraHPathS](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraHPathS/overview))
+  - [aci_access_interface_override](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/access_interface_override) ([infraHPathS](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraHPathS/overview))
 * `target_dn` (tDn) - (string) The distinguished name of the target.
 
 ### Read-Only ###
@@ -104,7 +104,7 @@ All examples for the Relation To Host Path resource can be found in the [example
 An existing Relation To Host Path can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_relation_to_host_path.example_host_path_selector uni/infra/hpaths-{name}/rsHPathAtt-[{tDn}]
+terraform import aci_relation_to_host_path.example_access_interface_override uni/infra/hpaths-{name}/rsHPathAtt-[{tDn}]
 ```
 
 Starting in Terraform version 1.5, an existing Relation To Host Path can be imported
@@ -113,6 +113,6 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/infra/hpaths-{name}/rsHPathAtt-[{tDn}]"
-  to = aci_relation_to_host_path.example_host_path_selector
+  to = aci_relation_to_host_path.example_access_interface_override
 }
 ```
