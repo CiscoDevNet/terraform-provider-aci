@@ -20,30 +20,30 @@ func TestAccDataSourceInfraHPathS(t *testing.T) {
 			{
 				Config: testConfigInfraHPathSDataSource,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.aci_host_path_selector.test", "annotation", "annotation"),
-					resource.TestCheckResourceAttr("data.aci_host_path_selector.test", "description", "description_1"),
-					resource.TestCheckResourceAttr("data.aci_host_path_selector.test", "name_alias", "name_alias_1"),
-					resource.TestCheckResourceAttr("data.aci_host_path_selector.test", "owner_key", "owner_key_1"),
-					resource.TestCheckResourceAttr("data.aci_host_path_selector.test", "owner_tag", "owner_tag_1"),
+					resource.TestCheckResourceAttr("data.aci_access_interface_override.test", "annotation", "annotation"),
+					resource.TestCheckResourceAttr("data.aci_access_interface_override.test", "description", "description_1"),
+					resource.TestCheckResourceAttr("data.aci_access_interface_override.test", "name_alias", "name_alias_1"),
+					resource.TestCheckResourceAttr("data.aci_access_interface_override.test", "owner_key", "owner_key_1"),
+					resource.TestCheckResourceAttr("data.aci_access_interface_override.test", "owner_tag", "owner_tag_1"),
 				),
 			},
 			{
 				Config:      testConfigInfraHPathSNotExisting,
-				ExpectError: regexp.MustCompile("Failed to read aci_host_path_selector data source"),
+				ExpectError: regexp.MustCompile("Failed to read aci_access_interface_override data source"),
 			},
 		},
 	})
 }
 
 const testConfigInfraHPathSDataSource = testConfigInfraHPathSAll + `
-data "aci_host_path_selector" "test" {
+data "aci_access_interface_override" "test" {
   name = "host_path_selector"
-  depends_on = [aci_host_path_selector.test]
+  depends_on = [aci_access_interface_override.test]
 }
 `
 
 const testConfigInfraHPathSNotExisting = testConfigInfraHPathSAll + `
-data "aci_host_path_selector" "test" {
+data "aci_access_interface_override" "test" {
   name = "host_path_selector_non_existing"
 }
 `

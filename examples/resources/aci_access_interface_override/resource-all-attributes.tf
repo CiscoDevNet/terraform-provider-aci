@@ -1,5 +1,5 @@
 
-resource "aci_host_path_selector" "full_example" {
+resource "aci_access_interface_override" "full_example" {
   annotation  = "annotation"
   description = "description_1"
   name        = "host_path_selector"
@@ -12,10 +12,10 @@ resource "aci_host_path_selector" "full_example" {
       target_dn  = "topology/pod-1/paths-101/pathep-[eth1/1]"
     }
   ]
-  relation_to_access_base_group = [
+  relation_to_access_interface_policy_group = [
     {
       annotation = "annotation_1"
-      target_dn  = "uni/infra/funcprof/accportgrp-interface_policy_group"
+      target_dn  = "uni/infra/funcprof/accportgrp-access_interface_policy_group"
     }
   ]
   annotations = [

@@ -1,5 +1,5 @@
 
-data "aci_relation_to_host_path" "example_host_path_selector" {
-  parent_dn = aci_host_path_selector.example.id
+data "aci_relation_to_host_path" "example_access_interface_override" {
+  parent_dn = aci_access_interface_override.example.id
   target_dn = "topology/pod-1/paths-101/pathep-[eth1/1]"
 }

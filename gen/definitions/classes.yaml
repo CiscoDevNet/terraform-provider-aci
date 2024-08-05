@@ -566,10 +566,15 @@ physDomP:
   resource_name: "physical_domain"
 
 infraHPathS:
-  resource_name: "host_path_selector"
+  ui_locations:
+    - "Fabric -> Access Policies -> Interfaces -> Leaf Interfaces -> Overrides"
+    - "Fabric -> Access Policies -> Interfaces -> Spine Interfaces -> Overrides"
+  sub_category: "Access Policies"
+  resource_name: "access_interface_override"
 
 infraRsHPathAtt:
   resource_name: "relation_to_host_path"
+  max_one_class_allowed: true
 
 infraRsPathToAccBaseGrp:
-  resource_name: "relation_to_access_base_group"
+  resource_name: "relation_to_access_interface_policy_group"
