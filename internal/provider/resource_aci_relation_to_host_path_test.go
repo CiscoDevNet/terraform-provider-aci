@@ -107,10 +107,6 @@ func TestAccResourceInfraRsHPathAttWithInfraHPathS(t *testing.T) {
 				ResourceName:      "aci_relation_to_host_path.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_host_path.test", "target_dn", "topology/pod-1/paths-101/pathep-[eth1/1]"),
-					resource.TestCheckResourceAttr("aci_relation_to_host_path.test", "annotation", "orchestrator:terraform"),
-				),
 			},
 			// Update with children
 			{
@@ -134,18 +130,6 @@ func TestAccResourceInfraRsHPathAttWithInfraHPathS(t *testing.T) {
 				ResourceName:      "aci_relation_to_host_path.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_host_path.test", "target_dn", "topology/pod-1/paths-101/pathep-[eth1/1]"),
-					resource.TestCheckResourceAttr("aci_relation_to_host_path.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_relation_to_host_path.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_host_path.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_host_path.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_host_path.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_to_host_path.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_host_path.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_host_path.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_host_path.test", "tags.1.value", "test_value"),
-				),
 			},
 			// Update with children removed from config
 			{

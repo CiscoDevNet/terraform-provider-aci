@@ -61,7 +61,7 @@ resource "aci_host_path_selector" "full_example" {
   relation_to_access_base_group = [
     {
       annotation = "annotation_1"
-      target_dn  = "uni/infra/funcprof/accportgrp-access_interface_policy_group"
+      target_dn  = "uni/infra/funcprof/accportgrp-interface_policy_group"
     }
   ]
   annotations = [
