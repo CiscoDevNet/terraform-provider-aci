@@ -35,7 +35,7 @@ func TestAccDataSourceInfraRsHPathAttWithInfraHPathS(t *testing.T) {
 
 const testConfigInfraRsHPathAttDataSourceDependencyWithInfraHPathS = testConfigInfraRsHPathAttMinDependencyWithInfraHPathS + `
 data "aci_relation_to_host_path" "test" {
-  parent_dn = aci_host_path_selector.test.id
+  parent_dn = aci_access_interface_override.test.id
   target_dn = "topology/pod-1/paths-101/pathep-[eth1/1]"
   depends_on = [aci_relation_to_host_path.test]
 }
@@ -43,7 +43,7 @@ data "aci_relation_to_host_path" "test" {
 
 const testConfigInfraRsHPathAttNotExistingInfraHPathS = testConfigInfraRsHPathAttMinDependencyWithInfraHPathS + `
 data "aci_relation_to_host_path" "test_non_existing" {
-  parent_dn = aci_host_path_selector.test.id
+  parent_dn = aci_access_interface_override.test.id
   target_dn = "topology/pod-1/paths-101/pathep-[eth1/1]_not_existing"
 }
 `
