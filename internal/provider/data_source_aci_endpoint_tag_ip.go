@@ -142,7 +142,7 @@ func (d *FvEpIpTagDataSource) Read(ctx context.Context, req datasource.ReadReque
 		return
 	}
 
-	setFvEpIpTagId(ctx, data)
+	SetFvEpIpTagId(ctx, data)
 
 	// Create a copy of the Id for when not found during getAndSetFvEpIpTagAttributes
 	cachedId := data.Id.ValueString()

@@ -162,7 +162,7 @@ func (d *FvFBRGroupDataSource) Read(ctx context.Context, req datasource.ReadRequ
 		return
 	}
 
-	setFvFBRGroupId(ctx, data)
+	SetFvFBRGroupId(ctx, data)
 
 	// Create a copy of the Id for when not found during getAndSetFvFBRGroupAttributes
 	cachedId := data.Id.ValueString()

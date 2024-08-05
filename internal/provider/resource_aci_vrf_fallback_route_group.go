@@ -273,7 +273,7 @@ func (r *FvFBRGroupResource) Create(ctx context.Context, req resource.CreateRequ
 	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
 	var stateData *FvFBRGroupResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
-	setFvFBRGroupId(ctx, stateData)
+	SetFvFBRGroupId(ctx, stateData)
 	getAndSetFvFBRGroupAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 
 	var data *FvFBRGroupResourceModel
@@ -285,7 +285,7 @@ func (r *FvFBRGroupResource) Create(ctx context.Context, req resource.CreateRequ
 		return
 	}
 
-	setFvFBRGroupId(ctx, data)
+	SetFvFBRGroupId(ctx, data)
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_vrf_fallback_route_group with id '%s'", data.Id.ValueString()))
 
@@ -547,7 +547,7 @@ func setFvFBRGroupParentDn(ctx context.Context, dn string, data *FvFBRGroupResou
 	data.ParentDn = basetypes.NewStringValue(dn[:rnIndex])
 }
 
-func setFvFBRGroupId(ctx context.Context, data *FvFBRGroupResourceModel) {
+func SetFvFBRGroupId(ctx context.Context, data *FvFBRGroupResourceModel) {
 	rn := getFvFBRGroupRn(ctx, data)
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }

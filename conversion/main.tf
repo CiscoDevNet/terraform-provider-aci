@@ -27,6 +27,15 @@ resource "aci_tenant" "example" {
 }
 
 
+resource "aci_tenant" "example2" {
+  name        = "demo_tenant2"
+  description = "from terraform2"
+  annotation  = "tag2"
+  name_alias  = "tenant2"
+}
+
+
+/*
 resource "aci_vrf_fallback_route_group" "full_example_vrf" {
   parent_dn   = "uni/tn-demo_tenant"
   annotation  = "annotation"
@@ -55,7 +64,7 @@ resource "aci_vrf_fallback_route_group" "full_example_vrf" {
     }
   ]
 }
-
+*/
 
 /*
 
@@ -85,8 +94,8 @@ resource "aci_external_management_network_instance_profile" "full_example" {
     }
   ]
 }
-
 */
+
 /*
 resource "aci_endpoint_tag_ip" "full_example_tenant" {
   parent_dn    = "uni/tn-demo_tenant"

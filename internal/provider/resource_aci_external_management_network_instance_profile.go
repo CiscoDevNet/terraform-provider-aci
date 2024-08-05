@@ -263,7 +263,7 @@ func (r *MgmtInstPResource) Create(ctx context.Context, req resource.CreateReque
 	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
 	var stateData *MgmtInstPResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
-	setMgmtInstPId(ctx, stateData)
+	SetMgmtInstPId(ctx, stateData)
 	getAndSetMgmtInstPAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 
 	var data *MgmtInstPResourceModel
@@ -275,7 +275,7 @@ func (r *MgmtInstPResource) Create(ctx context.Context, req resource.CreateReque
 		return
 	}
 
-	setMgmtInstPId(ctx, data)
+	SetMgmtInstPId(ctx, data)
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_external_management_network_instance_profile with id '%s'", data.Id.ValueString()))
 
@@ -288,7 +288,7 @@ func (r *MgmtInstPResource) Create(ctx context.Context, req resource.CreateReque
 	var tagTagPlan, tagTagState []TagTagMgmtInstPResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getMgmtInstPCreateJsonPayload(ctx, &resp.Diagnostics, data, mgmtRsOoBConsPlan, mgmtRsOoBConsState, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetMgmtInstPCreateJsonPayload(ctx, &resp.Diagnostics, data, mgmtRsOoBConsPlan, mgmtRsOoBConsState, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -356,7 +356,7 @@ func (r *MgmtInstPResource) Update(ctx context.Context, req resource.UpdateReque
 	var tagTagPlan, tagTagState []TagTagMgmtInstPResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getMgmtInstPCreateJsonPayload(ctx, &resp.Diagnostics, data, mgmtRsOoBConsPlan, mgmtRsOoBConsState, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetMgmtInstPCreateJsonPayload(ctx, &resp.Diagnostics, data, mgmtRsOoBConsPlan, mgmtRsOoBConsState, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -517,7 +517,7 @@ func getMgmtInstPRn(ctx context.Context, data *MgmtInstPResourceModel) string {
 	return rn
 }
 
-func setMgmtInstPId(ctx context.Context, data *MgmtInstPResourceModel) {
+func SetMgmtInstPId(ctx context.Context, data *MgmtInstPResourceModel) {
 	rn := getMgmtInstPRn(ctx, data)
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", strings.Split([]string{"uni/tn-mgmt/extmgmt-default/instp-{name}"}[0], "/")[0], rn))
 }
@@ -645,7 +645,7 @@ func GetMgmtInstPTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostic
 	return childPayloads
 }
 
-func getMgmtInstPCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *MgmtInstPResourceModel, mgmtRsOoBConsPlan, mgmtRsOoBConsState []MgmtRsOoBConsMgmtInstPResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationMgmtInstPResourceModel, tagTagPlan, tagTagState []TagTagMgmtInstPResourceModel) *container.Container {
+func GetMgmtInstPCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *MgmtInstPResourceModel, mgmtRsOoBConsPlan, mgmtRsOoBConsState []MgmtRsOoBConsMgmtInstPResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationMgmtInstPResourceModel, tagTagPlan, tagTagState []TagTagMgmtInstPResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 	childPayloads := []map[string]interface{}{}

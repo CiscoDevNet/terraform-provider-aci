@@ -231,7 +231,7 @@ func (r *FvEpIpTagResource) Create(ctx context.Context, req resource.CreateReque
 	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
 	var stateData *FvEpIpTagResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
-	setFvEpIpTagId(ctx, stateData)
+	SetFvEpIpTagId(ctx, stateData)
 	getAndSetFvEpIpTagAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 
 	var data *FvEpIpTagResourceModel
@@ -243,7 +243,7 @@ func (r *FvEpIpTagResource) Create(ctx context.Context, req resource.CreateReque
 		return
 	}
 
-	setFvEpIpTagId(ctx, data)
+	SetFvEpIpTagId(ctx, data)
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_endpoint_tag_ip with id '%s'", data.Id.ValueString()))
 
@@ -253,7 +253,7 @@ func (r *FvEpIpTagResource) Create(ctx context.Context, req resource.CreateReque
 	var tagTagPlan, tagTagState []TagTagFvEpIpTagResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvEpIpTagCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetFvEpIpTagCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -318,7 +318,7 @@ func (r *FvEpIpTagResource) Update(ctx context.Context, req resource.UpdateReque
 	var tagTagPlan, tagTagState []TagTagFvEpIpTagResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvEpIpTagCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetFvEpIpTagCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -483,7 +483,7 @@ func setFvEpIpTagParentDn(ctx context.Context, dn string, data *FvEpIpTagResourc
 	data.ParentDn = basetypes.NewStringValue(parentDn)
 }
 
-func setFvEpIpTagId(ctx context.Context, data *FvEpIpTagResourceModel) {
+func SetFvEpIpTagId(ctx context.Context, data *FvEpIpTagResourceModel) {
 	rn := getFvEpIpTagRn(ctx, data)
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
@@ -567,7 +567,7 @@ func getFvEpIpTagTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostic
 	return childPayloads
 }
 
-func getFvEpIpTagCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *FvEpIpTagResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvEpIpTagResourceModel, tagTagPlan, tagTagState []TagTagFvEpIpTagResourceModel) *container.Container {
+func GetFvEpIpTagCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *FvEpIpTagResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvEpIpTagResourceModel, tagTagPlan, tagTagState []TagTagFvEpIpTagResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 	childPayloads := []map[string]interface{}{}
