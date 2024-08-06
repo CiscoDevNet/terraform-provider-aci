@@ -123,6 +123,12 @@ func dataSourceAciBridgeDomain() *schema.Resource {
 				Computed: true,
 			},
 
+			"seg": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+
 			"unicast_route": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,

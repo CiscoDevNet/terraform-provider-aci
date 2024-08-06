@@ -179,6 +179,11 @@ func resourceAciBridgeDomain() *schema.Resource {
 				}, false),
 			},
 
+			"seg": &schema.Schema{
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+
 			"unicast_route": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -351,6 +356,7 @@ func setBridgeDomainAttributes(fvBD *models.BridgeDomain, d *schema.ResourceData
 	d.Set("multi_dst_pkt_act", fvBDMap["multiDstPktAct"])
 	d.Set("name_alias", fvBDMap["nameAlias"])
 	d.Set("bridge_domain_type", fvBDMap["type"])
+	d.Set("seg", fvBDMap["seg"])
 	d.Set("unicast_route", fvBDMap["unicastRoute"])
 	d.Set("unk_mac_ucast_act", fvBDMap["unkMacUcastAct"])
 	d.Set("unk_mcast_act", fvBDMap["unkMcastAct"])
