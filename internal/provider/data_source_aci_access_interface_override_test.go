@@ -43,7 +43,7 @@ data "aci_access_interface_override" "test" {
 `
 
 const testConfigInfraHPathSNotExisting = testConfigInfraHPathSAll + `
-data "aci_access_interface_override" "test" {
+data "aci_access_interface_override" "test_non_existing" {
   name = "host_path_selector_non_existing"
 }
 `

@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_access_interface_override"
 sidebar_current: "docs-aci-data-source-aci_access_interface_override"
 description: |-
-  Data source for Access Interface Override
+  Data source for ACI Access Interface Override
 ---
 
 # aci_access_interface_override #
 
-Data source for Access Interface Override
+Data source for ACI Access Interface Override
 
 ## API Information ##
 

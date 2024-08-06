@@ -33,6 +33,10 @@ children:
       value: "test_value"
       
 parents:
+  - class_name: "fvAEPg"
+    parent_dependency: "fvAp"
+    parent_dn: "aci_application_epg.test.id"
+    class_in_parent: false
   - class_name: "fvESg"
     parent_dependency: "fvAp"
     parent_dn: "aci_endpoint_security_group.test.id"

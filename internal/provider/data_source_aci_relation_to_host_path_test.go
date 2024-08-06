@@ -41,7 +41,7 @@ data "aci_relation_to_host_path" "test" {
 }
 `
 
-const testConfigInfraRsHPathAttNotExistingInfraHPathS = testConfigInfraRsHPathAttMinDependencyWithInfraHPathS + `
+const testConfigInfraRsHPathAttNotExistingInfraHPathS = testConfigInfraHPathSMin + `
 data "aci_relation_to_host_path" "test_non_existing" {
   parent_dn = aci_access_interface_override.test.id
   target_dn = "topology/pod-1/paths-101/pathep-[eth1/1]_not_existing"
