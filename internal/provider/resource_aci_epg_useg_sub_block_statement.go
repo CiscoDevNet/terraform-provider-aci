@@ -14,6 +14,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -56,16 +57,56 @@ type FvSCrtrnResourceModel struct {
 	TagTag        types.Set    `tfsdk:"tags"`
 }
 
+func getEmptyFvSCrtrnResourceModel() *FvSCrtrnResourceModel {
+	return &FvSCrtrnResourceModel{
+		Id:         basetypes.NewStringNull(),
+		ParentDn:   basetypes.NewStringNull(),
+		Annotation: basetypes.NewStringNull(),
+		Descr:      basetypes.NewStringNull(),
+		Match:      basetypes.NewStringNull(),
+		Name:       basetypes.NewStringNull(),
+		NameAlias:  basetypes.NewStringNull(),
+		OwnerKey:   basetypes.NewStringNull(),
+		OwnerTag:   basetypes.NewStringNull(),
+		TagAnnotation: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"key":   types.StringType,
+				"value": types.StringType,
+			},
+		}),
+		TagTag: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"key":   types.StringType,
+				"value": types.StringType,
+			},
+		}),
+	}
+}
+
 // TagAnnotationFvSCrtrnResourceModel describes the resource data model for the children without relation ships.
 type TagAnnotationFvSCrtrnResourceModel struct {
 	Key   types.String `tfsdk:"key"`
 	Value types.String `tfsdk:"value"`
 }
 
+func getEmptyTagAnnotationFvSCrtrnResourceModel() TagAnnotationFvSCrtrnResourceModel {
+	return TagAnnotationFvSCrtrnResourceModel{
+		Key:   basetypes.NewStringNull(),
+		Value: basetypes.NewStringNull(),
+	}
+}
+
 // TagTagFvSCrtrnResourceModel describes the resource data model for the children without relation ships.
 type TagTagFvSCrtrnResourceModel struct {
 	Key   types.String `tfsdk:"key"`
 	Value types.String `tfsdk:"value"`
+}
+
+func getEmptyTagTagFvSCrtrnResourceModel() TagTagFvSCrtrnResourceModel {
+	return TagTagFvSCrtrnResourceModel{
+		Key:   basetypes.NewStringNull(),
+		Value: basetypes.NewStringNull(),
+	}
 }
 
 type FvSCrtrnIdentifier struct {
@@ -130,6 +171,7 @@ func (r *FvSCrtrnResource) Schema(ctx context.Context, req resource.SchemaReques
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
 				MarkdownDescription: `The annotation of the EPG uSeg Sub Block Statement object.`,
@@ -139,6 +181,7 @@ func (r *FvSCrtrnResource) Schema(ctx context.Context, req resource.SchemaReques
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The description of the EPG uSeg Sub Block Statement object.`,
 			},
@@ -147,6 +190,7 @@ func (r *FvSCrtrnResource) Schema(ctx context.Context, req resource.SchemaReques
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
 					stringvalidator.OneOf("all", "any"),
@@ -157,6 +201,7 @@ func (r *FvSCrtrnResource) Schema(ctx context.Context, req resource.SchemaReques
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
 				MarkdownDescription: `The name of the EPG uSeg Sub Block Statement object.`,
@@ -166,6 +211,7 @@ func (r *FvSCrtrnResource) Schema(ctx context.Context, req resource.SchemaReques
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The name alias of the EPG uSeg Sub Block Statement object.`,
 			},
@@ -174,6 +220,7 @@ func (r *FvSCrtrnResource) Schema(ctx context.Context, req resource.SchemaReques
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The key for enabling clients to own their data for entity correlation.`,
 			},
@@ -182,6 +229,7 @@ func (r *FvSCrtrnResource) Schema(ctx context.Context, req resource.SchemaReques
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
 			},
@@ -423,6 +471,8 @@ func (r *FvSCrtrnResource) ImportState(ctx context.Context, req resource.ImportS
 func getAndSetFvSCrtrnAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvSCrtrnResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "fvSCrtrn,tagAnnotation,tagTag"), "GET", nil)
 
+	*data = *getEmptyFvSCrtrnResourceModel()
+
 	if diags.HasError() {
 		return
 	}
@@ -466,7 +516,7 @@ func getAndSetFvSCrtrnAttributes(ctx context.Context, diags *diag.Diagnostics, c
 					for childClassName, childClassDetails := range child.(map[string]interface{}) {
 						childAttributes := childClassDetails.(map[string]interface{})["attributes"].(map[string]interface{})
 						if childClassName == "tagAnnotation" {
-							TagAnnotationFvSCrtrn := TagAnnotationFvSCrtrnResourceModel{}
+							TagAnnotationFvSCrtrn := getEmptyTagAnnotationFvSCrtrnResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "key" {
 									TagAnnotationFvSCrtrn.Key = basetypes.NewStringValue(childAttributeValue.(string))
@@ -478,7 +528,7 @@ func getAndSetFvSCrtrnAttributes(ctx context.Context, diags *diag.Diagnostics, c
 							TagAnnotationFvSCrtrnList = append(TagAnnotationFvSCrtrnList, TagAnnotationFvSCrtrn)
 						}
 						if childClassName == "tagTag" {
-							TagTagFvSCrtrn := TagTagFvSCrtrnResourceModel{}
+							TagTagFvSCrtrn := getEmptyTagTagFvSCrtrnResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "key" {
 									TagTagFvSCrtrn.Key = basetypes.NewStringValue(childAttributeValue.(string))
@@ -545,10 +595,10 @@ func getFvSCrtrnTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diag
 		tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
 		for _, tagAnnotation := range tagAnnotationPlan {
 			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagAnnotation.Key.IsUnknown() {
+			if !tagAnnotation.Key.IsUnknown() && !tagAnnotation.Key.IsNull() {
 				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
 			}
-			if !tagAnnotation.Value.IsUnknown() {
+			if !tagAnnotation.Value.IsUnknown() && !tagAnnotation.Value.IsNull() {
 				childMap["attributes"]["value"] = tagAnnotation.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
@@ -584,10 +634,10 @@ func getFvSCrtrnTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics
 		tagTagIdentifiers := []TagTagIdentifier{}
 		for _, tagTag := range tagTagPlan {
 			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagTag.Key.IsUnknown() {
+			if !tagTag.Key.IsUnknown() && !tagTag.Key.IsNull() {
 				childMap["attributes"]["key"] = tagTag.Key.ValueString()
 			}
-			if !tagTag.Value.IsUnknown() {
+			if !tagTag.Value.IsUnknown() && !tagTag.Value.IsNull() {
 				childMap["attributes"]["value"] = tagTag.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})

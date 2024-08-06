@@ -22,20 +22,20 @@ func TestAccResourceFvIdGroupAttrWithFvCrtrn(t *testing.T) {
 				Config:             testConfigFvIdGroupAttrMinDependencyWithFvCrtrnAllowExisting,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "selector", "adepg/authsvr-common-sg1-ISE_1/grpcont/dom-cisco.com/grp-Eng"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test_2", "selector", "adepg/authsvr-common-sg1-ISE_1/grpcont/dom-cisco.com/grp-Eng"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test_2", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test_2", "description", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "name", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test_2", "name", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test_2", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test_2", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test_2", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.allow_test", "selector", "adepg/authsvr-common-sg1-ISE_1/grpcont/dom-cisco.com/grp-Eng"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.allow_test_2", "selector", "adepg/authsvr-common-sg1-ISE_1/grpcont/dom-cisco.com/grp-Eng"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.allow_test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.allow_test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.allow_test", "description", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.allow_test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.allow_test", "name", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.allow_test_2", "name", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.allow_test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.allow_test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.allow_test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.allow_test_2", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.allow_test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.allow_test_2", "owner_tag", ""),
 				),
 			},
 		},
@@ -64,20 +64,20 @@ func TestAccResourceFvIdGroupAttrWithFvCrtrn(t *testing.T) {
 				Config:             testConfigFvIdGroupAttrMinDependencyWithFvCrtrnAllowExisting,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "selector", "adepg/authsvr-common-sg1-ISE_1/grpcont/dom-cisco.com/grp-Eng"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test_2", "selector", "adepg/authsvr-common-sg1-ISE_1/grpcont/dom-cisco.com/grp-Eng"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test_2", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test_2", "description", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "name", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test_2", "name", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test_2", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test_2", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test_2", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.allow_test", "selector", "adepg/authsvr-common-sg1-ISE_1/grpcont/dom-cisco.com/grp-Eng"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.allow_test_2", "selector", "adepg/authsvr-common-sg1-ISE_1/grpcont/dom-cisco.com/grp-Eng"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.allow_test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.allow_test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.allow_test", "description", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.allow_test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.allow_test", "name", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.allow_test_2", "name", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.allow_test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.allow_test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.allow_test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.allow_test_2", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.allow_test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.allow_test_2", "owner_tag", ""),
 				),
 			},
 		},
@@ -108,11 +108,11 @@ func TestAccResourceFvIdGroupAttrWithFvCrtrn(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "selector", "adepg/authsvr-common-sg1-ISE_1/grpcont/dom-cisco.com/grp-Eng"),
 					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "annotation", "annotation"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "description", "description"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "name", "name"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "name_alias", "name_alias"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "owner_key", "owner_key"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "owner_tag", "owner_tag"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "description", "description_1"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "name", "name_1"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "name_alias", "name_alias_1"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "owner_key", "owner_key_1"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "owner_tag", "owner_tag_1"),
 				),
 			},
 			// Update with minimum config and verify config is unchanged
@@ -158,11 +158,11 @@ func TestAccResourceFvIdGroupAttrWithFvCrtrn(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "annotations.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "tags.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "tags.1.value", "test_value"),
 				),
 			},
 			// Import testing with children
@@ -179,12 +179,12 @@ func TestAccResourceFvIdGroupAttrWithFvCrtrn(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "annotations.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "annotations.#", "2"),
 					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "tags.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "tags.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "tags.#", "2"),
 				),
 			},
@@ -194,10 +194,10 @@ func TestAccResourceFvIdGroupAttrWithFvCrtrn(t *testing.T) {
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "annotations.0.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "annotations.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "annotations.#", "1"),
 					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "tags.0.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "tags.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "tags.#", "1"),
 				),
 			},
@@ -215,14 +215,14 @@ func TestAccResourceFvIdGroupAttrWithFvCrtrn(t *testing.T) {
 }
 
 const testConfigFvIdGroupAttrMinDependencyWithFvCrtrnAllowExisting = testConfigFvCrtrnMinDependencyWithFvAEPg + `
-resource "aci_epg_useg_ad_group_attribute" "test" {
+resource "aci_epg_useg_ad_group_attribute" "allow_test" {
   parent_dn = aci_epg_useg_block_statement.test.id
   selector = "adepg/authsvr-common-sg1-ISE_1/grpcont/dom-cisco.com/grp-Eng"
 }
-resource "aci_epg_useg_ad_group_attribute" "test_2" {
+resource "aci_epg_useg_ad_group_attribute" "allow_test_2" {
   parent_dn = aci_epg_useg_block_statement.test.id
   selector = "adepg/authsvr-common-sg1-ISE_1/grpcont/dom-cisco.com/grp-Eng"
-  depends_on = [aci_epg_useg_ad_group_attribute.test]
+  depends_on = [aci_epg_useg_ad_group_attribute.allow_test]
 }
 `
 
@@ -238,11 +238,11 @@ resource "aci_epg_useg_ad_group_attribute" "test" {
   parent_dn = aci_epg_useg_block_statement.test.id
   selector = "adepg/authsvr-common-sg1-ISE_1/grpcont/dom-cisco.com/grp-Eng"
   annotation = "annotation"
-  description = "description"
-  name = "name"
-  name_alias = "name_alias"
-  owner_key = "owner_key"
-  owner_tag = "owner_tag"
+  description = "description_1"
+  name = "name_1"
+  name_alias = "name_alias_1"
+  owner_key = "owner_key_1"
+  owner_tag = "owner_tag_1"
 }
 `
 
@@ -269,7 +269,7 @@ resource "aci_epg_useg_ad_group_attribute" "test" {
 	},
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
   tags = [
@@ -279,7 +279,7 @@ resource "aci_epg_useg_ad_group_attribute" "test" {
 	},
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
 }
@@ -299,13 +299,13 @@ resource "aci_epg_useg_ad_group_attribute" "test" {
   annotations = [ 
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
   tags = [ 
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
 }
