@@ -157,7 +157,7 @@ All examples for the Relation To Contract Master resource can be found in the [e
 An existing Relation To Contract Master can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_relation_to_contract_master.example_endpoint_security_group uni/tn-{name}/ap-{name}/epg-{name}/rssecInherited-[{tDn}]
+terraform import aci_relation_to_contract_master.example_application_epg uni/tn-{name}/ap-{name}/epg-{name}/rssecInherited-[{tDn}]
 ```
 
 Starting in Terraform version 1.5, an existing Relation To Contract Master can be imported
@@ -166,6 +166,6 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/tn-{name}/ap-{name}/epg-{name}/rssecInherited-[{tDn}]"
-  to = aci_relation_to_contract_master.example_endpoint_security_group
+  to = aci_relation_to_contract_master.example_application_epg
 }
 ```

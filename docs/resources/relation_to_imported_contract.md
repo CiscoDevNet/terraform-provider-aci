@@ -43,6 +43,11 @@ The configuration snippet below creates a Relation To Imported Contract with onl
 
 ```hcl
 
+resource "aci_relation_to_imported_contract" "example_application_epg" {
+  parent_dn              = aci_application_epg.example.id
+  imported_contract_name = aci_imported_contract.example.name
+}
+
 resource "aci_relation_to_imported_contract" "example_endpoint_security_group" {
   parent_dn              = aci_endpoint_security_group.example.id
   imported_contract_name = aci_imported_contract.example.name
@@ -54,6 +59,25 @@ The configuration snippet below shows all possible attributes of the Relation To
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
 ```hcl
+
+resource "aci_relation_to_imported_contract" "full_example_application_epg" {
+  parent_dn              = aci_application_epg.example.id
+  annotation             = "annotation"
+  priority               = "level1"
+  imported_contract_name = aci_imported_contract.example.name
+  annotations = [
+    {
+      key   = "key_0"
+      value = "value_1"
+    }
+  ]
+  tags = [
+    {
+      key   = "key_0"
+      value = "value_1"
+    }
+  ]
+}
 
 resource "aci_relation_to_imported_contract" "full_example_endpoint_security_group" {
   parent_dn              = aci_endpoint_security_group.example.id
@@ -138,7 +162,7 @@ All examples for the Relation To Imported Contract resource can be found in the 
 An existing Relation To Imported Contract can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_relation_to_imported_contract.example_endpoint_security_group uni/tn-{name}/ap-{name}/epg-{name}/rsconsIf-{tnVzCPIfName}
+terraform import aci_relation_to_imported_contract.example_application_epg uni/tn-{name}/ap-{name}/epg-{name}/rsconsIf-{tnVzCPIfName}
 ```
 
 Starting in Terraform version 1.5, an existing Relation To Imported Contract can be imported
@@ -147,6 +171,6 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/tn-{name}/ap-{name}/epg-{name}/rsconsIf-{tnVzCPIfName}"
-  to = aci_relation_to_imported_contract.example_endpoint_security_group
+  to = aci_relation_to_imported_contract.example_application_epg
 }
 ```
