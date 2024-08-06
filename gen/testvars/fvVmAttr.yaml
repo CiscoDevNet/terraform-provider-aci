@@ -27,12 +27,12 @@ resource_required:
 all:
   annotation: "annotation"
   category: "all_category"
-  description: "description"
+  description: "description_1"
   label_name: "label_name"
-  name_alias: "name_alias"
+  name_alias: "name_alias_1"
   operator: "contains"
-  owner_key: "owner_key"
-  owner_tag: "owner_tag"
+  owner_key: "owner_key_1"
+  owner_tag: "owner_tag_1"
   type: "domain"
   value: "all_value"
 
@@ -42,14 +42,14 @@ children:
       value: "value_1"
       
     - key: "key_1"
-      value: "value_2"
+      value: "test_value"
       
   tags:
     - key: "key_0"
       value: "value_1"
       
     - key: "key_1"
-      value: "value_2"
+      value: "test_value"
       
 parents:
   - class_name: "fvCrtrn"

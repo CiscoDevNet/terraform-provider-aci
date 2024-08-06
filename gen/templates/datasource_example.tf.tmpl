@@ -7,8 +7,8 @@ data "aci_{{$.ResourceName}}" "example_{{getResourceName $key $.Definitions}}" {
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = aci_{{getResourceName .NamedPropertyClass $.Definitions}}.example.name
     {{- else if eq .SnakeCaseName "t_dn" }}{{$attributeKey := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
     {{- range $index, $testParent := $.TestVars.parents }}
-      {{- if eq $index $parentIndex }}
-  {{$attributeKey}} = {{getTestTargetDn $.TestVars.targets $.TestVars.resourceName "" true $testParent.target_classes $index | replace "test" "example" | replace "_0" "" | replace "_1" "_2" }}
+      {{- if eq $index $parentIndex }}{{$attributeVale := getTestTargetDn $.TestVars.targets $.TestVars.resourceName "" true $testParent.target_classes $index | replace "test" "example" | replace "_0" "" | replace "_1" "_2" }}
+  {{$attributeKey}} = {{if containsString $attributeVale "."}}{{$attributeVale}}{{else}}"{{$attributeVale}}"{{end}}
     {{- $parentIndex = add $parentIndex 1 }}{{- break}}
       {{- end}}
     {{- end}}

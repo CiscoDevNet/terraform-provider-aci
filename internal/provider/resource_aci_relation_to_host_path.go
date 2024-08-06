@@ -13,6 +13,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -27,47 +28,82 @@ import (
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &FvRsProtByResource{}
-var _ resource.ResourceWithImportState = &FvRsProtByResource{}
+var _ resource.Resource = &InfraRsHPathAttResource{}
+var _ resource.ResourceWithImportState = &InfraRsHPathAttResource{}
 
-func NewFvRsProtByResource() resource.Resource {
-	return &FvRsProtByResource{}
+func NewInfraRsHPathAttResource() resource.Resource {
+	return &InfraRsHPathAttResource{}
 }
 
-// FvRsProtByResource defines the resource implementation.
-type FvRsProtByResource struct {
+// InfraRsHPathAttResource defines the resource implementation.
+type InfraRsHPathAttResource struct {
 	client *client.Client
 }
 
-// FvRsProtByResourceModel describes the resource data model.
-type FvRsProtByResourceModel struct {
+// InfraRsHPathAttResourceModel describes the resource data model.
+type InfraRsHPathAttResourceModel struct {
 	Id            types.String `tfsdk:"id"`
 	ParentDn      types.String `tfsdk:"parent_dn"`
 	Annotation    types.String `tfsdk:"annotation"`
-	TnVzTabooName types.String `tfsdk:"taboo_contract_name"`
+	TDn           types.String `tfsdk:"target_dn"`
 	TagAnnotation types.Set    `tfsdk:"annotations"`
 	TagTag        types.Set    `tfsdk:"tags"`
 }
 
-// TagAnnotationFvRsProtByResourceModel describes the resource data model for the children without relation ships.
-type TagAnnotationFvRsProtByResourceModel struct {
+func getEmptyInfraRsHPathAttResourceModel() *InfraRsHPathAttResourceModel {
+	return &InfraRsHPathAttResourceModel{
+		Id:         basetypes.NewStringNull(),
+		ParentDn:   basetypes.NewStringNull(),
+		Annotation: basetypes.NewStringNull(),
+		TDn:        basetypes.NewStringNull(),
+		TagAnnotation: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"key":   types.StringType,
+				"value": types.StringType,
+			},
+		}),
+		TagTag: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"key":   types.StringType,
+				"value": types.StringType,
+			},
+		}),
+	}
+}
+
+// TagAnnotationInfraRsHPathAttResourceModel describes the resource data model for the children without relation ships.
+type TagAnnotationInfraRsHPathAttResourceModel struct {
 	Key   types.String `tfsdk:"key"`
 	Value types.String `tfsdk:"value"`
 }
 
-// TagTagFvRsProtByResourceModel describes the resource data model for the children without relation ships.
-type TagTagFvRsProtByResourceModel struct {
+func getEmptyTagAnnotationInfraRsHPathAttResourceModel() TagAnnotationInfraRsHPathAttResourceModel {
+	return TagAnnotationInfraRsHPathAttResourceModel{
+		Key:   basetypes.NewStringNull(),
+		Value: basetypes.NewStringNull(),
+	}
+}
+
+// TagTagInfraRsHPathAttResourceModel describes the resource data model for the children without relation ships.
+type TagTagInfraRsHPathAttResourceModel struct {
 	Key   types.String `tfsdk:"key"`
 	Value types.String `tfsdk:"value"`
 }
 
-type FvRsProtByIdentifier struct {
-	TnVzTabooName types.String
+func getEmptyTagTagInfraRsHPathAttResourceModel() TagTagInfraRsHPathAttResourceModel {
+	return TagTagInfraRsHPathAttResourceModel{
+		Key:   basetypes.NewStringNull(),
+		Value: basetypes.NewStringNull(),
+	}
 }
 
-func (r *FvRsProtByResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
+type InfraRsHPathAttIdentifier struct {
+	TDn types.String
+}
+
+func (r *InfraRsHPathAttResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
 	if !req.Plan.Raw.IsNull() {
-		var planData, stateData *FvRsProtByResourceModel
+		var planData, stateData *InfraRsHPathAttResourceModel
 		resp.Diagnostics.Append(req.Plan.Get(ctx, &planData)...)
 		resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
 
@@ -75,12 +111,12 @@ func (r *FvRsProtByResource) ModifyPlan(ctx context.Context, req resource.Modify
 			return
 		}
 
-		if (planData.Id.IsUnknown() || planData.Id.IsNull()) && !planData.ParentDn.IsUnknown() && !planData.TnVzTabooName.IsUnknown() {
-			setFvRsProtById(ctx, planData)
+		if (planData.Id.IsUnknown() || planData.Id.IsNull()) && !planData.ParentDn.IsUnknown() && !planData.TDn.IsUnknown() {
+			setInfraRsHPathAttId(ctx, planData)
 		}
 
 		if stateData == nil && !globalAllowExistingOnCreate && !planData.Id.IsUnknown() && !planData.Id.IsNull() {
-			CheckDn(ctx, &resp.Diagnostics, r.client, "fvRsProtBy", planData.Id.ValueString())
+			CheckDn(ctx, &resp.Diagnostics, r.client, "infraRsHPathAtt", planData.Id.ValueString())
 			if resp.Diagnostics.HasError() {
 				return
 			}
@@ -90,22 +126,22 @@ func (r *FvRsProtByResource) ModifyPlan(ctx context.Context, req resource.Modify
 	}
 }
 
-func (r *FvRsProtByResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	tflog.Debug(ctx, "Start metadata of resource: aci_relation_to_taboo_contract")
-	resp.TypeName = req.ProviderTypeName + "_relation_to_taboo_contract"
-	tflog.Debug(ctx, "End metadata of resource: aci_relation_to_taboo_contract")
+func (r *InfraRsHPathAttResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	tflog.Debug(ctx, "Start metadata of resource: aci_relation_to_host_path")
+	resp.TypeName = req.ProviderTypeName + "_relation_to_host_path"
+	tflog.Debug(ctx, "End metadata of resource: aci_relation_to_host_path")
 }
 
-func (r *FvRsProtByResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
-	tflog.Debug(ctx, "Start schema of resource: aci_relation_to_taboo_contract")
+func (r *InfraRsHPathAttResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+	tflog.Debug(ctx, "Start schema of resource: aci_relation_to_host_path")
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "The relation_to_taboo_contract resource for the 'fvRsProtBy' class",
+		MarkdownDescription: "The relation_to_host_path resource for the 'infraRsHPathAtt' class",
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Relation To Taboo Contract object.",
+				MarkdownDescription: "The distinguished name (DN) of the Relation To Host Path object.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
@@ -123,17 +159,19 @@ func (r *FvRsProtByResource) Schema(ctx context.Context, req resource.SchemaRequ
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
-				MarkdownDescription: `The annotation of the Relation To Taboo Contract object.`,
+				MarkdownDescription: `The annotation of the Relation To Host Path object.`,
 			},
-			"taboo_contract_name": schema.StringAttribute{
+			"target_dn": schema.StringAttribute{
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
-				MarkdownDescription: `A contract for denying specific classes of traffic. Taboo rules are applied in the hardware before applying the rules of regular contracts. Without a contract, the default forwarding policy is to not allow any communication between EPGs.`,
+				MarkdownDescription: `The distinguished name of the target.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,
@@ -189,11 +227,11 @@ func (r *FvRsProtByResource) Schema(ctx context.Context, req resource.SchemaRequ
 			},
 		},
 	}
-	tflog.Debug(ctx, "End schema of resource: aci_relation_to_taboo_contract")
+	tflog.Debug(ctx, "End schema of resource: aci_relation_to_host_path")
 }
 
-func (r *FvRsProtByResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	tflog.Debug(ctx, "Start configure of resource: aci_relation_to_taboo_contract")
+func (r *InfraRsHPathAttResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+	tflog.Debug(ctx, "Start configure of resource: aci_relation_to_host_path")
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
 		return
@@ -211,27 +249,27 @@ func (r *FvRsProtByResource) Configure(ctx context.Context, req resource.Configu
 	}
 
 	r.client = client
-	tflog.Debug(ctx, "End configure of resource: aci_relation_to_taboo_contract")
+	tflog.Debug(ctx, "End configure of resource: aci_relation_to_host_path")
 }
 
-func (r *FvRsProtByResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	tflog.Debug(ctx, "Start create of resource: aci_relation_to_taboo_contract")
+func (r *InfraRsHPathAttResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	tflog.Debug(ctx, "Start create of resource: aci_relation_to_host_path")
 	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
-	var stateData *FvRsProtByResourceModel
+	var stateData *InfraRsHPathAttResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
 	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
-		setFvRsProtById(ctx, stateData)
+		setInfraRsHPathAttId(ctx, stateData)
 	}
-	getAndSetFvRsProtByAttributes(ctx, &resp.Diagnostics, r.client, stateData)
+	getAndSetInfraRsHPathAttAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
 		resp.Diagnostics.AddError(
 			"Object Already Exists",
-			fmt.Sprintf("The fvRsProtBy object with DN '%s' already exists.", stateData.Id.ValueString()),
+			fmt.Sprintf("The infraRsHPathAtt object with DN '%s' already exists.", stateData.Id.ValueString()),
 		)
 		return
 	}
 
-	var data *FvRsProtByResourceModel
+	var data *InfraRsHPathAttResourceModel
 
 	// Read Terraform plan data into the model
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
@@ -241,18 +279,18 @@ func (r *FvRsProtByResource) Create(ctx context.Context, req resource.CreateRequ
 	}
 
 	if data.Id.IsUnknown() || data.Id.IsNull() {
-		setFvRsProtById(ctx, data)
+		setInfraRsHPathAttId(ctx, data)
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_relation_to_taboo_contract with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_relation_to_host_path with id '%s'", data.Id.ValueString()))
 
-	var tagAnnotationPlan, tagAnnotationState []TagAnnotationFvRsProtByResourceModel
+	var tagAnnotationPlan, tagAnnotationState []TagAnnotationInfraRsHPathAttResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
 	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
-	var tagTagPlan, tagTagState []TagTagFvRsProtByResourceModel
+	var tagTagPlan, tagTagState []TagTagInfraRsHPathAttResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvRsProtByCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := getInfraRsHPathAttCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -263,16 +301,16 @@ func (r *FvRsProtByResource) Create(ctx context.Context, req resource.CreateRequ
 		return
 	}
 
-	getAndSetFvRsProtByAttributes(ctx, &resp.Diagnostics, r.client, data)
+	getAndSetInfraRsHPathAttAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_relation_to_taboo_contract with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_relation_to_host_path with id '%s'", data.Id.ValueString()))
 }
 
-func (r *FvRsProtByResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
-	tflog.Debug(ctx, "Start read of resource: aci_relation_to_taboo_contract")
-	var data *FvRsProtByResourceModel
+func (r *InfraRsHPathAttResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+	tflog.Debug(ctx, "Start read of resource: aci_relation_to_host_path")
+	var data *InfraRsHPathAttResourceModel
 
 	// Read Terraform prior state data into the model
 	resp.Diagnostics.Append(req.State.Get(ctx, &data)...)
@@ -281,25 +319,25 @@ func (r *FvRsProtByResource) Read(ctx context.Context, req resource.ReadRequest,
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Read of resource aci_relation_to_taboo_contract with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Read of resource aci_relation_to_host_path with id '%s'", data.Id.ValueString()))
 
-	getAndSetFvRsProtByAttributes(ctx, &resp.Diagnostics, r.client, data)
+	getAndSetInfraRsHPathAttAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save updated data into Terraform state
 	if data.Id.IsNull() {
-		var emptyData *FvRsProtByResourceModel
+		var emptyData *InfraRsHPathAttResourceModel
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_relation_to_taboo_contract with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_relation_to_host_path with id '%s'", data.Id.ValueString()))
 }
 
-func (r *FvRsProtByResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	tflog.Debug(ctx, "Start update of resource: aci_relation_to_taboo_contract")
-	var data *FvRsProtByResourceModel
-	var stateData *FvRsProtByResourceModel
+func (r *InfraRsHPathAttResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+	tflog.Debug(ctx, "Start update of resource: aci_relation_to_host_path")
+	var data *InfraRsHPathAttResourceModel
+	var stateData *InfraRsHPathAttResourceModel
 
 	// Read Terraform plan data into the model
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
@@ -309,15 +347,15 @@ func (r *FvRsProtByResource) Update(ctx context.Context, req resource.UpdateRequ
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_relation_to_taboo_contract with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_relation_to_host_path with id '%s'", data.Id.ValueString()))
 
-	var tagAnnotationPlan, tagAnnotationState []TagAnnotationFvRsProtByResourceModel
+	var tagAnnotationPlan, tagAnnotationState []TagAnnotationInfraRsHPathAttResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
 	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
-	var tagTagPlan, tagTagState []TagTagFvRsProtByResourceModel
+	var tagTagPlan, tagTagState []TagTagInfraRsHPathAttResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvRsProtByCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := getInfraRsHPathAttCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -329,16 +367,16 @@ func (r *FvRsProtByResource) Update(ctx context.Context, req resource.UpdateRequ
 		return
 	}
 
-	getAndSetFvRsProtByAttributes(ctx, &resp.Diagnostics, r.client, data)
+	getAndSetInfraRsHPathAttAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_relation_to_taboo_contract with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_relation_to_host_path with id '%s'", data.Id.ValueString()))
 }
 
-func (r *FvRsProtByResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	tflog.Debug(ctx, "Start delete of resource: aci_relation_to_taboo_contract")
-	var data *FvRsProtByResourceModel
+func (r *InfraRsHPathAttResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	tflog.Debug(ctx, "Start delete of resource: aci_relation_to_host_path")
+	var data *InfraRsHPathAttResourceModel
 
 	// Read Terraform prior state data into the model
 	resp.Diagnostics.Append(req.State.Get(ctx, &data)...)
@@ -347,8 +385,8 @@ func (r *FvRsProtByResource) Delete(ctx context.Context, req resource.DeleteRequ
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Delete of resource aci_relation_to_taboo_contract with id '%s'", data.Id.ValueString()))
-	jsonPayload := GetDeleteJsonPayload(ctx, &resp.Diagnostics, "fvRsProtBy", data.Id.ValueString())
+	tflog.Debug(ctx, fmt.Sprintf("Delete of resource aci_relation_to_host_path with id '%s'", data.Id.ValueString()))
+	jsonPayload := GetDeleteJsonPayload(ctx, &resp.Diagnostics, "infraRsHPathAtt", data.Id.ValueString())
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -356,44 +394,46 @@ func (r *FvRsProtByResource) Delete(ctx context.Context, req resource.DeleteRequ
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_relation_to_taboo_contract with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_relation_to_host_path with id '%s'", data.Id.ValueString()))
 }
 
-func (r *FvRsProtByResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	tflog.Debug(ctx, "Start import state of resource: aci_relation_to_taboo_contract")
+func (r *InfraRsHPathAttResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	tflog.Debug(ctx, "Start import state of resource: aci_relation_to_host_path")
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 
-	var stateData *FvRsProtByResourceModel
+	var stateData *InfraRsHPathAttResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
-	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_relation_to_taboo_contract with id '%s'", stateData.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_relation_to_host_path with id '%s'", stateData.Id.ValueString()))
 
-	tflog.Debug(ctx, "End import of state resource: aci_relation_to_taboo_contract")
+	tflog.Debug(ctx, "End import of state resource: aci_relation_to_host_path")
 }
 
-func getAndSetFvRsProtByAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvRsProtByResourceModel) {
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "fvRsProtBy,tagAnnotation,tagTag"), "GET", nil)
+func getAndSetInfraRsHPathAttAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *InfraRsHPathAttResourceModel) {
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "infraRsHPathAtt,tagAnnotation,tagTag"), "GET", nil)
+
+	*data = *getEmptyInfraRsHPathAttResourceModel()
 
 	if diags.HasError() {
 		return
 	}
-	if requestData.Search("imdata").Search("fvRsProtBy").Data() != nil {
-		classReadInfo := requestData.Search("imdata").Search("fvRsProtBy").Data().([]interface{})
+	if requestData.Search("imdata").Search("infraRsHPathAtt").Data() != nil {
+		classReadInfo := requestData.Search("imdata").Search("infraRsHPathAtt").Data().([]interface{})
 		if len(classReadInfo) == 1 {
 			attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
 			for attributeName, attributeValue := range attributes {
 				if attributeName == "dn" {
 					data.Id = basetypes.NewStringValue(attributeValue.(string))
-					setFvRsProtByParentDn(ctx, attributeValue.(string), data)
+					setInfraRsHPathAttParentDn(ctx, attributeValue.(string), data)
 				}
 				if attributeName == "annotation" {
 					data.Annotation = basetypes.NewStringValue(attributeValue.(string))
 				}
-				if attributeName == "tnVzTabooName" {
-					data.TnVzTabooName = basetypes.NewStringValue(attributeValue.(string))
+				if attributeName == "tDn" {
+					data.TDn = basetypes.NewStringValue(attributeValue.(string))
 				}
 			}
-			TagAnnotationFvRsProtByList := make([]TagAnnotationFvRsProtByResourceModel, 0)
-			TagTagFvRsProtByList := make([]TagTagFvRsProtByResourceModel, 0)
+			TagAnnotationInfraRsHPathAttList := make([]TagAnnotationInfraRsHPathAttResourceModel, 0)
+			TagTagInfraRsHPathAttList := make([]TagTagInfraRsHPathAttResourceModel, 0)
 			_, ok := classReadInfo[0].(map[string]interface{})["children"]
 			if ok {
 				children := classReadInfo[0].(map[string]interface{})["children"].([]interface{})
@@ -401,40 +441,40 @@ func getAndSetFvRsProtByAttributes(ctx context.Context, diags *diag.Diagnostics,
 					for childClassName, childClassDetails := range child.(map[string]interface{}) {
 						childAttributes := childClassDetails.(map[string]interface{})["attributes"].(map[string]interface{})
 						if childClassName == "tagAnnotation" {
-							TagAnnotationFvRsProtBy := TagAnnotationFvRsProtByResourceModel{}
+							TagAnnotationInfraRsHPathAtt := getEmptyTagAnnotationInfraRsHPathAttResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "key" {
-									TagAnnotationFvRsProtBy.Key = basetypes.NewStringValue(childAttributeValue.(string))
+									TagAnnotationInfraRsHPathAtt.Key = basetypes.NewStringValue(childAttributeValue.(string))
 								}
 								if childAttributeName == "value" {
-									TagAnnotationFvRsProtBy.Value = basetypes.NewStringValue(childAttributeValue.(string))
+									TagAnnotationInfraRsHPathAtt.Value = basetypes.NewStringValue(childAttributeValue.(string))
 								}
 							}
-							TagAnnotationFvRsProtByList = append(TagAnnotationFvRsProtByList, TagAnnotationFvRsProtBy)
+							TagAnnotationInfraRsHPathAttList = append(TagAnnotationInfraRsHPathAttList, TagAnnotationInfraRsHPathAtt)
 						}
 						if childClassName == "tagTag" {
-							TagTagFvRsProtBy := TagTagFvRsProtByResourceModel{}
+							TagTagInfraRsHPathAtt := getEmptyTagTagInfraRsHPathAttResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "key" {
-									TagTagFvRsProtBy.Key = basetypes.NewStringValue(childAttributeValue.(string))
+									TagTagInfraRsHPathAtt.Key = basetypes.NewStringValue(childAttributeValue.(string))
 								}
 								if childAttributeName == "value" {
-									TagTagFvRsProtBy.Value = basetypes.NewStringValue(childAttributeValue.(string))
+									TagTagInfraRsHPathAtt.Value = basetypes.NewStringValue(childAttributeValue.(string))
 								}
 							}
-							TagTagFvRsProtByList = append(TagTagFvRsProtByList, TagTagFvRsProtBy)
+							TagTagInfraRsHPathAttList = append(TagTagInfraRsHPathAttList, TagTagInfraRsHPathAtt)
 						}
 					}
 				}
 			}
-			tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationFvRsProtByList)
+			tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationInfraRsHPathAttList)
 			data.TagAnnotation = tagAnnotationSet
-			tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagFvRsProtByList)
+			tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagInfraRsHPathAttList)
 			data.TagTag = tagTagSet
 		} else {
 			diags.AddError(
 				"too many results in response",
-				fmt.Sprintf("%v matches returned for class 'fvRsProtBy'. Please report this issue to the provider developers.", len(classReadInfo)),
+				fmt.Sprintf("%v matches returned for class 'infraRsHPathAtt'. Please report this issue to the provider developers.", len(classReadInfo)),
 			)
 		}
 	} else {
@@ -442,9 +482,9 @@ func getAndSetFvRsProtByAttributes(ctx context.Context, diags *diag.Diagnostics,
 	}
 }
 
-func getFvRsProtByRn(ctx context.Context, data *FvRsProtByResourceModel) string {
-	rn := "rsprotBy-{tnVzTabooName}"
-	for _, identifier := range []string{"tnVzTabooName"} {
+func getInfraRsHPathAttRn(ctx context.Context, data *InfraRsHPathAttResourceModel) string {
+	rn := "rsHPathAtt-[{tDn}]"
+	for _, identifier := range []string{"tDn"} {
 		fieldName := fmt.Sprintf("%s%s", strings.ToUpper(identifier[:1]), identifier[1:])
 		fieldValue := reflect.ValueOf(data).Elem().FieldByName(fieldName).Interface().(basetypes.StringValue).ValueString()
 		rn = strings.ReplaceAll(rn, fmt.Sprintf("{%s}", identifier), fieldValue)
@@ -452,7 +492,7 @@ func getFvRsProtByRn(ctx context.Context, data *FvRsProtByResourceModel) string 
 	return rn
 }
 
-func setFvRsProtByParentDn(ctx context.Context, dn string, data *FvRsProtByResourceModel) {
+func setInfraRsHPathAttParentDn(ctx context.Context, dn string, data *InfraRsHPathAttResourceModel) {
 	bracketIndex := 0
 	rnIndex := 0
 	for i := len(dn) - 1; i >= 0; i-- {
@@ -468,22 +508,22 @@ func setFvRsProtByParentDn(ctx context.Context, dn string, data *FvRsProtByResou
 	data.ParentDn = basetypes.NewStringValue(dn[:rnIndex])
 }
 
-func setFvRsProtById(ctx context.Context, data *FvRsProtByResourceModel) {
-	rn := getFvRsProtByRn(ctx, data)
+func setInfraRsHPathAttId(ctx context.Context, data *InfraRsHPathAttResourceModel) {
+	rn := getInfraRsHPathAttRn(ctx, data)
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
 
-func getFvRsProtByTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvRsProtByResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvRsProtByResourceModel) []map[string]interface{} {
+func getInfraRsHPathAttTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *InfraRsHPathAttResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationInfraRsHPathAttResourceModel) []map[string]interface{} {
 
 	childPayloads := []map[string]interface{}{}
 	if !data.TagAnnotation.IsUnknown() {
 		tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
 		for _, tagAnnotation := range tagAnnotationPlan {
 			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagAnnotation.Key.IsUnknown() {
+			if !tagAnnotation.Key.IsUnknown() && !tagAnnotation.Key.IsNull() {
 				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
 			}
-			if !tagAnnotation.Value.IsUnknown() {
+			if !tagAnnotation.Value.IsUnknown() && !tagAnnotation.Value.IsNull() {
 				childMap["attributes"]["value"] = tagAnnotation.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
@@ -512,17 +552,17 @@ func getFvRsProtByTagAnnotationChildPayloads(ctx context.Context, diags *diag.Di
 
 	return childPayloads
 }
-func getFvRsProtByTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvRsProtByResourceModel, tagTagPlan, tagTagState []TagTagFvRsProtByResourceModel) []map[string]interface{} {
+func getInfraRsHPathAttTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *InfraRsHPathAttResourceModel, tagTagPlan, tagTagState []TagTagInfraRsHPathAttResourceModel) []map[string]interface{} {
 
 	childPayloads := []map[string]interface{}{}
 	if !data.TagTag.IsUnknown() {
 		tagTagIdentifiers := []TagTagIdentifier{}
 		for _, tagTag := range tagTagPlan {
 			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagTag.Key.IsUnknown() {
+			if !tagTag.Key.IsUnknown() && !tagTag.Key.IsNull() {
 				childMap["attributes"]["key"] = tagTag.Key.ValueString()
 			}
-			if !tagTag.Value.IsUnknown() {
+			if !tagTag.Value.IsUnknown() && !tagTag.Value.IsNull() {
 				childMap["attributes"]["value"] = tagTag.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})
@@ -552,7 +592,7 @@ func getFvRsProtByTagTagChildPayloads(ctx context.Context, diags *diag.Diagnosti
 	return childPayloads
 }
 
-func getFvRsProtByCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *FvRsProtByResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvRsProtByResourceModel, tagTagPlan, tagTagState []TagTagFvRsProtByResourceModel) *container.Container {
+func getInfraRsHPathAttCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *InfraRsHPathAttResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationInfraRsHPathAttResourceModel, tagTagPlan, tagTagState []TagTagInfraRsHPathAttResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 
@@ -561,13 +601,13 @@ func getFvRsProtByCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics
 	}
 	childPayloads := []map[string]interface{}{}
 
-	TagAnnotationchildPayloads := getFvRsProtByTagAnnotationChildPayloads(ctx, diags, data, tagAnnotationPlan, tagAnnotationState)
+	TagAnnotationchildPayloads := getInfraRsHPathAttTagAnnotationChildPayloads(ctx, diags, data, tagAnnotationPlan, tagAnnotationState)
 	if TagAnnotationchildPayloads == nil {
 		return nil
 	}
 	childPayloads = append(childPayloads, TagAnnotationchildPayloads...)
 
-	TagTagchildPayloads := getFvRsProtByTagTagChildPayloads(ctx, diags, data, tagTagPlan, tagTagState)
+	TagTagchildPayloads := getInfraRsHPathAttTagTagChildPayloads(ctx, diags, data, tagTagPlan, tagTagState)
 	if TagTagchildPayloads == nil {
 		return nil
 	}
@@ -577,11 +617,11 @@ func getFvRsProtByCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics
 	if !data.Annotation.IsNull() && !data.Annotation.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["annotation"] = data.Annotation.ValueString()
 	}
-	if !data.TnVzTabooName.IsNull() && !data.TnVzTabooName.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["tnVzTabooName"] = data.TnVzTabooName.ValueString()
+	if !data.TDn.IsNull() && !data.TDn.IsUnknown() {
+		payloadMap["attributes"].(map[string]string)["tDn"] = data.TDn.ValueString()
 	}
 
-	payload, err := json.Marshal(map[string]interface{}{"fvRsProtBy": payloadMap})
+	payload, err := json.Marshal(map[string]interface{}{"infraRsHPathAtt": payloadMap})
 	if err != nil {
 		diags.AddError(
 			"Marshalling of json payload failed",

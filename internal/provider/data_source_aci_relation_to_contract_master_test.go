@@ -11,27 +11,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
-func TestAccDataSourceFvRsSecInheritedWithFvAEPg(t *testing.T) {
-
-	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
-		Steps: []resource.TestStep{
-			{
-				Config:             testConfigFvRsSecInheritedDataSourceDependencyWithFvAEPg,
-				ExpectNonEmptyPlan: false,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.aci_relation_to_contract_master.test", "target_dn", "uni/tn-test_tenant/ap-test_ap/epg-epg_2"),
-					resource.TestCheckResourceAttr("data.aci_relation_to_contract_master.test", "annotation", "orchestrator:terraform"),
-				),
-			},
-			{
-				Config:      testConfigFvRsSecInheritedNotExistingFvAEPg,
-				ExpectError: regexp.MustCompile("Failed to read aci_relation_to_contract_master data source"),
-			},
-		},
-	})
-}
 func TestAccDataSourceFvRsSecInheritedWithFvESg(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
@@ -54,24 +33,10 @@ func TestAccDataSourceFvRsSecInheritedWithFvESg(t *testing.T) {
 	})
 }
 
-const testConfigFvRsSecInheritedDataSourceDependencyWithFvAEPg = testConfigFvRsSecInheritedMinDependencyWithFvAEPg + `
-data "aci_relation_to_contract_master" "test" {
-  parent_dn = aci_application_epg.test.id
-  target_dn = aci_application_epg.test_2.id
-  depends_on = [aci_relation_to_contract_master.test]
-}
-`
-
-const testConfigFvRsSecInheritedNotExistingFvAEPg = testConfigFvAEPgMinDependencyWithFvAp + `
-data "aci_relation_to_contract_master" "test_non_existing" {
-  parent_dn = aci_application_epg.test.id
-  target_dn = "uni/tn-test_tenant/ap-test_ap/epg-epg_2_not_existing"
-}
-`
 const testConfigFvRsSecInheritedDataSourceDependencyWithFvESg = testConfigFvRsSecInheritedMinDependencyWithFvESg + `
 data "aci_relation_to_contract_master" "test" {
   parent_dn = aci_endpoint_security_group.test.id
-  target_dn = aci_endpoint_security_group.test_0.id
+  target_dn = aci_endpoint_security_group.test_endpoint_security_group_0.id
   depends_on = [aci_relation_to_contract_master.test]
 }
 `

@@ -45,6 +45,15 @@ type TagTagResourceModel struct {
 	Value    types.String `tfsdk:"value"`
 }
 
+func getEmptyTagTagResourceModel() *TagTagResourceModel {
+	return &TagTagResourceModel{
+		Id:       basetypes.NewStringNull(),
+		ParentDn: basetypes.NewStringNull(),
+		Key:      basetypes.NewStringNull(),
+		Value:    basetypes.NewStringNull(),
+	}
+}
+
 type TagTagIdentifier struct {
 	Key types.String
 }
@@ -106,6 +115,7 @@ func (r *TagTagResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
 				MarkdownDescription: `The key used to uniquely identify this configuration object.`,
@@ -114,6 +124,7 @@ func (r *TagTagResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The value of the property.`,
 			},
@@ -274,6 +285,8 @@ func (r *TagTagResource) ImportState(ctx context.Context, req resource.ImportSta
 
 func getAndSetTagTagAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *TagTagResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "GET", nil)
+
+	*data = *getEmptyTagTagResourceModel()
 
 	if diags.HasError() {
 		return

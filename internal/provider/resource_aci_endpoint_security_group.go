@@ -76,11 +76,97 @@ type FvESgResourceModel struct {
 	DeprecatedFvRsProv         types.Set    `tfsdk:"relation_fv_rs_prov"`
 }
 
+func getEmptyFvESgResourceModel() *FvESgResourceModel {
+	return &FvESgResourceModel{
+		Id:           basetypes.NewStringNull(),
+		ParentDn:     basetypes.NewStringNull(),
+		Annotation:   basetypes.NewStringNull(),
+		Descr:        basetypes.NewStringNull(),
+		ExceptionTag: basetypes.NewStringNull(),
+		MatchT:       basetypes.NewStringNull(),
+		Name:         basetypes.NewStringNull(),
+		NameAlias:    basetypes.NewStringNull(),
+		PcEnfPref:    basetypes.NewStringNull(),
+		PrefGrMemb:   basetypes.NewStringNull(),
+		Shutdown:     basetypes.NewStringNull(),
+		FvRsCons: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"annotation":    types.StringType,
+				"priority":      types.StringType,
+				"contract_name": types.StringType,
+			},
+		}),
+		FvRsConsIf: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"annotation":             types.StringType,
+				"priority":               types.StringType,
+				"imported_contract_name": types.StringType,
+			},
+		}),
+		FvRsIntraEpg: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"annotation":    types.StringType,
+				"contract_name": types.StringType,
+			},
+		}),
+		FvRsProv: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"annotation":     types.StringType,
+				"match_criteria": types.StringType,
+				"priority":       types.StringType,
+				"contract_name":  types.StringType,
+			},
+		}),
+		FvRsScope: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"annotation": types.StringType,
+				"vrf_name":   types.StringType,
+			},
+		}),
+		FvRsSecInherited: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"annotation": types.StringType,
+				"target_dn":  types.StringType,
+			},
+		}),
+		TagAnnotation: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"key":   types.StringType,
+				"value": types.StringType,
+			},
+		}),
+		TagTag: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"key":   types.StringType,
+				"value": types.StringType,
+			},
+		}),
+		DeprecatedMatchT:           types.String{},
+		DeprecatedParentDn:         types.String{},
+		DeprecatedPcEnfPref:        types.String{},
+		DeprecatedPrefGrMemb:       types.String{},
+		DeprecatedFvRsSecInherited: types.SetNull(types.StringType),
+		DeprecatedFvRsIntraEpg:     types.SetNull(types.StringType),
+		DeprecatedFvRsScope:        types.String{},
+		DeprecatedFvRsCons:         types.SetNull(deprecatedFvRsConsType),
+		DeprecatedFvRsConsIf:       types.SetNull(deprecatedFvRsConsIfType),
+		DeprecatedFvRsProv:         types.SetNull(deprecatedFvRsProvType),
+	}
+}
+
 // FvRsConsFvESgResourceModel describes the resource data model for the children without relation ships.
 type FvRsConsFvESgResourceModel struct {
 	Annotation   types.String `tfsdk:"annotation"`
 	Prio         types.String `tfsdk:"priority"`
 	TnVzBrCPName types.String `tfsdk:"contract_name"`
+}
+
+func getEmptyFvRsConsFvESgResourceModel() FvRsConsFvESgResourceModel {
+	return FvRsConsFvESgResourceModel{
+		Annotation:   basetypes.NewStringNull(),
+		Prio:         basetypes.NewStringNull(),
+		TnVzBrCPName: basetypes.NewStringNull(),
+	}
 }
 
 // FvRsConsIfFvESgResourceModel describes the resource data model for the children without relation ships.
@@ -90,10 +176,25 @@ type FvRsConsIfFvESgResourceModel struct {
 	TnVzCPIfName types.String `tfsdk:"imported_contract_name"`
 }
 
+func getEmptyFvRsConsIfFvESgResourceModel() FvRsConsIfFvESgResourceModel {
+	return FvRsConsIfFvESgResourceModel{
+		Annotation:   basetypes.NewStringNull(),
+		Prio:         basetypes.NewStringNull(),
+		TnVzCPIfName: basetypes.NewStringNull(),
+	}
+}
+
 // FvRsIntraEpgFvESgResourceModel describes the resource data model for the children without relation ships.
 type FvRsIntraEpgFvESgResourceModel struct {
 	Annotation   types.String `tfsdk:"annotation"`
 	TnVzBrCPName types.String `tfsdk:"contract_name"`
+}
+
+func getEmptyFvRsIntraEpgFvESgResourceModel() FvRsIntraEpgFvESgResourceModel {
+	return FvRsIntraEpgFvESgResourceModel{
+		Annotation:   basetypes.NewStringNull(),
+		TnVzBrCPName: basetypes.NewStringNull(),
+	}
 }
 
 // FvRsProvFvESgResourceModel describes the resource data model for the children without relation ships.
@@ -104,10 +205,26 @@ type FvRsProvFvESgResourceModel struct {
 	TnVzBrCPName types.String `tfsdk:"contract_name"`
 }
 
+func getEmptyFvRsProvFvESgResourceModel() FvRsProvFvESgResourceModel {
+	return FvRsProvFvESgResourceModel{
+		Annotation:   basetypes.NewStringNull(),
+		MatchT:       basetypes.NewStringNull(),
+		Prio:         basetypes.NewStringNull(),
+		TnVzBrCPName: basetypes.NewStringNull(),
+	}
+}
+
 // FvRsScopeFvESgResourceModel describes the resource data model for the children without relation ships.
 type FvRsScopeFvESgResourceModel struct {
 	Annotation  types.String `tfsdk:"annotation"`
 	TnFvCtxName types.String `tfsdk:"vrf_name"`
+}
+
+func getEmptyFvRsScopeFvESgResourceModel() FvRsScopeFvESgResourceModel {
+	return FvRsScopeFvESgResourceModel{
+		Annotation:  basetypes.NewStringNull(),
+		TnFvCtxName: basetypes.NewStringNull(),
+	}
 }
 
 // FvRsSecInheritedFvESgResourceModel describes the resource data model for the children without relation ships.
@@ -116,16 +233,37 @@ type FvRsSecInheritedFvESgResourceModel struct {
 	TDn        types.String `tfsdk:"target_dn"`
 }
 
+func getEmptyFvRsSecInheritedFvESgResourceModel() FvRsSecInheritedFvESgResourceModel {
+	return FvRsSecInheritedFvESgResourceModel{
+		Annotation: basetypes.NewStringNull(),
+		TDn:        basetypes.NewStringNull(),
+	}
+}
+
 // TagAnnotationFvESgResourceModel describes the resource data model for the children without relation ships.
 type TagAnnotationFvESgResourceModel struct {
 	Key   types.String `tfsdk:"key"`
 	Value types.String `tfsdk:"value"`
 }
 
+func getEmptyTagAnnotationFvESgResourceModel() TagAnnotationFvESgResourceModel {
+	return TagAnnotationFvESgResourceModel{
+		Key:   basetypes.NewStringNull(),
+		Value: basetypes.NewStringNull(),
+	}
+}
+
 // TagTagFvESgResourceModel describes the resource data model for the children without relation ships.
 type TagTagFvESgResourceModel struct {
 	Key   types.String `tfsdk:"key"`
 	Value types.String `tfsdk:"value"`
+}
+
+func getEmptyTagTagFvESgResourceModel() TagTagFvESgResourceModel {
+	return TagTagFvESgResourceModel{
+		Key:   basetypes.NewStringNull(),
+		Value: basetypes.NewStringNull(),
+	}
 }
 
 type FvESgIdentifier struct {
@@ -535,6 +673,7 @@ func setFvESgLegacyAttributes(ctx context.Context, diags *diag.Diagnostics, data
 		}
 	}
 	DeprecatedFvRsIntraEpgFvESgList := make([]string, 0)
+	data.DeprecatedFvRsScope = basetypes.NewStringNull()
 	DeprecatedFvRsSecInheritedFvESgList := make([]string, 0)
 
 	_, ok := classReadInfo[0].(map[string]interface{})["children"]
@@ -1034,6 +1173,7 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
 				MarkdownDescription: `The annotation of the Endpoint Security Group object.`,
@@ -1043,6 +1183,7 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The description of the Endpoint Security Group object.`,
 			},
@@ -1051,6 +1192,7 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `Contract Exception Tag.`,
 			},
@@ -1059,6 +1201,7 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
 					stringvalidator.OneOf("All", "AtleastOne", "AtmostOne", "None"),
@@ -1069,6 +1212,7 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
 				MarkdownDescription: `The name of the Endpoint Security Group object.`,
@@ -1078,6 +1222,7 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The name alias of the Endpoint Security Group object.`,
 			},
@@ -1086,6 +1231,7 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
 					stringvalidator.OneOf("enforced", "unenforced"),
@@ -1097,6 +1243,7 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
 					stringvalidator.OneOf("exclude", "include"),
@@ -1108,6 +1255,7 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
 					stringvalidator.OneOf("no", "yes"),
@@ -1692,6 +1840,8 @@ func (r *FvESgResource) ImportState(ctx context.Context, req resource.ImportStat
 func getAndSetFvESgAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvESgResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "fvESg,fvRsCons,fvRsConsIf,fvRsIntraEpg,fvRsProv,fvRsScope,fvRsSecInherited,tagAnnotation,tagTag"), "GET", nil)
 
+	*data = *getEmptyFvESgResourceModel()
+
 	if diags.HasError() {
 		return
 	}
@@ -1736,7 +1886,7 @@ func getAndSetFvESgAttributes(ctx context.Context, diags *diag.Diagnostics, clie
 			FvRsConsIfFvESgList := make([]FvRsConsIfFvESgResourceModel, 0)
 			FvRsIntraEpgFvESgList := make([]FvRsIntraEpgFvESgResourceModel, 0)
 			FvRsProvFvESgList := make([]FvRsProvFvESgResourceModel, 0)
-			FvRsScopeFvESgList := make([]FvRsScopeFvESgResourceModel, 1)
+			FvRsScopeFvESgList := make([]FvRsScopeFvESgResourceModel, 0)
 			FvRsSecInheritedFvESgList := make([]FvRsSecInheritedFvESgResourceModel, 0)
 			TagAnnotationFvESgList := make([]TagAnnotationFvESgResourceModel, 0)
 			TagTagFvESgList := make([]TagTagFvESgResourceModel, 0)
@@ -1747,7 +1897,7 @@ func getAndSetFvESgAttributes(ctx context.Context, diags *diag.Diagnostics, clie
 					for childClassName, childClassDetails := range child.(map[string]interface{}) {
 						childAttributes := childClassDetails.(map[string]interface{})["attributes"].(map[string]interface{})
 						if childClassName == "fvRsCons" {
-							FvRsConsFvESg := FvRsConsFvESgResourceModel{}
+							FvRsConsFvESg := getEmptyFvRsConsFvESgResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "annotation" {
 									FvRsConsFvESg.Annotation = basetypes.NewStringValue(childAttributeValue.(string))
@@ -1762,7 +1912,7 @@ func getAndSetFvESgAttributes(ctx context.Context, diags *diag.Diagnostics, clie
 							FvRsConsFvESgList = append(FvRsConsFvESgList, FvRsConsFvESg)
 						}
 						if childClassName == "fvRsConsIf" {
-							FvRsConsIfFvESg := FvRsConsIfFvESgResourceModel{}
+							FvRsConsIfFvESg := getEmptyFvRsConsIfFvESgResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "annotation" {
 									FvRsConsIfFvESg.Annotation = basetypes.NewStringValue(childAttributeValue.(string))
@@ -1777,7 +1927,7 @@ func getAndSetFvESgAttributes(ctx context.Context, diags *diag.Diagnostics, clie
 							FvRsConsIfFvESgList = append(FvRsConsIfFvESgList, FvRsConsIfFvESg)
 						}
 						if childClassName == "fvRsIntraEpg" {
-							FvRsIntraEpgFvESg := FvRsIntraEpgFvESgResourceModel{}
+							FvRsIntraEpgFvESg := getEmptyFvRsIntraEpgFvESgResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "annotation" {
 									FvRsIntraEpgFvESg.Annotation = basetypes.NewStringValue(childAttributeValue.(string))
@@ -1789,7 +1939,7 @@ func getAndSetFvESgAttributes(ctx context.Context, diags *diag.Diagnostics, clie
 							FvRsIntraEpgFvESgList = append(FvRsIntraEpgFvESgList, FvRsIntraEpgFvESg)
 						}
 						if childClassName == "fvRsProv" {
-							FvRsProvFvESg := FvRsProvFvESgResourceModel{}
+							FvRsProvFvESg := getEmptyFvRsProvFvESgResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "annotation" {
 									FvRsProvFvESg.Annotation = basetypes.NewStringValue(childAttributeValue.(string))
@@ -1807,7 +1957,7 @@ func getAndSetFvESgAttributes(ctx context.Context, diags *diag.Diagnostics, clie
 							FvRsProvFvESgList = append(FvRsProvFvESgList, FvRsProvFvESg)
 						}
 						if childClassName == "fvRsScope" {
-							FvRsScopeFvESg := FvRsScopeFvESgResourceModel{}
+							FvRsScopeFvESg := getEmptyFvRsScopeFvESgResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "annotation" {
 									FvRsScopeFvESg.Annotation = basetypes.NewStringValue(childAttributeValue.(string))
@@ -1816,10 +1966,10 @@ func getAndSetFvESgAttributes(ctx context.Context, diags *diag.Diagnostics, clie
 									FvRsScopeFvESg.TnFvCtxName = basetypes.NewStringValue(childAttributeValue.(string))
 								}
 							}
-							FvRsScopeFvESgList[0] = FvRsScopeFvESg
+							FvRsScopeFvESgList = append(FvRsScopeFvESgList, FvRsScopeFvESg)
 						}
 						if childClassName == "fvRsSecInherited" {
-							FvRsSecInheritedFvESg := FvRsSecInheritedFvESgResourceModel{}
+							FvRsSecInheritedFvESg := getEmptyFvRsSecInheritedFvESgResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "annotation" {
 									FvRsSecInheritedFvESg.Annotation = basetypes.NewStringValue(childAttributeValue.(string))
@@ -1831,7 +1981,7 @@ func getAndSetFvESgAttributes(ctx context.Context, diags *diag.Diagnostics, clie
 							FvRsSecInheritedFvESgList = append(FvRsSecInheritedFvESgList, FvRsSecInheritedFvESg)
 						}
 						if childClassName == "tagAnnotation" {
-							TagAnnotationFvESg := TagAnnotationFvESgResourceModel{}
+							TagAnnotationFvESg := getEmptyTagAnnotationFvESgResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "key" {
 									TagAnnotationFvESg.Key = basetypes.NewStringValue(childAttributeValue.(string))
@@ -1843,7 +1993,7 @@ func getAndSetFvESgAttributes(ctx context.Context, diags *diag.Diagnostics, clie
 							TagAnnotationFvESgList = append(TagAnnotationFvESgList, TagAnnotationFvESg)
 						}
 						if childClassName == "tagTag" {
-							TagTagFvESg := TagTagFvESgResourceModel{}
+							TagTagFvESg := getEmptyTagTagFvESgResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "key" {
 									TagTagFvESg.Key = basetypes.NewStringValue(childAttributeValue.(string))
@@ -1923,15 +2073,15 @@ func getFvESgFvRsConsChildPayloads(ctx context.Context, diags *diag.Diagnostics,
 		fvRsConsIdentifiers := []FvRsConsIdentifier{}
 		for _, fvRsCons := range fvRsConsPlan {
 			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !fvRsCons.Annotation.IsUnknown() {
+			if !fvRsCons.Annotation.IsUnknown() && !fvRsCons.Annotation.IsNull() {
 				childMap["attributes"]["annotation"] = fvRsCons.Annotation.ValueString()
 			} else {
 				childMap["attributes"]["annotation"] = globalAnnotation
 			}
-			if !fvRsCons.Prio.IsUnknown() {
+			if !fvRsCons.Prio.IsUnknown() && !fvRsCons.Prio.IsNull() {
 				childMap["attributes"]["prio"] = fvRsCons.Prio.ValueString()
 			}
-			if !fvRsCons.TnVzBrCPName.IsUnknown() {
+			if !fvRsCons.TnVzBrCPName.IsUnknown() && !fvRsCons.TnVzBrCPName.IsNull() {
 				childMap["attributes"]["tnVzBrCPName"] = fvRsCons.TnVzBrCPName.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"fvRsCons": childMap})
@@ -1967,15 +2117,15 @@ func getFvESgFvRsConsIfChildPayloads(ctx context.Context, diags *diag.Diagnostic
 		fvRsConsIfIdentifiers := []FvRsConsIfIdentifier{}
 		for _, fvRsConsIf := range fvRsConsIfPlan {
 			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !fvRsConsIf.Annotation.IsUnknown() {
+			if !fvRsConsIf.Annotation.IsUnknown() && !fvRsConsIf.Annotation.IsNull() {
 				childMap["attributes"]["annotation"] = fvRsConsIf.Annotation.ValueString()
 			} else {
 				childMap["attributes"]["annotation"] = globalAnnotation
 			}
-			if !fvRsConsIf.Prio.IsUnknown() {
+			if !fvRsConsIf.Prio.IsUnknown() && !fvRsConsIf.Prio.IsNull() {
 				childMap["attributes"]["prio"] = fvRsConsIf.Prio.ValueString()
 			}
-			if !fvRsConsIf.TnVzCPIfName.IsUnknown() {
+			if !fvRsConsIf.TnVzCPIfName.IsUnknown() && !fvRsConsIf.TnVzCPIfName.IsNull() {
 				childMap["attributes"]["tnVzCPIfName"] = fvRsConsIf.TnVzCPIfName.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"fvRsConsIf": childMap})
@@ -2011,12 +2161,12 @@ func getFvESgFvRsIntraEpgChildPayloads(ctx context.Context, diags *diag.Diagnost
 		fvRsIntraEpgIdentifiers := []FvRsIntraEpgIdentifier{}
 		for _, fvRsIntraEpg := range fvRsIntraEpgPlan {
 			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !fvRsIntraEpg.Annotation.IsUnknown() {
+			if !fvRsIntraEpg.Annotation.IsUnknown() && !fvRsIntraEpg.Annotation.IsNull() {
 				childMap["attributes"]["annotation"] = fvRsIntraEpg.Annotation.ValueString()
 			} else {
 				childMap["attributes"]["annotation"] = globalAnnotation
 			}
-			if !fvRsIntraEpg.TnVzBrCPName.IsUnknown() {
+			if !fvRsIntraEpg.TnVzBrCPName.IsUnknown() && !fvRsIntraEpg.TnVzBrCPName.IsNull() {
 				childMap["attributes"]["tnVzBrCPName"] = fvRsIntraEpg.TnVzBrCPName.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"fvRsIntraEpg": childMap})
@@ -2052,18 +2202,18 @@ func getFvESgFvRsProvChildPayloads(ctx context.Context, diags *diag.Diagnostics,
 		fvRsProvIdentifiers := []FvRsProvIdentifier{}
 		for _, fvRsProv := range fvRsProvPlan {
 			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !fvRsProv.Annotation.IsUnknown() {
+			if !fvRsProv.Annotation.IsUnknown() && !fvRsProv.Annotation.IsNull() {
 				childMap["attributes"]["annotation"] = fvRsProv.Annotation.ValueString()
 			} else {
 				childMap["attributes"]["annotation"] = globalAnnotation
 			}
-			if !fvRsProv.MatchT.IsUnknown() {
+			if !fvRsProv.MatchT.IsUnknown() && !fvRsProv.MatchT.IsNull() {
 				childMap["attributes"]["matchT"] = fvRsProv.MatchT.ValueString()
 			}
-			if !fvRsProv.Prio.IsUnknown() {
+			if !fvRsProv.Prio.IsUnknown() && !fvRsProv.Prio.IsNull() {
 				childMap["attributes"]["prio"] = fvRsProv.Prio.ValueString()
 			}
-			if !fvRsProv.TnVzBrCPName.IsUnknown() {
+			if !fvRsProv.TnVzBrCPName.IsUnknown() && !fvRsProv.TnVzBrCPName.IsNull() {
 				childMap["attributes"]["tnVzBrCPName"] = fvRsProv.TnVzBrCPName.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"fvRsProv": childMap})
@@ -2098,12 +2248,12 @@ func getFvESgFvRsScopeChildPayloads(ctx context.Context, diags *diag.Diagnostics
 	if !data.FvRsScope.IsUnknown() {
 		for _, fvRsScope := range fvRsScopePlan {
 			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !fvRsScope.Annotation.IsUnknown() {
+			if !fvRsScope.Annotation.IsUnknown() && !fvRsScope.Annotation.IsNull() {
 				childMap["attributes"]["annotation"] = fvRsScope.Annotation.ValueString()
 			} else {
 				childMap["attributes"]["annotation"] = globalAnnotation
 			}
-			if !fvRsScope.TnFvCtxName.IsUnknown() {
+			if !fvRsScope.TnFvCtxName.IsUnknown() && !fvRsScope.TnFvCtxName.IsNull() {
 				childMap["attributes"]["tnFvCtxName"] = fvRsScope.TnFvCtxName.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"fvRsScope": childMap})
@@ -2128,12 +2278,12 @@ func getFvESgFvRsSecInheritedChildPayloads(ctx context.Context, diags *diag.Diag
 		fvRsSecInheritedIdentifiers := []FvRsSecInheritedIdentifier{}
 		for _, fvRsSecInherited := range fvRsSecInheritedPlan {
 			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !fvRsSecInherited.Annotation.IsUnknown() {
+			if !fvRsSecInherited.Annotation.IsUnknown() && !fvRsSecInherited.Annotation.IsNull() {
 				childMap["attributes"]["annotation"] = fvRsSecInherited.Annotation.ValueString()
 			} else {
 				childMap["attributes"]["annotation"] = globalAnnotation
 			}
-			if !fvRsSecInherited.TDn.IsUnknown() {
+			if !fvRsSecInherited.TDn.IsUnknown() && !fvRsSecInherited.TDn.IsNull() {
 				childMap["attributes"]["tDn"] = fvRsSecInherited.TDn.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"fvRsSecInherited": childMap})
@@ -2169,10 +2319,10 @@ func getFvESgTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnos
 		tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
 		for _, tagAnnotation := range tagAnnotationPlan {
 			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagAnnotation.Key.IsUnknown() {
+			if !tagAnnotation.Key.IsUnknown() && !tagAnnotation.Key.IsNull() {
 				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
 			}
-			if !tagAnnotation.Value.IsUnknown() {
+			if !tagAnnotation.Value.IsUnknown() && !tagAnnotation.Value.IsNull() {
 				childMap["attributes"]["value"] = tagAnnotation.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
@@ -2208,10 +2358,10 @@ func getFvESgTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, d
 		tagTagIdentifiers := []TagTagIdentifier{}
 		for _, tagTag := range tagTagPlan {
 			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagTag.Key.IsUnknown() {
+			if !tagTag.Key.IsUnknown() && !tagTag.Key.IsNull() {
 				childMap["attributes"]["key"] = tagTag.Key.ValueString()
 			}
-			if !tagTag.Value.IsUnknown() {
+			if !tagTag.Value.IsUnknown() && !tagTag.Value.IsNull() {
 				childMap["attributes"]["value"] = tagTag.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})

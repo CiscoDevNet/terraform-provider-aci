@@ -19,8 +19,8 @@ resource_required:
 
 all:
   annotation: "annotation"
-  description: "description"
-  name_alias: "name_alias"
+  description: "description_1"
+  name_alias: "name_alias_1"
   priority: "level1"
 
 children:
@@ -38,12 +38,12 @@ children:
       value: "value_1"
       
     - key: "key_1"
-      value: "value_2"
+      value: "test_value"
       
   tags:
     - key: "key_0"
       value: "value_1"
       
     - key: "key_1"
-      value: "value_2"
+      value: "test_value"
       

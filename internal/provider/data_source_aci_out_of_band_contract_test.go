@@ -21,11 +21,11 @@ func TestAccDataSourceVzOOBBrCP(t *testing.T) {
 				Config: testConfigVzOOBBrCPDataSource,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("data.aci_out_of_band_contract.test", "annotation", "annotation"),
-					resource.TestCheckResourceAttr("data.aci_out_of_band_contract.test", "description", "description"),
+					resource.TestCheckResourceAttr("data.aci_out_of_band_contract.test", "description", "description_1"),
 					resource.TestCheckResourceAttr("data.aci_out_of_band_contract.test", "intent", "estimate_add"),
-					resource.TestCheckResourceAttr("data.aci_out_of_band_contract.test", "name_alias", "name_alias"),
-					resource.TestCheckResourceAttr("data.aci_out_of_band_contract.test", "owner_key", "owner_key"),
-					resource.TestCheckResourceAttr("data.aci_out_of_band_contract.test", "owner_tag", "owner_tag"),
+					resource.TestCheckResourceAttr("data.aci_out_of_band_contract.test", "name_alias", "name_alias_1"),
+					resource.TestCheckResourceAttr("data.aci_out_of_band_contract.test", "owner_key", "owner_key_1"),
+					resource.TestCheckResourceAttr("data.aci_out_of_band_contract.test", "owner_tag", "owner_tag_1"),
 					resource.TestCheckResourceAttr("data.aci_out_of_band_contract.test", "priority", "level1"),
 					resource.TestCheckResourceAttr("data.aci_out_of_band_contract.test", "scope", "application-profile"),
 					resource.TestCheckResourceAttr("data.aci_out_of_band_contract.test", "target_dscp", "AF11"),
@@ -49,6 +49,5 @@ data "aci_out_of_band_contract" "test" {
 const testConfigVzOOBBrCPNotExisting = testConfigVzOOBBrCPAll + `
 data "aci_out_of_band_contract" "test_non_existing" {
   name = "non_existing_name"
-  depends_on = [aci_out_of_band_contract.test]
 }
 `

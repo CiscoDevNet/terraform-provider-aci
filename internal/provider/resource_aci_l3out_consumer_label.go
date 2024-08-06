@@ -14,6 +14,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -57,16 +58,57 @@ type L3extConsLblResourceModel struct {
 	TagTag        types.Set    `tfsdk:"tags"`
 }
 
+func getEmptyL3extConsLblResourceModel() *L3extConsLblResourceModel {
+	return &L3extConsLblResourceModel{
+		Id:         basetypes.NewStringNull(),
+		ParentDn:   basetypes.NewStringNull(),
+		Annotation: basetypes.NewStringNull(),
+		Descr:      basetypes.NewStringNull(),
+		Name:       basetypes.NewStringNull(),
+		NameAlias:  basetypes.NewStringNull(),
+		Owner:      basetypes.NewStringNull(),
+		OwnerKey:   basetypes.NewStringNull(),
+		OwnerTag:   basetypes.NewStringNull(),
+		Tag:        basetypes.NewStringNull(),
+		TagAnnotation: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"key":   types.StringType,
+				"value": types.StringType,
+			},
+		}),
+		TagTag: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"key":   types.StringType,
+				"value": types.StringType,
+			},
+		}),
+	}
+}
+
 // TagAnnotationL3extConsLblResourceModel describes the resource data model for the children without relation ships.
 type TagAnnotationL3extConsLblResourceModel struct {
 	Key   types.String `tfsdk:"key"`
 	Value types.String `tfsdk:"value"`
 }
 
+func getEmptyTagAnnotationL3extConsLblResourceModel() TagAnnotationL3extConsLblResourceModel {
+	return TagAnnotationL3extConsLblResourceModel{
+		Key:   basetypes.NewStringNull(),
+		Value: basetypes.NewStringNull(),
+	}
+}
+
 // TagTagL3extConsLblResourceModel describes the resource data model for the children without relation ships.
 type TagTagL3extConsLblResourceModel struct {
 	Key   types.String `tfsdk:"key"`
 	Value types.String `tfsdk:"value"`
+}
+
+func getEmptyTagTagL3extConsLblResourceModel() TagTagL3extConsLblResourceModel {
+	return TagTagL3extConsLblResourceModel{
+		Key:   basetypes.NewStringNull(),
+		Value: basetypes.NewStringNull(),
+	}
 }
 
 type L3extConsLblIdentifier struct {
@@ -131,6 +173,7 @@ func (r *L3extConsLblResource) Schema(ctx context.Context, req resource.SchemaRe
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
 				MarkdownDescription: `The annotation of the L3out Consumer Label object.`,
@@ -140,6 +183,7 @@ func (r *L3extConsLblResource) Schema(ctx context.Context, req resource.SchemaRe
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The description of the L3out Consumer Label object.`,
 			},
@@ -147,6 +191,7 @@ func (r *L3extConsLblResource) Schema(ctx context.Context, req resource.SchemaRe
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
 				MarkdownDescription: `The name of the L3out Consumer Label object.`,
@@ -156,6 +201,7 @@ func (r *L3extConsLblResource) Schema(ctx context.Context, req resource.SchemaRe
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The name alias of the L3out Consumer Label object.`,
 			},
@@ -164,6 +210,7 @@ func (r *L3extConsLblResource) Schema(ctx context.Context, req resource.SchemaRe
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
 					stringvalidator.OneOf("infra", "tenant"),
@@ -175,6 +222,7 @@ func (r *L3extConsLblResource) Schema(ctx context.Context, req resource.SchemaRe
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The key for enabling clients to own their data for entity correlation.`,
 			},
@@ -183,6 +231,7 @@ func (r *L3extConsLblResource) Schema(ctx context.Context, req resource.SchemaRe
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
 			},
@@ -191,6 +240,7 @@ func (r *L3extConsLblResource) Schema(ctx context.Context, req resource.SchemaRe
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
 					stringvalidator.OneOf("alice-blue", "antique-white", "aqua", "aquamarine", "azure", "beige", "bisque", "black", "blanched-almond", "blue", "blue-violet", "brown", "burlywood", "cadet-blue", "chartreuse", "chocolate", "coral", "cornflower-blue", "cornsilk", "crimson", "cyan", "dark-blue", "dark-cyan", "dark-goldenrod", "dark-gray", "dark-green", "dark-khaki", "dark-magenta", "dark-olive-green", "dark-orange", "dark-orchid", "dark-red", "dark-salmon", "dark-sea-green", "dark-slate-blue", "dark-slate-gray", "dark-turquoise", "dark-violet", "deep-pink", "deep-sky-blue", "dim-gray", "dodger-blue", "fire-brick", "floral-white", "forest-green", "fuchsia", "gainsboro", "ghost-white", "gold", "goldenrod", "gray", "green", "green-yellow", "honeydew", "hot-pink", "indian-red", "indigo", "ivory", "khaki", "lavender", "lavender-blush", "lawn-green", "lemon-chiffon", "light-blue", "light-coral", "light-cyan", "light-goldenrod-yellow", "light-gray", "light-green", "light-pink", "light-salmon", "light-sea-green", "light-sky-blue", "light-slate-gray", "light-steel-blue", "light-yellow", "lime", "lime-green", "linen", "magenta", "maroon", "medium-aquamarine", "medium-blue", "medium-orchid", "medium-purple", "medium-sea-green", "medium-slate-blue", "medium-spring-green", "medium-turquoise", "medium-violet-red", "midnight-blue", "mint-cream", "misty-rose", "moccasin", "navajo-white", "navy", "old-lace", "olive", "olive-drab", "orange", "orange-red", "orchid", "pale-goldenrod", "pale-green", "pale-turquoise", "pale-violet-red", "papaya-whip", "peachpuff", "peru", "pink", "plum", "powder-blue", "purple", "red", "rosy-brown", "royal-blue", "saddle-brown", "salmon", "sandy-brown", "sea-green", "seashell", "sienna", "silver", "sky-blue", "slate-blue", "slate-gray", "snow", "spring-green", "steel-blue", "tan", "teal", "thistle", "tomato", "turquoise", "violet", "wheat", "white", "white-smoke", "yellow", "yellow-green"),
@@ -435,6 +485,8 @@ func (r *L3extConsLblResource) ImportState(ctx context.Context, req resource.Imp
 func getAndSetL3extConsLblAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *L3extConsLblResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "l3extConsLbl,tagAnnotation,tagTag"), "GET", nil)
 
+	*data = *getEmptyL3extConsLblResourceModel()
+
 	if diags.HasError() {
 		return
 	}
@@ -481,7 +533,7 @@ func getAndSetL3extConsLblAttributes(ctx context.Context, diags *diag.Diagnostic
 					for childClassName, childClassDetails := range child.(map[string]interface{}) {
 						childAttributes := childClassDetails.(map[string]interface{})["attributes"].(map[string]interface{})
 						if childClassName == "tagAnnotation" {
-							TagAnnotationL3extConsLbl := TagAnnotationL3extConsLblResourceModel{}
+							TagAnnotationL3extConsLbl := getEmptyTagAnnotationL3extConsLblResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "key" {
 									TagAnnotationL3extConsLbl.Key = basetypes.NewStringValue(childAttributeValue.(string))
@@ -493,7 +545,7 @@ func getAndSetL3extConsLblAttributes(ctx context.Context, diags *diag.Diagnostic
 							TagAnnotationL3extConsLblList = append(TagAnnotationL3extConsLblList, TagAnnotationL3extConsLbl)
 						}
 						if childClassName == "tagTag" {
-							TagTagL3extConsLbl := TagTagL3extConsLblResourceModel{}
+							TagTagL3extConsLbl := getEmptyTagTagL3extConsLblResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "key" {
 									TagTagL3extConsLbl.Key = basetypes.NewStringValue(childAttributeValue.(string))
@@ -560,10 +612,10 @@ func getL3extConsLblTagAnnotationChildPayloads(ctx context.Context, diags *diag.
 		tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
 		for _, tagAnnotation := range tagAnnotationPlan {
 			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagAnnotation.Key.IsUnknown() {
+			if !tagAnnotation.Key.IsUnknown() && !tagAnnotation.Key.IsNull() {
 				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
 			}
-			if !tagAnnotation.Value.IsUnknown() {
+			if !tagAnnotation.Value.IsUnknown() && !tagAnnotation.Value.IsNull() {
 				childMap["attributes"]["value"] = tagAnnotation.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
@@ -599,10 +651,10 @@ func getL3extConsLblTagTagChildPayloads(ctx context.Context, diags *diag.Diagnos
 		tagTagIdentifiers := []TagTagIdentifier{}
 		for _, tagTag := range tagTagPlan {
 			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagTag.Key.IsUnknown() {
+			if !tagTag.Key.IsUnknown() && !tagTag.Key.IsNull() {
 				childMap["attributes"]["key"] = tagTag.Key.ValueString()
 			}
-			if !tagTag.Value.IsUnknown() {
+			if !tagTag.Value.IsUnknown() && !tagTag.Value.IsNull() {
 				childMap["attributes"]["value"] = tagTag.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})

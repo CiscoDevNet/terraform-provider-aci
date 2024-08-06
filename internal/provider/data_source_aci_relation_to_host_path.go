@@ -16,33 +16,33 @@ import (
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ datasource.DataSource = &FvRsProtByDataSource{}
+var _ datasource.DataSource = &InfraRsHPathAttDataSource{}
 
-func NewFvRsProtByDataSource() datasource.DataSource {
-	return &FvRsProtByDataSource{}
+func NewInfraRsHPathAttDataSource() datasource.DataSource {
+	return &InfraRsHPathAttDataSource{}
 }
 
-// FvRsProtByDataSource defines the data source implementation.
-type FvRsProtByDataSource struct {
+// InfraRsHPathAttDataSource defines the data source implementation.
+type InfraRsHPathAttDataSource struct {
 	client *client.Client
 }
 
-func (d *FvRsProtByDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
-	tflog.Debug(ctx, "Start metadata of datasource: aci_relation_to_taboo_contract")
-	resp.TypeName = req.ProviderTypeName + "_relation_to_taboo_contract"
-	tflog.Debug(ctx, "End metadata of datasource: aci_relation_to_taboo_contract")
+func (d *InfraRsHPathAttDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
+	tflog.Debug(ctx, "Start metadata of datasource: aci_relation_to_host_path")
+	resp.TypeName = req.ProviderTypeName + "_relation_to_host_path"
+	tflog.Debug(ctx, "End metadata of datasource: aci_relation_to_host_path")
 }
 
-func (d *FvRsProtByDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
-	tflog.Debug(ctx, "Start schema of datasource: aci_relation_to_taboo_contract")
+func (d *InfraRsHPathAttDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+	tflog.Debug(ctx, "Start schema of datasource: aci_relation_to_host_path")
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "The relation_to_taboo_contract datasource for the 'fvRsProtBy' class",
+		MarkdownDescription: "The relation_to_host_path datasource for the 'infraRsHPathAtt' class",
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Relation To Taboo Contract object.",
+				MarkdownDescription: "The distinguished name (DN) of the Relation To Host Path object.",
 			},
 			"parent_dn": schema.StringAttribute{
 				Required:            true,
@@ -50,11 +50,11 @@ func (d *FvRsProtByDataSource) Schema(ctx context.Context, req datasource.Schema
 			},
 			"annotation": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The annotation of the Relation To Taboo Contract object.`,
+				MarkdownDescription: `The annotation of the Relation To Host Path object.`,
 			},
-			"taboo_contract_name": schema.StringAttribute{
+			"target_dn": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: `A contract for denying specific classes of traffic. Taboo rules are applied in the hardware before applying the rules of regular contracts. Without a contract, the default forwarding policy is to not allow any communication between EPGs.`,
+				MarkdownDescription: `The distinguished name of the target.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,
@@ -90,11 +90,11 @@ func (d *FvRsProtByDataSource) Schema(ctx context.Context, req datasource.Schema
 			},
 		},
 	}
-	tflog.Debug(ctx, "End schema of datasource: aci_relation_to_taboo_contract")
+	tflog.Debug(ctx, "End schema of datasource: aci_relation_to_host_path")
 }
 
-func (d *FvRsProtByDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	tflog.Debug(ctx, "Start configure of datasource: aci_relation_to_taboo_contract")
+func (d *InfraRsHPathAttDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
+	tflog.Debug(ctx, "Start configure of datasource: aci_relation_to_host_path")
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
 		return
@@ -112,12 +112,12 @@ func (d *FvRsProtByDataSource) Configure(ctx context.Context, req datasource.Con
 	}
 
 	d.client = client
-	tflog.Debug(ctx, "End configure of datasource: aci_relation_to_taboo_contract")
+	tflog.Debug(ctx, "End configure of datasource: aci_relation_to_host_path")
 }
 
-func (d *FvRsProtByDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	tflog.Debug(ctx, "Start read of datasource: aci_relation_to_taboo_contract")
-	var data *FvRsProtByResourceModel
+func (d *InfraRsHPathAttDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
+	tflog.Debug(ctx, "Start read of datasource: aci_relation_to_host_path")
+	var data *InfraRsHPathAttResourceModel
 
 	// Read Terraform configuration data into the model
 	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
@@ -126,24 +126,24 @@ func (d *FvRsProtByDataSource) Read(ctx context.Context, req datasource.ReadRequ
 		return
 	}
 
-	setFvRsProtById(ctx, data)
+	setInfraRsHPathAttId(ctx, data)
 
-	// Create a copy of the Id for when not found during getAndSetFvRsProtByAttributes
+	// Create a copy of the Id for when not found during getAndSetInfraRsHPathAttAttributes
 	cachedId := data.Id.ValueString()
 
-	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_relation_to_taboo_contract with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_relation_to_host_path with id '%s'", data.Id.ValueString()))
 
-	getAndSetFvRsProtByAttributes(ctx, &resp.Diagnostics, d.client, data)
+	getAndSetInfraRsHPathAttAttributes(ctx, &resp.Diagnostics, d.client, data)
 
 	if data.Id.IsNull() {
 		resp.Diagnostics.AddError(
-			"Failed to read aci_relation_to_taboo_contract data source",
-			fmt.Sprintf("The aci_relation_to_taboo_contract data source with id '%s' has not been found", cachedId),
+			"Failed to read aci_relation_to_host_path data source",
+			fmt.Sprintf("The aci_relation_to_host_path data source with id '%s' has not been found", cachedId),
 		)
 		return
 	}
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_relation_to_taboo_contract with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_relation_to_host_path with id '%s'", data.Id.ValueString()))
 }

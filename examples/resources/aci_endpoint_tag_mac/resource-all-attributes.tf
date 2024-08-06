@@ -5,8 +5,8 @@ resource "aci_endpoint_tag_mac" "full_example_tenant" {
   bd_name      = "test_bd_name"
   id_attribute = "1"
   mac          = "00:00:00:00:00:01"
-  name         = "name"
-  name_alias   = "name_alias"
+  name         = "name_1"
+  name_alias   = "name_alias_1"
   annotations = [
     {
       key   = "key_0"

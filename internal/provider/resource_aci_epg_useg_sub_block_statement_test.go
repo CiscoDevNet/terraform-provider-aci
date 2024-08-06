@@ -22,20 +22,20 @@ func TestAccResourceFvSCrtrnWithFvCrtrn(t *testing.T) {
 				Config:             testConfigFvSCrtrnMinDependencyWithFvCrtrnAllowExisting,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "name", "sub_criterion"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_2", "name", "sub_criterion"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_2", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_2", "description", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "match", "any"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_2", "match", "any"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_2", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_2", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_2", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test", "name", "sub_criterion"),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test_2", "name", "sub_criterion"),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test", "description", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test", "match", "any"),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test_2", "match", "any"),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test_2", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test_2", "owner_tag", ""),
 				),
 			},
 		},
@@ -64,20 +64,20 @@ func TestAccResourceFvSCrtrnWithFvCrtrn(t *testing.T) {
 				Config:             testConfigFvSCrtrnMinDependencyWithFvCrtrnAllowExisting,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "name", "sub_criterion"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_2", "name", "sub_criterion"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_2", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_2", "description", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "match", "any"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_2", "match", "any"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_2", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_2", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_2", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test", "name", "sub_criterion"),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test_2", "name", "sub_criterion"),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test", "description", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test", "match", "any"),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test_2", "match", "any"),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test_2", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test_2", "owner_tag", ""),
 				),
 			},
 		},
@@ -108,11 +108,11 @@ func TestAccResourceFvSCrtrnWithFvCrtrn(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "name", "sub_criterion"),
 					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "annotation", "annotation"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "description", "description"),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "description", "description_1"),
 					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "match", "all"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "name_alias", "name_alias"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "owner_key", "owner_key"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "owner_tag", "owner_tag"),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "name_alias", "name_alias_1"),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "owner_key", "owner_key_1"),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "owner_tag", "owner_tag_1"),
 				),
 			},
 			// Update with minimum config and verify config is unchanged
@@ -158,11 +158,11 @@ func TestAccResourceFvSCrtrnWithFvCrtrn(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "annotations.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "tags.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "tags.1.value", "test_value"),
 				),
 			},
 			// Import testing with children
@@ -179,12 +179,12 @@ func TestAccResourceFvSCrtrnWithFvCrtrn(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "annotations.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "annotations.#", "2"),
 					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "tags.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "tags.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "tags.#", "2"),
 				),
 			},
@@ -194,10 +194,10 @@ func TestAccResourceFvSCrtrnWithFvCrtrn(t *testing.T) {
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "annotations.0.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "annotations.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "annotations.#", "1"),
 					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "tags.0.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "tags.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "tags.#", "1"),
 				),
 			},
@@ -224,20 +224,20 @@ func TestAccResourceFvSCrtrnWithFvSCrtrn(t *testing.T) {
 				Config:             testConfigFvSCrtrnMinDependencyWithFvSCrtrnAllowExisting,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_0", "name", "sub_criterion"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_2", "name", "sub_criterion"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_0", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_2", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_0", "description", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_2", "description", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_0", "match", "any"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_2", "match", "any"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_0", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_2", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_0", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_2", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_0", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_2", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test", "name", "sub_criterion"),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test_2", "name", "sub_criterion"),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test", "description", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test", "match", "any"),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test_2", "match", "any"),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test_2", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test_2", "owner_tag", ""),
 				),
 			},
 		},
@@ -266,20 +266,20 @@ func TestAccResourceFvSCrtrnWithFvSCrtrn(t *testing.T) {
 				Config:             testConfigFvSCrtrnMinDependencyWithFvSCrtrnAllowExisting,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_0", "name", "sub_criterion"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_2", "name", "sub_criterion"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_0", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_2", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_0", "description", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_2", "description", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_0", "match", "any"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_2", "match", "any"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_0", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_2", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_0", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_2", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_0", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_2", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test", "name", "sub_criterion"),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test_2", "name", "sub_criterion"),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test", "description", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test", "match", "any"),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test_2", "match", "any"),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test_2", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.allow_test_2", "owner_tag", ""),
 				),
 			},
 		},
@@ -310,11 +310,11 @@ func TestAccResourceFvSCrtrnWithFvSCrtrn(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "name", "sub_criterion"),
 					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "annotation", "annotation"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "description", "description"),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "description", "description_1"),
 					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "match", "all"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "name_alias", "name_alias"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "owner_key", "owner_key"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "owner_tag", "owner_tag"),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "name_alias", "name_alias_1"),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "owner_key", "owner_key_1"),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "owner_tag", "owner_tag_1"),
 				),
 			},
 			// Update with minimum config and verify config is unchanged
@@ -360,11 +360,11 @@ func TestAccResourceFvSCrtrnWithFvSCrtrn(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "annotations.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "tags.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "tags.1.value", "test_value"),
 				),
 			},
 			// Import testing with children
@@ -381,12 +381,12 @@ func TestAccResourceFvSCrtrnWithFvSCrtrn(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "annotations.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "annotations.#", "2"),
 					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "tags.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "tags.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "tags.#", "2"),
 				),
 			},
@@ -396,10 +396,10 @@ func TestAccResourceFvSCrtrnWithFvSCrtrn(t *testing.T) {
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "annotations.0.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "annotations.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "annotations.#", "1"),
 					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "tags.0.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "tags.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "tags.#", "1"),
 				),
 			},
@@ -417,14 +417,14 @@ func TestAccResourceFvSCrtrnWithFvSCrtrn(t *testing.T) {
 }
 
 const testConfigFvSCrtrnMinDependencyWithFvCrtrnAllowExisting = testConfigFvCrtrnMinDependencyWithFvAEPg + `
-resource "aci_epg_useg_sub_block_statement" "test" {
+resource "aci_epg_useg_sub_block_statement" "allow_test" {
   parent_dn = aci_epg_useg_block_statement.test.id
   name = "sub_criterion"
 }
-resource "aci_epg_useg_sub_block_statement" "test_2" {
+resource "aci_epg_useg_sub_block_statement" "allow_test_2" {
   parent_dn = aci_epg_useg_block_statement.test.id
   name = "sub_criterion"
-  depends_on = [aci_epg_useg_sub_block_statement.test]
+  depends_on = [aci_epg_useg_sub_block_statement.allow_test]
 }
 `
 
@@ -440,11 +440,11 @@ resource "aci_epg_useg_sub_block_statement" "test" {
   parent_dn = aci_epg_useg_block_statement.test.id
   name = "sub_criterion"
   annotation = "annotation"
-  description = "description"
+  description = "description_1"
   match = "all"
-  name_alias = "name_alias"
-  owner_key = "owner_key"
-  owner_tag = "owner_tag"
+  name_alias = "name_alias_1"
+  owner_key = "owner_key_1"
+  owner_tag = "owner_tag_1"
 }
 `
 
@@ -471,7 +471,7 @@ resource "aci_epg_useg_sub_block_statement" "test" {
 	},
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
   tags = [
@@ -481,7 +481,7 @@ resource "aci_epg_useg_sub_block_statement" "test" {
 	},
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
 }
@@ -501,13 +501,13 @@ resource "aci_epg_useg_sub_block_statement" "test" {
   annotations = [ 
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
   tags = [ 
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
 }
@@ -523,14 +523,14 @@ resource "aci_epg_useg_sub_block_statement" "test" {
 `
 
 const testConfigFvSCrtrnMinDependencyWithFvSCrtrnAllowExisting = testConfigFvSCrtrnMinDependencyWithFvCrtrn + `
-resource "aci_epg_useg_sub_block_statement" "test_0" {
+resource "aci_epg_useg_sub_block_statement" "allow_test" {
   parent_dn = aci_epg_useg_sub_block_statement.test.id
   name = "sub_criterion"
 }
-resource "aci_epg_useg_sub_block_statement" "test_2" {
+resource "aci_epg_useg_sub_block_statement" "allow_test_2" {
   parent_dn = aci_epg_useg_sub_block_statement.test.id
   name = "sub_criterion"
-  depends_on = [aci_epg_useg_sub_block_statement.test_0]
+  depends_on = [aci_epg_useg_sub_block_statement.allow_test]
 }
 `
 
@@ -546,11 +546,11 @@ resource "aci_epg_useg_sub_block_statement" "test_1" {
   parent_dn = aci_epg_useg_sub_block_statement.test.id
   name = "sub_criterion"
   annotation = "annotation"
-  description = "description"
+  description = "description_1"
   match = "all"
-  name_alias = "name_alias"
-  owner_key = "owner_key"
-  owner_tag = "owner_tag"
+  name_alias = "name_alias_1"
+  owner_key = "owner_key_1"
+  owner_tag = "owner_tag_1"
 }
 `
 
@@ -577,7 +577,7 @@ resource "aci_epg_useg_sub_block_statement" "test_1" {
 	},
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
   tags = [
@@ -587,7 +587,7 @@ resource "aci_epg_useg_sub_block_statement" "test_1" {
 	},
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
 }
@@ -607,13 +607,13 @@ resource "aci_epg_useg_sub_block_statement" "test_1" {
   annotations = [ 
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
   tags = [ 
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
 }

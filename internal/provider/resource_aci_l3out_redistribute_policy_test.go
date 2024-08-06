@@ -22,12 +22,12 @@ func TestAccResourceL3extRsRedistributePolWithL3extOut(t *testing.T) {
 				Config:             testConfigL3extRsRedistributePolMinDependencyWithL3extOutAllowExisting,
 				ExpectNonEmptyPlan: true,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "route_control_profile_name", "test_tn_rtctrl_profile_name"),
-					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test_2", "route_control_profile_name", "test_tn_rtctrl_profile_name"),
-					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test_2", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "source", "direct"),
-					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test_2", "source", "direct"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.allow_test", "route_control_profile_name", "test_tn_rtctrl_profile_name"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.allow_test_2", "route_control_profile_name", "test_tn_rtctrl_profile_name"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.allow_test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.allow_test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.allow_test", "source", "direct"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.allow_test_2", "source", "direct"),
 				),
 			},
 		},
@@ -56,12 +56,12 @@ func TestAccResourceL3extRsRedistributePolWithL3extOut(t *testing.T) {
 				Config:             testConfigL3extRsRedistributePolMinDependencyWithL3extOutAllowExisting,
 				ExpectNonEmptyPlan: true,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "route_control_profile_name", "test_tn_rtctrl_profile_name"),
-					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test_2", "route_control_profile_name", "test_tn_rtctrl_profile_name"),
-					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test_2", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "source", "direct"),
-					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test_2", "source", "direct"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.allow_test", "route_control_profile_name", "test_tn_rtctrl_profile_name"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.allow_test_2", "route_control_profile_name", "test_tn_rtctrl_profile_name"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.allow_test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.allow_test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.allow_test", "source", "direct"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.allow_test_2", "source", "direct"),
 				),
 			},
 		},
@@ -127,11 +127,11 @@ func TestAccResourceL3extRsRedistributePolWithL3extOut(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotations.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "tags.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "tags.1.value", "test_value"),
 				),
 			},
 			// Import testing with children
@@ -148,12 +148,12 @@ func TestAccResourceL3extRsRedistributePolWithL3extOut(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotations.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotations.#", "2"),
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "tags.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "tags.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "tags.#", "2"),
 				),
 			},
@@ -163,10 +163,10 @@ func TestAccResourceL3extRsRedistributePolWithL3extOut(t *testing.T) {
 				ExpectNonEmptyPlan: true,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotations.0.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotations.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotations.#", "1"),
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "tags.0.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "tags.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "tags.#", "1"),
 				),
 			},
@@ -184,16 +184,16 @@ func TestAccResourceL3extRsRedistributePolWithL3extOut(t *testing.T) {
 }
 
 const testConfigL3extRsRedistributePolMinDependencyWithL3extOutAllowExisting = testConfigL3extOutMinDependencyWithFvTenant + `
-resource "aci_l3out_redistribute_policy" "test" {
+resource "aci_l3out_redistribute_policy" "allow_test" {
   parent_dn = aci_l3_outside.test.id
   route_control_profile_name = "test_tn_rtctrl_profile_name"
   source = "direct"
 }
-resource "aci_l3out_redistribute_policy" "test_2" {
+resource "aci_l3out_redistribute_policy" "allow_test_2" {
   parent_dn = aci_l3_outside.test.id
   route_control_profile_name = "test_tn_rtctrl_profile_name"
   source = "direct"
-  depends_on = [aci_l3out_redistribute_policy.test]
+  depends_on = [aci_l3out_redistribute_policy.allow_test]
 }
 `
 
@@ -234,7 +234,7 @@ resource "aci_l3out_redistribute_policy" "test" {
 	},
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
   tags = [
@@ -244,7 +244,7 @@ resource "aci_l3out_redistribute_policy" "test" {
 	},
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
 }
@@ -266,13 +266,13 @@ resource "aci_l3out_redistribute_policy" "test" {
   annotations = [ 
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
   tags = [ 
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
 }
