@@ -154,17 +154,6 @@ func TestAccResourceFvCrtrnWithFvAEPg(t *testing.T) {
 				ResourceName:      "aci_epg_useg_block_statement.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "match", "any"),
-					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "name", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "precedence", "0"),
-					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "scope", "scope-bd"),
-				),
 			},
 			// Update with children
 			{
@@ -195,25 +184,6 @@ func TestAccResourceFvCrtrnWithFvAEPg(t *testing.T) {
 				ResourceName:      "aci_epg_useg_block_statement.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "match", "any"),
-					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "name", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "precedence", "0"),
-					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "scope", "scope-bd"),
-					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "annotations.1.value", "value_2"),
-					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "tags.1.value", "value_2"),
-				),
 			},
 			// Update with children removed from config
 			{

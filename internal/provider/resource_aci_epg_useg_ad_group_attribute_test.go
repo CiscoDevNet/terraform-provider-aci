@@ -142,15 +142,6 @@ func TestAccResourceFvIdGroupAttrWithFvCrtrn(t *testing.T) {
 				ResourceName:      "aci_epg_useg_ad_group_attribute.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "selector", "adepg/authsvr-common-sg1-ISE_1/grpcont/dom-cisco.com/grp-Eng"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "name", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "owner_tag", ""),
-				),
 			},
 			// Update with children
 			{
@@ -179,23 +170,6 @@ func TestAccResourceFvIdGroupAttrWithFvCrtrn(t *testing.T) {
 				ResourceName:      "aci_epg_useg_ad_group_attribute.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "selector", "adepg/authsvr-common-sg1-ISE_1/grpcont/dom-cisco.com/grp-Eng"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "name", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "annotations.1.value", "value_2"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "tags.1.value", "value_2"),
-				),
 			},
 			// Update with children removed from config
 			{
