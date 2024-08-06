@@ -74,11 +74,10 @@ data "aci_route_control_profile" "test" {
 }
 `
 
-const testConfigRtctrlProfileNotExistingFvTenant = testConfigRtctrlProfileMinDependencyWithFvTenant + `
+const testConfigRtctrlProfileNotExistingFvTenant = testConfigFvTenantMin + `
 data "aci_route_control_profile" "test_non_existing" {
   parent_dn = aci_tenant.test.id
   name = "non_existing_name"
-  depends_on = [aci_route_control_profile.test]
 }
 `
 const testConfigRtctrlProfileDataSourceDependencyWithL3extOut = testConfigRtctrlProfileMinDependencyWithL3extOut + `
@@ -89,10 +88,9 @@ data "aci_route_control_profile" "test" {
 }
 `
 
-const testConfigRtctrlProfileNotExistingL3extOut = testConfigRtctrlProfileMinDependencyWithL3extOut + `
+const testConfigRtctrlProfileNotExistingL3extOut = testConfigL3extOutMin + `
 data "aci_route_control_profile" "test_non_existing" {
   parent_dn = aci_l3_outside.test.id
   name = "non_existing_name"
-  depends_on = [aci_route_control_profile.test]
 }
 `
