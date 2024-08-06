@@ -21,16 +21,16 @@ func TestAccResourceMgmtInstP(t *testing.T) {
 			{
 				Config: testConfigMgmtInstPMinAllowExisting,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "name", "test_name"),
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test_2", "name", "test_name"),
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test_2", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test_2", "description", ""),
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test_2", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "priority", "unspecified"),
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test_2", "priority", "unspecified"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.allow_test", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.allow_test_2", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.allow_test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.allow_test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.allow_test", "description", ""),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.allow_test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.allow_test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.allow_test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.allow_test", "priority", "unspecified"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.allow_test_2", "priority", "unspecified"),
 				),
 			},
 		},
@@ -58,16 +58,16 @@ func TestAccResourceMgmtInstP(t *testing.T) {
 			{
 				Config: testConfigMgmtInstPMinAllowExisting,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "name", "test_name"),
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test_2", "name", "test_name"),
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test_2", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test_2", "description", ""),
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test_2", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "priority", "unspecified"),
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test_2", "priority", "unspecified"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.allow_test", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.allow_test_2", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.allow_test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.allow_test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.allow_test", "description", ""),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.allow_test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.allow_test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.allow_test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.allow_test", "priority", "unspecified"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.allow_test_2", "priority", "unspecified"),
 				),
 			},
 		},
@@ -94,8 +94,8 @@ func TestAccResourceMgmtInstP(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "annotation", "annotation"),
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "description", "description"),
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "name_alias", "name_alias"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "description", "description_1"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "name_alias", "name_alias_1"),
 					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "priority", "level1"),
 				),
 			},
@@ -105,8 +105,8 @@ func TestAccResourceMgmtInstP(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "description", "description"),
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "name_alias", "name_alias"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "description", "description_1"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "name_alias", "name_alias_1"),
 					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "priority", "level1"),
 				),
 			},
@@ -138,7 +138,7 @@ func TestAccResourceMgmtInstP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "annotations.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "annotations.#", "2"),
 					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "relation_to_consumed_out_of_band_contracts.0.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "relation_to_consumed_out_of_band_contracts.0.out_of_band_contract_name", "out_of_band_contract_name_0"),
@@ -150,7 +150,7 @@ func TestAccResourceMgmtInstP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "tags.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "tags.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "tags.#", "2"),
 				),
 			},
@@ -165,7 +165,7 @@ func TestAccResourceMgmtInstP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "annotations.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "annotations.#", "2"),
 					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "relation_to_consumed_out_of_band_contracts.0.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "relation_to_consumed_out_of_band_contracts.0.out_of_band_contract_name", "out_of_band_contract_name_0"),
@@ -177,7 +177,7 @@ func TestAccResourceMgmtInstP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "tags.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "tags.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "tags.#", "2"),
 				),
 			},
@@ -190,14 +190,14 @@ func TestAccResourceMgmtInstP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "priority", "unspecified"),
 					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "annotations.0.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "annotations.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "annotations.#", "1"),
 					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "relation_to_consumed_out_of_band_contracts.0.annotation", "annotation_2"),
 					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "relation_to_consumed_out_of_band_contracts.0.out_of_band_contract_name", "out_of_band_contract_name_1"),
 					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "relation_to_consumed_out_of_band_contracts.0.priority", "level2"),
 					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "relation_to_consumed_out_of_band_contracts.#", "1"),
 					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "tags.0.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "tags.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "tags.#", "1"),
 				),
 			},
@@ -219,12 +219,12 @@ func TestAccResourceMgmtInstP(t *testing.T) {
 }
 
 const testConfigMgmtInstPMinAllowExisting = `
-resource "aci_external_management_network_instance_profile" "test" {
+resource "aci_external_management_network_instance_profile" "allow_test" {
   name = "test_name"
 }
-resource "aci_external_management_network_instance_profile" "test_2" {
+resource "aci_external_management_network_instance_profile" "allow_test_2" {
   name = "test_name"
-  depends_on = [aci_external_management_network_instance_profile.test]
+  depends_on = [aci_external_management_network_instance_profile.allow_test]
 }
 `
 
@@ -238,8 +238,8 @@ const testConfigMgmtInstPAll = `
 resource "aci_external_management_network_instance_profile" "test" {
   name = "test_name"
   annotation = "annotation"
-  description = "description"
-  name_alias = "name_alias"
+  description = "description_1"
+  name_alias = "name_alias_1"
   priority = "level1"
 }
 `
@@ -263,7 +263,7 @@ resource "aci_external_management_network_instance_profile" "test" {
 	},
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
   relation_to_consumed_out_of_band_contracts = [
@@ -285,7 +285,7 @@ resource "aci_external_management_network_instance_profile" "test" {
 	},
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
 }
@@ -303,7 +303,7 @@ resource "aci_external_management_network_instance_profile" "test" {
   annotations = [ 
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
   relation_to_consumed_out_of_band_contracts = [ 
@@ -316,7 +316,7 @@ resource "aci_external_management_network_instance_profile" "test" {
   tags = [ 
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
 }

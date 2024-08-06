@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_endpoint_tag_mac"
 sidebar_current: "docs-aci-data-source-aci_endpoint_tag_mac"
 description: |-
-  Data source for Endpoint Tag MAC
+  Data source for ACI Endpoint Tag MAC
 ---
 
 # aci_endpoint_tag_mac #
 
-Data source for Endpoint Tag MAC
+Data source for ACI Endpoint Tag MAC
 
 ## API Information ##
 

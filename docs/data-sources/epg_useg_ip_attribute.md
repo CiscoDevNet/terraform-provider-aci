@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_epg_useg_ip_attribute"
 sidebar_current: "docs-aci-data-source-aci_epg_useg_ip_attribute"
 description: |-
-  Data source for EPG uSeg IP Attribute
+  Data source for ACI EPG uSeg IP Attribute
 ---
 
 # aci_epg_useg_ip_attribute #
 
-Data source for EPG uSeg IP Attribute
+Data source for ACI EPG uSeg IP Attribute
 
 ## API Information ##
 

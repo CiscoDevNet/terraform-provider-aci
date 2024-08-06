@@ -14,6 +14,8 @@ global:
     tnRtctrlProfileName: "The name of the Route Control Profile object."
     prio: "The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles."
     matchT: "The provider label match criteria."
+    instrImedcy: "The deployment immediacy of the %s object. Specifies when the policy is pushed into the hardware policy content-addressable memory (CAM)"
+    resImedcy: "The resolution immediacy of the %s object. Specifies if policies are resolved immmediately or when needed."
   overwrites:
     count: "apic_count" # count is a terraform reserved schema entry
     provider: "prov" # provider is a terraform reserved schema entry
@@ -23,7 +25,17 @@ global:
     prio: "priority"
     match_t: "match_criteria"
     descr: "description"
-
+    encap: "encapsulation"
+    encap_mode: "encapsulation_mode"
+    primary_encap: "primary_encapsulation"
+    primary_encap_inner: "primary_encapsulation_inner"
+    secondary_encap_inner: "secondary_encapsulation_inner"
+    instr_imedcy: "deployment_immediacy"
+    res_imedcy: "resolution_immediacy"
+    netflow_dir: "netflow_direction"
+    netflow_pref: "enable_netflow"
+    num_ports: "number_of_ports"
+    class_pref: "class_preference"
   resource_name_doc_overwrite:
     Vrf: VRF
     Sid: "SR-MPLS Segment ID"
@@ -34,6 +46,7 @@ global:
     Mac: "MAC"
     Ip: "IP"
     Ad: "AD"
+    Esg: "ESG"
   ignores:
     - "userdom"
 
@@ -366,6 +379,8 @@ fvESg:
   parents:
     - class_name: "fvAp"
       parent_dependency: "fvTenant"
+  exclude_targets:
+    - "fvAEPg"
   ignores:
     - "floodOnEncap"
     - "prio"
@@ -627,3 +642,272 @@ fvIpAttr:
     - class_name: "fvCrtrn"
       parent_dependency: "fvAEPg"
       parent_dn: "epg_useg_block_statement.test.id"
+fvAEPg:
+  read_only_properties:
+    - "pcTag"
+  remove_valid_values:
+    pcTag:
+      - "any"
+  default_values:
+    shutdown: "no"
+    hasMcastSource: "no"
+    isAttrBasedEPg: "no"
+  type_overwrites:
+    fwdCtrl: "string"
+  overwrites:
+    pref_gr_memb: "preferred_group_member"
+    pc_enf_pref: "intra_epg_isolation"
+    shutdown: "admin_state"
+    fwd_ctrl: "forwarding_control"
+    has_mcast_source: "has_multicast_source"
+    is_attr_based_e_pg: "useg_epg"
+    exception_tag: "contract_exception_tag"
+    flood_on_encap: "flood_in_encapsulation"
+  documentation:
+    exceptionTag: "The contract exception tag of the %s object."
+    fwdCtrl: "The forwarding control of the %s object."
+    floodOnEncap: "Flood L2 Multicast/Broadcast and Link Local Layer based on encapsulation."
+    hasMcastSource: "The %s object has a multicast source."
+    isAttrBasedEPg: "The %s object is microsegmented (uSeg)."
+    pcEnfPref: "Parameter used to determine whether communication between endpoints within the EPG is blocked."
+    prefGrMemb: "Parameter used to determine whether the EPG is part of the preferred group. Members of this group are allowed to communicate without contracts."
+  test_values:
+    default:
+      forwarding_control: "none"
+    all:
+      forwarding_control: "proxy-arp"
+  exclude_targets:
+    - "fvESg"
+  parents:
+    - class_name: "fvAp"
+      parent_dependency: "fvTenant"
+
+fvRsAEPgMonPol:
+  documentation:
+    tnMonEPGPolName: "The name of the monitoring policy."
+
+fvRsFcPathAtt:
+  default_values:
+    vsan: "unknown"
+  test_values:
+    default:
+      vsan: "unknown"
+    all:
+      vsan: "vsan-10"
+    datasource_non_existing:
+      target_dn: "topology/pod-2/paths-201/pathep-[eth1/1]"
+  documentation:
+    vsan: "The virtual storage area network (VSAN) of the %s object."
+    vsanMode: "The virtual storage area network (VSAN) mode of the %s object."
+  parents:
+    - class_name: "fvAEPg"
+      parent_dependency: "fvAp"
+      parent_dn: "aci_application_epg.test.id"
+      target_classes:
+        - "fabricPathEp"
+  targets:
+    - class_name: "fabricPathEp"
+      target_dn: "topology/pod-1/paths-101/pathep-[eth1/1]"
+      relation_resource_name: "fibre_channel_path"
+      static: true
+    - class_name: "fabricPathEp"
+      target_dn: "topology/pod-1/paths-101/pathep-[eth1/2]"
+      relation_resource_name: "fibre_channel_path"
+      static: true
+
+fvRsNodeAtt:
+  resource_required:
+    - "encapsulation"
+  datasource_required:
+    - "encapsulation"
+  documentation:
+    mode: "The static association mode with the path of the %s object."
+    encap: "The VLAN encapsulation of the %s object."
+  test_values:
+    default:
+      encapsulation: "vlan-101"
+    all:
+      encapsulation: "vlan-100"
+    resource_required:
+      encapsulation: "vlan-101"
+    datasource_required:
+      encapsulation: "vlan-101"
+    datasource_non_existing:
+      target_dn: "topology/pod-2/paths-201/pathep-[eth1/1]"
+  parents:
+    - class_name: "fvAEPg"
+      parent_dependency: "fvAp"
+      parent_dn: "aci_application_epg.test.id"
+      target_classes:
+        - "fabricNode"
+  targets:
+    - class_name: "fabricNode"
+      target_dn: "topology/pod-1/node-101"
+      relation_resource_name: "static_leaf"
+      static: true
+    - class_name: "fabricNode"
+      target_dn: "topology/pod-1/node-102"
+      relation_resource_name: "static_leaf"
+      static: true
+
+fvRsDomAtt:
+  default_values:
+    untagged: "no"
+    vnetOnly: "no"
+    ipamEnabled: "no"
+  ignores:
+    - "apiMode"
+  ignore_properties_in_test:
+    "ipamDhcpOverride": "10.0.0.2"
+    "ipamEnabled": "yes"
+    "ipamGateway": "10.0.0.1"
+  documentation:
+    bindingType: "The binding type of the %s object."
+    classPref: "The class preference of the %s object. Set 'useg' to allow microsegmentation."
+    delimiter: "The delimiter of the %s object."
+    encap: "The encapsulation of the %s object. The encapsulation refers to the EPG VLAN when class preference is set to 'encap, or to the Secondary VLAN when class preference is set to 'useg'."
+    encapMode: "The encapsulation mode of the %s object."
+    customEpgName: "The display name of the user configured port-group."
+    epgCos: "The class of service (CoS) of the %s object."
+    epgCosPref: "The class of service (CoS) preference of the %s object."
+    ipamEnabled: "The IP address management (IPAM) enabled status of the %s object. Only applicable for Nutanix domains."
+    ipamGateway: "The IP address management (IPAM) gateway of the %s object. Only applicable for Nutanix domains."
+    ipamDhcpOverride: "The IP address management (IPAM) DHCP override of the %s object. Only applicable for Nutanix domains."
+    lagPolicyName: "The link aggregation group (LAG) policy name of the %s object."
+    netflowDir: "The NetFlow monitoring direction of the %s object."
+    netflowPref: "The Netflow enabled status for the %s object."
+    numPorts: "The number of ports of the %s object."
+    primaryEncap: "The primary encapsulation of the %s object. This is used when the class preference is set to 'useg'."
+    primaryEncapInner: "The primary inner encapsulation of the %s object. This is used for the portgroup at the VMWare Distributed Virtual Switch (DVS). This VLAN is internal to the DVS and is used for communication between the other VMs and the AVE VM at a host. Traffic is not forwarded to the fabric over the VLAN. Only applicable for Cisco ACI Virtual Edge (AVE) domains."
+    secondaryEncapInner: "The secondary inner encapsulation of the %s object. This is used for the portgroup at the VMWare Distributed Virtual Switch (DVS). This VLAN is internal to the DVS and is used for communication between the other VMs and the AVE VM at a host. Traffic is not forwarded to the fabric over the VLAN. Only applicable for Cisco ACI Virtual Edge (AVE) domains."
+    untagged: "The untagged status of the %s object."
+    vnetOnly: "The VNET only status of the %s object."
+    switchingMode: "The switching mode of the %s object."
+    tDn: "The distinguished name of the target Domain object."
+  test_values:
+    default:
+      encapsulation: "unknown"
+      primary_encapsulation: "unknown"
+      primary_encapsulation_inner: "unknown"
+      secondary_encapsulation_inner: "unknown"
+      number_of_ports: "0"
+      delimiter: ""
+    all:
+      encapsulation: "vlan-100"
+      primary_encapsulation: "vlan-200"
+      primary_encapsulation_inner: "vlan-300"
+      secondary_encapsulation_inner: "vlan-400"
+      number_of_ports: "1"
+      delimiter: "@"
+  parents:
+    - class_name: "fvAEPg"
+      parent_dependency: "fvAp"
+      parent_dn: "aci_application_epg.test.id"
+      target_classes:
+        - "vmmDomP"
+  targets:
+    - class_name: "vmmDomP"
+      target_dn: "uni/vmmp-VMware/dom-domain_1"
+      relation_resource_name: "domain"
+      static: true
+    - class_name: "vmmDomP"
+      target_dn: "uni/vmmp-VMware/dom-domain_2"
+      relation_resource_name: "domain"
+      static: true
+
+fvRsPathAtt:
+  resource_required:
+    - "encapsulation"
+  datasource_required:
+    - "encapsulation"
+  test_values:
+    default:
+      encapsulation: "vlan-201"
+      primary_encapsulation: "unknown"
+    all:
+      encapsulation: "vlan-202"
+      primary_encapsulation: "vlan-203"
+    resource_required:
+      encapsulation: "vlan-201"
+    datasource_required:
+      encapsulation: "vlan-201"
+    datasource_non_existing:
+      target_dn: "topology/pod-2/paths-201/pathep-[eth1/1]"
+  documentation:
+    mode: "The static association mode of the %s object."
+    encap: "The VLAN encapsulation of the %s object."
+    primaryEncap: "The primary VLAN encapsulation of the %s object."
+  parents:
+    - class_name: "fvAEPg"
+      parent_dependency: "fvAp"
+      parent_dn: "aci_application_epg.test.id"
+      target_classes:
+        - "fabricPathEp"
+  targets:
+    - class_name: "fabricPathEp"
+      target_dn: "topology/pod-1/paths-101/pathep-[eth1/1]"
+      relation_resource_name: "static_path"
+      static: true
+    - class_name: "fabricPathEp"
+      target_dn: "topology/pod-1/paths-101/pathep-[eth1/2]"
+      relation_resource_name: "static_path"
+      static: true
+
+qosCustomPol:
+  parents:
+    - class_name: "fvTenant"
+      parent_dn: "aci_tenant.test.id"
+
+fhsTrustCtrlPol:
+  default_values:
+    hasDhcpv4Server: "no"
+    hasDhcpv6Server: "no"
+    hasIpv6Router: "no"
+    trustArp: "no"
+    trustNd: "no"
+    trustRa: "no"
+  documentation:
+    hasDhcpv4Server: "The %s object contains DHCPv4 servers."
+    hasDhcpv6Server: "The %s object contains DHCPv6 servers."
+    hasIpv6Router: "The %s object contains IPv6 routers."
+    trustArp: "The address resolution protocol (ARP) trust status of the %s object."
+    trustNd: "The neighbor discovery (ND) trust status of the %s object."
+    trustRa: "The router advertisement (RA) trust status of the %s object."
+  parents:
+    - class_name: "fvTenant"
+      parent_dn: "aci_tenant.test.id"
+
+qosDppPol:
+  default_values:
+    pir: "0"
+    rate: "0"
+  documentation:
+    rate: "The rate of the %s object."
+    rateUnit: "The rate unit of the %s object."
+    burst: "The burst size of the %s object."
+    burstUnit: "The burst size unit of the %s object."
+    pir: "The peak information rate (PIR) of the %s object. Only applicable for 2R3C policer."
+    pirUnit: "The peak information rate (PIR) unit of the %s object. Only applicable for 2R3C policer."
+    be: "The excessive burst size of the %s object. Only applicable for 2R3C policer."
+    beUnit: "The excessive burst size unit of the %s object. Only applicable for 2R3C policer."
+    conformAction: "The conform action of the %s object."
+    exceedAction: "The exceed action of the %s object."
+    violateAction: "The violate action of the %s object."
+    conformMarkCos: "The conform mark class of service (CoS) of the %s object."
+    exceedMarkCos: "The exceed mark class of service (CoS) of the %s object."
+    violateMarkCos: "The violate mark class of service (CoS) of the %s object."
+    conformMarkDscp: "The conform mark differentiated services code point (DSCP) of the %s object."
+    exceedMarkDscp: "The exceed mark differentiated services code point (DSCP) of the %s object."
+    violateMarkDscp: "The violate mark differentiated services code point (DSCP) of the %s object."
+    adminSt: "The administrative state of the %s object."
+    sharingMode: "The sharing mode of the %s object."
+    type: "The type of the %s object."
+  overwrites:
+    be: "excessive_burst"
+    be_unit: "excessive_burst_unit"
+    pir: "peak_rate"
+    pir_unit: "peak_rate_unit"
+    admin_st: "admin_state"
+  parents:
+    - class_name: "fvTenant"
+      parent_dn: "aci_tenant.test.id"

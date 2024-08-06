@@ -24,11 +24,11 @@ resource_required:
 
 all:
   annotation: "annotation"
-  description: "description"
+  description: "description_1"
   intent: "estimate_add"
-  name_alias: "name_alias"
-  owner_key: "owner_key"
-  owner_tag: "owner_tag"
+  name_alias: "name_alias_1"
+  owner_key: "owner_key_1"
+  owner_tag: "owner_tag_1"
   priority: "level1"
   scope: "application-profile"
   target_dscp: "AF11"
@@ -39,12 +39,12 @@ children:
       value: "value_1"
       
     - key: "key_1"
-      value: "value_2"
+      value: "test_value"
       
   tags:
     - key: "key_0"
       value: "value_1"
       
     - key: "key_1"
-      value: "value_2"
+      value: "test_value"
       

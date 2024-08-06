@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_out_of_band_contract"
 sidebar_current: "docs-aci-data-source-aci_out_of_band_contract"
 description: |-
-  Data source for Out Of Band Contract
+  Data source for ACI Out Of Band Contract
 ---
 
 # aci_out_of_band_contract #
 
-Data source for Out Of Band Contract
+Data source for ACI Out Of Band Contract
 
 ## API Information ##
 

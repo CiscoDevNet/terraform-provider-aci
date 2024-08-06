@@ -16,7 +16,7 @@ resource_required:
   value: "test_value"
 
 all:
-  value: "value"
+  value: "value_1"
 
 parents:
   - class_name: "fvTenant"

@@ -45,12 +45,12 @@ The configuration snippet below creates a Relation To Contract Master with only 
 
 resource "aci_relation_to_contract_master" "example_application_epg" {
   parent_dn = aci_application_epg.example.id
-  target_dn = aci_application_epg.example_2.id
+  target_dn = aci_application_epg.example_application_epg.id
 }
 
 resource "aci_relation_to_contract_master" "example_endpoint_security_group" {
   parent_dn = aci_endpoint_security_group.example.id
-  target_dn = aci_endpoint_security_group.example_2.id
+  target_dn = aci_endpoint_security_group.example_endpoint_security_group_2.id
 }
 
 ```
@@ -63,7 +63,7 @@ The configuration snippet below shows all possible attributes of the Relation To
 resource "aci_relation_to_contract_master" "full_example_application_epg" {
   parent_dn  = aci_application_epg.example.id
   annotation = "annotation"
-  target_dn  = aci_application_epg.example_2.id
+  target_dn  = aci_application_epg.example_application_epg.id
   annotations = [
     {
       key   = "key_0"
@@ -81,7 +81,7 @@ resource "aci_relation_to_contract_master" "full_example_application_epg" {
 resource "aci_relation_to_contract_master" "full_example_endpoint_security_group" {
   parent_dn  = aci_endpoint_security_group.example.id
   annotation = "annotation"
-  target_dn  = aci_endpoint_security_group.example_2.id
+  target_dn  = aci_endpoint_security_group.example_endpoint_security_group_2.id
   annotations = [
     {
       key   = "key_0"

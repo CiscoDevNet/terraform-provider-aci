@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_netflow_monitor_policy"
 sidebar_current: "docs-aci-data-source-aci_netflow_monitor_policy"
 description: |-
-  Data source for Netflow Monitor Policy
+  Data source for ACI Netflow Monitor Policy
 ---
 
 # aci_netflow_monitor_policy #
 
-Data source for Netflow Monitor Policy
+Data source for ACI Netflow Monitor Policy
 
 ## API Information ##
 

@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_epg_useg_ad_group_attribute"
 sidebar_current: "docs-aci-data-source-aci_epg_useg_ad_group_attribute"
 description: |-
-  Data source for EPG uSeg AD Group Attribute
+  Data source for ACI EPG uSeg AD Group Attribute
 ---
 
 # aci_epg_useg_ad_group_attribute #
 
-Data source for EPG uSeg AD Group Attribute
+Data source for ACI EPG uSeg AD Group Attribute
 
 ## API Information ##
 

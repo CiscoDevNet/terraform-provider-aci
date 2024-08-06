@@ -36,7 +36,7 @@ func TestAccDataSourceL3extRsOutToFBRGroupWithL3extOut(t *testing.T) {
 const testConfigL3extRsOutToFBRGroupDataSourceDependencyWithL3extOut = testConfigL3extRsOutToFBRGroupMinDependencyWithL3extOut + `
 data "aci_relation_to_vrf_fallback_route_group" "test" {
   parent_dn = aci_l3_outside.test.id
-  target_dn = aci_vrf_fallback_route_group.test_0.id
+  target_dn = aci_vrf_fallback_route_group.test_vrf_fallback_route_group_0.id
   depends_on = [aci_relation_to_vrf_fallback_route_group.test]
 }
 `

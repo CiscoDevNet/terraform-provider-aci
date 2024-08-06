@@ -204,6 +204,8 @@ func (p *AciProvider) Configure(ctx context.Context, req provider.ConfigureReque
 
 func (p *AciProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
+		NewFhsTrustCtrlPolResource,
+		NewFvAEPgResource,
 		NewFvCrtrnResource,
 		NewFvDnsAttrResource,
 		NewFvESgResource,
@@ -217,7 +219,11 @@ func (p *AciProvider) Resources(ctx context.Context) []func() resource.Resource 
 		NewFvMacAttrResource,
 		NewFvRsConsResource,
 		NewFvRsConsIfResource,
+		NewFvRsDomAttResource,
+		NewFvRsFcPathAttResource,
 		NewFvRsIntraEpgResource,
+		NewFvRsNodeAttResource,
+		NewFvRsPathAttResource,
 		NewFvRsProtByResource,
 		NewFvRsProvResource,
 		NewFvRsSecInheritedResource,
@@ -236,6 +242,8 @@ func (p *AciProvider) Resources(ctx context.Context) []func() resource.Resource 
 		NewNetflowRsMonitorToExporterResource,
 		NewPimRouteMapEntryResource,
 		NewPimRouteMapPolResource,
+		NewQosCustomPolResource,
+		NewQosDppPolResource,
 		NewTagAnnotationResource,
 		NewTagTagResource,
 		NewVzOOBBrCPResource,
@@ -245,6 +253,8 @@ func (p *AciProvider) Resources(ctx context.Context) []func() resource.Resource 
 
 func (p *AciProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
+		NewFhsTrustCtrlPolDataSource,
+		NewFvAEPgDataSource,
 		NewFvCrtrnDataSource,
 		NewFvDnsAttrDataSource,
 		NewFvESgDataSource,
@@ -258,7 +268,11 @@ func (p *AciProvider) DataSources(ctx context.Context) []func() datasource.DataS
 		NewFvMacAttrDataSource,
 		NewFvRsConsDataSource,
 		NewFvRsConsIfDataSource,
+		NewFvRsDomAttDataSource,
+		NewFvRsFcPathAttDataSource,
 		NewFvRsIntraEpgDataSource,
+		NewFvRsNodeAttDataSource,
+		NewFvRsPathAttDataSource,
 		NewFvRsProtByDataSource,
 		NewFvRsProvDataSource,
 		NewFvRsSecInheritedDataSource,
@@ -277,6 +291,8 @@ func (p *AciProvider) DataSources(ctx context.Context) []func() datasource.DataS
 		NewNetflowRsMonitorToExporterDataSource,
 		NewPimRouteMapEntryDataSource,
 		NewPimRouteMapPolDataSource,
+		NewQosCustomPolDataSource,
+		NewQosDppPolDataSource,
 		NewTagAnnotationDataSource,
 		NewTagTagDataSource,
 		NewVzOOBBrCPDataSource,

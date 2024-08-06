@@ -20,10 +20,10 @@ resource_required:
 
 all:
   annotation: "annotation"
-  description: "description"
+  description: "description_1"
   loopback_address: "1.1.1.1"
   name: "node_sid_profile"
-  name_alias: "name_alias"
+  name_alias: "name_alias_1"
 
 children:
   annotations:
@@ -31,14 +31,14 @@ children:
       value: "value_1"
       
     - key: "key_1"
-      value: "value_2"
+      value: "test_value"
       
   tags:
     - key: "key_0"
       value: "value_1"
       
     - key: "key_1"
-      value: "value_2"
+      value: "test_value"
       
 parents:
   - class_name: "l3extLoopBackIfP"

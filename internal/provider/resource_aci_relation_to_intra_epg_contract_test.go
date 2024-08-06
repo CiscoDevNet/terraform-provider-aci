@@ -22,10 +22,10 @@ func TestAccResourceFvRsIntraEpgWithFvAEPg(t *testing.T) {
 				Config:             testConfigFvRsIntraEpgMinDependencyWithFvAEPgAllowExisting,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "contract_name", "test_tn_vz_br_cp_name"),
-					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test_2", "contract_name", "test_tn_vz_br_cp_name"),
-					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.allow_test", "contract_name", "test_tn_vz_br_cp_name"),
+					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.allow_test_2", "contract_name", "test_tn_vz_br_cp_name"),
+					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.allow_test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.allow_test_2", "annotation", "orchestrator:terraform"),
 				),
 			},
 		},
@@ -54,10 +54,10 @@ func TestAccResourceFvRsIntraEpgWithFvAEPg(t *testing.T) {
 				Config:             testConfigFvRsIntraEpgMinDependencyWithFvAEPgAllowExisting,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "contract_name", "test_tn_vz_br_cp_name"),
-					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test_2", "contract_name", "test_tn_vz_br_cp_name"),
-					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.allow_test", "contract_name", "test_tn_vz_br_cp_name"),
+					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.allow_test_2", "contract_name", "test_tn_vz_br_cp_name"),
+					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.allow_test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.allow_test_2", "annotation", "orchestrator:terraform"),
 				),
 			},
 		},
@@ -118,11 +118,11 @@ func TestAccResourceFvRsIntraEpgWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "annotations.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "tags.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "tags.1.value", "test_value"),
 				),
 			},
 			// Import testing with children
@@ -139,12 +139,12 @@ func TestAccResourceFvRsIntraEpgWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "annotations.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "annotations.#", "2"),
 					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "tags.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "tags.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "tags.#", "2"),
 				),
 			},
@@ -154,10 +154,10 @@ func TestAccResourceFvRsIntraEpgWithFvAEPg(t *testing.T) {
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "annotations.0.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "annotations.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "annotations.#", "1"),
 					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "tags.0.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "tags.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "tags.#", "1"),
 				),
 			},
@@ -184,10 +184,10 @@ func TestAccResourceFvRsIntraEpgWithFvESg(t *testing.T) {
 				Config:             testConfigFvRsIntraEpgMinDependencyWithFvESgAllowExisting,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "contract_name", "test_tn_vz_br_cp_name"),
-					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test_2", "contract_name", "test_tn_vz_br_cp_name"),
-					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.allow_test", "contract_name", "test_tn_vz_br_cp_name"),
+					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.allow_test_2", "contract_name", "test_tn_vz_br_cp_name"),
+					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.allow_test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.allow_test_2", "annotation", "orchestrator:terraform"),
 				),
 			},
 		},
@@ -216,10 +216,10 @@ func TestAccResourceFvRsIntraEpgWithFvESg(t *testing.T) {
 				Config:             testConfigFvRsIntraEpgMinDependencyWithFvESgAllowExisting,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "contract_name", "test_tn_vz_br_cp_name"),
-					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test_2", "contract_name", "test_tn_vz_br_cp_name"),
-					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.allow_test", "contract_name", "test_tn_vz_br_cp_name"),
+					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.allow_test_2", "contract_name", "test_tn_vz_br_cp_name"),
+					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.allow_test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.allow_test_2", "annotation", "orchestrator:terraform"),
 				),
 			},
 		},
@@ -280,11 +280,11 @@ func TestAccResourceFvRsIntraEpgWithFvESg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "annotations.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "tags.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "tags.1.value", "test_value"),
 				),
 			},
 			// Import testing with children
@@ -301,12 +301,12 @@ func TestAccResourceFvRsIntraEpgWithFvESg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "annotations.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "annotations.#", "2"),
 					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "tags.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "tags.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "tags.#", "2"),
 				),
 			},
@@ -316,10 +316,10 @@ func TestAccResourceFvRsIntraEpgWithFvESg(t *testing.T) {
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "annotations.0.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "annotations.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "annotations.#", "1"),
 					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "tags.0.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "tags.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "tags.#", "1"),
 				),
 			},
@@ -337,14 +337,14 @@ func TestAccResourceFvRsIntraEpgWithFvESg(t *testing.T) {
 }
 
 const testConfigFvRsIntraEpgMinDependencyWithFvAEPgAllowExisting = testConfigFvAEPgMinDependencyWithFvAp + `
-resource "aci_relation_to_intra_epg_contract" "test" {
+resource "aci_relation_to_intra_epg_contract" "allow_test" {
   parent_dn = aci_application_epg.test.id
   contract_name = "test_tn_vz_br_cp_name"
 }
-resource "aci_relation_to_intra_epg_contract" "test_2" {
+resource "aci_relation_to_intra_epg_contract" "allow_test_2" {
   parent_dn = aci_application_epg.test.id
   contract_name = "test_tn_vz_br_cp_name"
-  depends_on = [aci_relation_to_intra_epg_contract.test]
+  depends_on = [aci_relation_to_intra_epg_contract.allow_test]
 }
 `
 
@@ -381,7 +381,7 @@ resource "aci_relation_to_intra_epg_contract" "test" {
 	},
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
   tags = [
@@ -391,7 +391,7 @@ resource "aci_relation_to_intra_epg_contract" "test" {
 	},
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
 }
@@ -411,13 +411,13 @@ resource "aci_relation_to_intra_epg_contract" "test" {
   annotations = [ 
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
   tags = [ 
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
 }
@@ -433,14 +433,14 @@ resource "aci_relation_to_intra_epg_contract" "test" {
 `
 
 const testConfigFvRsIntraEpgMinDependencyWithFvESgAllowExisting = testConfigFvESgMinDependencyWithFvAp + `
-resource "aci_relation_to_intra_epg_contract" "test" {
+resource "aci_relation_to_intra_epg_contract" "allow_test" {
   parent_dn = aci_endpoint_security_group.test.id
   contract_name = "test_tn_vz_br_cp_name"
 }
-resource "aci_relation_to_intra_epg_contract" "test_2" {
+resource "aci_relation_to_intra_epg_contract" "allow_test_2" {
   parent_dn = aci_endpoint_security_group.test.id
   contract_name = "test_tn_vz_br_cp_name"
-  depends_on = [aci_relation_to_intra_epg_contract.test]
+  depends_on = [aci_relation_to_intra_epg_contract.allow_test]
 }
 `
 
@@ -477,7 +477,7 @@ resource "aci_relation_to_intra_epg_contract" "test" {
 	},
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
   tags = [
@@ -487,7 +487,7 @@ resource "aci_relation_to_intra_epg_contract" "test" {
 	},
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
 }
@@ -507,13 +507,13 @@ resource "aci_relation_to_intra_epg_contract" "test" {
   annotations = [ 
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
   tags = [ 
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
 }

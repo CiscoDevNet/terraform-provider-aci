@@ -49,12 +49,12 @@ The configuration snippet below shows all possible attributes of the EPG uSeg DN
 resource "aci_epg_useg_dns_attribute" "full_example_epg_useg_block_statement" {
   parent_dn   = aci_epg_useg_block_statement.example.id
   annotation  = "annotation"
-  description = "description"
-  filter      = "filter"
+  description = "description_1"
+  filter      = "filter_1"
   name        = "dns_attribute"
-  name_alias  = "name_alias"
-  owner_key   = "owner_key"
-  owner_tag   = "owner_tag"
+  name_alias  = "name_alias_1"
+  owner_key   = "owner_key_1"
+  owner_tag   = "owner_tag_1"
   annotations = [
     {
       key   = "key_0"

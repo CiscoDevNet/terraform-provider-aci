@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_epg_useg_vm_attribute"
 sidebar_current: "docs-aci-data-source-aci_epg_useg_vm_attribute"
 description: |-
-  Data source for EPG uSeg VM Attribute
+  Data source for ACI EPG uSeg VM Attribute
 ---
 
 # aci_epg_useg_vm_attribute #
 
-Data source for EPG uSeg VM Attribute
+Data source for ACI EPG uSeg VM Attribute
 
 ## API Information ##
 

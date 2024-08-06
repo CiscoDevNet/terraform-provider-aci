@@ -1,9 +1,9 @@
 
 resource "aci_external_management_network_instance_profile" "full_example" {
   annotation  = "annotation"
-  description = "description"
+  description = "description_1"
   name        = "test_name"
-  name_alias  = "name_alias"
+  name_alias  = "name_alias_1"
   priority    = "level1"
   relation_to_consumed_out_of_band_contracts = [
     {

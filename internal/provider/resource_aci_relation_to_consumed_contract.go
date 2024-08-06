@@ -14,6 +14,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -52,16 +53,52 @@ type FvRsConsResourceModel struct {
 	TagTag        types.Set    `tfsdk:"tags"`
 }
 
+func getEmptyFvRsConsResourceModel() *FvRsConsResourceModel {
+	return &FvRsConsResourceModel{
+		Id:           basetypes.NewStringNull(),
+		ParentDn:     basetypes.NewStringNull(),
+		Annotation:   basetypes.NewStringNull(),
+		Prio:         basetypes.NewStringNull(),
+		TnVzBrCPName: basetypes.NewStringNull(),
+		TagAnnotation: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"key":   types.StringType,
+				"value": types.StringType,
+			},
+		}),
+		TagTag: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"key":   types.StringType,
+				"value": types.StringType,
+			},
+		}),
+	}
+}
+
 // TagAnnotationFvRsConsResourceModel describes the resource data model for the children without relation ships.
 type TagAnnotationFvRsConsResourceModel struct {
 	Key   types.String `tfsdk:"key"`
 	Value types.String `tfsdk:"value"`
 }
 
+func getEmptyTagAnnotationFvRsConsResourceModel() TagAnnotationFvRsConsResourceModel {
+	return TagAnnotationFvRsConsResourceModel{
+		Key:   basetypes.NewStringNull(),
+		Value: basetypes.NewStringNull(),
+	}
+}
+
 // TagTagFvRsConsResourceModel describes the resource data model for the children without relation ships.
 type TagTagFvRsConsResourceModel struct {
 	Key   types.String `tfsdk:"key"`
 	Value types.String `tfsdk:"value"`
+}
+
+func getEmptyTagTagFvRsConsResourceModel() TagTagFvRsConsResourceModel {
+	return TagTagFvRsConsResourceModel{
+		Key:   basetypes.NewStringNull(),
+		Value: basetypes.NewStringNull(),
+	}
 }
 
 type FvRsConsIdentifier struct {
@@ -126,6 +163,7 @@ func (r *FvRsConsResource) Schema(ctx context.Context, req resource.SchemaReques
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
 				MarkdownDescription: `The annotation of the Relation To Consumed Contract object.`,
@@ -135,6 +173,7 @@ func (r *FvRsConsResource) Schema(ctx context.Context, req resource.SchemaReques
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
 					stringvalidator.OneOf("level1", "level2", "level3", "level4", "level5", "level6", "unspecified"),
@@ -145,6 +184,7 @@ func (r *FvRsConsResource) Schema(ctx context.Context, req resource.SchemaReques
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
 				MarkdownDescription: `The consumer contract name.`,
@@ -387,6 +427,8 @@ func (r *FvRsConsResource) ImportState(ctx context.Context, req resource.ImportS
 func getAndSetFvRsConsAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvRsConsResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "fvRsCons,tagAnnotation,tagTag"), "GET", nil)
 
+	*data = *getEmptyFvRsConsResourceModel()
+
 	if diags.HasError() {
 		return
 	}
@@ -418,7 +460,7 @@ func getAndSetFvRsConsAttributes(ctx context.Context, diags *diag.Diagnostics, c
 					for childClassName, childClassDetails := range child.(map[string]interface{}) {
 						childAttributes := childClassDetails.(map[string]interface{})["attributes"].(map[string]interface{})
 						if childClassName == "tagAnnotation" {
-							TagAnnotationFvRsCons := TagAnnotationFvRsConsResourceModel{}
+							TagAnnotationFvRsCons := getEmptyTagAnnotationFvRsConsResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "key" {
 									TagAnnotationFvRsCons.Key = basetypes.NewStringValue(childAttributeValue.(string))
@@ -430,7 +472,7 @@ func getAndSetFvRsConsAttributes(ctx context.Context, diags *diag.Diagnostics, c
 							TagAnnotationFvRsConsList = append(TagAnnotationFvRsConsList, TagAnnotationFvRsCons)
 						}
 						if childClassName == "tagTag" {
-							TagTagFvRsCons := TagTagFvRsConsResourceModel{}
+							TagTagFvRsCons := getEmptyTagTagFvRsConsResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "key" {
 									TagTagFvRsCons.Key = basetypes.NewStringValue(childAttributeValue.(string))
@@ -497,10 +539,10 @@ func getFvRsConsTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diag
 		tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
 		for _, tagAnnotation := range tagAnnotationPlan {
 			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagAnnotation.Key.IsUnknown() {
+			if !tagAnnotation.Key.IsUnknown() && !tagAnnotation.Key.IsNull() {
 				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
 			}
-			if !tagAnnotation.Value.IsUnknown() {
+			if !tagAnnotation.Value.IsUnknown() && !tagAnnotation.Value.IsNull() {
 				childMap["attributes"]["value"] = tagAnnotation.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
@@ -536,10 +578,10 @@ func getFvRsConsTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics
 		tagTagIdentifiers := []TagTagIdentifier{}
 		for _, tagTag := range tagTagPlan {
 			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagTag.Key.IsUnknown() {
+			if !tagTag.Key.IsUnknown() && !tagTag.Key.IsNull() {
 				childMap["attributes"]["key"] = tagTag.Key.ValueString()
 			}
-			if !tagTag.Value.IsUnknown() {
+			if !tagTag.Value.IsUnknown() && !tagTag.Value.IsNull() {
 				childMap["attributes"]["value"] = tagTag.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})

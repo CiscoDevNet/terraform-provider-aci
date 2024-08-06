@@ -45,6 +45,15 @@ type TagAnnotationResourceModel struct {
 	Value    types.String `tfsdk:"value"`
 }
 
+func getEmptyTagAnnotationResourceModel() *TagAnnotationResourceModel {
+	return &TagAnnotationResourceModel{
+		Id:       basetypes.NewStringNull(),
+		ParentDn: basetypes.NewStringNull(),
+		Key:      basetypes.NewStringNull(),
+		Value:    basetypes.NewStringNull(),
+	}
+}
+
 type TagAnnotationIdentifier struct {
 	Key types.String
 }
@@ -106,6 +115,7 @@ func (r *TagAnnotationResource) Schema(ctx context.Context, req resource.SchemaR
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
 				MarkdownDescription: `The key used to uniquely identify this configuration object.`,
@@ -114,6 +124,7 @@ func (r *TagAnnotationResource) Schema(ctx context.Context, req resource.SchemaR
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The value of the property.`,
 			},
@@ -274,6 +285,8 @@ func (r *TagAnnotationResource) ImportState(ctx context.Context, req resource.Im
 
 func getAndSetTagAnnotationAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *TagAnnotationResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "GET", nil)
+
+	*data = *getEmptyTagAnnotationResourceModel()
 
 	if diags.HasError() {
 		return

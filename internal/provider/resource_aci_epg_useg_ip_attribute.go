@@ -14,6 +14,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -57,16 +58,57 @@ type FvIpAttrResourceModel struct {
 	TagTag        types.Set    `tfsdk:"tags"`
 }
 
+func getEmptyFvIpAttrResourceModel() *FvIpAttrResourceModel {
+	return &FvIpAttrResourceModel{
+		Id:          basetypes.NewStringNull(),
+		ParentDn:    basetypes.NewStringNull(),
+		Annotation:  basetypes.NewStringNull(),
+		Descr:       basetypes.NewStringNull(),
+		Ip:          basetypes.NewStringNull(),
+		Name:        basetypes.NewStringNull(),
+		NameAlias:   basetypes.NewStringNull(),
+		OwnerKey:    basetypes.NewStringNull(),
+		OwnerTag:    basetypes.NewStringNull(),
+		UsefvSubnet: basetypes.NewStringNull(),
+		TagAnnotation: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"key":   types.StringType,
+				"value": types.StringType,
+			},
+		}),
+		TagTag: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"key":   types.StringType,
+				"value": types.StringType,
+			},
+		}),
+	}
+}
+
 // TagAnnotationFvIpAttrResourceModel describes the resource data model for the children without relation ships.
 type TagAnnotationFvIpAttrResourceModel struct {
 	Key   types.String `tfsdk:"key"`
 	Value types.String `tfsdk:"value"`
 }
 
+func getEmptyTagAnnotationFvIpAttrResourceModel() TagAnnotationFvIpAttrResourceModel {
+	return TagAnnotationFvIpAttrResourceModel{
+		Key:   basetypes.NewStringNull(),
+		Value: basetypes.NewStringNull(),
+	}
+}
+
 // TagTagFvIpAttrResourceModel describes the resource data model for the children without relation ships.
 type TagTagFvIpAttrResourceModel struct {
 	Key   types.String `tfsdk:"key"`
 	Value types.String `tfsdk:"value"`
+}
+
+func getEmptyTagTagFvIpAttrResourceModel() TagTagFvIpAttrResourceModel {
+	return TagTagFvIpAttrResourceModel{
+		Key:   basetypes.NewStringNull(),
+		Value: basetypes.NewStringNull(),
+	}
 }
 
 type FvIpAttrIdentifier struct {
@@ -131,6 +173,7 @@ func (r *FvIpAttrResource) Schema(ctx context.Context, req resource.SchemaReques
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
 				MarkdownDescription: `The annotation of the EPG uSeg IP Attribute object.`,
@@ -140,6 +183,7 @@ func (r *FvIpAttrResource) Schema(ctx context.Context, req resource.SchemaReques
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The description of the EPG uSeg IP Attribute object.`,
 			},
@@ -147,6 +191,7 @@ func (r *FvIpAttrResource) Schema(ctx context.Context, req resource.SchemaReques
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The device IP address of the EPG uSeg IP Attribute object.`,
 			},
@@ -154,6 +199,7 @@ func (r *FvIpAttrResource) Schema(ctx context.Context, req resource.SchemaReques
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
 				MarkdownDescription: `The name of the EPG uSeg IP Attribute object.`,
@@ -163,6 +209,7 @@ func (r *FvIpAttrResource) Schema(ctx context.Context, req resource.SchemaReques
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The name alias of the EPG uSeg IP Attribute object.`,
 			},
@@ -171,6 +218,7 @@ func (r *FvIpAttrResource) Schema(ctx context.Context, req resource.SchemaReques
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The key for enabling clients to own their data for entity correlation.`,
 			},
@@ -179,6 +227,7 @@ func (r *FvIpAttrResource) Schema(ctx context.Context, req resource.SchemaReques
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
 			},
@@ -187,6 +236,7 @@ func (r *FvIpAttrResource) Schema(ctx context.Context, req resource.SchemaReques
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
 					stringvalidator.OneOf("no", "yes"),
@@ -431,6 +481,8 @@ func (r *FvIpAttrResource) ImportState(ctx context.Context, req resource.ImportS
 func getAndSetFvIpAttrAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvIpAttrResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "fvIpAttr,tagAnnotation,tagTag"), "GET", nil)
 
+	*data = *getEmptyFvIpAttrResourceModel()
+
 	if diags.HasError() {
 		return
 	}
@@ -477,7 +529,7 @@ func getAndSetFvIpAttrAttributes(ctx context.Context, diags *diag.Diagnostics, c
 					for childClassName, childClassDetails := range child.(map[string]interface{}) {
 						childAttributes := childClassDetails.(map[string]interface{})["attributes"].(map[string]interface{})
 						if childClassName == "tagAnnotation" {
-							TagAnnotationFvIpAttr := TagAnnotationFvIpAttrResourceModel{}
+							TagAnnotationFvIpAttr := getEmptyTagAnnotationFvIpAttrResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "key" {
 									TagAnnotationFvIpAttr.Key = basetypes.NewStringValue(childAttributeValue.(string))
@@ -489,7 +541,7 @@ func getAndSetFvIpAttrAttributes(ctx context.Context, diags *diag.Diagnostics, c
 							TagAnnotationFvIpAttrList = append(TagAnnotationFvIpAttrList, TagAnnotationFvIpAttr)
 						}
 						if childClassName == "tagTag" {
-							TagTagFvIpAttr := TagTagFvIpAttrResourceModel{}
+							TagTagFvIpAttr := getEmptyTagTagFvIpAttrResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "key" {
 									TagTagFvIpAttr.Key = basetypes.NewStringValue(childAttributeValue.(string))
@@ -556,10 +608,10 @@ func getFvIpAttrTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diag
 		tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
 		for _, tagAnnotation := range tagAnnotationPlan {
 			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagAnnotation.Key.IsUnknown() {
+			if !tagAnnotation.Key.IsUnknown() && !tagAnnotation.Key.IsNull() {
 				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
 			}
-			if !tagAnnotation.Value.IsUnknown() {
+			if !tagAnnotation.Value.IsUnknown() && !tagAnnotation.Value.IsNull() {
 				childMap["attributes"]["value"] = tagAnnotation.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
@@ -595,10 +647,10 @@ func getFvIpAttrTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics
 		tagTagIdentifiers := []TagTagIdentifier{}
 		for _, tagTag := range tagTagPlan {
 			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagTag.Key.IsUnknown() {
+			if !tagTag.Key.IsUnknown() && !tagTag.Key.IsNull() {
 				childMap["attributes"]["key"] = tagTag.Key.ValueString()
 			}
-			if !tagTag.Value.IsUnknown() {
+			if !tagTag.Value.IsUnknown() && !tagTag.Value.IsNull() {
 				childMap["attributes"]["value"] = tagTag.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})

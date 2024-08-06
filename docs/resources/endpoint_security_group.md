@@ -49,11 +49,11 @@ The configuration snippet below shows all possible attributes of the Endpoint Se
 resource "aci_endpoint_security_group" "full_example_application_profile" {
   parent_dn              = aci_application_profile.example.id
   annotation             = "annotation"
-  description            = "description"
-  exception_tag          = "exception_tag"
+  description            = "description_1"
+  exception_tag          = "exception_tag_1"
   match_criteria         = "All"
   name                   = "test_name"
-  name_alias             = "name_alias"
+  name_alias             = "name_alias_1"
   intra_esg_isolation    = "enforced"
   preferred_group_member = "exclude"
   admin_state            = "no"
@@ -94,7 +94,7 @@ resource "aci_endpoint_security_group" "full_example_application_profile" {
   relation_to_contract_masters = [
     {
       annotation = "annotation_1"
-      target_dn  = aci_endpoint_security_group.example_2.id
+      target_dn  = aci_endpoint_security_group.test_endpoint_security_group_0.id
     }
   ]
   annotations = [

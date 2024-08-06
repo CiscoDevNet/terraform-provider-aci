@@ -21,8 +21,8 @@ func TestAccDataSourceMgmtInstP(t *testing.T) {
 				Config: testConfigMgmtInstPDataSource,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("data.aci_external_management_network_instance_profile.test", "annotation", "annotation"),
-					resource.TestCheckResourceAttr("data.aci_external_management_network_instance_profile.test", "description", "description"),
-					resource.TestCheckResourceAttr("data.aci_external_management_network_instance_profile.test", "name_alias", "name_alias"),
+					resource.TestCheckResourceAttr("data.aci_external_management_network_instance_profile.test", "description", "description_1"),
+					resource.TestCheckResourceAttr("data.aci_external_management_network_instance_profile.test", "name_alias", "name_alias_1"),
 					resource.TestCheckResourceAttr("data.aci_external_management_network_instance_profile.test", "priority", "level1"),
 				),
 			},
@@ -44,6 +44,5 @@ data "aci_external_management_network_instance_profile" "test" {
 const testConfigMgmtInstPNotExisting = testConfigMgmtInstPAll + `
 data "aci_external_management_network_instance_profile" "test_non_existing" {
   name = "non_existing_name"
-  depends_on = [aci_external_management_network_instance_profile.test]
 }
 `

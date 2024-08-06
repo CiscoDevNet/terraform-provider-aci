@@ -23,10 +23,10 @@ resource_required:
 
 all:
   annotation: "annotation"
-  description: "description"
-  exception_tag: "exception_tag"
+  description: "description_1"
+  exception_tag: "exception_tag_1"
   match_criteria: "All"
-  name_alias: "name_alias"
+  name_alias: "name_alias_1"
   intra_esg_isolation: "enforced"
   preferred_group_member: "exclude"
   admin_state: "no"
@@ -85,14 +85,14 @@ children:
       value: "value_1"
       
     - key: "key_1"
-      value: "value_2"
+      value: "test_value"
       
   tags:
     - key: "key_0"
       value: "value_1"
       
     - key: "key_1"
-      value: "value_2"
+      value: "test_value"
       
 parents:
   - class_name: "fvAp"
@@ -102,21 +102,23 @@ parents:
 child_targets:
   - class_name: "fvESg"
     target_dn: "uni/tn-test_tenant/ap-test_ap/esg-esg_0"
-    target_dn_ref: "aci_endpoint_security_group.test_0.id"
+    relation_resource_name: "contract_master"
+    static: false
+    target_dn_ref: "aci_endpoint_security_group.test_endpoint_security_group_0.id"
     parent_dependency: "fvAp"
     parent_dependency_dn_ref: "aci_application_profile.test.id"
     target_resource_name: "endpoint_security_group"
-    relation_resource_name: "contract_master"
     parent_dn_key: "application_profile_dn"
     properties:
         name: "esg_0"
   - class_name: "fvESg"
     target_dn: "uni/tn-test_tenant/ap-test_ap/esg-esg_1"
-    target_dn_ref: "aci_endpoint_security_group.test_1.id"
+    relation_resource_name: "contract_master"
+    static: false
+    target_dn_ref: "aci_endpoint_security_group.test_endpoint_security_group_1.id"
     parent_dependency: "fvAp"
     parent_dependency_dn_ref: "aci_application_profile.test.id"
     target_resource_name: "endpoint_security_group"
-    relation_resource_name: "contract_master"
     parent_dn_key: "application_profile_dn"
     properties:
         name: "esg_1"

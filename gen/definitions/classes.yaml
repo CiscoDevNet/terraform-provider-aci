@@ -8,8 +8,128 @@ global:
 fvTenant:
   resource_name: "tenant"
 
+fvBD:
+  resource_name: "bridge_domain"
+
 fvAEPg:
   resource_name: "application_epg"
+  ui_locations:
+    - "Tenants -> Application Profiles -> Application EPGs"
+  sub_category: "Application Management"
+  migration_version: 1
+  migration_blocks:
+    fvAEPg:
+      application_profile_dn: parent_dn
+      match_t: match_criteria
+      pc_enf_pref: intra_epg_isolation
+      pref_gr_memb: preferred_group_member
+      fwd_ctrl: forwarding_control
+      has_mcast_source: has_multicast_source
+      is_attr_based_epg: useg_epg
+      prio: priority
+      shutdown: admin_state
+      flood_on_encap: flood_in_encapsulation
+      exception_tag: contract_exception_tag
+    fvRsBd:
+      relation_fv_rs_bd: relation_to_bridge_domain.bridge_domain_name
+    fvRsCustQosPol:
+      relation_fv_rs_cust_qos_pol: relation_to_custom_qos_policy.custom_qos_policy_name
+    fvRsFcPathAtt:
+      relation_fv_rs_fc_path_att: relation_to_fibre_channel_paths.fibre_channel_path_name
+    fvRsProv:
+      relation_fv_rs_prov: relation_to_provided_contracts.contract_name
+    fvRsConsIf:
+      relation_fv_rs_cons_if: relation_to_imported_contracts.imported_contract_name
+    fvRsSecInherited:
+      relation_fv_rs_sec_inherited: relation_to_contract_masters.target_dn
+    fvRsDppPol:
+      relation_fv_rs_dpp_pol: relation_to_data_plane_policing_policy.data_plane_policing_policy_name
+    fvRsCons:
+      relation_fv_rs_cons: relation_to_consumed_contracts.contract_name
+    fvRsTrustCtrl:
+      relation_fv_rs_trust_ctrl: relation_to_trust_control_policy.trust_control_policy_name
+    fvRsProtBy:
+      relation_fv_rs_prot_by: relation_to_taboo_contracts.taboo_contract_name
+    fvRsAEPgMonPol:
+      relation_fv_rs_aepg_mon_pol: relation_to_application_epg_monitoring_policy.monitoring_policy_name
+    fvRsIntraEpg:
+      relation_fv_rs_intra_epg: relation_to_intra_epg_contracts.contract_name
+    fvRsPathAtt:
+      relation_fv_rs_path_att: relation_to_static_paths.target_dn
+    fvRsNodeAtt:
+      relation_fv_rs_node_att: relation_to_static_leafs
+      node_dn: relation_to_static_leafs.target_dn
+      encap:  relation_to_static_leafs.encapsulation
+      description: relation_to_static_leafs.description
+      deployment_immediacy: relation_to_static_leafs.deployment_immediacy
+      mode: relation_to_static_leafs.mode
+
+fvRsAEPgMonPol:
+  resource_name: "relation_to_application_epg_monitoring_policy"
+
+fvRsBd:
+  resource_name: "relation_to_bridge_domain"
+
+fvRsCustQosPol:
+  resource_name: "relation_to_custom_qos_policy"
+
+fvRsDppPol:
+  resource_name: "relation_to_data_plane_policing_policy"
+
+fvRsTrustCtrl:
+  resource_name: "relation_to_trust_control_policy"
+
+fvRsFcPathAtt:
+  resource_name: "relation_to_fibre_channel_path"
+  ui_locations:
+    - "Tenants -> Application Profiles -> Application EPGs -> Fibre Channel (Paths)"
+  sub_category: "Application Management"
+
+fvRsNodeAtt:
+  resource_name: "relation_to_static_leaf"
+  ui_locations:
+    - "Tenants -> Application Profiles -> Application EPGs -> Static Leafs"
+  sub_category: "Application Management"
+
+fvRsDomAtt:
+  resource_name: "relation_to_domain"
+  ui_locations:
+    - "Tenants -> Application Profiles -> Application EPGs -> Domains (VMs and Bare-Metals)"
+  sub_category: "Application Management"
+  multi_relationship_class: true
+  relationship_classes:
+    - "vmmDomP"
+    - "physDomP"
+    - "fcDomP"
+    - "l2extDomP"
+
+fvRsPathAtt:
+  resource_name: "relation_to_static_path"
+  ui_locations:
+    - "Tenants -> Application Profiles -> Application EPGs -> Static Ports"
+  sub_category: "Application Management"
+
+qosCustomPol:
+  resource_name: "custom_qos_policy"
+  ui_locations:
+    - "Tenants -> Policies -> Protocol -> Custom QoS"
+  sub_category: "Tenant Policies"
+
+fhsTrustCtrlPol:
+  ui_locations:
+    - "Tenants -> Policies -> Protocol -> First Hop Security -> Trust Control Policies"
+  sub_category: "Tenant Policies"
+
+qosDppPol:
+  ui_locations:
+    - "Tenants -> Policies -> Protocol -> Data Plane Policing"
+  sub_category: "Tenant Policies"
+
+monEPGPol:
+  resource_name: "monitoring_policy"
+
+vmmDomP:
+  resource_name: "vmm_domain"
 
 fvAp:
   resource_name: "application_profile"
@@ -212,10 +332,6 @@ netflowMonitorPol:
 
 netflowRsMonitorToRecord:
   resource_name: "relation_to_netflow_record"
-  ui_locations:
-    - "Tenants -> Policies -> NetFlow -> NetFlow Monitors"
-    - "Fabric -> Access Policies -> Policies -> Interface -> NetFlow -> NetFlow Monitors"
-  sub_category: "Tenant Policies"
 
 netflowRsMonitorToExporter:
   resource_name: "relation_to_netflow_exporter"
@@ -254,6 +370,7 @@ fvESg:
   sub_category: "Application Management"
   exclude_children:
     - "fvRsProtBy"
+    - "fvRsCustQosPol"
   migration_version: 1
   migration_blocks:
     fvESg:
@@ -448,3 +565,5 @@ fvIpAttr:
     - "uni/tn-{name}/ap-{name}/epg-{name}/crtrn/ipattr-{name}"
   contained_by:
     - "fvCrtrn"
+physDomP:
+  resource_name: "physical_domain"

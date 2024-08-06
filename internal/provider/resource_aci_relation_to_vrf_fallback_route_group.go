@@ -13,6 +13,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -49,16 +50,51 @@ type L3extRsOutToFBRGroupResourceModel struct {
 	TagTag        types.Set    `tfsdk:"tags"`
 }
 
+func getEmptyL3extRsOutToFBRGroupResourceModel() *L3extRsOutToFBRGroupResourceModel {
+	return &L3extRsOutToFBRGroupResourceModel{
+		Id:         basetypes.NewStringNull(),
+		ParentDn:   basetypes.NewStringNull(),
+		Annotation: basetypes.NewStringNull(),
+		TDn:        basetypes.NewStringNull(),
+		TagAnnotation: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"key":   types.StringType,
+				"value": types.StringType,
+			},
+		}),
+		TagTag: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"key":   types.StringType,
+				"value": types.StringType,
+			},
+		}),
+	}
+}
+
 // TagAnnotationL3extRsOutToFBRGroupResourceModel describes the resource data model for the children without relation ships.
 type TagAnnotationL3extRsOutToFBRGroupResourceModel struct {
 	Key   types.String `tfsdk:"key"`
 	Value types.String `tfsdk:"value"`
 }
 
+func getEmptyTagAnnotationL3extRsOutToFBRGroupResourceModel() TagAnnotationL3extRsOutToFBRGroupResourceModel {
+	return TagAnnotationL3extRsOutToFBRGroupResourceModel{
+		Key:   basetypes.NewStringNull(),
+		Value: basetypes.NewStringNull(),
+	}
+}
+
 // TagTagL3extRsOutToFBRGroupResourceModel describes the resource data model for the children without relation ships.
 type TagTagL3extRsOutToFBRGroupResourceModel struct {
 	Key   types.String `tfsdk:"key"`
 	Value types.String `tfsdk:"value"`
+}
+
+func getEmptyTagTagL3extRsOutToFBRGroupResourceModel() TagTagL3extRsOutToFBRGroupResourceModel {
+	return TagTagL3extRsOutToFBRGroupResourceModel{
+		Key:   basetypes.NewStringNull(),
+		Value: basetypes.NewStringNull(),
+	}
 }
 
 type L3extRsOutToFBRGroupIdentifier struct {
@@ -123,6 +159,7 @@ func (r *L3extRsOutToFBRGroupResource) Schema(ctx context.Context, req resource.
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
 				MarkdownDescription: `The annotation of the Relation To VRF Fallback Route Group object.`,
@@ -131,6 +168,7 @@ func (r *L3extRsOutToFBRGroupResource) Schema(ctx context.Context, req resource.
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
 				MarkdownDescription: `The distinguished name of the VRF Fallback Route Group object.`,
@@ -373,6 +411,8 @@ func (r *L3extRsOutToFBRGroupResource) ImportState(ctx context.Context, req reso
 func getAndSetL3extRsOutToFBRGroupAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *L3extRsOutToFBRGroupResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "l3extRsOutToFBRGroup,tagAnnotation,tagTag"), "GET", nil)
 
+	*data = *getEmptyL3extRsOutToFBRGroupResourceModel()
+
 	if diags.HasError() {
 		return
 	}
@@ -401,7 +441,7 @@ func getAndSetL3extRsOutToFBRGroupAttributes(ctx context.Context, diags *diag.Di
 					for childClassName, childClassDetails := range child.(map[string]interface{}) {
 						childAttributes := childClassDetails.(map[string]interface{})["attributes"].(map[string]interface{})
 						if childClassName == "tagAnnotation" {
-							TagAnnotationL3extRsOutToFBRGroup := TagAnnotationL3extRsOutToFBRGroupResourceModel{}
+							TagAnnotationL3extRsOutToFBRGroup := getEmptyTagAnnotationL3extRsOutToFBRGroupResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "key" {
 									TagAnnotationL3extRsOutToFBRGroup.Key = basetypes.NewStringValue(childAttributeValue.(string))
@@ -413,7 +453,7 @@ func getAndSetL3extRsOutToFBRGroupAttributes(ctx context.Context, diags *diag.Di
 							TagAnnotationL3extRsOutToFBRGroupList = append(TagAnnotationL3extRsOutToFBRGroupList, TagAnnotationL3extRsOutToFBRGroup)
 						}
 						if childClassName == "tagTag" {
-							TagTagL3extRsOutToFBRGroup := TagTagL3extRsOutToFBRGroupResourceModel{}
+							TagTagL3extRsOutToFBRGroup := getEmptyTagTagL3extRsOutToFBRGroupResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "key" {
 									TagTagL3extRsOutToFBRGroup.Key = basetypes.NewStringValue(childAttributeValue.(string))
@@ -480,10 +520,10 @@ func getL3extRsOutToFBRGroupTagAnnotationChildPayloads(ctx context.Context, diag
 		tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
 		for _, tagAnnotation := range tagAnnotationPlan {
 			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagAnnotation.Key.IsUnknown() {
+			if !tagAnnotation.Key.IsUnknown() && !tagAnnotation.Key.IsNull() {
 				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
 			}
-			if !tagAnnotation.Value.IsUnknown() {
+			if !tagAnnotation.Value.IsUnknown() && !tagAnnotation.Value.IsNull() {
 				childMap["attributes"]["value"] = tagAnnotation.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
@@ -519,10 +559,10 @@ func getL3extRsOutToFBRGroupTagTagChildPayloads(ctx context.Context, diags *diag
 		tagTagIdentifiers := []TagTagIdentifier{}
 		for _, tagTag := range tagTagPlan {
 			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagTag.Key.IsUnknown() {
+			if !tagTag.Key.IsUnknown() && !tagTag.Key.IsNull() {
 				childMap["attributes"]["key"] = tagTag.Key.ValueString()
 			}
-			if !tagTag.Value.IsUnknown() {
+			if !tagTag.Value.IsUnknown() && !tagTag.Value.IsNull() {
 				childMap["attributes"]["value"] = tagTag.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})

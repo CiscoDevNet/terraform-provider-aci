@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_endpoint_tag_ip"
 sidebar_current: "docs-aci-data-source-aci_endpoint_tag_ip"
 description: |-
-  Data source for Endpoint Tag IP
+  Data source for ACI Endpoint Tag IP
 ---
 
 # aci_endpoint_tag_ip #
 
-Data source for Endpoint Tag IP
+Data source for ACI Endpoint Tag IP
 
 ## API Information ##
 

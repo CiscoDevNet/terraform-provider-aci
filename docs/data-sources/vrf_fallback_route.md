@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_vrf_fallback_route"
 sidebar_current: "docs-aci-data-source-aci_vrf_fallback_route"
 description: |-
-  Data source for VRF Fallback Route
+  Data source for ACI VRF Fallback Route
 ---
 
 # aci_vrf_fallback_route #
 
-Data source for VRF Fallback Route
+Data source for ACI VRF Fallback Route
 
 ## API Information ##
 

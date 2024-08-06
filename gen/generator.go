@@ -93,10 +93,12 @@ var templateFuncs = template.FuncMap{
 	"getDefaultValues":                  GetDefaultValues,
 	"fromInterfacesToString":            FromInterfacesToString,
 	"containsNoneAttributeValue":        ContainsNoneAttributeValue,
+	"legacyAttributeContainsNoneValue":  LegacyAttributeContainsNoneAttributeValue,
 	"definedInMap":                      DefinedInMap,
 	"getValueFromMap":                   GetValueFromMap,
 	"add":                               func(val1, val2 int) int { return val1 + val2 },
 	"substract":                         func(val1, val2 int) int { return val1 - val2 },
+	"mod":                               func(val1, val2 int) int { return val1 % val2 },
 	"isInterfaceSlice":                  IsInterfaceSlice,
 	"replace":                           Replace,
 	"lookupTestValue":                   LookupTestValue,
@@ -119,6 +121,7 @@ var templateFuncs = template.FuncMap{
 	"getChildAttributesFromBlocks":      GetChildAttributesFromBlocks,
 	"getNewChildAttributes":             GetNewChildAttributes,
 	"containsRequired":                  ContainsRequired,
+	"hasPrefix":                         strings.HasPrefix,
 }
 
 func ContainsRequired(properties map[string]Property) bool {
@@ -158,24 +161,15 @@ func IsLegacyAttribute(name string, legacyAttributes map[string]LegacyAttribute)
 }
 
 func IsLegacyChild(child string, children []string) bool {
-	if slices.Contains(children, child) {
-		return true
-	}
-	return false
+	return slices.Contains(children, child)
 }
 
 func IsNewAttributeStringType(attributeName string) bool {
-	if len(strings.Split(attributeName, ".")) == 1 {
-		return true
-	}
-	return false
+	return len(strings.Split(attributeName, ".")) == 1
 }
 
 func IsNewNamedClassAttribute(attributeName string) bool {
-	if strings.HasSuffix(attributeName, "_name") {
-		return true
-	}
-	return false
+	return strings.HasSuffix(attributeName, "_name")
 }
 
 func GetConflictingAttributeName(attributeName string) string {
@@ -249,10 +243,10 @@ func GetNewChildAttributes(legacyAttributes map[string]LegacyAttribute, properti
 var labels = []string{"dns_provider", "filter_entry"}
 var duplicateLabels = []string{}
 var resourceNames = map[string]string{}
-var rnPrefix = map[string]string{}
 var targetRelationalPropertyClasses = map[string]string{}
 var alwaysIncludeChildren = []string{"tag:Annotation", "tag:Tag"}
 var excludeChildResourceNamesFromDocs = []string{"", "annotation", "tag"}
+var classesWithoutResource = []string{}
 
 func GetResourceNameAsDescription(s string, definitions Definitions) string {
 	resourceName := cases.Title(language.English).String(strings.ReplaceAll(s, "_", " "))
@@ -275,10 +269,7 @@ func Decapitalize(s string) string {
 }
 
 func ContainsString(s, sub string) bool {
-	if strings.Contains(s, sub) {
-		return true
-	}
-	return false
+	return strings.Contains(s, sub)
 }
 
 // Reused from https://github.com/buxizhizhoum/inflection/blob/master/inflection.go#L8 to avoid importing the whole package
@@ -297,7 +288,7 @@ func ValidatorString(stringList []string) string {
 
 func ListToString(stringList []string) string {
 	sort.Strings(stringList)
-	return fmt.Sprintf("%s", strings.Join(stringList, ","))
+	return strings.Join(stringList, ",")
 }
 
 // Creates a parent dn value for the resources and datasources in the example files
@@ -349,6 +340,7 @@ func LookupTestValue(classPkgName, propertyName string, testVars map[string]inte
 // Retrieves a value for a attribute of a aci class when defined in the testVars YAML file of the class
 // Returns "test_value_for_child" if no value is defined in the testVars YAML file
 func LookupChildTestValue(classPkgName, childResourceName, propertyName string, testVars map[string]interface{}, testValueIndex int, definitions Definitions) interface{} {
+
 	propertyName = GetOverwriteAttributeName(classPkgName, propertyName, definitions)
 
 	overwritePropertyValue := GetOverwriteAttributeValue(classPkgName, propertyName, "", "test_values_for_parent", testValueIndex, definitions)
@@ -367,11 +359,12 @@ func LookupChildTestValue(classPkgName, childResourceName, propertyName string, 
 	return "test_value_for_child"
 }
 
+func LegacyAttributeContainsNoneAttributeValue(legacyAttribute LegacyAttribute, properties map[string]Property) bool {
+	return ContainsNoneAttributeValue(properties[Decapitalize(legacyAttribute.Name)].ValidValues)
+}
+
 func ContainsNoneAttributeValue(values []string) bool {
-	if slices.Contains(values, "none") {
-		return true
-	}
-	return false
+	return slices.Contains(values, "none")
 }
 
 func DefinedInMap(s string, values interface{}) bool {
@@ -709,6 +702,13 @@ func main() {
 		}
 		renderTemplate("annotation_unsupported.go.tmpl", "annotation_unsupported.go", providerPath, annotationUnsupported)
 	}
+
+	for _, model := range classModels {
+		if len(model.IdentifiedBy) == 0 && !model.Include {
+			classesWithoutResource = append(classesWithoutResource, model.PkgName)
+		}
+	}
+
 	for _, model := range classModels {
 
 		// Only render resources and datasources when the class has a unique identifier or is marked as include in the classes definitions YAML file
@@ -812,6 +812,7 @@ type Model struct {
 	ExampleResourceFull       string
 	SubCategory               string
 	RelationshipClasses       []string
+	MultiRelationshipClass    bool
 	RelationshipResourceNames []string
 	Versions                  string
 	ChildClasses              []string
@@ -859,6 +860,7 @@ type Model struct {
 	HasNamedProperties        bool
 	HasChildNamedProperties   bool
 	Include                   bool
+	HasReadOnlyProperties     bool
 }
 
 type TestDependency struct {
@@ -870,6 +872,7 @@ type TestDependency struct {
 	TargetDnRef           string
 	TargetResourceName    string
 	RelationResourceName  string
+	Static                bool
 	Properties            map[string]string
 }
 
@@ -898,25 +901,28 @@ type ReplacementAttribute struct {
 // A Property represents a ACI class property
 // All information is retrieved directly or deduced from the metadata
 type Property struct {
-	Name               string
-	PropertyName       string
-	SnakeCaseName      string
-	ResourceClassName  string
-	PkgName            string
-	ValueType          string
-	Label              string
-	Comment            string
-	DefaultValue       string
-	Versions           string
-	NamedPropertyClass string
-	ValidValues        []string
-	IdentifiedBy       []interface{}
-	Validators         []interface{}
-	IdentifyProperties []Property
+	Name                     string
+	PropertyName             string
+	SnakeCaseName            string
+	ResourceClassName        string
+	PkgName                  string
+	ValueType                string
+	Label                    string
+	Comment                  string
+	DefaultValue             string
+	Versions                 string
+	NamedPropertyClass       string
+	IgnoreInTestExampleValue string
+	ValidValues              []string
+	IdentifiedBy             []interface{}
+	Validators               []interface{}
+	IdentifyProperties       []Property
 	// Below booleans are used during template rendering to determine correct rendering the go code
-	IsNaming   bool
-	CreateOnly bool
-	IsRequired bool
+	IsNaming     bool
+	CreateOnly   bool
+	IsRequired   bool
+	IgnoreInTest bool
+	ReadOnly     bool
 }
 
 // A Definitions represents the ACI class and property definitions as defined in the definitions YAML files
@@ -1083,6 +1089,10 @@ func (m *Model) SetRelationshipClasses(definitions Definitions) {
 		for key, value := range v.(map[interface{}]interface{}) {
 			if key.(string) == "relationship_classes" {
 				overwriteExampleClasses = value.([]interface{})
+			}
+			if key == "multi_relationship_class" {
+				// Used in documentation when a relationship can point to multple classes
+				m.MultiRelationshipClass = true
 			}
 		}
 	}
@@ -1285,34 +1295,44 @@ func (m *Model) SetClassProperties(classDetails interface{}) {
 	properties := make(map[string]Property)
 	namedProperties := make(map[string]Property)
 	requiredCount := 0
+	readOnlyProperties := readOnlyProperties(m.PkgName, m.Definitions)
+
+	if len(readOnlyProperties) > 0 {
+		m.HasReadOnlyProperties = true
+	}
 
 	for propertyName, propertyValue := range classDetails.(map[string]interface{})["properties"].(map[string]interface{}) {
 
-		if propertyValue.(map[string]interface{})["isConfigurable"] == true {
+		if propertyValue.(map[string]interface{})["isConfigurable"] == true || slices.Contains(readOnlyProperties, propertyName) {
 
 			if ignoreProperty(propertyName, m.PkgName, m.Definitions) {
 				continue
 			}
 
+			ignoreInTest, ignoreInTestExampleValue := ignoreTestProperty(propertyName, m.PkgName, m.Definitions)
+
 			property := Property{
-				Name:              fmt.Sprintf("%s%s", strings.ToUpper(propertyName[0:1]), propertyName[1:]),
-				PropertyName:      propertyName,
-				SnakeCaseName:     Underscore(propertyName),
-				ResourceClassName: strings.ToUpper(m.PkgName[:1]) + m.PkgName[1:],
-				PkgName:           m.PkgName,
-				IdentifiedBy:      m.IdentifiedBy,
-				ValueType:         propertyValue.(map[string]interface{})["uitype"].(string),
-				Label:             propertyValue.(map[string]interface{})["label"].(string),
-				IsNaming:          propertyValue.(map[string]interface{})["isNaming"].(bool),
-				CreateOnly:        propertyValue.(map[string]interface{})["createOnly"].(bool),
+				Name:                     fmt.Sprintf("%s%s", strings.ToUpper(propertyName[0:1]), propertyName[1:]),
+				PropertyName:             propertyName,
+				SnakeCaseName:            Underscore(propertyName),
+				ResourceClassName:        strings.ToUpper(m.PkgName[:1]) + m.PkgName[1:],
+				PkgName:                  m.PkgName,
+				IdentifiedBy:             m.IdentifiedBy,
+				ValueType:                getOverwritePropertyType(propertyName, m.PkgName, propertyValue.(map[string]interface{})["uitype"].(string), m.Definitions),
+				Label:                    propertyValue.(map[string]interface{})["label"].(string),
+				IsNaming:                 propertyValue.(map[string]interface{})["isNaming"].(bool),
+				CreateOnly:               propertyValue.(map[string]interface{})["createOnly"].(bool),
+				IgnoreInTest:             ignoreInTest,
+				IgnoreInTestExampleValue: ignoreInTestExampleValue,
+				ReadOnly:                 slices.Contains(readOnlyProperties, propertyName),
 			}
 
-			if requiredProperty(propertyName, m.PkgName, m.Definitions) || property.IsNaming == true {
+			if requiredProperty(GetOverwriteAttributeName(m.PkgName, propertyName, m.Definitions), m.PkgName, m.Definitions) || property.IsNaming {
 				property.IsRequired = true
 				requiredCount += 1
 			}
 
-			if property.IsRequired == false {
+			if !property.IsRequired {
 				m.HasOptionalProperties = true
 			}
 
@@ -1358,6 +1378,7 @@ func (m *Model) SetClassProperties(classDetails interface{}) {
 
 			if propertyValue.(map[string]interface{})["validValues"] != nil {
 				removedValidValuesList := GetValidValuesToRemove(m.PkgName, propertyName, m.Definitions)
+
 				for _, details := range propertyValue.(map[string]interface{})["validValues"].([]interface{}) {
 					validValue := details.(map[string]interface{})["localName"].(string)
 					if validValue != "defaultValue" && !isInSlice(removedValidValuesList, validValue) {
@@ -1494,6 +1515,7 @@ func (m *Model) SetLegacyAttributes(definitions Definitions) {
 
 		blockTypes := legacyResource.(map[string]interface{})["block"].(map[string]interface{})["block_types"].(map[string]interface{})
 		for blockName, blockDetails := range blockTypes {
+
 			block := LegacyBlock{
 				Name:        blockName,
 				NestingMode: blockDetails.(map[string]interface{})["nesting_mode"].(string),
@@ -1506,17 +1528,20 @@ func (m *Model) SetLegacyAttributes(definitions Definitions) {
 
 				if legacyAttribute.AttributeName == "target_dn" {
 					legacyAttribute.Name = "TargetDn"
+				} else if strings.HasSuffix(legacyAttribute.AttributeName, "_dn") {
+					legacyAttribute.Name = "TDn"
 				}
 
 				childClass := m.Children[block.ClassName]
 				for _, property := range childClass.Properties {
-					if legacyAttribute.AttributeName == property.SnakeCaseName {
+					if GetOverwriteAttributeName(m.PkgName, legacyAttribute.AttributeName, definitions) == GetOverwriteAttributeName(m.PkgName, property.SnakeCaseName, definitions) {
 						legacyAttribute.Name = property.Name
 						break
 					}
 				}
 				block.Attributes[propertyName] = legacyAttribute
 			}
+
 			m.LegacyBlocks = append(m.LegacyBlocks, block)
 		}
 
@@ -1631,6 +1656,24 @@ func getOverwritePropertyComment(propertyName, classPkgName string, definitions 
 	return ""
 }
 
+func getOverwritePropertyType(propertyName, classPkgName, uiType string, definitions Definitions) string {
+	precedenceList := []string{classPkgName, "global"}
+	for _, precedence := range precedenceList {
+		if classDetails, ok := definitions.Properties[precedence]; ok {
+			for key, value := range classDetails.(map[interface{}]interface{}) {
+				if key.(string) == "type_overwrites" {
+					for k, v := range value.(map[interface{}]interface{}) {
+						if k.(string) == propertyName {
+							return v.(string)
+						}
+					}
+				}
+			}
+		}
+	}
+	return uiType
+}
+
 /*
 Determine if a property should be ignored as defined in the properties.yaml file
 Precendence order is:
@@ -1638,6 +1681,7 @@ Precendence order is:
  2. global level from properties.yaml
 */
 func ignoreProperty(propertyName, classPkgName string, definitions Definitions) bool {
+
 	precedenceList := []string{classPkgName, "global"}
 	for _, precedence := range precedenceList {
 		if classDetails, ok := definitions.Properties[precedence]; ok {
@@ -1653,6 +1697,39 @@ func ignoreProperty(propertyName, classPkgName string, definitions Definitions) 
 		}
 	}
 	return false
+}
+
+func ignoreTestProperty(propertyName, classPkgName string, definitions Definitions) (bool, string) {
+
+	precedenceList := []string{classPkgName, "global"}
+	for _, precedence := range precedenceList {
+		if classDetails, ok := definitions.Properties[precedence]; ok {
+			for key, value := range classDetails.(map[interface{}]interface{}) {
+				if key.(string) == "ignore_properties_in_test" {
+					for k, v := range value.(map[interface{}]interface{}) {
+						if k.(string) == propertyName {
+							return true, v.(string)
+						}
+					}
+				}
+			}
+		}
+	}
+	return false, ""
+}
+
+func readOnlyProperties(classPkgName string, definitions Definitions) []string {
+	readOnlyProperties := []string{}
+	if classDetails, ok := definitions.Properties[classPkgName]; ok {
+		for key, value := range classDetails.(map[interface{}]interface{}) {
+			if key.(string) == "read_only_properties" {
+				for _, v := range value.([]interface{}) {
+					readOnlyProperties = append(readOnlyProperties, v.(string))
+				}
+			}
+		}
+	}
+	return readOnlyProperties
 }
 
 /*
@@ -1720,6 +1797,7 @@ Precendence order is:
  1. class level from properties.yaml
 */
 func GetOverwriteAttributeValue(classPkgName, propertyName, propertyValue, testType string, valueIndex int, definitions Definitions) interface{} {
+
 	if classDetails, ok := definitions.Properties[classPkgName]; ok {
 		for key, value := range classDetails.(map[interface{}]interface{}) {
 			if key.(string) == "test_values" {
@@ -1744,6 +1822,15 @@ func GetOverwriteAttributeValue(classPkgName, propertyName, propertyValue, testT
 				}
 			}
 		}
+	}
+	if propertyValue == propertyName {
+		index := valueIndex
+		if testType == "all" {
+			index = valueIndex + 1
+		} else if testType == "default" {
+			index = valueIndex + 2
+		}
+		return fmt.Sprintf("%s_%d", propertyValue, index)
 	}
 	return propertyValue
 }
@@ -1871,7 +1958,7 @@ func (m *Model) SetModelTestDependencies(classModels map[string]Model, definitio
 				if key.(string) == "targets" {
 					for index, v := range value.([]interface{}) {
 						targetMap := v.(map[interface{}]interface{})
-						if className, ok := targetMap["class_name"]; ok && className.(string) == m.PkgName {
+						if className, ok := targetMap["class_name"]; ok && !slices.Contains(m.getExcludeTargets(), className.(string)) {
 							childTestDependencies = append(childTestDependencies, getTestDependency(className.(string), targetMap, definitions, index))
 						}
 					}
@@ -1883,6 +1970,20 @@ func (m *Model) SetModelTestDependencies(classModels map[string]Model, definitio
 	m.TestDependencies = testDependencies
 	m.ChildTestDependencies = childTestDependencies
 
+}
+
+func (m *Model) getExcludeTargets() []string {
+	excludeTargets := []string{}
+	if v, ok := m.Definitions.Properties[m.PkgName]; ok {
+		for key, value := range v.(map[interface{}]interface{}) {
+			if key.(string) == "exclude_targets" {
+				for _, v := range value.([]interface{}) {
+					excludeTargets = append(excludeTargets, v.(string))
+				}
+			}
+		}
+	}
+	return excludeTargets
 }
 
 func getTestDependency(className string, targetMap map[interface{}]interface{}, definitions Definitions, index int) TestDependency {
@@ -1904,7 +2005,7 @@ func getTestDependency(className string, targetMap map[interface{}]interface{}, 
 
 	if targetDn, ok := targetMap["target_dn"]; ok {
 		testDependency.TargetDn = targetDn.(string)
-		testDependency.TargetDnRef = fmt.Sprintf("%s_%s.test_%d.id", providerName, GetResourceName(className, definitions), index)
+		testDependency.TargetDnRef = fmt.Sprintf("%s_%s.test_%s_%d.id", providerName, GetResourceName(className, definitions), GetResourceName(className, definitions), index%2)
 	}
 
 	if properties, ok := targetMap["properties"]; ok {
@@ -1918,6 +2019,11 @@ func getTestDependency(className string, targetMap map[interface{}]interface{}, 
 		testDependency.ParentDnKey = overwriteKey.(string)
 	}
 
+	testDependency.Static = false
+	if static, ok := targetMap["static"]; ok {
+		testDependency.Static = static.(bool)
+	}
+
 	return testDependency
 }
 
@@ -1929,6 +2035,7 @@ func GetTestTargetDn(targets []interface{}, resourceName, targetDnValue string, 
 	if targetClasses != nil {
 		// CHANGE logic here when allowing for multiple target classes in single resource
 		targetClass := targetClasses.([]interface{})[0].(string)
+
 		for _, target := range targets {
 			if targetClass == target.(map[interface{}]interface{})["class_name"].(string) {
 				filteredTargets = append(filteredTargets, target)
@@ -1939,18 +2046,26 @@ func GetTestTargetDn(targets []interface{}, resourceName, targetDnValue string, 
 	}
 
 	for _, target := range filteredTargets {
+
 		targetRelationResourceName := target.(map[interface{}]interface{})["relation_resource_name"].(string)
+
+		static := false
+		if v, ok := target.(map[interface{}]interface{})["static"]; ok {
+			static = v.(bool)
+		}
+
 		if targetResourceName == targetRelationResourceName || strings.TrimSuffix(targetResourceName, "s") == targetRelationResourceName {
 			if index > 0 {
 				index = index - 1
 			} else {
-				if reference {
+				if reference && !static {
 					return target.(map[interface{}]interface{})["target_dn_ref"].(string)
 				}
 				return target.(map[interface{}]interface{})["target_dn"].(string)
 			}
 		}
 	}
+
 	return targetDnValue
 }
 
@@ -2053,7 +2168,7 @@ func setDocumentationData(m *Model, definitions Definitions) {
 	resourcesNotFound := []string{}
 	for _, containedClassName := range m.ContainedBy {
 		resourceName := GetResourceName(containedClassName, definitions)
-		if resourceName != "" {
+		if resourceName != "" && !slices.Contains(classesWithoutResource, containedClassName) {
 			resourcesFound = append(resourcesFound, []string{resourceName, containedClassName})
 		} else {
 			resourcesNotFound = append(resourcesNotFound, containedClassName)

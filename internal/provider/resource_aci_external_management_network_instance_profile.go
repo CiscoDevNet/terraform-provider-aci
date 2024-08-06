@@ -14,6 +14,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -54,11 +55,49 @@ type MgmtInstPResourceModel struct {
 	TagTag        types.Set    `tfsdk:"tags"`
 }
 
+func getEmptyMgmtInstPResourceModel() *MgmtInstPResourceModel {
+	return &MgmtInstPResourceModel{
+		Id:         basetypes.NewStringNull(),
+		Annotation: basetypes.NewStringNull(),
+		Descr:      basetypes.NewStringNull(),
+		Name:       basetypes.NewStringNull(),
+		NameAlias:  basetypes.NewStringNull(),
+		Prio:       basetypes.NewStringNull(),
+		MgmtRsOoBCons: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"annotation":                types.StringType,
+				"priority":                  types.StringType,
+				"out_of_band_contract_name": types.StringType,
+			},
+		}),
+		TagAnnotation: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"key":   types.StringType,
+				"value": types.StringType,
+			},
+		}),
+		TagTag: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"key":   types.StringType,
+				"value": types.StringType,
+			},
+		}),
+	}
+}
+
 // MgmtRsOoBConsMgmtInstPResourceModel describes the resource data model for the children without relation ships.
 type MgmtRsOoBConsMgmtInstPResourceModel struct {
 	Annotation      types.String `tfsdk:"annotation"`
 	Prio            types.String `tfsdk:"priority"`
 	TnVzOOBBrCPName types.String `tfsdk:"out_of_band_contract_name"`
+}
+
+func getEmptyMgmtRsOoBConsMgmtInstPResourceModel() MgmtRsOoBConsMgmtInstPResourceModel {
+	return MgmtRsOoBConsMgmtInstPResourceModel{
+		Annotation:      basetypes.NewStringNull(),
+		Prio:            basetypes.NewStringNull(),
+		TnVzOOBBrCPName: basetypes.NewStringNull(),
+	}
 }
 
 // TagAnnotationMgmtInstPResourceModel describes the resource data model for the children without relation ships.
@@ -67,10 +106,24 @@ type TagAnnotationMgmtInstPResourceModel struct {
 	Value types.String `tfsdk:"value"`
 }
 
+func getEmptyTagAnnotationMgmtInstPResourceModel() TagAnnotationMgmtInstPResourceModel {
+	return TagAnnotationMgmtInstPResourceModel{
+		Key:   basetypes.NewStringNull(),
+		Value: basetypes.NewStringNull(),
+	}
+}
+
 // TagTagMgmtInstPResourceModel describes the resource data model for the children without relation ships.
 type TagTagMgmtInstPResourceModel struct {
 	Key   types.String `tfsdk:"key"`
 	Value types.String `tfsdk:"value"`
+}
+
+func getEmptyTagTagMgmtInstPResourceModel() TagTagMgmtInstPResourceModel {
+	return TagTagMgmtInstPResourceModel{
+		Key:   basetypes.NewStringNull(),
+		Value: basetypes.NewStringNull(),
+	}
 }
 
 type MgmtInstPIdentifier struct {
@@ -127,6 +180,7 @@ func (r *MgmtInstPResource) Schema(ctx context.Context, req resource.SchemaReque
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
 				MarkdownDescription: `The annotation of the External Management Network Instance Profile object.`,
@@ -136,6 +190,7 @@ func (r *MgmtInstPResource) Schema(ctx context.Context, req resource.SchemaReque
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The description of the External Management Network Instance Profile object.`,
 			},
@@ -143,6 +198,7 @@ func (r *MgmtInstPResource) Schema(ctx context.Context, req resource.SchemaReque
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
 				MarkdownDescription: `The name of the External Management Network Instance Profile object.`,
@@ -152,6 +208,7 @@ func (r *MgmtInstPResource) Schema(ctx context.Context, req resource.SchemaReque
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The name alias of the External Management Network Instance Profile object.`,
 			},
@@ -160,6 +217,7 @@ func (r *MgmtInstPResource) Schema(ctx context.Context, req resource.SchemaReque
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
 					stringvalidator.OneOf("level1", "level2", "level3", "level4", "level5", "level6", "unspecified"),
@@ -448,6 +506,8 @@ func (r *MgmtInstPResource) ImportState(ctx context.Context, req resource.Import
 func getAndSetMgmtInstPAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *MgmtInstPResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "mgmtInstP,mgmtRsOoBCons,tagAnnotation,tagTag"), "GET", nil)
 
+	*data = *getEmptyMgmtInstPResourceModel()
+
 	if diags.HasError() {
 		return
 	}
@@ -485,7 +545,7 @@ func getAndSetMgmtInstPAttributes(ctx context.Context, diags *diag.Diagnostics, 
 					for childClassName, childClassDetails := range child.(map[string]interface{}) {
 						childAttributes := childClassDetails.(map[string]interface{})["attributes"].(map[string]interface{})
 						if childClassName == "mgmtRsOoBCons" {
-							MgmtRsOoBConsMgmtInstP := MgmtRsOoBConsMgmtInstPResourceModel{}
+							MgmtRsOoBConsMgmtInstP := getEmptyMgmtRsOoBConsMgmtInstPResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "annotation" {
 									MgmtRsOoBConsMgmtInstP.Annotation = basetypes.NewStringValue(childAttributeValue.(string))
@@ -500,7 +560,7 @@ func getAndSetMgmtInstPAttributes(ctx context.Context, diags *diag.Diagnostics, 
 							MgmtRsOoBConsMgmtInstPList = append(MgmtRsOoBConsMgmtInstPList, MgmtRsOoBConsMgmtInstP)
 						}
 						if childClassName == "tagAnnotation" {
-							TagAnnotationMgmtInstP := TagAnnotationMgmtInstPResourceModel{}
+							TagAnnotationMgmtInstP := getEmptyTagAnnotationMgmtInstPResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "key" {
 									TagAnnotationMgmtInstP.Key = basetypes.NewStringValue(childAttributeValue.(string))
@@ -512,7 +572,7 @@ func getAndSetMgmtInstPAttributes(ctx context.Context, diags *diag.Diagnostics, 
 							TagAnnotationMgmtInstPList = append(TagAnnotationMgmtInstPList, TagAnnotationMgmtInstP)
 						}
 						if childClassName == "tagTag" {
-							TagTagMgmtInstP := TagTagMgmtInstPResourceModel{}
+							TagTagMgmtInstP := getEmptyTagTagMgmtInstPResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "key" {
 									TagTagMgmtInstP.Key = basetypes.NewStringValue(childAttributeValue.(string))
@@ -565,15 +625,15 @@ func getMgmtInstPMgmtRsOoBConsChildPayloads(ctx context.Context, diags *diag.Dia
 		mgmtRsOoBConsIdentifiers := []MgmtRsOoBConsIdentifier{}
 		for _, mgmtRsOoBCons := range mgmtRsOoBConsPlan {
 			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !mgmtRsOoBCons.Annotation.IsUnknown() {
+			if !mgmtRsOoBCons.Annotation.IsUnknown() && !mgmtRsOoBCons.Annotation.IsNull() {
 				childMap["attributes"]["annotation"] = mgmtRsOoBCons.Annotation.ValueString()
 			} else {
 				childMap["attributes"]["annotation"] = globalAnnotation
 			}
-			if !mgmtRsOoBCons.Prio.IsUnknown() {
+			if !mgmtRsOoBCons.Prio.IsUnknown() && !mgmtRsOoBCons.Prio.IsNull() {
 				childMap["attributes"]["prio"] = mgmtRsOoBCons.Prio.ValueString()
 			}
-			if !mgmtRsOoBCons.TnVzOOBBrCPName.IsUnknown() {
+			if !mgmtRsOoBCons.TnVzOOBBrCPName.IsUnknown() && !mgmtRsOoBCons.TnVzOOBBrCPName.IsNull() {
 				childMap["attributes"]["tnVzOOBBrCPName"] = mgmtRsOoBCons.TnVzOOBBrCPName.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"mgmtRsOoBCons": childMap})
@@ -609,10 +669,10 @@ func getMgmtInstPTagAnnotationChildPayloads(ctx context.Context, diags *diag.Dia
 		tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
 		for _, tagAnnotation := range tagAnnotationPlan {
 			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagAnnotation.Key.IsUnknown() {
+			if !tagAnnotation.Key.IsUnknown() && !tagAnnotation.Key.IsNull() {
 				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
 			}
-			if !tagAnnotation.Value.IsUnknown() {
+			if !tagAnnotation.Value.IsUnknown() && !tagAnnotation.Value.IsNull() {
 				childMap["attributes"]["value"] = tagAnnotation.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
@@ -648,10 +708,10 @@ func getMgmtInstPTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostic
 		tagTagIdentifiers := []TagTagIdentifier{}
 		for _, tagTag := range tagTagPlan {
 			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagTag.Key.IsUnknown() {
+			if !tagTag.Key.IsUnknown() && !tagTag.Key.IsNull() {
 				childMap["attributes"]["key"] = tagTag.Key.ValueString()
 			}
-			if !tagTag.Value.IsUnknown() {
+			if !tagTag.Value.IsUnknown() && !tagTag.Value.IsNull() {
 				childMap["attributes"]["value"] = tagTag.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})

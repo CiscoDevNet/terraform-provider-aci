@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_l3out_provider_label"
 sidebar_current: "docs-aci-data-source-aci_l3out_provider_label"
 description: |-
-  Data source for L3out Provider Label
+  Data source for ACI L3out Provider Label
 ---
 
 # aci_l3out_provider_label #
 
-Data source for L3out Provider Label
+Data source for ACI L3out Provider Label
 
 ## API Information ##
 

@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_external_management_network_instance_profile"
 sidebar_current: "docs-aci-data-source-aci_external_management_network_instance_profile"
 description: |-
-  Data source for External Management Network Instance Profile
+  Data source for ACI External Management Network Instance Profile
 ---
 
 # aci_external_management_network_instance_profile #
 
-Data source for External Management Network Instance Profile
+Data source for ACI External Management Network Instance Profile
 
 ## API Information ##
 
