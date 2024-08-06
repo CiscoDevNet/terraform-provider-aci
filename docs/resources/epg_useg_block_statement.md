@@ -48,12 +48,12 @@ The configuration snippet below shows all possible attributes of the EPG uSeg Bl
 resource "aci_epg_useg_block_statement" "full_example_application_epg" {
   parent_dn   = aci_application_epg.example.id
   annotation  = "annotation"
-  description = "description"
+  description = "description_1"
   match       = "all"
   name        = "criterion"
-  name_alias  = "name_alias"
-  owner_key   = "owner_key"
-  owner_tag   = "owner_tag"
+  name_alias  = "name_alias_1"
+  owner_key   = "owner_key_1"
+  owner_tag   = "owner_tag_1"
   precedence  = "1"
   scope       = "scope-bd"
   annotations = [

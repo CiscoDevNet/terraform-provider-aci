@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_relation_to_provided_contract"
 sidebar_current: "docs-aci-data-source-aci_relation_to_provided_contract"
 description: |-
-  Data source for Relation To Provided Contract
+  Data source for ACI Relation To Provided Contract
 ---
 
 # aci_relation_to_provided_contract #
 
-Data source for Relation To Provided Contract
+Data source for ACI Relation To Provided Contract
 
 ## API Information ##
 

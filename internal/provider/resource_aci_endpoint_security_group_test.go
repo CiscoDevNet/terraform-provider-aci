@@ -22,24 +22,24 @@ func TestAccResourceFvESgWithFvAp(t *testing.T) {
 				Config:             testConfigFvESgMinDependencyWithFvApAllowExisting,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "name", "test_name"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test_2", "name", "test_name"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "admin_state", "no"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test_2", "admin_state", "no"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test_2", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test_2", "description", ""),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "exception_tag", ""),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test_2", "exception_tag", ""),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "intra_esg_isolation", "unenforced"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test_2", "intra_esg_isolation", "unenforced"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "match_criteria", "AtleastOne"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test_2", "match_criteria", "AtleastOne"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test_2", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "preferred_group_member", "exclude"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test_2", "preferred_group_member", "exclude"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test_2", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test", "admin_state", "no"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test_2", "admin_state", "no"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test", "description", ""),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test", "exception_tag", ""),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test_2", "exception_tag", ""),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test", "intra_esg_isolation", "unenforced"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test_2", "intra_esg_isolation", "unenforced"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test", "match_criteria", "AtleastOne"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test_2", "match_criteria", "AtleastOne"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test", "preferred_group_member", "exclude"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test_2", "preferred_group_member", "exclude"),
 				),
 			},
 		},
@@ -68,24 +68,24 @@ func TestAccResourceFvESgWithFvAp(t *testing.T) {
 				Config:             testConfigFvESgMinDependencyWithFvApAllowExisting,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "name", "test_name"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test_2", "name", "test_name"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "admin_state", "no"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test_2", "admin_state", "no"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test_2", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test_2", "description", ""),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "exception_tag", ""),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test_2", "exception_tag", ""),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "intra_esg_isolation", "unenforced"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test_2", "intra_esg_isolation", "unenforced"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "match_criteria", "AtleastOne"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test_2", "match_criteria", "AtleastOne"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test_2", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "preferred_group_member", "exclude"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test_2", "preferred_group_member", "exclude"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test_2", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test", "admin_state", "no"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test_2", "admin_state", "no"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test", "description", ""),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test", "exception_tag", ""),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test_2", "exception_tag", ""),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test", "intra_esg_isolation", "unenforced"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test_2", "intra_esg_isolation", "unenforced"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test", "match_criteria", "AtleastOne"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test_2", "match_criteria", "AtleastOne"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test", "preferred_group_member", "exclude"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test_2", "preferred_group_member", "exclude"),
 				),
 			},
 		},
@@ -119,11 +119,11 @@ func TestAccResourceFvESgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "admin_state", "no"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "annotation", "annotation"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "description", "description"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "exception_tag", "exception_tag"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "description", "description_1"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "exception_tag", "exception_tag_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "intra_esg_isolation", "enforced"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "match_criteria", "All"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "name_alias", "name_alias"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "name_alias", "name_alias_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "preferred_group_member", "exclude"),
 				),
 			},
@@ -174,7 +174,7 @@ func TestAccResourceFvESgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "annotations.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contracts.0.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contracts.0.contract_name", "contract_name_0"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contracts.0.priority", "level1"),
@@ -208,7 +208,7 @@ func TestAccResourceFvESgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "tags.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "tags.1.value", "test_value"),
 				),
 			},
 			// Import testing with children
@@ -225,7 +225,7 @@ func TestAccResourceFvESgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "annotations.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "annotations.#", "2"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contracts.0.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contracts.0.contract_name", "contract_name_0"),
@@ -266,7 +266,7 @@ func TestAccResourceFvESgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "tags.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "tags.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "tags.#", "2"),
 				),
 			},
@@ -276,7 +276,7 @@ func TestAccResourceFvESgWithFvAp(t *testing.T) {
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "annotations.0.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "annotations.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "annotations.#", "1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contracts.0.annotation", "annotation_2"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contracts.0.contract_name", "contract_name_1"),
@@ -301,7 +301,7 @@ func TestAccResourceFvESgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_vrf.0.vrf_name", "vrf_name_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_vrf.#", "1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "tags.0.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "tags.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "tags.#", "1"),
 				),
 			},
@@ -327,25 +327,25 @@ func TestAccResourceFvESgWithFvAp(t *testing.T) {
 }
 
 const testChildDependencyConfigFvESg = `
-resource "aci_endpoint_security_group" "test_0" {
+resource "aci_endpoint_security_group" "test_endpoint_security_group_0"{
   application_profile_dn = aci_application_profile.test.id
   name = "esg_0"
 }
-resource "aci_endpoint_security_group" "test_1" {
+resource "aci_endpoint_security_group" "test_endpoint_security_group_1"{
   application_profile_dn = aci_application_profile.test.id
   name = "esg_1"
 }
 `
 
 const testConfigFvESgMinDependencyWithFvApAllowExisting = testConfigFvApMinDependencyWithFvTenant + `
-resource "aci_endpoint_security_group" "test" {
+resource "aci_endpoint_security_group" "allow_test" {
   parent_dn = aci_application_profile.test.id
   name = "test_name"
 }
-resource "aci_endpoint_security_group" "test_2" {
+resource "aci_endpoint_security_group" "allow_test_2" {
   parent_dn = aci_application_profile.test.id
   name = "test_name"
-  depends_on = [aci_endpoint_security_group.test]
+  depends_on = [aci_endpoint_security_group.allow_test]
 }
 `
 
@@ -362,11 +362,11 @@ resource "aci_endpoint_security_group" "test" {
   name = "test_name"
   admin_state = "no"
   annotation = "annotation"
-  description = "description"
-  exception_tag = "exception_tag"
+  description = "description_1"
+  exception_tag = "exception_tag_1"
   intra_esg_isolation = "enforced"
   match_criteria = "All"
-  name_alias = "name_alias"
+  name_alias = "name_alias_1"
   preferred_group_member = "exclude"
 }
 `
@@ -396,7 +396,7 @@ resource "aci_endpoint_security_group" "test" {
 	},
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
   relation_to_consumed_contracts = [
@@ -414,11 +414,11 @@ resource "aci_endpoint_security_group" "test" {
   relation_to_contract_masters = [
 	{
 	  annotation = "annotation_1"
-	  target_dn = aci_endpoint_security_group.test_0.id
+	  target_dn = aci_endpoint_security_group.test_endpoint_security_group_0.id
 	},
 	{
 	  annotation = "annotation_2"
-	  target_dn = aci_endpoint_security_group.test_1.id
+	  target_dn = aci_endpoint_security_group.test_endpoint_security_group_1.id
 	},
   ]
   relation_to_imported_contracts = [
@@ -470,7 +470,7 @@ resource "aci_endpoint_security_group" "test" {
 	},
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
 }
@@ -490,7 +490,7 @@ resource "aci_endpoint_security_group" "test" {
   annotations = [ 
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
   relation_to_consumed_contracts = [ 
@@ -503,7 +503,7 @@ resource "aci_endpoint_security_group" "test" {
   relation_to_contract_masters = [ 
 	{
 	  annotation = "annotation_2"
-	  target_dn = aci_endpoint_security_group.test_1.id
+	  target_dn = aci_endpoint_security_group.test_endpoint_security_group_1.id
 	},
   ]
   relation_to_imported_contracts = [ 
@@ -530,7 +530,7 @@ resource "aci_endpoint_security_group" "test" {
   tags = [ 
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
 }

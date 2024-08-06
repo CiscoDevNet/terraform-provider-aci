@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_epg_useg_dns_attribute"
 sidebar_current: "docs-aci-data-source-aci_epg_useg_dns_attribute"
 description: |-
-  Data source for EPG uSeg DNS Attribute
+  Data source for ACI EPG uSeg DNS Attribute
 ---
 
 # aci_epg_useg_dns_attribute #
 
-Data source for EPG uSeg DNS Attribute
+Data source for ACI EPG uSeg DNS Attribute
 
 ## API Information ##
 

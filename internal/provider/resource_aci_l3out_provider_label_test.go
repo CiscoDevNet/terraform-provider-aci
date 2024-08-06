@@ -22,20 +22,20 @@ func TestAccResourceL3extProvLblWithL3extOut(t *testing.T) {
 				Config:             testConfigL3extProvLblMinDependencyWithL3extOutAllowExisting,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "name", "prov_label"),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test_2", "name", "prov_label"),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test_2", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test_2", "description", ""),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test_2", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test_2", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test_2", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "tag", "yellow-green"),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test_2", "tag", "yellow-green"),
+					resource.TestCheckResourceAttr("aci_l3out_provider_label.allow_test", "name", "prov_label"),
+					resource.TestCheckResourceAttr("aci_l3out_provider_label.allow_test_2", "name", "prov_label"),
+					resource.TestCheckResourceAttr("aci_l3out_provider_label.allow_test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_l3out_provider_label.allow_test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_l3out_provider_label.allow_test", "description", ""),
+					resource.TestCheckResourceAttr("aci_l3out_provider_label.allow_test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_l3out_provider_label.allow_test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_l3out_provider_label.allow_test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_l3out_provider_label.allow_test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_l3out_provider_label.allow_test_2", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_l3out_provider_label.allow_test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_l3out_provider_label.allow_test_2", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_l3out_provider_label.allow_test", "tag", "yellow-green"),
+					resource.TestCheckResourceAttr("aci_l3out_provider_label.allow_test_2", "tag", "yellow-green"),
 				),
 			},
 		},
@@ -64,20 +64,20 @@ func TestAccResourceL3extProvLblWithL3extOut(t *testing.T) {
 				Config:             testConfigL3extProvLblMinDependencyWithL3extOutAllowExisting,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "name", "prov_label"),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test_2", "name", "prov_label"),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test_2", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test_2", "description", ""),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test_2", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test_2", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test_2", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "tag", "yellow-green"),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test_2", "tag", "yellow-green"),
+					resource.TestCheckResourceAttr("aci_l3out_provider_label.allow_test", "name", "prov_label"),
+					resource.TestCheckResourceAttr("aci_l3out_provider_label.allow_test_2", "name", "prov_label"),
+					resource.TestCheckResourceAttr("aci_l3out_provider_label.allow_test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_l3out_provider_label.allow_test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_l3out_provider_label.allow_test", "description", ""),
+					resource.TestCheckResourceAttr("aci_l3out_provider_label.allow_test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_l3out_provider_label.allow_test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_l3out_provider_label.allow_test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_l3out_provider_label.allow_test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_l3out_provider_label.allow_test_2", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_l3out_provider_label.allow_test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_l3out_provider_label.allow_test_2", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_l3out_provider_label.allow_test", "tag", "yellow-green"),
+					resource.TestCheckResourceAttr("aci_l3out_provider_label.allow_test_2", "tag", "yellow-green"),
 				),
 			},
 		},
@@ -108,10 +108,10 @@ func TestAccResourceL3extProvLblWithL3extOut(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "name", "prov_label"),
 					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "annotation", "annotation"),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "description", "description"),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "name_alias", "name_alias"),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "owner_key", "owner_key"),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "owner_tag", "owner_tag"),
+					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "description", "description_1"),
+					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "name_alias", "name_alias_1"),
+					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "owner_key", "owner_key_1"),
+					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "owner_tag", "owner_tag_1"),
 					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "tag", "alice-blue"),
 				),
 			},
@@ -158,11 +158,11 @@ func TestAccResourceL3extProvLblWithL3extOut(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "annotations.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "tags.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "tags.1.value", "test_value"),
 				),
 			},
 			// Import testing with children
@@ -179,12 +179,12 @@ func TestAccResourceL3extProvLblWithL3extOut(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "annotations.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "annotations.#", "2"),
 					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "tags.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "tags.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "tags.#", "2"),
 				),
 			},
@@ -194,10 +194,10 @@ func TestAccResourceL3extProvLblWithL3extOut(t *testing.T) {
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "annotations.0.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "annotations.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "annotations.#", "1"),
 					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "tags.0.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "tags.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "tags.#", "1"),
 				),
 			},
@@ -215,14 +215,14 @@ func TestAccResourceL3extProvLblWithL3extOut(t *testing.T) {
 }
 
 const testConfigL3extProvLblMinDependencyWithL3extOutAllowExisting = testConfigL3extOutMinDependencyWithFvTenantInfra + `
-resource "aci_l3out_provider_label" "test" {
+resource "aci_l3out_provider_label" "allow_test" {
   parent_dn = aci_l3_outside.test.id
   name = "prov_label"
 }
-resource "aci_l3out_provider_label" "test_2" {
+resource "aci_l3out_provider_label" "allow_test_2" {
   parent_dn = aci_l3_outside.test.id
   name = "prov_label"
-  depends_on = [aci_l3out_provider_label.test]
+  depends_on = [aci_l3out_provider_label.allow_test]
 }
 `
 
@@ -238,10 +238,10 @@ resource "aci_l3out_provider_label" "test" {
   parent_dn = aci_l3_outside.test.id
   name = "prov_label"
   annotation = "annotation"
-  description = "description"
-  name_alias = "name_alias"
-  owner_key = "owner_key"
-  owner_tag = "owner_tag"
+  description = "description_1"
+  name_alias = "name_alias_1"
+  owner_key = "owner_key_1"
+  owner_tag = "owner_tag_1"
   tag = "alice-blue"
 }
 `
@@ -269,7 +269,7 @@ resource "aci_l3out_provider_label" "test" {
 	},
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
   tags = [
@@ -279,7 +279,7 @@ resource "aci_l3out_provider_label" "test" {
 	},
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
 }
@@ -299,13 +299,13 @@ resource "aci_l3out_provider_label" "test" {
   annotations = [ 
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
   tags = [ 
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
 }

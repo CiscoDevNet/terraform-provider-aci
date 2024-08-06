@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_netflow_record_policy"
 sidebar_current: "docs-aci-data-source-aci_netflow_record_policy"
 description: |-
-  Data source for Netflow Record Policy
+  Data source for ACI Netflow Record Policy
 ---
 
 # aci_netflow_record_policy #
 
-Data source for Netflow Record Policy
+Data source for ACI Netflow Record Policy
 
 ## API Information ##
 

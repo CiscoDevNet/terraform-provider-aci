@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_epg_useg_block_statement"
 sidebar_current: "docs-aci-data-source-aci_epg_useg_block_statement"
 description: |-
-  Data source for EPG uSeg Block Statement
+  Data source for ACI EPG uSeg Block Statement
 ---
 
 # aci_epg_useg_block_statement #
 
-Data source for EPG uSeg Block Statement
+Data source for ACI EPG uSeg Block Statement
 
 ## API Information ##
 

@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_endpoint_security_group"
 sidebar_current: "docs-aci-data-source-aci_endpoint_security_group"
 description: |-
-  Data source for Endpoint Security Group
+  Data source for ACI Endpoint Security Group
 ---
 
 # aci_endpoint_security_group #
 
-Data source for Endpoint Security Group
+Data source for ACI Endpoint Security Group
 
 ## API Information ##
 

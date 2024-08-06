@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_relation_to_consumed_out_of_band_contract"
 sidebar_current: "docs-aci-data-source-aci_relation_to_consumed_out_of_band_contract"
 description: |-
-  Data source for Relation To Consumed Out Of Band Contract
+  Data source for ACI Relation To Consumed Out Of Band Contract
 ---
 
 # aci_relation_to_consumed_out_of_band_contract #
 
-Data source for Relation To Consumed Out Of Band Contract
+Data source for ACI Relation To Consumed Out Of Band Contract
 
 ## API Information ##
 

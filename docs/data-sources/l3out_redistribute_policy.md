@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_l3out_redistribute_policy"
 sidebar_current: "docs-aci-data-source-aci_l3out_redistribute_policy"
 description: |-
-  Data source for L3out Redistribute Policy
+  Data source for ACI L3out Redistribute Policy
 ---
 
 # aci_l3out_redistribute_policy #
 
-Data source for L3out Redistribute Policy
+Data source for ACI L3out Redistribute Policy
 
 ## API Information ##
 

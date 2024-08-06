@@ -85,6 +85,49 @@ type {{.ResourceClassName}}ResourceModel struct {
 	{{- end }}
 }
 
+func getEmpty{{.ResourceClassName}}ResourceModel() *{{.ResourceClassName}}ResourceModel {
+	return &{{.ResourceClassName}}ResourceModel{
+		Id: basetypes.NewStringNull(),
+		{{- if .HasParent}}
+		ParentDn: basetypes.NewStringNull(),
+		{{- end}}
+		{{- range .Properties}}
+			{{- if eq .ValueType "bitmask"}}
+		{{ .Name }}: types.SetNull(types.StringType),
+			{{- else if eq .Name "Id"}}
+		{{.ResourceClassName}}{{ .Name }}: basetypes.NewStringNull(),
+			{{- else}}
+		{{ .Name }}: basetypes.NewStringNull(),
+			{{- end}}
+		{{- end}}
+		{{- range .Children}}
+		{{ .ResourceClassName }}: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+			{{- range .Properties}}
+				{{- if eq .ValueType "bitmask"}}
+				"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": types.SetType(types.StringType),
+				{{- else}}
+				"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": types.StringType,
+				{{- end}}
+			{{- end}}
+			},
+		}),
+		{{- end}}
+		{{- if .LegacyAttributes}}
+			{{- range .LegacyAttributes}}{{- if ne .ReplacedBy.AttributeName "" }}
+				{{- if eq (getMigrationType .ValueType) "String"}}
+		Deprecated{{ .Name }}: types.{{getMigrationType .ValueType}}{},
+				{{- else if eq (getMigrationType .ValueType) "Set"}}
+		Deprecated{{ .Name }}: types.SetNull(types.StringType),
+				{{- end }}
+			{{- end }}{{- end }}
+			{{- range .LegacyBlocks}}
+		Deprecated{{ capitalize .ClassName }}: types.SetNull(deprecated{{ capitalize .ClassName }}Type),
+			{{- end }}
+		{{- end }}
+	}
+}
+
 {{- range .Children}}
 // {{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel describes the resource data model for the children without relation ships.
 type {{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel struct {
@@ -97,6 +140,20 @@ type {{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel struct {
 	{{ .Name }} types.String `tfsdk:"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}"`
 		{{- end}}
 	{{- end}}
+}
+
+func getEmpty{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel() {{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel {
+	return {{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel{
+		{{- range .Properties}}
+			{{- if eq .ValueType "bitmask"}}
+	{{ .Name }}: types.SetNull(types.StringType),
+			{{- else if eq .Name "Id"}}
+	{{.ResourceClassName}}{{ .Name }}: basetypes.NewStringNull(),
+			{{- else}}
+	{{ .Name }}: basetypes.NewStringNull(),
+			{{- end}}
+		{{- end}}
+	}
 }
 {{- end}}
 
@@ -308,7 +365,7 @@ func (r *{{.ResourceClassName}}Resource) UpgradeState(ctx context.Context) map[i
 							{{- else}}
 								{{- if isNewNamedClassAttribute $Overwrite }}
 						{{ .Name }}: basetypes.NewStringValue(GetMOName(priorStateData{{ .ResourceClassName }})),
-								{{- else}}
+								{{- else if eq .Name "TDn"}}
 						{{ .Name }}: basetypes.NewStringValue(priorStateData{{ .ResourceClassName }}),
 								{{- end}}
 							{{- end}}
@@ -373,9 +430,17 @@ func set{{ .ResourceClassName }}LegacyAttributes(ctx context.Context, diags *dia
 	for attributeName, attributeValue := range attributes {
 		{{- range .LegacyAttributes}}{{- if ne .ReplacedBy.AttributeName "" }}
 			{{- if and (isNewAttributeStringType .ReplacedBy.AttributeName) (ne .Name "ParentDn")}}
+				{{- if legacyAttributeContainsNoneValue . $.Properties}}
+		if attributeName == "{{decapitalize .Name}}" && attributeValue.(string) == "" {
+			data.Deprecated{{.Name}} = basetypes.NewStringValue("none")
+		} else if attributeName == "{{decapitalize .Name}}" {
+			data.Deprecated{{.Name}} = basetypes.NewStringValue(attributeValue.(string))
+		}
+				{{- else}}
 		if attributeName == "{{decapitalize .Name}}" {
 			data.Deprecated{{.Name}} = basetypes.NewStringValue(attributeValue.(string))
 		}
+				{{- end}}
 			{{- end }}{{- end }}
 		{{- end }}
 	}
@@ -383,7 +448,9 @@ func set{{ .ResourceClassName }}LegacyAttributes(ctx context.Context, diags *dia
 	{{- if .HasChild}}
 		{{- range $.Children}}{{- if isLegacyChild .PkgName $.LegacyChildren}}
 		{{- $childClassType := getValueFromMap .PkgName $.MigrationClassTypes}}
-			{{- if eq $childClassType "set,string" }}
+			{{- if eq $childClassType "string" }}
+	data.Deprecated{{.ResourceClassName}} = basetypes.NewStringNull()
+			{{- else if eq $childClassType "set,string" }}
 	Deprecated{{.ResourceClassName}}{{$.ResourceClassName}}List := make([]string, 0)
 			{{- end }}
 		{{- end }}{{- end }}
@@ -422,7 +489,7 @@ func set{{ .ResourceClassName }}LegacyAttributes(ctx context.Context, diags *dia
 							{{- if eq $AttributeName (capitalize .PkgName)}}
 						if childAttributeName == "tDn" && childAttributeValue != "" {
 							Deprecated{{.ResourceClassName}}{{$.ResourceClassName}}List = append(Deprecated{{.ResourceClassName}}{{$.ResourceClassName}}List, childAttributeValue.(string))
-						}
+						}{{break}}
 							{{- else if ne $AttributeName ""}}
 						if childAttributeName == "{{.PropertyName}}" {
 							Deprecated{{.ResourceClassName}}{{$.ResourceClassName}}List = append(Deprecated{{.ResourceClassName}}{{$.ResourceClassName}}List, childAttributeValue.(string))
@@ -546,7 +613,7 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 						{{- range .Properties}}
 							{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
 							{{- $AttributeName := getLegacyChildAttribute .PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
-							{{- if ne $AttributeName ""}}
+							{{- if or (eq .Name "TDn") (isNewNamedClassAttribute $Overwrite)}}
 				newAttributeValues = append(newAttributeValues, attributeValue.{{ .Name }}.ValueString())
 							{{- end }}
 						{{- end }}
@@ -580,7 +647,7 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 					{{- range .Properties}}
 						{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
 						{{- $AttributeName := getLegacyChildAttribute .PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
-						{{- if ne $AttributeName ""}}
+						{{- if or (eq .Name "TDn") (isNewNamedClassAttribute $Overwrite)}}
 					if newAttributeValue.{{ .Name }}.ValueString() == {{- if isNewNamedClassAttribute $Overwrite }}GetMOName(attributeValue){{- else}}attributeValue{{- end}} {
 						{{.ResourceClassName}}Value = newAttributeValue
 						foundAttributeValue = true
@@ -593,7 +660,7 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 						{{- range .Properties}}
 						{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
 						{{- $AttributeName := getLegacyChildAttribute .PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
-							{{- if ne $AttributeName ""}}
+							{{- if or (eq .Name "TDn") (isNewNamedClassAttribute $Overwrite)}}
 					{{ .Name }}: {{- if isNewNamedClassAttribute $Overwrite }}basetypes.NewStringValue(GetMOName(attributeValue)){{- else}}basetypes.NewStringValue(attributeValue){{- end}},
 							{{- end}}
 						{{- end}}
@@ -603,7 +670,7 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 					{{- range .Properties}}
 						{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
 						{{- $AttributeName := getLegacyChildAttribute .PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
-						{{- if eq $AttributeName ""}}
+						{{- if and (ne .Name "TDn") (not (isNewNamedClassAttribute $Overwrite))}}
 					{{ .ResourceClassName }}.{{ .Name }} = {{.ResourceClassName}}Value.{{ .Name }}
 						{{- end}}
 					{{- end}}
@@ -652,6 +719,7 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 			stateData.{{.ResourceClassName}}.ElementsAs(ctx, &newAttributeValues, false)
 			for _, attributeValue := range attributeValues {
 				{{- $NewProperties := getNewChildAttributes (getChildAttributesFromBlocks $ClassName $.LegacyBlocks) .Properties}}
+				{{- if ne (len $NewProperties) 0}}
 				{{- range .Properties}}
 					{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
 					{{- $AttributeName := getLegacyChildAttribute .PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
@@ -659,13 +727,14 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 				planned{{ .ResourceClassName }} := {{ .ResourceClassName }}{{$.ResourceClassName}}ResourceModel{}
 				foundAttributeValue := false
 				for _, newAttributeValue := range newAttributeValues {
-					if newAttributeValue.{{ .Name }}.ValueString() == {{- if isNewNamedClassAttribute $Overwrite }}GetMOName(attributeValue.{{ $AttributeName }}.ValueString()){{- else}}attributeValue{{- end}} {
+					if newAttributeValue.{{ .Name }}.ValueString() == {{- if isNewNamedClassAttribute $Overwrite }}GetMOName(attributeValue.{{ $AttributeName }}.ValueString()){{- else}}attributeValue.TDn.ValueString(){{- end}} {
 						planned{{ .ResourceClassName }} = newAttributeValue
 						foundAttributeValue = true
 						break
 					}
 				}
 					{{- end}}
+				{{- end}}
 				{{- end}}
 				
 				{{ .ResourceClassName }} := {{ .ResourceClassName }}{{$.ResourceClassName}}ResourceModel {
@@ -680,6 +749,8 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 					{{- end}}
 				}
 
+				{{- if ne (len $NewProperties) 0}}
+				
 				if foundAttributeValue {
 					{{- range $NewProperties}}
 					{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
@@ -699,6 +770,7 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 						{{- end}}
 					{{- end}}
 				}
+				{{- end}}
 
 				{{.ResourceClassName}}List = append({{.ResourceClassName}}List, {{ .ResourceClassName }})
 			}
@@ -826,11 +898,15 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 				{{- if eq .ValueType "bitmask"}}
 			"{{$OverwritePropertyName}}": schema.SetAttribute{
 				MarkdownDescription: `{{.Comment}}`,
+					{{- if not .ReadOnly }}
 				Optional:            true,
+					{{- end }}
 				Computed:            true,
+					{{- if not .ReadOnly }}
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
 				},
+					{{- end}}
 					{{- if .ValidValues}}
 				Validators: []validator.Set{
 					setvalidator.SizeAtMost({{ len .ValidValues }}),
@@ -845,21 +921,28 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 			"{{$OverwritePropertyName}}": schema.StringAttribute{
 					{{- if or .IsNaming .IsRequired}}
 						{{- if ne $LegacyAttributeName ""}}
-				Optional: true,
+				{{- if not .ReadOnly }}
+				Optional:            true,
+				{{- end }}
 				Computed: true,
 						{{- else}}
 				Required:            true,
 						{{- end}}
 					{{- else }}
+				{{- if not .ReadOnly }}
 				Optional:            true,
+				{{- end }}
 				Computed:            true,
 					{{- end}}
+					{{- if not .ReadOnly }}
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					{{- if or .IsNaming .CreateOnly}}
 					stringplanmodifier.RequiresReplace(),
 					{{- end}}
 				},
+					{{- end}}
 					{{- if eq .Name "Annotation"}}
 				Default: stringdefault.StaticString(globalAnnotation),
 					{{- end}}
@@ -898,11 +981,15 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 						{{- if eq .ValueType "bitmask"}}
 						"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": schema.SetAttribute{
 							MarkdownDescription: `{{.Comment}}`,
+							{{- if not .ReadOnly }}
 							Optional:            true,
+							{{- end }}
 							Computed:            true,
+							{{- if not .ReadOnly }}
 							PlanModifiers: []planmodifier.Set{
 								setplanmodifier.UseStateForUnknown(),
 							},
+							{{- end }}
 							{{- if .ValidValues}}
 							Validators: []validator.Set{
 								setvalidator.SizeAtMost({{ len .ValidValues }}),
@@ -915,18 +1002,25 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 						},
 						{{- else}}
 						"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": schema.StringAttribute{
-							{{- if or .IsNaming .IsRequired}}
+							{{- if and (or .IsNaming .IsRequired) (not $.HasReadOnlyProperties)}}
 							Required:            true,
 							{{- else }}
 							Optional:            true,
 							Computed:            true,
 							{{- end}}
+							{{- if not .ReadOnly }}
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
-							{{- if .ValidValues}}
+							{{- end}}
+							{{- if or .ValidValues $.HasReadOnlyProperties}}
 							Validators: []validator.String{
+								{{- if .ValidValues}}
 								stringvalidator.OneOf({{- validatorString .ValidValues}}),
+								{{- end}}
+								{{- if or .IsNaming .IsRequired}}
+								MakeStringRequired(),
+								{{- end}}
 							},
 							{{- end}}
 							MarkdownDescription: `{{.Comment}}`,
@@ -1204,6 +1298,8 @@ func getAndSet{{.ResourceClassName}}Attributes(ctx context.Context, diags *diag.
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "GET", nil)
 	{{- end}}
 	
+	*data = *getEmpty{{.ResourceClassName}}ResourceModel()
+
 	if diags.HasError() {
 		return
 	}
@@ -1246,11 +1342,7 @@ func getAndSet{{.ResourceClassName}}Attributes(ctx context.Context, diags *diag.
 			
 			{{- if .HasChild}}
 				{{- range .Children}}
-					{{- if .IdentifiedBy}}
 			{{ .ResourceClassName }}{{$.ResourceClassName}}List := make([]{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel, 0)
-					{{- else}}
-			{{ .ResourceClassName }}{{$.ResourceClassName}}List := make([]{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel, 1)
-					{{- end}}
 				{{- end}}
 			_, ok := classReadInfo[0].(map[string]interface{})["children"]
 			if ok {
@@ -1260,7 +1352,7 @@ func getAndSet{{.ResourceClassName}}Attributes(ctx context.Context, diags *diag.
 						childAttributes := childClassDetails.(map[string]interface{})["attributes"].(map[string]interface{})
 						{{- range .Children}}
 						if childClassName == "{{ .PkgName }}" {
-							{{.ResourceClassName}}{{$.ResourceClassName}} := {{ .ResourceClassName}}{{$.ResourceClassName}}ResourceModel{}
+							{{.ResourceClassName}}{{$.ResourceClassName}} := getEmpty{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								{{- range .Properties}}
 									{{- if eq .ValueType "bitmask"}}
@@ -1295,11 +1387,7 @@ func getAndSet{{.ResourceClassName}}Attributes(ctx context.Context, diags *diag.
 									{{- end}}
 								{{- end}}
 							}
-							{{- if .IdentifiedBy}}
 							{{.ResourceClassName}}{{$.ResourceClassName}}List = append({{.ResourceClassName}}{{$.ResourceClassName}}List, {{.ResourceClassName}}{{$.ResourceClassName}})
-							{{- else}}
-							{{.ResourceClassName}}{{$.ResourceClassName}}List[0] =  {{.ResourceClassName}}{{$.ResourceClassName}}
-							{{- end}}
 						}
 						{{- end}}
 					}
@@ -1382,7 +1470,7 @@ func get{{$.ResourceClassName}}{{ .ResourceClassName }}ChildPayloads(ctx context
 		for _, {{ .PkgName }} := range {{ .PkgName }}Plan {
 			childMap := map[string]map[string]interface{}{"attributes": {}}
 		{{- range .Properties}}
-			if !{{ .PkgName }}.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}.IsUnknown(){
+			if !{{ .PkgName }}.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}.IsUnknown() &&  !{{ .PkgName }}.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}.IsNull(){
 			{{- if eq .ValueType "bitmask"}}
 				var tmp{{ .Name }} []string
 				{{ .PkgName }}.{{ .Name }}.ElementsAs(ctx, &tmp{{ .Name }}, false)
@@ -1476,7 +1564,7 @@ func get{{.ResourceClassName}}CreateJsonPayload(ctx context.Context, diags *diag
 	payloadMap["children"] = childPayloads
 	{{- end}}
 
-	{{- range .Properties}}
+	{{- range .Properties}}{{- if not .ReadOnly}}
 		{{- if eq .ValueType "bitmask"}}
 	if !data.{{ .Name }}.IsNull() && !data.{{ .Name }}.IsUnknown() {
 		var tmp{{ .Name }} []string
@@ -1488,7 +1576,7 @@ func get{{.ResourceClassName}}CreateJsonPayload(ctx context.Context, diags *diag
 		payloadMap["attributes"].(map[string]string)["{{ .PropertyName }}"] = data.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}.ValueString()
 	}
 		{{- end}}
-	{{- end}}
+	{{- end}}{{- end}}
 
 	payload, err := json.Marshal(map[string]interface{}{"{{.PkgName}}": payloadMap})
 	if err != nil {

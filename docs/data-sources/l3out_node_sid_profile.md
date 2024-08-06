@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_l3out_node_sid_profile"
 sidebar_current: "docs-aci-data-source-aci_l3out_node_sid_profile"
 description: |-
-  Data source for L3out Node SR-MPLS Segment ID Profile
+  Data source for ACI L3out Node SR-MPLS Segment ID Profile
 ---
 
 # aci_l3out_node_sid_profile #
 
-Data source for L3out Node SR-MPLS Segment ID Profile
+Data source for ACI L3out Node SR-MPLS Segment ID Profile
 
 ## API Information ##
 

@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_relation_to_taboo_contract"
 sidebar_current: "docs-aci-data-source-aci_relation_to_taboo_contract"
 description: |-
-  Data source for Relation To Taboo Contract
+  Data source for ACI Relation To Taboo Contract
 ---
 
 # aci_relation_to_taboo_contract #
 
-Data source for Relation To Taboo Contract
+Data source for ACI Relation To Taboo Contract
 
 ## API Information ##
 

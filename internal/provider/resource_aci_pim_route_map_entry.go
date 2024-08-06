@@ -14,6 +14,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -58,16 +59,58 @@ type PimRouteMapEntryResourceModel struct {
 	TagTag        types.Set    `tfsdk:"tags"`
 }
 
+func getEmptyPimRouteMapEntryResourceModel() *PimRouteMapEntryResourceModel {
+	return &PimRouteMapEntryResourceModel{
+		Id:         basetypes.NewStringNull(),
+		ParentDn:   basetypes.NewStringNull(),
+		Action:     basetypes.NewStringNull(),
+		Annotation: basetypes.NewStringNull(),
+		Descr:      basetypes.NewStringNull(),
+		Grp:        basetypes.NewStringNull(),
+		Name:       basetypes.NewStringNull(),
+		NameAlias:  basetypes.NewStringNull(),
+		Order:      basetypes.NewStringNull(),
+		Rp:         basetypes.NewStringNull(),
+		Src:        basetypes.NewStringNull(),
+		TagAnnotation: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"key":   types.StringType,
+				"value": types.StringType,
+			},
+		}),
+		TagTag: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"key":   types.StringType,
+				"value": types.StringType,
+			},
+		}),
+	}
+}
+
 // TagAnnotationPimRouteMapEntryResourceModel describes the resource data model for the children without relation ships.
 type TagAnnotationPimRouteMapEntryResourceModel struct {
 	Key   types.String `tfsdk:"key"`
 	Value types.String `tfsdk:"value"`
 }
 
+func getEmptyTagAnnotationPimRouteMapEntryResourceModel() TagAnnotationPimRouteMapEntryResourceModel {
+	return TagAnnotationPimRouteMapEntryResourceModel{
+		Key:   basetypes.NewStringNull(),
+		Value: basetypes.NewStringNull(),
+	}
+}
+
 // TagTagPimRouteMapEntryResourceModel describes the resource data model for the children without relation ships.
 type TagTagPimRouteMapEntryResourceModel struct {
 	Key   types.String `tfsdk:"key"`
 	Value types.String `tfsdk:"value"`
+}
+
+func getEmptyTagTagPimRouteMapEntryResourceModel() TagTagPimRouteMapEntryResourceModel {
+	return TagTagPimRouteMapEntryResourceModel{
+		Key:   basetypes.NewStringNull(),
+		Value: basetypes.NewStringNull(),
+	}
 }
 
 type PimRouteMapEntryIdentifier struct {
@@ -132,6 +175,7 @@ func (r *PimRouteMapEntryResource) Schema(ctx context.Context, req resource.Sche
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
 					stringvalidator.OneOf("deny", "permit"),
@@ -143,6 +187,7 @@ func (r *PimRouteMapEntryResource) Schema(ctx context.Context, req resource.Sche
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
 				MarkdownDescription: `The annotation of the Pim Route Map Entry object.`,
@@ -152,6 +197,7 @@ func (r *PimRouteMapEntryResource) Schema(ctx context.Context, req resource.Sche
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The description of the Pim Route Map Entry object.`,
 			},
@@ -160,6 +206,7 @@ func (r *PimRouteMapEntryResource) Schema(ctx context.Context, req resource.Sche
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The group ip of the Pim Route Map Entry object.`,
 			},
@@ -168,6 +215,7 @@ func (r *PimRouteMapEntryResource) Schema(ctx context.Context, req resource.Sche
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The name of the Pim Route Map Entry object.`,
 			},
@@ -176,6 +224,7 @@ func (r *PimRouteMapEntryResource) Schema(ctx context.Context, req resource.Sche
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The name alias of the Pim Route Map Entry object.`,
 			},
@@ -183,6 +232,7 @@ func (r *PimRouteMapEntryResource) Schema(ctx context.Context, req resource.Sche
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
 				MarkdownDescription: `PIM route map entry order.`,
@@ -192,6 +242,7 @@ func (r *PimRouteMapEntryResource) Schema(ctx context.Context, req resource.Sche
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The rendezvous point ip of the Pim Route Map Entry object.`,
 			},
@@ -200,6 +251,7 @@ func (r *PimRouteMapEntryResource) Schema(ctx context.Context, req resource.Sche
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The source ip of the Pim Route Map Entry object.`,
 			},
@@ -441,6 +493,8 @@ func (r *PimRouteMapEntryResource) ImportState(ctx context.Context, req resource
 func getAndSetPimRouteMapEntryAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *PimRouteMapEntryResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "pimRouteMapEntry,tagAnnotation,tagTag"), "GET", nil)
 
+	*data = *getEmptyPimRouteMapEntryResourceModel()
+
 	if diags.HasError() {
 		return
 	}
@@ -490,7 +544,7 @@ func getAndSetPimRouteMapEntryAttributes(ctx context.Context, diags *diag.Diagno
 					for childClassName, childClassDetails := range child.(map[string]interface{}) {
 						childAttributes := childClassDetails.(map[string]interface{})["attributes"].(map[string]interface{})
 						if childClassName == "tagAnnotation" {
-							TagAnnotationPimRouteMapEntry := TagAnnotationPimRouteMapEntryResourceModel{}
+							TagAnnotationPimRouteMapEntry := getEmptyTagAnnotationPimRouteMapEntryResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "key" {
 									TagAnnotationPimRouteMapEntry.Key = basetypes.NewStringValue(childAttributeValue.(string))
@@ -502,7 +556,7 @@ func getAndSetPimRouteMapEntryAttributes(ctx context.Context, diags *diag.Diagno
 							TagAnnotationPimRouteMapEntryList = append(TagAnnotationPimRouteMapEntryList, TagAnnotationPimRouteMapEntry)
 						}
 						if childClassName == "tagTag" {
-							TagTagPimRouteMapEntry := TagTagPimRouteMapEntryResourceModel{}
+							TagTagPimRouteMapEntry := getEmptyTagTagPimRouteMapEntryResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "key" {
 									TagTagPimRouteMapEntry.Key = basetypes.NewStringValue(childAttributeValue.(string))
@@ -569,10 +623,10 @@ func getPimRouteMapEntryTagAnnotationChildPayloads(ctx context.Context, diags *d
 		tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
 		for _, tagAnnotation := range tagAnnotationPlan {
 			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagAnnotation.Key.IsUnknown() {
+			if !tagAnnotation.Key.IsUnknown() && !tagAnnotation.Key.IsNull() {
 				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
 			}
-			if !tagAnnotation.Value.IsUnknown() {
+			if !tagAnnotation.Value.IsUnknown() && !tagAnnotation.Value.IsNull() {
 				childMap["attributes"]["value"] = tagAnnotation.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
@@ -608,10 +662,10 @@ func getPimRouteMapEntryTagTagChildPayloads(ctx context.Context, diags *diag.Dia
 		tagTagIdentifiers := []TagTagIdentifier{}
 		for _, tagTag := range tagTagPlan {
 			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagTag.Key.IsUnknown() {
+			if !tagTag.Key.IsUnknown() && !tagTag.Key.IsNull() {
 				childMap["attributes"]["key"] = tagTag.Key.ValueString()
 			}
-			if !tagTag.Value.IsUnknown() {
+			if !tagTag.Value.IsUnknown() && !tagTag.Value.IsNull() {
 				childMap["attributes"]["value"] = tagTag.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})

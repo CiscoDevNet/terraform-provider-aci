@@ -13,6 +13,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -54,16 +55,56 @@ type FvDnsAttrResourceModel struct {
 	TagTag        types.Set    `tfsdk:"tags"`
 }
 
+func getEmptyFvDnsAttrResourceModel() *FvDnsAttrResourceModel {
+	return &FvDnsAttrResourceModel{
+		Id:         basetypes.NewStringNull(),
+		ParentDn:   basetypes.NewStringNull(),
+		Annotation: basetypes.NewStringNull(),
+		Descr:      basetypes.NewStringNull(),
+		Filter:     basetypes.NewStringNull(),
+		Name:       basetypes.NewStringNull(),
+		NameAlias:  basetypes.NewStringNull(),
+		OwnerKey:   basetypes.NewStringNull(),
+		OwnerTag:   basetypes.NewStringNull(),
+		TagAnnotation: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"key":   types.StringType,
+				"value": types.StringType,
+			},
+		}),
+		TagTag: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"key":   types.StringType,
+				"value": types.StringType,
+			},
+		}),
+	}
+}
+
 // TagAnnotationFvDnsAttrResourceModel describes the resource data model for the children without relation ships.
 type TagAnnotationFvDnsAttrResourceModel struct {
 	Key   types.String `tfsdk:"key"`
 	Value types.String `tfsdk:"value"`
 }
 
+func getEmptyTagAnnotationFvDnsAttrResourceModel() TagAnnotationFvDnsAttrResourceModel {
+	return TagAnnotationFvDnsAttrResourceModel{
+		Key:   basetypes.NewStringNull(),
+		Value: basetypes.NewStringNull(),
+	}
+}
+
 // TagTagFvDnsAttrResourceModel describes the resource data model for the children without relation ships.
 type TagTagFvDnsAttrResourceModel struct {
 	Key   types.String `tfsdk:"key"`
 	Value types.String `tfsdk:"value"`
+}
+
+func getEmptyTagTagFvDnsAttrResourceModel() TagTagFvDnsAttrResourceModel {
+	return TagTagFvDnsAttrResourceModel{
+		Key:   basetypes.NewStringNull(),
+		Value: basetypes.NewStringNull(),
+	}
 }
 
 type FvDnsAttrIdentifier struct {
@@ -128,6 +169,7 @@ func (r *FvDnsAttrResource) Schema(ctx context.Context, req resource.SchemaReque
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
 				MarkdownDescription: `The annotation of the EPG uSeg DNS Attribute object.`,
@@ -137,6 +179,7 @@ func (r *FvDnsAttrResource) Schema(ctx context.Context, req resource.SchemaReque
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The description of the EPG uSeg DNS Attribute object.`,
 			},
@@ -145,6 +188,7 @@ func (r *FvDnsAttrResource) Schema(ctx context.Context, req resource.SchemaReque
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The domain name filter of the EPG uSeg DNS Attribute object.`,
 			},
@@ -152,6 +196,7 @@ func (r *FvDnsAttrResource) Schema(ctx context.Context, req resource.SchemaReque
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
 				MarkdownDescription: `The name of the EPG uSeg DNS Attribute object.`,
@@ -161,6 +206,7 @@ func (r *FvDnsAttrResource) Schema(ctx context.Context, req resource.SchemaReque
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The name alias of the EPG uSeg DNS Attribute object.`,
 			},
@@ -169,6 +215,7 @@ func (r *FvDnsAttrResource) Schema(ctx context.Context, req resource.SchemaReque
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The key for enabling clients to own their data for entity correlation.`,
 			},
@@ -177,6 +224,7 @@ func (r *FvDnsAttrResource) Schema(ctx context.Context, req resource.SchemaReque
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
 			},
@@ -418,6 +466,8 @@ func (r *FvDnsAttrResource) ImportState(ctx context.Context, req resource.Import
 func getAndSetFvDnsAttrAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvDnsAttrResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "fvDnsAttr,tagAnnotation,tagTag"), "GET", nil)
 
+	*data = *getEmptyFvDnsAttrResourceModel()
+
 	if diags.HasError() {
 		return
 	}
@@ -461,7 +511,7 @@ func getAndSetFvDnsAttrAttributes(ctx context.Context, diags *diag.Diagnostics, 
 					for childClassName, childClassDetails := range child.(map[string]interface{}) {
 						childAttributes := childClassDetails.(map[string]interface{})["attributes"].(map[string]interface{})
 						if childClassName == "tagAnnotation" {
-							TagAnnotationFvDnsAttr := TagAnnotationFvDnsAttrResourceModel{}
+							TagAnnotationFvDnsAttr := getEmptyTagAnnotationFvDnsAttrResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "key" {
 									TagAnnotationFvDnsAttr.Key = basetypes.NewStringValue(childAttributeValue.(string))
@@ -473,7 +523,7 @@ func getAndSetFvDnsAttrAttributes(ctx context.Context, diags *diag.Diagnostics, 
 							TagAnnotationFvDnsAttrList = append(TagAnnotationFvDnsAttrList, TagAnnotationFvDnsAttr)
 						}
 						if childClassName == "tagTag" {
-							TagTagFvDnsAttr := TagTagFvDnsAttrResourceModel{}
+							TagTagFvDnsAttr := getEmptyTagTagFvDnsAttrResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "key" {
 									TagTagFvDnsAttr.Key = basetypes.NewStringValue(childAttributeValue.(string))
@@ -540,10 +590,10 @@ func getFvDnsAttrTagAnnotationChildPayloads(ctx context.Context, diags *diag.Dia
 		tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
 		for _, tagAnnotation := range tagAnnotationPlan {
 			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagAnnotation.Key.IsUnknown() {
+			if !tagAnnotation.Key.IsUnknown() && !tagAnnotation.Key.IsNull() {
 				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
 			}
-			if !tagAnnotation.Value.IsUnknown() {
+			if !tagAnnotation.Value.IsUnknown() && !tagAnnotation.Value.IsNull() {
 				childMap["attributes"]["value"] = tagAnnotation.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
@@ -579,10 +629,10 @@ func getFvDnsAttrTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostic
 		tagTagIdentifiers := []TagTagIdentifier{}
 		for _, tagTag := range tagTagPlan {
 			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagTag.Key.IsUnknown() {
+			if !tagTag.Key.IsUnknown() && !tagTag.Key.IsNull() {
 				childMap["attributes"]["key"] = tagTag.Key.ValueString()
 			}
-			if !tagTag.Value.IsUnknown() {
+			if !tagTag.Value.IsUnknown() && !tagTag.Value.IsNull() {
 				childMap["attributes"]["value"] = tagTag.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})

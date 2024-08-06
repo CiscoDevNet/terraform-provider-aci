@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_relation_to_netflow_exporter"
 sidebar_current: "docs-aci-data-source-aci_relation_to_netflow_exporter"
 description: |-
-  Data source for Relation To Netflow Exporter
+  Data source for ACI Relation To Netflow Exporter
 ---
 
 # aci_relation_to_netflow_exporter #
 
-Data source for Relation To Netflow Exporter
+Data source for ACI Relation To Netflow Exporter
 
 ## API Information ##
 

@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_epg_useg_mac_attribute"
 sidebar_current: "docs-aci-data-source-aci_epg_useg_mac_attribute"
 description: |-
-  Data source for EPG uSeg MAC Attribute
+  Data source for ACI EPG uSeg MAC Attribute
 ---
 
 # aci_epg_useg_mac_attribute #
 
-Data source for EPG uSeg MAC Attribute
+Data source for ACI EPG uSeg MAC Attribute
 
 ## API Information ##
 

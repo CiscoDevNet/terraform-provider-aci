@@ -1,0 +1,1816 @@
+{
+        "qos:DppPol": {
+            "contains": {
+                "aaa:RbacAnnotation": "",
+                "fault:Counts": "",
+                "fault:Delegate": "",
+                "health:Inst": "",
+                "qos:RtDppPol": "",
+                "qos:RtEgressDppPol": "",
+                "qos:RtEgressQosDppPol": "",
+                "qos:RtIngressDppPol": "",
+                "qos:RtIngressQosDppPol": "",
+                "qos:RtQosDppIfPol": "",
+                "qos:RtQosEgressDppIfPol": "",
+                "qos:RtQosEgressDppIfPolCons": "",
+                "qos:RtQosIngressDppIfPol": "",
+                "qos:RtQosIngressDppIfPolCons": "",
+                "tag:AliasDelInst": "",
+                "tag:AliasInst": "",
+                "tag:Annotation": "",
+                "tag:ExtMngdInst": "",
+                "tag:Inst": "",
+                "tag:Tag": ""
+            },
+            "rnMap": {
+                "alias": "tag:AliasInst",
+                "aliasdel-": "tag:AliasDelInst",
+                "annotationKey-": "tag:Annotation",
+                "extmngd": "tag:ExtMngdInst",
+                "fd-": "fault:Delegate",
+                "fltCnts": "fault:Counts",
+                "health": "health:Inst",
+                "rbacDom-": "aaa:RbacAnnotation",
+                "rtegressDppPol-": "qos:RtEgressDppPol",
+                "rtfvDppPol-": "qos:RtDppPol",
+                "rtinfraQosDppIfPol-": "qos:RtQosDppIfPol",
+                "rtinfraQosEgressDppIfPol-": "qos:RtQosEgressDppIfPol",
+                "rtinfraQosIngressDppIfPol-": "qos:RtQosIngressDppIfPol",
+                "rtingressDppPol-": "qos:RtIngressDppPol",
+                "rtl1QosEgressDppIfPolCons-": "qos:RtQosEgressDppIfPolCons",
+                "rtl1QosIngressDppIfPolCons-": "qos:RtQosIngressDppIfPolCons",
+                "rtl3extEgressQosDppPol-": "qos:RtEgressQosDppPol",
+                "rtl3extIngressQosDppPol-": "qos:RtIngressQosDppPol",
+                "tag-": "tag:Inst",
+                "tagKey-": "tag:Tag"
+            },
+            "identifiedBy": [
+                "name"
+            ],
+            "rnFormat": "qosdpppol-{name}",
+            "containedBy": {
+                "fv:Tenant": "",
+                "infra:Infra": ""
+            },
+            "superClasses": [
+                "qos:ADppPol",
+                "fabric:L2IfPol",
+                "fabric:ProtoIfPol",
+                "fabric:ProtoPol",
+                "pol:Def",
+                "pol:Obj",
+                "naming:NamedObject"
+            ],
+            "subClasses": {
+
+            },
+            "relationFrom": {
+                "qos:RtDppPol": "fv:AEPg",
+                "qos:RtEgressDppPol": "qos:Requirement",
+                "qos:RtEgressQosDppPol": "l3ext:LIfP",
+                "qos:RtIngressDppPol": "qos:Requirement",
+                "qos:RtIngressQosDppPol": "l3ext:LIfP",
+                "qos:RtQosDppIfPol": "infra:AccGrp",
+                "qos:RtQosEgressDppIfPol": "infra:AccGrp",
+                "qos:RtQosEgressDppIfPolCons": "l1:EthIf",
+                "qos:RtQosIngressDppIfPol": "infra:AccGrp",
+                "qos:RtQosIngressDppIfPolCons": "l1:EthIf"
+            },
+            "relationTo": {
+
+            },
+            "dnFormats": [
+                "uni/infra/qosdpppol-{name}",
+                "uni/tn-{name}/qosdpppol-{name}"
+            ],
+            "writeAccess": [
+                "admin",
+                "custom-port-privilege",
+                "tenant-qos"
+            ],
+            "readAccess": [
+                "access-connectivity",
+                "admin",
+                "custom-port-privilege",
+                "ops",
+                "tenant-epg",
+                "tenant-ext-connectivity",
+                "tenant-network-profile",
+                "tenant-qos"
+            ],
+            "faults": {
+
+            },
+            "events": {
+                "E4214450": "creation||qos:DppPol",
+                "E4214451": "modification||qos:DppPol",
+                "E4214452": "deletion||qos:DppPol"
+            },
+            "stats": {
+
+            },
+            "versions": "1.2(2g)-",
+            "isAbstract": false,
+            "isConfigurable": true,
+            "isContextRoot": false,
+            "isNxosConverged": false,
+            "isDeprecated": false,
+            "isHidden": false,
+            "isEncrypted": false,
+            "isExportable": true,
+            "isPersistent": true,
+            "isSubjectToQuota": false,
+            "isObservable": true,
+            "hasStats": false,
+            "isStat": false,
+            "isFaultable": false,
+            "isDomainable": false,
+            "isHealthScorable": true,
+            "shouldCollectHealthStats": false,
+            "healthCollectionSource": "faults",
+            "hasEventRules": false,
+            "abstractionLayer": "logical",
+            "apicNxProcessing": false,
+            "monitoringPolicySource": "Parent",
+            "isCreatableDeletable": "always",
+            "platformFlavors": [
+
+            ],
+            "classId": "7681",
+            "className": "DppPol",
+            "classPkg": "qos",
+            "featureTag": "",
+            "moCategory": "Regular",
+            "label": "Data Plane Policing Policy",
+            "comment": [
+                "Define a Data Plane Policing policy. User is supposed\n                 to use this in scenarios where the incoming traffic need\n                 to be policed to certain levels"
+            ],
+            "properties": {
+                "adminSt": {
+                    "versions": "1.2(2g)-",
+                    "comment": [
+                         "The Administrative state of the policy"
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "23167",
+                    "propLocalId": "46",
+                    "label": "adminSt",
+                    "baseType": "scalar:Enum8",
+                    "modelType": "qos:DppPolAdminState",
+                    "needsPropDelimiters": false,
+                    "uitype": "enum",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "disabled", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "1", "localName": "disabled",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "disabled "},
+                         { "value": "0", "localName": "enabled",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "enabled "}
+                    ],
+                    "default": "disabled",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "annotation": {
+                    "versions": "3.2(1l)-",
+                    "comment": [
+                         "User annotation. Suggested format orchestrator:value"
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "38360",
+                    "propLocalId": "8719",
+                    "label": "Annotation",
+                    "baseType": "string:Basic",
+                    "modelType": "mo:Annotation",
+                    "needsPropDelimiters": false,
+                    "uitype": "string",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validators": [
+                         {"min" : 0, "max": 128,
+                             "regexs": [
+                                 {"regex" : "^[a-zA-Z0-9_.:-]+$", "type": "include"}
+                             ]
+                         }
+                    ],
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "be": {
+                    "versions": "1.2(2g)-",
+                    "comment": [
+                         "Excessive burst size (2R3C policer only)"
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "22908",
+                    "propLocalId": "5695",
+                    "label": "Excessive Burst",
+                    "baseType": "scalar:Uint64",
+                    "modelType": "dpp:Burst",
+                    "needsPropDelimiters": false,
+                    "uitype": "number",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": true,
+                    "likeProp": "dpp:Policer:be",
+                    "validators": [
+                         {"min" : 0, "max": 549755813760 }
+                    ],
+                    "validValues": [
+                         { "value": "unspecified", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "0xffffffffffffffff", "localName": "unspecified",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Unspecified "}
+                    ],
+                    "default": "unspecified",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "beUnit": {
+                    "versions": "1.2(2g)-",
+                    "comment": [
+                         "Excessive Burst unit - none, Kilo, Mega, Giga, ms, us"
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "22910",
+                    "propLocalId": "5697",
+                    "label": "Excessive Burst Unit",
+                    "baseType": "scalar:Enum8",
+                    "modelType": "dpp:BurstUnit",
+                    "needsPropDelimiters": false,
+                    "uitype": "enum",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": true,
+                    "likeProp": "dpp:Policer:beUnit",
+                    "validValues": [
+                         { "value": "unspecified", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "3", "localName": "giga",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Giga Bytes/Packets "},
+                         { "value": "1", "localName": "kilo",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Kilo Bytes/Packets "},
+                         { "value": "2", "localName": "mega",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Mega Bytes/Packets "},
+                         { "value": "4", "localName": "msec",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Milli Seconds "},
+                         { "value": "0", "localName": "unspecified",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Bytes/Packets "},
+                         { "value": "5", "localName": "usec",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Micro Seconds "}
+                    ],
+                    "default": "unspecified",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "burst": {
+                    "versions": "1.2(2g)-",
+                    "comment": [
+                         "Committed burst size, number of packets to absorb during\n                   a burst"
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "22724",
+                    "propLocalId": "986",
+                    "label": "Burst",
+                    "baseType": "scalar:Uint64",
+                    "modelType": "dpp:Burst",
+                    "needsPropDelimiters": false,
+                    "uitype": "number",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": true,
+                    "likeProp": "dpp:Policer:burst",
+                    "validators": [
+                         {"min" : 0, "max": 549755813760 }
+                    ],
+                    "validValues": [
+                         { "value": "unspecified", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "0xffffffffffffffff", "localName": "unspecified",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Unspecified "}
+                    ],
+                    "default": "unspecified",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "burstUnit": {
+                    "versions": "1.2(2g)-",
+                    "comment": [
+                         "Burst unit - byte, kbyte, mbyte etc."
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "22726",
+                    "propLocalId": "5593",
+                    "label": "Burst Unit",
+                    "baseType": "scalar:Enum8",
+                    "modelType": "dpp:BurstUnit",
+                    "needsPropDelimiters": false,
+                    "uitype": "enum",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": true,
+                    "likeProp": "dpp:Policer:burstUnit",
+                    "validValues": [
+                         { "value": "unspecified", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "3", "localName": "giga",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Giga Bytes/Packets "},
+                         { "value": "1", "localName": "kilo",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Kilo Bytes/Packets "},
+                         { "value": "2", "localName": "mega",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Mega Bytes/Packets "},
+                         { "value": "4", "localName": "msec",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Milli Seconds "},
+                         { "value": "0", "localName": "unspecified",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Bytes/Packets "},
+                         { "value": "5", "localName": "usec",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Micro Seconds "}
+                    ],
+                    "default": "unspecified",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "childAction": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "Delete or ignore. For internal use only."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "4",
+                    "propLocalId": "5",
+                    "label": "childAction",
+                    "baseType": "scalar:Bitmask32",
+                    "modelType": "mo:ModificationChildAction",
+                    "needsPropDelimiters": false,
+                    "uitype": "bitmask",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "16384", "localName": "deleteAll",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Delete All "},
+                         { "value": "8192", "localName": "deleteNonPresent",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Delete Non Present "},
+                         { "value": "4096", "localName": "ignore",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Ignore "}
+                    ],
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "conformAction": {
+                    "versions": "1.2(2g)-",
+                    "comment": [
+                         "Confirm action"
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "22911",
+                    "propLocalId": "5698",
+                    "label": "Confirm Action",
+                    "baseType": "scalar:Enum8",
+                    "modelType": "dpp:ConformRateAction",
+                    "needsPropDelimiters": false,
+                    "uitype": "enum",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": true,
+                    "likeProp": "dpp:Policer:conformAction",
+                    "validValues": [
+                         { "value": "transmit", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "2", "localName": "drop",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Drop "},
+                         { "value": "3", "localName": "mark",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Mark "},
+                         { "value": "1", "localName": "transmit",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Transmit "}
+                    ],
+                    "default": "transmit",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "conformMarkCos": {
+                    "versions": "1.2(2g)-",
+                    "comment": [
+                         "Conform Mark cos"
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "22917",
+                    "propLocalId": "5704",
+                    "label": "Conform mark cos",
+                    "baseType": "scalar:Uint16",
+                    "modelType": "dpp:CosMarkingValue",
+                    "needsPropDelimiters": false,
+                    "uitype": "number",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": true,
+                    "likeProp": "dpp:Policer:conformMarkCos",
+                    "validators": [
+                         {"min" : 0, "max": 7 }
+                    ],
+                    "validValues": [
+                         { "value": "unspecified", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "0xffff", "localName": "unspecified",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Unspecified "}
+                    ],
+                    "default": "unspecified",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "conformMarkDscp": {
+                    "versions": "1.2(2g)-",
+                    "comment": [
+                         "Conform Mark Dscp"
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "22914",
+                    "propLocalId": "5701",
+                    "label": "Conform mark dscp",
+                    "baseType": "scalar:Uint16",
+                    "modelType": "dpp:DscpMarkingValue",
+                    "needsPropDelimiters": false,
+                    "uitype": "number",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": true,
+                    "likeProp": "dpp:Policer:conformMarkDscp",
+                    "validators": [
+                         {"min" : 0, "max": 63 }
+                    ],
+                    "validValues": [
+                         { "value": "unspecified", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "0xffff", "localName": "unspecified",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Unspecified "}
+                    ],
+                    "default": "unspecified",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "descr": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "Specifies a description of the policy definition."
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "5579",
+                    "propLocalId": "28",
+                    "label": "Description",
+                    "baseType": "string:Basic",
+                    "modelType": "naming:Descr",
+                    "needsPropDelimiters": false,
+                    "uitype": "string",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": true,
+                    "likeProp": "naming:Described:descr",
+                    "validators": [
+                         {"min" : 0, "max": 128,
+                             "regexs": [
+                                 {"regex" : "^[a-zA-Z0-9\\\\!#$%()*,-./:;@ _{|}~?&+]+$", "type": "include"}
+                             ]
+                         }
+                    ],
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "dn": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "A tag or metadata is a non-hierarchical keyword or term assigned to the fabric module."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "1",
+                    "propLocalId": "2",
+                    "label": "dn",
+                    "baseType": "reference:BinRef",
+                    "modelType": "reference:BinRef",
+                    "needsPropDelimiters": true,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "exceedAction": {
+                    "versions": "1.2(2g)-",
+                    "comment": [
+                         "Exceed action"
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "22912",
+                    "propLocalId": "5699",
+                    "label": "Exceed Action",
+                    "baseType": "scalar:Enum8",
+                    "modelType": "dpp:ExceedRateAction",
+                    "needsPropDelimiters": false,
+                    "uitype": "enum",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": true,
+                    "likeProp": "dpp:Policer:exceedAction",
+                    "validValues": [
+                         { "value": "drop", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "2", "localName": "drop",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Drop "},
+                         { "value": "3", "localName": "mark",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Mark "},
+                         { "value": "1", "localName": "transmit",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Transmit "}
+                    ],
+                    "default": "drop",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "exceedMarkCos": {
+                    "versions": "1.2(2g)-",
+                    "comment": [
+                         "Exceed Mark cos"
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "22918",
+                    "propLocalId": "5705",
+                    "label": "Exceed mark cos",
+                    "baseType": "scalar:Uint16",
+                    "modelType": "dpp:CosMarkingValue",
+                    "needsPropDelimiters": false,
+                    "uitype": "number",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": true,
+                    "likeProp": "dpp:Policer:exceedMarkCos",
+                    "validators": [
+                         {"min" : 0, "max": 7 }
+                    ],
+                    "validValues": [
+                         { "value": "unspecified", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "0xffff", "localName": "unspecified",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Unspecified "}
+                    ],
+                    "default": "unspecified",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "exceedMarkDscp": {
+                    "versions": "1.2(2g)-",
+                    "comment": [
+                         "Exceed Mark Dscp"
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "22915",
+                    "propLocalId": "5702",
+                    "label": "Exceed mark dscp",
+                    "baseType": "scalar:Uint16",
+                    "modelType": "dpp:DscpMarkingValue",
+                    "needsPropDelimiters": false,
+                    "uitype": "number",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": true,
+                    "likeProp": "dpp:Policer:exceedMarkDscp",
+                    "validators": [
+                         {"min" : 0, "max": 63 }
+                    ],
+                    "validValues": [
+                         { "value": "unspecified", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "0xffff", "localName": "unspecified",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Unspecified "}
+                    ],
+                    "default": "unspecified",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "extMngdBy": {
+                    "versions": "3.2(1l)-",
+                    "comment": [
+                         "Indicates which orchestrator is managing this MO"
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "40499",
+                    "propLocalId": "8023",
+                    "label": "Managed By",
+                    "baseType": "scalar:Bitmask32",
+                    "modelType": "mo:ExtMngdByType",
+                    "needsPropDelimiters": false,
+                    "uitype": "bitmask",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "undefined", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "1", "localName": "msc",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "MSC "},
+                         { "value": "0", "localName": "undefined",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Undefined "}
+                    ],
+                    "default": "undefined",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "lcOwn": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "A value that indicates how this object was created. For internal use only."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "9",
+                    "propLocalId": "9",
+                    "label": "lcOwn",
+                    "baseType": "scalar:Enum8",
+                    "modelType": "mo:Owner",
+                    "needsPropDelimiters": false,
+                    "uitype": "enum",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "local", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "4", "localName": "implicit",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Implicit "},
+                         { "value": "0", "localName": "local",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Local "},
+                         { "value": "1", "localName": "policy",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Policy "},
+                         { "value": "2", "localName": "replica",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Replica "},
+                         { "value": "3", "localName": "resolveOnBehalf",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Resolved On Behalf "}
+                    ],
+                    "default": "local",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "modTs": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "The time when this object was last modified."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "7",
+                    "propLocalId": "7",
+                    "label": "modTs",
+                    "baseType": "scalar:Date",
+                    "modelType": "mo:TStamp",
+                    "needsPropDelimiters": false,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "never", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "0", "localName": "never",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Never "}
+                    ],
+                    "default": "never",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "mode": {
+                    "versions": "1.2(2g)-",
+                    "comment": [
+                         "Policer mode - bytes or packet policer"
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "22906",
+                    "propLocalId": "14",
+                    "label": "Bit or Packet",
+                    "baseType": "scalar:Enum8",
+                    "modelType": "dpp:Mode",
+                    "needsPropDelimiters": false,
+                    "uitype": "enum",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": true,
+                    "likeProp": "dpp:Policer:mode",
+                    "validValues": [
+                         { "value": "1", "localName": "bit",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Bit policer "},
+                         { "value": "bit", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "2", "localName": "packet",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Packet Policer "}
+                    ],
+                    "default": "bit",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "monPolDn": {
+                    "versions": "5.1(1h)-",
+                    "comment": [
+                         "The monitoring policy attached to this observable object."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "26896",
+                    "propLocalId": "228",
+                    "label": "Monitoring Policy",
+                    "baseType": "reference:BinRef",
+                    "modelType": "reference:BinRef",
+                    "needsPropDelimiters": true,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "name": {
+                    "versions": "1.2(2g)-",
+                    "comment": [
+                         "The name of the object."
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "22803",
+                    "propLocalId": "13",
+                    "label": "Name",
+                    "baseType": "string:Basic",
+                    "modelType": "naming:Name",
+                    "needsPropDelimiters": false,
+                    "uitype": "string",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": false,
+                    "isNaming": true,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": true,
+                    "isLike": false,
+                    "validators": [
+                         {"min" : 1, "max": 64,
+                             "regexs": [
+                                 {"regex" : "^[a-zA-Z0-9_.:-]+$", "type": "include"}
+                             ]
+                         }
+                    ],
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "nameAlias": {
+                    "versions": "2.2(1k)-",
+                    "isConfigurable": true,
+                    "propGlobalId": "28417",
+                    "propLocalId": "6719",
+                    "label": "Display Name",
+                    "baseType": "string:Basic",
+                    "modelType": "naming:NameAlias",
+                    "needsPropDelimiters": false,
+                    "uitype": "string",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validators": [
+                         {"min" : 0, "max": 63,
+                             "regexs": [
+                                 {"regex" : "^[a-zA-Z0-9_.-]+$", "type": "include"}
+                             ]
+                         }
+                    ],
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "ownerKey": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "The key for enabling clients to own their data for entity correlation."
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "15230",
+                    "propLocalId": "4100",
+                    "label": "ownerKey",
+                    "baseType": "string:Basic",
+                    "modelType": "naming:Descr",
+                    "needsPropDelimiters": false,
+                    "uitype": "string",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validators": [
+                         {"min" : 0, "max": 128,
+                             "regexs": [
+                                 {"regex" : "^[a-zA-Z0-9\\\\!#$%()*,-./:;@ _{|}~?&+]+$", "type": "include"}
+                             ]
+                         }
+                    ],
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "ownerTag": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "A tag for enabling clients to add their own data. For example, to indicate who created this object."
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "15231",
+                    "propLocalId": "4101",
+                    "label": "ownerTag",
+                    "baseType": "string:Basic",
+                    "modelType": "naming:Descr",
+                    "needsPropDelimiters": false,
+                    "uitype": "string",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validators": [
+                         {"min" : 0, "max": 64,
+                             "regexs": [
+                                 {"regex" : "^[a-zA-Z0-9\\\\!#$%()*,-./:;@ _{|}~?&+]+$", "type": "include"}
+                             ]
+                         }
+                    ],
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "pir": {
+                    "versions": "1.2(2g)-",
+                    "comment": [
+                         "Peak rate (pir) (2R3C policer only)"
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "22907",
+                    "propLocalId": "5694",
+                    "label": "Peak Rate",
+                    "baseType": "scalar:Uint64",
+                    "modelType": "dpp:Rate",
+                    "needsPropDelimiters": false,
+                    "uitype": "number",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": true,
+                    "likeProp": "dpp:Policer:pir",
+                    "validators": [
+                         {"min" : 0, "max": 4398046510080 }
+                    ],
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "pirUnit": {
+                    "versions": "1.2(2g)-",
+                    "comment": [
+                         "Peak Rate unit - none, Kilo, Mega, Giga"
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "22909",
+                    "propLocalId": "5696",
+                    "label": "Peak Rate Unit",
+                    "baseType": "scalar:Enum8",
+                    "modelType": "dpp:RateUnit",
+                    "needsPropDelimiters": false,
+                    "uitype": "enum",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": true,
+                    "likeProp": "dpp:Policer:pirUnit",
+                    "validValues": [
+                         { "value": "unspecified", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "3", "localName": "giga",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Giga Bits/Packets per second "},
+                         { "value": "1", "localName": "kilo",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Kilo Bits/Packets per second "},
+                         { "value": "2", "localName": "mega",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Mega Bits/Packets per second "},
+                         { "value": "0", "localName": "unspecified",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Bits/Packets per second "}
+                    ],
+                    "default": "unspecified",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "rate": {
+                    "versions": "1.2(2g)-",
+                    "comment": [
+                         "Allowed rate, committed rate at which the packets\n                   are allowed into the system"
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "22723",
+                    "propLocalId": "985",
+                    "label": "Rate",
+                    "baseType": "scalar:Uint64",
+                    "modelType": "dpp:Rate",
+                    "needsPropDelimiters": false,
+                    "uitype": "number",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": true,
+                    "likeProp": "dpp:Policer:rate",
+                    "validators": [
+                         {"min" : 0, "max": 4398046510080 }
+                    ],
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "rateUnit": {
+                    "versions": "1.2(2g)-",
+                    "comment": [
+                         "Rate unit - bps, kbps, mbps, packets etc."
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "22725",
+                    "propLocalId": "5592",
+                    "label": "Rate Unit",
+                    "baseType": "scalar:Enum8",
+                    "modelType": "dpp:RateUnit",
+                    "needsPropDelimiters": false,
+                    "uitype": "enum",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": true,
+                    "likeProp": "dpp:Policer:rateUnit",
+                    "validValues": [
+                         { "value": "unspecified", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "3", "localName": "giga",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Giga Bits/Packets per second "},
+                         { "value": "1", "localName": "kilo",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Kilo Bits/Packets per second "},
+                         { "value": "2", "localName": "mega",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Mega Bits/Packets per second "},
+                         { "value": "0", "localName": "unspecified",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Bits/Packets per second "}
+                    ],
+                    "default": "unspecified",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "rn": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "Identifies an object from its siblings within the context of its parent object. The distinguished name contains a sequence of relative names."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "2",
+                    "propLocalId": "3",
+                    "label": "rn",
+                    "baseType": "reference:BinRN",
+                    "modelType": "reference:BinRN",
+                    "needsPropDelimiters": true,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "sharingMode": {
+                    "versions": "3.1(1i)-",
+                    "comment": [
+                         "Policer sharing mode"
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "34347",
+                    "propLocalId": "8135",
+                    "label": "Policer Sharing Mode",
+                    "baseType": "scalar:Enum8",
+                    "modelType": "dpp:SharingMode",
+                    "needsPropDelimiters": false,
+                    "uitype": "enum",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": true,
+                    "likeProp": "dpp:Policer:sharingMode",
+                    "validValues": [
+                         { "value": "2", "localName": "dedicated",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "Policer is Dedicated on the members of the\n                     place where is attached"
+                             ],
+                             "label": "Dedicated Policer "},
+                         { "value": "dedicated", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "1", "localName": "shared",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "Policer is Shared on a given leaf among the\n                     attachment points using it"
+                             ],
+                             "label": "Shared Policer "}
+                    ],
+                    "default": "dedicated",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "status": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "The upgrade status. This property is for internal use only."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "3",
+                    "propLocalId": "4",
+                    "label": "status",
+                    "baseType": "scalar:Bitmask32",
+                    "modelType": "mo:ModificationStatus",
+                    "needsPropDelimiters": false,
+                    "uitype": "bitmask",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "2", "localName": "created",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "In a setter method: specifies that an object should be created. An error is returned if the object already exists.  \nIn the return value of a setter method: indicates that an object has been created.  \n"
+                             ],
+                             "label": "Created "},
+                         { "value": "8", "localName": "deleted",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "In a setter method: specifies that an object should be deleted.  \nIn the return value of a setter method: indicates that an object has been deleted.\n"
+                             ],
+                             "label": "Deleted "},
+                         { "value": "4", "localName": "modified",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "In a setter method: specifies that an object should be modified  \nIn the return value of a setter method: indicates that an object has been modified.\n"
+                             ],
+                             "label": "Modified "}
+                    ],
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "type": {
+                    "versions": "1.2(2g)-",
+                    "comment": [
+                         "Policer type"
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "22905",
+                    "propLocalId": "33",
+                    "label": "1R2C or 2R3C Policer",
+                    "baseType": "scalar:Enum8",
+                    "modelType": "dpp:Type",
+                    "needsPropDelimiters": false,
+                    "uitype": "enum",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": true,
+                    "likeProp": "dpp:Policer:type",
+                    "validValues": [
+                         { "value": "1", "localName": "1R2C",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "1 Rate 2 Color "},
+                         { "value": "2", "localName": "2R3C",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "2 Rate 3 Color "},
+                         { "value": "1R2C", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "}
+                    ],
+                    "default": "1R2C",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "uid": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "A unique identifier for this object."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "8",
+                    "propLocalId": "8",
+                    "label": "uid",
+                    "baseType": "scalar:Uint16",
+                    "modelType": "scalar:Uint16",
+                    "needsPropDelimiters": false,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "userdom": {
+                    "versions": "5.0(1k)-",
+                    "isConfigurable": true,
+                    "propGlobalId": "60657",
+                    "propLocalId": "13244",
+                    "label": "userdom",
+                    "baseType": "string:Basic",
+                    "modelType": "mo:UserDomType",
+                    "needsPropDelimiters": false,
+                    "uitype": "string",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validators": [
+                         {"min" : 0, "max": 1024,
+                             "regexs": [
+                                 {"regex" : "^[a-zA-Z0-9_.:-]+$", "type": "include"}
+                             ]
+                         }
+                    ],
+                    "validValues": [
+                         { "value": "all", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "}
+                    ],
+                    "default": "all",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "violateAction": {
+                    "versions": "1.2(2g)-",
+                    "comment": [
+                         "Violate action"
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "22913",
+                    "propLocalId": "5700",
+                    "label": "Violate Action",
+                    "baseType": "scalar:Enum8",
+                    "modelType": "dpp:ViolateRateAction",
+                    "needsPropDelimiters": false,
+                    "uitype": "enum",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": true,
+                    "likeProp": "dpp:Policer:violateAction",
+                    "validValues": [
+                         { "value": "drop", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "2", "localName": "drop",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Drop "},
+                         { "value": "3", "localName": "mark",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Mark "},
+                         { "value": "1", "localName": "transmit",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Transmit "}
+                    ],
+                    "default": "drop",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "violateMarkCos": {
+                    "versions": "1.2(2g)-",
+                    "comment": [
+                         "Violate Mark cos"
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "22919",
+                    "propLocalId": "5706",
+                    "label": "Violate mark cos",
+                    "baseType": "scalar:Uint16",
+                    "modelType": "dpp:CosMarkingValue",
+                    "needsPropDelimiters": false,
+                    "uitype": "number",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": true,
+                    "likeProp": "dpp:Policer:violateMarkCos",
+                    "validators": [
+                         {"min" : 0, "max": 7 }
+                    ],
+                    "validValues": [
+                         { "value": "unspecified", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "0xffff", "localName": "unspecified",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Unspecified "}
+                    ],
+                    "default": "unspecified",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "violateMarkDscp": {
+                    "versions": "1.2(2g)-",
+                    "comment": [
+                         "Violate Mark Dscp"
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "22916",
+                    "propLocalId": "5703",
+                    "label": "Violate mark dscp",
+                    "baseType": "scalar:Uint16",
+                    "modelType": "dpp:DscpMarkingValue",
+                    "needsPropDelimiters": false,
+                    "uitype": "number",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": true,
+                    "likeProp": "dpp:Policer:violateMarkDscp",
+                    "validators": [
+                         {"min" : 0, "max": 63 }
+                    ],
+                    "validValues": [
+                         { "value": "unspecified", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "0xffff", "localName": "unspecified",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Unspecified "}
+                    ],
+                    "default": "unspecified",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                }
+            }
+        }
+}

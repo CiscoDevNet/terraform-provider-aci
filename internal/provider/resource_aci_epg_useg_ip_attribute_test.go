@@ -22,22 +22,22 @@ func TestAccResourceFvIpAttrWithFvCrtrn(t *testing.T) {
 				Config:             testConfigFvIpAttrMinDependencyWithFvCrtrnAllowExisting,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "name", "131"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test_2", "name", "131"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test_2", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test_2", "description", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "ip", "131.107.1.200"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test_2", "ip", "131.107.1.200"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test_2", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test_2", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test_2", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "use_epg_subnet", "no"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test_2", "use_epg_subnet", "no"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.allow_test", "name", "131"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.allow_test_2", "name", "131"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.allow_test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.allow_test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.allow_test", "description", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.allow_test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.allow_test", "ip", "131.107.1.200"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.allow_test_2", "ip", "131.107.1.200"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.allow_test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.allow_test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.allow_test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.allow_test_2", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.allow_test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.allow_test_2", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.allow_test", "use_epg_subnet", "no"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.allow_test_2", "use_epg_subnet", "no"),
 				),
 			},
 		},
@@ -66,22 +66,22 @@ func TestAccResourceFvIpAttrWithFvCrtrn(t *testing.T) {
 				Config:             testConfigFvIpAttrMinDependencyWithFvCrtrnAllowExisting,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "name", "131"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test_2", "name", "131"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test_2", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test_2", "description", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "ip", "131.107.1.200"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test_2", "ip", "131.107.1.200"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test_2", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test_2", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test_2", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "use_epg_subnet", "no"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test_2", "use_epg_subnet", "no"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.allow_test", "name", "131"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.allow_test_2", "name", "131"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.allow_test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.allow_test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.allow_test", "description", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.allow_test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.allow_test", "ip", "131.107.1.200"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.allow_test_2", "ip", "131.107.1.200"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.allow_test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.allow_test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.allow_test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.allow_test_2", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.allow_test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.allow_test_2", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.allow_test", "use_epg_subnet", "no"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.allow_test_2", "use_epg_subnet", "no"),
 				),
 			},
 		},
@@ -113,11 +113,11 @@ func TestAccResourceFvIpAttrWithFvCrtrn(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "name", "131"),
 					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "annotation", "annotation"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "description", "description"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "description", "description_1"),
 					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "ip", "0.0.0.0"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "name_alias", "name_alias"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "owner_key", "owner_key"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "owner_tag", "owner_tag"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "name_alias", "name_alias_1"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "owner_key", "owner_key_1"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "owner_tag", "owner_tag_1"),
 					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "use_epg_subnet", "yes"),
 				),
 			},
@@ -167,11 +167,11 @@ func TestAccResourceFvIpAttrWithFvCrtrn(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "annotations.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "tags.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "tags.1.value", "test_value"),
 				),
 			},
 			// Import testing with children
@@ -188,12 +188,12 @@ func TestAccResourceFvIpAttrWithFvCrtrn(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "annotations.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "annotations.#", "2"),
 					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "tags.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "tags.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "tags.#", "2"),
 				),
 			},
@@ -203,10 +203,10 @@ func TestAccResourceFvIpAttrWithFvCrtrn(t *testing.T) {
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "annotations.0.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "annotations.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "annotations.#", "1"),
 					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "tags.0.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "tags.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "tags.#", "1"),
 				),
 			},
@@ -224,16 +224,16 @@ func TestAccResourceFvIpAttrWithFvCrtrn(t *testing.T) {
 }
 
 const testConfigFvIpAttrMinDependencyWithFvCrtrnAllowExisting = testConfigFvCrtrnMinDependencyWithFvAEPg + `
-resource "aci_epg_useg_ip_attribute" "test" {
+resource "aci_epg_useg_ip_attribute" "allow_test" {
   parent_dn = aci_epg_useg_block_statement.test.id
   ip = "131.107.1.200"
   name = "131"
 }
-resource "aci_epg_useg_ip_attribute" "test_2" {
+resource "aci_epg_useg_ip_attribute" "allow_test_2" {
   parent_dn = aci_epg_useg_block_statement.test.id
   ip = "131.107.1.200"
   name = "131"
-  depends_on = [aci_epg_useg_ip_attribute.test]
+  depends_on = [aci_epg_useg_ip_attribute.allow_test]
 }
 `
 
@@ -250,11 +250,11 @@ resource "aci_epg_useg_ip_attribute" "test" {
   parent_dn = aci_epg_useg_block_statement.test.id
   name = "131"
   annotation = "annotation"
-  description = "description"
+  description = "description_1"
   ip = "0.0.0.0"
-  name_alias = "name_alias"
-  owner_key = "owner_key"
-  owner_tag = "owner_tag"
+  name_alias = "name_alias_1"
+  owner_key = "owner_key_1"
+  owner_tag = "owner_tag_1"
   use_epg_subnet = "yes"
 }
 `
@@ -284,7 +284,7 @@ resource "aci_epg_useg_ip_attribute" "test" {
 	},
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
   tags = [
@@ -294,7 +294,7 @@ resource "aci_epg_useg_ip_attribute" "test" {
 	},
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
 }
@@ -316,13 +316,13 @@ resource "aci_epg_useg_ip_attribute" "test" {
   annotations = [ 
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
   tags = [ 
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
 }

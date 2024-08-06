@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_l3out_consumer_label"
 sidebar_current: "docs-aci-data-source-aci_l3out_consumer_label"
 description: |-
-  Data source for L3out Consumer Label
+  Data source for ACI L3out Consumer Label
 ---
 
 # aci_l3out_consumer_label #
 
-Data source for L3out Consumer Label
+Data source for ACI L3out Consumer Label
 
 ## API Information ##
 

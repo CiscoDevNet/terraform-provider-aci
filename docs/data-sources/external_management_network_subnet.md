@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_external_management_network_subnet"
 sidebar_current: "docs-aci-data-source-aci_external_management_network_subnet"
 description: |-
-  Data source for External Management Network Subnet
+  Data source for ACI External Management Network Subnet
 ---
 
 # aci_external_management_network_subnet #
 
-Data source for External Management Network Subnet
+Data source for ACI External Management Network Subnet
 
 ## API Information ##
 

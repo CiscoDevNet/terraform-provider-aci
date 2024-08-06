@@ -22,28 +22,28 @@ func TestAccResourceFvVmAttrWithFvCrtrn(t *testing.T) {
 				Config:             testConfigFvVmAttrMinDependencyWithFvCrtrnAllowExisting,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "name", "vm_attribute"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "name", "vm_attribute"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "category", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "category", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "description", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "label_name", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "label_name", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "operator", "equals"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "operator", "equals"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "type", "vm-name"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "type", "vm-name"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "value", "default_value"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "value", "default_value"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test", "name", "vm_attribute"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test_2", "name", "vm_attribute"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test", "category", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test_2", "category", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test", "description", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test", "label_name", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test_2", "label_name", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test", "operator", "equals"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test_2", "operator", "equals"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test_2", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test_2", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test", "type", "vm-name"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test_2", "type", "vm-name"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test", "value", "default_value"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test_2", "value", "default_value"),
 				),
 			},
 		},
@@ -72,28 +72,28 @@ func TestAccResourceFvVmAttrWithFvCrtrn(t *testing.T) {
 				Config:             testConfigFvVmAttrMinDependencyWithFvCrtrnAllowExisting,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "name", "vm_attribute"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "name", "vm_attribute"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "category", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "category", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "description", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "label_name", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "label_name", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "operator", "equals"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "operator", "equals"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "type", "vm-name"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "type", "vm-name"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "value", "default_value"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "value", "default_value"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test", "name", "vm_attribute"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test_2", "name", "vm_attribute"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test", "category", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test_2", "category", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test", "description", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test", "label_name", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test_2", "label_name", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test", "operator", "equals"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test_2", "operator", "equals"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test_2", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test_2", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test", "type", "vm-name"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test_2", "type", "vm-name"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test", "value", "default_value"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test_2", "value", "default_value"),
 				),
 			},
 		},
@@ -129,12 +129,12 @@ func TestAccResourceFvVmAttrWithFvCrtrn(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "name", "vm_attribute"),
 					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "annotation", "annotation"),
 					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "category", "all_category"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "description", "description"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "description", "description_1"),
 					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "label_name", "label_name"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "name_alias", "name_alias"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "name_alias", "name_alias_1"),
 					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "operator", "contains"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "owner_key", "owner_key"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "owner_tag", "owner_tag"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "owner_key", "owner_key_1"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "owner_tag", "owner_tag_1"),
 					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "type", "domain"),
 					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "value", "all_value"),
 				),
@@ -191,11 +191,11 @@ func TestAccResourceFvVmAttrWithFvCrtrn(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "annotations.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "tags.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "tags.1.value", "test_value"),
 				),
 			},
 			// Import testing with children
@@ -212,12 +212,12 @@ func TestAccResourceFvVmAttrWithFvCrtrn(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "annotations.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "annotations.#", "2"),
 					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "tags.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "tags.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "tags.#", "2"),
 				),
 			},
@@ -227,10 +227,10 @@ func TestAccResourceFvVmAttrWithFvCrtrn(t *testing.T) {
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "annotations.0.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "annotations.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "annotations.#", "1"),
 					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "tags.0.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "tags.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "tags.#", "1"),
 				),
 			},
@@ -257,28 +257,28 @@ func TestAccResourceFvVmAttrWithFvSCrtrn(t *testing.T) {
 				Config:             testConfigFvVmAttrMinDependencyWithFvSCrtrnAllowExisting,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "name", "vm_attribute"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "name", "vm_attribute"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "category", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "category", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "description", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "label_name", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "label_name", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "operator", "equals"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "operator", "equals"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "type", "vm-name"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "type", "vm-name"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "value", "default_value"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "value", "default_value"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test", "name", "vm_attribute"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test_2", "name", "vm_attribute"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test", "category", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test_2", "category", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test", "description", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test", "label_name", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test_2", "label_name", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test", "operator", "equals"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test_2", "operator", "equals"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test_2", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test_2", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test", "type", "vm-name"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test_2", "type", "vm-name"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test", "value", "default_value"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test_2", "value", "default_value"),
 				),
 			},
 		},
@@ -307,28 +307,28 @@ func TestAccResourceFvVmAttrWithFvSCrtrn(t *testing.T) {
 				Config:             testConfigFvVmAttrMinDependencyWithFvSCrtrnAllowExisting,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "name", "vm_attribute"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "name", "vm_attribute"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "category", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "category", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "description", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "label_name", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "label_name", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "operator", "equals"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "operator", "equals"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "type", "vm-name"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "type", "vm-name"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "value", "default_value"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test_2", "value", "default_value"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test", "name", "vm_attribute"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test_2", "name", "vm_attribute"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test", "category", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test_2", "category", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test", "description", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test", "label_name", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test_2", "label_name", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test", "operator", "equals"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test_2", "operator", "equals"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test_2", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test_2", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test", "type", "vm-name"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test_2", "type", "vm-name"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test", "value", "default_value"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.allow_test_2", "value", "default_value"),
 				),
 			},
 		},
@@ -364,12 +364,12 @@ func TestAccResourceFvVmAttrWithFvSCrtrn(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "name", "vm_attribute"),
 					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "annotation", "annotation"),
 					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "category", "all_category"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "description", "description"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "description", "description_1"),
 					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "label_name", "label_name"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "name_alias", "name_alias"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "name_alias", "name_alias_1"),
 					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "operator", "contains"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "owner_key", "owner_key"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "owner_tag", "owner_tag"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "owner_key", "owner_key_1"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "owner_tag", "owner_tag_1"),
 					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "type", "domain"),
 					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "value", "all_value"),
 				),
@@ -426,11 +426,11 @@ func TestAccResourceFvVmAttrWithFvSCrtrn(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "annotations.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "tags.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "tags.1.value", "test_value"),
 				),
 			},
 			// Import testing with children
@@ -447,12 +447,12 @@ func TestAccResourceFvVmAttrWithFvSCrtrn(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "annotations.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "annotations.#", "2"),
 					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "tags.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "tags.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "tags.#", "2"),
 				),
 			},
@@ -462,10 +462,10 @@ func TestAccResourceFvVmAttrWithFvSCrtrn(t *testing.T) {
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "annotations.0.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "annotations.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "annotations.#", "1"),
 					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "tags.0.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "tags.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_epg_useg_vm_attribute.test", "tags.#", "1"),
 				),
 			},
@@ -483,16 +483,16 @@ func TestAccResourceFvVmAttrWithFvSCrtrn(t *testing.T) {
 }
 
 const testConfigFvVmAttrMinDependencyWithFvCrtrnAllowExisting = testConfigFvCrtrnMinDependencyWithFvAEPg + `
-resource "aci_epg_useg_vm_attribute" "test" {
+resource "aci_epg_useg_vm_attribute" "allow_test" {
   parent_dn = aci_epg_useg_block_statement.test.id
   name = "vm_attribute"
   value = "default_value"
 }
-resource "aci_epg_useg_vm_attribute" "test_2" {
+resource "aci_epg_useg_vm_attribute" "allow_test_2" {
   parent_dn = aci_epg_useg_block_statement.test.id
   name = "vm_attribute"
   value = "default_value"
-  depends_on = [aci_epg_useg_vm_attribute.test]
+  depends_on = [aci_epg_useg_vm_attribute.allow_test]
 }
 `
 
@@ -510,12 +510,12 @@ resource "aci_epg_useg_vm_attribute" "test" {
   name = "vm_attribute"
   annotation = "annotation"
   category = "all_category"
-  description = "description"
+  description = "description_1"
   label_name = "label_name"
-  name_alias = "name_alias"
+  name_alias = "name_alias_1"
   operator = "contains"
-  owner_key = "owner_key"
-  owner_tag = "owner_tag"
+  owner_key = "owner_key_1"
+  owner_tag = "owner_tag_1"
   type = "domain"
   value = "all_value"
 }
@@ -549,7 +549,7 @@ resource "aci_epg_useg_vm_attribute" "test" {
 	},
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
   tags = [
@@ -559,7 +559,7 @@ resource "aci_epg_useg_vm_attribute" "test" {
 	},
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
 }
@@ -581,13 +581,13 @@ resource "aci_epg_useg_vm_attribute" "test" {
   annotations = [ 
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
   tags = [ 
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
 }
@@ -604,16 +604,16 @@ resource "aci_epg_useg_vm_attribute" "test" {
 `
 
 const testConfigFvVmAttrMinDependencyWithFvSCrtrnAllowExisting = testConfigFvSCrtrnMinDependencyWithFvCrtrn + `
-resource "aci_epg_useg_vm_attribute" "test" {
+resource "aci_epg_useg_vm_attribute" "allow_test" {
   parent_dn = aci_epg_useg_sub_block_statement.test.id
   name = "vm_attribute"
   value = "default_value"
 }
-resource "aci_epg_useg_vm_attribute" "test_2" {
+resource "aci_epg_useg_vm_attribute" "allow_test_2" {
   parent_dn = aci_epg_useg_sub_block_statement.test.id
   name = "vm_attribute"
   value = "default_value"
-  depends_on = [aci_epg_useg_vm_attribute.test]
+  depends_on = [aci_epg_useg_vm_attribute.allow_test]
 }
 `
 
@@ -631,12 +631,12 @@ resource "aci_epg_useg_vm_attribute" "test" {
   name = "vm_attribute"
   annotation = "annotation"
   category = "all_category"
-  description = "description"
+  description = "description_1"
   label_name = "label_name"
-  name_alias = "name_alias"
+  name_alias = "name_alias_1"
   operator = "contains"
-  owner_key = "owner_key"
-  owner_tag = "owner_tag"
+  owner_key = "owner_key_1"
+  owner_tag = "owner_tag_1"
   type = "domain"
   value = "all_value"
 }
@@ -670,7 +670,7 @@ resource "aci_epg_useg_vm_attribute" "test" {
 	},
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
   tags = [
@@ -680,7 +680,7 @@ resource "aci_epg_useg_vm_attribute" "test" {
 	},
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
 }
@@ -702,13 +702,13 @@ resource "aci_epg_useg_vm_attribute" "test" {
   annotations = [ 
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
   tags = [ 
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
 }

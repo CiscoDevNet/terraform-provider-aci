@@ -14,6 +14,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -52,16 +53,52 @@ type L3extRsRedistributePolResourceModel struct {
 	TagTag              types.Set    `tfsdk:"tags"`
 }
 
+func getEmptyL3extRsRedistributePolResourceModel() *L3extRsRedistributePolResourceModel {
+	return &L3extRsRedistributePolResourceModel{
+		Id:                  basetypes.NewStringNull(),
+		ParentDn:            basetypes.NewStringNull(),
+		Annotation:          basetypes.NewStringNull(),
+		Src:                 basetypes.NewStringNull(),
+		TnRtctrlProfileName: basetypes.NewStringNull(),
+		TagAnnotation: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"key":   types.StringType,
+				"value": types.StringType,
+			},
+		}),
+		TagTag: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"key":   types.StringType,
+				"value": types.StringType,
+			},
+		}),
+	}
+}
+
 // TagAnnotationL3extRsRedistributePolResourceModel describes the resource data model for the children without relation ships.
 type TagAnnotationL3extRsRedistributePolResourceModel struct {
 	Key   types.String `tfsdk:"key"`
 	Value types.String `tfsdk:"value"`
 }
 
+func getEmptyTagAnnotationL3extRsRedistributePolResourceModel() TagAnnotationL3extRsRedistributePolResourceModel {
+	return TagAnnotationL3extRsRedistributePolResourceModel{
+		Key:   basetypes.NewStringNull(),
+		Value: basetypes.NewStringNull(),
+	}
+}
+
 // TagTagL3extRsRedistributePolResourceModel describes the resource data model for the children without relation ships.
 type TagTagL3extRsRedistributePolResourceModel struct {
 	Key   types.String `tfsdk:"key"`
 	Value types.String `tfsdk:"value"`
+}
+
+func getEmptyTagTagL3extRsRedistributePolResourceModel() TagTagL3extRsRedistributePolResourceModel {
+	return TagTagL3extRsRedistributePolResourceModel{
+		Key:   basetypes.NewStringNull(),
+		Value: basetypes.NewStringNull(),
+	}
 }
 
 type L3extRsRedistributePolIdentifier struct {
@@ -127,6 +164,7 @@ func (r *L3extRsRedistributePolResource) Schema(ctx context.Context, req resourc
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
 				MarkdownDescription: `The annotation of the L3out Redistribute Policy object.`,
@@ -135,6 +173,7 @@ func (r *L3extRsRedistributePolResource) Schema(ctx context.Context, req resourc
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
 				Validators: []validator.String{
@@ -146,6 +185,7 @@ func (r *L3extRsRedistributePolResource) Schema(ctx context.Context, req resourc
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
 				MarkdownDescription: `The name of the Route Control Profile object.`,
@@ -388,6 +428,8 @@ func (r *L3extRsRedistributePolResource) ImportState(ctx context.Context, req re
 func getAndSetL3extRsRedistributePolAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *L3extRsRedistributePolResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "l3extRsRedistributePol,tagAnnotation,tagTag"), "GET", nil)
 
+	*data = *getEmptyL3extRsRedistributePolResourceModel()
+
 	if diags.HasError() {
 		return
 	}
@@ -419,7 +461,7 @@ func getAndSetL3extRsRedistributePolAttributes(ctx context.Context, diags *diag.
 					for childClassName, childClassDetails := range child.(map[string]interface{}) {
 						childAttributes := childClassDetails.(map[string]interface{})["attributes"].(map[string]interface{})
 						if childClassName == "tagAnnotation" {
-							TagAnnotationL3extRsRedistributePol := TagAnnotationL3extRsRedistributePolResourceModel{}
+							TagAnnotationL3extRsRedistributePol := getEmptyTagAnnotationL3extRsRedistributePolResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "key" {
 									TagAnnotationL3extRsRedistributePol.Key = basetypes.NewStringValue(childAttributeValue.(string))
@@ -431,7 +473,7 @@ func getAndSetL3extRsRedistributePolAttributes(ctx context.Context, diags *diag.
 							TagAnnotationL3extRsRedistributePolList = append(TagAnnotationL3extRsRedistributePolList, TagAnnotationL3extRsRedistributePol)
 						}
 						if childClassName == "tagTag" {
-							TagTagL3extRsRedistributePol := TagTagL3extRsRedistributePolResourceModel{}
+							TagTagL3extRsRedistributePol := getEmptyTagTagL3extRsRedistributePolResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "key" {
 									TagTagL3extRsRedistributePol.Key = basetypes.NewStringValue(childAttributeValue.(string))
@@ -498,10 +540,10 @@ func getL3extRsRedistributePolTagAnnotationChildPayloads(ctx context.Context, di
 		tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
 		for _, tagAnnotation := range tagAnnotationPlan {
 			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagAnnotation.Key.IsUnknown() {
+			if !tagAnnotation.Key.IsUnknown() && !tagAnnotation.Key.IsNull() {
 				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
 			}
-			if !tagAnnotation.Value.IsUnknown() {
+			if !tagAnnotation.Value.IsUnknown() && !tagAnnotation.Value.IsNull() {
 				childMap["attributes"]["value"] = tagAnnotation.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
@@ -537,10 +579,10 @@ func getL3extRsRedistributePolTagTagChildPayloads(ctx context.Context, diags *di
 		tagTagIdentifiers := []TagTagIdentifier{}
 		for _, tagTag := range tagTagPlan {
 			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagTag.Key.IsUnknown() {
+			if !tagTag.Key.IsUnknown() && !tagTag.Key.IsNull() {
 				childMap["attributes"]["key"] = tagTag.Key.ValueString()
 			}
-			if !tagTag.Value.IsUnknown() {
+			if !tagTag.Value.IsUnknown() && !tagTag.Value.IsNull() {
 				childMap["attributes"]["value"] = tagTag.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})

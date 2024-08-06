@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_relation_to_consumed_contract"
 sidebar_current: "docs-aci-data-source-aci_relation_to_consumed_contract"
 description: |-
-  Data source for Relation To Consumed Contract
+  Data source for ACI Relation To Consumed Contract
 ---
 
 # aci_relation_to_consumed_contract #
 
-Data source for Relation To Consumed Contract
+Data source for ACI Relation To Consumed Contract
 
 ## API Information ##
 

@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_relation_to_imported_contract"
 sidebar_current: "docs-aci-data-source-aci_relation_to_imported_contract"
 description: |-
-  Data source for Relation To Imported Contract
+  Data source for ACI Relation To Imported Contract
 ---
 
 # aci_relation_to_imported_contract #
 
-Data source for Relation To Imported Contract
+Data source for ACI Relation To Imported Contract
 
 ## API Information ##
 

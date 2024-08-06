@@ -23,14 +23,14 @@ children:
       value: "value_1"
       
     - key: "key_1"
-      value: "value_2"
+      value: "test_value"
       
   tags:
     - key: "key_0"
       value: "value_1"
       
     - key: "key_1"
-      value: "value_2"
+      value: "test_value"
       
 parents:
   - class_name: "fvAEPg"
@@ -48,41 +48,45 @@ parents:
 targets:
   - class_name: "fvESg"
     target_dn: "uni/tn-test_tenant/ap-test_ap/esg-esg_0"
-    target_dn_ref: "aci_endpoint_security_group.test_0.id"
+    target_dn_ref: "aci_endpoint_security_group.test_endpoint_security_group_0.id"
     parent_dependency: "fvAp"
     parent_dependency_dn_ref: "aci_application_profile.test.id"
     target_resource_name: "endpoint_security_group"
     relation_resource_name: "contract_master"
     parent_dn_key: "application_profile_dn"
+    static: false
     properties:
         name: "esg_0"
   - class_name: "fvESg"
     target_dn: "uni/tn-test_tenant/ap-test_ap/esg-esg_1"
-    target_dn_ref: "aci_endpoint_security_group.test_1.id"
+    target_dn_ref: "aci_endpoint_security_group.test_endpoint_security_group_1.id"
     parent_dependency: "fvAp"
     parent_dependency_dn_ref: "aci_application_profile.test.id"
     target_resource_name: "endpoint_security_group"
     relation_resource_name: "contract_master"
     parent_dn_key: "application_profile_dn"
+    static: false
     properties:
         name: "esg_1"
   - class_name: "fvAEPg"
     target_dn: "uni/tn-test_tenant/ap-test_ap/epg-epg_2"
-    target_dn_ref: "aci_application_epg.test_2.id"
+    target_dn_ref: "aci_application_epg.test_application_epg_0.id"
     parent_dependency: "fvAp"
     parent_dependency_dn_ref: "aci_application_profile.test.id"
     target_resource_name: "application_epg"
     relation_resource_name: "contract_master"
     parent_dn_key: "application_profile_dn"
+    static: false
     properties:
         name: "epg_2"
   - class_name: "fvAEPg"
     target_dn: "uni/tn-test_tenant/ap-test_ap/epg-epg_3"
-    target_dn_ref: "aci_application_epg.test_3.id"
+    target_dn_ref: "aci_application_epg.test_application_epg_1.id"
     parent_dependency: "fvAp"
     parent_dependency_dn_ref: "aci_application_profile.test.id"
     target_resource_name: "application_epg"
     relation_resource_name: "contract_master"
     parent_dn_key: "application_profile_dn"
+    static: false
     properties:
         name: "epg_3"

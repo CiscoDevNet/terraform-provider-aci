@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_pim_route_map_policy"
 sidebar_current: "docs-aci-data-source-aci_pim_route_map_policy"
 description: |-
-  Data source for Pim Route Map Policy
+  Data source for ACI Pim Route Map Policy
 ---
 
 # aci_pim_route_map_policy #
 
-Data source for Pim Route Map Policy
+Data source for ACI Pim Route Map Policy
 
 ## API Information ##
 
