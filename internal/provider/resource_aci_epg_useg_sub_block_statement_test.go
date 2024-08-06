@@ -142,15 +142,6 @@ func TestAccResourceFvSCrtrnWithFvCrtrn(t *testing.T) {
 				ResourceName:      "aci_epg_useg_sub_block_statement.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "name", "sub_criterion"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "match", "any"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "owner_tag", ""),
-				),
 			},
 			// Update with children
 			{
@@ -179,23 +170,6 @@ func TestAccResourceFvSCrtrnWithFvCrtrn(t *testing.T) {
 				ResourceName:      "aci_epg_useg_sub_block_statement.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "name", "sub_criterion"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "match", "any"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "annotations.1.value", "value_2"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test", "tags.1.value", "value_2"),
-				),
 			},
 			// Update with children removed from config
 			{
@@ -370,15 +344,6 @@ func TestAccResourceFvSCrtrnWithFvSCrtrn(t *testing.T) {
 				ResourceName:      "aci_epg_useg_sub_block_statement.test_1",
 				ImportState:       true,
 				ImportStateVerify: true,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "name", "sub_criterion"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "description", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "match", "any"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "owner_tag", ""),
-				),
 			},
 			// Update with children
 			{
@@ -407,23 +372,6 @@ func TestAccResourceFvSCrtrnWithFvSCrtrn(t *testing.T) {
 				ResourceName:      "aci_epg_useg_sub_block_statement.test_1",
 				ImportState:       true,
 				ImportStateVerify: true,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "name", "sub_criterion"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "description", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "match", "any"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "annotations.1.value", "value_2"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_sub_block_statement.test_1", "tags.1.value", "value_2"),
-				),
 			},
 			// Update with children removed from config
 			{
