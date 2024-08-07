@@ -48,6 +48,8 @@ data "aci_data_plane_policing_policy" "example_tenant" {
   - The distinguished name (DN) of classes below can be used but currently there is no available resource for it:
     - [infraInfra](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraInfra/overview)
 
+  - Default: `uni/infra`
+  
 * `name` (name) - (string) The name of the Data Plane Policing Policy object.
 
 ### Read-Only ###

@@ -12,6 +12,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
@@ -45,7 +46,7 @@ func (d *QosDppPolDataSource) Schema(ctx context.Context, req datasource.SchemaR
 				MarkdownDescription: "The distinguished name (DN) of the Data Plane Policing Policy object.",
 			},
 			"parent_dn": schema.StringAttribute{
-				Required:            true,
+				Optional:            true,
 				MarkdownDescription: "The distinguished name (DN) of the parent object.",
 			},
 			"admin_state": schema.StringAttribute{
@@ -224,6 +225,10 @@ func (d *QosDppPolDataSource) Read(ctx context.Context, req datasource.ReadReque
 
 	if resp.Diagnostics.HasError() {
 		return
+	}
+
+	if data.ParentDn.IsNull() || data.ParentDn.IsUnknown() {
+		data.ParentDn = basetypes.NewStringValue("uni/infra")
 	}
 
 	setQosDppPolId(ctx, data)

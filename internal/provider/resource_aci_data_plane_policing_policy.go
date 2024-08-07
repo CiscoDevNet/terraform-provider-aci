@@ -199,7 +199,9 @@ func (r *QosDppPolResource) Schema(ctx context.Context, req resource.SchemaReque
 				},
 			},
 			"parent_dn": schema.StringAttribute{
-				Required:            true,
+				Optional:            true,
+				Computed:            true,
+				Default:             stringdefault.StaticString("uni/infra"),
 				MarkdownDescription: "The distinguished name (DN) of the parent object.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),

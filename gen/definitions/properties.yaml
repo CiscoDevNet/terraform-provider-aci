@@ -879,6 +879,7 @@ fhsTrustCtrlPol:
 
 qosDppPol:
   default_values:
+    parent_dn: "uni/infra"
     pir: "0"
     rate: "0"
   documentation:
