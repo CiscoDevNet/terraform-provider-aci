@@ -54,6 +54,7 @@ type FvESgResourceModel struct {
 	Name                       types.String `tfsdk:"name"`
 	NameAlias                  types.String `tfsdk:"name_alias"`
 	PcEnfPref                  types.String `tfsdk:"intra_esg_isolation"`
+	PcTag                      types.String `tfsdk:"pc_tag"`
 	PrefGrMemb                 types.String `tfsdk:"preferred_group_member"`
 	Shutdown                   types.String `tfsdk:"admin_state"`
 	FvRsCons                   types.Set    `tfsdk:"relation_to_consumed_contracts"`
@@ -87,6 +88,7 @@ func getEmptyFvESgResourceModel() *FvESgResourceModel {
 		Name:         basetypes.NewStringNull(),
 		NameAlias:    basetypes.NewStringNull(),
 		PcEnfPref:    basetypes.NewStringNull(),
+		PcTag:        basetypes.NewStringNull(),
 		PrefGrMemb:   basetypes.NewStringNull(),
 		Shutdown:     basetypes.NewStringNull(),
 		FvRsCons: types.SetNull(types.ObjectType{
@@ -482,6 +484,7 @@ func (r *FvESgResource) UpgradeState(ctx context.Context) map[int64]resource.Sta
 					Name:                 priorStateData.Name,
 					NameAlias:            priorStateData.NameAlias,
 					PcEnfPref:            priorStateData.PcEnfPref,
+					PcTag:                basetypes.NewStringNull(),
 					PrefGrMemb:           priorStateData.PrefGrMemb,
 					Shutdown:             basetypes.NewStringNull(),
 					DeprecatedMatchT:     priorStateData.MatchT,
@@ -1238,6 +1241,10 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				},
 				MarkdownDescription: `Parameter used to determine whether communication between endpoints within the ESG is blocked.`,
 			},
+			"pc_tag": schema.StringAttribute{
+				Computed:            true,
+				MarkdownDescription: `The classification tag used for policy enforcement and zoning.`,
+			},
 			"preferred_group_member": schema.StringAttribute{
 				Optional: true,
 				Computed: true,
@@ -1277,6 +1284,7 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
+							Validators:          []validator.String{},
 							MarkdownDescription: `The annotation of the Relation To Consumed Contract object.`,
 						},
 						"priority": schema.StringAttribute{
@@ -1291,9 +1299,13 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							MarkdownDescription: `The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.`,
 						},
 						"contract_name": schema.StringAttribute{
-							Required: true,
+							Optional: true,
+							Computed: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+							},
+							Validators: []validator.String{
+								MakeStringRequired(),
 							},
 							MarkdownDescription: `The consumer contract name.`,
 						},
@@ -1315,6 +1327,7 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
+							Validators:          []validator.String{},
 							MarkdownDescription: `The annotation of the Relation To Imported Contract object.`,
 						},
 						"priority": schema.StringAttribute{
@@ -1329,9 +1342,13 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							MarkdownDescription: `The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.`,
 						},
 						"imported_contract_name": schema.StringAttribute{
-							Required: true,
+							Optional: true,
+							Computed: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+							},
+							Validators: []validator.String{
+								MakeStringRequired(),
 							},
 							MarkdownDescription: `The contract interface name.`,
 						},
@@ -1357,12 +1374,17 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
+							Validators:          []validator.String{},
 							MarkdownDescription: `The annotation of the Relation To Intra EPG Contract object.`,
 						},
 						"contract_name": schema.StringAttribute{
-							Required: true,
+							Optional: true,
+							Computed: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+							},
+							Validators: []validator.String{
+								MakeStringRequired(),
 							},
 							MarkdownDescription: `The contract name.`,
 						},
@@ -1384,6 +1406,7 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
+							Validators:          []validator.String{},
 							MarkdownDescription: `The annotation of the Relation To Provided Contract object.`,
 						},
 						"match_criteria": schema.StringAttribute{
@@ -1409,9 +1432,13 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							MarkdownDescription: `The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.`,
 						},
 						"contract_name": schema.StringAttribute{
-							Required: true,
+							Optional: true,
+							Computed: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+							},
+							Validators: []validator.String{
+								MakeStringRequired(),
 							},
 							MarkdownDescription: `The provider contract name.`,
 						},
@@ -1436,6 +1463,7 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
+							Validators:          []validator.String{},
 							MarkdownDescription: `The annotation of the Relation To VRF object.`,
 						},
 						"vrf_name": schema.StringAttribute{
@@ -1444,6 +1472,7 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
+							Validators:          []validator.String{},
 							MarkdownDescription: `The name of the VRF object.`,
 						},
 					},
@@ -1464,12 +1493,17 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
+							Validators:          []validator.String{},
 							MarkdownDescription: `The annotation of the Relation To Contract Master object.`,
 						},
 						"target_dn": schema.StringAttribute{
-							Required: true,
+							Optional: true,
+							Computed: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+							},
+							Validators: []validator.String{
+								MakeStringRequired(),
 							},
 							MarkdownDescription: `The distinguished name of the target.`,
 						},
@@ -1486,16 +1520,24 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"key": schema.StringAttribute{
-							Required: true,
+							Optional: true,
+							Computed: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+							},
+							Validators: []validator.String{
+								MakeStringRequired(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
 						"value": schema.StringAttribute{
-							Required: true,
+							Optional: true,
+							Computed: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+							},
+							Validators: []validator.String{
+								MakeStringRequired(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -1512,16 +1554,24 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"key": schema.StringAttribute{
-							Required: true,
+							Optional: true,
+							Computed: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+							},
+							Validators: []validator.String{
+								MakeStringRequired(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
 						"value": schema.StringAttribute{
-							Required: true,
+							Optional: true,
+							Computed: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+							},
+							Validators: []validator.String{
+								MakeStringRequired(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -1874,6 +1924,9 @@ func getAndSetFvESgAttributes(ctx context.Context, diags *diag.Diagnostics, clie
 				}
 				if attributeName == "pcEnfPref" {
 					data.PcEnfPref = basetypes.NewStringValue(attributeValue.(string))
+				}
+				if attributeName == "pcTag" {
+					data.PcTag = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "prefGrMemb" {
 					data.PrefGrMemb = basetypes.NewStringValue(attributeValue.(string))

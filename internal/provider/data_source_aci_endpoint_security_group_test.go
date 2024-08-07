@@ -30,6 +30,7 @@ func TestAccDataSourceFvESgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("data.aci_endpoint_security_group.test", "match_criteria", "AtleastOne"),
 					resource.TestCheckResourceAttr("data.aci_endpoint_security_group.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("data.aci_endpoint_security_group.test", "preferred_group_member", "exclude"),
+					resource.TestCheckResourceAttrSet("data.aci_endpoint_security_group.test", "pc_tag"),
 				),
 			},
 			{
