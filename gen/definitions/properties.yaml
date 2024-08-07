@@ -924,6 +924,9 @@ qosDppPol:
     - class_name: "fvTenant"
 
 netflowExporterPol:
+  resource_required:
+    - dstAddr
+    - dstPort
   overwrites:
     dst_addr: "destination_address"
     dst_port: "destination_port"

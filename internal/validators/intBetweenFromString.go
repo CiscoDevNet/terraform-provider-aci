@@ -10,21 +10,21 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework-validators/helpers/validatordiag"
 )
 
-var _ validator.String = inBetweenFromStringValidator{}
+var _ validator.String = InBetweenFromStringValidator{}
 
-type inBetweenFromStringValidator struct {
-	min, max int32
+type InBetweenFromStringValidator struct {
+	min, max int
 }
 
-func (v inBetweenFromStringValidator) Description(ctx context.Context) string {
+func (v InBetweenFromStringValidator) Description(ctx context.Context) string {
 	return v.MarkdownDescription(ctx)
 }
 
-func (v inBetweenFromStringValidator) MarkdownDescription(_ context.Context) string {
+func (v InBetweenFromStringValidator) MarkdownDescription(_ context.Context) string {
 	return fmt.Sprintf("value must be between %d and %d", v.min, v.max)
 }
 
-func (v inBetweenFromStringValidator) ValidateString(ctx context.Context, request validator.StringRequest, response *validator.StringResponse) {
+func (v InBetweenFromStringValidator) ValidateString(ctx context.Context, request validator.StringRequest, response *validator.StringResponse) {
 	if request.ConfigValue.IsNull() || request.ConfigValue.IsUnknown() {
 		return
 	}
@@ -44,12 +44,12 @@ func (v inBetweenFromStringValidator) ValidateString(ctx context.Context, reques
 	}
 }
 
-func InBetweenFromString(min, max int32) validator.String {
+func InBetweenFromString(min, max int) validator.String {
 	if min > max {
 		return nil
 	}
 
-	return inBetweenFromStringValidator{
+	return InBetweenFromStringValidator{
 		min: min,
 		max: max,
 	}

@@ -11,7 +11,7 @@ import (
 	"reflect"
 	"strings"
 
-	customtypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/validators"
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
@@ -51,7 +51,7 @@ type MgmtInstPResourceModel struct {
 	Descr         types.String                         `tfsdk:"description"`
 	Name          types.String                         `tfsdk:"name"`
 	NameAlias     types.String                         `tfsdk:"name_alias"`
-	Prio          customtypes.MgmtInstPprioStringValue `tfsdk:"priority"`
+	Prio          customTypes.MgmtInstPprioStringValue `tfsdk:"priority"`
 	MgmtRsOoBCons types.Set                            `tfsdk:"relation_to_consumed_out_of_band_contracts"`
 	TagAnnotation types.Set                            `tfsdk:"annotations"`
 	TagTag        types.Set                            `tfsdk:"tags"`
@@ -90,7 +90,7 @@ func getEmptyMgmtInstPResourceModel() *MgmtInstPResourceModel {
 // MgmtRsOoBConsMgmtInstPResourceModel describes the resource data model for the children without relation ships.
 type MgmtRsOoBConsMgmtInstPResourceModel struct {
 	Annotation      types.String                             `tfsdk:"annotation"`
-	Prio            customtypes.MgmtRsOoBConsprioStringValue `tfsdk:"priority"`
+	Prio            customTypes.MgmtRsOoBConsprioStringValue `tfsdk:"priority"`
 	TnVzOOBBrCPName types.String                             `tfsdk:"out_of_band_contract_name"`
 }
 
@@ -215,7 +215,7 @@ func (r *MgmtInstPResource) Schema(ctx context.Context, req resource.SchemaReque
 				MarkdownDescription: `The name alias of the External Management Network Instance Profile object.`,
 			},
 			"priority": schema.StringAttribute{
-				CustomType: customtypes.MgmtInstPprioStringType{},
+				CustomType: customTypes.MgmtInstPprioStringType{},
 				Optional:   true,
 				Computed:   true,
 				PlanModifiers: []planmodifier.String{
@@ -248,7 +248,7 @@ func (r *MgmtInstPResource) Schema(ctx context.Context, req resource.SchemaReque
 							MarkdownDescription: `The annotation of the Relation To Consumed Out Of Band Contract object.`,
 						},
 						"priority": schema.StringAttribute{
-							CustomType: customtypes.MgmtRsOoBConsprioStringType{},
+							CustomType: customTypes.MgmtRsOoBConsprioStringType{},
 							Optional:   true,
 							Computed:   true,
 							PlanModifiers: []planmodifier.String{
@@ -542,7 +542,7 @@ func getAndSetMgmtInstPAttributes(ctx context.Context, diags *diag.Diagnostics, 
 					data.NameAlias = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "prio" {
-					data.Prio = customtypes.NewMgmtInstPprioStringValue(attributeValue.(string))
+					data.Prio = customTypes.NewMgmtInstPprioStringValue(attributeValue.(string))
 				}
 			}
 			MgmtRsOoBConsMgmtInstPList := make([]MgmtRsOoBConsMgmtInstPResourceModel, 0)
@@ -561,7 +561,7 @@ func getAndSetMgmtInstPAttributes(ctx context.Context, diags *diag.Diagnostics, 
 									MgmtRsOoBConsMgmtInstP.Annotation = basetypes.NewStringValue(childAttributeValue.(string))
 								}
 								if childAttributeName == "prio" {
-									MgmtRsOoBConsMgmtInstP.Prio = customtypes.NewMgmtRsOoBConsprioStringValue(childAttributeValue.(string))
+									MgmtRsOoBConsMgmtInstP.Prio = customTypes.NewMgmtRsOoBConsprioStringValue(childAttributeValue.(string))
 								}
 								if childAttributeName == "tnVzOOBBrCPName" {
 									MgmtRsOoBConsMgmtInstP.TnVzOOBBrCPName = basetypes.NewStringValue(childAttributeValue.(string))

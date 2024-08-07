@@ -11,7 +11,7 @@ import (
 	"reflect"
 	"strings"
 
-	customtypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/validators"
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
@@ -54,9 +54,9 @@ type VzOOBBrCPResourceModel struct {
 	NameAlias     types.String                               `tfsdk:"name_alias"`
 	OwnerKey      types.String                               `tfsdk:"owner_key"`
 	OwnerTag      types.String                               `tfsdk:"owner_tag"`
-	Prio          customtypes.VzOOBBrCPprioStringValue       `tfsdk:"priority"`
+	Prio          customTypes.VzOOBBrCPprioStringValue       `tfsdk:"priority"`
 	Scope         types.String                               `tfsdk:"scope"`
-	TargetDscp    customtypes.VzOOBBrCPtargetDscpStringValue `tfsdk:"target_dscp"`
+	TargetDscp    customTypes.VzOOBBrCPtargetDscpStringValue `tfsdk:"target_dscp"`
 	TagAnnotation types.Set                                  `tfsdk:"annotations"`
 	TagTag        types.Set                                  `tfsdk:"tags"`
 }
@@ -232,7 +232,7 @@ func (r *VzOOBBrCPResource) Schema(ctx context.Context, req resource.SchemaReque
 				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
 			},
 			"priority": schema.StringAttribute{
-				CustomType: customtypes.VzOOBBrCPprioStringType{},
+				CustomType: customTypes.VzOOBBrCPprioStringType{},
 				Optional:   true,
 				Computed:   true,
 				PlanModifiers: []planmodifier.String{
@@ -260,7 +260,7 @@ func (r *VzOOBBrCPResource) Schema(ctx context.Context, req resource.SchemaReque
 				MarkdownDescription: `Represents the scope of this contract. If the scope is set as application-profile, the epg can only communicate with epgs in the same application-profile.`,
 			},
 			"target_dscp": schema.StringAttribute{
-				CustomType: customtypes.VzOOBBrCPtargetDscpStringType{},
+				CustomType: customTypes.VzOOBBrCPtargetDscpStringType{},
 				Optional:   true,
 				Computed:   true,
 				PlanModifiers: []planmodifier.String{
@@ -548,13 +548,13 @@ func getAndSetVzOOBBrCPAttributes(ctx context.Context, diags *diag.Diagnostics, 
 					data.OwnerTag = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "prio" {
-					data.Prio = customtypes.NewVzOOBBrCPprioStringValue(attributeValue.(string))
+					data.Prio = customTypes.NewVzOOBBrCPprioStringValue(attributeValue.(string))
 				}
 				if attributeName == "scope" {
 					data.Scope = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "targetDscp" {
-					data.TargetDscp = customtypes.NewVzOOBBrCPtargetDscpStringValue(attributeValue.(string))
+					data.TargetDscp = customTypes.NewVzOOBBrCPtargetDscpStringValue(attributeValue.(string))
 				}
 			}
 			TagAnnotationVzOOBBrCPList := make([]TagAnnotationVzOOBBrCPResourceModel, 0)

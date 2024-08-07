@@ -1,4 +1,4 @@
-package customtypes
+package customTypes
 
 import (
 	"context"

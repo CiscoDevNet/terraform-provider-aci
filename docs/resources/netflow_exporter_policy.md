@@ -39,8 +39,10 @@ The configuration snippet below creates a Netflow Exporter Policy with only requ
 ```hcl
 
 resource "aci_netflow_exporter_policy" "example_tenant" {
-  parent_dn = aci_tenant.example.id
-  name      = "netfow_exporter"
+  parent_dn           = aci_tenant.example.id
+  destination_address = "2.2.2.1"
+  destination_port    = "https"
+  name                = "netfow_exporter"
 }
 
 ```
@@ -86,6 +88,9 @@ All examples for the Netflow Exporter Policy resource can be found in the [examp
 
 ### Required ###
 
+* `destination_address` (dstAddr) - (string) The destination IP address of the remote node.
+* `destination_port` (dstPort) - (string) The destination port of the remote node.
+  - Valid Values: `dns`, `ftpData`, `http`, `https`, `pop3`, `rtsp`, `smtp`, `ssh`, `unspecified`.
 * `name` (name) - (string) The name of the Netflow Exporter Policy object.
 
 ### Read-Only ###
@@ -106,10 +111,6 @@ All examples for the Netflow Exporter Policy resource can be found in the [examp
 * `dscp` (dscp) - (string) The DSCP value of the Netflow Exporter Policy object.
   - Default: `CS2`
   - Valid Values: `AF11`, `AF12`, `AF13`, `AF21`, `AF22`, `AF23`, `AF31`, `AF32`, `AF33`, `AF41`, `AF42`, `AF43`, `CS0`, `CS1`, `CS2`, `CS3`, `CS4`, `CS5`, `CS6`, `CS7`, `EF`, `VA`.
-* `destination_address` (dstAddr) - (string) The destination IP address of the remote node.
-* `destination_port` (dstPort) - (string) The destination port of the remote node.
-  - Default: `unspecified`
-  - Valid Values: `dns`, `ftpData`, `http`, `https`, `pop3`, `rtsp`, `smtp`, `ssh`, `unspecified`.
 * `name_alias` (nameAlias) - (string) The name alias of the Netflow Exporter Policy object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.

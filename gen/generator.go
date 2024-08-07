@@ -118,7 +118,7 @@ var templateFuncs = template.FuncMap{
 	"getPropertyNameForLegacyAttribute": GetPropertyNameForLegacyAttribute,
 	"isNewAttributeStringType":          IsNewAttributeStringType,
 	"isNewNamedClassAttribute":          IsNewNamedClassAttribute,
-	"isInRequiredTestValues":            IsInRequiredTestValues,
+	"isRequiredInTestValue":             IsRequiredInTestValue,
 	"getChildAttributesFromBlocks":      GetChildAttributesFromBlocks,
 	"getNewChildAttributes":             GetNewChildAttributes,
 	"containsRequired":                  ContainsRequired,
@@ -768,7 +768,7 @@ func main() {
 			}
 			model.TestVars = testVarsMap
 			for propertyName, property := range model.Properties {
-				if len(property.ValidValues) > 0 && len(property.Validators) > 0 {
+				if len(property.ValidValuesMap) > 0 && len(property.Validators) > 0 {
 					renderTemplate("custom_type.go.tmpl", fmt.Sprintf("%s_%s.go", model.PkgName, propertyName), "./internal/custom_types", property)
 				}
 			}
@@ -934,6 +934,7 @@ type Property struct {
 	Versions                 string
 	NamedPropertyClass       string
 	IgnoreInTestExampleValue string
+	ValidValuesMap           map[string]string
 	ValidValues              []string
 	IdentifiedBy             []interface{}
 	Validators               []interface{}
@@ -1402,12 +1403,12 @@ func (m *Model) SetClassProperties(classDetails interface{}) {
 
 			if propertyValue.(map[string]interface{})["validValues"] != nil {
 				removedValidValuesList := GetValidValuesToRemove(m.PkgName, propertyName, m.Definitions)
-
+				property.ValidValuesMap = make(map[string]string)
 				for _, details := range propertyValue.(map[string]interface{})["validValues"].([]interface{}) {
 					validValueName := details.(map[string]interface{})["localName"].(string)
 					if validValueName != "defaultValue" && !isInSlice(removedValidValuesList, validValueName) {
-						property.ValidValuesNames = append(property.ValidValuesNames, validValueName)
-						property.ValidValues = append(property.ValidValues, details)
+						property.ValidValues = append(property.ValidValues, validValueName)
+						property.ValidValuesMap[details.(map[string]interface{})["value"].(string)] = validValueName
 					}
 				}
 				if len(property.ValidValues) > 0 {
@@ -2384,7 +2385,7 @@ func GetValidValuesToRemove(classPkgName, propertyName string, definitions Defin
 	return removedValidValuesSlice
 }
 
-func IsInRequiredTestValues(classPkgName, propertyName string, definitions Definitions, testType string) bool {
+func IsRequiredInTestValue(classPkgName, propertyName string, definitions Definitions, testType string) bool {
 	if classDetails, ok := definitions.Properties[classPkgName]; ok {
 		for key, value := range classDetails.(map[interface{}]interface{}) {
 			if key.(string) == "test_values" {
@@ -2402,14 +2403,4 @@ func IsInRequiredTestValues(classPkgName, propertyName string, definitions Defin
 		}
 	}
 	return false
-}
-
-func ValidValuesToMap(validValues []interface{}) map[string]string {
-	validValuesMap := make(map[string]string)
-	if len(validValues) > 0 {
-		for _, details := range validValues {
-			validValuesMap[details.(map[string]interface{})["value"].(string)] = details.(map[string]interface{})["localName"].(string)
-		}
-	}
-	return validValuesMap
 }

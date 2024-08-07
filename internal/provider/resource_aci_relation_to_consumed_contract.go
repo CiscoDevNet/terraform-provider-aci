@@ -11,7 +11,7 @@ import (
 	"reflect"
 	"strings"
 
-	customtypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/validators"
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
@@ -49,7 +49,7 @@ type FvRsConsResourceModel struct {
 	Id            types.String                        `tfsdk:"id"`
 	ParentDn      types.String                        `tfsdk:"parent_dn"`
 	Annotation    types.String                        `tfsdk:"annotation"`
-	Prio          customtypes.FvRsConsprioStringValue `tfsdk:"priority"`
+	Prio          customTypes.FvRsConsprioStringValue `tfsdk:"priority"`
 	TnVzBrCPName  types.String                        `tfsdk:"contract_name"`
 	TagAnnotation types.Set                           `tfsdk:"annotations"`
 	TagTag        types.Set                           `tfsdk:"tags"`
@@ -171,7 +171,7 @@ func (r *FvRsConsResource) Schema(ctx context.Context, req resource.SchemaReques
 				MarkdownDescription: `The annotation of the Relation To Consumed Contract object.`,
 			},
 			"priority": schema.StringAttribute{
-				CustomType: customtypes.FvRsConsprioStringType{},
+				CustomType: customTypes.FvRsConsprioStringType{},
 				Optional:   true,
 				Computed:   true,
 				PlanModifiers: []planmodifier.String{
@@ -451,7 +451,7 @@ func getAndSetFvRsConsAttributes(ctx context.Context, diags *diag.Diagnostics, c
 					data.Annotation = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "prio" {
-					data.Prio = customtypes.NewFvRsConsprioStringValue(attributeValue.(string))
+					data.Prio = customTypes.NewFvRsConsprioStringValue(attributeValue.(string))
 				}
 				if attributeName == "tnVzBrCPName" {
 					data.TnVzBrCPName = basetypes.NewStringValue(attributeValue.(string))

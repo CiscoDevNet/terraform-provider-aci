@@ -11,7 +11,7 @@ import (
 	"reflect"
 	"strings"
 
-	customtypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/validators"
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
@@ -49,7 +49,7 @@ type MgmtRsOoBConsResourceModel struct {
 	Id              types.String                             `tfsdk:"id"`
 	ParentDn        types.String                             `tfsdk:"parent_dn"`
 	Annotation      types.String                             `tfsdk:"annotation"`
-	Prio            customtypes.MgmtRsOoBConsprioStringValue `tfsdk:"priority"`
+	Prio            customTypes.MgmtRsOoBConsprioStringValue `tfsdk:"priority"`
 	TnVzOOBBrCPName types.String                             `tfsdk:"out_of_band_contract_name"`
 	TagAnnotation   types.Set                                `tfsdk:"annotations"`
 	TagTag          types.Set                                `tfsdk:"tags"`
@@ -171,7 +171,7 @@ func (r *MgmtRsOoBConsResource) Schema(ctx context.Context, req resource.SchemaR
 				MarkdownDescription: `The annotation of the Relation To Consumed Out Of Band Contract object.`,
 			},
 			"priority": schema.StringAttribute{
-				CustomType: customtypes.MgmtRsOoBConsprioStringType{},
+				CustomType: customTypes.MgmtRsOoBConsprioStringType{},
 				Optional:   true,
 				Computed:   true,
 				PlanModifiers: []planmodifier.String{
@@ -451,7 +451,7 @@ func getAndSetMgmtRsOoBConsAttributes(ctx context.Context, diags *diag.Diagnosti
 					data.Annotation = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "prio" {
-					data.Prio = customtypes.NewMgmtRsOoBConsprioStringValue(attributeValue.(string))
+					data.Prio = customTypes.NewMgmtRsOoBConsprioStringValue(attributeValue.(string))
 				}
 				if attributeName == "tnVzOOBBrCPName" {
 					data.TnVzOOBBrCPName = basetypes.NewStringValue(attributeValue.(string))
