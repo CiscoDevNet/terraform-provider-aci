@@ -8,7 +8,7 @@ import (
 	"context"
 	"fmt"
 
-	customtypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
@@ -58,7 +58,7 @@ func (d *FvRsProvDataSource) Schema(ctx context.Context, req datasource.SchemaRe
 				MarkdownDescription: `The provider label match criteria.`,
 			},
 			"priority": schema.StringAttribute{
-				CustomType:          customtypes.FvRsProvprioStringType{},
+				CustomType:          customTypes.FvRsProvprioStringType{},
 				Computed:            true,
 				MarkdownDescription: `The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.`,
 			},

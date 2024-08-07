@@ -17,6 +17,7 @@ datasource_required:
   name: "dns_attribute"
 
 resource_required:
+  filter: "test_filter"
   name: "dns_attribute"
 
 all:

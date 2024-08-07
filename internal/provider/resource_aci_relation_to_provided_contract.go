@@ -11,7 +11,7 @@ import (
 	"reflect"
 	"strings"
 
-	customtypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/validators"
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
@@ -50,7 +50,7 @@ type FvRsProvResourceModel struct {
 	ParentDn      types.String                        `tfsdk:"parent_dn"`
 	Annotation    types.String                        `tfsdk:"annotation"`
 	MatchT        types.String                        `tfsdk:"match_criteria"`
-	Prio          customtypes.FvRsProvprioStringValue `tfsdk:"priority"`
+	Prio          customTypes.FvRsProvprioStringValue `tfsdk:"priority"`
 	TnVzBrCPName  types.String                        `tfsdk:"contract_name"`
 	TagAnnotation types.Set                           `tfsdk:"annotations"`
 	TagTag        types.Set                           `tfsdk:"tags"`
@@ -185,7 +185,7 @@ func (r *FvRsProvResource) Schema(ctx context.Context, req resource.SchemaReques
 				MarkdownDescription: `The provider label match criteria.`,
 			},
 			"priority": schema.StringAttribute{
-				CustomType: customtypes.FvRsProvprioStringType{},
+				CustomType: customTypes.FvRsProvprioStringType{},
 				Optional:   true,
 				Computed:   true,
 				PlanModifiers: []planmodifier.String{
@@ -468,7 +468,7 @@ func getAndSetFvRsProvAttributes(ctx context.Context, diags *diag.Diagnostics, c
 					data.MatchT = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "prio" {
-					data.Prio = customtypes.NewFvRsProvprioStringValue(attributeValue.(string))
+					data.Prio = customTypes.NewFvRsProvprioStringValue(attributeValue.(string))
 				}
 				if attributeName == "tnVzBrCPName" {
 					data.TnVzBrCPName = basetypes.NewStringValue(attributeValue.(string))
