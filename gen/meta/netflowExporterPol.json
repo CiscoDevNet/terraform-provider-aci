@@ -1,0 +1,1220 @@
+{
+    "netflow:ExporterPol": {
+        "contains": {
+            "aaa:RbacAnnotation": "",
+            "fault:Counts": "",
+            "fault:Delegate": "",
+            "health:Inst": "",
+            "netflow:RsExporterToCtx": "",
+            "netflow:RsExporterToEPg": "",
+            "netflow:RsExporterToTopSystem": "",
+            "netflow:RtMonitorToExporter": "",
+            "tag:Annotation": "",
+            "tag:Tag": ""
+        },
+        "rnMap": {
+            "annotationKey-": "tag:Annotation",
+            "fd-": "fault:Delegate",
+            "fltCnts": "fault:Counts",
+            "health": "health:Inst",
+            "rbacDom-": "aaa:RbacAnnotation",
+            "rsexporterToCtx": "netflow:RsExporterToCtx",
+            "rsexporterToEPg": "netflow:RsExporterToEPg",
+            "rsexporterToTopSystem": "netflow:RsExporterToTopSystem",
+            "rtmonitorToExporter-": "netflow:RtMonitorToExporter",
+            "tagKey-": "tag:Tag"
+        },
+        "identifiedBy": [
+            "name"
+        ],
+        "rnFormat": "exporterpol-{name}",
+        "containedBy": {
+            "fv:Tenant": "",
+            "infra:Infra": ""
+        },
+        "superClasses": [
+            "netflow:AExporterPol",
+            "netflow:AFabExporterPol",
+            "fabric:L2IfPol",
+            "fabric:ProtoIfPol",
+            "fabric:ProtoPol",
+            "pol:Def",
+            "pol:Obj",
+            "naming:NamedObject"
+        ],
+        "subClasses": {
+
+        },
+        "relationFrom": {
+            "netflow:RtMonitorToExporter": "netflow:MonitorPol"
+        },
+        "relationTo": {
+            "netflow:RsExporterToCtx": "fv:Ctx",
+            "netflow:RsExporterToEPg": "fv:EPg",
+            "netflow:RsExporterToTopSystem": "top:System"
+        },
+        "dnFormats": [
+            "uni/infra/exporterpol-{name}",
+            "uni/tn-{name}/exporterpol-{name}"
+        ],
+        "writeAccess": [
+            "admin",
+            "custom-port-privilege"
+        ],
+        "readAccess": [
+            "admin",
+            "custom-port-privilege"
+        ],
+        "faults": {
+
+        },
+        "events": {
+            "E4214399": "creation||netflow:ExporterPol",
+            "E4214400": "modification||netflow:ExporterPol",
+            "E4214401": "deletion||netflow:ExporterPol"
+        },
+        "stats": {
+
+        },
+        "versions": "2.2(1k)-",
+        "isAbstract": false,
+        "isConfigurable": true,
+        "isContextRoot": false,
+        "isNxosConverged": false,
+        "isDeprecated": false,
+        "isHidden": false,
+        "isEncrypted": false,
+        "isExportable": true,
+        "isPersistent": true,
+        "isSubjectToQuota": false,
+        "isObservable": true,
+        "hasStats": false,
+        "isStat": false,
+        "isFaultable": false,
+        "isDomainable": false,
+        "isHealthScorable": true,
+        "shouldCollectHealthStats": false,
+        "healthCollectionSource": "faults",
+        "hasEventRules": false,
+        "abstractionLayer": "logical",
+        "apicNxProcessing": false,
+        "monitoringPolicySource": "Parent",
+        "isCreatableDeletable": "always",
+        "platformFlavors": [
+
+        ],
+        "classId": "9207",
+        "className": "ExporterPol",
+        "classPkg": "netflow",
+        "featureTag": "",
+        "moCategory": "Regular",
+        "label": "External Collector Reachability",
+        "comment": [
+            "Exporter information for bootstrapping the netflow Collection agent"
+        ],
+        "properties": {
+            "annotation": {
+                "versions": "3.2(1l)-",
+                "comment": [
+                     "User annotation. Suggested format orchestrator:value"
+                ],
+                "isConfigurable": true,
+                "propGlobalId": "38546",
+                "propLocalId": "8719",
+                "label": "Annotation",
+                "baseType": "string:Basic",
+                "modelType": "mo:Annotation",
+                "needsPropDelimiters": false,
+                "uitype": "string",
+                "createOnly": false,
+                "readWrite": true,
+                "readOnly": false,
+                "isNaming": false,
+                "secure": false,
+                "implicit": false,
+                "mandatory": false,
+                "isOverride": false,
+                "isLike": false,
+                "validators": [
+                     {"min" : 0, "max": 128,
+                         "regexs": [
+                             {"regex" : "^[a-zA-Z0-9_.:-]+$", "type": "include"}
+                         ]
+                     }
+                ],
+                "platformFlavors": [
+
+                ],
+                "isNxosConverged": false,
+                "isDeprecated": false,
+                "isHidden": false
+            },
+            "childAction": {
+                "versions": "1.0(1e)-",
+                "comment": [
+                     "Delete or ignore. For internal use only."
+                ],
+                "isConfigurable": false,
+                "propGlobalId": "4",
+                "propLocalId": "5",
+                "label": "childAction",
+                "baseType": "scalar:Bitmask32",
+                "modelType": "mo:ModificationChildAction",
+                "needsPropDelimiters": false,
+                "uitype": "bitmask",
+                "createOnly": false,
+                "readWrite": false,
+                "readOnly": true,
+                "isNaming": false,
+                "secure": false,
+                "implicit": true,
+                "mandatory": false,
+                "isOverride": false,
+                "isLike": false,
+                "validValues": [
+                     { "value": "16384", "localName": "deleteAll",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "Delete All "},
+                     { "value": "8192", "localName": "deleteNonPresent",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "Delete Non Present "},
+                     { "value": "4096", "localName": "ignore",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "Ignore "}
+                ],
+                "platformFlavors": [
+
+                ],
+                "isNxosConverged": false,
+                "isDeprecated": false,
+                "isHidden": false
+            },
+            "descr": {
+                "versions": "2.2(1k)-",
+                "comment": [
+                     "The description of this configuration item."
+                ],
+                "isConfigurable": true,
+                "propGlobalId": "27338",
+                "propLocalId": "28",
+                "label": "Description",
+                "baseType": "string:Basic",
+                "modelType": "naming:Descr",
+                "needsPropDelimiters": false,
+                "uitype": "string",
+                "createOnly": false,
+                "readWrite": true,
+                "readOnly": false,
+                "isNaming": false,
+                "secure": false,
+                "implicit": false,
+                "mandatory": false,
+                "isOverride": true,
+                "isLike": false,
+                "validators": [
+                     {"min" : 0, "max": 128,
+                         "regexs": [
+                             {"regex" : "^[a-zA-Z0-9\\\\!#$%()*,-./:;@ _{|}~?&+]+$", "type": "include"}
+                         ]
+                     }
+                ],
+                "platformFlavors": [
+
+                ],
+                "isNxosConverged": false,
+                "isDeprecated": false,
+                "isHidden": false
+            },
+            "dn": {
+                "versions": "1.0(1e)-",
+                "comment": [
+                     "A tag or metadata is a non-hierarchical keyword or term assigned to the fabric module."
+                ],
+                "isConfigurable": false,
+                "propGlobalId": "1",
+                "propLocalId": "2",
+                "label": "dn",
+                "baseType": "reference:BinRef",
+                "modelType": "reference:BinRef",
+                "needsPropDelimiters": true,
+                "uitype": "auto",
+                "createOnly": false,
+                "readWrite": false,
+                "readOnly": true,
+                "isNaming": false,
+                "secure": false,
+                "implicit": true,
+                "mandatory": false,
+                "isOverride": false,
+                "isLike": false,
+                "platformFlavors": [
+
+                ],
+                "isNxosConverged": false,
+                "isDeprecated": false,
+                "isHidden": false
+            },
+            "dscp": {
+                "versions": "2.3(1e)-",
+                "comment": [
+                     "IP dscp value"
+                ],
+                "isConfigurable": true,
+                "propGlobalId": "33153",
+                "propLocalId": "978",
+                "label": "QoS DSCP Value",
+                "baseType": "scalar:UByte",
+                "modelType": "qosp:DscpCP",
+                "needsPropDelimiters": false,
+                "uitype": "number",
+                "createOnly": false,
+                "readWrite": true,
+                "readOnly": false,
+                "isNaming": false,
+                "secure": false,
+                "implicit": false,
+                "mandatory": false,
+                "isOverride": false,
+                "isLike": true,
+                "likeProp": "analytics:RemoteNode:dscp",
+                "validators": [
+                     {"min" : 0, "max": 63 }
+                ],
+                "validValues": [
+                     { "value": "10", "localName": "AF11",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "AF11 low drop"
+                         ],
+                         "label": "AF11 Low Drop "},
+                     { "value": "12", "localName": "AF12",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "AF12 medium drop"
+                         ],
+                         "label": "AF12 Medium Drop "},
+                     { "value": "14", "localName": "AF13",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "AF13 high drop"
+                         ],
+                         "label": "AF13 High Drop "},
+                     { "value": "18", "localName": "AF21",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "AF21 low drop"
+                         ],
+                         "label": "AF21 Low Drop "},
+                     { "value": "20", "localName": "AF22",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "AF22 medium drop"
+                         ],
+                         "label": "AF22 Medium Drop "},
+                     { "value": "22", "localName": "AF23",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "AF22 high drop"
+                         ],
+                         "label": "AF23 High Drop "},
+                     { "value": "26", "localName": "AF31",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "AF31 low drop"
+                         ],
+                         "label": "AF31 Low Drop "},
+                     { "value": "28", "localName": "AF32",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "AF32 medium drop"
+                         ],
+                         "label": "AF32 Medium Drop "},
+                     { "value": "30", "localName": "AF33",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "AF33 high drop"
+                         ],
+                         "label": "AF33 High Drop "},
+                     { "value": "34", "localName": "AF41",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "AF41 low drop"
+                         ],
+                         "label": "AF41 Low Drop "},
+                     { "value": "36", "localName": "AF42",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "AF42 medium drop"
+                         ],
+                         "label": "AF42 Medium Drop "},
+                     { "value": "38", "localName": "AF43",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "AF42 high drop"
+                         ],
+                         "label": "AF43 High Drop "},
+                     { "value": "0", "localName": "CS0",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "CS0"
+                         ],
+                         "label": "CS0 "},
+                     { "value": "8", "localName": "CS1",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "CS1"
+                         ],
+                         "label": "CS1 "},
+                     { "value": "16", "localName": "CS2",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "CS2"
+                         ],
+                         "label": "CS2 "},
+                     { "value": "24", "localName": "CS3",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "CS3"
+                         ],
+                         "label": "CS3 "},
+                     { "value": "32", "localName": "CS4",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "CS4"
+                         ],
+                         "label": "CS4 "},
+                     { "value": "40", "localName": "CS5",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "CS5"
+                         ],
+                         "label": "CS5 "},
+                     { "value": "48", "localName": "CS6",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "CS6"
+                         ],
+                         "label": "CS6 "},
+                     { "value": "56", "localName": "CS7",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "CS7"
+                         ],
+                         "label": "CS7 "},
+                     { "value": "46", "localName": "EF",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "EF"
+                         ],
+                         "label": "Expedited Forwarding "},
+                     { "value": "44", "localName": "VA",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "VA"
+                         ],
+                         "label": "Voice Admit "},
+                     { "value": "CS2", "localName": "defaultValue",
+                         "platformFlavors": [
+
+                         ],
+                         "label": " "}
+                ],
+                "default": "CS2",
+                "platformFlavors": [
+
+                ],
+                "isNxosConverged": false,
+                "isDeprecated": false,
+                "isHidden": false
+            },
+            "dstAddr": {
+                "versions": "2.2(1k)-",
+                "comment": [
+                     "Remote node destination IP address"
+                ],
+                "isConfigurable": true,
+                "propGlobalId": "27503",
+                "propLocalId": "5353",
+                "label": "Remote Entity IP",
+                "baseType": "address:Ip",
+                "modelType": "address:Ip",
+                "needsPropDelimiters": true,
+                "uitype": "string",
+                "createOnly": false,
+                "readWrite": true,
+                "readOnly": false,
+                "isNaming": false,
+                "secure": false,
+                "implicit": false,
+                "mandatory": false,
+                "isOverride": false,
+                "isLike": true,
+                "likeProp": "analytics:RemoteNode:dstAddr",
+                "validateAsIPv4OrIPv6": true,
+                "platformFlavors": [
+
+                ],
+                "isNxosConverged": false,
+                "isDeprecated": false,
+                "isHidden": false
+            },
+            "dstPort": {
+                "versions": "2.2(1k)-",
+                "comment": [
+                     "Remote node destination port"
+                ],
+                "isConfigurable": true,
+                "propGlobalId": "27504",
+                "propLocalId": "1046",
+                "label": "Remote Entity L4 Port",
+                "baseType": "scalar:Uint16",
+                "modelType": "l4:Port",
+                "needsPropDelimiters": false,
+                "uitype": "number",
+                "createOnly": false,
+                "readWrite": true,
+                "readOnly": false,
+                "isNaming": false,
+                "secure": false,
+                "implicit": false,
+                "mandatory": false,
+                "isOverride": false,
+                "isLike": true,
+                "likeProp": "analytics:RemoteNode:dstPort",
+                "validators": [
+                     {"min" : 0, "max": 65535 }
+                ],
+                "validValues": [
+                     { "value": "unspecified", "localName": "defaultValue",
+                         "platformFlavors": [
+
+                         ],
+                         "label": " "},
+                     { "value": "53", "localName": "dns",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "DNS "},
+                     { "value": "20", "localName": "ftpData",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "FTP Data "},
+                     { "value": "80", "localName": "http",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "HTTP "},
+                     { "value": "443", "localName": "https",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "HTTPS "},
+                     { "value": "110", "localName": "pop3",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "POP3 "},
+                     { "value": "554", "localName": "rtsp",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "RTSP "},
+                     { "value": "25", "localName": "smtp",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "SMTP "},
+                     { "value": "22", "localName": "ssh",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "SSH "},
+                     { "value": "0", "localName": "unspecified",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "Unspecified "}
+                ],
+                "default": "unspecified",
+                "platformFlavors": [
+
+                ],
+                "isNxosConverged": false,
+                "isDeprecated": false,
+                "isHidden": false
+            },
+            "extMngdBy": {
+                "versions": "3.2(1l)-",
+                "comment": [
+                     "Indicates which orchestrator is managing this MO"
+                ],
+                "isConfigurable": false,
+                "propGlobalId": "40685",
+                "propLocalId": "8023",
+                "label": "Managed By",
+                "baseType": "scalar:Bitmask32",
+                "modelType": "mo:ExtMngdByType",
+                "needsPropDelimiters": false,
+                "uitype": "bitmask",
+                "createOnly": false,
+                "readWrite": false,
+                "readOnly": true,
+                "isNaming": false,
+                "secure": false,
+                "implicit": true,
+                "mandatory": false,
+                "isOverride": false,
+                "isLike": false,
+                "validValues": [
+                     { "value": "undefined", "localName": "defaultValue",
+                         "platformFlavors": [
+
+                         ],
+                         "label": " "},
+                     { "value": "1", "localName": "msc",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "MSC "},
+                     { "value": "0", "localName": "undefined",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "Undefined "}
+                ],
+                "default": "undefined",
+                "platformFlavors": [
+
+                ],
+                "isNxosConverged": false,
+                "isDeprecated": false,
+                "isHidden": false
+            },
+            "lcOwn": {
+                "versions": "1.0(1e)-",
+                "comment": [
+                     "A value that indicates how this object was created. For internal use only."
+                ],
+                "isConfigurable": false,
+                "propGlobalId": "9",
+                "propLocalId": "9",
+                "label": "lcOwn",
+                "baseType": "scalar:Enum8",
+                "modelType": "mo:Owner",
+                "needsPropDelimiters": false,
+                "uitype": "enum",
+                "createOnly": false,
+                "readWrite": false,
+                "readOnly": true,
+                "isNaming": false,
+                "secure": false,
+                "implicit": true,
+                "mandatory": false,
+                "isOverride": false,
+                "isLike": false,
+                "validValues": [
+                     { "value": "local", "localName": "defaultValue",
+                         "platformFlavors": [
+
+                         ],
+                         "label": " "},
+                     { "value": "4", "localName": "implicit",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "Implicit "},
+                     { "value": "0", "localName": "local",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "Local "},
+                     { "value": "1", "localName": "policy",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "Policy "},
+                     { "value": "2", "localName": "replica",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "Replica "},
+                     { "value": "3", "localName": "resolveOnBehalf",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "Resolved On Behalf "}
+                ],
+                "default": "local",
+                "platformFlavors": [
+
+                ],
+                "isNxosConverged": false,
+                "isDeprecated": false,
+                "isHidden": false
+            },
+            "modTs": {
+                "versions": "1.0(1e)-",
+                "comment": [
+                     "The time when this object was last modified."
+                ],
+                "isConfigurable": false,
+                "propGlobalId": "7",
+                "propLocalId": "7",
+                "label": "modTs",
+                "baseType": "scalar:Date",
+                "modelType": "mo:TStamp",
+                "needsPropDelimiters": false,
+                "uitype": "auto",
+                "createOnly": false,
+                "readWrite": false,
+                "readOnly": true,
+                "isNaming": false,
+                "secure": false,
+                "implicit": true,
+                "mandatory": false,
+                "isOverride": false,
+                "isLike": false,
+                "validValues": [
+                     { "value": "never", "localName": "defaultValue",
+                         "platformFlavors": [
+
+                         ],
+                         "label": " "},
+                     { "value": "0", "localName": "never",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "Never "}
+                ],
+                "default": "never",
+                "platformFlavors": [
+
+                ],
+                "isNxosConverged": false,
+                "isDeprecated": false,
+                "isHidden": false
+            },
+            "monPolDn": {
+                "versions": "2.2(1k)-",
+                "comment": [
+                     "The monitoring policy attached to this observable object."
+                ],
+                "isConfigurable": false,
+                "propGlobalId": "27389",
+                "propLocalId": "228",
+                "label": "Monitoring Policy",
+                "baseType": "reference:BinRef",
+                "modelType": "reference:BinRef",
+                "needsPropDelimiters": true,
+                "uitype": "auto",
+                "createOnly": false,
+                "readWrite": false,
+                "readOnly": true,
+                "isNaming": false,
+                "secure": false,
+                "implicit": true,
+                "mandatory": false,
+                "isOverride": false,
+                "isLike": false,
+                "platformFlavors": [
+
+                ],
+                "isNxosConverged": false,
+                "isDeprecated": false,
+                "isHidden": false
+            },
+            "name": {
+                "versions": "2.2(1k)-",
+                "comment": [
+                     "The name of the object."
+                ],
+                "isConfigurable": true,
+                "propGlobalId": "27339",
+                "propLocalId": "13",
+                "label": "Name",
+                "baseType": "string:Basic",
+                "modelType": "naming:Name",
+                "needsPropDelimiters": false,
+                "uitype": "string",
+                "createOnly": false,
+                "readWrite": false,
+                "readOnly": false,
+                "isNaming": true,
+                "secure": false,
+                "implicit": false,
+                "mandatory": false,
+                "isOverride": true,
+                "isLike": false,
+                "validators": [
+                     {"min" : 1, "max": 64,
+                         "regexs": [
+                             {"regex" : "^[a-zA-Z0-9_.:-]+$", "type": "include"}
+                         ]
+                     }
+                ],
+                "platformFlavors": [
+
+                ],
+                "isNxosConverged": false,
+                "isDeprecated": false,
+                "isHidden": false
+            },
+            "nameAlias": {
+                "versions": "2.2(1k)-",
+                "isConfigurable": true,
+                "propGlobalId": "28417",
+                "propLocalId": "6719",
+                "label": "Display Name",
+                "baseType": "string:Basic",
+                "modelType": "naming:NameAlias",
+                "needsPropDelimiters": false,
+                "uitype": "string",
+                "createOnly": false,
+                "readWrite": true,
+                "readOnly": false,
+                "isNaming": false,
+                "secure": false,
+                "implicit": false,
+                "mandatory": false,
+                "isOverride": false,
+                "isLike": false,
+                "validators": [
+                     {"min" : 0, "max": 63,
+                         "regexs": [
+                             {"regex" : "^[a-zA-Z0-9_.-]+$", "type": "include"}
+                         ]
+                     }
+                ],
+                "platformFlavors": [
+
+                ],
+                "isNxosConverged": false,
+                "isDeprecated": false,
+                "isHidden": false
+            },
+            "ownerKey": {
+                "versions": "1.0(1e)-",
+                "comment": [
+                     "The key for enabling clients to own their data for entity correlation."
+                ],
+                "isConfigurable": true,
+                "propGlobalId": "15230",
+                "propLocalId": "4100",
+                "label": "ownerKey",
+                "baseType": "string:Basic",
+                "modelType": "naming:Descr",
+                "needsPropDelimiters": false,
+                "uitype": "string",
+                "createOnly": false,
+                "readWrite": true,
+                "readOnly": false,
+                "isNaming": false,
+                "secure": false,
+                "implicit": false,
+                "mandatory": false,
+                "isOverride": false,
+                "isLike": false,
+                "validators": [
+                     {"min" : 0, "max": 128,
+                         "regexs": [
+                             {"regex" : "^[a-zA-Z0-9\\\\!#$%()*,-./:;@ _{|}~?&+]+$", "type": "include"}
+                         ]
+                     }
+                ],
+                "platformFlavors": [
+
+                ],
+                "isNxosConverged": false,
+                "isDeprecated": false,
+                "isHidden": false
+            },
+            "ownerTag": {
+                "versions": "1.0(1e)-",
+                "comment": [
+                     "A tag for enabling clients to add their own data. For example, to indicate who created this object."
+                ],
+                "isConfigurable": true,
+                "propGlobalId": "15231",
+                "propLocalId": "4101",
+                "label": "ownerTag",
+                "baseType": "string:Basic",
+                "modelType": "naming:Descr",
+                "needsPropDelimiters": false,
+                "uitype": "string",
+                "createOnly": false,
+                "readWrite": true,
+                "readOnly": false,
+                "isNaming": false,
+                "secure": false,
+                "implicit": false,
+                "mandatory": false,
+                "isOverride": false,
+                "isLike": false,
+                "validators": [
+                     {"min" : 0, "max": 64,
+                         "regexs": [
+                             {"regex" : "^[a-zA-Z0-9\\\\!#$%()*,-./:;@ _{|}~?&+]+$", "type": "include"}
+                         ]
+                     }
+                ],
+                "platformFlavors": [
+
+                ],
+                "isNxosConverged": false,
+                "isDeprecated": false,
+                "isHidden": false
+            },
+            "rn": {
+                "versions": "1.0(1e)-",
+                "comment": [
+                     "Identifies an object from its siblings within the context of its parent object. The distinguished name contains a sequence of relative names."
+                ],
+                "isConfigurable": false,
+                "propGlobalId": "2",
+                "propLocalId": "3",
+                "label": "rn",
+                "baseType": "reference:BinRN",
+                "modelType": "reference:BinRN",
+                "needsPropDelimiters": true,
+                "uitype": "auto",
+                "createOnly": false,
+                "readWrite": false,
+                "readOnly": true,
+                "isNaming": false,
+                "secure": false,
+                "implicit": true,
+                "mandatory": false,
+                "isOverride": false,
+                "isLike": false,
+                "platformFlavors": [
+
+                ],
+                "isNxosConverged": false,
+                "isDeprecated": false,
+                "isHidden": false
+            },
+            "sourceIpType": {
+                "versions": "3.0(1k)-",
+                "isConfigurable": true,
+                "propGlobalId": "33429",
+                "propLocalId": "7997",
+                "label": "Type of Exporter Src IP Address: Can be one of the available management IP Address for a given leaf or a custom IP Address",
+                "baseType": "scalar:Enum8",
+                "modelType": "netflow:SrcIpType",
+                "needsPropDelimiters": false,
+                "uitype": "enum",
+                "createOnly": false,
+                "readWrite": true,
+                "readOnly": false,
+                "isNaming": false,
+                "secure": false,
+                "implicit": false,
+                "mandatory": false,
+                "isOverride": false,
+                "isLike": false,
+                "validValues": [
+                     { "value": "1", "localName": "custom-src-ip",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "Custom Src IP "},
+                     { "value": "custom-src-ip", "localName": "defaultValue",
+                         "platformFlavors": [
+
+                         ],
+                         "label": " "},
+                     { "value": "2", "localName": "inband-mgmt-ip",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "Inband Management IP "},
+                     { "value": "3", "localName": "oob-mgmt-ip",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "OutOfband Management IP "},
+                     { "value": "4", "localName": "ptep",
+                         "platformFlavors": [
+
+                         ],
+                         "label": "PTEP address "}
+                ],
+                "default": "custom-src-ip",
+                "platformFlavors": [
+
+                ],
+                "isNxosConverged": false,
+                "isDeprecated": false,
+                "isHidden": false
+            },
+            "srcAddr": {
+                "versions": "2.2(1k)-",
+                "comment": [
+                     "Source IP address"
+                ],
+                "isConfigurable": true,
+                "propGlobalId": "27505",
+                "propLocalId": "4387",
+                "label": "Source IP Address",
+                "baseType": "address:Ip",
+                "modelType": "address:Ip",
+                "needsPropDelimiters": true,
+                "uitype": "string",
+                "createOnly": false,
+                "readWrite": true,
+                "readOnly": false,
+                "isNaming": false,
+                "secure": false,
+                "implicit": false,
+                "mandatory": false,
+                "isOverride": false,
+                "isLike": true,
+                "likeProp": "analytics:RemoteNode:srcAddr",
+                "validateAsIPv4OrIPv6": true,
+                "platformFlavors": [
+
+                ],
+                "isNxosConverged": false,
+                "isDeprecated": false,
+                "isHidden": false
+            },
+            "status": {
+                "versions": "1.0(1e)-",
+                "comment": [
+                     "The upgrade status. This property is for internal use only."
+                ],
+                "isConfigurable": false,
+                "propGlobalId": "3",
+                "propLocalId": "4",
+                "label": "status",
+                "baseType": "scalar:Bitmask32",
+                "modelType": "mo:ModificationStatus",
+                "needsPropDelimiters": false,
+                "uitype": "bitmask",
+                "createOnly": false,
+                "readWrite": false,
+                "readOnly": true,
+                "isNaming": false,
+                "secure": false,
+                "implicit": true,
+                "mandatory": false,
+                "isOverride": false,
+                "isLike": false,
+                "validValues": [
+                     { "value": "2", "localName": "created",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "In a setter method: specifies that an object should be created. An error is returned if the object already exists.  \nIn the return value of a setter method: indicates that an object has been created.  \n"
+                         ],
+                         "label": "Created "},
+                     { "value": "8", "localName": "deleted",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "In a setter method: specifies that an object should be deleted.  \nIn the return value of a setter method: indicates that an object has been deleted.\n"
+                         ],
+                         "label": "Deleted "},
+                     { "value": "4", "localName": "modified",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "In a setter method: specifies that an object should be modified  \nIn the return value of a setter method: indicates that an object has been modified.\n"
+                         ],
+                         "label": "Modified "}
+                ],
+                "platformFlavors": [
+
+                ],
+                "isNxosConverged": false,
+                "isDeprecated": false,
+                "isHidden": false
+            },
+            "uid": {
+                "versions": "1.0(1e)-",
+                "comment": [
+                     "A unique identifier for this object."
+                ],
+                "isConfigurable": false,
+                "propGlobalId": "8",
+                "propLocalId": "8",
+                "label": "uid",
+                "baseType": "scalar:Uint16",
+                "modelType": "scalar:Uint16",
+                "needsPropDelimiters": false,
+                "uitype": "auto",
+                "createOnly": false,
+                "readWrite": false,
+                "readOnly": true,
+                "isNaming": false,
+                "secure": false,
+                "implicit": true,
+                "mandatory": false,
+                "isOverride": false,
+                "isLike": false,
+                "platformFlavors": [
+
+                ],
+                "isNxosConverged": false,
+                "isDeprecated": false,
+                "isHidden": false
+            },
+            "userdom": {
+                "versions": "5.0(1k)-",
+                "isConfigurable": true,
+                "propGlobalId": "60657",
+                "propLocalId": "13244",
+                "label": "userdom",
+                "baseType": "string:Basic",
+                "modelType": "mo:UserDomType",
+                "needsPropDelimiters": false,
+                "uitype": "string",
+                "createOnly": false,
+                "readWrite": true,
+                "readOnly": false,
+                "isNaming": false,
+                "secure": false,
+                "implicit": false,
+                "mandatory": false,
+                "isOverride": false,
+                "isLike": false,
+                "validators": [
+                     {"min" : 0, "max": 1024,
+                         "regexs": [
+                             {"regex" : "^[a-zA-Z0-9_.:-]+$", "type": "include"}
+                         ]
+                     }
+                ],
+                "validValues": [
+                     { "value": "all", "localName": "defaultValue",
+                         "platformFlavors": [
+
+                         ],
+                         "label": " "}
+                ],
+                "default": "all",
+                "platformFlavors": [
+
+                ],
+                "isNxosConverged": false,
+                "isDeprecated": false,
+                "isHidden": false
+            },
+            "ver": {
+                "versions": "2.2(1k)-",
+                "comment": [
+                     "Collector version"
+                ],
+                "isConfigurable": true,
+                "propGlobalId": "65628",
+                "propLocalId": "811",
+                "label": "Exporter NetFlow Version Format",
+                "baseType": "scalar:Enum8",
+                "modelType": "analytics:CollVersion",
+                "needsPropDelimiters": false,
+                "uitype": "enum",
+                "createOnly": false,
+                "readWrite": true,
+                "readOnly": false,
+                "isNaming": false,
+                "secure": false,
+                "implicit": false,
+                "mandatory": false,
+                "isOverride": true,
+                "isLike": false,
+                "validValues": [
+                     { "value": "3", "localName": "cisco-v1",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "Cisco proprietary version 1"
+                         ],
+                         "label": "Cisco proprietary version 1 "},
+                     { "value": "v9", "localName": "defaultValue",
+                         "platformFlavors": [
+
+                         ],
+                         "label": " "},
+                     { "value": "1", "localName": "v5",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "Version 5"
+                         ],
+                         "label": "Version 5 "},
+                     { "value": "2", "localName": "v9",
+                         "platformFlavors": [
+
+                         ],
+                         "comment": [
+                             "Version 9"
+                         ],
+                         "label": "Version 9 "}
+                ],
+                "default": "v9",
+                "platformFlavors": [
+
+                ],
+                "isNxosConverged": false,
+                "isDeprecated": false,
+                "isHidden": false
+            }
+        }
+    }
+}
