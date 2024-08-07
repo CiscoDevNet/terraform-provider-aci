@@ -21,6 +21,9 @@ datasource_required:
 resource_required:
   name: "test_name"
 
+read_only:
+  - "pc_tag"
+
 all:
   annotation: "annotation"
   description: "description_1"

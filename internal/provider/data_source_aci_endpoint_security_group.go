@@ -109,6 +109,10 @@ func (d *FvESgDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 				Computed:            true,
 				MarkdownDescription: `Parameter used to determine whether communication between endpoints within the ESG is blocked.`,
 			},
+			"pc_tag": schema.StringAttribute{
+				Computed:            true,
+				MarkdownDescription: `The classification tag used for policy enforcement and zoning.`,
+			},
 			"preferred_group_member": schema.StringAttribute{
 				Computed:            true,
 				MarkdownDescription: `Parameter used to determine whether the ESG is part of the preferred group. Members of this group are allowed to communicate without contracts.`,

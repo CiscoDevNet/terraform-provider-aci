@@ -54,6 +54,7 @@ data "aci_endpoint_security_group" "example_application_profile" {
 * `match_criteria` (matchT) - (string) The provider label match criteria.
 * `name_alias` (nameAlias) - (string) The name alias of the Endpoint Security Group object.
 * `intra_esg_isolation` (pcEnfPref) - (string) Parameter used to determine whether communication between endpoints within the ESG is blocked.
+* `pc_tag` (pcTag) - (string) The classification tag used for policy enforcement and zoning.
 * `preferred_group_member` (prefGrMemb) - (string) Parameter used to determine whether the ESG is part of the preferred group. Members of this group are allowed to communicate without contracts.
 * `admin_state` (shutdown) - (string) Withdraw the ESG configuration from all nodes in the fabric.
 

@@ -366,6 +366,11 @@ netflowRecordPol:
       parent_dn: "aci_tenant.test.id"
 
 fvESg:
+  read_only_properties:
+    - "pcTag"
+  remove_valid_values:
+    pcTag:
+      - "any"
   default_values:
     shutdown: "no"
   overwrites:
@@ -642,6 +647,7 @@ fvIpAttr:
     - class_name: "fvCrtrn"
       parent_dependency: "fvAEPg"
       parent_dn: "epg_useg_block_statement.test.id"
+
 fvAEPg:
   read_only_properties:
     - "pcTag"
