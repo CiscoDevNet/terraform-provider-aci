@@ -11,7 +11,7 @@ import (
 	"reflect"
 	"strings"
 
-	customtypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/validators"
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
@@ -81,14 +81,14 @@ type FvESgResourceModel struct {
 // FvRsConsFvESgResourceModel describes the resource data model for the children without relation ships.
 type FvRsConsFvESgResourceModel struct {
 	Annotation   types.String                        `tfsdk:"annotation"`
-	Prio         customtypes.FvRsConsprioStringValue `tfsdk:"priority"`
+	Prio         customTypes.FvRsConsprioStringValue `tfsdk:"priority"`
 	TnVzBrCPName types.String                        `tfsdk:"contract_name"`
 }
 
 // FvRsConsIfFvESgResourceModel describes the resource data model for the children without relation ships.
 type FvRsConsIfFvESgResourceModel struct {
 	Annotation   types.String                          `tfsdk:"annotation"`
-	Prio         customtypes.FvRsConsIfprioStringValue `tfsdk:"priority"`
+	Prio         customTypes.FvRsConsIfprioStringValue `tfsdk:"priority"`
 	TnVzCPIfName types.String                          `tfsdk:"imported_contract_name"`
 }
 
@@ -102,7 +102,7 @@ type FvRsIntraEpgFvESgResourceModel struct {
 type FvRsProvFvESgResourceModel struct {
 	Annotation   types.String                        `tfsdk:"annotation"`
 	MatchT       types.String                        `tfsdk:"match_criteria"`
-	Prio         customtypes.FvRsProvprioStringValue `tfsdk:"priority"`
+	Prio         customTypes.FvRsProvprioStringValue `tfsdk:"priority"`
 	TnVzBrCPName types.String                        `tfsdk:"contract_name"`
 }
 
@@ -361,7 +361,7 @@ func (r *FvESgResource) UpgradeState(ctx context.Context) map[int64]resource.Sta
 				for _, priorStateDataFvRsCons := range priorStateDataFvRsConsList {
 					FvRsCons := FvRsConsFvESgResourceModel{
 						Annotation:   basetypes.NewStringNull(),
-						Prio:         customtypes.FvRsConsprioStringValue{StringValue: priorStateDataFvRsCons.Prio},
+						Prio:         customTypes.FvRsConsprioStringValue{StringValue: priorStateDataFvRsCons.Prio},
 						TnVzBrCPName: priorStateDataFvRsCons.TargetDn,
 					}
 					FvRsConsList = append(FvRsConsList, FvRsCons)
@@ -382,7 +382,7 @@ func (r *FvESgResource) UpgradeState(ctx context.Context) map[int64]resource.Sta
 				for _, priorStateDataFvRsConsIf := range priorStateDataFvRsConsIfList {
 					FvRsConsIf := FvRsConsIfFvESgResourceModel{
 						Annotation:   basetypes.NewStringNull(),
-						Prio:         customtypes.FvRsConsIfprioStringValue{StringValue: priorStateDataFvRsConsIf.Prio},
+						Prio:         customTypes.FvRsConsIfprioStringValue{StringValue: priorStateDataFvRsConsIf.Prio},
 						TnVzCPIfName: priorStateDataFvRsConsIf.TargetDn,
 					}
 					FvRsConsIfList = append(FvRsConsIfList, FvRsConsIf)
@@ -423,7 +423,7 @@ func (r *FvESgResource) UpgradeState(ctx context.Context) map[int64]resource.Sta
 					FvRsProv := FvRsProvFvESgResourceModel{
 						Annotation:   basetypes.NewStringNull(),
 						MatchT:       priorStateDataFvRsProv.MatchT,
-						Prio:         customtypes.FvRsProvprioStringValue{StringValue: priorStateDataFvRsProv.Prio},
+						Prio:         customTypes.FvRsProvprioStringValue{StringValue: priorStateDataFvRsProv.Prio},
 						TnVzBrCPName: priorStateDataFvRsProv.TargetDn,
 					}
 					FvRsProvList = append(FvRsProvList, FvRsProv)
@@ -807,7 +807,7 @@ func (r *FvESgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanR
 
 				FvRsCons := FvRsConsFvESgResourceModel{
 					Annotation: planData.Annotation,
-					Prio:       customtypes.FvRsConsprioStringValue{StringValue: attributeValue.Prio},
+					Prio:       customTypes.FvRsConsprioStringValue{StringValue: attributeValue.Prio},
 				}
 
 				if foundAttributeValue {
@@ -850,7 +850,7 @@ func (r *FvESgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanR
 
 				FvRsConsIf := FvRsConsIfFvESgResourceModel{
 					Annotation: planData.Annotation,
-					Prio:       customtypes.FvRsConsIfprioStringValue{StringValue: attributeValue.Prio},
+					Prio:       customTypes.FvRsConsIfprioStringValue{StringValue: attributeValue.Prio},
 				}
 
 				if foundAttributeValue {
@@ -894,7 +894,7 @@ func (r *FvESgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanR
 				FvRsProv := FvRsProvFvESgResourceModel{
 					Annotation: planData.Annotation,
 					MatchT:     attributeValue.MatchT,
-					Prio:       customtypes.FvRsProvprioStringValue{StringValue: attributeValue.Prio},
+					Prio:       customTypes.FvRsProvprioStringValue{StringValue: attributeValue.Prio},
 				}
 
 				if foundAttributeValue {
@@ -1134,7 +1134,7 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							MarkdownDescription: `The annotation of the Relation To Consumed Contract object.`,
 						},
 						"priority": schema.StringAttribute{
-							CustomType: customtypes.FvRsConsprioStringType{},
+							CustomType: customTypes.FvRsConsprioStringType{},
 							Optional:   true,
 							Computed:   true,
 							PlanModifiers: []planmodifier.String{
@@ -1176,7 +1176,7 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							MarkdownDescription: `The annotation of the Relation To Imported Contract object.`,
 						},
 						"priority": schema.StringAttribute{
-							CustomType: customtypes.FvRsConsIfprioStringType{},
+							CustomType: customTypes.FvRsConsIfprioStringType{},
 							Optional:   true,
 							Computed:   true,
 							PlanModifiers: []planmodifier.String{
@@ -1260,7 +1260,7 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							MarkdownDescription: `The provider label match criteria.`,
 						},
 						"priority": schema.StringAttribute{
-							CustomType: customtypes.FvRsProvprioStringType{},
+							CustomType: customTypes.FvRsProvprioStringType{},
 							Optional:   true,
 							Computed:   true,
 							PlanModifiers: []planmodifier.String{
@@ -1767,7 +1767,7 @@ func getAndSetFvESgAttributes(ctx context.Context, diags *diag.Diagnostics, clie
 									FvRsConsFvESg.Annotation = basetypes.NewStringValue(childAttributeValue.(string))
 								}
 								if childAttributeName == "prio" {
-									FvRsConsFvESg.Prio = customtypes.NewFvRsConsprioStringValue(childAttributeValue.(string))
+									FvRsConsFvESg.Prio = customTypes.NewFvRsConsprioStringValue(childAttributeValue.(string))
 								}
 								if childAttributeName == "tnVzBrCPName" {
 									FvRsConsFvESg.TnVzBrCPName = basetypes.NewStringValue(childAttributeValue.(string))
@@ -1782,7 +1782,7 @@ func getAndSetFvESgAttributes(ctx context.Context, diags *diag.Diagnostics, clie
 									FvRsConsIfFvESg.Annotation = basetypes.NewStringValue(childAttributeValue.(string))
 								}
 								if childAttributeName == "prio" {
-									FvRsConsIfFvESg.Prio = customtypes.NewFvRsConsIfprioStringValue(childAttributeValue.(string))
+									FvRsConsIfFvESg.Prio = customTypes.NewFvRsConsIfprioStringValue(childAttributeValue.(string))
 								}
 								if childAttributeName == "tnVzCPIfName" {
 									FvRsConsIfFvESg.TnVzCPIfName = basetypes.NewStringValue(childAttributeValue.(string))
@@ -1812,7 +1812,7 @@ func getAndSetFvESgAttributes(ctx context.Context, diags *diag.Diagnostics, clie
 									FvRsProvFvESg.MatchT = basetypes.NewStringValue(childAttributeValue.(string))
 								}
 								if childAttributeName == "prio" {
-									FvRsProvFvESg.Prio = customtypes.NewFvRsProvprioStringValue(childAttributeValue.(string))
+									FvRsProvFvESg.Prio = customTypes.NewFvRsProvprioStringValue(childAttributeValue.(string))
 								}
 								if childAttributeName == "tnVzBrCPName" {
 									FvRsProvFvESg.TnVzBrCPName = basetypes.NewStringValue(childAttributeValue.(string))

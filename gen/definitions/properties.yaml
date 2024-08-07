@@ -627,6 +627,9 @@ fvIpAttr:
       parent_dn: "epg_useg_block_statement.test.id"
 
 netflowExporterPol:
+  resource_required:
+    - dstAddr
+    - dstPort
   overwrites:
     dst_addr: "destination_address"
     dst_port: "destination_port"

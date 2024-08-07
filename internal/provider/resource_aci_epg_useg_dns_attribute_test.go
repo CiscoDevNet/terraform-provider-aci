@@ -120,6 +120,7 @@ func TestAccResourceFvDnsAttrWithFvCrtrn(t *testing.T) {
 				Config:             testConfigFvDnsAttrMinDependencyWithFvCrtrn,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "filter", "test_filter"),
 					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "name", "dns_attribute"),
 				),
 			},
@@ -128,10 +129,10 @@ func TestAccResourceFvDnsAttrWithFvCrtrn(t *testing.T) {
 				Config:             testConfigFvDnsAttrResetDependencyWithFvCrtrn,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "filter", "test_filter"),
 					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "name", "dns_attribute"),
 					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "filter", ""),
 					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "owner_tag", ""),
@@ -148,10 +149,10 @@ func TestAccResourceFvDnsAttrWithFvCrtrn(t *testing.T) {
 				Config:             testConfigFvDnsAttrChildrenDependencyWithFvCrtrn,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "filter", "test_filter"),
 					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "name", "dns_attribute"),
 					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "filter", ""),
 					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "owner_tag", ""),
@@ -217,10 +218,12 @@ func TestAccResourceFvDnsAttrWithFvCrtrn(t *testing.T) {
 const testConfigFvDnsAttrMinDependencyWithFvCrtrnAllowExisting = testConfigFvCrtrnMinDependencyWithFvAEPg + `
 resource "aci_epg_useg_dns_attribute" "test" {
   parent_dn = aci_epg_useg_block_statement.test.id
+  filter = "test_filter"
   name = "dns_attribute"
 }
 resource "aci_epg_useg_dns_attribute" "test_2" {
   parent_dn = aci_epg_useg_block_statement.test.id
+  filter = "test_filter"
   name = "dns_attribute"
   depends_on = [aci_epg_useg_dns_attribute.test]
 }
@@ -229,6 +232,7 @@ resource "aci_epg_useg_dns_attribute" "test_2" {
 const testConfigFvDnsAttrMinDependencyWithFvCrtrn = testConfigFvCrtrnMinDependencyWithFvAEPg + `
 resource "aci_epg_useg_dns_attribute" "test" {
   parent_dn = aci_epg_useg_block_statement.test.id
+  filter = "test_filter"
   name = "dns_attribute"
 }
 `
@@ -261,6 +265,7 @@ resource "aci_epg_useg_dns_attribute" "test" {
 const testConfigFvDnsAttrChildrenDependencyWithFvCrtrn = testConfigFvCrtrnMinDependencyWithFvAEPg + `
 resource "aci_epg_useg_dns_attribute" "test" {
   parent_dn = aci_epg_useg_block_statement.test.id
+  filter = "test_filter"
   name = "dns_attribute"
   annotations = [
 	{
@@ -288,6 +293,7 @@ resource "aci_epg_useg_dns_attribute" "test" {
 const testConfigFvDnsAttrChildrenRemoveFromConfigDependencyWithFvCrtrn = testConfigFvCrtrnMinDependencyWithFvAEPg + `
 resource "aci_epg_useg_dns_attribute" "test" {
   parent_dn = aci_epg_useg_block_statement.test.id
+  filter = "test_filter"
   name = "dns_attribute"
 }
 `
@@ -295,6 +301,7 @@ resource "aci_epg_useg_dns_attribute" "test" {
 const testConfigFvDnsAttrChildrenRemoveOneDependencyWithFvCrtrn = testConfigFvCrtrnMinDependencyWithFvAEPg + `
 resource "aci_epg_useg_dns_attribute" "test" {
   parent_dn = aci_epg_useg_block_statement.test.id
+  filter = "test_filter"
   name = "dns_attribute"
   annotations = [ 
 	{
@@ -314,6 +321,7 @@ resource "aci_epg_useg_dns_attribute" "test" {
 const testConfigFvDnsAttrChildrenRemoveAllDependencyWithFvCrtrn = testConfigFvCrtrnMinDependencyWithFvAEPg + `
 resource "aci_epg_useg_dns_attribute" "test" {
   parent_dn = aci_epg_useg_block_statement.test.id
+  filter = "test_filter"
   name = "dns_attribute"
   annotations = []
   tags = []

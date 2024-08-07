@@ -11,7 +11,7 @@ import (
 	"reflect"
 	"strings"
 
-	customtypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/validators"
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
@@ -49,9 +49,9 @@ type NetflowExporterPolResourceModel struct {
 	ParentDn      types.String                                     `tfsdk:"parent_dn"`
 	Annotation    types.String                                     `tfsdk:"annotation"`
 	Descr         types.String                                     `tfsdk:"description"`
-	Dscp          customtypes.NetflowExporterPoldscpStringValue    `tfsdk:"dscp"`
+	Dscp          customTypes.NetflowExporterPoldscpStringValue    `tfsdk:"dscp"`
 	DstAddr       types.String                                     `tfsdk:"destination_address"`
-	DstPort       customtypes.NetflowExporterPoldstPortStringValue `tfsdk:"destination_port"`
+	DstPort       customTypes.NetflowExporterPoldstPortStringValue `tfsdk:"destination_port"`
 	Name          types.String                                     `tfsdk:"name"`
 	NameAlias     types.String                                     `tfsdk:"name_alias"`
 	OwnerKey      types.String                                     `tfsdk:"owner_key"`
@@ -152,7 +152,7 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 				MarkdownDescription: `The description of the Netflow Exporter Policy object.`,
 			},
 			"dscp": schema.StringAttribute{
-				CustomType: customtypes.NetflowExporterPoldscpStringType{},
+				CustomType: customTypes.NetflowExporterPoldscpStringType{},
 				Optional:   true,
 				Computed:   true,
 				PlanModifiers: []planmodifier.String{
@@ -167,17 +167,15 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 				MarkdownDescription: `The DSCP value of the Netflow Exporter Policy object.`,
 			},
 			"destination_address": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
+				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
 				MarkdownDescription: `The destination IP address of the remote node.`,
 			},
 			"destination_port": schema.StringAttribute{
-				CustomType: customtypes.NetflowExporterPoldstPortStringType{},
-				Optional:   true,
-				Computed:   true,
+				CustomType: customTypes.NetflowExporterPoldstPortStringType{},
+				Required:   true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
@@ -508,13 +506,13 @@ func getAndSetNetflowExporterPolAttributes(ctx context.Context, diags *diag.Diag
 					data.Descr = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "dscp" {
-					data.Dscp = customtypes.NewNetflowExporterPoldscpStringValue(attributeValue.(string))
+					data.Dscp = customTypes.NewNetflowExporterPoldscpStringValue(attributeValue.(string))
 				}
 				if attributeName == "dstAddr" {
 					data.DstAddr = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "dstPort" {
-					data.DstPort = customtypes.NewNetflowExporterPoldstPortStringValue(attributeValue.(string))
+					data.DstPort = customTypes.NewNetflowExporterPoldstPortStringValue(attributeValue.(string))
 				}
 				if attributeName == "name" {
 					data.Name = basetypes.NewStringValue(attributeValue.(string))

@@ -8,7 +8,7 @@ import (
 	"context"
 	"fmt"
 
-	customtypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
@@ -74,7 +74,7 @@ func (d *VzOOBBrCPDataSource) Schema(ctx context.Context, req datasource.SchemaR
 				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
 			},
 			"priority": schema.StringAttribute{
-				CustomType:          customtypes.VzOOBBrCPprioStringType{},
+				CustomType:          customTypes.VzOOBBrCPprioStringType{},
 				Computed:            true,
 				MarkdownDescription: `The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.`,
 			},
@@ -83,7 +83,7 @@ func (d *VzOOBBrCPDataSource) Schema(ctx context.Context, req datasource.SchemaR
 				MarkdownDescription: `Represents the scope of this contract. If the scope is set as application-profile, the epg can only communicate with epgs in the same application-profile.`,
 			},
 			"target_dscp": schema.StringAttribute{
-				CustomType:          customtypes.VzOOBBrCPtargetDscpStringType{},
+				CustomType:          customTypes.VzOOBBrCPtargetDscpStringType{},
 				Computed:            true,
 				MarkdownDescription: `The target DSCP value of the Out Of Band Contract object.`,
 			},

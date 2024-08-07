@@ -10,8 +10,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	{{- range .Properties}}
-		{{- if and (lt 0 (len .ValidValues)) (lt 0 (len .Validators))}}
-	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+		{{- if and (lt 0 (len .ValidValuesMap)) (lt 0 (len .Validators))}}
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 		{{- break}}
 		{{- end}}
 	{{- end}}
@@ -106,8 +106,8 @@ func (d *{{.ResourceClassName}}DataSource) Schema(ctx context.Context, req datas
 				ElementType: types.StringType,
 			},{{else}}
 			"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": schema.StringAttribute{
-					{{- if and (lt 0 (len .ValidValues)) (lt 0 (len .Validators))}}
-				CustomType: customtypes.{{.ResourceClassName}}{{.PropertyName}}StringType{},
+					{{- if and (lt 0 (len .ValidValuesMap)) (lt 0 (len .Validators))}}
+				CustomType: customTypes.{{.ResourceClassName}}{{.PropertyName}}StringType{},
 					{{- end}}
 				Computed:            true,
 				MarkdownDescription: `{{.Comment}}`,
@@ -127,8 +127,8 @@ func (d *{{.ResourceClassName}}DataSource) Schema(ctx context.Context, req datas
 							ElementType: types.StringType,
 						},{{else}}
 						"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": schema.StringAttribute{
-								{{- if and (lt 0 (len .ValidValues)) (lt 0 (len .Validators))}}
-							CustomType: customtypes.{{.ResourceClassName}}{{.PropertyName}}StringType{},
+								{{- if and (lt 0 (len .ValidValuesMap)) (lt 0 (len .Validators))}}
+							CustomType: customTypes.{{.ResourceClassName}}{{.PropertyName}}StringType{},
 								{{- end}}
 							Computed:            true,
 							MarkdownDescription: `{{.Comment}}`,

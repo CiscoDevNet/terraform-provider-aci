@@ -51,10 +51,9 @@ data "aci_netflow_exporter_policy" "test" {
 }
 `
 
-const testConfigNetflowExporterPolNotExistingFvTenant = testConfigNetflowExporterPolMinDependencyWithFvTenant + `
+const testConfigNetflowExporterPolNotExistingFvTenant = testConfigFvTenantMin + `
 data "aci_netflow_exporter_policy" "test_non_existing" {
   parent_dn = aci_tenant.test.id
   name = "netfow_exporter_non_existing"
-  depends_on = [aci_netflow_exporter_policy.test]
 }
 `

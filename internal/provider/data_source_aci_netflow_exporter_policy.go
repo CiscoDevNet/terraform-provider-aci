@@ -8,7 +8,7 @@ import (
 	"context"
 	"fmt"
 
-	customtypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
@@ -59,7 +59,7 @@ func (d *NetflowExporterPolDataSource) Schema(ctx context.Context, req datasourc
 				MarkdownDescription: `The description of the Netflow Exporter Policy object.`,
 			},
 			"dscp": schema.StringAttribute{
-				CustomType:          customtypes.NetflowExporterPoldscpStringType{},
+				CustomType:          customTypes.NetflowExporterPoldscpStringType{},
 				Computed:            true,
 				MarkdownDescription: `The DSCP value of the Netflow Exporter Policy object.`,
 			},
@@ -68,7 +68,7 @@ func (d *NetflowExporterPolDataSource) Schema(ctx context.Context, req datasourc
 				MarkdownDescription: `The destination IP address of the remote node.`,
 			},
 			"destination_port": schema.StringAttribute{
-				CustomType:          customtypes.NetflowExporterPoldstPortStringType{},
+				CustomType:          customTypes.NetflowExporterPoldstPortStringType{},
 				Computed:            true,
 				MarkdownDescription: `The destination port of the remote node.`,
 			},

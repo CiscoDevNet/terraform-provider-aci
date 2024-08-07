@@ -1,4 +1,4 @@
-package customtypes
+package customTypes
 
 import (
 	"context"
@@ -113,9 +113,8 @@ func (v {{.ResourceClassName}}{{.PropertyName}}StringValue) StringSemanticEquals
 }
 
 func {{.ResourceClassName}}{{.PropertyName}}ValueMap(value basetypes.StringValue) basetypes.StringValue {
-{{- $ValidValuesMap := validValuesToMap .ValidValues}}
 	matchMap := map[string]string{
-	{{- range $key, $value := $ValidValuesMap}}
+	{{- range $key, $value := .ValidValuesMap}}
 		"{{$key}}": "{{$value}}",
 	{{- end}}
 	}
