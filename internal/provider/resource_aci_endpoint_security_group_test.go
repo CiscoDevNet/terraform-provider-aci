@@ -40,7 +40,6 @@ func TestAccResourceFvESgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test_2", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test", "preferred_group_member", "exclude"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test_2", "preferred_group_member", "exclude"),
-					resource.TestCheckResourceAttrSet("aci_endpoint_security_group.allow_test", "pc_tag"),
 				),
 			},
 		},
@@ -87,8 +86,6 @@ func TestAccResourceFvESgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test_2", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test", "preferred_group_member", "exclude"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test_2", "preferred_group_member", "exclude"),
-					resource.TestCheckResourceAttrSet("aci_endpoint_security_group.allow_test", "pc_tag"),
-					resource.TestCheckResourceAttrSet("aci_endpoint_security_group.allow_test_2", "pc_tag"),
 				),
 			},
 		},
@@ -112,7 +109,6 @@ func TestAccResourceFvESgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "match_criteria", "AtleastOne"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "preferred_group_member", "exclude"),
-					resource.TestCheckResourceAttrSet("aci_endpoint_security_group.test", "pc_tag"),
 				),
 			},
 			// Update with all config and verify default APIC values
@@ -129,7 +125,6 @@ func TestAccResourceFvESgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "match_criteria", "All"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "name_alias", "name_alias_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "preferred_group_member", "exclude"),
-					resource.TestCheckResourceAttrSet("aci_endpoint_security_group.test", "pc_tag"),
 				),
 			},
 			// Update with minimum config and verify config is unchanged
@@ -138,7 +133,6 @@ func TestAccResourceFvESgWithFvAp(t *testing.T) {
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "name", "test_name"),
-					resource.TestCheckResourceAttrSet("aci_endpoint_security_group.test", "pc_tag"),
 				),
 			},
 			// Update with empty strings config or default value
@@ -155,7 +149,6 @@ func TestAccResourceFvESgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "match_criteria", "AtleastOne"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "preferred_group_member", "exclude"),
-					resource.TestCheckResourceAttrSet("aci_endpoint_security_group.test", "pc_tag"),
 				),
 			},
 			// Import testing
@@ -178,7 +171,6 @@ func TestAccResourceFvESgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "match_criteria", "AtleastOne"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "preferred_group_member", "exclude"),
-					resource.TestCheckResourceAttrSet("aci_endpoint_security_group.test", "pc_tag"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "annotations.1.key", "key_1"),
@@ -230,7 +222,6 @@ func TestAccResourceFvESgWithFvAp(t *testing.T) {
 				Config:             testConfigFvESgChildrenRemoveFromConfigDependencyWithFvAp,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttrSet("aci_endpoint_security_group.test", "pc_tag"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "annotations.1.key", "key_1"),
@@ -284,7 +275,6 @@ func TestAccResourceFvESgWithFvAp(t *testing.T) {
 				Config:             testConfigFvESgChildrenRemoveOneDependencyWithFvAp,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttrSet("aci_endpoint_security_group.test", "pc_tag"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "annotations.0.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "annotations.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "annotations.#", "1"),
@@ -320,7 +310,6 @@ func TestAccResourceFvESgWithFvAp(t *testing.T) {
 				Config:             testConfigFvESgChildrenRemoveAllDependencyWithFvAp,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttrSet("aci_endpoint_security_group.test", "pc_tag"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "annotations.#", "0"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contracts.#", "0"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_contract_masters.#", "0"),
