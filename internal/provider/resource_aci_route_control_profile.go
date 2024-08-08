@@ -14,6 +14,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -57,16 +58,57 @@ type RtctrlProfileResourceModel struct {
 	TagTag        types.Set    `tfsdk:"tags"`
 }
 
+func getEmptyRtctrlProfileResourceModel() *RtctrlProfileResourceModel {
+	return &RtctrlProfileResourceModel{
+		Id:           basetypes.NewStringNull(),
+		ParentDn:     basetypes.NewStringNull(),
+		Annotation:   basetypes.NewStringNull(),
+		AutoContinue: basetypes.NewStringNull(),
+		Descr:        basetypes.NewStringNull(),
+		Name:         basetypes.NewStringNull(),
+		NameAlias:    basetypes.NewStringNull(),
+		OwnerKey:     basetypes.NewStringNull(),
+		OwnerTag:     basetypes.NewStringNull(),
+		Type:         basetypes.NewStringNull(),
+		TagAnnotation: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"key":   types.StringType,
+				"value": types.StringType,
+			},
+		}),
+		TagTag: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"key":   types.StringType,
+				"value": types.StringType,
+			},
+		}),
+	}
+}
+
 // TagAnnotationRtctrlProfileResourceModel describes the resource data model for the children without relation ships.
 type TagAnnotationRtctrlProfileResourceModel struct {
 	Key   types.String `tfsdk:"key"`
 	Value types.String `tfsdk:"value"`
 }
 
+func getEmptyTagAnnotationRtctrlProfileResourceModel() TagAnnotationRtctrlProfileResourceModel {
+	return TagAnnotationRtctrlProfileResourceModel{
+		Key:   basetypes.NewStringNull(),
+		Value: basetypes.NewStringNull(),
+	}
+}
+
 // TagTagRtctrlProfileResourceModel describes the resource data model for the children without relation ships.
 type TagTagRtctrlProfileResourceModel struct {
 	Key   types.String `tfsdk:"key"`
 	Value types.String `tfsdk:"value"`
+}
+
+func getEmptyTagTagRtctrlProfileResourceModel() TagTagRtctrlProfileResourceModel {
+	return TagTagRtctrlProfileResourceModel{
+		Key:   basetypes.NewStringNull(),
+		Value: basetypes.NewStringNull(),
+	}
 }
 
 type RtctrlProfileIdentifier struct {
@@ -131,6 +173,7 @@ func (r *RtctrlProfileResource) Schema(ctx context.Context, req resource.SchemaR
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
 				MarkdownDescription: `The annotation of the Route Control Profile object.`,
@@ -140,6 +183,7 @@ func (r *RtctrlProfileResource) Schema(ctx context.Context, req resource.SchemaR
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
 					stringvalidator.OneOf("no", "yes"),
@@ -151,6 +195,7 @@ func (r *RtctrlProfileResource) Schema(ctx context.Context, req resource.SchemaR
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The description of the Route Control Profile object.`,
 			},
@@ -158,6 +203,7 @@ func (r *RtctrlProfileResource) Schema(ctx context.Context, req resource.SchemaR
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
 				MarkdownDescription: `The name of the Route Control Profile object.`,
@@ -167,6 +213,7 @@ func (r *RtctrlProfileResource) Schema(ctx context.Context, req resource.SchemaR
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The name alias of the Route Control Profile object.`,
 			},
@@ -175,6 +222,7 @@ func (r *RtctrlProfileResource) Schema(ctx context.Context, req resource.SchemaR
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The key for enabling clients to own their data for entity correlation.`,
 			},
@@ -183,6 +231,7 @@ func (r *RtctrlProfileResource) Schema(ctx context.Context, req resource.SchemaR
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
 			},
@@ -191,6 +240,7 @@ func (r *RtctrlProfileResource) Schema(ctx context.Context, req resource.SchemaR
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
 					stringvalidator.OneOf("combinable", "global"),
@@ -435,6 +485,8 @@ func (r *RtctrlProfileResource) ImportState(ctx context.Context, req resource.Im
 func getAndSetRtctrlProfileAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *RtctrlProfileResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "rtctrlProfile,tagAnnotation,tagTag"), "GET", nil)
 
+	*data = *getEmptyRtctrlProfileResourceModel()
+
 	if diags.HasError() {
 		return
 	}
@@ -481,7 +533,7 @@ func getAndSetRtctrlProfileAttributes(ctx context.Context, diags *diag.Diagnosti
 					for childClassName, childClassDetails := range child.(map[string]interface{}) {
 						childAttributes := childClassDetails.(map[string]interface{})["attributes"].(map[string]interface{})
 						if childClassName == "tagAnnotation" {
-							TagAnnotationRtctrlProfile := TagAnnotationRtctrlProfileResourceModel{}
+							TagAnnotationRtctrlProfile := getEmptyTagAnnotationRtctrlProfileResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "key" {
 									TagAnnotationRtctrlProfile.Key = basetypes.NewStringValue(childAttributeValue.(string))
@@ -493,7 +545,7 @@ func getAndSetRtctrlProfileAttributes(ctx context.Context, diags *diag.Diagnosti
 							TagAnnotationRtctrlProfileList = append(TagAnnotationRtctrlProfileList, TagAnnotationRtctrlProfile)
 						}
 						if childClassName == "tagTag" {
-							TagTagRtctrlProfile := TagTagRtctrlProfileResourceModel{}
+							TagTagRtctrlProfile := getEmptyTagTagRtctrlProfileResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "key" {
 									TagTagRtctrlProfile.Key = basetypes.NewStringValue(childAttributeValue.(string))
@@ -560,10 +612,10 @@ func getRtctrlProfileTagAnnotationChildPayloads(ctx context.Context, diags *diag
 		tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
 		for _, tagAnnotation := range tagAnnotationPlan {
 			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagAnnotation.Key.IsUnknown() {
+			if !tagAnnotation.Key.IsUnknown() && !tagAnnotation.Key.IsNull() {
 				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
 			}
-			if !tagAnnotation.Value.IsUnknown() {
+			if !tagAnnotation.Value.IsUnknown() && !tagAnnotation.Value.IsNull() {
 				childMap["attributes"]["value"] = tagAnnotation.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
@@ -599,10 +651,10 @@ func getRtctrlProfileTagTagChildPayloads(ctx context.Context, diags *diag.Diagno
 		tagTagIdentifiers := []TagTagIdentifier{}
 		for _, tagTag := range tagTagPlan {
 			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagTag.Key.IsUnknown() {
+			if !tagTag.Key.IsUnknown() && !tagTag.Key.IsNull() {
 				childMap["attributes"]["key"] = tagTag.Key.ValueString()
 			}
-			if !tagTag.Value.IsUnknown() {
+			if !tagTag.Value.IsUnknown() && !tagTag.Value.IsNull() {
 				childMap["attributes"]["value"] = tagTag.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})

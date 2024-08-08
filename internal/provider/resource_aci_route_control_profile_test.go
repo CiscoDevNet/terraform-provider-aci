@@ -22,22 +22,22 @@ func TestAccResourceRtctrlProfileWithFvTenant(t *testing.T) {
 				Config:             testConfigRtctrlProfileMinDependencyWithFvTenantAllowExisting,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "name", "test_name"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test_2", "name", "test_name"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test_2", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test_2", "description", ""),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test_2", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test_2", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test_2", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_control_profile_type", "combinable"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test_2", "route_control_profile_type", "combinable"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_map_continue", "no"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test_2", "route_map_continue", "no"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "description", ""),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "route_control_profile_type", "combinable"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "route_control_profile_type", "combinable"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "route_map_continue", "no"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "route_map_continue", "no"),
 				),
 			},
 		},
@@ -66,22 +66,22 @@ func TestAccResourceRtctrlProfileWithFvTenant(t *testing.T) {
 				Config:             testConfigRtctrlProfileMinDependencyWithFvTenantAllowExisting,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "name", "test_name"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test_2", "name", "test_name"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test_2", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test_2", "description", ""),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test_2", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test_2", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test_2", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_control_profile_type", "combinable"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test_2", "route_control_profile_type", "combinable"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_map_continue", "no"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test_2", "route_map_continue", "no"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "description", ""),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "route_control_profile_type", "combinable"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "route_control_profile_type", "combinable"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "route_map_continue", "no"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "route_map_continue", "no"),
 				),
 			},
 		},
@@ -113,10 +113,10 @@ func TestAccResourceRtctrlProfileWithFvTenant(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotation", "annotation"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "description", "description"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "name_alias", "name_alias"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "owner_key", "owner_key"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "owner_tag", "owner_tag"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.test", "description", "description_1"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.test", "name_alias", "name_alias_1"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.test", "owner_key", "owner_key_1"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.test", "owner_tag", "owner_tag_1"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_control_profile_type", "combinable"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_map_continue", "no"),
 				),
@@ -166,11 +166,11 @@ func TestAccResourceRtctrlProfileWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotations.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "tags.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.test", "tags.1.value", "test_value"),
 				),
 			},
 			// Import testing with children
@@ -187,12 +187,12 @@ func TestAccResourceRtctrlProfileWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotations.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotations.#", "2"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "tags.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.test", "tags.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "tags.#", "2"),
 				),
 			},
@@ -202,10 +202,10 @@ func TestAccResourceRtctrlProfileWithFvTenant(t *testing.T) {
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotations.0.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotations.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotations.#", "1"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "tags.0.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.test", "tags.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "tags.#", "1"),
 				),
 			},
@@ -232,22 +232,22 @@ func TestAccResourceRtctrlProfileWithL3extOut(t *testing.T) {
 				Config:             testConfigRtctrlProfileMinDependencyWithL3extOutAllowExisting,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "name", "test_name"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test_2", "name", "test_name"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test_2", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test_2", "description", ""),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test_2", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test_2", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test_2", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_control_profile_type", "combinable"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test_2", "route_control_profile_type", "combinable"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_map_continue", "no"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test_2", "route_map_continue", "no"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "description", ""),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "route_control_profile_type", "combinable"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "route_control_profile_type", "combinable"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "route_map_continue", "no"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "route_map_continue", "no"),
 				),
 			},
 		},
@@ -276,22 +276,22 @@ func TestAccResourceRtctrlProfileWithL3extOut(t *testing.T) {
 				Config:             testConfigRtctrlProfileMinDependencyWithL3extOutAllowExisting,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "name", "test_name"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test_2", "name", "test_name"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test_2", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test_2", "description", ""),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test_2", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test_2", "owner_key", ""),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test_2", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_control_profile_type", "combinable"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test_2", "route_control_profile_type", "combinable"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_map_continue", "no"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test_2", "route_map_continue", "no"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "description", ""),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "route_control_profile_type", "combinable"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "route_control_profile_type", "combinable"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "route_map_continue", "no"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "route_map_continue", "no"),
 				),
 			},
 		},
@@ -323,10 +323,10 @@ func TestAccResourceRtctrlProfileWithL3extOut(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotation", "annotation"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "description", "description"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "name_alias", "name_alias"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "owner_key", "owner_key"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "owner_tag", "owner_tag"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.test", "description", "description_1"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.test", "name_alias", "name_alias_1"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.test", "owner_key", "owner_key_1"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.test", "owner_tag", "owner_tag_1"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_control_profile_type", "combinable"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_map_continue", "no"),
 				),
@@ -376,11 +376,11 @@ func TestAccResourceRtctrlProfileWithL3extOut(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotations.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "tags.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.test", "tags.1.value", "test_value"),
 				),
 			},
 			// Import testing with children
@@ -397,12 +397,12 @@ func TestAccResourceRtctrlProfileWithL3extOut(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotations.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotations.#", "2"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "tags.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.test", "tags.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "tags.#", "2"),
 				),
 			},
@@ -412,10 +412,10 @@ func TestAccResourceRtctrlProfileWithL3extOut(t *testing.T) {
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotations.0.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotations.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotations.#", "1"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "tags.0.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_route_control_profile.test", "tags.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "tags.#", "1"),
 				),
 			},
@@ -433,14 +433,14 @@ func TestAccResourceRtctrlProfileWithL3extOut(t *testing.T) {
 }
 
 const testConfigRtctrlProfileMinDependencyWithFvTenantAllowExisting = testConfigFvTenantMin + `
-resource "aci_route_control_profile" "test" {
+resource "aci_route_control_profile" "allow_test" {
   parent_dn = aci_tenant.test.id
   name = "test_name"
 }
-resource "aci_route_control_profile" "test_2" {
+resource "aci_route_control_profile" "allow_test_2" {
   parent_dn = aci_tenant.test.id
   name = "test_name"
-  depends_on = [aci_route_control_profile.test]
+  depends_on = [aci_route_control_profile.allow_test]
 }
 `
 
@@ -456,10 +456,10 @@ resource "aci_route_control_profile" "test" {
   parent_dn = aci_tenant.test.id
   name = "test_name"
   annotation = "annotation"
-  description = "description"
-  name_alias = "name_alias"
-  owner_key = "owner_key"
-  owner_tag = "owner_tag"
+  description = "description_1"
+  name_alias = "name_alias_1"
+  owner_key = "owner_key_1"
+  owner_tag = "owner_tag_1"
   route_control_profile_type = "combinable"
   route_map_continue = "no"
 }
@@ -489,7 +489,7 @@ resource "aci_route_control_profile" "test" {
 	},
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
   tags = [
@@ -499,7 +499,7 @@ resource "aci_route_control_profile" "test" {
 	},
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
 }
@@ -519,13 +519,13 @@ resource "aci_route_control_profile" "test" {
   annotations = [ 
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
   tags = [ 
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
 }
@@ -541,14 +541,14 @@ resource "aci_route_control_profile" "test" {
 `
 
 const testConfigRtctrlProfileMinDependencyWithL3extOutAllowExisting = testConfigL3extOutMin + `
-resource "aci_route_control_profile" "test" {
+resource "aci_route_control_profile" "allow_test" {
   parent_dn = aci_l3_outside.test.id
   name = "test_name"
 }
-resource "aci_route_control_profile" "test_2" {
+resource "aci_route_control_profile" "allow_test_2" {
   parent_dn = aci_l3_outside.test.id
   name = "test_name"
-  depends_on = [aci_route_control_profile.test]
+  depends_on = [aci_route_control_profile.allow_test]
 }
 `
 
@@ -564,10 +564,10 @@ resource "aci_route_control_profile" "test" {
   parent_dn = aci_l3_outside.test.id
   name = "test_name"
   annotation = "annotation"
-  description = "description"
-  name_alias = "name_alias"
-  owner_key = "owner_key"
-  owner_tag = "owner_tag"
+  description = "description_1"
+  name_alias = "name_alias_1"
+  owner_key = "owner_key_1"
+  owner_tag = "owner_tag_1"
   route_control_profile_type = "combinable"
   route_map_continue = "no"
 }
@@ -597,7 +597,7 @@ resource "aci_route_control_profile" "test" {
 	},
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
   tags = [
@@ -607,7 +607,7 @@ resource "aci_route_control_profile" "test" {
 	},
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
 }
@@ -627,13 +627,13 @@ resource "aci_route_control_profile" "test" {
   annotations = [ 
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
   tags = [ 
 	{
 	  key = "key_1"
-	  value = "value_2"
+	  value = "test_value"
 	},
   ]
 }
