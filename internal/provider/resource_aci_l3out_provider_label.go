@@ -244,7 +244,7 @@ func (r *L3extProvLblResource) Create(ctx context.Context, req resource.CreateRe
 	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
 	var stateData *L3extProvLblResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
-	setL3extProvLblId(ctx, stateData)
+	SetL3extProvLblId(ctx, stateData)
 	getAndSetL3extProvLblAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 
 	var data *L3extProvLblResourceModel
@@ -256,7 +256,7 @@ func (r *L3extProvLblResource) Create(ctx context.Context, req resource.CreateRe
 		return
 	}
 
-	setL3extProvLblId(ctx, data)
+	SetL3extProvLblId(ctx, data)
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_l3out_provider_label with id '%s'", data.Id.ValueString()))
 
@@ -266,7 +266,7 @@ func (r *L3extProvLblResource) Create(ctx context.Context, req resource.CreateRe
 	var tagTagPlan, tagTagState []TagTagL3extProvLblResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getL3extProvLblCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetL3extProvLblCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -331,7 +331,7 @@ func (r *L3extProvLblResource) Update(ctx context.Context, req resource.UpdateRe
 	var tagTagPlan, tagTagState []TagTagL3extProvLblResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getL3extProvLblCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetL3extProvLblCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -497,7 +497,7 @@ func setL3extProvLblParentDn(ctx context.Context, dn string, data *L3extProvLblR
 	data.ParentDn = basetypes.NewStringValue(dn[:rnIndex])
 }
 
-func setL3extProvLblId(ctx context.Context, data *L3extProvLblResourceModel) {
+func SetL3extProvLblId(ctx context.Context, data *L3extProvLblResourceModel) {
 	rn := getL3extProvLblRn(ctx, data)
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
@@ -581,7 +581,7 @@ func getL3extProvLblTagTagChildPayloads(ctx context.Context, diags *diag.Diagnos
 	return childPayloads
 }
 
-func getL3extProvLblCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *L3extProvLblResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationL3extProvLblResourceModel, tagTagPlan, tagTagState []TagTagL3extProvLblResourceModel) *container.Container {
+func GetL3extProvLblCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *L3extProvLblResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationL3extProvLblResourceModel, tagTagPlan, tagTagState []TagTagL3extProvLblResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 	childPayloads := []map[string]interface{}{}

@@ -138,7 +138,7 @@ func (d *MgmtSubnetDataSource) Read(ctx context.Context, req datasource.ReadRequ
 		return
 	}
 
-	setMgmtSubnetId(ctx, data)
+	SetMgmtSubnetId(ctx, data)
 
 	// Create a copy of the Id for when not found during getAndSetMgmtSubnetAttributes
 	cachedId := data.Id.ValueString()

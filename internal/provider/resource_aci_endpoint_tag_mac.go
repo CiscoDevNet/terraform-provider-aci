@@ -231,7 +231,7 @@ func (r *FvEpMacTagResource) Create(ctx context.Context, req resource.CreateRequ
 	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
 	var stateData *FvEpMacTagResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
-	setFvEpMacTagId(ctx, stateData)
+	SetFvEpMacTagId(ctx, stateData)
 	getAndSetFvEpMacTagAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 
 	var data *FvEpMacTagResourceModel
@@ -243,7 +243,7 @@ func (r *FvEpMacTagResource) Create(ctx context.Context, req resource.CreateRequ
 		return
 	}
 
-	setFvEpMacTagId(ctx, data)
+	SetFvEpMacTagId(ctx, data)
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_endpoint_tag_mac with id '%s'", data.Id.ValueString()))
 
@@ -253,7 +253,7 @@ func (r *FvEpMacTagResource) Create(ctx context.Context, req resource.CreateRequ
 	var tagTagPlan, tagTagState []TagTagFvEpMacTagResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvEpMacTagCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetFvEpMacTagCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -318,7 +318,7 @@ func (r *FvEpMacTagResource) Update(ctx context.Context, req resource.UpdateRequ
 	var tagTagPlan, tagTagState []TagTagFvEpMacTagResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvEpMacTagCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetFvEpMacTagCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -483,12 +483,12 @@ func setFvEpMacTagParentDn(ctx context.Context, dn string, data *FvEpMacTagResou
 	data.ParentDn = basetypes.NewStringValue(parentDn)
 }
 
-func setFvEpMacTagId(ctx context.Context, data *FvEpMacTagResourceModel) {
+func SetFvEpMacTagId(ctx context.Context, data *FvEpMacTagResourceModel) {
 	rn := getFvEpMacTagRn(ctx, data)
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
 
-func GetFvEpMacTagTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvEpMacTagResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvEpMacTagResourceModel) []map[string]interface{} {
+func getFvEpMacTagTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvEpMacTagResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvEpMacTagResourceModel) []map[string]interface{} {
 
 	childPayloads := []map[string]interface{}{}
 	if !data.TagAnnotation.IsUnknown() {
@@ -567,12 +567,12 @@ func getFvEpMacTagTagTagChildPayloads(ctx context.Context, diags *diag.Diagnosti
 	return childPayloads
 }
 
-func getFvEpMacTagCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *FvEpMacTagResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvEpMacTagResourceModel, tagTagPlan, tagTagState []TagTagFvEpMacTagResourceModel) *container.Container {
+func GetFvEpMacTagCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *FvEpMacTagResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvEpMacTagResourceModel, tagTagPlan, tagTagState []TagTagFvEpMacTagResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 	childPayloads := []map[string]interface{}{}
 
-	TagAnnotationchildPayloads := GetFvEpMacTagTagAnnotationChildPayloads(ctx, diags, data, tagAnnotationPlan, tagAnnotationState)
+	TagAnnotationchildPayloads := getFvEpMacTagTagAnnotationChildPayloads(ctx, diags, data, tagAnnotationPlan, tagAnnotationState)
 	if TagAnnotationchildPayloads == nil {
 		return nil
 	}

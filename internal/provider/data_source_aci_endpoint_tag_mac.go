@@ -142,7 +142,7 @@ func (d *FvEpMacTagDataSource) Read(ctx context.Context, req datasource.ReadRequ
 		return
 	}
 
-	setFvEpMacTagId(ctx, data)
+	SetFvEpMacTagId(ctx, data)
 
 	// Create a copy of the Id for when not found during getAndSetFvEpMacTagAttributes
 	cachedId := data.Id.ValueString()

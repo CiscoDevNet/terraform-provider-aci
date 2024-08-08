@@ -11,33 +11,42 @@ provider "aci" {
   # APIC Username
   username = "admin"
   # APIC Password
-  password = "!v3G@!4@Y"
+  password = "ins3965!"
   # APIC URL
-  url      = "https://sandboxapicdc.cisco.com"
+  url      = "https://173.36.219.79"
   insecure = true
 }
 
 # Define an ACI Tenant Resource.
 
-resource "aci_tenant" "example" {
-  name        = "demo_tenant"
-  description = "from terraform"
-  annotation  = "tag"
-  name_alias  = "tenant"
+/* SUCCESS
+resource "aci_endpoint_tag_ip" "full_example_tenant" {
+  parent_dn    = "uni/tn-demo_tenant"
+  annotation   = "annotation"
+  vrf_name     = "test_ctx_name"
+  id_attribute = "1"
+  ip           = "10.0.0.2"
+  name         = "WOW"
+  name_alias   = "name_alias"
+  annotations = [
+    {
+      key   = "key_0"
+      value = "value_1"
+    }
+  ]
+  tags = [
+    {
+      key   = "key_0"
+      value = "value_1"
+    }
+  ]
 }
 
-
-resource "aci_tenant" "example2" {
-  name        = "demo_tenant2"
-  description = "from terraform2"
-  annotation  = "tag2"
-  name_alias  = "tenant2"
-}
-
-
+*/
+//SUCCESS
 /*
 resource "aci_vrf_fallback_route_group" "full_example_vrf" {
-  parent_dn   = "uni/tn-demo_tenant"
+  parent_dn   = "uni/tn-mgmt/extmgmt-default/instp-test_name"
   annotation  = "annotation"
   description = "description"
   name        = "fallback_route_group"
@@ -66,9 +75,36 @@ resource "aci_vrf_fallback_route_group" "full_example_vrf" {
 }
 */
 
-/*
-
 resource "aci_external_management_network_instance_profile" "full_example" {
+  annotation  = "woidid"
+  description = "description"
+  name        = "test_name"
+  name_alias  = "name_alias"
+  priority    = "level1"
+  relation_to_consumed_out_of_band_contracts = [
+    {
+      annotation                = "annotation_1"
+      priority                  = "level1"
+      out_of_band_contract_name = "aci_out_of_band_contract.example.name"
+    }
+  ]
+  annotations = [
+    {
+      key   = "key_0"
+      value = "value_1"
+    }
+  ]
+  tags = [
+    {
+      key   = "key_0"
+      value = "value_1"
+    }
+  ]
+}
+
+/* SUCCESS
+
+resource "aci_external_management_network_instance_profile" "full_example333" {
   annotation  = "annotation"
   description = "description"
   name        = "test_name"
@@ -94,35 +130,12 @@ resource "aci_external_management_network_instance_profile" "full_example" {
     }
   ]
 }
+
 */
 
-/*
-resource "aci_endpoint_tag_ip" "full_example_tenant" {
-  parent_dn    = "uni/tn-demo_tenant"
-  annotation   = "annotation"
-  vrf_name     = "test_ctx_name"
-  id_attribute = "1"
-  ip           = "10.0.0.2"
-  name         = "WOW"
-  name_alias   = "name_alias"
-  annotations = [
-    {
-      key   = "key_0"
-      value = "value_1"
-    }
-  ]
-  tags = [
-    {
-      key   = "key_0"
-      value = "value_1"
-    }
-  ]
-}
-*/
 
-/*
 resource "aci_netflow_monitor_policy" "full_example_tenant" {
-  parent_dn   = "uni/tn-example_tenant"
+  parent_dn   = "uni/tn-mgmt/extmgmt-default/instp-test_name"
   annotation  = "annotation"
   description = "description"
   name        = "netfow_monitor"
@@ -154,7 +167,7 @@ resource "aci_netflow_monitor_policy" "full_example_tenant" {
     }
   ]
 }
-*/
+
 
 
 /*
@@ -183,10 +196,8 @@ resource "aci_annotation" "terraform_annotation" {
 
 */
 
-/*
-
 resource "aci_l3out_consumer_label" "full_example_l3_outside" {
-  parent_dn   = "uni/tn-example_tenant/out-foo_l3_outside"
+  parent_dn   = "uni/tn-mgmt/extmgmt-default/instp-test_name"
   annotation  = "annotation"
   description = "description"
   name        = "test_name"
@@ -209,8 +220,30 @@ resource "aci_l3out_consumer_label" "full_example_l3_outside" {
   ]
 }
 
-*/
 
+/*
+resource "aci_pim_route_map_policy" "full_example_tenant" {
+  parent_dn   = "uni/tn-demo_tenant"
+  annotation  = "annotation"
+  description = "description"
+  name        = "test_name"
+  name_alias  = "name_alias"
+  owner_key   = "owner_key"
+  owner_tag   = "owner_tag"
+  annotations = [
+    {
+      key   = "key_0"
+      value = "value_1"
+    }
+  ]
+  tags = [
+    {
+      key   = "key_0"
+      value = "value_1"
+    }
+  ]
+}
+*/
 # Define an ACI Tenant VRF Resource.
 # resource "aci_vrf" "terraform_vrf" {
 #     tenant_dn   = aci_tenant.terraform_tenant.id

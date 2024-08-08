@@ -154,7 +154,7 @@ func (d *PimRouteMapEntryDataSource) Read(ctx context.Context, req datasource.Re
 		return
 	}
 
-	setPimRouteMapEntryId(ctx, data)
+	SetPimRouteMapEntryId(ctx, data)
 
 	// Create a copy of the Id for when not found during getAndSetPimRouteMapEntryAttributes
 	cachedId := data.Id.ValueString()

@@ -208,7 +208,7 @@ func (r *MgmtRsOoBConsResource) Create(ctx context.Context, req resource.CreateR
 	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
 	var stateData *MgmtRsOoBConsResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
-	setMgmtRsOoBConsId(ctx, stateData)
+	SetMgmtRsOoBConsId(ctx, stateData)
 	getAndSetMgmtRsOoBConsAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 
 	var data *MgmtRsOoBConsResourceModel
@@ -220,7 +220,7 @@ func (r *MgmtRsOoBConsResource) Create(ctx context.Context, req resource.CreateR
 		return
 	}
 
-	setMgmtRsOoBConsId(ctx, data)
+	SetMgmtRsOoBConsId(ctx, data)
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_relation_to_consumed_out_of_band_contract with id '%s'", data.Id.ValueString()))
 
@@ -230,7 +230,7 @@ func (r *MgmtRsOoBConsResource) Create(ctx context.Context, req resource.CreateR
 	var tagTagPlan, tagTagState []TagTagMgmtRsOoBConsResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getMgmtRsOoBConsCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetMgmtRsOoBConsCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -295,7 +295,7 @@ func (r *MgmtRsOoBConsResource) Update(ctx context.Context, req resource.UpdateR
 	var tagTagPlan, tagTagState []TagTagMgmtRsOoBConsResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getMgmtRsOoBConsCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetMgmtRsOoBConsCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -449,12 +449,12 @@ func setMgmtRsOoBConsParentDn(ctx context.Context, dn string, data *MgmtRsOoBCon
 	data.ParentDn = basetypes.NewStringValue(dn[:rnIndex])
 }
 
-func setMgmtRsOoBConsId(ctx context.Context, data *MgmtRsOoBConsResourceModel) {
+func SetMgmtRsOoBConsId(ctx context.Context, data *MgmtRsOoBConsResourceModel) {
 	rn := getMgmtRsOoBConsRn(ctx, data)
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
 
-func GetMgmtRsOoBConsTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *MgmtRsOoBConsResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationMgmtRsOoBConsResourceModel) []map[string]interface{} {
+func getMgmtRsOoBConsTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *MgmtRsOoBConsResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationMgmtRsOoBConsResourceModel) []map[string]interface{} {
 
 	childPayloads := []map[string]interface{}{}
 	if !data.TagAnnotation.IsUnknown() {
@@ -493,7 +493,7 @@ func GetMgmtRsOoBConsTagAnnotationChildPayloads(ctx context.Context, diags *diag
 
 	return childPayloads
 }
-func GetMgmtRsOoBConsTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *MgmtRsOoBConsResourceModel, tagTagPlan, tagTagState []TagTagMgmtRsOoBConsResourceModel) []map[string]interface{} {
+func getMgmtRsOoBConsTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *MgmtRsOoBConsResourceModel, tagTagPlan, tagTagState []TagTagMgmtRsOoBConsResourceModel) []map[string]interface{} {
 
 	childPayloads := []map[string]interface{}{}
 	if !data.TagTag.IsUnknown() {
@@ -533,18 +533,18 @@ func GetMgmtRsOoBConsTagTagChildPayloads(ctx context.Context, diags *diag.Diagno
 	return childPayloads
 }
 
-func getMgmtRsOoBConsCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *MgmtRsOoBConsResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationMgmtRsOoBConsResourceModel, tagTagPlan, tagTagState []TagTagMgmtRsOoBConsResourceModel) *container.Container {
+func GetMgmtRsOoBConsCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *MgmtRsOoBConsResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationMgmtRsOoBConsResourceModel, tagTagPlan, tagTagState []TagTagMgmtRsOoBConsResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 	childPayloads := []map[string]interface{}{}
 
-	TagAnnotationchildPayloads := GetMgmtRsOoBConsTagAnnotationChildPayloads(ctx, diags, data, tagAnnotationPlan, tagAnnotationState)
+	TagAnnotationchildPayloads := getMgmtRsOoBConsTagAnnotationChildPayloads(ctx, diags, data, tagAnnotationPlan, tagAnnotationState)
 	if TagAnnotationchildPayloads == nil {
 		return nil
 	}
 	childPayloads = append(childPayloads, TagAnnotationchildPayloads...)
 
-	TagTagchildPayloads := GetMgmtRsOoBConsTagTagChildPayloads(ctx, diags, data, tagTagPlan, tagTagState)
+	TagTagchildPayloads := getMgmtRsOoBConsTagTagChildPayloads(ctx, diags, data, tagTagPlan, tagTagState)
 	if TagTagchildPayloads == nil {
 		return nil
 	}

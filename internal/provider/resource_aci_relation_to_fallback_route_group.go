@@ -194,7 +194,7 @@ func (r *L3extRsOutToFBRGroupResource) Create(ctx context.Context, req resource.
 	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
 	var stateData *L3extRsOutToFBRGroupResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
-	setL3extRsOutToFBRGroupId(ctx, stateData)
+	SetL3extRsOutToFBRGroupId(ctx, stateData)
 	getAndSetL3extRsOutToFBRGroupAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 
 	var data *L3extRsOutToFBRGroupResourceModel
@@ -206,7 +206,7 @@ func (r *L3extRsOutToFBRGroupResource) Create(ctx context.Context, req resource.
 		return
 	}
 
-	setL3extRsOutToFBRGroupId(ctx, data)
+	SetL3extRsOutToFBRGroupId(ctx, data)
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_relation_to_fallback_route_group with id '%s'", data.Id.ValueString()))
 
@@ -216,7 +216,7 @@ func (r *L3extRsOutToFBRGroupResource) Create(ctx context.Context, req resource.
 	var tagTagPlan, tagTagState []TagTagL3extRsOutToFBRGroupResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getL3extRsOutToFBRGroupCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetL3extRsOutToFBRGroupCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -281,7 +281,7 @@ func (r *L3extRsOutToFBRGroupResource) Update(ctx context.Context, req resource.
 	var tagTagPlan, tagTagState []TagTagL3extRsOutToFBRGroupResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getL3extRsOutToFBRGroupCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetL3extRsOutToFBRGroupCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -432,7 +432,7 @@ func setL3extRsOutToFBRGroupParentDn(ctx context.Context, dn string, data *L3ext
 	data.ParentDn = basetypes.NewStringValue(dn[:rnIndex])
 }
 
-func setL3extRsOutToFBRGroupId(ctx context.Context, data *L3extRsOutToFBRGroupResourceModel) {
+func SetL3extRsOutToFBRGroupId(ctx context.Context, data *L3extRsOutToFBRGroupResourceModel) {
 	rn := getL3extRsOutToFBRGroupRn(ctx, data)
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
@@ -516,7 +516,7 @@ func getL3extRsOutToFBRGroupTagTagChildPayloads(ctx context.Context, diags *diag
 	return childPayloads
 }
 
-func getL3extRsOutToFBRGroupCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *L3extRsOutToFBRGroupResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationL3extRsOutToFBRGroupResourceModel, tagTagPlan, tagTagState []TagTagL3extRsOutToFBRGroupResourceModel) *container.Container {
+func GetL3extRsOutToFBRGroupCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *L3extRsOutToFBRGroupResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationL3extRsOutToFBRGroupResourceModel, tagTagPlan, tagTagState []TagTagL3extRsOutToFBRGroupResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 	childPayloads := []map[string]interface{}{}

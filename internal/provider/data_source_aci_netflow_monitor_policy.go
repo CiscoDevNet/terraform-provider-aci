@@ -179,7 +179,7 @@ func (d *NetflowMonitorPolDataSource) Read(ctx context.Context, req datasource.R
 		data.ParentDn = basetypes.NewStringValue("uni/infra")
 	}
 
-	setNetflowMonitorPolId(ctx, data)
+	SetNetflowMonitorPolId(ctx, data)
 
 	// Create a copy of the Id for when not found during getAndSetNetflowMonitorPolAttributes
 	cachedId := data.Id.ValueString()

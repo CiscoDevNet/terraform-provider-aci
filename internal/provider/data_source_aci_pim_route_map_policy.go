@@ -142,7 +142,7 @@ func (d *PimRouteMapPolDataSource) Read(ctx context.Context, req datasource.Read
 		return
 	}
 
-	setPimRouteMapPolId(ctx, data)
+	SetPimRouteMapPolId(ctx, data)
 
 	// Create a copy of the Id for when not found during getAndSetPimRouteMapPolAttributes
 	cachedId := data.Id.ValueString()

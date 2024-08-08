@@ -126,7 +126,7 @@ func (d *L3extRsOutToFBRGroupDataSource) Read(ctx context.Context, req datasourc
 		return
 	}
 
-	setL3extRsOutToFBRGroupId(ctx, data)
+	SetL3extRsOutToFBRGroupId(ctx, data)
 
 	// Create a copy of the Id for when not found during getAndSetL3extRsOutToFBRGroupAttributes
 	cachedId := data.Id.ValueString()

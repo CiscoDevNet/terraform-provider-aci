@@ -150,7 +150,7 @@ func (d *L3extConsLblDataSource) Read(ctx context.Context, req datasource.ReadRe
 		return
 	}
 
-	setL3extConsLblId(ctx, data)
+	SetL3extConsLblId(ctx, data)
 
 	// Create a copy of the Id for when not found during getAndSetL3extConsLblAttributes
 	cachedId := data.Id.ValueString()

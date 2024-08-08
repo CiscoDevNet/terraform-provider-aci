@@ -126,7 +126,7 @@ func (d *NetflowRsMonitorToExporterDataSource) Read(ctx context.Context, req dat
 		return
 	}
 
-	setNetflowRsMonitorToExporterId(ctx, data)
+	SetNetflowRsMonitorToExporterId(ctx, data)
 
 	// Create a copy of the Id for when not found during getAndSetNetflowRsMonitorToExporterAttributes
 	cachedId := data.Id.ValueString()

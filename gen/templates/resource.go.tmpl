@@ -272,7 +272,7 @@ func (r *{{.ResourceClassName}}Resource) Create(ctx context.Context, req resourc
 	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
 	var stateData *{{.ResourceClassName}}ResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
-	set{{.ResourceClassName}}Id(ctx, stateData)
+	Set{{.ResourceClassName}}Id(ctx, stateData)
 	getAndSet{{.ResourceClassName}}Attributes(ctx, &resp.Diagnostics, r.client, stateData)
 	{{- end}}
 
@@ -285,7 +285,7 @@ func (r *{{.ResourceClassName}}Resource) Create(ctx context.Context, req resourc
 		return
 	}
 	
-	set{{.ResourceClassName}}Id(ctx, data)
+	Set{{.ResourceClassName}}Id(ctx, data)
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_{{.ResourceName}} with id '%s'", data.Id.ValueString()))
 
@@ -295,9 +295,9 @@ func (r *{{.ResourceClassName}}Resource) Create(ctx context.Context, req resourc
 	data.{{ .ResourceClassName }}.ElementsAs(ctx, &{{.PkgName}}Plan, false)
 	stateData.{{ .ResourceClassName }}.ElementsAs(ctx, &{{.PkgName}}State, false)
 		{{- end}}
-	jsonPayload := get{{.ResourceClassName}}CreateJsonPayload(ctx, &resp.Diagnostics, data{{- range .Children}}, {{.PkgName}}Plan, {{.PkgName}}State{{- end}})	
+	jsonPayload := Get{{.ResourceClassName}}CreateJsonPayload(ctx, &resp.Diagnostics, data{{- range .Children}}, {{.PkgName}}Plan, {{.PkgName}}State{{- end}})	
 	{{- else}}
-	jsonPayload := get{{.ResourceClassName}}CreateJsonPayload(ctx, &resp.Diagnostics, data)
+	jsonPayload := Get{{.ResourceClassName}}CreateJsonPayload(ctx, &resp.Diagnostics, data)
 	{{- end}}
 
 	if resp.Diagnostics.HasError() {
@@ -367,9 +367,9 @@ func (r *{{.ResourceClassName}}Resource) Update(ctx context.Context, req resourc
 	data.{{ .ResourceClassName }}.ElementsAs(ctx, &{{.PkgName}}Plan, false)
 	stateData.{{ .ResourceClassName }}.ElementsAs(ctx, &{{.PkgName}}State, false)
 		{{- end}}
-	jsonPayload := get{{.ResourceClassName}}CreateJsonPayload(ctx, &resp.Diagnostics, data{{- range .Children}}, {{.PkgName}}Plan, {{.PkgName}}State{{- end}})	
+	jsonPayload := Get{{.ResourceClassName}}CreateJsonPayload(ctx, &resp.Diagnostics, data{{- range .Children}}, {{.PkgName}}Plan, {{.PkgName}}State{{- end}})	
 	{{- else}}
-	jsonPayload := get{{.ResourceClassName}}CreateJsonPayload(ctx, &resp.Diagnostics, data)
+	jsonPayload := Get{{.ResourceClassName}}CreateJsonPayload(ctx, &resp.Diagnostics, data)
 	{{- end}}
 	
 	if resp.Diagnostics.HasError() {
@@ -607,7 +607,7 @@ func set{{.ResourceClassName}}ParentDn(ctx context.Context, dn string, data *{{.
 }
 {{- end}}
 
-func set{{.ResourceClassName}}Id(ctx context.Context, data *{{.ResourceClassName}}ResourceModel) {
+func Set{{.ResourceClassName}}Id(ctx context.Context, data *{{.ResourceClassName}}ResourceModel) {
 	rn := get{{.ResourceClassName}}Rn(ctx, data)
 	{{- if .HasParent}}
 	data.Id =  types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
@@ -700,7 +700,7 @@ func get{{$.ResourceClassName}}{{ .ResourceClassName }}ChildPayloads(ctx context
 }
 {{- end}}
 
-func get{{.ResourceClassName}}CreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *{{.ResourceClassName}}ResourceModel{{- range .Children}}, {{.PkgName}}Plan, {{.PkgName}}State []{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel{{- end}}) *container.Container {
+func Get{{.ResourceClassName}}CreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *{{.ResourceClassName}}ResourceModel{{- range .Children}}, {{.PkgName}}Plan, {{.PkgName}}State []{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel{{- end}}) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 	{{- if .HasChild}}

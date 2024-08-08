@@ -154,7 +154,7 @@ func (d *VzOOBBrCPDataSource) Read(ctx context.Context, req datasource.ReadReque
 		return
 	}
 
-	setVzOOBBrCPId(ctx, data)
+	SetVzOOBBrCPId(ctx, data)
 
 	// Create a copy of the Id for when not found during getAndSetVzOOBBrCPAttributes
 	cachedId := data.Id.ValueString()

@@ -131,11 +131,11 @@ func (r *TagAnnotationResource) Create(ctx context.Context, req resource.CreateR
 		return
 	}
 
-	setTagAnnotationId(ctx, data)
+	SetTagAnnotationId(ctx, data)
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_annotation with id '%s'", data.Id.ValueString()))
 
-	jsonPayload := getTagAnnotationCreateJsonPayload(ctx, &resp.Diagnostics, data)
+	jsonPayload := GetTagAnnotationCreateJsonPayload(ctx, &resp.Diagnostics, data)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -192,7 +192,7 @@ func (r *TagAnnotationResource) Update(ctx context.Context, req resource.UpdateR
 
 	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_annotation with id '%s'", data.Id.ValueString()))
 
-	jsonPayload := getTagAnnotationCreateJsonPayload(ctx, &resp.Diagnostics, data)
+	jsonPayload := GetTagAnnotationCreateJsonPayload(ctx, &resp.Diagnostics, data)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -304,12 +304,12 @@ func setTagAnnotationParentDn(ctx context.Context, dn string, data *TagAnnotatio
 	data.ParentDn = basetypes.NewStringValue(dn[:rnIndex])
 }
 
-func setTagAnnotationId(ctx context.Context, data *TagAnnotationResourceModel) {
+func SetTagAnnotationId(ctx context.Context, data *TagAnnotationResourceModel) {
 	rn := getTagAnnotationRn(ctx, data)
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
 
-func getTagAnnotationCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *TagAnnotationResourceModel) *container.Container {
+func GetTagAnnotationCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *TagAnnotationResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 	if !data.Key.IsNull() && !data.Key.IsUnknown() {

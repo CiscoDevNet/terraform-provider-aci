@@ -1,0 +1,87 @@
+{
+  "mgmtInstP": {
+    "attributes": {
+      "annotation": "woidid",
+      "name": "test_name",
+      "nameAlias": "name_alias"
+    },
+    "children": [
+      {
+        "l3extConsLbl": {
+          "attributes": {
+            "annotation": "annotation",
+            "name": "test_name",
+            "nameAlias": "name_alias",
+            "owner": "infra",
+            "ownerKey": "owner_key",
+            "ownerTag": "owner_tag",
+            "tag": "lemon-chiffon"
+          },
+          "children": [
+            {
+              "tagAnnotation": {
+                "attributes": {
+                  "key": "key_0",
+                  "value": "value_1"
+                }
+              }
+            },
+            {
+              "tagTag": {
+                "attributes": {
+                  "key": "key_0",
+                  "value": "value_1"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "netflowMonitorPol": {
+          "attributes": {
+            "annotation": "annotation",
+            "name": "netfow_monitor",
+            "nameAlias": "name_alias",
+            "ownerKey": "owner_key",
+            "ownerTag": "owner_tag"
+          },
+          "children": [
+            {
+              "netflowRsMonitorToExporter": {
+                "attributes": {
+                  "annotation": "annotation_1",
+                  "tnNetflowExporterPolName": "aci_netflow_exporter_policy.example.name"
+                }
+              }
+            },
+            {
+              "netflowRsMonitorToRecord": {
+                "attributes": {
+                  "annotation": "annotation_1",
+                  "tnNetflowRecordPolName": "aci_netflow_record_policy.example.name"
+                }
+              }
+            },
+            {
+              "tagAnnotation": {
+                "attributes": {
+                  "key": "key_0",
+                  "value": "value_1"
+                }
+              }
+            },
+            {
+              "tagTag": {
+                "attributes": {
+                  "key": "key_0",
+                  "value": "value_1"
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
