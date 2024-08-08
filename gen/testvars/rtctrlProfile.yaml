@@ -23,10 +23,10 @@ resource_required:
 all:
   annotation: "annotation"
   route_map_continue: "no"
-  description: "description"
-  name_alias: "name_alias"
-  owner_key: "owner_key"
-  owner_tag: "owner_tag"
+  description: "description_1"
+  name_alias: "name_alias_1"
+  owner_key: "owner_key_1"
+  owner_tag: "owner_tag_1"
   route_control_profile_type: "combinable"
 
 children:
@@ -35,14 +35,14 @@ children:
       value: "value_1"
       
     - key: "key_1"
-      value: "value_2"
+      value: "test_value"
       
   tags:
     - key: "key_0"
       value: "value_1"
       
     - key: "key_1"
-      value: "value_2"
+      value: "test_value"
       
 parents:
   - class_name: "fvTenant"
