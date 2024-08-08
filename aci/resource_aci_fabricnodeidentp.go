@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/models"
@@ -66,7 +67,7 @@ func resourceAciFabricNodeMember() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"node_type": &schema.Schema{
+			"node_type": &schema.Schema{ // Note : -> needs more options
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -74,6 +75,9 @@ func resourceAciFabricNodeMember() *schema.Resource {
 				ValidateFunc: validation.StringInSlice([]string{
 					"unspecified",
 					"remote-leaf-wan",
+					"tier-2-leaf",
+					"virtual",
+					"leaf",
 				}, false),
 			},
 
@@ -94,6 +98,12 @@ func resourceAciFabricNodeMember() *schema.Resource {
 					"leaf",
 					"spine",
 				}, false),
+			},
+
+			"commission": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  true,
 			},
 		}),
 	}
@@ -192,6 +202,10 @@ func resourceAciFabricNodeMemberCreate(ctx context.Context, d *schema.ResourceDa
 	if Role, ok := d.GetOk("role"); ok {
 		fabricNodeIdentPAttr.Role = Role.(string)
 	}
+	// if Commission, ok := d.GetOk("commission"); ok {
+	// 	Commission = Commission.(string)
+	// }
+
 	fabricNodeIdentP := models.NewFabricNodeMember(fmt.Sprintf("controller/nodeidentpol/nodep-%s", serial), "uni", desc, fabricNodeIdentPAttr)
 
 	err := aciClient.Save(fabricNodeIdentP)
@@ -242,6 +256,9 @@ func resourceAciFabricNodeMemberUpdate(ctx context.Context, d *schema.ResourceDa
 	if Role, ok := d.GetOk("role"); ok {
 		fabricNodeIdentPAttr.Role = Role.(string)
 	}
+	// if RemoveFromController, ok := d.GetOk("remove_from_controller"); ok {
+
+	// }
 	fabricNodeIdentP := models.NewFabricNodeMember(fmt.Sprintf("controller/nodeidentpol/nodep-%s", serial), "uni", desc, fabricNodeIdentPAttr)
 
 	fabricNodeIdentP.Status = "modified"
@@ -275,6 +292,7 @@ func resourceAciFabricNodeMemberRead(ctx context.Context, d *schema.ResourceData
 		d.SetId("")
 		return nil
 	}
+
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
@@ -285,7 +303,25 @@ func resourceAciFabricNodeMemberDelete(ctx context.Context, d *schema.ResourceDa
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
-	err := aciClient.DeleteByDn(dn, "fabricNodeIdentP")
+
+	// Get node data and verify if the node is attached to the switch.
+	switchStatusDn := fmt.Sprintf("client-[%s]", d.Get("serial").(string))
+	dhcpClientCont, err := aciClient.Get(switchStatusDn)
+	if err != nil {
+		if !strings.Contains(err.Error(), "Error retrieving Object: Object may not exist") {
+			return diag.FromErr(err)
+		}
+	}
+	data, _ := dhcpClientCont.ArrayElement(0, "imdata")
+	ip := G(data.S("dhcpClient", "attributes"), "ip")
+	nodeId := G(data.S("dhcpClient", "attributes"), "nodeId")
+	nodeRole := G(data.S("dhcpClient", "attributes"), "nodeRole")
+	if (ip != "0.0.0.0" && nodeId != "0") && (nodeRole == "leaf" || nodeRole == "spine") {
+		// If the node is attached to the switch, it has to be decommissioned before deleting from the controller.
+		removeFabricNodeMemberFromController(d, m)
+	}
+
+	err = aciClient.DeleteByDn(dn, "fabricNodeIdentP")
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -294,4 +330,37 @@ func resourceAciFabricNodeMemberDelete(ctx context.Context, d *schema.ResourceDa
 
 	d.SetId("")
 	return diag.FromErr(err)
+}
+
+func removeFabricNodeMemberFromController(d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	log.Printf("[DEBUG] %s: Beginning removal of fabric node from controller", d.Id())
+	aciClient := m.(*client.Client)
+	nodePayload := `{
+			"fabricRsDecommissionNode": {
+				"attributes": {
+					"tDn": "topology/pod-%s/node-%s",
+					"status": "created,modified",
+					"removeFromController": "true"
+				},
+				"children": []
+			}
+		}`
+
+	httpRequestPayload, err := aciClient.MakeRestRequestRaw("POST", "api/node/mo/uni/fabric/outofsvc.json", []byte(fmt.Sprintf(nodePayload, d.Get("pod_id").(string), d.Get("node_id").(string))), true)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	respCont, _, err := aciClient.Do(httpRequestPayload)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	err = client.CheckForErrors(respCont, "POST", false)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	log.Printf("[DEBUG] %s: Decommission finished successfully", d.Id())
+	return nil
 }
