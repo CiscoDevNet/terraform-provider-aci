@@ -66,9 +66,10 @@ data "aci_data_plane_policing_policy" "test" {
 }
 `
 
-const testConfigQosDppPolNotExistingFvTenant = testConfigFvTenantMin + `
+const testConfigQosDppPolNotExistingFvTenant = testConfigQosDppPolMinDependencyWithFvTenant + `
 data "aci_data_plane_policing_policy" "test_non_existing" {
   parent_dn = aci_tenant.test.id
   name = "non_existing_name"
+  depends_on = [aci_data_plane_policing_policy.test]
 }
 `

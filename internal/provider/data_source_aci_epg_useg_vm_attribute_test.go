@@ -80,10 +80,11 @@ data "aci_epg_useg_vm_attribute" "test" {
 }
 `
 
-const testConfigFvVmAttrNotExistingFvCrtrn = testConfigFvCrtrnMinDependencyWithFvAEPg + `
+const testConfigFvVmAttrNotExistingFvCrtrn = testConfigFvVmAttrMinDependencyWithFvCrtrn + `
 data "aci_epg_useg_vm_attribute" "test_non_existing" {
   parent_dn = aci_epg_useg_block_statement.test.id
   name = "vm_attribute_non_existing"
+  depends_on = [aci_epg_useg_vm_attribute.test]
 }
 `
 const testConfigFvVmAttrDataSourceDependencyWithFvSCrtrn = testConfigFvVmAttrMinDependencyWithFvSCrtrn + `
@@ -94,9 +95,10 @@ data "aci_epg_useg_vm_attribute" "test" {
 }
 `
 
-const testConfigFvVmAttrNotExistingFvSCrtrn = testConfigFvSCrtrnMinDependencyWithFvCrtrn + `
+const testConfigFvVmAttrNotExistingFvSCrtrn = testConfigFvVmAttrMinDependencyWithFvSCrtrn + `
 data "aci_epg_useg_vm_attribute" "test_non_existing" {
   parent_dn = aci_epg_useg_sub_block_statement.test.id
   name = "vm_attribute_non_existing"
+  depends_on = [aci_epg_useg_vm_attribute.test]
 }
 `

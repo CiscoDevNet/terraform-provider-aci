@@ -62,10 +62,11 @@ data "aci_relation_to_intra_epg_contract" "test" {
 }
 `
 
-const testConfigFvRsIntraEpgNotExistingFvAEPg = testConfigFvAEPgMinDependencyWithFvAp + `
+const testConfigFvRsIntraEpgNotExistingFvAEPg = testConfigFvRsIntraEpgMinDependencyWithFvAEPg + `
 data "aci_relation_to_intra_epg_contract" "test_non_existing" {
   parent_dn = aci_application_epg.test.id
   contract_name = "non_existing_tn_vz_br_cp_name"
+  depends_on = [aci_relation_to_intra_epg_contract.test]
 }
 `
 const testConfigFvRsIntraEpgDataSourceDependencyWithFvESg = testConfigFvRsIntraEpgMinDependencyWithFvESg + `
@@ -76,9 +77,10 @@ data "aci_relation_to_intra_epg_contract" "test" {
 }
 `
 
-const testConfigFvRsIntraEpgNotExistingFvESg = testConfigFvESgMinDependencyWithFvAp + `
+const testConfigFvRsIntraEpgNotExistingFvESg = testConfigFvRsIntraEpgMinDependencyWithFvESg + `
 data "aci_relation_to_intra_epg_contract" "test_non_existing" {
   parent_dn = aci_endpoint_security_group.test.id
   contract_name = "non_existing_tn_vz_br_cp_name"
+  depends_on = [aci_relation_to_intra_epg_contract.test]
 }
 `

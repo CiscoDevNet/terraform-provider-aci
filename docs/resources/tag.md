@@ -82,7 +82,7 @@ All examples for the Tag resource can be found in the [examples](https://github.
   - [aci_epg_useg_ad_group_attribute](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/epg_useg_ad_group_attribute) ([fvIdGroupAttr](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvIdGroupAttr/overview))
   - [aci_epg_useg_ip_attribute](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/epg_useg_ip_attribute) ([fvIpAttr](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvIpAttr/overview))
   - [aci_epg_useg_mac_attribute](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/epg_useg_mac_attribute) ([fvMacAttr](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvMacAttr/overview))
-  - [aci_relation_to_consumed_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/relation_to_consumed_contract) ([fvRsCons](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsCons/overview))
+  - [aci_remote_site_id_mappings](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/remote_site_id_mappings) ([fvRemoteId](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRemoteId/overview))
 * `key` (key) - (string) The key used to uniquely identify this configuration object.
 * `value` (value) - (string) The value of the property.
 

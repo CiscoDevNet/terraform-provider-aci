@@ -46,9 +46,10 @@ data "aci_epg_useg_mac_attribute" "test" {
 }
 `
 
-const testConfigFvMacAttrNotExistingFvCrtrn = testConfigFvCrtrnMinDependencyWithFvAEPg + `
+const testConfigFvMacAttrNotExistingFvCrtrn = testConfigFvMacAttrMinDependencyWithFvCrtrn + `
 data "aci_epg_useg_mac_attribute" "test_non_existing" {
   parent_dn = aci_epg_useg_block_statement.test.id
   name = "mac_attr_non_existing"
+  depends_on = [aci_epg_useg_mac_attribute.test]
 }
 `

@@ -50,7 +50,6 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.allow_test_2", "priority", "unspecified"),
 					resource.TestCheckResourceAttr("aci_application_epg.allow_test", "useg_epg", "no"),
 					resource.TestCheckResourceAttr("aci_application_epg.allow_test_2", "useg_epg", "no"),
-					resource.TestCheckResourceAttrSet("aci_application_epg.allow_test", "pc_tag"),
 				),
 			},
 		},
@@ -107,8 +106,6 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.allow_test_2", "priority", "unspecified"),
 					resource.TestCheckResourceAttr("aci_application_epg.allow_test", "useg_epg", "no"),
 					resource.TestCheckResourceAttr("aci_application_epg.allow_test_2", "useg_epg", "no"),
-					resource.TestCheckResourceAttrSet("aci_application_epg.allow_test", "pc_tag"),
-					resource.TestCheckResourceAttrSet("aci_application_epg.allow_test_2", "pc_tag"),
 				),
 			},
 		},
@@ -137,7 +134,6 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "preferred_group_member", "exclude"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "priority", "unspecified"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "useg_epg", "no"),
-					resource.TestCheckResourceAttrSet("aci_application_epg.test", "pc_tag"),
 				),
 			},
 			// Update with all config and verify default APIC values
@@ -159,7 +155,6 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "preferred_group_member", "exclude"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "priority", "level1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "useg_epg", "no"),
-					resource.TestCheckResourceAttrSet("aci_application_epg.test", "pc_tag"),
 				),
 			},
 			// Update with minimum config and verify config is unchanged
@@ -168,7 +163,6 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_application_epg.test", "name", "test_name"),
-					resource.TestCheckResourceAttrSet("aci_application_epg.test", "pc_tag"),
 				),
 			},
 			// Update with empty strings config or default value
@@ -190,7 +184,6 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "preferred_group_member", "exclude"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "priority", "unspecified"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "useg_epg", "no"),
-					resource.TestCheckResourceAttrSet("aci_application_epg.test", "pc_tag"),
 				),
 			},
 			// Import testing
@@ -218,11 +211,17 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "preferred_group_member", "exclude"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "priority", "unspecified"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "useg_epg", "no"),
-					resource.TestCheckResourceAttrSet("aci_application_epg.test", "pc_tag"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.1.value", "test_value"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "associated_site.0.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "associated_site.0.description", "description_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "associated_site.0.name", "name_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "associated_site.0.name_alias", "name_alias_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "associated_site.0.owner_key", "owner_key_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "associated_site.0.owner_tag", "owner_tag_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "associated_site.0.site_id", "0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.0.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.0.description", "description_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.0.match", "all"),
@@ -373,12 +372,19 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 				Config:             testConfigFvAEPgChildrenRemoveFromConfigDependencyWithFvAp,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttrSet("aci_application_epg.test", "pc_tag"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "associated_site.0.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "associated_site.0.description", "description_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "associated_site.0.name", "name_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "associated_site.0.name_alias", "name_alias_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "associated_site.0.owner_key", "owner_key_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "associated_site.0.owner_tag", "owner_tag_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "associated_site.0.site_id", "0"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "associated_site.#", "1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.0.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.0.description", "description_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.0.match", "all"),
@@ -540,10 +546,10 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 				Config:             testConfigFvAEPgChildrenRemoveOneDependencyWithFvAp,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttrSet("aci_application_epg.test", "pc_tag"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.0.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.#", "1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "associated_site.#", "0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.#", "0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_application_epg_monitoring_policy.#", "0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_bridge_domain.0.annotation", "annotation_1"),
@@ -631,8 +637,8 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 				Config:             testConfigFvAEPgChildrenRemoveAllDependencyWithFvAp,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttrSet("aci_application_epg.test", "pc_tag"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.#", "0"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "associated_site.#", "0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.#", "0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_application_epg_monitoring_policy.#", "0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_bridge_domain.0.annotation", "annotation_1"),
@@ -741,6 +747,17 @@ resource "aci_application_epg" "test" {
 	{
 	  key = "key_1"
 	  value = "test_value"
+	},
+  ]
+  associated_site = [
+	{
+	  annotation = "annotation_1"
+	  description = "description_1"
+	  name = "name_1"
+	  name_alias = "name_alias_1"
+	  owner_key = "owner_key_1"
+	  owner_tag = "owner_tag_1"
+	  site_id = "0"
 	},
   ]
   epg_useg_block_statement = [
@@ -990,6 +1007,7 @@ resource "aci_application_epg" "test" {
 	  value = "test_value"
 	},
   ]
+  associated_site = []
   epg_useg_block_statement = []
   relation_to_application_epg_monitoring_policy = []
   relation_to_consumed_contracts = [ 
@@ -1105,6 +1123,7 @@ resource "aci_application_epg" "test" {
   parent_dn = aci_application_profile.test.id
   name = "test_name"
   annotations = []
+  associated_site = []
   epg_useg_block_statement = []
   relation_to_application_epg_monitoring_policy = []
   relation_to_consumed_contracts = []

@@ -51,9 +51,10 @@ data "aci_trust_control_policy" "test" {
 }
 `
 
-const testConfigFhsTrustCtrlPolNotExistingFvTenant = testConfigFvTenantMin + `
+const testConfigFhsTrustCtrlPolNotExistingFvTenant = testConfigFhsTrustCtrlPolMinDependencyWithFvTenant + `
 data "aci_trust_control_policy" "test_non_existing" {
   parent_dn = aci_tenant.test.id
   name = "non_existing_name"
+  depends_on = [aci_trust_control_policy.test]
 }
 `

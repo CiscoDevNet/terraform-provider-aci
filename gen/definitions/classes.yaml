@@ -311,6 +311,44 @@ fvFBRoute:
   resource_notes:
     - "This resource should not be used in combination with the `vrf_fallback_routes` nested attribute of the `aci_vrf_fallback_route_group` resource. Doing so will result in unexpected behaviour."
 
+fvBD:
+  resource_name: "bridge_domain"
+
+l3extInstP:
+  resource_name: "external_network_instance_profile"
+
+fvSiteAssociated:
+  include: true
+  resource_name: "associated_site"
+  ui_locations:
+    - "Not shown in UI"
+  sub_category: "Multi-Site"
+  resource_notes:
+    - "This resource should only be used to accomplish multi-site orchestration. Manually assigning a value to attribute `site_id` may lead to unexpected behaviour."
+  dn_formats:
+    - "uni/tn-{name}/ap-{name}/epg-{name}/stAsc"
+    - "uni/tn-{name}/ctx-{name}/stAsc"
+    - "uni/tn-{name}/BD-{name}/stAsc"
+    - "uni/tn-{name}/out-{name}/instP-{name}/stAsc"
+    - "uni/tn-{name}/mscGraphXlateCont/epgDefXlate-[{epgDefDn}]/stAsc"
+  example_classes:
+    - "fvAEPg"
+    - "fvBD"
+
+fvRemoteId:
+  ui_locations:
+    - "Not shown in UI"
+  sub_category: "Multi-Site"
+  resource_notes:
+    - "This resource should only be used to accomplish multi-site orchestration. Assigning values to attribute `remote_vrf_pc_tag` should only be done for object under VRF."
+  dn_formats:
+  - "uni/tn-{name}/ctx-{name}/stAsc/site-{siteId}"
+  - "uni/tn-{name}/ap-{name}/epg-{name}/stAsc/site-{siteId}"
+  - "uni/tn-{name}/BD-{name}/stAsc/site-{siteId}"
+  - "uni/tn-{name}/out-{name}/instP-{name}/stAsc/site-{siteId}"
+  - "uni/tn-{name}/ap-{name}/esg-{name}/stAsc/site-{siteId}"
+  - "uni/tn-{name}/mscGraphXlateCont/epgDefXlate-[{epgDefDn}]/stAsc/site-{siteId}"
+
 l3extRsOutToFBRGroup:
   resource_name: "relation_to_vrf_fallback_route_group"
   ui_locations:

@@ -666,6 +666,42 @@ func (d *FvAEPgDataSource) Schema(ctx context.Context, req datasource.SchemaRequ
 					},
 				},
 			},
+			"associated_site": schema.SetNestedAttribute{
+				MarkdownDescription: `Used to store ID mappings`,
+				Computed:            true,
+				NestedObject: schema.NestedAttributeObject{
+					Attributes: map[string]schema.Attribute{
+						"annotation": schema.StringAttribute{
+							Computed:            true,
+							MarkdownDescription: `The annotation of the Associated Site object.`,
+						},
+						"description": schema.StringAttribute{
+							Computed:            true,
+							MarkdownDescription: `The description of the Associated Site object.`,
+						},
+						"name": schema.StringAttribute{
+							Computed:            true,
+							MarkdownDescription: `The name of the Associated Site object.`,
+						},
+						"name_alias": schema.StringAttribute{
+							Computed:            true,
+							MarkdownDescription: `The name alias of the Associated Site object.`,
+						},
+						"owner_key": schema.StringAttribute{
+							Computed:            true,
+							MarkdownDescription: `The key for enabling clients to own their data for entity correlation.`,
+						},
+						"owner_tag": schema.StringAttribute{
+							Computed:            true,
+							MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
+						},
+						"site_id": schema.StringAttribute{
+							Computed:            true,
+							MarkdownDescription: `A number between 0 and 1000 to identify the primary site being associated.`,
+						},
+					},
+				},
+			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,
 				Computed:            true,

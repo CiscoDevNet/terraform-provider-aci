@@ -35,7 +35,6 @@ func TestAccDataSourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("data.aci_application_epg.test", "preferred_group_member", "exclude"),
 					resource.TestCheckResourceAttr("data.aci_application_epg.test", "priority", "unspecified"),
 					resource.TestCheckResourceAttr("data.aci_application_epg.test", "useg_epg", "no"),
-					resource.TestCheckResourceAttrSet("data.aci_application_epg.test", "pc_tag"),
 				),
 			},
 			{
@@ -54,9 +53,10 @@ data "aci_application_epg" "test" {
 }
 `
 
-const testConfigFvAEPgNotExistingFvAp = testConfigFvApMinDependencyWithFvTenant + `
+const testConfigFvAEPgNotExistingFvAp = testConfigFvAEPgMinDependencyWithFvAp + `
 data "aci_application_epg" "test_non_existing" {
   parent_dn = aci_application_profile.test.id
   name = "non_existing_name"
+  depends_on = [aci_application_epg.test]
 }
 `

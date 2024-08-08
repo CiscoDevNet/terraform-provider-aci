@@ -95,3 +95,12 @@ resource "aci_l3out_loopback_interface_profile" "test" {
   addr           = "1.2.3.5"
 }
 `
+
+const testConfigFvBDMinDependencyWithFvTenant = testConfigFvTenantMin + `
+resource "aci_bridge_domain" "test" {
+  tenant_dn = aci_tenant.test.id
+  name      = "test_bd"
+}
+`
+
+const testConfigFvBDMin = testConfigFvBDMinDependencyWithFvTenant

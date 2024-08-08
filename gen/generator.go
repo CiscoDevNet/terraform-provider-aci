@@ -1381,6 +1381,9 @@ func (m *Model) SetClassProperties(classDetails interface{}) {
 
 				for _, details := range propertyValue.(map[string]interface{})["validValues"].([]interface{}) {
 					validValue := details.(map[string]interface{})["localName"].(string)
+					if propertyName == "remoteCtxPcTag" || propertyName == "remotePcTag" {
+						validValue = "defaultValue"
+					}
 					if validValue != "defaultValue" && !isInSlice(removedValidValuesList, validValue) {
 						property.ValidValues = append(property.ValidValues, validValue)
 					}
@@ -1744,9 +1747,18 @@ func requiredProperty(propertyName, classPkgName string, definitions Definitions
 		if classDetails, ok := definitions.Properties[precedence]; ok {
 			for key, value := range classDetails.(map[interface{}]interface{}) {
 				if key.(string) == "resource_required" {
-					for _, v := range value.([]interface{}) {
-						if v.(string) == propertyName {
-							return true
+					v1, ok1 := value.([]interface{})
+					if !ok1 {
+						for k1, _ := range value.(map[interface{}]interface{}) {
+							if k1.(string) == propertyName {
+								return true
+							}
+						}
+					} else {
+						for _, v := range v1 {
+							if v.(string) == propertyName {
+								return true
+							}
 						}
 					}
 				}

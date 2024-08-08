@@ -47,9 +47,10 @@ data "aci_epg_useg_ip_attribute" "test" {
 }
 `
 
-const testConfigFvIpAttrNotExistingFvCrtrn = testConfigFvCrtrnMinDependencyWithFvAEPg + `
+const testConfigFvIpAttrNotExistingFvCrtrn = testConfigFvIpAttrMinDependencyWithFvCrtrn + `
 data "aci_epg_useg_ip_attribute" "test_non_existing" {
   parent_dn = aci_epg_useg_block_statement.test.id
   name = "131_non_existing"
+  depends_on = [aci_epg_useg_ip_attribute.test]
 }
 `

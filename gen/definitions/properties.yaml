@@ -235,6 +235,66 @@ fvFBRoute:
       parent_dependency: "fvCtx"
       parent_dn: "aci_vrf_fallback_route_group.test.id"
 
+fvSiteAssociated:
+  overwrites:
+    siteId: "site_id"
+  documentation:
+    siteId: "A number between 0 and 1000 to identify the primary site being associated"
+  default_values:
+    site_id: "100"
+  resource_required:
+    - "site_id"
+  test_values:
+    all:
+      site_id: "0" 
+    default:
+      site_id: "0"
+    resource_required:
+      site_id: "0"
+  datasource_required:
+    - "site_id"
+  parents:
+    - class_name: "fvAEPg"
+      parent_dependency: "fvAp"
+      parent_dn: "aci_application_epg.test.id"  
+    - class_name: "fvBD"
+      parent_dependency: "fvTenant"
+      parent_dn: "aci_bridge_domain.test.id"  
+
+fvRemoteId:
+  overwrites:
+    siteId: "site_id"
+    remote_ctx_pc_tag: "remote_vrf_pc_tag"
+  documentation:
+    siteId: "A number between 0 and 1000 to identify the remote site being associated with the primary site"
+  default_values:
+    siteId: "100"
+    remote_ctx_pc_tag: "any"
+    remote_pc_tag: "16386"
+  resource_required:
+    - "remotePcTag"
+  test_values:
+    all:
+      site_id: "100"
+      remote_vrf_pc_tag: "any"
+      remote_pc_tag: "16386"
+    default:
+      site_id: "100"
+      remote_vrf_pc_tag: "any"
+      remote_pc_tag: "16386"
+    resource_required:
+      site_id: "100"
+      remote_vrf_pc_tag: "any"
+      remote_pc_tag: "16386"
+    datasource_non_existing:
+      site_id: "102"
+    datasource_required:
+      site_id: "100"
+  parents:
+    - class_name: "fvSiteAssociated"
+      parent_dependency: "fvBD"
+      parent_dn: "aci_associated_site.test.id"
+
 l3extRsOutToFBRGroup:
   documentation:
     tDn: "The distinguished name of the VRF Fallback Route Group object."

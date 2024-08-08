@@ -48,9 +48,10 @@ data "aci_netflow_record_policy" "test" {
 }
 `
 
-const testConfigNetflowRecordPolNotExistingFvTenant = testConfigFvTenantMin + `
+const testConfigNetflowRecordPolNotExistingFvTenant = testConfigNetflowRecordPolMinDependencyWithFvTenant + `
 data "aci_netflow_record_policy" "test_non_existing" {
   parent_dn = aci_tenant.test.id
   name = "netfow_record_non_existing"
+  depends_on = [aci_netflow_record_policy.test]
 }
 `

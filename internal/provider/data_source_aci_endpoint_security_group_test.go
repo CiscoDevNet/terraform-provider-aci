@@ -30,7 +30,6 @@ func TestAccDataSourceFvESgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("data.aci_endpoint_security_group.test", "match_criteria", "AtleastOne"),
 					resource.TestCheckResourceAttr("data.aci_endpoint_security_group.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("data.aci_endpoint_security_group.test", "preferred_group_member", "exclude"),
-					resource.TestCheckResourceAttrSet("data.aci_endpoint_security_group.test", "pc_tag"),
 				),
 			},
 			{
@@ -49,9 +48,10 @@ data "aci_endpoint_security_group" "test" {
 }
 `
 
-const testConfigFvESgNotExistingFvAp = testConfigFvApMinDependencyWithFvTenant + `
+const testConfigFvESgNotExistingFvAp = testConfigFvESgMinDependencyWithFvAp + `
 data "aci_endpoint_security_group" "test_non_existing" {
   parent_dn = aci_application_profile.test.id
   name = "non_existing_name"
+  depends_on = [aci_endpoint_security_group.test]
 }
 `

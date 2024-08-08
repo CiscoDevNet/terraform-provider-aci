@@ -46,10 +46,11 @@ data "aci_endpoint_tag_mac" "test" {
 }
 `
 
-const testConfigFvEpMacTagNotExistingFvTenant = testConfigFvTenantMin + `
+const testConfigFvEpMacTagNotExistingFvTenant = testConfigFvEpMacTagMinDependencyWithFvTenant + `
 data "aci_endpoint_tag_mac" "test_non_existing" {
   parent_dn = aci_tenant.test.id
   bd_name = "non_existing_bd_name"
   mac = "00:00:00:00:00:01"
+  depends_on = [aci_endpoint_tag_mac.test]
 }
 `

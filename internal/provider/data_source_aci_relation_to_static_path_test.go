@@ -46,9 +46,10 @@ data "aci_relation_to_static_path" "test" {
 }
 `
 
-const testConfigFvRsPathAttNotExistingFvAEPg = testConfigFvAEPgMinDependencyWithFvAp + `
+const testConfigFvRsPathAttNotExistingFvAEPg = testConfigFvRsPathAttMinDependencyWithFvAEPg + `
 data "aci_relation_to_static_path" "test_non_existing" {
   parent_dn = aci_application_epg.test.id
   target_dn = "topology/pod-2/paths-201/pathep-[eth1/1]"
+  depends_on = [aci_relation_to_static_path.test]
 }
 `

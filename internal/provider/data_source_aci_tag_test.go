@@ -62,10 +62,11 @@ data "aci_tag" "test" {
 }
 `
 
-const testConfigTagTagNotExistingFvTenant = testConfigFvTenantMin + `
+const testConfigTagTagNotExistingFvTenant = testConfigTagTagMinDependencyWithFvTenant + `
 data "aci_tag" "test_non_existing" {
   parent_dn = aci_tenant.test.id
   key = "non_existing_key"
+  depends_on = [aci_tag.test]
 }
 `
 const testConfigTagTagDataSourceDependencyWithFvAEPg = testConfigTagTagMinDependencyWithFvAEPg + `
@@ -76,9 +77,10 @@ data "aci_tag" "test" {
 }
 `
 
-const testConfigTagTagNotExistingFvAEPg = testConfigFvAEPgMin + `
+const testConfigTagTagNotExistingFvAEPg = testConfigTagTagMinDependencyWithFvAEPg + `
 data "aci_tag" "test_non_existing" {
   parent_dn = aci_application_epg.test.id
   key = "non_existing_key"
+  depends_on = [aci_tag.test]
 }
 `
