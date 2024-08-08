@@ -41,9 +41,10 @@ data "aci_relation_to_vrf_fallback_route_group" "test" {
 }
 `
 
-const testConfigL3extRsOutToFBRGroupNotExistingL3extOut = testConfigL3extOutMinDependencyWithFvTenant + `
+const testConfigL3extRsOutToFBRGroupNotExistingL3extOut = testConfigL3extRsOutToFBRGroupMinDependencyWithL3extOut + `
 data "aci_relation_to_vrf_fallback_route_group" "test_non_existing" {
   parent_dn = aci_l3_outside.test.id
   target_dn = "uni/tn-test_tenant/ctx-test_vrf/fbrg-vrf_fallback_route_group_0_not_existing"
+  depends_on = [aci_relation_to_vrf_fallback_route_group.test]
 }
 `

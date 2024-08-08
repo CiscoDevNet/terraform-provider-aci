@@ -46,9 +46,10 @@ data "aci_epg_useg_ad_group_attribute" "test" {
 }
 `
 
-const testConfigFvIdGroupAttrNotExistingFvCrtrn = testConfigFvCrtrnMinDependencyWithFvAEPg + `
+const testConfigFvIdGroupAttrNotExistingFvCrtrn = testConfigFvIdGroupAttrMinDependencyWithFvCrtrn + `
 data "aci_epg_useg_ad_group_attribute" "test_non_existing" {
   parent_dn = aci_epg_useg_block_statement.test.id
   selector = "adepg/authsvr-common-sg1-ISE_1/grpcont/dom-cisco.com/grp-Eng_non_existing"
+  depends_on = [aci_epg_useg_ad_group_attribute.test]
 }
 `

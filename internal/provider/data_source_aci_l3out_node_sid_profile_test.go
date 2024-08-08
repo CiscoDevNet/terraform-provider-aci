@@ -45,9 +45,10 @@ data "aci_l3out_node_sid_profile" "test" {
 }
 `
 
-const testConfigMplsNodeSidPNotExistingL3extLoopBackIfP = testConfigL3extLoopBackIfPMinDependencyWithL3extRsNodeL3OutAtt + `
+const testConfigMplsNodeSidPNotExistingL3extLoopBackIfP = testConfigMplsNodeSidPMinDependencyWithL3extLoopBackIfP + `
 data "aci_l3out_node_sid_profile" "test_non_existing" {
   parent_dn = aci_l3out_loopback_interface_profile.test.id
   segment_id = "2"
+  depends_on = [aci_l3out_node_sid_profile.test]
 }
 `

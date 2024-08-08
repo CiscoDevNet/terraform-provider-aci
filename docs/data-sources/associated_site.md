@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_associated_site"
 sidebar_current: "docs-aci-data-source-aci_associated_site"
 description: |-
-  Data source for Associated Site
+  Data source for ACI Associated Site
 ---
 
 # aci_associated_site #
 
-Data source for Associated Site
+Data source for ACI Associated Site
 
 ## API Information ##
 

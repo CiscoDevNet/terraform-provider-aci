@@ -158,6 +158,17 @@ resource "aci_application_epg" "full_example_application_profile" {
       trust_control_policy_name = aci_trust_control_policy.example.name
     }
   ]
+  associated_site = [
+    {
+      annotation  = "annotation_1"
+      description = "description_1"
+      name        = "name_1"
+      name_alias  = "name_alias_1"
+      owner_key   = "owner_key_1"
+      owner_tag   = "owner_tag_1"
+      site_id     = "0"
+    }
+  ]
   annotations = [
     {
       key   = "key_0"

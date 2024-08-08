@@ -62,9 +62,10 @@ data "aci_relation_to_domain" "test" {
 }
 `
 
-const testConfigFvRsDomAttNotExistingFvAEPg = testConfigFvAEPgMinDependencyWithFvAp + `
+const testConfigFvRsDomAttNotExistingFvAEPg = testConfigFvRsDomAttMinDependencyWithFvAEPg + `
 data "aci_relation_to_domain" "test_non_existing" {
   parent_dn = aci_application_epg.test.id
   target_dn = "uni/vmmp-VMware/dom-domain_1_not_existing"
+  depends_on = [aci_relation_to_domain.test]
 }
 `

@@ -49,9 +49,10 @@ data "aci_endpoint_security_group" "test" {
 }
 `
 
-const testConfigFvESgNotExistingFvAp = testConfigFvApMinDependencyWithFvTenant + `
+const testConfigFvESgNotExistingFvAp = testConfigFvESgMinDependencyWithFvAp + `
 data "aci_endpoint_security_group" "test_non_existing" {
   parent_dn = aci_application_profile.test.id
   name = "non_existing_name"
+  depends_on = [aci_endpoint_security_group.test]
 }
 `

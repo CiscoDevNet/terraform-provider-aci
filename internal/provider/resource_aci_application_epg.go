@@ -78,6 +78,7 @@ type FvAEPgResourceModel struct {
 	FvRsProv                   types.Set    `tfsdk:"relation_to_provided_contracts"`
 	FvRsSecInherited           types.Set    `tfsdk:"relation_to_contract_masters"`
 	FvRsTrustCtrl              types.Set    `tfsdk:"relation_to_trust_control_policy"`
+	FvSiteAssociated           types.Set    `tfsdk:"associated_site"`
 	TagAnnotation              types.Set    `tfsdk:"annotations"`
 	TagTag                     types.Set    `tfsdk:"tags"`
 	DeprecatedExceptionTag     types.String `tfsdk:"exception_tag"`
@@ -267,6 +268,17 @@ func getEmptyFvAEPgResourceModel() *FvAEPgResourceModel {
 			AttrTypes: map[string]attr.Type{
 				"annotation":                types.StringType,
 				"trust_control_policy_name": types.StringType,
+			},
+		}),
+		FvSiteAssociated: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"annotation":  types.StringType,
+				"description": types.StringType,
+				"name":        types.StringType,
+				"name_alias":  types.StringType,
+				"owner_key":   types.StringType,
+				"owner_tag":   types.StringType,
+				"site_id":     types.StringType,
 			},
 		}),
 		TagAnnotation: types.SetNull(types.ObjectType{
@@ -608,6 +620,29 @@ func getEmptyFvRsTrustCtrlFvAEPgResourceModel() FvRsTrustCtrlFvAEPgResourceModel
 	return FvRsTrustCtrlFvAEPgResourceModel{
 		Annotation:            basetypes.NewStringNull(),
 		TnFhsTrustCtrlPolName: basetypes.NewStringNull(),
+	}
+}
+
+// FvSiteAssociatedFvAEPgResourceModel describes the resource data model for the children without relation ships.
+type FvSiteAssociatedFvAEPgResourceModel struct {
+	Annotation types.String `tfsdk:"annotation"`
+	Descr      types.String `tfsdk:"description"`
+	Name       types.String `tfsdk:"name"`
+	NameAlias  types.String `tfsdk:"name_alias"`
+	OwnerKey   types.String `tfsdk:"owner_key"`
+	OwnerTag   types.String `tfsdk:"owner_tag"`
+	SiteId     types.String `tfsdk:"site_id"`
+}
+
+func getEmptyFvSiteAssociatedFvAEPgResourceModel() FvSiteAssociatedFvAEPgResourceModel {
+	return FvSiteAssociatedFvAEPgResourceModel{
+		Annotation: basetypes.NewStringNull(),
+		Descr:      basetypes.NewStringNull(),
+		Name:       basetypes.NewStringNull(),
+		NameAlias:  basetypes.NewStringNull(),
+		OwnerKey:   basetypes.NewStringNull(),
+		OwnerTag:   basetypes.NewStringNull(),
+		SiteId:     basetypes.NewStringNull(),
 	}
 }
 
@@ -1258,6 +1293,20 @@ func (r *FvAEPgResource) UpgradeState(ctx context.Context) map[int64]resource.St
 				}
 				FvRsTrustCtrlSet, _ := types.SetValueFrom(ctx, FvRsTrustCtrlType, FvRsTrustCtrlList)
 				upgradedStateData.FvRsTrustCtrl = FvRsTrustCtrlSet
+
+				upgradedStateData.FvSiteAssociated = types.SetNull(
+					types.ObjectType{
+						AttrTypes: map[string]attr.Type{
+							"annotation":  basetypes.StringType{},
+							"description": basetypes.StringType{},
+							"name":        basetypes.StringType{},
+							"name_alias":  basetypes.StringType{},
+							"owner_key":   basetypes.StringType{},
+							"owner_tag":   basetypes.StringType{},
+							"site_id":     basetypes.StringType{},
+						},
+					},
+				)
 
 				upgradedStateData.TagAnnotation = types.SetNull(
 					types.ObjectType{
@@ -3772,6 +3821,86 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 					},
 				},
 			},
+			"associated_site": schema.SetNestedAttribute{
+				MarkdownDescription: `Used to store ID mappings`,
+				Optional:            true,
+				Computed:            true,
+				PlanModifiers: []planmodifier.Set{
+					setplanmodifier.UseStateForUnknown(),
+				},
+				Validators: []validator.Set{
+					setvalidator.SizeAtMost(1),
+				},
+				NestedObject: schema.NestedAttributeObject{
+					Attributes: map[string]schema.Attribute{
+						"annotation": schema.StringAttribute{
+							Optional: true,
+							Computed: true,
+							PlanModifiers: []planmodifier.String{
+								stringplanmodifier.UseStateForUnknown(),
+							},
+							Validators:          []validator.String{},
+							MarkdownDescription: `The annotation of the Associated Site object.`,
+						},
+						"description": schema.StringAttribute{
+							Optional: true,
+							Computed: true,
+							PlanModifiers: []planmodifier.String{
+								stringplanmodifier.UseStateForUnknown(),
+							},
+							Validators:          []validator.String{},
+							MarkdownDescription: `The description of the Associated Site object.`,
+						},
+						"name": schema.StringAttribute{
+							Optional: true,
+							Computed: true,
+							PlanModifiers: []planmodifier.String{
+								stringplanmodifier.UseStateForUnknown(),
+							},
+							Validators:          []validator.String{},
+							MarkdownDescription: `The name of the Associated Site object.`,
+						},
+						"name_alias": schema.StringAttribute{
+							Optional: true,
+							Computed: true,
+							PlanModifiers: []planmodifier.String{
+								stringplanmodifier.UseStateForUnknown(),
+							},
+							Validators:          []validator.String{},
+							MarkdownDescription: `The name alias of the Associated Site object.`,
+						},
+						"owner_key": schema.StringAttribute{
+							Optional: true,
+							Computed: true,
+							PlanModifiers: []planmodifier.String{
+								stringplanmodifier.UseStateForUnknown(),
+							},
+							Validators:          []validator.String{},
+							MarkdownDescription: `The key for enabling clients to own their data for entity correlation.`,
+						},
+						"owner_tag": schema.StringAttribute{
+							Optional: true,
+							Computed: true,
+							PlanModifiers: []planmodifier.String{
+								stringplanmodifier.UseStateForUnknown(),
+							},
+							Validators:          []validator.String{},
+							MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
+						},
+						"site_id": schema.StringAttribute{
+							Optional: true,
+							Computed: true,
+							PlanModifiers: []planmodifier.String{
+								stringplanmodifier.UseStateForUnknown(),
+							},
+							Validators: []validator.String{
+								MakeStringRequired(),
+							},
+							MarkdownDescription: `A number between 0 and 1000 to identify the primary site being associated.`,
+						},
+					},
+				},
+			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,
 				Optional:            true,
@@ -4005,13 +4134,16 @@ func (r *FvAEPgResource) Create(ctx context.Context, req resource.CreateRequest,
 	var fvRsTrustCtrlPlan, fvRsTrustCtrlState []FvRsTrustCtrlFvAEPgResourceModel
 	data.FvRsTrustCtrl.ElementsAs(ctx, &fvRsTrustCtrlPlan, false)
 	stateData.FvRsTrustCtrl.ElementsAs(ctx, &fvRsTrustCtrlState, false)
+	var fvSiteAssociatedPlan, fvSiteAssociatedState []FvSiteAssociatedFvAEPgResourceModel
+	data.FvSiteAssociated.ElementsAs(ctx, &fvSiteAssociatedPlan, false)
+	stateData.FvSiteAssociated.ElementsAs(ctx, &fvSiteAssociatedState, false)
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationFvAEPgResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
 	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
 	var tagTagPlan, tagTagState []TagTagFvAEPgResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvAEPgCreateJsonPayload(ctx, &resp.Diagnostics, true, data, fvCrtrnPlan, fvCrtrnState, fvRsAEPgMonPolPlan, fvRsAEPgMonPolState, fvRsBdPlan, fvRsBdState, fvRsConsPlan, fvRsConsState, fvRsConsIfPlan, fvRsConsIfState, fvRsCustQosPolPlan, fvRsCustQosPolState, fvRsDomAttPlan, fvRsDomAttState, fvRsDppPolPlan, fvRsDppPolState, fvRsFcPathAttPlan, fvRsFcPathAttState, fvRsIntraEpgPlan, fvRsIntraEpgState, fvRsNodeAttPlan, fvRsNodeAttState, fvRsPathAttPlan, fvRsPathAttState, fvRsProtByPlan, fvRsProtByState, fvRsProvPlan, fvRsProvState, fvRsSecInheritedPlan, fvRsSecInheritedState, fvRsTrustCtrlPlan, fvRsTrustCtrlState, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := getFvAEPgCreateJsonPayload(ctx, &resp.Diagnostics, true, data, fvCrtrnPlan, fvCrtrnState, fvRsAEPgMonPolPlan, fvRsAEPgMonPolState, fvRsBdPlan, fvRsBdState, fvRsConsPlan, fvRsConsState, fvRsConsIfPlan, fvRsConsIfState, fvRsCustQosPolPlan, fvRsCustQosPolState, fvRsDomAttPlan, fvRsDomAttState, fvRsDppPolPlan, fvRsDppPolState, fvRsFcPathAttPlan, fvRsFcPathAttState, fvRsIntraEpgPlan, fvRsIntraEpgState, fvRsNodeAttPlan, fvRsNodeAttState, fvRsPathAttPlan, fvRsPathAttState, fvRsProtByPlan, fvRsProtByState, fvRsProvPlan, fvRsProvState, fvRsSecInheritedPlan, fvRsSecInheritedState, fvRsTrustCtrlPlan, fvRsTrustCtrlState, fvSiteAssociatedPlan, fvSiteAssociatedState, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -4118,13 +4250,16 @@ func (r *FvAEPgResource) Update(ctx context.Context, req resource.UpdateRequest,
 	var fvRsTrustCtrlPlan, fvRsTrustCtrlState []FvRsTrustCtrlFvAEPgResourceModel
 	data.FvRsTrustCtrl.ElementsAs(ctx, &fvRsTrustCtrlPlan, false)
 	stateData.FvRsTrustCtrl.ElementsAs(ctx, &fvRsTrustCtrlState, false)
+	var fvSiteAssociatedPlan, fvSiteAssociatedState []FvSiteAssociatedFvAEPgResourceModel
+	data.FvSiteAssociated.ElementsAs(ctx, &fvSiteAssociatedPlan, false)
+	stateData.FvSiteAssociated.ElementsAs(ctx, &fvSiteAssociatedState, false)
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationFvAEPgResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
 	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
 	var tagTagPlan, tagTagState []TagTagFvAEPgResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvAEPgCreateJsonPayload(ctx, &resp.Diagnostics, false, data, fvCrtrnPlan, fvCrtrnState, fvRsAEPgMonPolPlan, fvRsAEPgMonPolState, fvRsBdPlan, fvRsBdState, fvRsConsPlan, fvRsConsState, fvRsConsIfPlan, fvRsConsIfState, fvRsCustQosPolPlan, fvRsCustQosPolState, fvRsDomAttPlan, fvRsDomAttState, fvRsDppPolPlan, fvRsDppPolState, fvRsFcPathAttPlan, fvRsFcPathAttState, fvRsIntraEpgPlan, fvRsIntraEpgState, fvRsNodeAttPlan, fvRsNodeAttState, fvRsPathAttPlan, fvRsPathAttState, fvRsProtByPlan, fvRsProtByState, fvRsProvPlan, fvRsProvState, fvRsSecInheritedPlan, fvRsSecInheritedState, fvRsTrustCtrlPlan, fvRsTrustCtrlState, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := getFvAEPgCreateJsonPayload(ctx, &resp.Diagnostics, false, data, fvCrtrnPlan, fvCrtrnState, fvRsAEPgMonPolPlan, fvRsAEPgMonPolState, fvRsBdPlan, fvRsBdState, fvRsConsPlan, fvRsConsState, fvRsConsIfPlan, fvRsConsIfState, fvRsCustQosPolPlan, fvRsCustQosPolState, fvRsDomAttPlan, fvRsDomAttState, fvRsDppPolPlan, fvRsDppPolState, fvRsFcPathAttPlan, fvRsFcPathAttState, fvRsIntraEpgPlan, fvRsIntraEpgState, fvRsNodeAttPlan, fvRsNodeAttState, fvRsPathAttPlan, fvRsPathAttState, fvRsProtByPlan, fvRsProtByState, fvRsProvPlan, fvRsProvState, fvRsSecInheritedPlan, fvRsSecInheritedState, fvRsTrustCtrlPlan, fvRsTrustCtrlState, fvSiteAssociatedPlan, fvSiteAssociatedState, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -4178,7 +4313,7 @@ func (r *FvAEPgResource) ImportState(ctx context.Context, req resource.ImportSta
 }
 
 func getAndSetFvAEPgAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvAEPgResourceModel) {
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "fvAEPg,fvCrtrn,fvRsAEPgMonPol,fvRsBd,fvRsCons,fvRsConsIf,fvRsCustQosPol,fvRsDomAtt,fvRsDppPol,fvRsFcPathAtt,fvRsIntraEpg,fvRsNodeAtt,fvRsPathAtt,fvRsProtBy,fvRsProv,fvRsSecInherited,fvRsTrustCtrl,tagAnnotation,tagTag"), "GET", nil)
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "fvAEPg,fvCrtrn,fvRsAEPgMonPol,fvRsBd,fvRsCons,fvRsConsIf,fvRsCustQosPol,fvRsDomAtt,fvRsDppPol,fvRsFcPathAtt,fvRsIntraEpg,fvRsNodeAtt,fvRsPathAtt,fvRsProtBy,fvRsProv,fvRsSecInherited,fvRsTrustCtrl,fvSiteAssociated,tagAnnotation,tagTag"), "GET", nil)
 
 	*data = *getEmptyFvAEPgResourceModel()
 
@@ -4258,6 +4393,7 @@ func getAndSetFvAEPgAttributes(ctx context.Context, diags *diag.Diagnostics, cli
 			FvRsProvFvAEPgList := make([]FvRsProvFvAEPgResourceModel, 0)
 			FvRsSecInheritedFvAEPgList := make([]FvRsSecInheritedFvAEPgResourceModel, 0)
 			FvRsTrustCtrlFvAEPgList := make([]FvRsTrustCtrlFvAEPgResourceModel, 0)
+			FvSiteAssociatedFvAEPgList := make([]FvSiteAssociatedFvAEPgResourceModel, 0)
 			TagAnnotationFvAEPgList := make([]TagAnnotationFvAEPgResourceModel, 0)
 			TagTagFvAEPgList := make([]TagTagFvAEPgResourceModel, 0)
 			_, ok := classReadInfo[0].(map[string]interface{})["children"]
@@ -4603,6 +4739,33 @@ func getAndSetFvAEPgAttributes(ctx context.Context, diags *diag.Diagnostics, cli
 							}
 							FvRsTrustCtrlFvAEPgList = append(FvRsTrustCtrlFvAEPgList, FvRsTrustCtrlFvAEPg)
 						}
+						if childClassName == "fvSiteAssociated" {
+							FvSiteAssociatedFvAEPg := getEmptyFvSiteAssociatedFvAEPgResourceModel()
+							for childAttributeName, childAttributeValue := range childAttributes {
+								if childAttributeName == "annotation" {
+									FvSiteAssociatedFvAEPg.Annotation = basetypes.NewStringValue(childAttributeValue.(string))
+								}
+								if childAttributeName == "descr" {
+									FvSiteAssociatedFvAEPg.Descr = basetypes.NewStringValue(childAttributeValue.(string))
+								}
+								if childAttributeName == "name" {
+									FvSiteAssociatedFvAEPg.Name = basetypes.NewStringValue(childAttributeValue.(string))
+								}
+								if childAttributeName == "nameAlias" {
+									FvSiteAssociatedFvAEPg.NameAlias = basetypes.NewStringValue(childAttributeValue.(string))
+								}
+								if childAttributeName == "ownerKey" {
+									FvSiteAssociatedFvAEPg.OwnerKey = basetypes.NewStringValue(childAttributeValue.(string))
+								}
+								if childAttributeName == "ownerTag" {
+									FvSiteAssociatedFvAEPg.OwnerTag = basetypes.NewStringValue(childAttributeValue.(string))
+								}
+								if childAttributeName == "siteId" {
+									FvSiteAssociatedFvAEPg.SiteId = basetypes.NewStringValue(childAttributeValue.(string))
+								}
+							}
+							FvSiteAssociatedFvAEPgList = append(FvSiteAssociatedFvAEPgList, FvSiteAssociatedFvAEPg)
+						}
 						if childClassName == "tagAnnotation" {
 							TagAnnotationFvAEPg := getEmptyTagAnnotationFvAEPgResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
@@ -4662,6 +4825,8 @@ func getAndSetFvAEPgAttributes(ctx context.Context, diags *diag.Diagnostics, cli
 			data.FvRsSecInherited = fvRsSecInheritedSet
 			fvRsTrustCtrlSet, _ := types.SetValueFrom(ctx, data.FvRsTrustCtrl.ElementType(ctx), FvRsTrustCtrlFvAEPgList)
 			data.FvRsTrustCtrl = fvRsTrustCtrlSet
+			fvSiteAssociatedSet, _ := types.SetValueFrom(ctx, data.FvSiteAssociated.ElementType(ctx), FvSiteAssociatedFvAEPgList)
+			data.FvSiteAssociated = fvSiteAssociatedSet
 			tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationFvAEPgList)
 			data.TagAnnotation = tagAnnotationSet
 			tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagFvAEPgList)
@@ -5426,6 +5591,48 @@ func getFvAEPgFvRsTrustCtrlChildPayloads(ctx context.Context, diags *diag.Diagno
 
 	return childPayloads
 }
+func getFvAEPgFvSiteAssociatedChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvAEPgResourceModel, fvSiteAssociatedPlan, fvSiteAssociatedState []FvSiteAssociatedFvAEPgResourceModel) []map[string]interface{} {
+
+	childPayloads := []map[string]interface{}{}
+	if !data.FvSiteAssociated.IsUnknown() {
+		for _, fvSiteAssociated := range fvSiteAssociatedPlan {
+			childMap := map[string]map[string]interface{}{"attributes": {}}
+			if !fvSiteAssociated.Annotation.IsUnknown() && !fvSiteAssociated.Annotation.IsNull() {
+				childMap["attributes"]["annotation"] = fvSiteAssociated.Annotation.ValueString()
+			} else {
+				childMap["attributes"]["annotation"] = globalAnnotation
+			}
+			if !fvSiteAssociated.Descr.IsUnknown() && !fvSiteAssociated.Descr.IsNull() {
+				childMap["attributes"]["descr"] = fvSiteAssociated.Descr.ValueString()
+			}
+			if !fvSiteAssociated.Name.IsUnknown() && !fvSiteAssociated.Name.IsNull() {
+				childMap["attributes"]["name"] = fvSiteAssociated.Name.ValueString()
+			}
+			if !fvSiteAssociated.NameAlias.IsUnknown() && !fvSiteAssociated.NameAlias.IsNull() {
+				childMap["attributes"]["nameAlias"] = fvSiteAssociated.NameAlias.ValueString()
+			}
+			if !fvSiteAssociated.OwnerKey.IsUnknown() && !fvSiteAssociated.OwnerKey.IsNull() {
+				childMap["attributes"]["ownerKey"] = fvSiteAssociated.OwnerKey.ValueString()
+			}
+			if !fvSiteAssociated.OwnerTag.IsUnknown() && !fvSiteAssociated.OwnerTag.IsNull() {
+				childMap["attributes"]["ownerTag"] = fvSiteAssociated.OwnerTag.ValueString()
+			}
+			if !fvSiteAssociated.SiteId.IsUnknown() && !fvSiteAssociated.SiteId.IsNull() {
+				childMap["attributes"]["siteId"] = fvSiteAssociated.SiteId.ValueString()
+			}
+			childPayloads = append(childPayloads, map[string]interface{}{"fvSiteAssociated": childMap})
+		}
+		if len(fvSiteAssociatedPlan) == 0 && len(fvSiteAssociatedState) == 1 {
+			childMap := map[string]map[string]interface{}{"attributes": {}}
+			childMap["attributes"]["status"] = "deleted"
+			childPayloads = append(childPayloads, map[string]interface{}{"fvSiteAssociated": childMap})
+		}
+	} else {
+		data.FvSiteAssociated = types.SetNull(data.FvSiteAssociated.ElementType(ctx))
+	}
+
+	return childPayloads
+}
 func getFvAEPgTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvAEPgResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvAEPgResourceModel) []map[string]interface{} {
 
 	childPayloads := []map[string]interface{}{}
@@ -5505,7 +5712,7 @@ func getFvAEPgTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, 
 	return childPayloads
 }
 
-func getFvAEPgCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *FvAEPgResourceModel, fvCrtrnPlan, fvCrtrnState []FvCrtrnFvAEPgResourceModel, fvRsAEPgMonPolPlan, fvRsAEPgMonPolState []FvRsAEPgMonPolFvAEPgResourceModel, fvRsBdPlan, fvRsBdState []FvRsBdFvAEPgResourceModel, fvRsConsPlan, fvRsConsState []FvRsConsFvAEPgResourceModel, fvRsConsIfPlan, fvRsConsIfState []FvRsConsIfFvAEPgResourceModel, fvRsCustQosPolPlan, fvRsCustQosPolState []FvRsCustQosPolFvAEPgResourceModel, fvRsDomAttPlan, fvRsDomAttState []FvRsDomAttFvAEPgResourceModel, fvRsDppPolPlan, fvRsDppPolState []FvRsDppPolFvAEPgResourceModel, fvRsFcPathAttPlan, fvRsFcPathAttState []FvRsFcPathAttFvAEPgResourceModel, fvRsIntraEpgPlan, fvRsIntraEpgState []FvRsIntraEpgFvAEPgResourceModel, fvRsNodeAttPlan, fvRsNodeAttState []FvRsNodeAttFvAEPgResourceModel, fvRsPathAttPlan, fvRsPathAttState []FvRsPathAttFvAEPgResourceModel, fvRsProtByPlan, fvRsProtByState []FvRsProtByFvAEPgResourceModel, fvRsProvPlan, fvRsProvState []FvRsProvFvAEPgResourceModel, fvRsSecInheritedPlan, fvRsSecInheritedState []FvRsSecInheritedFvAEPgResourceModel, fvRsTrustCtrlPlan, fvRsTrustCtrlState []FvRsTrustCtrlFvAEPgResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvAEPgResourceModel, tagTagPlan, tagTagState []TagTagFvAEPgResourceModel) *container.Container {
+func getFvAEPgCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *FvAEPgResourceModel, fvCrtrnPlan, fvCrtrnState []FvCrtrnFvAEPgResourceModel, fvRsAEPgMonPolPlan, fvRsAEPgMonPolState []FvRsAEPgMonPolFvAEPgResourceModel, fvRsBdPlan, fvRsBdState []FvRsBdFvAEPgResourceModel, fvRsConsPlan, fvRsConsState []FvRsConsFvAEPgResourceModel, fvRsConsIfPlan, fvRsConsIfState []FvRsConsIfFvAEPgResourceModel, fvRsCustQosPolPlan, fvRsCustQosPolState []FvRsCustQosPolFvAEPgResourceModel, fvRsDomAttPlan, fvRsDomAttState []FvRsDomAttFvAEPgResourceModel, fvRsDppPolPlan, fvRsDppPolState []FvRsDppPolFvAEPgResourceModel, fvRsFcPathAttPlan, fvRsFcPathAttState []FvRsFcPathAttFvAEPgResourceModel, fvRsIntraEpgPlan, fvRsIntraEpgState []FvRsIntraEpgFvAEPgResourceModel, fvRsNodeAttPlan, fvRsNodeAttState []FvRsNodeAttFvAEPgResourceModel, fvRsPathAttPlan, fvRsPathAttState []FvRsPathAttFvAEPgResourceModel, fvRsProtByPlan, fvRsProtByState []FvRsProtByFvAEPgResourceModel, fvRsProvPlan, fvRsProvState []FvRsProvFvAEPgResourceModel, fvRsSecInheritedPlan, fvRsSecInheritedState []FvRsSecInheritedFvAEPgResourceModel, fvRsTrustCtrlPlan, fvRsTrustCtrlState []FvRsTrustCtrlFvAEPgResourceModel, fvSiteAssociatedPlan, fvSiteAssociatedState []FvSiteAssociatedFvAEPgResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvAEPgResourceModel, tagTagPlan, tagTagState []TagTagFvAEPgResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 
@@ -5609,6 +5816,12 @@ func getFvAEPgCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, cr
 		return nil
 	}
 	childPayloads = append(childPayloads, FvRsTrustCtrlchildPayloads...)
+
+	FvSiteAssociatedchildPayloads := getFvAEPgFvSiteAssociatedChildPayloads(ctx, diags, data, fvSiteAssociatedPlan, fvSiteAssociatedState)
+	if FvSiteAssociatedchildPayloads == nil {
+		return nil
+	}
+	childPayloads = append(childPayloads, FvSiteAssociatedchildPayloads...)
 
 	TagAnnotationchildPayloads := getFvAEPgTagAnnotationChildPayloads(ctx, diags, data, tagAnnotationPlan, tagAnnotationState)
 	if TagAnnotationchildPayloads == nil {

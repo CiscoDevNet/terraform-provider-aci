@@ -42,10 +42,12 @@ The configuration snippet below creates a Associated Site with only required att
 
 resource "aci_associated_site" "example_application_epg" {
   parent_dn = aci_application_epg.example.id
+  site_id   = "0"
 }
 
 resource "aci_associated_site" "example_bridge_domain" {
   parent_dn = aci_bridge_domain.example.id
+  site_id   = "0"
 }
 
 ```
@@ -58,11 +60,11 @@ The configuration snippet below shows all possible attributes of the Associated 
 resource "aci_associated_site" "full_example_application_epg" {
   parent_dn   = aci_application_epg.example.id
   annotation  = "annotation"
-  description = "description"
-  name        = "name"
-  name_alias  = "name_alias"
-  owner_key   = "owner_key"
-  owner_tag   = "owner_tag"
+  description = "description_1"
+  name        = "name_1"
+  name_alias  = "name_alias_1"
+  owner_key   = "owner_key_1"
+  owner_tag   = "owner_tag_1"
   site_id     = "0"
   annotations = [
     {
@@ -81,11 +83,11 @@ resource "aci_associated_site" "full_example_application_epg" {
 resource "aci_associated_site" "full_example_bridge_domain" {
   parent_dn   = aci_bridge_domain.example.id
   annotation  = "annotation"
-  description = "description"
-  name        = "name"
-  name_alias  = "name_alias"
-  owner_key   = "owner_key"
-  owner_tag   = "owner_tag"
+  description = "description_1"
+  name        = "name_1"
+  name_alias  = "name_alias_1"
+  owner_key   = "owner_key_1"
+  owner_tag   = "owner_tag_1"
   site_id     = "0"
   annotations = [
     {
@@ -117,6 +119,7 @@ All examples for the Associated Site resource can be found in the [examples](htt
   - The distinguished name (DN) of classes below can be used but currently there is no available resource for it:
     - [vnsEpgDefXlate](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vnsEpgDefXlate/overview)
 
+* `site_id` (siteId) - (string) A number between 0 and 1000 to identify the primary site being associated.
 
 ### Read-Only ###
 
@@ -131,21 +134,19 @@ All examples for the Associated Site resource can be found in the [examples](htt
 * `name_alias` (nameAlias) - (string) The name alias of the Associated Site object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
-* `site_id` (siteId) - (string) A number between 0 and 1000 to identify the primary site being associated.
-  - Default: `0.000000`
 
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   
   #### Required ####
   
-  * `key` (key) - (string) The key used to uniquely identify this Associated Site object.
+  * `key` (key) - (string) The key used to uniquely identify this configuration object.
   * `value` (value) - (string) The value of the property.
 
 * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   
   #### Required ####
   
-  * `key` (key) - (string) The key used to uniquely identify this Associated Site object.
+  * `key` (key) - (string) The key used to uniquely identify this configuration object.
   * `value` (value) - (string) The value of the property.
 
 ## Importing

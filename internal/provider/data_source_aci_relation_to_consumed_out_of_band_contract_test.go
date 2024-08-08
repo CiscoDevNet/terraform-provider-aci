@@ -42,9 +42,10 @@ data "aci_relation_to_consumed_out_of_band_contract" "test" {
 }
 `
 
-const testConfigMgmtRsOoBConsNotExistingMgmtInstP = testConfigMgmtInstPMin + `
+const testConfigMgmtRsOoBConsNotExistingMgmtInstP = testConfigMgmtRsOoBConsMinDependencyWithMgmtInstP + `
 data "aci_relation_to_consumed_out_of_band_contract" "test_non_existing" {
   parent_dn = aci_external_management_network_instance_profile.test.id
   out_of_band_contract_name = "non_existing_tn_vz_oob_br_cp_name"
+  depends_on = [aci_relation_to_consumed_out_of_band_contract.test]
 }
 `

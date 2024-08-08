@@ -205,6 +205,17 @@ resource "aci_application_epg" "full_example_application_profile" {
       trust_control_policy_name = aci_trust_control_policy.example.name
     }
   ]
+  associated_site = [
+    {
+      annotation  = "annotation_1"
+      description = "description_1"
+      name        = "name_1"
+      name_alias  = "name_alias_1"
+      owner_key   = "owner_key_1"
+      owner_tag   = "owner_tag_1"
+      site_id     = "0"
+    }
+  ]
   annotations = [
     {
       key   = "key_0"
@@ -543,6 +554,23 @@ All examples for the Application EPG resource can be found in the [examples](htt
   * `annotation` (annotation) - (string) The annotation of the Relation To Trust Control Policy object.
       - Default: `orchestrator:terraform`
   * `trust_control_policy_name` (tnFhsTrustCtrlPolName) - (string) Name.
+
+* `associated_site` - (list) A list of Associated Site (ACI object [fvSiteAssociated](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvSiteAssociated/overview)). Associated Site can also be configured using a separate [aci_](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/) resource. This attribute is supported in ACI versions: 3.0(1k) and later.
+    - Max Items: 1
+  
+  #### Required ####
+  
+  * `site_id` (siteId) - (string) A number between 0 and 1000 to identify the primary site being associated.
+
+  #### Optional ####
+    
+  * `annotation` (annotation) - (string) The annotation of the Associated Site object.
+      - Default: `orchestrator:terraform`
+  * `description` (descr) - (string) The description of the Associated Site object.
+  * `name` (name) - (string) The name of the Associated Site object.
+  * `name_alias` (nameAlias) - (string) The name alias of the Associated Site object.
+  * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
+  * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   

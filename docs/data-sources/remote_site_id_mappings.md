@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_remote_site_id_mappings"
 sidebar_current: "docs-aci-data-source-aci_remote_site_id_mappings"
 description: |-
-  Data source for Remote Site Id Mappings
+  Data source for ACI Remote Site Id Mappings
 ---
 
 # aci_remote_site_id_mappings #
 
-Data source for Remote Site Id Mappings
+Data source for ACI Remote Site Id Mappings
 
 ## API Information ##
 

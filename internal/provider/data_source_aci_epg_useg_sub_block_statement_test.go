@@ -72,10 +72,11 @@ data "aci_epg_useg_sub_block_statement" "test" {
 }
 `
 
-const testConfigFvSCrtrnNotExistingFvCrtrn = testConfigFvCrtrnMinDependencyWithFvAEPg + `
+const testConfigFvSCrtrnNotExistingFvCrtrn = testConfigFvSCrtrnMinDependencyWithFvCrtrn + `
 data "aci_epg_useg_sub_block_statement" "test_non_existing" {
   parent_dn = aci_epg_useg_block_statement.test.id
   name = "sub_criterion_non_existing"
+  depends_on = [aci_epg_useg_sub_block_statement.test]
 }
 `
 const testConfigFvSCrtrnDataSourceDependencyWithFvSCrtrn = testConfigFvSCrtrnMinDependencyWithFvSCrtrn + `
@@ -86,9 +87,10 @@ data "aci_epg_useg_sub_block_statement" "test_1" {
 }
 `
 
-const testConfigFvSCrtrnNotExistingFvSCrtrn = testConfigFvSCrtrnMinDependencyWithFvCrtrn + `
+const testConfigFvSCrtrnNotExistingFvSCrtrn = testConfigFvSCrtrnMinDependencyWithFvSCrtrn + `
 data "aci_epg_useg_sub_block_statement" "test_non_existing" {
   parent_dn = aci_epg_useg_sub_block_statement.test.id
   name = "sub_criterion_non_existing"
+  depends_on = [aci_epg_useg_sub_block_statement.test]
 }
 `

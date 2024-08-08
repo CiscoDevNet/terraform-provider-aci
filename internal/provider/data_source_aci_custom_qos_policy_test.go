@@ -45,9 +45,10 @@ data "aci_custom_qos_policy" "test" {
 }
 `
 
-const testConfigQosCustomPolNotExistingFvTenant = testConfigFvTenantMin + `
+const testConfigQosCustomPolNotExistingFvTenant = testConfigQosCustomPolMinDependencyWithFvTenant + `
 data "aci_custom_qos_policy" "test_non_existing" {
   parent_dn = aci_tenant.test.id
   name = "non_existing_name"
+  depends_on = [aci_custom_qos_policy.test]
 }
 `

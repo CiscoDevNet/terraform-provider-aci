@@ -44,9 +44,10 @@ data "aci_relation_to_fibre_channel_path" "test" {
 }
 `
 
-const testConfigFvRsFcPathAttNotExistingFvAEPg = testConfigFvAEPgMinDependencyWithFvAp + `
+const testConfigFvRsFcPathAttNotExistingFvAEPg = testConfigFvRsFcPathAttMinDependencyWithFvAEPg + `
 data "aci_relation_to_fibre_channel_path" "test_non_existing" {
   parent_dn = aci_application_epg.test.id
   target_dn = "topology/pod-2/paths-201/pathep-[eth1/1]"
+  depends_on = [aci_relation_to_fibre_channel_path.test]
 }
 `

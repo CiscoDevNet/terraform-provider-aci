@@ -45,9 +45,10 @@ data "aci_netflow_monitor_policy" "test" {
 }
 `
 
-const testConfigNetflowMonitorPolNotExistingFvTenant = testConfigFvTenantMin + `
+const testConfigNetflowMonitorPolNotExistingFvTenant = testConfigNetflowMonitorPolMinDependencyWithFvTenant + `
 data "aci_netflow_monitor_policy" "test_non_existing" {
   parent_dn = aci_tenant.test.id
   name = "netfow_monitor_non_existing"
+  depends_on = [aci_netflow_monitor_policy.test]
 }
 `

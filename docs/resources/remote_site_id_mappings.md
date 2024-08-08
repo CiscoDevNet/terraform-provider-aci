@@ -57,11 +57,11 @@ The configuration snippet below shows all possible attributes of the Remote Site
 resource "aci_remote_site_id_mappings" "full_example_associated_site" {
   parent_dn         = aci_associated_site.example.id
   annotation        = "annotation"
-  description       = "description"
-  name              = "name"
-  name_alias        = "name_alias"
-  owner_key         = "owner_key"
-  owner_tag         = "owner_tag"
+  description       = "description_1"
+  name              = "name_1"
+  name_alias        = "name_alias_1"
+  owner_key         = "owner_key_1"
+  owner_tag         = "owner_tag_1"
   remote_vrf_pc_tag = "any"
   remote_pc_tag     = "16386"
   site_id           = "100"
@@ -111,14 +111,14 @@ All examples for the Remote Site Id Mappings resource can be found in the [examp
   
   #### Required ####
   
-  * `key` (key) - (string) The key used to uniquely identify this Associated Site object.
+  * `key` (key) - (string) The key used to uniquely identify this configuration object.
   * `value` (value) - (string) The value of the property.
 
 * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   
   #### Required ####
   
-  * `key` (key) - (string) The key used to uniquely identify this Associated Site object.
+  * `key` (key) - (string) The key used to uniquely identify this configuration object.
   * `value` (value) - (string) The value of the property.
 
 ## Importing
