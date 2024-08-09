@@ -76,7 +76,7 @@ type {{.ResourceClassName}}ResourceModel struct {
 		{{- else if eq .Name "Id"}}
 	{{.ResourceClassName}}{{ .Name }} types.String `tfsdk:"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}"`
 		{{- else if and (lt 0 (len .ValidValuesMap)) (lt 0 (len .Validators))}}
-	{{ .Name }} customTypes.{{.ResourceClassName}}{{.PropertyName}}StringValue `tfsdk:"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}"`
+	{{ .Name }} customTypes.{{.ResourceClassName}}{{.Name}}StringValue `tfsdk:"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}"`
 		{{- else}}
 	{{ .Name }} types.String `tfsdk:"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}"`
 		{{- end}}
@@ -105,6 +105,8 @@ func getEmpty{{.ResourceClassName}}ResourceModel() *{{.ResourceClassName}}Resour
 		{{ .Name }}: types.SetNull(types.StringType),
 			{{- else if eq .Name "Id"}}
 		{{.ResourceClassName}}{{ .Name }}: basetypes.NewStringNull(),
+			{{- else if and (lt 0 (len .ValidValuesMap)) (lt 0 (len .Validators))}}
+		{{ .Name }}: customTypes.New{{.ResourceClassName}}{{.Name}}StringNull(),
 			{{- else}}
 		{{ .Name }}: basetypes.NewStringNull(),
 			{{- end}}
@@ -146,7 +148,7 @@ type {{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel struct {
 		{{- else if eq .Name "Id"}}
 	{{.ResourceClassName}}{{ .Name }} types.String `tfsdk:"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}"`
 		{{- else if and (lt 0 (len .ValidValuesMap)) (lt 0 (len .Validators))}}
-	{{ .Name }} customTypes.{{.ResourceClassName}}{{.PropertyName}}StringValue `tfsdk:"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}"`
+	{{ .Name }} customTypes.{{.ResourceClassName}}{{.Name}}StringValue `tfsdk:"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}"`
 		{{- else}}
 	{{ .Name }} types.String `tfsdk:"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}"`
 		{{- end}}
@@ -160,6 +162,8 @@ func getEmpty{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel() {{.Res
 	{{ .Name }}: types.SetNull(types.StringType),
 			{{- else if eq .Name "Id"}}
 	{{.ResourceClassName}}{{ .Name }}: basetypes.NewStringNull(),
+			{{- else if and (lt 0 (len .ValidValuesMap)) (lt 0 (len .Validators))}}
+	{{ .Name }}: customTypes.New{{.ResourceClassName}}{{.Name}}StringNull(),
 			{{- else}}
 	{{ .Name }}: basetypes.NewStringNull(),
 			{{- end}}
@@ -291,7 +295,11 @@ func (r *{{.ResourceClassName}}Resource) UpgradeState(ctx context.Context) map[i
 					{{- end}}
 					{{- range .Properties}}
 						{{- if isLegacyAttribute .Name $.LegacyAttributes}}
+							{{- if and (lt 0 (len .ValidValuesMap)) (lt 0 (len .Validators))}}
+					{{ .Name }}: customTypes.{{.ResourceClassName}}{{.Name}}StringValue{ StringValue: priorStateData.{{ .Name }} },
+							{{- else}}
 					{{ .Name }}: priorStateData.{{ .Name }},
+							{{- end}}
 						{{- else if ne .ValueType "bitmask"}}
 					{{ .Name }}: basetypes.NewStringNull(),
 						{{- else if eq .ValueType "bitmask"}}
@@ -347,7 +355,7 @@ func (r *{{.ResourceClassName}}Resource) UpgradeState(ctx context.Context) map[i
 							{{- if eq $AttributeName ""}}
 						{{ .Name }}: basetypes.NewStringNull(),
 								{{- else if and (lt 0 (len .ValidValuesMap)) (lt 0 (len .Validators))}}
-						{{ .Name }}: customTypes.{{.ResourceClassName}}{{.PropertyName}}StringValue{StringValue: priorStateData{{.ResourceClassName}}.{{ $AttributeName }}},
+						{{ .Name }}: customTypes.{{.ResourceClassName}}{{.Name}}StringValue{StringValue: priorStateData{{.ResourceClassName}}.{{ $AttributeName }}},
 								{{- else}}
 						{{ .Name }}: priorStateData{{.ResourceClassName}}.{{ $AttributeName }},
 								{{- end}}
@@ -552,9 +560,18 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 			}
 		}
 
-		{{ if .LegacyAttributes}}
+		{{ if .LegacyAttributes}}{{ $ResourceClassName := .ResourceClassName}}
 		{{ range .LegacyAttributes}}{{$SetName := .Name}}
 			{{- if and (ne .ReplacedBy.AttributeName "") (eq (getMigrationType .ValueType) "String") (isNewAttributeStringType .ReplacedBy.AttributeName) }}
+				{{- if .NeedCustomType}}
+		if !configData.{{ .Name }}.IsNull() {
+			planData.Deprecated{{ .Name }} = configData.{{ .Name }}.StringValue
+		} else if !configData.Deprecated{{ .Name }}.IsNull() { 
+			planData.{{ .Name }} =customTypes.{{$ResourceClassName}}{{.Name}}StringValue{ StringValue: configData.Deprecated{{ .Name }} }
+		} else if stateData != nil { // used to replace use state for unknown
+			planData.Deprecated{{ .Name }} = stateData.Deprecated{{ .Name }}
+		}
+				{{- else}}
 		if !configData.{{ .Name }}.IsNull() {
 			planData.Deprecated{{ .Name }} = configData.{{ .Name }}
 		} else if !configData.Deprecated{{ .Name }}.IsNull() { 
@@ -562,6 +579,7 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 		} else if stateData != nil { // used to replace use state for unknown
 			planData.Deprecated{{ .Name }} = stateData.Deprecated{{ .Name }}
 		}
+			{{- end}}
 			{{- else if and (ne .ReplacedBy.AttributeName "") (eq (getMigrationType .ValueType) "String") }}
 				{{- range $.Children}}
 					{{- if isLegacyChild .PkgName $.LegacyChildren}}
@@ -694,7 +712,11 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 						{{- if eq .Name "Annotation"}}
 					{{ .ResourceClassName }}.{{ .Name }} = planData.Annotation
 						{{- else if ne .DefaultValue ""}}
+							{{- if and (lt 0 (len .ValidValuesMap)) (lt 0 (len .Validators))}}
+					{{ .ResourceClassName }}.{{ .Name }} = customTypes.New{{.ResourceClassName}}{{.Name}}StringValue("{{ .DefaultValue }}") // Default to default value from meta when not found
+							{{- else}}
 					{{ .ResourceClassName }}.{{ .Name }} = basetypes.NewStringValue("{{ .DefaultValue }}") // Default to default value from meta when not found
+							{{- end}}
 						{{- end}}
 					{{- end}}
 				}
@@ -758,7 +780,7 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 					{{ .Name }}: planData.Annotation,
 						{{- else if and (ne $AttributeName "") (not (isNewNamedClassAttribute $Overwrite)) }}
 							{{- if and (lt 0 (len .ValidValuesMap)) (lt 0 (len .Validators))}}
-					{{ .Name }}: customTypes.{{.ResourceClassName}}{{.PropertyName}}StringValue{StringValue: attributeValue.{{ .Name }}},
+					{{ .Name }}: customTypes.{{.ResourceClassName}}{{.Name}}StringValue{StringValue: attributeValue.{{ .Name }}},
 							{{- else}}
 					{{ .Name }}: attributeValue.{{ .Name }},
 							{{- end}}
@@ -939,7 +961,7 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 				{{- else}}
 			"{{$OverwritePropertyName}}": schema.StringAttribute{
 					{{- if and (lt 0 (len .ValidValuesMap)) (lt 0 (len .Validators))}}
-				CustomType: customTypes.{{.ResourceClassName}}{{.PropertyName}}StringType{},
+				CustomType: customTypes.{{.ResourceClassName}}{{.Name}}StringType{},
 					{{- end}}
 					{{- if or .IsNaming .IsRequired}}
 						{{- if ne $LegacyAttributeName ""}}
@@ -1032,7 +1054,7 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 						{{- else}}
 						"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": schema.StringAttribute{
 							{{- if and (lt 0 (len .ValidValuesMap)) (lt 0 (len .Validators))}}
-							CustomType: customTypes.{{.ResourceClassName}}{{.PropertyName}}StringType{},
+							CustomType: customTypes.{{.ResourceClassName}}{{.Name}}StringType{},
 							{{- end}}
 							{{- if and (or .IsNaming .IsRequired) (not $.HasReadOnlyProperties)}}
 							Required:            true,
@@ -1373,7 +1395,7 @@ func getAndSet{{.ResourceClassName}}Attributes(ctx context.Context, diags *diag.
 						{{- else}}
 				if attributeName == "{{.PropertyName}}" {
 							{{- if and (lt 0 (len .ValidValuesMap)) (lt 0 (len .Validators))}}
-					data.{{.Name}} = customTypes.New{{.ResourceClassName}}{{.PropertyName}}StringValue(attributeValue.(string))
+					data.{{.Name}} = customTypes.New{{.ResourceClassName}}{{.Name}}StringValue(attributeValue.(string))
 							{{- else}}
 					data.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}} = basetypes.NewStringValue(attributeValue.(string))
 							{{- end}}
@@ -1425,7 +1447,7 @@ func getAndSet{{.ResourceClassName}}Attributes(ctx context.Context, diags *diag.
 										{{- else}}
 								if childAttributeName == "{{.PropertyName}}" {
 											{{- if and (lt 0 (len .ValidValuesMap)) (lt 0 (len .Validators))}}
-									{{.ResourceClassName}}{{$.ResourceClassName}}.{{.Name}} = customTypes.New{{.ResourceClassName}}{{.PropertyName}}StringValue(childAttributeValue.(string))
+									{{.ResourceClassName}}{{$.ResourceClassName}}.{{.Name}} = customTypes.New{{.ResourceClassName}}{{.Name}}StringValue(childAttributeValue.(string))
 											{{- else}}
 									{{.ResourceClassName}}{{$.ResourceClassName}}.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}} = basetypes.NewStringValue(childAttributeValue.(string))
 											{{- end}}

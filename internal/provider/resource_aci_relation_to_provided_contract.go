@@ -50,7 +50,7 @@ type FvRsProvResourceModel struct {
 	ParentDn      types.String                        `tfsdk:"parent_dn"`
 	Annotation    types.String                        `tfsdk:"annotation"`
 	MatchT        types.String                        `tfsdk:"match_criteria"`
-	Prio          customTypes.FvRsProvprioStringValue `tfsdk:"priority"`
+	Prio          customTypes.FvRsProvPrioStringValue `tfsdk:"priority"`
 	TnVzBrCPName  types.String                        `tfsdk:"contract_name"`
 	TagAnnotation types.Set                           `tfsdk:"annotations"`
 	TagTag        types.Set                           `tfsdk:"tags"`
@@ -62,7 +62,7 @@ func getEmptyFvRsProvResourceModel() *FvRsProvResourceModel {
 		ParentDn:     basetypes.NewStringNull(),
 		Annotation:   basetypes.NewStringNull(),
 		MatchT:       basetypes.NewStringNull(),
-		Prio:         basetypes.NewStringNull(),
+		Prio:         customTypes.NewFvRsProvPrioStringNull(),
 		TnVzBrCPName: basetypes.NewStringNull(),
 		TagAnnotation: types.SetNull(types.ObjectType{
 			AttrTypes: map[string]attr.Type{
@@ -185,7 +185,7 @@ func (r *FvRsProvResource) Schema(ctx context.Context, req resource.SchemaReques
 				MarkdownDescription: `The provider label match criteria.`,
 			},
 			"priority": schema.StringAttribute{
-				CustomType: customTypes.FvRsProvprioStringType{},
+				CustomType: customTypes.FvRsProvPrioStringType{},
 				Optional:   true,
 				Computed:   true,
 				PlanModifiers: []planmodifier.String{
@@ -468,7 +468,7 @@ func getAndSetFvRsProvAttributes(ctx context.Context, diags *diag.Diagnostics, c
 					data.MatchT = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "prio" {
-					data.Prio = customTypes.NewFvRsProvprioStringValue(attributeValue.(string))
+					data.Prio = customTypes.NewFvRsProvPrioStringValue(attributeValue.(string))
 				}
 				if attributeName == "tnVzBrCPName" {
 					data.TnVzBrCPName = basetypes.NewStringValue(attributeValue.(string))

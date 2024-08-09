@@ -49,7 +49,7 @@ type MgmtRsOoBConsResourceModel struct {
 	Id              types.String                             `tfsdk:"id"`
 	ParentDn        types.String                             `tfsdk:"parent_dn"`
 	Annotation      types.String                             `tfsdk:"annotation"`
-	Prio            customTypes.MgmtRsOoBConsprioStringValue `tfsdk:"priority"`
+	Prio            customTypes.MgmtRsOoBConsPrioStringValue `tfsdk:"priority"`
 	TnVzOOBBrCPName types.String                             `tfsdk:"out_of_band_contract_name"`
 	TagAnnotation   types.Set                                `tfsdk:"annotations"`
 	TagTag          types.Set                                `tfsdk:"tags"`
@@ -60,7 +60,7 @@ func getEmptyMgmtRsOoBConsResourceModel() *MgmtRsOoBConsResourceModel {
 		Id:              basetypes.NewStringNull(),
 		ParentDn:        basetypes.NewStringNull(),
 		Annotation:      basetypes.NewStringNull(),
-		Prio:            basetypes.NewStringNull(),
+		Prio:            customTypes.NewMgmtRsOoBConsPrioStringNull(),
 		TnVzOOBBrCPName: basetypes.NewStringNull(),
 		TagAnnotation: types.SetNull(types.ObjectType{
 			AttrTypes: map[string]attr.Type{
@@ -171,7 +171,7 @@ func (r *MgmtRsOoBConsResource) Schema(ctx context.Context, req resource.SchemaR
 				MarkdownDescription: `The annotation of the Relation To Consumed Out Of Band Contract object.`,
 			},
 			"priority": schema.StringAttribute{
-				CustomType: customTypes.MgmtRsOoBConsprioStringType{},
+				CustomType: customTypes.MgmtRsOoBConsPrioStringType{},
 				Optional:   true,
 				Computed:   true,
 				PlanModifiers: []planmodifier.String{
@@ -451,7 +451,7 @@ func getAndSetMgmtRsOoBConsAttributes(ctx context.Context, diags *diag.Diagnosti
 					data.Annotation = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "prio" {
-					data.Prio = customTypes.NewMgmtRsOoBConsprioStringValue(attributeValue.(string))
+					data.Prio = customTypes.NewMgmtRsOoBConsPrioStringValue(attributeValue.(string))
 				}
 				if attributeName == "tnVzOOBBrCPName" {
 					data.TnVzOOBBrCPName = basetypes.NewStringValue(attributeValue.(string))

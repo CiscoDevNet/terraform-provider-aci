@@ -10,16 +10,16 @@ import (
 	"github.com/hashicorp/terraform-plugin-go/tftypes"
 )
 
-// MgmtRsOoBConsprio custom string type.
+// MgmtRsOoBConsPrio custom string type.
 
-var _ basetypes.StringTypable = MgmtRsOoBConsprioStringType{}
+var _ basetypes.StringTypable = MgmtRsOoBConsPrioStringType{}
 
-type MgmtRsOoBConsprioStringType struct {
+type MgmtRsOoBConsPrioStringType struct {
 	basetypes.StringType
 }
 
-func (t MgmtRsOoBConsprioStringType) Equal(o attr.Type) bool {
-	other, ok := o.(MgmtRsOoBConsprioStringType)
+func (t MgmtRsOoBConsPrioStringType) Equal(o attr.Type) bool {
+	other, ok := o.(MgmtRsOoBConsPrioStringType)
 
 	if !ok {
 		return false
@@ -28,19 +28,19 @@ func (t MgmtRsOoBConsprioStringType) Equal(o attr.Type) bool {
 	return t.StringType.Equal(other.StringType)
 }
 
-func (t MgmtRsOoBConsprioStringType) String() string {
-	return "MgmtRsOoBConsprioStringType"
+func (t MgmtRsOoBConsPrioStringType) String() string {
+	return "MgmtRsOoBConsPrioStringType"
 }
 
-func (t MgmtRsOoBConsprioStringType) ValueFromString(ctx context.Context, in basetypes.StringValue) (basetypes.StringValuable, diag.Diagnostics) {
-	value := MgmtRsOoBConsprioStringValue{
+func (t MgmtRsOoBConsPrioStringType) ValueFromString(ctx context.Context, in basetypes.StringValue) (basetypes.StringValuable, diag.Diagnostics) {
+	value := MgmtRsOoBConsPrioStringValue{
 		StringValue: in,
 	}
 
 	return value, nil
 }
 
-func (t MgmtRsOoBConsprioStringType) ValueFromTerraform(ctx context.Context, in tftypes.Value) (attr.Value, error) {
+func (t MgmtRsOoBConsPrioStringType) ValueFromTerraform(ctx context.Context, in tftypes.Value) (attr.Value, error) {
 	attrValue, err := t.StringType.ValueFromTerraform(ctx, in)
 
 	if err != nil {
@@ -62,20 +62,20 @@ func (t MgmtRsOoBConsprioStringType) ValueFromTerraform(ctx context.Context, in 
 	return stringValuable, nil
 }
 
-func (t MgmtRsOoBConsprioStringType) ValueType(ctx context.Context) attr.Value {
-	return MgmtRsOoBConsprioStringValue{}
+func (t MgmtRsOoBConsPrioStringType) ValueType(ctx context.Context) attr.Value {
+	return MgmtRsOoBConsPrioStringValue{}
 }
 
-// MgmtRsOoBConsprio custom string value.
+// MgmtRsOoBConsPrio custom string value.
 
-var _ basetypes.StringValuableWithSemanticEquals = MgmtRsOoBConsprioStringValue{}
+var _ basetypes.StringValuableWithSemanticEquals = MgmtRsOoBConsPrioStringValue{}
 
-type MgmtRsOoBConsprioStringValue struct {
+type MgmtRsOoBConsPrioStringValue struct {
 	basetypes.StringValue
 }
 
-func (v MgmtRsOoBConsprioStringValue) Equal(o attr.Value) bool {
-	other, ok := o.(MgmtRsOoBConsprioStringValue)
+func (v MgmtRsOoBConsPrioStringValue) Equal(o attr.Value) bool {
+	other, ok := o.(MgmtRsOoBConsPrioStringValue)
 
 	if !ok {
 		return false
@@ -84,14 +84,14 @@ func (v MgmtRsOoBConsprioStringValue) Equal(o attr.Value) bool {
 	return v.StringValue.Equal(other.StringValue)
 }
 
-func (v MgmtRsOoBConsprioStringValue) Type(ctx context.Context) attr.Type {
-	return MgmtRsOoBConsprioStringType{}
+func (v MgmtRsOoBConsPrioStringValue) Type(ctx context.Context) attr.Type {
+	return MgmtRsOoBConsPrioStringType{}
 }
 
-func (v MgmtRsOoBConsprioStringValue) StringSemanticEquals(ctx context.Context, newValuable basetypes.StringValuable) (bool, diag.Diagnostics) {
+func (v MgmtRsOoBConsPrioStringValue) StringSemanticEquals(ctx context.Context, newValuable basetypes.StringValuable) (bool, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
-	newValue, ok := newValuable.(MgmtRsOoBConsprioStringValue)
+	newValue, ok := newValuable.(MgmtRsOoBConsPrioStringValue)
 
 	if !ok {
 		diags.AddError(
@@ -105,14 +105,14 @@ func (v MgmtRsOoBConsprioStringValue) StringSemanticEquals(ctx context.Context, 
 		return false, diags
 	}
 
-	priorMappedValue := MgmtRsOoBConsprioValueMap(v.StringValue)
+	priorMappedValue := MgmtRsOoBConsPrioValueMap(v.StringValue)
 
-	newMappedValue := MgmtRsOoBConsprioValueMap(newValue.StringValue)
+	newMappedValue := MgmtRsOoBConsPrioValueMap(newValue.StringValue)
 
 	return priorMappedValue.Equal(newMappedValue), diags
 }
 
-func MgmtRsOoBConsprioValueMap(value basetypes.StringValue) basetypes.StringValue {
+func MgmtRsOoBConsPrioValueMap(value basetypes.StringValue) basetypes.StringValue {
 	matchMap := map[string]string{
 		"0": "unspecified",
 		"1": "level3",
@@ -130,26 +130,26 @@ func MgmtRsOoBConsprioValueMap(value basetypes.StringValue) basetypes.StringValu
 	return value
 }
 
-func NewMgmtRsOoBConsprioStringNull() MgmtRsOoBConsprioStringValue {
-	return MgmtRsOoBConsprioStringValue{
+func NewMgmtRsOoBConsPrioStringNull() MgmtRsOoBConsPrioStringValue {
+	return MgmtRsOoBConsPrioStringValue{
 		StringValue: basetypes.NewStringNull(),
 	}
 }
 
-func NewMgmtRsOoBConsprioStringUnknown() MgmtRsOoBConsprioStringValue {
-	return MgmtRsOoBConsprioStringValue{
+func NewMgmtRsOoBConsPrioStringUnknown() MgmtRsOoBConsPrioStringValue {
+	return MgmtRsOoBConsPrioStringValue{
 		StringValue: basetypes.NewStringUnknown(),
 	}
 }
 
-func NewMgmtRsOoBConsprioStringValue(value string) MgmtRsOoBConsprioStringValue {
-	return MgmtRsOoBConsprioStringValue{
+func NewMgmtRsOoBConsPrioStringValue(value string) MgmtRsOoBConsPrioStringValue {
+	return MgmtRsOoBConsPrioStringValue{
 		StringValue: basetypes.NewStringValue(value),
 	}
 }
 
-func NewMgmtRsOoBConsprioStringPointerValue(value *string) MgmtRsOoBConsprioStringValue {
-	return MgmtRsOoBConsprioStringValue{
+func NewMgmtRsOoBConsPrioStringPointerValue(value *string) MgmtRsOoBConsPrioStringValue {
+	return MgmtRsOoBConsPrioStringValue{
 		StringValue: basetypes.NewStringPointerValue(value),
 	}
 }

@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
@@ -208,6 +209,7 @@ func (d *FvAEPgDataSource) Schema(ctx context.Context, req datasource.SchemaRequ
 				MarkdownDescription: `Parameter used to determine whether the EPG is part of the preferred group. Members of this group are allowed to communicate without contracts.`,
 			},
 			"priority": schema.StringAttribute{
+				CustomType:          customTypes.FvAEPgPrioStringType{},
 				Computed:            true,
 				MarkdownDescription: `The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.`,
 			},
@@ -301,6 +303,7 @@ func (d *FvAEPgDataSource) Schema(ctx context.Context, req datasource.SchemaRequ
 							MarkdownDescription: `The annotation of the Relation To Consumed Contract object.`,
 						},
 						"priority": schema.StringAttribute{
+							CustomType:          customTypes.FvRsConsPrioStringType{},
 							Computed:            true,
 							MarkdownDescription: `The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.`,
 						},
@@ -321,6 +324,7 @@ func (d *FvAEPgDataSource) Schema(ctx context.Context, req datasource.SchemaRequ
 							MarkdownDescription: `The annotation of the Relation To Imported Contract object.`,
 						},
 						"priority": schema.StringAttribute{
+							CustomType:          customTypes.FvRsConsIfPrioStringType{},
 							Computed:            true,
 							MarkdownDescription: `The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.`,
 						},
@@ -624,6 +628,7 @@ func (d *FvAEPgDataSource) Schema(ctx context.Context, req datasource.SchemaRequ
 							MarkdownDescription: `The provider label match criteria.`,
 						},
 						"priority": schema.StringAttribute{
+							CustomType:          customTypes.FvRsProvPrioStringType{},
 							Computed:            true,
 							MarkdownDescription: `The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.`,
 						},

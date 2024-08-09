@@ -51,7 +51,7 @@ type MgmtInstPResourceModel struct {
 	Descr         types.String                         `tfsdk:"description"`
 	Name          types.String                         `tfsdk:"name"`
 	NameAlias     types.String                         `tfsdk:"name_alias"`
-	Prio          customTypes.MgmtInstPprioStringValue `tfsdk:"priority"`
+	Prio          customTypes.MgmtInstPPrioStringValue `tfsdk:"priority"`
 	MgmtRsOoBCons types.Set                            `tfsdk:"relation_to_consumed_out_of_band_contracts"`
 	TagAnnotation types.Set                            `tfsdk:"annotations"`
 	TagTag        types.Set                            `tfsdk:"tags"`
@@ -64,7 +64,7 @@ func getEmptyMgmtInstPResourceModel() *MgmtInstPResourceModel {
 		Descr:      basetypes.NewStringNull(),
 		Name:       basetypes.NewStringNull(),
 		NameAlias:  basetypes.NewStringNull(),
-		Prio:       basetypes.NewStringNull(),
+		Prio:       customTypes.NewMgmtInstPPrioStringNull(),
 		MgmtRsOoBCons: types.SetNull(types.ObjectType{
 			AttrTypes: map[string]attr.Type{
 				"annotation":                types.StringType,
@@ -90,14 +90,14 @@ func getEmptyMgmtInstPResourceModel() *MgmtInstPResourceModel {
 // MgmtRsOoBConsMgmtInstPResourceModel describes the resource data model for the children without relation ships.
 type MgmtRsOoBConsMgmtInstPResourceModel struct {
 	Annotation      types.String                             `tfsdk:"annotation"`
-	Prio            customTypes.MgmtRsOoBConsprioStringValue `tfsdk:"priority"`
+	Prio            customTypes.MgmtRsOoBConsPrioStringValue `tfsdk:"priority"`
 	TnVzOOBBrCPName types.String                             `tfsdk:"out_of_band_contract_name"`
 }
 
 func getEmptyMgmtRsOoBConsMgmtInstPResourceModel() MgmtRsOoBConsMgmtInstPResourceModel {
 	return MgmtRsOoBConsMgmtInstPResourceModel{
 		Annotation:      basetypes.NewStringNull(),
-		Prio:            basetypes.NewStringNull(),
+		Prio:            customTypes.NewMgmtRsOoBConsPrioStringNull(),
 		TnVzOOBBrCPName: basetypes.NewStringNull(),
 	}
 }
@@ -215,7 +215,7 @@ func (r *MgmtInstPResource) Schema(ctx context.Context, req resource.SchemaReque
 				MarkdownDescription: `The name alias of the External Management Network Instance Profile object.`,
 			},
 			"priority": schema.StringAttribute{
-				CustomType: customTypes.MgmtInstPprioStringType{},
+				CustomType: customTypes.MgmtInstPPrioStringType{},
 				Optional:   true,
 				Computed:   true,
 				PlanModifiers: []planmodifier.String{
@@ -248,7 +248,7 @@ func (r *MgmtInstPResource) Schema(ctx context.Context, req resource.SchemaReque
 							MarkdownDescription: `The annotation of the Relation To Consumed Out Of Band Contract object.`,
 						},
 						"priority": schema.StringAttribute{
-							CustomType: customTypes.MgmtRsOoBConsprioStringType{},
+							CustomType: customTypes.MgmtRsOoBConsPrioStringType{},
 							Optional:   true,
 							Computed:   true,
 							PlanModifiers: []planmodifier.String{
@@ -542,7 +542,7 @@ func getAndSetMgmtInstPAttributes(ctx context.Context, diags *diag.Diagnostics, 
 					data.NameAlias = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "prio" {
-					data.Prio = customTypes.NewMgmtInstPprioStringValue(attributeValue.(string))
+					data.Prio = customTypes.NewMgmtInstPPrioStringValue(attributeValue.(string))
 				}
 			}
 			MgmtRsOoBConsMgmtInstPList := make([]MgmtRsOoBConsMgmtInstPResourceModel, 0)
@@ -561,7 +561,7 @@ func getAndSetMgmtInstPAttributes(ctx context.Context, diags *diag.Diagnostics, 
 									MgmtRsOoBConsMgmtInstP.Annotation = basetypes.NewStringValue(childAttributeValue.(string))
 								}
 								if childAttributeName == "prio" {
-									MgmtRsOoBConsMgmtInstP.Prio = customTypes.NewMgmtRsOoBConsprioStringValue(childAttributeValue.(string))
+									MgmtRsOoBConsMgmtInstP.Prio = customTypes.NewMgmtRsOoBConsPrioStringValue(childAttributeValue.(string))
 								}
 								if childAttributeName == "tnVzOOBBrCPName" {
 									MgmtRsOoBConsMgmtInstP.TnVzOOBBrCPName = basetypes.NewStringValue(childAttributeValue.(string))

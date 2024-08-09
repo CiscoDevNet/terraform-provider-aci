@@ -11,6 +11,8 @@ import (
 	"reflect"
 	"strings"
 
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/validators"
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
@@ -44,37 +46,37 @@ type QosDppPolResource struct {
 
 // QosDppPolResourceModel describes the resource data model.
 type QosDppPolResourceModel struct {
-	Id              types.String `tfsdk:"id"`
-	ParentDn        types.String `tfsdk:"parent_dn"`
-	AdminSt         types.String `tfsdk:"admin_state"`
-	Annotation      types.String `tfsdk:"annotation"`
-	Be              types.String `tfsdk:"excessive_burst"`
-	BeUnit          types.String `tfsdk:"excessive_burst_unit"`
-	Burst           types.String `tfsdk:"burst"`
-	BurstUnit       types.String `tfsdk:"burst_unit"`
-	ConformAction   types.String `tfsdk:"conform_action"`
-	ConformMarkCos  types.String `tfsdk:"conform_mark_cos"`
-	ConformMarkDscp types.String `tfsdk:"conform_mark_dscp"`
-	Descr           types.String `tfsdk:"description"`
-	ExceedAction    types.String `tfsdk:"exceed_action"`
-	ExceedMarkCos   types.String `tfsdk:"exceed_mark_cos"`
-	ExceedMarkDscp  types.String `tfsdk:"exceed_mark_dscp"`
-	Mode            types.String `tfsdk:"mode"`
-	Name            types.String `tfsdk:"name"`
-	NameAlias       types.String `tfsdk:"name_alias"`
-	OwnerKey        types.String `tfsdk:"owner_key"`
-	OwnerTag        types.String `tfsdk:"owner_tag"`
-	Pir             types.String `tfsdk:"peak_rate"`
-	PirUnit         types.String `tfsdk:"peak_rate_unit"`
-	Rate            types.String `tfsdk:"rate"`
-	RateUnit        types.String `tfsdk:"rate_unit"`
-	SharingMode     types.String `tfsdk:"sharing_mode"`
-	Type            types.String `tfsdk:"type"`
-	ViolateAction   types.String `tfsdk:"violate_action"`
-	ViolateMarkCos  types.String `tfsdk:"violate_mark_cos"`
-	ViolateMarkDscp types.String `tfsdk:"violate_mark_dscp"`
-	TagAnnotation   types.Set    `tfsdk:"annotations"`
-	TagTag          types.Set    `tfsdk:"tags"`
+	Id              types.String                                    `tfsdk:"id"`
+	ParentDn        types.String                                    `tfsdk:"parent_dn"`
+	AdminSt         types.String                                    `tfsdk:"admin_state"`
+	Annotation      types.String                                    `tfsdk:"annotation"`
+	Be              customTypes.QosDppPolBeStringValue              `tfsdk:"excessive_burst"`
+	BeUnit          types.String                                    `tfsdk:"excessive_burst_unit"`
+	Burst           customTypes.QosDppPolBurstStringValue           `tfsdk:"burst"`
+	BurstUnit       types.String                                    `tfsdk:"burst_unit"`
+	ConformAction   types.String                                    `tfsdk:"conform_action"`
+	ConformMarkCos  customTypes.QosDppPolConformMarkCosStringValue  `tfsdk:"conform_mark_cos"`
+	ConformMarkDscp customTypes.QosDppPolConformMarkDscpStringValue `tfsdk:"conform_mark_dscp"`
+	Descr           types.String                                    `tfsdk:"description"`
+	ExceedAction    types.String                                    `tfsdk:"exceed_action"`
+	ExceedMarkCos   customTypes.QosDppPolExceedMarkCosStringValue   `tfsdk:"exceed_mark_cos"`
+	ExceedMarkDscp  customTypes.QosDppPolExceedMarkDscpStringValue  `tfsdk:"exceed_mark_dscp"`
+	Mode            types.String                                    `tfsdk:"mode"`
+	Name            types.String                                    `tfsdk:"name"`
+	NameAlias       types.String                                    `tfsdk:"name_alias"`
+	OwnerKey        types.String                                    `tfsdk:"owner_key"`
+	OwnerTag        types.String                                    `tfsdk:"owner_tag"`
+	Pir             types.String                                    `tfsdk:"peak_rate"`
+	PirUnit         types.String                                    `tfsdk:"peak_rate_unit"`
+	Rate            types.String                                    `tfsdk:"rate"`
+	RateUnit        types.String                                    `tfsdk:"rate_unit"`
+	SharingMode     types.String                                    `tfsdk:"sharing_mode"`
+	Type            types.String                                    `tfsdk:"type"`
+	ViolateAction   types.String                                    `tfsdk:"violate_action"`
+	ViolateMarkCos  customTypes.QosDppPolViolateMarkCosStringValue  `tfsdk:"violate_mark_cos"`
+	ViolateMarkDscp customTypes.QosDppPolViolateMarkDscpStringValue `tfsdk:"violate_mark_dscp"`
+	TagAnnotation   types.Set                                       `tfsdk:"annotations"`
+	TagTag          types.Set                                       `tfsdk:"tags"`
 }
 
 func getEmptyQosDppPolResourceModel() *QosDppPolResourceModel {
@@ -83,17 +85,17 @@ func getEmptyQosDppPolResourceModel() *QosDppPolResourceModel {
 		ParentDn:        basetypes.NewStringNull(),
 		AdminSt:         basetypes.NewStringNull(),
 		Annotation:      basetypes.NewStringNull(),
-		Be:              basetypes.NewStringNull(),
+		Be:              customTypes.NewQosDppPolBeStringNull(),
 		BeUnit:          basetypes.NewStringNull(),
-		Burst:           basetypes.NewStringNull(),
+		Burst:           customTypes.NewQosDppPolBurstStringNull(),
 		BurstUnit:       basetypes.NewStringNull(),
 		ConformAction:   basetypes.NewStringNull(),
-		ConformMarkCos:  basetypes.NewStringNull(),
-		ConformMarkDscp: basetypes.NewStringNull(),
+		ConformMarkCos:  customTypes.NewQosDppPolConformMarkCosStringNull(),
+		ConformMarkDscp: customTypes.NewQosDppPolConformMarkDscpStringNull(),
 		Descr:           basetypes.NewStringNull(),
 		ExceedAction:    basetypes.NewStringNull(),
-		ExceedMarkCos:   basetypes.NewStringNull(),
-		ExceedMarkDscp:  basetypes.NewStringNull(),
+		ExceedMarkCos:   customTypes.NewQosDppPolExceedMarkCosStringNull(),
+		ExceedMarkDscp:  customTypes.NewQosDppPolExceedMarkDscpStringNull(),
 		Mode:            basetypes.NewStringNull(),
 		Name:            basetypes.NewStringNull(),
 		NameAlias:       basetypes.NewStringNull(),
@@ -106,8 +108,8 @@ func getEmptyQosDppPolResourceModel() *QosDppPolResourceModel {
 		SharingMode:     basetypes.NewStringNull(),
 		Type:            basetypes.NewStringNull(),
 		ViolateAction:   basetypes.NewStringNull(),
-		ViolateMarkCos:  basetypes.NewStringNull(),
-		ViolateMarkDscp: basetypes.NewStringNull(),
+		ViolateMarkCos:  customTypes.NewQosDppPolViolateMarkCosStringNull(),
+		ViolateMarkDscp: customTypes.NewQosDppPolViolateMarkDscpStringNull(),
 		TagAnnotation: types.SetNull(types.ObjectType{
 			AttrTypes: map[string]attr.Type{
 				"key":   types.StringType,
@@ -231,14 +233,18 @@ func (r *QosDppPolResource) Schema(ctx context.Context, req resource.SchemaReque
 				MarkdownDescription: `The annotation of the Data Plane Policing Policy object.`,
 			},
 			"excessive_burst": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
+				CustomType: customTypes.QosDppPolBeStringType{},
+				Optional:   true,
+				Computed:   true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
-					stringvalidator.OneOf("unspecified"),
+					stringvalidator.Any(
+						stringvalidator.OneOf("unspecified"),
+						validators.InBetweenFromString(0, 5.4975581376e+11),
+					),
 				},
 				MarkdownDescription: `The excessive burst size of the Data Plane Policing Policy object. Only applicable for 2R3C policer.`,
 			},
@@ -255,14 +261,18 @@ func (r *QosDppPolResource) Schema(ctx context.Context, req resource.SchemaReque
 				MarkdownDescription: `The excessive burst size unit of the Data Plane Policing Policy object. Only applicable for 2R3C policer.`,
 			},
 			"burst": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
+				CustomType: customTypes.QosDppPolBurstStringType{},
+				Optional:   true,
+				Computed:   true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
-					stringvalidator.OneOf("unspecified"),
+					stringvalidator.Any(
+						stringvalidator.OneOf("unspecified"),
+						validators.InBetweenFromString(0, 5.4975581376e+11),
+					),
 				},
 				MarkdownDescription: `The burst size of the Data Plane Policing Policy object.`,
 			},
@@ -291,26 +301,34 @@ func (r *QosDppPolResource) Schema(ctx context.Context, req resource.SchemaReque
 				MarkdownDescription: `The conform action of the Data Plane Policing Policy object.`,
 			},
 			"conform_mark_cos": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
+				CustomType: customTypes.QosDppPolConformMarkCosStringType{},
+				Optional:   true,
+				Computed:   true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
-					stringvalidator.OneOf("unspecified"),
+					stringvalidator.Any(
+						stringvalidator.OneOf("unspecified"),
+						validators.InBetweenFromString(0, 7),
+					),
 				},
 				MarkdownDescription: `The conform mark class of service (CoS) of the Data Plane Policing Policy object.`,
 			},
 			"conform_mark_dscp": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
+				CustomType: customTypes.QosDppPolConformMarkDscpStringType{},
+				Optional:   true,
+				Computed:   true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
-					stringvalidator.OneOf("unspecified"),
+					stringvalidator.Any(
+						stringvalidator.OneOf("unspecified"),
+						validators.InBetweenFromString(0, 63),
+					),
 				},
 				MarkdownDescription: `The conform mark differentiated services code point (DSCP) of the Data Plane Policing Policy object.`,
 			},
@@ -336,26 +354,34 @@ func (r *QosDppPolResource) Schema(ctx context.Context, req resource.SchemaReque
 				MarkdownDescription: `The exceed action of the Data Plane Policing Policy object.`,
 			},
 			"exceed_mark_cos": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
+				CustomType: customTypes.QosDppPolExceedMarkCosStringType{},
+				Optional:   true,
+				Computed:   true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
-					stringvalidator.OneOf("unspecified"),
+					stringvalidator.Any(
+						stringvalidator.OneOf("unspecified"),
+						validators.InBetweenFromString(0, 7),
+					),
 				},
 				MarkdownDescription: `The exceed mark class of service (CoS) of the Data Plane Policing Policy object.`,
 			},
 			"exceed_mark_dscp": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
+				CustomType: customTypes.QosDppPolExceedMarkDscpStringType{},
+				Optional:   true,
+				Computed:   true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
-					stringvalidator.OneOf("unspecified"),
+					stringvalidator.Any(
+						stringvalidator.OneOf("unspecified"),
+						validators.InBetweenFromString(0, 63),
+					),
 				},
 				MarkdownDescription: `The exceed mark differentiated services code point (DSCP) of the Data Plane Policing Policy object.`,
 			},
@@ -486,26 +512,34 @@ func (r *QosDppPolResource) Schema(ctx context.Context, req resource.SchemaReque
 				MarkdownDescription: `The violate action of the Data Plane Policing Policy object.`,
 			},
 			"violate_mark_cos": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
+				CustomType: customTypes.QosDppPolViolateMarkCosStringType{},
+				Optional:   true,
+				Computed:   true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
-					stringvalidator.OneOf("unspecified"),
+					stringvalidator.Any(
+						stringvalidator.OneOf("unspecified"),
+						validators.InBetweenFromString(0, 7),
+					),
 				},
 				MarkdownDescription: `The violate mark class of service (CoS) of the Data Plane Policing Policy object.`,
 			},
 			"violate_mark_dscp": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
+				CustomType: customTypes.QosDppPolViolateMarkDscpStringType{},
+				Optional:   true,
+				Computed:   true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
-					stringvalidator.OneOf("unspecified"),
+					stringvalidator.Any(
+						stringvalidator.OneOf("unspecified"),
+						validators.InBetweenFromString(0, 63),
+					),
 				},
 				MarkdownDescription: `The violate mark differentiated services code point (DSCP) of the Data Plane Policing Policy object.`,
 			},
@@ -768,13 +802,13 @@ func getAndSetQosDppPolAttributes(ctx context.Context, diags *diag.Diagnostics, 
 					data.Annotation = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "be" {
-					data.Be = basetypes.NewStringValue(attributeValue.(string))
+					data.Be = customTypes.NewQosDppPolBeStringValue(attributeValue.(string))
 				}
 				if attributeName == "beUnit" {
 					data.BeUnit = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "burst" {
-					data.Burst = basetypes.NewStringValue(attributeValue.(string))
+					data.Burst = customTypes.NewQosDppPolBurstStringValue(attributeValue.(string))
 				}
 				if attributeName == "burstUnit" {
 					data.BurstUnit = basetypes.NewStringValue(attributeValue.(string))
@@ -783,10 +817,10 @@ func getAndSetQosDppPolAttributes(ctx context.Context, diags *diag.Diagnostics, 
 					data.ConformAction = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "conformMarkCos" {
-					data.ConformMarkCos = basetypes.NewStringValue(attributeValue.(string))
+					data.ConformMarkCos = customTypes.NewQosDppPolConformMarkCosStringValue(attributeValue.(string))
 				}
 				if attributeName == "conformMarkDscp" {
-					data.ConformMarkDscp = basetypes.NewStringValue(attributeValue.(string))
+					data.ConformMarkDscp = customTypes.NewQosDppPolConformMarkDscpStringValue(attributeValue.(string))
 				}
 				if attributeName == "descr" {
 					data.Descr = basetypes.NewStringValue(attributeValue.(string))
@@ -795,10 +829,10 @@ func getAndSetQosDppPolAttributes(ctx context.Context, diags *diag.Diagnostics, 
 					data.ExceedAction = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "exceedMarkCos" {
-					data.ExceedMarkCos = basetypes.NewStringValue(attributeValue.(string))
+					data.ExceedMarkCos = customTypes.NewQosDppPolExceedMarkCosStringValue(attributeValue.(string))
 				}
 				if attributeName == "exceedMarkDscp" {
-					data.ExceedMarkDscp = basetypes.NewStringValue(attributeValue.(string))
+					data.ExceedMarkDscp = customTypes.NewQosDppPolExceedMarkDscpStringValue(attributeValue.(string))
 				}
 				if attributeName == "mode" {
 					data.Mode = basetypes.NewStringValue(attributeValue.(string))
@@ -837,10 +871,10 @@ func getAndSetQosDppPolAttributes(ctx context.Context, diags *diag.Diagnostics, 
 					data.ViolateAction = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "violateMarkCos" {
-					data.ViolateMarkCos = basetypes.NewStringValue(attributeValue.(string))
+					data.ViolateMarkCos = customTypes.NewQosDppPolViolateMarkCosStringValue(attributeValue.(string))
 				}
 				if attributeName == "violateMarkDscp" {
-					data.ViolateMarkDscp = basetypes.NewStringValue(attributeValue.(string))
+					data.ViolateMarkDscp = customTypes.NewQosDppPolViolateMarkDscpStringValue(attributeValue.(string))
 				}
 			}
 			TagAnnotationQosDppPolList := make([]TagAnnotationQosDppPolResourceModel, 0)

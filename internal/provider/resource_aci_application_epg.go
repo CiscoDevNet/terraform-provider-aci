@@ -11,6 +11,8 @@ import (
 	"reflect"
 	"strings"
 
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/validators"
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework-validators/setvalidator"
@@ -45,66 +47,66 @@ type FvAEPgResource struct {
 
 // FvAEPgResourceModel describes the resource data model.
 type FvAEPgResourceModel struct {
-	Id                         types.String `tfsdk:"id"`
-	ParentDn                   types.String `tfsdk:"parent_dn"`
-	Annotation                 types.String `tfsdk:"annotation"`
-	Descr                      types.String `tfsdk:"description"`
-	ExceptionTag               types.String `tfsdk:"contract_exception_tag"`
-	FloodOnEncap               types.String `tfsdk:"flood_in_encapsulation"`
-	FwdCtrl                    types.String `tfsdk:"forwarding_control"`
-	HasMcastSource             types.String `tfsdk:"has_multicast_source"`
-	IsAttrBasedEPg             types.String `tfsdk:"useg_epg"`
-	MatchT                     types.String `tfsdk:"match_criteria"`
-	Name                       types.String `tfsdk:"name"`
-	NameAlias                  types.String `tfsdk:"name_alias"`
-	PcEnfPref                  types.String `tfsdk:"intra_epg_isolation"`
-	PcTag                      types.String `tfsdk:"pc_tag"`
-	PrefGrMemb                 types.String `tfsdk:"preferred_group_member"`
-	Prio                       types.String `tfsdk:"priority"`
-	Shutdown                   types.String `tfsdk:"admin_state"`
-	FvCrtrn                    types.Set    `tfsdk:"epg_useg_block_statement"`
-	FvRsAEPgMonPol             types.Set    `tfsdk:"relation_to_application_epg_monitoring_policy"`
-	FvRsBd                     types.Set    `tfsdk:"relation_to_bridge_domain"`
-	FvRsCons                   types.Set    `tfsdk:"relation_to_consumed_contracts"`
-	FvRsConsIf                 types.Set    `tfsdk:"relation_to_imported_contracts"`
-	FvRsCustQosPol             types.Set    `tfsdk:"relation_to_custom_qos_policy"`
-	FvRsDomAtt                 types.Set    `tfsdk:"relation_to_domains"`
-	FvRsDppPol                 types.Set    `tfsdk:"relation_to_data_plane_policing_policy"`
-	FvRsFcPathAtt              types.Set    `tfsdk:"relation_to_fibre_channel_paths"`
-	FvRsIntraEpg               types.Set    `tfsdk:"relation_to_intra_epg_contracts"`
-	FvRsNodeAtt                types.Set    `tfsdk:"relation_to_static_leafs"`
-	FvRsPathAtt                types.Set    `tfsdk:"relation_to_static_paths"`
-	FvRsProtBy                 types.Set    `tfsdk:"relation_to_taboo_contracts"`
-	FvRsProv                   types.Set    `tfsdk:"relation_to_provided_contracts"`
-	FvRsSecInherited           types.Set    `tfsdk:"relation_to_contract_masters"`
-	FvRsTrustCtrl              types.Set    `tfsdk:"relation_to_trust_control_policy"`
-	TagAnnotation              types.Set    `tfsdk:"annotations"`
-	TagTag                     types.Set    `tfsdk:"tags"`
-	DeprecatedExceptionTag     types.String `tfsdk:"exception_tag"`
-	DeprecatedFloodOnEncap     types.String `tfsdk:"flood_on_encap"`
-	DeprecatedFwdCtrl          types.String `tfsdk:"fwd_ctrl"`
-	DeprecatedHasMcastSource   types.String `tfsdk:"has_mcast_source"`
-	DeprecatedIsAttrBasedEPg   types.String `tfsdk:"is_attr_based_epg"`
-	DeprecatedMatchT           types.String `tfsdk:"match_t"`
-	DeprecatedParentDn         types.String `tfsdk:"application_profile_dn"`
-	DeprecatedPcEnfPref        types.String `tfsdk:"pc_enf_pref"`
-	DeprecatedPrefGrMemb       types.String `tfsdk:"pref_gr_memb"`
-	DeprecatedPrio             types.String `tfsdk:"prio"`
-	DeprecatedShutdown         types.String `tfsdk:"shutdown"`
-	DeprecatedFvRsAEPgMonPol   types.String `tfsdk:"relation_fv_rs_aepg_mon_pol"`
-	DeprecatedFvRsBd           types.String `tfsdk:"relation_fv_rs_bd"`
-	DeprecatedFvRsCons         types.Set    `tfsdk:"relation_fv_rs_cons"`
-	DeprecatedFvRsSecInherited types.Set    `tfsdk:"relation_fv_rs_sec_inherited"`
-	DeprecatedFvRsCustQosPol   types.String `tfsdk:"relation_fv_rs_cust_qos_pol"`
-	DeprecatedFvRsDppPol       types.String `tfsdk:"relation_fv_rs_dpp_pol"`
-	DeprecatedFvRsFcPathAtt    types.Set    `tfsdk:"relation_fv_rs_fc_path_att"`
-	DeprecatedFvRsConsIf       types.Set    `tfsdk:"relation_fv_rs_cons_if"`
-	DeprecatedFvRsIntraEpg     types.Set    `tfsdk:"relation_fv_rs_intra_epg"`
-	DeprecatedFvRsProv         types.Set    `tfsdk:"relation_fv_rs_prov"`
-	DeprecatedFvRsPathAtt      types.Set    `tfsdk:"relation_fv_rs_path_att"`
-	DeprecatedFvRsProtBy       types.Set    `tfsdk:"relation_fv_rs_prot_by"`
-	DeprecatedFvRsTrustCtrl    types.String `tfsdk:"relation_fv_rs_trust_ctrl"`
-	DeprecatedFvRsNodeAtt      types.Set    `tfsdk:"relation_fv_rs_node_att"`
+	Id                         types.String                      `tfsdk:"id"`
+	ParentDn                   types.String                      `tfsdk:"parent_dn"`
+	Annotation                 types.String                      `tfsdk:"annotation"`
+	Descr                      types.String                      `tfsdk:"description"`
+	ExceptionTag               types.String                      `tfsdk:"contract_exception_tag"`
+	FloodOnEncap               types.String                      `tfsdk:"flood_in_encapsulation"`
+	FwdCtrl                    types.String                      `tfsdk:"forwarding_control"`
+	HasMcastSource             types.String                      `tfsdk:"has_multicast_source"`
+	IsAttrBasedEPg             types.String                      `tfsdk:"useg_epg"`
+	MatchT                     types.String                      `tfsdk:"match_criteria"`
+	Name                       types.String                      `tfsdk:"name"`
+	NameAlias                  types.String                      `tfsdk:"name_alias"`
+	PcEnfPref                  types.String                      `tfsdk:"intra_epg_isolation"`
+	PcTag                      types.String                      `tfsdk:"pc_tag"`
+	PrefGrMemb                 types.String                      `tfsdk:"preferred_group_member"`
+	Prio                       customTypes.FvAEPgPrioStringValue `tfsdk:"priority"`
+	Shutdown                   types.String                      `tfsdk:"admin_state"`
+	FvCrtrn                    types.Set                         `tfsdk:"epg_useg_block_statement"`
+	FvRsAEPgMonPol             types.Set                         `tfsdk:"relation_to_application_epg_monitoring_policy"`
+	FvRsBd                     types.Set                         `tfsdk:"relation_to_bridge_domain"`
+	FvRsCons                   types.Set                         `tfsdk:"relation_to_consumed_contracts"`
+	FvRsConsIf                 types.Set                         `tfsdk:"relation_to_imported_contracts"`
+	FvRsCustQosPol             types.Set                         `tfsdk:"relation_to_custom_qos_policy"`
+	FvRsDomAtt                 types.Set                         `tfsdk:"relation_to_domains"`
+	FvRsDppPol                 types.Set                         `tfsdk:"relation_to_data_plane_policing_policy"`
+	FvRsFcPathAtt              types.Set                         `tfsdk:"relation_to_fibre_channel_paths"`
+	FvRsIntraEpg               types.Set                         `tfsdk:"relation_to_intra_epg_contracts"`
+	FvRsNodeAtt                types.Set                         `tfsdk:"relation_to_static_leafs"`
+	FvRsPathAtt                types.Set                         `tfsdk:"relation_to_static_paths"`
+	FvRsProtBy                 types.Set                         `tfsdk:"relation_to_taboo_contracts"`
+	FvRsProv                   types.Set                         `tfsdk:"relation_to_provided_contracts"`
+	FvRsSecInherited           types.Set                         `tfsdk:"relation_to_contract_masters"`
+	FvRsTrustCtrl              types.Set                         `tfsdk:"relation_to_trust_control_policy"`
+	TagAnnotation              types.Set                         `tfsdk:"annotations"`
+	TagTag                     types.Set                         `tfsdk:"tags"`
+	DeprecatedExceptionTag     types.String                      `tfsdk:"exception_tag"`
+	DeprecatedFloodOnEncap     types.String                      `tfsdk:"flood_on_encap"`
+	DeprecatedFwdCtrl          types.String                      `tfsdk:"fwd_ctrl"`
+	DeprecatedHasMcastSource   types.String                      `tfsdk:"has_mcast_source"`
+	DeprecatedIsAttrBasedEPg   types.String                      `tfsdk:"is_attr_based_epg"`
+	DeprecatedMatchT           types.String                      `tfsdk:"match_t"`
+	DeprecatedParentDn         types.String                      `tfsdk:"application_profile_dn"`
+	DeprecatedPcEnfPref        types.String                      `tfsdk:"pc_enf_pref"`
+	DeprecatedPrefGrMemb       types.String                      `tfsdk:"pref_gr_memb"`
+	DeprecatedPrio             types.String                      `tfsdk:"prio"`
+	DeprecatedShutdown         types.String                      `tfsdk:"shutdown"`
+	DeprecatedFvRsAEPgMonPol   types.String                      `tfsdk:"relation_fv_rs_aepg_mon_pol"`
+	DeprecatedFvRsBd           types.String                      `tfsdk:"relation_fv_rs_bd"`
+	DeprecatedFvRsCons         types.Set                         `tfsdk:"relation_fv_rs_cons"`
+	DeprecatedFvRsSecInherited types.Set                         `tfsdk:"relation_fv_rs_sec_inherited"`
+	DeprecatedFvRsCustQosPol   types.String                      `tfsdk:"relation_fv_rs_cust_qos_pol"`
+	DeprecatedFvRsDppPol       types.String                      `tfsdk:"relation_fv_rs_dpp_pol"`
+	DeprecatedFvRsFcPathAtt    types.Set                         `tfsdk:"relation_fv_rs_fc_path_att"`
+	DeprecatedFvRsConsIf       types.Set                         `tfsdk:"relation_fv_rs_cons_if"`
+	DeprecatedFvRsIntraEpg     types.Set                         `tfsdk:"relation_fv_rs_intra_epg"`
+	DeprecatedFvRsProv         types.Set                         `tfsdk:"relation_fv_rs_prov"`
+	DeprecatedFvRsPathAtt      types.Set                         `tfsdk:"relation_fv_rs_path_att"`
+	DeprecatedFvRsProtBy       types.Set                         `tfsdk:"relation_fv_rs_prot_by"`
+	DeprecatedFvRsTrustCtrl    types.String                      `tfsdk:"relation_fv_rs_trust_ctrl"`
+	DeprecatedFvRsNodeAtt      types.Set                         `tfsdk:"relation_fv_rs_node_att"`
 }
 
 func getEmptyFvAEPgResourceModel() *FvAEPgResourceModel {
@@ -124,7 +126,7 @@ func getEmptyFvAEPgResourceModel() *FvAEPgResourceModel {
 		PcEnfPref:      basetypes.NewStringNull(),
 		PcTag:          basetypes.NewStringNull(),
 		PrefGrMemb:     basetypes.NewStringNull(),
-		Prio:           basetypes.NewStringNull(),
+		Prio:           customTypes.NewFvAEPgPrioStringNull(),
 		Shutdown:       basetypes.NewStringNull(),
 		FvCrtrn: types.SetNull(types.ObjectType{
 			AttrTypes: map[string]attr.Type{
@@ -364,30 +366,30 @@ func getEmptyFvRsBdFvAEPgResourceModel() FvRsBdFvAEPgResourceModel {
 
 // FvRsConsFvAEPgResourceModel describes the resource data model for the children without relation ships.
 type FvRsConsFvAEPgResourceModel struct {
-	Annotation   types.String `tfsdk:"annotation"`
-	Prio         types.String `tfsdk:"priority"`
-	TnVzBrCPName types.String `tfsdk:"contract_name"`
+	Annotation   types.String                        `tfsdk:"annotation"`
+	Prio         customTypes.FvRsConsPrioStringValue `tfsdk:"priority"`
+	TnVzBrCPName types.String                        `tfsdk:"contract_name"`
 }
 
 func getEmptyFvRsConsFvAEPgResourceModel() FvRsConsFvAEPgResourceModel {
 	return FvRsConsFvAEPgResourceModel{
 		Annotation:   basetypes.NewStringNull(),
-		Prio:         basetypes.NewStringNull(),
+		Prio:         customTypes.NewFvRsConsPrioStringNull(),
 		TnVzBrCPName: basetypes.NewStringNull(),
 	}
 }
 
 // FvRsConsIfFvAEPgResourceModel describes the resource data model for the children without relation ships.
 type FvRsConsIfFvAEPgResourceModel struct {
-	Annotation   types.String `tfsdk:"annotation"`
-	Prio         types.String `tfsdk:"priority"`
-	TnVzCPIfName types.String `tfsdk:"imported_contract_name"`
+	Annotation   types.String                          `tfsdk:"annotation"`
+	Prio         customTypes.FvRsConsIfPrioStringValue `tfsdk:"priority"`
+	TnVzCPIfName types.String                          `tfsdk:"imported_contract_name"`
 }
 
 func getEmptyFvRsConsIfFvAEPgResourceModel() FvRsConsIfFvAEPgResourceModel {
 	return FvRsConsIfFvAEPgResourceModel{
 		Annotation:   basetypes.NewStringNull(),
-		Prio:         basetypes.NewStringNull(),
+		Prio:         customTypes.NewFvRsConsIfPrioStringNull(),
 		TnVzCPIfName: basetypes.NewStringNull(),
 	}
 }
@@ -570,17 +572,17 @@ func getEmptyFvRsProtByFvAEPgResourceModel() FvRsProtByFvAEPgResourceModel {
 
 // FvRsProvFvAEPgResourceModel describes the resource data model for the children without relation ships.
 type FvRsProvFvAEPgResourceModel struct {
-	Annotation   types.String `tfsdk:"annotation"`
-	MatchT       types.String `tfsdk:"match_criteria"`
-	Prio         types.String `tfsdk:"priority"`
-	TnVzBrCPName types.String `tfsdk:"contract_name"`
+	Annotation   types.String                        `tfsdk:"annotation"`
+	MatchT       types.String                        `tfsdk:"match_criteria"`
+	Prio         customTypes.FvRsProvPrioStringValue `tfsdk:"priority"`
+	TnVzBrCPName types.String                        `tfsdk:"contract_name"`
 }
 
 func getEmptyFvRsProvFvAEPgResourceModel() FvRsProvFvAEPgResourceModel {
 	return FvRsProvFvAEPgResourceModel{
 		Annotation:   basetypes.NewStringNull(),
 		MatchT:       basetypes.NewStringNull(),
-		Prio:         basetypes.NewStringNull(),
+		Prio:         customTypes.NewFvRsProvPrioStringNull(),
 		TnVzBrCPName: basetypes.NewStringNull(),
 	}
 }
@@ -917,7 +919,7 @@ func (r *FvAEPgResource) UpgradeState(ctx context.Context) map[int64]resource.St
 					PcEnfPref:                priorStateData.PcEnfPref,
 					PcTag:                    basetypes.NewStringNull(),
 					PrefGrMemb:               priorStateData.PrefGrMemb,
-					Prio:                     priorStateData.Prio,
+					Prio:                     customTypes.FvAEPgPrioStringValue{StringValue: priorStateData.Prio},
 					Shutdown:                 priorStateData.Shutdown,
 					DeprecatedExceptionTag:   priorStateData.ExceptionTag,
 					DeprecatedFloodOnEncap:   priorStateData.FloodOnEncap,
@@ -1593,9 +1595,9 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 		}
 
 		if !configData.Prio.IsNull() {
-			planData.DeprecatedPrio = configData.Prio
+			planData.DeprecatedPrio = configData.Prio.StringValue
 		} else if !configData.DeprecatedPrio.IsNull() {
-			planData.Prio = configData.DeprecatedPrio
+			planData.Prio = customTypes.FvAEPgPrioStringValue{StringValue: configData.DeprecatedPrio}
 		} else if stateData != nil { // used to replace use state for unknown
 			planData.DeprecatedPrio = stateData.DeprecatedPrio
 		}
@@ -1712,7 +1714,7 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 					FvRsCons.Prio = FvRsConsValue.Prio
 				} else {
 					FvRsCons.Annotation = planData.Annotation
-					FvRsCons.Prio = basetypes.NewStringValue("unspecified") // Default to default value from meta when not found
+					FvRsCons.Prio = customTypes.NewFvRsConsPrioStringValue("unspecified") // Default to default value from meta when not found
 				}
 				FvRsConsList = append(FvRsConsList, FvRsCons)
 			}
@@ -1969,7 +1971,7 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 					FvRsConsIf.Prio = FvRsConsIfValue.Prio
 				} else {
 					FvRsConsIf.Annotation = planData.Annotation
-					FvRsConsIf.Prio = basetypes.NewStringValue("unspecified") // Default to default value from meta when not found
+					FvRsConsIf.Prio = customTypes.NewFvRsConsIfPrioStringValue("unspecified") // Default to default value from meta when not found
 				}
 				FvRsConsIfList = append(FvRsConsIfList, FvRsConsIf)
 			}
@@ -2101,8 +2103,8 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 					FvRsProv.Prio = FvRsProvValue.Prio
 				} else {
 					FvRsProv.Annotation = planData.Annotation
-					FvRsProv.MatchT = basetypes.NewStringValue("AtleastOne") // Default to default value from meta when not found
-					FvRsProv.Prio = basetypes.NewStringValue("unspecified")  // Default to default value from meta when not found
+					FvRsProv.MatchT = basetypes.NewStringValue("AtleastOne")              // Default to default value from meta when not found
+					FvRsProv.Prio = customTypes.NewFvRsProvPrioStringValue("unspecified") // Default to default value from meta when not found
 				}
 				FvRsProvList = append(FvRsProvList, FvRsProv)
 			}
@@ -2747,14 +2749,18 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				MarkdownDescription: `Parameter used to determine whether the EPG is part of the preferred group. Members of this group are allowed to communicate without contracts.`,
 			},
 			"priority": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
+				CustomType: customTypes.FvAEPgPrioStringType{},
+				Optional:   true,
+				Computed:   true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
-					stringvalidator.OneOf("level1", "level2", "level3", "level4", "level5", "level6", "unspecified"),
+					stringvalidator.Any(
+						stringvalidator.OneOf("level1", "level2", "level3", "level4", "level5", "level6", "unspecified"),
+						validators.InBetweenFromString(0, 9),
+					),
 				},
 				MarkdownDescription: `The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.`,
 			},
@@ -2955,13 +2961,17 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							MarkdownDescription: `The annotation of the Relation To Consumed Contract object.`,
 						},
 						"priority": schema.StringAttribute{
-							Optional: true,
-							Computed: true,
+							CustomType: customTypes.FvRsConsPrioStringType{},
+							Optional:   true,
+							Computed:   true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
 							Validators: []validator.String{
-								stringvalidator.OneOf("level1", "level2", "level3", "level4", "level5", "level6", "unspecified"),
+								stringvalidator.Any(
+									stringvalidator.OneOf("level1", "level2", "level3", "level4", "level5", "level6", "unspecified"),
+									validators.InBetweenFromString(0, 9),
+								),
 							},
 							MarkdownDescription: `The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.`,
 						},
@@ -2998,13 +3008,17 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							MarkdownDescription: `The annotation of the Relation To Imported Contract object.`,
 						},
 						"priority": schema.StringAttribute{
-							Optional: true,
-							Computed: true,
+							CustomType: customTypes.FvRsConsIfPrioStringType{},
+							Optional:   true,
+							Computed:   true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
 							Validators: []validator.String{
-								stringvalidator.OneOf("level1", "level2", "level3", "level4", "level5", "level6", "unspecified"),
+								stringvalidator.Any(
+									stringvalidator.OneOf("level1", "level2", "level3", "level4", "level5", "level6", "unspecified"),
+									validators.InBetweenFromString(0, 9),
+								),
 							},
 							MarkdownDescription: `The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.`,
 						},
@@ -3683,13 +3697,17 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							MarkdownDescription: `The provider label match criteria.`,
 						},
 						"priority": schema.StringAttribute{
-							Optional: true,
-							Computed: true,
+							CustomType: customTypes.FvRsProvPrioStringType{},
+							Optional:   true,
+							Computed:   true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
 							Validators: []validator.String{
-								stringvalidator.OneOf("level1", "level2", "level3", "level4", "level5", "level6", "unspecified"),
+								stringvalidator.Any(
+									stringvalidator.OneOf("level1", "level2", "level3", "level4", "level5", "level6", "unspecified"),
+									validators.InBetweenFromString(0, 9),
+								),
 							},
 							MarkdownDescription: `The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.`,
 						},
@@ -4236,7 +4254,7 @@ func getAndSetFvAEPgAttributes(ctx context.Context, diags *diag.Diagnostics, cli
 					data.PrefGrMemb = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "prio" {
-					data.Prio = basetypes.NewStringValue(attributeValue.(string))
+					data.Prio = customTypes.NewFvAEPgPrioStringValue(attributeValue.(string))
 				}
 				if attributeName == "shutdown" {
 					data.Shutdown = basetypes.NewStringValue(attributeValue.(string))
@@ -4330,7 +4348,7 @@ func getAndSetFvAEPgAttributes(ctx context.Context, diags *diag.Diagnostics, cli
 									FvRsConsFvAEPg.Annotation = basetypes.NewStringValue(childAttributeValue.(string))
 								}
 								if childAttributeName == "prio" {
-									FvRsConsFvAEPg.Prio = basetypes.NewStringValue(childAttributeValue.(string))
+									FvRsConsFvAEPg.Prio = customTypes.NewFvRsConsPrioStringValue(childAttributeValue.(string))
 								}
 								if childAttributeName == "tnVzBrCPName" {
 									FvRsConsFvAEPg.TnVzBrCPName = basetypes.NewStringValue(childAttributeValue.(string))
@@ -4345,7 +4363,7 @@ func getAndSetFvAEPgAttributes(ctx context.Context, diags *diag.Diagnostics, cli
 									FvRsConsIfFvAEPg.Annotation = basetypes.NewStringValue(childAttributeValue.(string))
 								}
 								if childAttributeName == "prio" {
-									FvRsConsIfFvAEPg.Prio = basetypes.NewStringValue(childAttributeValue.(string))
+									FvRsConsIfFvAEPg.Prio = customTypes.NewFvRsConsIfPrioStringValue(childAttributeValue.(string))
 								}
 								if childAttributeName == "tnVzCPIfName" {
 									FvRsConsIfFvAEPg.TnVzCPIfName = basetypes.NewStringValue(childAttributeValue.(string))
@@ -4571,7 +4589,7 @@ func getAndSetFvAEPgAttributes(ctx context.Context, diags *diag.Diagnostics, cli
 									FvRsProvFvAEPg.MatchT = basetypes.NewStringValue(childAttributeValue.(string))
 								}
 								if childAttributeName == "prio" {
-									FvRsProvFvAEPg.Prio = basetypes.NewStringValue(childAttributeValue.(string))
+									FvRsProvFvAEPg.Prio = customTypes.NewFvRsProvPrioStringValue(childAttributeValue.(string))
 								}
 								if childAttributeName == "tnVzBrCPName" {
 									FvRsProvFvAEPg.TnVzBrCPName = basetypes.NewStringValue(childAttributeValue.(string))

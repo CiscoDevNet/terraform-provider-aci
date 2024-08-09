@@ -132,7 +132,7 @@ func (d *FvESgDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 							MarkdownDescription: `The annotation of the Relation To Consumed Contract object.`,
 						},
 						"priority": schema.StringAttribute{
-							CustomType:          customTypes.FvRsConsprioStringType{},
+							CustomType:          customTypes.FvRsConsPrioStringType{},
 							Computed:            true,
 							MarkdownDescription: `The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.`,
 						},
@@ -153,7 +153,7 @@ func (d *FvESgDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 							MarkdownDescription: `The annotation of the Relation To Imported Contract object.`,
 						},
 						"priority": schema.StringAttribute{
-							CustomType:          customTypes.FvRsConsIfprioStringType{},
+							CustomType:          customTypes.FvRsConsIfPrioStringType{},
 							Computed:            true,
 							MarkdownDescription: `The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.`,
 						},
@@ -198,7 +198,7 @@ func (d *FvESgDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 							MarkdownDescription: `The provider label match criteria.`,
 						},
 						"priority": schema.StringAttribute{
-							CustomType:          customTypes.FvRsProvprioStringType{},
+							CustomType:          customTypes.FvRsProvPrioStringType{},
 							Computed:            true,
 							MarkdownDescription: `The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.`,
 						},

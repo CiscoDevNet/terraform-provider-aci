@@ -59,7 +59,7 @@ func (d *NetflowExporterPolDataSource) Schema(ctx context.Context, req datasourc
 				MarkdownDescription: `The description of the Netflow Exporter Policy object.`,
 			},
 			"dscp": schema.StringAttribute{
-				CustomType:          customTypes.NetflowExporterPoldscpStringType{},
+				CustomType:          customTypes.NetflowExporterPolDscpStringType{},
 				Computed:            true,
 				MarkdownDescription: `The DSCP value of the Netflow Exporter Policy object.`,
 			},
@@ -68,7 +68,7 @@ func (d *NetflowExporterPolDataSource) Schema(ctx context.Context, req datasourc
 				MarkdownDescription: `The destination IP address of the remote node.`,
 			},
 			"destination_port": schema.StringAttribute{
-				CustomType:          customTypes.NetflowExporterPoldstPortStringType{},
+				CustomType:          customTypes.NetflowExporterPolDstPortStringType{},
 				Computed:            true,
 				MarkdownDescription: `The destination port of the remote node.`,
 			},

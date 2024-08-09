@@ -49,7 +49,7 @@ type FvRsConsResourceModel struct {
 	Id            types.String                        `tfsdk:"id"`
 	ParentDn      types.String                        `tfsdk:"parent_dn"`
 	Annotation    types.String                        `tfsdk:"annotation"`
-	Prio          customTypes.FvRsConsprioStringValue `tfsdk:"priority"`
+	Prio          customTypes.FvRsConsPrioStringValue `tfsdk:"priority"`
 	TnVzBrCPName  types.String                        `tfsdk:"contract_name"`
 	TagAnnotation types.Set                           `tfsdk:"annotations"`
 	TagTag        types.Set                           `tfsdk:"tags"`
@@ -60,7 +60,7 @@ func getEmptyFvRsConsResourceModel() *FvRsConsResourceModel {
 		Id:           basetypes.NewStringNull(),
 		ParentDn:     basetypes.NewStringNull(),
 		Annotation:   basetypes.NewStringNull(),
-		Prio:         basetypes.NewStringNull(),
+		Prio:         customTypes.NewFvRsConsPrioStringNull(),
 		TnVzBrCPName: basetypes.NewStringNull(),
 		TagAnnotation: types.SetNull(types.ObjectType{
 			AttrTypes: map[string]attr.Type{
@@ -171,7 +171,7 @@ func (r *FvRsConsResource) Schema(ctx context.Context, req resource.SchemaReques
 				MarkdownDescription: `The annotation of the Relation To Consumed Contract object.`,
 			},
 			"priority": schema.StringAttribute{
-				CustomType: customTypes.FvRsConsprioStringType{},
+				CustomType: customTypes.FvRsConsPrioStringType{},
 				Optional:   true,
 				Computed:   true,
 				PlanModifiers: []planmodifier.String{
@@ -451,7 +451,7 @@ func getAndSetFvRsConsAttributes(ctx context.Context, diags *diag.Diagnostics, c
 					data.Annotation = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "prio" {
-					data.Prio = customTypes.NewFvRsConsprioStringValue(attributeValue.(string))
+					data.Prio = customTypes.NewFvRsConsPrioStringValue(attributeValue.(string))
 				}
 				if attributeName == "tnVzBrCPName" {
 					data.TnVzBrCPName = basetypes.NewStringValue(attributeValue.(string))
