@@ -10,16 +10,16 @@ import (
 	"github.com/hashicorp/terraform-plugin-go/tftypes"
 )
 
-// NetflowExporterPoldscp custom string type.
+// NetflowExporterPolDscp custom string type.
 
-var _ basetypes.StringTypable = NetflowExporterPoldscpStringType{}
+var _ basetypes.StringTypable = NetflowExporterPolDscpStringType{}
 
-type NetflowExporterPoldscpStringType struct {
+type NetflowExporterPolDscpStringType struct {
 	basetypes.StringType
 }
 
-func (t NetflowExporterPoldscpStringType) Equal(o attr.Type) bool {
-	other, ok := o.(NetflowExporterPoldscpStringType)
+func (t NetflowExporterPolDscpStringType) Equal(o attr.Type) bool {
+	other, ok := o.(NetflowExporterPolDscpStringType)
 
 	if !ok {
 		return false
@@ -28,19 +28,19 @@ func (t NetflowExporterPoldscpStringType) Equal(o attr.Type) bool {
 	return t.StringType.Equal(other.StringType)
 }
 
-func (t NetflowExporterPoldscpStringType) String() string {
-	return "NetflowExporterPoldscpStringType"
+func (t NetflowExporterPolDscpStringType) String() string {
+	return "NetflowExporterPolDscpStringType"
 }
 
-func (t NetflowExporterPoldscpStringType) ValueFromString(ctx context.Context, in basetypes.StringValue) (basetypes.StringValuable, diag.Diagnostics) {
-	value := NetflowExporterPoldscpStringValue{
+func (t NetflowExporterPolDscpStringType) ValueFromString(ctx context.Context, in basetypes.StringValue) (basetypes.StringValuable, diag.Diagnostics) {
+	value := NetflowExporterPolDscpStringValue{
 		StringValue: in,
 	}
 
 	return value, nil
 }
 
-func (t NetflowExporterPoldscpStringType) ValueFromTerraform(ctx context.Context, in tftypes.Value) (attr.Value, error) {
+func (t NetflowExporterPolDscpStringType) ValueFromTerraform(ctx context.Context, in tftypes.Value) (attr.Value, error) {
 	attrValue, err := t.StringType.ValueFromTerraform(ctx, in)
 
 	if err != nil {
@@ -62,20 +62,20 @@ func (t NetflowExporterPoldscpStringType) ValueFromTerraform(ctx context.Context
 	return stringValuable, nil
 }
 
-func (t NetflowExporterPoldscpStringType) ValueType(ctx context.Context) attr.Value {
-	return NetflowExporterPoldscpStringValue{}
+func (t NetflowExporterPolDscpStringType) ValueType(ctx context.Context) attr.Value {
+	return NetflowExporterPolDscpStringValue{}
 }
 
-// NetflowExporterPoldscp custom string value.
+// NetflowExporterPolDscp custom string value.
 
-var _ basetypes.StringValuableWithSemanticEquals = NetflowExporterPoldscpStringValue{}
+var _ basetypes.StringValuableWithSemanticEquals = NetflowExporterPolDscpStringValue{}
 
-type NetflowExporterPoldscpStringValue struct {
+type NetflowExporterPolDscpStringValue struct {
 	basetypes.StringValue
 }
 
-func (v NetflowExporterPoldscpStringValue) Equal(o attr.Value) bool {
-	other, ok := o.(NetflowExporterPoldscpStringValue)
+func (v NetflowExporterPolDscpStringValue) Equal(o attr.Value) bool {
+	other, ok := o.(NetflowExporterPolDscpStringValue)
 
 	if !ok {
 		return false
@@ -84,14 +84,14 @@ func (v NetflowExporterPoldscpStringValue) Equal(o attr.Value) bool {
 	return v.StringValue.Equal(other.StringValue)
 }
 
-func (v NetflowExporterPoldscpStringValue) Type(ctx context.Context) attr.Type {
-	return NetflowExporterPoldscpStringType{}
+func (v NetflowExporterPolDscpStringValue) Type(ctx context.Context) attr.Type {
+	return NetflowExporterPolDscpStringType{}
 }
 
-func (v NetflowExporterPoldscpStringValue) StringSemanticEquals(ctx context.Context, newValuable basetypes.StringValuable) (bool, diag.Diagnostics) {
+func (v NetflowExporterPolDscpStringValue) StringSemanticEquals(ctx context.Context, newValuable basetypes.StringValuable) (bool, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
-	newValue, ok := newValuable.(NetflowExporterPoldscpStringValue)
+	newValue, ok := newValuable.(NetflowExporterPolDscpStringValue)
 
 	if !ok {
 		diags.AddError(
@@ -105,14 +105,14 @@ func (v NetflowExporterPoldscpStringValue) StringSemanticEquals(ctx context.Cont
 		return false, diags
 	}
 
-	priorMappedValue := NetflowExporterPoldscpValueMap(v.StringValue)
+	priorMappedValue := NetflowExporterPolDscpValueMap(v.StringValue)
 
-	newMappedValue := NetflowExporterPoldscpValueMap(newValue.StringValue)
+	newMappedValue := NetflowExporterPolDscpValueMap(newValue.StringValue)
 
 	return priorMappedValue.Equal(newMappedValue), diags
 }
 
-func NetflowExporterPoldscpValueMap(value basetypes.StringValue) basetypes.StringValue {
+func NetflowExporterPolDscpValueMap(value basetypes.StringValue) basetypes.StringValue {
 	matchMap := map[string]string{
 		"0":  "CS0",
 		"10": "AF11",
@@ -145,26 +145,26 @@ func NetflowExporterPoldscpValueMap(value basetypes.StringValue) basetypes.Strin
 	return value
 }
 
-func NewNetflowExporterPoldscpStringNull() NetflowExporterPoldscpStringValue {
-	return NetflowExporterPoldscpStringValue{
+func NewNetflowExporterPolDscpStringNull() NetflowExporterPolDscpStringValue {
+	return NetflowExporterPolDscpStringValue{
 		StringValue: basetypes.NewStringNull(),
 	}
 }
 
-func NewNetflowExporterPoldscpStringUnknown() NetflowExporterPoldscpStringValue {
-	return NetflowExporterPoldscpStringValue{
+func NewNetflowExporterPolDscpStringUnknown() NetflowExporterPolDscpStringValue {
+	return NetflowExporterPolDscpStringValue{
 		StringValue: basetypes.NewStringUnknown(),
 	}
 }
 
-func NewNetflowExporterPoldscpStringValue(value string) NetflowExporterPoldscpStringValue {
-	return NetflowExporterPoldscpStringValue{
+func NewNetflowExporterPolDscpStringValue(value string) NetflowExporterPolDscpStringValue {
+	return NetflowExporterPolDscpStringValue{
 		StringValue: basetypes.NewStringValue(value),
 	}
 }
 
-func NewNetflowExporterPoldscpStringPointerValue(value *string) NetflowExporterPoldscpStringValue {
-	return NetflowExporterPoldscpStringValue{
+func NewNetflowExporterPolDscpStringPointerValue(value *string) NetflowExporterPolDscpStringValue {
+	return NetflowExporterPolDscpStringValue{
 		StringValue: basetypes.NewStringPointerValue(value),
 	}
 }

@@ -10,16 +10,16 @@ import (
 	"github.com/hashicorp/terraform-plugin-go/tftypes"
 )
 
-// VzOOBBrCPprio custom string type.
+// VzOOBBrCPPrio custom string type.
 
-var _ basetypes.StringTypable = VzOOBBrCPprioStringType{}
+var _ basetypes.StringTypable = VzOOBBrCPPrioStringType{}
 
-type VzOOBBrCPprioStringType struct {
+type VzOOBBrCPPrioStringType struct {
 	basetypes.StringType
 }
 
-func (t VzOOBBrCPprioStringType) Equal(o attr.Type) bool {
-	other, ok := o.(VzOOBBrCPprioStringType)
+func (t VzOOBBrCPPrioStringType) Equal(o attr.Type) bool {
+	other, ok := o.(VzOOBBrCPPrioStringType)
 
 	if !ok {
 		return false
@@ -28,19 +28,19 @@ func (t VzOOBBrCPprioStringType) Equal(o attr.Type) bool {
 	return t.StringType.Equal(other.StringType)
 }
 
-func (t VzOOBBrCPprioStringType) String() string {
-	return "VzOOBBrCPprioStringType"
+func (t VzOOBBrCPPrioStringType) String() string {
+	return "VzOOBBrCPPrioStringType"
 }
 
-func (t VzOOBBrCPprioStringType) ValueFromString(ctx context.Context, in basetypes.StringValue) (basetypes.StringValuable, diag.Diagnostics) {
-	value := VzOOBBrCPprioStringValue{
+func (t VzOOBBrCPPrioStringType) ValueFromString(ctx context.Context, in basetypes.StringValue) (basetypes.StringValuable, diag.Diagnostics) {
+	value := VzOOBBrCPPrioStringValue{
 		StringValue: in,
 	}
 
 	return value, nil
 }
 
-func (t VzOOBBrCPprioStringType) ValueFromTerraform(ctx context.Context, in tftypes.Value) (attr.Value, error) {
+func (t VzOOBBrCPPrioStringType) ValueFromTerraform(ctx context.Context, in tftypes.Value) (attr.Value, error) {
 	attrValue, err := t.StringType.ValueFromTerraform(ctx, in)
 
 	if err != nil {
@@ -62,20 +62,20 @@ func (t VzOOBBrCPprioStringType) ValueFromTerraform(ctx context.Context, in tfty
 	return stringValuable, nil
 }
 
-func (t VzOOBBrCPprioStringType) ValueType(ctx context.Context) attr.Value {
-	return VzOOBBrCPprioStringValue{}
+func (t VzOOBBrCPPrioStringType) ValueType(ctx context.Context) attr.Value {
+	return VzOOBBrCPPrioStringValue{}
 }
 
-// VzOOBBrCPprio custom string value.
+// VzOOBBrCPPrio custom string value.
 
-var _ basetypes.StringValuableWithSemanticEquals = VzOOBBrCPprioStringValue{}
+var _ basetypes.StringValuableWithSemanticEquals = VzOOBBrCPPrioStringValue{}
 
-type VzOOBBrCPprioStringValue struct {
+type VzOOBBrCPPrioStringValue struct {
 	basetypes.StringValue
 }
 
-func (v VzOOBBrCPprioStringValue) Equal(o attr.Value) bool {
-	other, ok := o.(VzOOBBrCPprioStringValue)
+func (v VzOOBBrCPPrioStringValue) Equal(o attr.Value) bool {
+	other, ok := o.(VzOOBBrCPPrioStringValue)
 
 	if !ok {
 		return false
@@ -84,14 +84,14 @@ func (v VzOOBBrCPprioStringValue) Equal(o attr.Value) bool {
 	return v.StringValue.Equal(other.StringValue)
 }
 
-func (v VzOOBBrCPprioStringValue) Type(ctx context.Context) attr.Type {
-	return VzOOBBrCPprioStringType{}
+func (v VzOOBBrCPPrioStringValue) Type(ctx context.Context) attr.Type {
+	return VzOOBBrCPPrioStringType{}
 }
 
-func (v VzOOBBrCPprioStringValue) StringSemanticEquals(ctx context.Context, newValuable basetypes.StringValuable) (bool, diag.Diagnostics) {
+func (v VzOOBBrCPPrioStringValue) StringSemanticEquals(ctx context.Context, newValuable basetypes.StringValuable) (bool, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
-	newValue, ok := newValuable.(VzOOBBrCPprioStringValue)
+	newValue, ok := newValuable.(VzOOBBrCPPrioStringValue)
 
 	if !ok {
 		diags.AddError(
@@ -105,14 +105,14 @@ func (v VzOOBBrCPprioStringValue) StringSemanticEquals(ctx context.Context, newV
 		return false, diags
 	}
 
-	priorMappedValue := VzOOBBrCPprioValueMap(v.StringValue)
+	priorMappedValue := VzOOBBrCPPrioValueMap(v.StringValue)
 
-	newMappedValue := VzOOBBrCPprioValueMap(newValue.StringValue)
+	newMappedValue := VzOOBBrCPPrioValueMap(newValue.StringValue)
 
 	return priorMappedValue.Equal(newMappedValue), diags
 }
 
-func VzOOBBrCPprioValueMap(value basetypes.StringValue) basetypes.StringValue {
+func VzOOBBrCPPrioValueMap(value basetypes.StringValue) basetypes.StringValue {
 	matchMap := map[string]string{
 		"0": "unspecified",
 		"1": "level3",
@@ -130,26 +130,26 @@ func VzOOBBrCPprioValueMap(value basetypes.StringValue) basetypes.StringValue {
 	return value
 }
 
-func NewVzOOBBrCPprioStringNull() VzOOBBrCPprioStringValue {
-	return VzOOBBrCPprioStringValue{
+func NewVzOOBBrCPPrioStringNull() VzOOBBrCPPrioStringValue {
+	return VzOOBBrCPPrioStringValue{
 		StringValue: basetypes.NewStringNull(),
 	}
 }
 
-func NewVzOOBBrCPprioStringUnknown() VzOOBBrCPprioStringValue {
-	return VzOOBBrCPprioStringValue{
+func NewVzOOBBrCPPrioStringUnknown() VzOOBBrCPPrioStringValue {
+	return VzOOBBrCPPrioStringValue{
 		StringValue: basetypes.NewStringUnknown(),
 	}
 }
 
-func NewVzOOBBrCPprioStringValue(value string) VzOOBBrCPprioStringValue {
-	return VzOOBBrCPprioStringValue{
+func NewVzOOBBrCPPrioStringValue(value string) VzOOBBrCPPrioStringValue {
+	return VzOOBBrCPPrioStringValue{
 		StringValue: basetypes.NewStringValue(value),
 	}
 }
 
-func NewVzOOBBrCPprioStringPointerValue(value *string) VzOOBBrCPprioStringValue {
-	return VzOOBBrCPprioStringValue{
+func NewVzOOBBrCPPrioStringPointerValue(value *string) VzOOBBrCPPrioStringValue {
+	return VzOOBBrCPPrioStringValue{
 		StringValue: basetypes.NewStringPointerValue(value),
 	}
 }

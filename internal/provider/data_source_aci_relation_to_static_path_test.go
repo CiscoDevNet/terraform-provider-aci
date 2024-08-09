@@ -21,6 +21,7 @@ func TestAccDataSourceFvRsPathAttWithFvAEPg(t *testing.T) {
 				Config:             testConfigFvRsPathAttDataSourceDependencyWithFvAEPg,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("data.aci_relation_to_static_path.test", "encapsulation", "vlan-201"),
 					resource.TestCheckResourceAttr("data.aci_relation_to_static_path.test", "target_dn", "topology/pod-1/paths-101/pathep-[eth1/1]"),
 					resource.TestCheckResourceAttr("data.aci_relation_to_static_path.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("data.aci_relation_to_static_path.test", "deployment_immediacy", "lazy"),
@@ -41,6 +42,7 @@ func TestAccDataSourceFvRsPathAttWithFvAEPg(t *testing.T) {
 const testConfigFvRsPathAttDataSourceDependencyWithFvAEPg = testConfigFvRsPathAttMinDependencyWithFvAEPg + `
 data "aci_relation_to_static_path" "test" {
   parent_dn = aci_application_epg.test.id
+  encapsulation = "vlan-201"
   target_dn = "topology/pod-1/paths-101/pathep-[eth1/1]"
   depends_on = [aci_relation_to_static_path.test]
 }

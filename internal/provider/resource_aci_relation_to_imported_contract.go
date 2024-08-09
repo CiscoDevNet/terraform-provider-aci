@@ -49,7 +49,7 @@ type FvRsConsIfResourceModel struct {
 	Id            types.String                          `tfsdk:"id"`
 	ParentDn      types.String                          `tfsdk:"parent_dn"`
 	Annotation    types.String                          `tfsdk:"annotation"`
-	Prio          customTypes.FvRsConsIfprioStringValue `tfsdk:"priority"`
+	Prio          customTypes.FvRsConsIfPrioStringValue `tfsdk:"priority"`
 	TnVzCPIfName  types.String                          `tfsdk:"imported_contract_name"`
 	TagAnnotation types.Set                             `tfsdk:"annotations"`
 	TagTag        types.Set                             `tfsdk:"tags"`
@@ -60,7 +60,7 @@ func getEmptyFvRsConsIfResourceModel() *FvRsConsIfResourceModel {
 		Id:           basetypes.NewStringNull(),
 		ParentDn:     basetypes.NewStringNull(),
 		Annotation:   basetypes.NewStringNull(),
-		Prio:         basetypes.NewStringNull(),
+		Prio:         customTypes.NewFvRsConsIfPrioStringNull(),
 		TnVzCPIfName: basetypes.NewStringNull(),
 		TagAnnotation: types.SetNull(types.ObjectType{
 			AttrTypes: map[string]attr.Type{
@@ -171,7 +171,7 @@ func (r *FvRsConsIfResource) Schema(ctx context.Context, req resource.SchemaRequ
 				MarkdownDescription: `The annotation of the Relation To Imported Contract object.`,
 			},
 			"priority": schema.StringAttribute{
-				CustomType: customTypes.FvRsConsIfprioStringType{},
+				CustomType: customTypes.FvRsConsIfPrioStringType{},
 				Optional:   true,
 				Computed:   true,
 				PlanModifiers: []planmodifier.String{
@@ -451,7 +451,7 @@ func getAndSetFvRsConsIfAttributes(ctx context.Context, diags *diag.Diagnostics,
 					data.Annotation = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "prio" {
-					data.Prio = customTypes.NewFvRsConsIfprioStringValue(attributeValue.(string))
+					data.Prio = customTypes.NewFvRsConsIfPrioStringValue(attributeValue.(string))
 				}
 				if attributeName == "tnVzCPIfName" {
 					data.TnVzCPIfName = basetypes.NewStringValue(attributeValue.(string))

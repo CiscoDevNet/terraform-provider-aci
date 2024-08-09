@@ -107,7 +107,7 @@ func (d *{{.ResourceClassName}}DataSource) Schema(ctx context.Context, req datas
 			},{{else}}
 			"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": schema.StringAttribute{
 					{{- if and (lt 0 (len .ValidValuesMap)) (lt 0 (len .Validators))}}
-				CustomType: customTypes.{{.ResourceClassName}}{{.PropertyName}}StringType{},
+				CustomType: customTypes.{{.ResourceClassName}}{{.Name}}StringType{},
 					{{- end}}
 				Computed:            true,
 				MarkdownDescription: `{{.Comment}}`,
@@ -128,7 +128,7 @@ func (d *{{.ResourceClassName}}DataSource) Schema(ctx context.Context, req datas
 						},{{else}}
 						"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": schema.StringAttribute{
 								{{- if and (lt 0 (len .ValidValuesMap)) (lt 0 (len .Validators))}}
-							CustomType: customTypes.{{.ResourceClassName}}{{.PropertyName}}StringType{},
+							CustomType: customTypes.{{.ResourceClassName}}{{.Name}}StringType{},
 								{{- end}}
 							Computed:            true,
 							MarkdownDescription: `{{.Comment}}`,

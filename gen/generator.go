@@ -905,13 +905,14 @@ type LegacyBlock struct {
 }
 
 type LegacyAttribute struct {
-	Name          string
-	AttributeName string
-	ValueType     []string
-	ReplacedBy    ReplacementAttribute
-	Optional      bool
-	Computed      bool
-	Required      bool
+	Name           string
+	AttributeName  string
+	ValueType      []string
+	ReplacedBy     ReplacementAttribute
+	Optional       bool
+	Computed       bool
+	Required       bool
+	NeedCustomType bool
 }
 
 type ReplacementAttribute struct {
@@ -1639,13 +1640,23 @@ func (m *Model) GetLegacyAttribute(attributeName, className string, attributeVal
 		}
 	}
 
+	needCustomType := false
+	for _, property := range m.Properties {
+		if propertyName == property.Name && len(property.ValidValuesMap) > 0 && len(property.Validators) > 0 {
+			needCustomType = true
+			break
+		}
+
+	}
+
 	legacyAttribute := LegacyAttribute{
-		Name:          propertyName,
-		AttributeName: attributeName,
-		ValueType:     valueType,
-		Optional:      optional,
-		Computed:      computed,
-		Required:      required,
+		Name:           propertyName,
+		AttributeName:  attributeName,
+		ValueType:      valueType,
+		Optional:       optional,
+		Computed:       computed,
+		Required:       required,
+		NeedCustomType: needCustomType,
 	}
 
 	if replacedBy != nil {

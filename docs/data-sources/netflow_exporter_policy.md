@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_netflow_exporter_policy"
 sidebar_current: "docs-aci-data-source-aci_netflow_exporter_policy"
 description: |-
-  Data source for Netflow Exporter Policy
+  Data source for ACI Netflow Exporter Policy
 ---
 
 # aci_netflow_exporter_policy #
 
-Data source for Netflow Exporter Policy
+Data source for ACI Netflow Exporter Policy
 
 ## API Information ##
 

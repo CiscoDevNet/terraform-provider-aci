@@ -10,16 +10,16 @@ import (
 	"github.com/hashicorp/terraform-plugin-go/tftypes"
 )
 
-// FvRsConsprio custom string type.
+// FvRsConsPrio custom string type.
 
-var _ basetypes.StringTypable = FvRsConsprioStringType{}
+var _ basetypes.StringTypable = FvRsConsPrioStringType{}
 
-type FvRsConsprioStringType struct {
+type FvRsConsPrioStringType struct {
 	basetypes.StringType
 }
 
-func (t FvRsConsprioStringType) Equal(o attr.Type) bool {
-	other, ok := o.(FvRsConsprioStringType)
+func (t FvRsConsPrioStringType) Equal(o attr.Type) bool {
+	other, ok := o.(FvRsConsPrioStringType)
 
 	if !ok {
 		return false
@@ -28,19 +28,19 @@ func (t FvRsConsprioStringType) Equal(o attr.Type) bool {
 	return t.StringType.Equal(other.StringType)
 }
 
-func (t FvRsConsprioStringType) String() string {
-	return "FvRsConsprioStringType"
+func (t FvRsConsPrioStringType) String() string {
+	return "FvRsConsPrioStringType"
 }
 
-func (t FvRsConsprioStringType) ValueFromString(ctx context.Context, in basetypes.StringValue) (basetypes.StringValuable, diag.Diagnostics) {
-	value := FvRsConsprioStringValue{
+func (t FvRsConsPrioStringType) ValueFromString(ctx context.Context, in basetypes.StringValue) (basetypes.StringValuable, diag.Diagnostics) {
+	value := FvRsConsPrioStringValue{
 		StringValue: in,
 	}
 
 	return value, nil
 }
 
-func (t FvRsConsprioStringType) ValueFromTerraform(ctx context.Context, in tftypes.Value) (attr.Value, error) {
+func (t FvRsConsPrioStringType) ValueFromTerraform(ctx context.Context, in tftypes.Value) (attr.Value, error) {
 	attrValue, err := t.StringType.ValueFromTerraform(ctx, in)
 
 	if err != nil {
@@ -62,20 +62,20 @@ func (t FvRsConsprioStringType) ValueFromTerraform(ctx context.Context, in tftyp
 	return stringValuable, nil
 }
 
-func (t FvRsConsprioStringType) ValueType(ctx context.Context) attr.Value {
-	return FvRsConsprioStringValue{}
+func (t FvRsConsPrioStringType) ValueType(ctx context.Context) attr.Value {
+	return FvRsConsPrioStringValue{}
 }
 
-// FvRsConsprio custom string value.
+// FvRsConsPrio custom string value.
 
-var _ basetypes.StringValuableWithSemanticEquals = FvRsConsprioStringValue{}
+var _ basetypes.StringValuableWithSemanticEquals = FvRsConsPrioStringValue{}
 
-type FvRsConsprioStringValue struct {
+type FvRsConsPrioStringValue struct {
 	basetypes.StringValue
 }
 
-func (v FvRsConsprioStringValue) Equal(o attr.Value) bool {
-	other, ok := o.(FvRsConsprioStringValue)
+func (v FvRsConsPrioStringValue) Equal(o attr.Value) bool {
+	other, ok := o.(FvRsConsPrioStringValue)
 
 	if !ok {
 		return false
@@ -84,14 +84,14 @@ func (v FvRsConsprioStringValue) Equal(o attr.Value) bool {
 	return v.StringValue.Equal(other.StringValue)
 }
 
-func (v FvRsConsprioStringValue) Type(ctx context.Context) attr.Type {
-	return FvRsConsprioStringType{}
+func (v FvRsConsPrioStringValue) Type(ctx context.Context) attr.Type {
+	return FvRsConsPrioStringType{}
 }
 
-func (v FvRsConsprioStringValue) StringSemanticEquals(ctx context.Context, newValuable basetypes.StringValuable) (bool, diag.Diagnostics) {
+func (v FvRsConsPrioStringValue) StringSemanticEquals(ctx context.Context, newValuable basetypes.StringValuable) (bool, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
-	newValue, ok := newValuable.(FvRsConsprioStringValue)
+	newValue, ok := newValuable.(FvRsConsPrioStringValue)
 
 	if !ok {
 		diags.AddError(
@@ -105,14 +105,14 @@ func (v FvRsConsprioStringValue) StringSemanticEquals(ctx context.Context, newVa
 		return false, diags
 	}
 
-	priorMappedValue := FvRsConsprioValueMap(v.StringValue)
+	priorMappedValue := FvRsConsPrioValueMap(v.StringValue)
 
-	newMappedValue := FvRsConsprioValueMap(newValue.StringValue)
+	newMappedValue := FvRsConsPrioValueMap(newValue.StringValue)
 
 	return priorMappedValue.Equal(newMappedValue), diags
 }
 
-func FvRsConsprioValueMap(value basetypes.StringValue) basetypes.StringValue {
+func FvRsConsPrioValueMap(value basetypes.StringValue) basetypes.StringValue {
 	matchMap := map[string]string{
 		"0": "unspecified",
 		"1": "level3",
@@ -130,26 +130,26 @@ func FvRsConsprioValueMap(value basetypes.StringValue) basetypes.StringValue {
 	return value
 }
 
-func NewFvRsConsprioStringNull() FvRsConsprioStringValue {
-	return FvRsConsprioStringValue{
+func NewFvRsConsPrioStringNull() FvRsConsPrioStringValue {
+	return FvRsConsPrioStringValue{
 		StringValue: basetypes.NewStringNull(),
 	}
 }
 
-func NewFvRsConsprioStringUnknown() FvRsConsprioStringValue {
-	return FvRsConsprioStringValue{
+func NewFvRsConsPrioStringUnknown() FvRsConsPrioStringValue {
+	return FvRsConsPrioStringValue{
 		StringValue: basetypes.NewStringUnknown(),
 	}
 }
 
-func NewFvRsConsprioStringValue(value string) FvRsConsprioStringValue {
-	return FvRsConsprioStringValue{
+func NewFvRsConsPrioStringValue(value string) FvRsConsPrioStringValue {
+	return FvRsConsPrioStringValue{
 		StringValue: basetypes.NewStringValue(value),
 	}
 }
 
-func NewFvRsConsprioStringPointerValue(value *string) FvRsConsprioStringValue {
-	return FvRsConsprioStringValue{
+func NewFvRsConsPrioStringPointerValue(value *string) FvRsConsPrioStringValue {
+	return FvRsConsPrioStringValue{
 		StringValue: basetypes.NewStringPointerValue(value),
 	}
 }

@@ -54,9 +54,9 @@ type VzOOBBrCPResourceModel struct {
 	NameAlias     types.String                               `tfsdk:"name_alias"`
 	OwnerKey      types.String                               `tfsdk:"owner_key"`
 	OwnerTag      types.String                               `tfsdk:"owner_tag"`
-	Prio          customTypes.VzOOBBrCPprioStringValue       `tfsdk:"priority"`
+	Prio          customTypes.VzOOBBrCPPrioStringValue       `tfsdk:"priority"`
 	Scope         types.String                               `tfsdk:"scope"`
-	TargetDscp    customTypes.VzOOBBrCPtargetDscpStringValue `tfsdk:"target_dscp"`
+	TargetDscp    customTypes.VzOOBBrCPTargetDscpStringValue `tfsdk:"target_dscp"`
 	TagAnnotation types.Set                                  `tfsdk:"annotations"`
 	TagTag        types.Set                                  `tfsdk:"tags"`
 }
@@ -71,9 +71,9 @@ func getEmptyVzOOBBrCPResourceModel() *VzOOBBrCPResourceModel {
 		NameAlias:  basetypes.NewStringNull(),
 		OwnerKey:   basetypes.NewStringNull(),
 		OwnerTag:   basetypes.NewStringNull(),
-		Prio:       basetypes.NewStringNull(),
+		Prio:       customTypes.NewVzOOBBrCPPrioStringNull(),
 		Scope:      basetypes.NewStringNull(),
-		TargetDscp: basetypes.NewStringNull(),
+		TargetDscp: customTypes.NewVzOOBBrCPTargetDscpStringNull(),
 		TagAnnotation: types.SetNull(types.ObjectType{
 			AttrTypes: map[string]attr.Type{
 				"key":   types.StringType,
@@ -232,7 +232,7 @@ func (r *VzOOBBrCPResource) Schema(ctx context.Context, req resource.SchemaReque
 				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
 			},
 			"priority": schema.StringAttribute{
-				CustomType: customTypes.VzOOBBrCPprioStringType{},
+				CustomType: customTypes.VzOOBBrCPPrioStringType{},
 				Optional:   true,
 				Computed:   true,
 				PlanModifiers: []planmodifier.String{
@@ -260,7 +260,7 @@ func (r *VzOOBBrCPResource) Schema(ctx context.Context, req resource.SchemaReque
 				MarkdownDescription: `Represents the scope of this contract. If the scope is set as application-profile, the epg can only communicate with epgs in the same application-profile.`,
 			},
 			"target_dscp": schema.StringAttribute{
-				CustomType: customTypes.VzOOBBrCPtargetDscpStringType{},
+				CustomType: customTypes.VzOOBBrCPTargetDscpStringType{},
 				Optional:   true,
 				Computed:   true,
 				PlanModifiers: []planmodifier.String{
@@ -548,13 +548,13 @@ func getAndSetVzOOBBrCPAttributes(ctx context.Context, diags *diag.Diagnostics, 
 					data.OwnerTag = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "prio" {
-					data.Prio = customTypes.NewVzOOBBrCPprioStringValue(attributeValue.(string))
+					data.Prio = customTypes.NewVzOOBBrCPPrioStringValue(attributeValue.(string))
 				}
 				if attributeName == "scope" {
 					data.Scope = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "targetDscp" {
-					data.TargetDscp = customTypes.NewVzOOBBrCPtargetDscpStringValue(attributeValue.(string))
+					data.TargetDscp = customTypes.NewVzOOBBrCPTargetDscpStringValue(attributeValue.(string))
 				}
 			}
 			TagAnnotationVzOOBBrCPList := make([]TagAnnotationVzOOBBrCPResourceModel, 0)

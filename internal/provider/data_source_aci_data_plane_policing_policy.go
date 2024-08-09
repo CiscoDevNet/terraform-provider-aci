@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
@@ -58,6 +59,7 @@ func (d *QosDppPolDataSource) Schema(ctx context.Context, req datasource.SchemaR
 				MarkdownDescription: `The annotation of the Data Plane Policing Policy object.`,
 			},
 			"excessive_burst": schema.StringAttribute{
+				CustomType:          customTypes.QosDppPolBeStringType{},
 				Computed:            true,
 				MarkdownDescription: `The excessive burst size of the Data Plane Policing Policy object. Only applicable for 2R3C policer.`,
 			},
@@ -66,6 +68,7 @@ func (d *QosDppPolDataSource) Schema(ctx context.Context, req datasource.SchemaR
 				MarkdownDescription: `The excessive burst size unit of the Data Plane Policing Policy object. Only applicable for 2R3C policer.`,
 			},
 			"burst": schema.StringAttribute{
+				CustomType:          customTypes.QosDppPolBurstStringType{},
 				Computed:            true,
 				MarkdownDescription: `The burst size of the Data Plane Policing Policy object.`,
 			},
@@ -78,10 +81,12 @@ func (d *QosDppPolDataSource) Schema(ctx context.Context, req datasource.SchemaR
 				MarkdownDescription: `The conform action of the Data Plane Policing Policy object.`,
 			},
 			"conform_mark_cos": schema.StringAttribute{
+				CustomType:          customTypes.QosDppPolConformMarkCosStringType{},
 				Computed:            true,
 				MarkdownDescription: `The conform mark class of service (CoS) of the Data Plane Policing Policy object.`,
 			},
 			"conform_mark_dscp": schema.StringAttribute{
+				CustomType:          customTypes.QosDppPolConformMarkDscpStringType{},
 				Computed:            true,
 				MarkdownDescription: `The conform mark differentiated services code point (DSCP) of the Data Plane Policing Policy object.`,
 			},
@@ -94,10 +99,12 @@ func (d *QosDppPolDataSource) Schema(ctx context.Context, req datasource.SchemaR
 				MarkdownDescription: `The exceed action of the Data Plane Policing Policy object.`,
 			},
 			"exceed_mark_cos": schema.StringAttribute{
+				CustomType:          customTypes.QosDppPolExceedMarkCosStringType{},
 				Computed:            true,
 				MarkdownDescription: `The exceed mark class of service (CoS) of the Data Plane Policing Policy object.`,
 			},
 			"exceed_mark_dscp": schema.StringAttribute{
+				CustomType:          customTypes.QosDppPolExceedMarkDscpStringType{},
 				Computed:            true,
 				MarkdownDescription: `The exceed mark differentiated services code point (DSCP) of the Data Plane Policing Policy object.`,
 			},
@@ -150,10 +157,12 @@ func (d *QosDppPolDataSource) Schema(ctx context.Context, req datasource.SchemaR
 				MarkdownDescription: `The violate action of the Data Plane Policing Policy object.`,
 			},
 			"violate_mark_cos": schema.StringAttribute{
+				CustomType:          customTypes.QosDppPolViolateMarkCosStringType{},
 				Computed:            true,
 				MarkdownDescription: `The violate mark class of service (CoS) of the Data Plane Policing Policy object.`,
 			},
 			"violate_mark_dscp": schema.StringAttribute{
+				CustomType:          customTypes.QosDppPolViolateMarkDscpStringType{},
 				Computed:            true,
 				MarkdownDescription: `The violate mark differentiated services code point (DSCP) of the Data Plane Policing Policy object.`,
 			},

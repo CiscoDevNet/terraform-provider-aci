@@ -10,16 +10,16 @@ import (
 	"github.com/hashicorp/terraform-plugin-go/tftypes"
 )
 
-// VzOOBBrCPtargetDscp custom string type.
+// VzOOBBrCPTargetDscp custom string type.
 
-var _ basetypes.StringTypable = VzOOBBrCPtargetDscpStringType{}
+var _ basetypes.StringTypable = VzOOBBrCPTargetDscpStringType{}
 
-type VzOOBBrCPtargetDscpStringType struct {
+type VzOOBBrCPTargetDscpStringType struct {
 	basetypes.StringType
 }
 
-func (t VzOOBBrCPtargetDscpStringType) Equal(o attr.Type) bool {
-	other, ok := o.(VzOOBBrCPtargetDscpStringType)
+func (t VzOOBBrCPTargetDscpStringType) Equal(o attr.Type) bool {
+	other, ok := o.(VzOOBBrCPTargetDscpStringType)
 
 	if !ok {
 		return false
@@ -28,19 +28,19 @@ func (t VzOOBBrCPtargetDscpStringType) Equal(o attr.Type) bool {
 	return t.StringType.Equal(other.StringType)
 }
 
-func (t VzOOBBrCPtargetDscpStringType) String() string {
-	return "VzOOBBrCPtargetDscpStringType"
+func (t VzOOBBrCPTargetDscpStringType) String() string {
+	return "VzOOBBrCPTargetDscpStringType"
 }
 
-func (t VzOOBBrCPtargetDscpStringType) ValueFromString(ctx context.Context, in basetypes.StringValue) (basetypes.StringValuable, diag.Diagnostics) {
-	value := VzOOBBrCPtargetDscpStringValue{
+func (t VzOOBBrCPTargetDscpStringType) ValueFromString(ctx context.Context, in basetypes.StringValue) (basetypes.StringValuable, diag.Diagnostics) {
+	value := VzOOBBrCPTargetDscpStringValue{
 		StringValue: in,
 	}
 
 	return value, nil
 }
 
-func (t VzOOBBrCPtargetDscpStringType) ValueFromTerraform(ctx context.Context, in tftypes.Value) (attr.Value, error) {
+func (t VzOOBBrCPTargetDscpStringType) ValueFromTerraform(ctx context.Context, in tftypes.Value) (attr.Value, error) {
 	attrValue, err := t.StringType.ValueFromTerraform(ctx, in)
 
 	if err != nil {
@@ -62,20 +62,20 @@ func (t VzOOBBrCPtargetDscpStringType) ValueFromTerraform(ctx context.Context, i
 	return stringValuable, nil
 }
 
-func (t VzOOBBrCPtargetDscpStringType) ValueType(ctx context.Context) attr.Value {
-	return VzOOBBrCPtargetDscpStringValue{}
+func (t VzOOBBrCPTargetDscpStringType) ValueType(ctx context.Context) attr.Value {
+	return VzOOBBrCPTargetDscpStringValue{}
 }
 
-// VzOOBBrCPtargetDscp custom string value.
+// VzOOBBrCPTargetDscp custom string value.
 
-var _ basetypes.StringValuableWithSemanticEquals = VzOOBBrCPtargetDscpStringValue{}
+var _ basetypes.StringValuableWithSemanticEquals = VzOOBBrCPTargetDscpStringValue{}
 
-type VzOOBBrCPtargetDscpStringValue struct {
+type VzOOBBrCPTargetDscpStringValue struct {
 	basetypes.StringValue
 }
 
-func (v VzOOBBrCPtargetDscpStringValue) Equal(o attr.Value) bool {
-	other, ok := o.(VzOOBBrCPtargetDscpStringValue)
+func (v VzOOBBrCPTargetDscpStringValue) Equal(o attr.Value) bool {
+	other, ok := o.(VzOOBBrCPTargetDscpStringValue)
 
 	if !ok {
 		return false
@@ -84,14 +84,14 @@ func (v VzOOBBrCPtargetDscpStringValue) Equal(o attr.Value) bool {
 	return v.StringValue.Equal(other.StringValue)
 }
 
-func (v VzOOBBrCPtargetDscpStringValue) Type(ctx context.Context) attr.Type {
-	return VzOOBBrCPtargetDscpStringType{}
+func (v VzOOBBrCPTargetDscpStringValue) Type(ctx context.Context) attr.Type {
+	return VzOOBBrCPTargetDscpStringType{}
 }
 
-func (v VzOOBBrCPtargetDscpStringValue) StringSemanticEquals(ctx context.Context, newValuable basetypes.StringValuable) (bool, diag.Diagnostics) {
+func (v VzOOBBrCPTargetDscpStringValue) StringSemanticEquals(ctx context.Context, newValuable basetypes.StringValuable) (bool, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
-	newValue, ok := newValuable.(VzOOBBrCPtargetDscpStringValue)
+	newValue, ok := newValuable.(VzOOBBrCPTargetDscpStringValue)
 
 	if !ok {
 		diags.AddError(
@@ -105,14 +105,14 @@ func (v VzOOBBrCPtargetDscpStringValue) StringSemanticEquals(ctx context.Context
 		return false, diags
 	}
 
-	priorMappedValue := VzOOBBrCPtargetDscpValueMap(v.StringValue)
+	priorMappedValue := VzOOBBrCPTargetDscpValueMap(v.StringValue)
 
-	newMappedValue := VzOOBBrCPtargetDscpValueMap(newValue.StringValue)
+	newMappedValue := VzOOBBrCPTargetDscpValueMap(newValue.StringValue)
 
 	return priorMappedValue.Equal(newMappedValue), diags
 }
 
-func VzOOBBrCPtargetDscpValueMap(value basetypes.StringValue) basetypes.StringValue {
+func VzOOBBrCPTargetDscpValueMap(value basetypes.StringValue) basetypes.StringValue {
 	matchMap := map[string]string{
 		"0":  "CS0",
 		"10": "AF11",
@@ -146,26 +146,26 @@ func VzOOBBrCPtargetDscpValueMap(value basetypes.StringValue) basetypes.StringVa
 	return value
 }
 
-func NewVzOOBBrCPtargetDscpStringNull() VzOOBBrCPtargetDscpStringValue {
-	return VzOOBBrCPtargetDscpStringValue{
+func NewVzOOBBrCPTargetDscpStringNull() VzOOBBrCPTargetDscpStringValue {
+	return VzOOBBrCPTargetDscpStringValue{
 		StringValue: basetypes.NewStringNull(),
 	}
 }
 
-func NewVzOOBBrCPtargetDscpStringUnknown() VzOOBBrCPtargetDscpStringValue {
-	return VzOOBBrCPtargetDscpStringValue{
+func NewVzOOBBrCPTargetDscpStringUnknown() VzOOBBrCPTargetDscpStringValue {
+	return VzOOBBrCPTargetDscpStringValue{
 		StringValue: basetypes.NewStringUnknown(),
 	}
 }
 
-func NewVzOOBBrCPtargetDscpStringValue(value string) VzOOBBrCPtargetDscpStringValue {
-	return VzOOBBrCPtargetDscpStringValue{
+func NewVzOOBBrCPTargetDscpStringValue(value string) VzOOBBrCPTargetDscpStringValue {
+	return VzOOBBrCPTargetDscpStringValue{
 		StringValue: basetypes.NewStringValue(value),
 	}
 }
 
-func NewVzOOBBrCPtargetDscpStringPointerValue(value *string) VzOOBBrCPtargetDscpStringValue {
-	return VzOOBBrCPtargetDscpStringValue{
+func NewVzOOBBrCPTargetDscpStringPointerValue(value *string) VzOOBBrCPTargetDscpStringValue {
+	return VzOOBBrCPTargetDscpStringValue{
 		StringValue: basetypes.NewStringPointerValue(value),
 	}
 }

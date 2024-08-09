@@ -10,16 +10,16 @@ import (
 	"github.com/hashicorp/terraform-plugin-go/tftypes"
 )
 
-// NetflowExporterPoldstPort custom string type.
+// NetflowExporterPolDstPort custom string type.
 
-var _ basetypes.StringTypable = NetflowExporterPoldstPortStringType{}
+var _ basetypes.StringTypable = NetflowExporterPolDstPortStringType{}
 
-type NetflowExporterPoldstPortStringType struct {
+type NetflowExporterPolDstPortStringType struct {
 	basetypes.StringType
 }
 
-func (t NetflowExporterPoldstPortStringType) Equal(o attr.Type) bool {
-	other, ok := o.(NetflowExporterPoldstPortStringType)
+func (t NetflowExporterPolDstPortStringType) Equal(o attr.Type) bool {
+	other, ok := o.(NetflowExporterPolDstPortStringType)
 
 	if !ok {
 		return false
@@ -28,19 +28,19 @@ func (t NetflowExporterPoldstPortStringType) Equal(o attr.Type) bool {
 	return t.StringType.Equal(other.StringType)
 }
 
-func (t NetflowExporterPoldstPortStringType) String() string {
-	return "NetflowExporterPoldstPortStringType"
+func (t NetflowExporterPolDstPortStringType) String() string {
+	return "NetflowExporterPolDstPortStringType"
 }
 
-func (t NetflowExporterPoldstPortStringType) ValueFromString(ctx context.Context, in basetypes.StringValue) (basetypes.StringValuable, diag.Diagnostics) {
-	value := NetflowExporterPoldstPortStringValue{
+func (t NetflowExporterPolDstPortStringType) ValueFromString(ctx context.Context, in basetypes.StringValue) (basetypes.StringValuable, diag.Diagnostics) {
+	value := NetflowExporterPolDstPortStringValue{
 		StringValue: in,
 	}
 
 	return value, nil
 }
 
-func (t NetflowExporterPoldstPortStringType) ValueFromTerraform(ctx context.Context, in tftypes.Value) (attr.Value, error) {
+func (t NetflowExporterPolDstPortStringType) ValueFromTerraform(ctx context.Context, in tftypes.Value) (attr.Value, error) {
 	attrValue, err := t.StringType.ValueFromTerraform(ctx, in)
 
 	if err != nil {
@@ -62,20 +62,20 @@ func (t NetflowExporterPoldstPortStringType) ValueFromTerraform(ctx context.Cont
 	return stringValuable, nil
 }
 
-func (t NetflowExporterPoldstPortStringType) ValueType(ctx context.Context) attr.Value {
-	return NetflowExporterPoldstPortStringValue{}
+func (t NetflowExporterPolDstPortStringType) ValueType(ctx context.Context) attr.Value {
+	return NetflowExporterPolDstPortStringValue{}
 }
 
-// NetflowExporterPoldstPort custom string value.
+// NetflowExporterPolDstPort custom string value.
 
-var _ basetypes.StringValuableWithSemanticEquals = NetflowExporterPoldstPortStringValue{}
+var _ basetypes.StringValuableWithSemanticEquals = NetflowExporterPolDstPortStringValue{}
 
-type NetflowExporterPoldstPortStringValue struct {
+type NetflowExporterPolDstPortStringValue struct {
 	basetypes.StringValue
 }
 
-func (v NetflowExporterPoldstPortStringValue) Equal(o attr.Value) bool {
-	other, ok := o.(NetflowExporterPoldstPortStringValue)
+func (v NetflowExporterPolDstPortStringValue) Equal(o attr.Value) bool {
+	other, ok := o.(NetflowExporterPolDstPortStringValue)
 
 	if !ok {
 		return false
@@ -84,14 +84,14 @@ func (v NetflowExporterPoldstPortStringValue) Equal(o attr.Value) bool {
 	return v.StringValue.Equal(other.StringValue)
 }
 
-func (v NetflowExporterPoldstPortStringValue) Type(ctx context.Context) attr.Type {
-	return NetflowExporterPoldstPortStringType{}
+func (v NetflowExporterPolDstPortStringValue) Type(ctx context.Context) attr.Type {
+	return NetflowExporterPolDstPortStringType{}
 }
 
-func (v NetflowExporterPoldstPortStringValue) StringSemanticEquals(ctx context.Context, newValuable basetypes.StringValuable) (bool, diag.Diagnostics) {
+func (v NetflowExporterPolDstPortStringValue) StringSemanticEquals(ctx context.Context, newValuable basetypes.StringValuable) (bool, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
-	newValue, ok := newValuable.(NetflowExporterPoldstPortStringValue)
+	newValue, ok := newValuable.(NetflowExporterPolDstPortStringValue)
 
 	if !ok {
 		diags.AddError(
@@ -105,14 +105,14 @@ func (v NetflowExporterPoldstPortStringValue) StringSemanticEquals(ctx context.C
 		return false, diags
 	}
 
-	priorMappedValue := NetflowExporterPoldstPortValueMap(v.StringValue)
+	priorMappedValue := NetflowExporterPolDstPortValueMap(v.StringValue)
 
-	newMappedValue := NetflowExporterPoldstPortValueMap(newValue.StringValue)
+	newMappedValue := NetflowExporterPolDstPortValueMap(newValue.StringValue)
 
 	return priorMappedValue.Equal(newMappedValue), diags
 }
 
-func NetflowExporterPoldstPortValueMap(value basetypes.StringValue) basetypes.StringValue {
+func NetflowExporterPolDstPortValueMap(value basetypes.StringValue) basetypes.StringValue {
 	matchMap := map[string]string{
 		"0":   "unspecified",
 		"110": "pop3",
@@ -132,26 +132,26 @@ func NetflowExporterPoldstPortValueMap(value basetypes.StringValue) basetypes.St
 	return value
 }
 
-func NewNetflowExporterPoldstPortStringNull() NetflowExporterPoldstPortStringValue {
-	return NetflowExporterPoldstPortStringValue{
+func NewNetflowExporterPolDstPortStringNull() NetflowExporterPolDstPortStringValue {
+	return NetflowExporterPolDstPortStringValue{
 		StringValue: basetypes.NewStringNull(),
 	}
 }
 
-func NewNetflowExporterPoldstPortStringUnknown() NetflowExporterPoldstPortStringValue {
-	return NetflowExporterPoldstPortStringValue{
+func NewNetflowExporterPolDstPortStringUnknown() NetflowExporterPolDstPortStringValue {
+	return NetflowExporterPolDstPortStringValue{
 		StringValue: basetypes.NewStringUnknown(),
 	}
 }
 
-func NewNetflowExporterPoldstPortStringValue(value string) NetflowExporterPoldstPortStringValue {
-	return NetflowExporterPoldstPortStringValue{
+func NewNetflowExporterPolDstPortStringValue(value string) NetflowExporterPolDstPortStringValue {
+	return NetflowExporterPolDstPortStringValue{
 		StringValue: basetypes.NewStringValue(value),
 	}
 }
 
-func NewNetflowExporterPoldstPortStringPointerValue(value *string) NetflowExporterPoldstPortStringValue {
-	return NetflowExporterPoldstPortStringValue{
+func NewNetflowExporterPolDstPortStringPointerValue(value *string) NetflowExporterPolDstPortStringValue {
+	return NetflowExporterPolDstPortStringValue{
 		StringValue: basetypes.NewStringPointerValue(value),
 	}
 }

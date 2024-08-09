@@ -62,7 +62,7 @@ func (d *MgmtInstPDataSource) Schema(ctx context.Context, req datasource.SchemaR
 				MarkdownDescription: `The name alias of the External Management Network Instance Profile object.`,
 			},
 			"priority": schema.StringAttribute{
-				CustomType:          customTypes.MgmtInstPprioStringType{},
+				CustomType:          customTypes.MgmtInstPPrioStringType{},
 				Computed:            true,
 				MarkdownDescription: `The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.`,
 			},
@@ -76,7 +76,7 @@ func (d *MgmtInstPDataSource) Schema(ctx context.Context, req datasource.SchemaR
 							MarkdownDescription: `The annotation of the Relation To Consumed Out Of Band Contract object.`,
 						},
 						"priority": schema.StringAttribute{
-							CustomType:          customTypes.MgmtRsOoBConsprioStringType{},
+							CustomType:          customTypes.MgmtRsOoBConsPrioStringType{},
 							Computed:            true,
 							MarkdownDescription: `The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.`,
 						},
