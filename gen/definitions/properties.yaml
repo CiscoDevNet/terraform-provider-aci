@@ -730,8 +730,6 @@ fvRsFcPathAtt:
 fvRsNodeAtt:
   resource_required:
     - "encapsulation"
-  datasource_required:
-    - "encapsulation"
   documentation:
     mode: "The static association mode with the path of the %s object."
     encap: "The VLAN encapsulation of the %s object."
@@ -741,8 +739,6 @@ fvRsNodeAtt:
     all:
       encapsulation: "vlan-100"
     resource_required:
-      encapsulation: "vlan-101"
-    datasource_required:
       encapsulation: "vlan-101"
     datasource_non_existing:
       target_dn: "topology/pod-2/paths-201/pathep-[eth1/1]"
@@ -830,8 +826,6 @@ fvRsDomAtt:
 fvRsPathAtt:
   resource_required:
     - "encapsulation"
-  datasource_required:
-    - "encapsulation"
   test_values:
     default:
       encapsulation: "vlan-201"
@@ -840,8 +834,6 @@ fvRsPathAtt:
       encapsulation: "vlan-202"
       primary_encapsulation: "vlan-203"
     resource_required:
-      encapsulation: "vlan-201"
-    datasource_required:
       encapsulation: "vlan-201"
     datasource_non_existing:
       target_dn: "topology/pod-2/paths-201/pathep-[eth1/1]"
