@@ -593,11 +593,12 @@ fvDnsAttr:
   test_values:
     resource_required:
       name: "dns_attribute"
-      filter: "test_filter"
     datasource_required:
       name: "dns_attribute"
     datasource_non_existing:
       name: "dns_attribute_non_existing"
+    all:
+      filter: "test_filter"
   parents:
     - class_name: "fvCrtrn"
       parent_dependency: "fvAEPg"
