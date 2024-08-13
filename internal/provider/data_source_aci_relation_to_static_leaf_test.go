@@ -21,7 +21,6 @@ func TestAccDataSourceFvRsNodeAttWithFvAEPg(t *testing.T) {
 				Config:             testConfigFvRsNodeAttDataSourceDependencyWithFvAEPg,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.aci_relation_to_static_leaf.test", "encapsulation", "vlan-101"),
 					resource.TestCheckResourceAttr("data.aci_relation_to_static_leaf.test", "target_dn", "topology/pod-1/node-101"),
 					resource.TestCheckResourceAttr("data.aci_relation_to_static_leaf.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("data.aci_relation_to_static_leaf.test", "deployment_immediacy", "lazy"),
@@ -41,7 +40,6 @@ func TestAccDataSourceFvRsNodeAttWithFvAEPg(t *testing.T) {
 const testConfigFvRsNodeAttDataSourceDependencyWithFvAEPg = testConfigFvRsNodeAttMinDependencyWithFvAEPg + `
 data "aci_relation_to_static_leaf" "test" {
   parent_dn = aci_application_epg.test.id
-  encapsulation = "vlan-101"
   target_dn = "topology/pod-1/node-101"
   depends_on = [aci_relation_to_static_leaf.test]
 }

@@ -14,7 +14,6 @@ datasource_non_existing:
   target_dn: "topology/pod-2/paths-201/pathep-[eth1/1]"
 
 datasource_required:
-  encapsulation: "vlan-201"
   target_dn: "test_t_dn"
 
 resource_required:
