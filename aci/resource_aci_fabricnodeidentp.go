@@ -101,9 +101,13 @@ func resourceAciFabricNodeMember() *schema.Resource {
 			},
 
 			"commission": &schema.Schema{
-				Type:     schema.TypeBool,
+				Type:     schema.TypeString,
 				Optional: true,
-				Default:  true,
+				Default:  "yes",
+				ValidateFunc: validation.StringInSlice([]string{
+					"yes",
+					"no",
+				}, false),
 			},
 		}),
 	}
@@ -141,6 +145,26 @@ func setFabricNodeMemberAttributes(fabricNodeIdentP *models.FabricNodeMember, d 
 	d.Set("node_type", fabricNodeIdentPMap["nodeType"])
 	d.Set("pod_id", fabricNodeIdentPMap["podId"])
 	d.Set("role", fabricNodeIdentPMap["role"])
+	return d, nil
+}
+
+func getAndsetDecommissionedNodes(client *client.Client, serial string, d *schema.ResourceData) (*schema.ResourceData, error) {
+
+	// Get node data and verify if the node is attached to the switch.
+	dn := fmt.Sprintf("client-[%s]", d.Get("serial").(string))
+	dhcpClientCont, err := client.Get(dn)
+	if err != nil {
+		if !strings.Contains(err.Error(), "Error retrieving Object: Object may not exist") {
+			return d, err
+		}
+	}
+	data, _ := dhcpClientCont.ArrayElement(0, "imdata")
+	if G(data.S("dhcpClient", "attributes"), "decomissioned") == "yes" {
+		d.Set("commission", "no")
+	} else {
+		d.Set("commission", "yes")
+	}
+
 	return d, nil
 }
 
@@ -202,10 +226,6 @@ func resourceAciFabricNodeMemberCreate(ctx context.Context, d *schema.ResourceDa
 	if Role, ok := d.GetOk("role"); ok {
 		fabricNodeIdentPAttr.Role = Role.(string)
 	}
-	// if Commission, ok := d.GetOk("commission"); ok {
-	// 	Commission = Commission.(string)
-	// }
-
 	fabricNodeIdentP := models.NewFabricNodeMember(fmt.Sprintf("controller/nodeidentpol/nodep-%s", serial), "uni", desc, fabricNodeIdentPAttr)
 
 	err := aciClient.Save(fabricNodeIdentP)
@@ -215,6 +235,12 @@ func resourceAciFabricNodeMemberCreate(ctx context.Context, d *schema.ResourceDa
 
 	d.SetId(fabricNodeIdentP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
+
+	if Commission, ok := d.GetOk("commission"); ok {
+		if Commission.(string) == "no" {
+			decommissionFabricNodeMemberFromController("false", "no", d, m)
+		}
+	}
 
 	return resourceAciFabricNodeMemberRead(ctx, d, m)
 }
@@ -256,21 +282,31 @@ func resourceAciFabricNodeMemberUpdate(ctx context.Context, d *schema.ResourceDa
 	if Role, ok := d.GetOk("role"); ok {
 		fabricNodeIdentPAttr.Role = Role.(string)
 	}
-	// if RemoveFromController, ok := d.GetOk("remove_from_controller"); ok {
 
-	// }
-	fabricNodeIdentP := models.NewFabricNodeMember(fmt.Sprintf("controller/nodeidentpol/nodep-%s", serial), "uni", desc, fabricNodeIdentPAttr)
+	if Commission, ok := d.GetOk("commission"); ok {
+		if Commission.(string) == "no" {
+			decommissionFabricNodeMemberFromController("false", "no", d, m)
+		} else {
+			attachedToSwitch, err := verifyNodeAttachedToSwitch(aciClient, serial)
+			if err != nil {
+				return diag.FromErr(err)
+			}
+			if attachedToSwitch {
+				decommissionFabricNodeMemberFromController("false", "yes", d, m)
+			} else {
+				fabricNodeIdentP := models.NewFabricNodeMember(fmt.Sprintf("controller/nodeidentpol/nodep-%s", serial), "uni", desc, fabricNodeIdentPAttr)
+				fabricNodeIdentP.Status = "modified"
 
-	fabricNodeIdentP.Status = "modified"
+				err = aciClient.Save(fabricNodeIdentP)
+				if err != nil {
+					return diag.FromErr(err)
+				}
 
-	err := aciClient.Save(fabricNodeIdentP)
-
-	if err != nil {
-		return diag.FromErr(err)
+				d.SetId(fabricNodeIdentP.DistinguishedName)
+			}
+		}
+		log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 	}
-
-	d.SetId(fabricNodeIdentP.DistinguishedName)
-	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
 	return resourceAciFabricNodeMemberRead(ctx, d, m)
 
@@ -280,13 +316,14 @@ func resourceAciFabricNodeMemberRead(ctx context.Context, d *schema.ResourceData
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
-
 	dn := d.Id()
 	fabricNodeIdentP, err := getRemoteFabricNodeMember(aciClient, dn)
-
 	if err != nil {
 		return errorForObjectNotFound(err, dn, d)
 	}
+
+	getAndsetDecommissionedNodes(aciClient, d.Get("serial").(string), d)
+
 	_, err = setFabricNodeMemberAttributes(fabricNodeIdentP, d)
 	if err != nil {
 		d.SetId("")
@@ -300,25 +337,15 @@ func resourceAciFabricNodeMemberRead(ctx context.Context, d *schema.ResourceData
 
 func resourceAciFabricNodeMemberDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
-
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 
-	// Get node data and verify if the node is attached to the switch.
-	switchStatusDn := fmt.Sprintf("client-[%s]", d.Get("serial").(string))
-	dhcpClientCont, err := aciClient.Get(switchStatusDn)
+	attachedToSwitch, err := verifyNodeAttachedToSwitch(aciClient, d.Get("serial").(string))
 	if err != nil {
-		if !strings.Contains(err.Error(), "Error retrieving Object: Object may not exist") {
-			return diag.FromErr(err)
-		}
+		return diag.FromErr(err)
 	}
-	data, _ := dhcpClientCont.ArrayElement(0, "imdata")
-	ip := G(data.S("dhcpClient", "attributes"), "ip")
-	nodeId := G(data.S("dhcpClient", "attributes"), "nodeId")
-	nodeRole := G(data.S("dhcpClient", "attributes"), "nodeRole")
-	if (ip != "0.0.0.0" && nodeId != "0") && (nodeRole == "leaf" || nodeRole == "spine") {
-		// If the node is attached to the switch, it has to be decommissioned before deleting from the controller.
-		removeFabricNodeMemberFromController(d, m)
+	if attachedToSwitch {
+		decommissionFabricNodeMemberFromController("true", "no", d, m)
 	}
 
 	err = aciClient.DeleteByDn(dn, "fabricNodeIdentP")
@@ -331,22 +358,52 @@ func resourceAciFabricNodeMemberDelete(ctx context.Context, d *schema.ResourceDa
 	d.SetId("")
 	return diag.FromErr(err)
 }
+func verifyNodeAttachedToSwitch(aciClient *client.Client, serial string) (bool, error) {
+	switchStatusDn := fmt.Sprintf("client-[%s]", serial)
+	dhcpClientCont, err := aciClient.Get(switchStatusDn)
+	if err != nil {
+		if !strings.Contains(err.Error(), "Error retrieving Object: Object may not exist") {
+			return false, err
+		}
+	}
+	data, _ := dhcpClientCont.ArrayElement(0, "imdata")
+	ip := G(data.S("dhcpClient", "attributes"), "ip")
+	nodeId := G(data.S("dhcpClient", "attributes"), "nodeId")
+	nodeRole := G(data.S("dhcpClient", "attributes"), "nodeRole")
+	if (ip != "0.0.0.0" && nodeId != "0") && (nodeRole == "leaf" || nodeRole == "spine") {
+		return true, nil
+	}
+	return false, nil
+}
 
-func removeFabricNodeMemberFromController(d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func decommissionFabricNodeMemberFromController(removeFromController string, commission string, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning removal of fabric node from controller", d.Id())
 	aciClient := m.(*client.Client)
-	nodePayload := `{
+
+	nodePayload := []byte(fmt.Sprintf(`{
+		"fabricRsDecommissionNode": {
+			"attributes": {
+				"tDn": "topology/pod-%s/node-%s",
+				"status": "created,modified",
+				"removeFromController": "%s"
+			},
+			"children": []
+		}
+	}`, d.Get("pod_id").(string), d.Get("node_id").(string), removeFromController))
+
+	if commission == "yes" {
+		nodePayload = []byte(fmt.Sprintf(`{
 			"fabricRsDecommissionNode": {
 				"attributes": {
 					"tDn": "topology/pod-%s/node-%s",
-					"status": "created,modified",
-					"removeFromController": "true"
+					"status": "deleted"
 				},
 				"children": []
 			}
-		}`
+		}`, d.Get("pod_id").(string), d.Get("node_id").(string)))
+	}
 
-	httpRequestPayload, err := aciClient.MakeRestRequestRaw("POST", "api/node/mo/uni/fabric/outofsvc.json", []byte(fmt.Sprintf(nodePayload, d.Get("pod_id").(string), d.Get("node_id").(string))), true)
+	httpRequestPayload, err := aciClient.MakeRestRequestRaw("POST", "api/node/mo/uni/fabric/outofsvc.json", nodePayload, true)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -361,6 +418,10 @@ func removeFabricNodeMemberFromController(d *schema.ResourceData, m interface{})
 		return diag.FromErr(err)
 	}
 
-	log.Printf("[DEBUG] %s: Decommission finished successfully", d.Id())
+	if commission == "no" {
+		log.Printf("[DEBUG] %s: Decommission finished successfully", d.Id())
+	} else {
+		log.Printf("[DEBUG] %s: Commission finished successfully", d.Id())
+	}
 	return nil
 }
