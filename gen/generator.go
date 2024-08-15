@@ -712,7 +712,9 @@ func main() {
 	for _, model := range classModels {
 
 		// Only render resources and datasources when the class has a unique identifier or is marked as include in the classes definitions YAML file
-		if len(model.IdentifiedBy) > 0 || model.Include {
+		// And only render when the class is also not a Rs object and is not set to max one class allowed
+		// TODO might need to extend this last condition in the future
+		if (len(model.IdentifiedBy) > 0 || model.Include) && !(strings.HasPrefix(model.RnFormat, "rs") && model.MaxOneClassAllowed) {
 
 			// All classmodels have been read, thus now the model, child and relational resources names can be set
 			// When done before additional files would need to be opened and read which would slow down the generation process
