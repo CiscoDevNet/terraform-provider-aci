@@ -1464,7 +1464,7 @@ func get{{$.ResourceClassName}}{{ .ResourceClassName }}ChildPayloads(ctx context
 	
 	childPayloads := []map[string]interface{}{}
 	if !data.{{ .ResourceClassName }}.IsUnknown() {
-	{{- if .IdentifiedBy}}
+	{{- if and .IdentifiedBy (not (and .MaxOneClassAllowed (hasPrefix .RnFormat  "rs")))}}
 		{{ .PkgName }}Identifiers := []{{ .ResourceClassName }}Identifier{}
 	{{- end}}
 		for _, {{ .PkgName }} := range {{ .PkgName }}Plan {
@@ -1485,7 +1485,7 @@ func get{{$.ResourceClassName}}{{ .ResourceClassName }}ChildPayloads(ctx context
 			} {{- end}}
 		{{- end}}
 			childPayloads = append(childPayloads, map[string]interface{}{"{{ .PkgName }}": childMap})
-		{{- if .IdentifiedBy}}
+		{{- if and .IdentifiedBy (not (and .MaxOneClassAllowed (hasPrefix .RnFormat  "rs")))}}
 			{{ .PkgName }}Identifier := {{ .ResourceClassName }}Identifier{}
 				{{- range .Properties}}
 					{{- if .IsNaming}}
@@ -1495,7 +1495,7 @@ func get{{$.ResourceClassName}}{{ .ResourceClassName }}ChildPayloads(ctx context
 			{{ .PkgName }}Identifiers = append({{ .PkgName }}Identifiers, {{ .PkgName }}Identifier)
 		{{- end}}
 		}
-		{{- if .IdentifiedBy}}
+		{{- if and .IdentifiedBy (not (and .MaxOneClassAllowed (hasPrefix .RnFormat  "rs")))}}
 		for _, {{ .PkgName }} := range {{ .PkgName }}State {
 			delete := true
 			for _, {{ .PkgName }}Identifier := range {{ .PkgName }}Identifiers { {{$i := 1}}{{$length := len .IdentifiedBy}}
@@ -1525,6 +1525,13 @@ func get{{$.ResourceClassName}}{{ .ResourceClassName }}ChildPayloads(ctx context
 			{{- if .AllowDelete}}
 			childMap := map[string]map[string]interface{}{"attributes": {}}
 			childMap["attributes"]["status"] = "deleted"
+			{{- if .IdentifiedBy}}
+				{{- range .Properties}}
+					{{- if .IsNaming }}
+			childMap["attributes"]["{{.PropertyName}}"] = {{ .PkgName }}State[0].{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}.ValueString()
+					{{- end}}
+				{{- end}}
+			{{- end}}
 			childPayloads = append(childPayloads, map[string]interface{}{"{{ .PkgName }}": childMap})
 			{{- else}}
 			diags.AddError(

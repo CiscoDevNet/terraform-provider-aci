@@ -720,7 +720,6 @@ func getInfraHPathSInfraRsHPathAttChildPayloads(ctx context.Context, diags *diag
 
 	childPayloads := []map[string]interface{}{}
 	if !data.InfraRsHPathAtt.IsUnknown() {
-		infraRsHPathAttIdentifiers := []InfraRsHPathAttIdentifier{}
 		for _, infraRsHPathAtt := range infraRsHPathAttPlan {
 			childMap := map[string]map[string]interface{}{"attributes": {}}
 			if !infraRsHPathAtt.Annotation.IsUnknown() && !infraRsHPathAtt.Annotation.IsNull() {
@@ -732,24 +731,12 @@ func getInfraHPathSInfraRsHPathAttChildPayloads(ctx context.Context, diags *diag
 				childMap["attributes"]["tDn"] = infraRsHPathAtt.TDn.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"infraRsHPathAtt": childMap})
-			infraRsHPathAttIdentifier := InfraRsHPathAttIdentifier{}
-			infraRsHPathAttIdentifier.TDn = infraRsHPathAtt.TDn
-			infraRsHPathAttIdentifiers = append(infraRsHPathAttIdentifiers, infraRsHPathAttIdentifier)
 		}
-		for _, infraRsHPathAtt := range infraRsHPathAttState {
-			delete := true
-			for _, infraRsHPathAttIdentifier := range infraRsHPathAttIdentifiers {
-				if infraRsHPathAttIdentifier.TDn == infraRsHPathAtt.TDn {
-					delete = false
-					break
-				}
-			}
-			if delete {
-				childMap := map[string]map[string]interface{}{"attributes": {}}
-				childMap["attributes"]["status"] = "deleted"
-				childMap["attributes"]["tDn"] = infraRsHPathAtt.TDn.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"infraRsHPathAtt": childMap})
-			}
+		if len(infraRsHPathAttPlan) == 0 && len(infraRsHPathAttState) == 1 {
+			childMap := map[string]map[string]interface{}{"attributes": {}}
+			childMap["attributes"]["status"] = "deleted"
+			childMap["attributes"]["tDn"] = infraRsHPathAttState[0].TDn.ValueString()
+			childPayloads = append(childPayloads, map[string]interface{}{"infraRsHPathAtt": childMap})
 		}
 	} else {
 		data.InfraRsHPathAtt = types.SetNull(data.InfraRsHPathAtt.ElementType(ctx))
