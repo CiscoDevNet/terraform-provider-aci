@@ -64,24 +64,29 @@ func dataSourceAciFabricNodeMember() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+
+			"commission": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 		}),
 	}
 }
 
 func dataSourceAciFabricNodeMemberRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
-
 	serial := d.Get("serial").(string)
-
 	rn := fmt.Sprintf("controller/nodeidentpol/nodep-%s", serial)
-
 	dn := fmt.Sprintf("uni/%s", rn)
 
 	fabricNodeIdentP, err := getRemoteFabricNodeMember(aciClient, dn)
-
 	if err != nil {
 		return diag.FromErr(err)
 	}
+
+	getAndsetDecommissionedNodes(aciClient, serial, d)
+
 	_, err = setFabricNodeMemberAttributes(fabricNodeIdentP, d)
 	if err != nil {
 		return diag.FromErr(err)

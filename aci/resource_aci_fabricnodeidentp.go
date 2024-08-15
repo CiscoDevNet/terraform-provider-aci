@@ -346,11 +346,11 @@ func resourceAciFabricNodeMemberDelete(ctx context.Context, d *schema.ResourceDa
 	}
 	if attachedToSwitch {
 		decommissionFabricNodeMemberFromController("true", "no", d, m)
-	}
-
-	err = aciClient.DeleteByDn(dn, "fabricNodeIdentP")
-	if err != nil {
-		return diag.FromErr(err)
+	} else {
+		err = aciClient.DeleteByDn(dn, "fabricNodeIdentP")
+		if err != nil {
+			return diag.FromErr(err)
+		}
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
