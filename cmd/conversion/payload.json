@@ -1,41 +1,70 @@
 {
-  "fvAEPg": {
-    "attributes": {
-      "annotation": "tag_epg",
-      "dn": "aci_application_profile.app_profile_for_epg.id/epg-demo_epg",
-      "name": "demo_epg",
-      "nameAlias": "alias_epg",
-      "status": "created"
-    },
-    "children": []
-  },
-  "pimRouteMapPol": {
-    "attributes": {
-      "annotation": "annotation",
-      "dn": "uni/tn-demo_tenant/rtmap-test_name",
-      "name": "test_name",
-      "nameAlias": "name_alias",
-      "ownerKey": "owner_key",
-      "ownerTag": "owner_tag",
-      "status": "created"
-    },
-    "children": [
-      {
-        "tagAnnotation": {
-          "attributes": {
-            "key": "key_0",
-            "value": "value_1"
-          }
-        }
-      },
-      {
-        "tagTag": {
-          "attributes": {
-            "key": "key_0",
-            "value": "value_1"
+  "uni": {
+    "attributes": null,
+    "children": {
+      "fvTenant": {
+        "attributes": null,
+        "children": {
+          "fvAp": {
+            "attributes": null,
+            "children": {
+              "fvAEPg": {
+                "attributes": null,
+                "children": [
+                  {
+                    "fvAEPg": {
+                      "attributes": {
+                        "annotation": "tag_epg",
+                        "descr": "from terraform",
+                        "dn": "uni/tn-common/ap-default/epg-haris_demo_epg",
+                        "exceptionTag": "0",
+                        "floodOnEncap": "disabled",
+                        "fwdCtrl": "none",
+                        "name": "haris_demo_epg",
+                        "status": "created"
+                      },
+                      "children": [
+                        {
+                          "fvRsBd": {
+                            "attributes": {
+                              "annotation": "annotation1",
+                              "tnFvBDName": "default"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "fvAEPg": {
+                      "attributes": {
+                        "annotation": "tag_epg",
+                        "descr": "from terraform",
+                        "dn": "uni/tn-common/ap-default/epg-new_epg2",
+                        "exceptionTag": "0",
+                        "floodOnEncap": "disabled",
+                        "fwdCtrl": "none",
+                        "name": "new_epg2",
+                        "status": "created"
+                      },
+                      "children": [
+                        {
+                          "fvRsBd": {
+                            "attributes": {
+                              "annotation": "annotation1",
+                              "tnFvBDName": "default"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
           }
         }
       }
-    ]
+    }
   }
 }

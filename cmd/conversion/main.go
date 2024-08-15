@@ -6,11 +6,11 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"strings"
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/convert_funcs"
 )
 
-// Represents parts of the Terraform Plan we are interested in
 type Plan struct {
 	PlannedValues struct {
 		RootModule struct {
@@ -34,16 +34,34 @@ type Change struct {
 	} `json:"change"`
 }
 
-// Executes Terraform commands to create input JSON
+// Work in progress... getAciClass() needs to be generated and referenced outside of main
+func getAciClass(prefix string) string {
+	mapping := map[string]string{
+		"tn":        "fvTenant",
+		"epg":       "fvAEPg",
+		"ap":        "fvAp",
+		"BD":        "fvBD",
+		"subnet":    "fvSubnet",
+		"instP":     "l3extInstP",
+		"extsubnet": "l3extSubnet",
+		"ctx":       "fvCtx",
+	}
+
+	if class, found := mapping[prefix]; found {
+		return class
+	}
+	return ""
+}
+
 func runTerraform() (string, error) {
 	planBin := "plan.bin"
-	planJson := "plan.json"
+	planJSON := "plan.json"
 
 	if err := exec.Command("terraform", "plan", "-out="+planBin).Run(); err != nil {
 		return "", fmt.Errorf("failed to run terraform plan: %w", err)
 	}
 
-	output, err := os.Create(planJson)
+	output, err := os.Create(planJSON)
 	if err != nil {
 		return "", fmt.Errorf("failed to create json file: %w", err)
 	}
@@ -55,10 +73,9 @@ func runTerraform() (string, error) {
 		return "", fmt.Errorf("failed to run terraform show: %w", err)
 	}
 
-	return planJson, nil
+	return planJSON, nil
 }
 
-// Converts Plan json into bytes, then unmarshals into Plan struct
 func readPlan(jsonFile string) (Plan, error) {
 	var plan Plan
 	data, err := os.ReadFile(jsonFile)
@@ -86,171 +103,178 @@ func writeToFile(outputFile string, data map[string]interface{}) error {
 	return nil
 }
 
-func createItem(resourceType string, values map[string]interface{}, status string) map[string]interface{} {
-	if create, exists := convert_funcs.ResourceMap[resourceType]; exists {
-		item := create(values)
-		if status == "deleted" && item != nil {
-			if attributes, ok := item[resourceType].(map[string]interface{}); ok {
-				if attrs, ok := attributes["attributes"].(map[string]interface{}); ok {
-					if status != "" {
-						attrs["status"] = status
-					}
-				}
-			}
-		}
-		return item
+func createPayload(resourceType string, values map[string]interface{}, status string) map[string]interface{} {
+	if createFunc, exists := convert_funcs.ResourceMap[resourceType]; exists {
+		payload := createFunc(values)
+
+		return payload
 	}
 	return nil
 }
 
-// Ranges through resources to create each item, adds to []map[string]interface{}
-func createItemList(plan Plan) []map[string]interface{} {
+func createPayloadList(plan Plan) []map[string]interface{} {
 	var data []map[string]interface{}
 
-	// Create deleted items
 	for _, change := range plan.Changes {
 		if len(change.Change.Actions) > 0 && change.Change.Actions[0] == "delete" {
-			item := createItem(change.Type, change.Change.Before, "deleted")
-			if item != nil {
-				data = append(data, item)
+			payload := createPayload(change.Type, change.Change.Before, "deleted")
+			if payload != nil {
+				data = append(data, payload)
 			}
 		}
 	}
 
-	// Create-created items and include parent_dn if exists for tree construction
 	for _, resource := range plan.PlannedValues.RootModule.Resources {
-		item := createItem(resource.Type, resource.Values, "")
-		if item != nil {
-			for _, value := range item {
-				if obj, ok := value.(map[string]interface{}); ok {
-					if attributes, ok := obj["attributes"].(map[string]interface{}); ok {
-						if parentDn, ok := resource.Values["parent_dn"].(string); ok && parentDn != "" {
-							attributes["parent_dn"] = parentDn
-						}
-					}
-				}
-			}
-			data = append(data, item)
+		payload := createPayload(resource.Type, resource.Values, "")
+		if payload != nil {
+			data = append(data, payload)
 		}
 	}
 
 	return data
 }
 
-func constructTree(data []map[string]interface{}) map[string]interface{} {
-	resourceMap := make(map[string]map[string]interface{})
-	parentChildMap := make(map[string][]map[string]interface{})
+// Work in progress... based on constructTree() implementation from ansible-nd/plugins/module_utils/ndi.py
+func constructTree(resources []map[string]interface{}) map[string]interface{} {
 
-	for _, item := range data {
-		for key, value := range item {
-			if obj, ok := value.(map[string]interface{}); ok {
-				if attributes, ok := obj["attributes"].(map[string]interface{}); ok {
-					if dn, ok := attributes["dn"].(string); ok {
-						resourceMap[dn] = map[string]interface{}{key: obj}
-						if parentDn, ok := attributes["parent_dn"].(string); ok && parentDn != "" {
-							parentChildMap[parentDn] = append(parentChildMap[parentDn], map[string]interface{}{key: obj})
-						}
+	rootNode := map[string]interface{}{
+		"attributes": nil,
+		"children":   map[string]interface{}{},
+	}
+
+	for _, resourceList := range resources {
+		for resourceType, resourceData := range resourceList {
+			resourceAttributes, valid := resourceData.(map[string]interface{})
+			if !valid {
+				continue
+			}
+
+			attributes, valid := resourceAttributes["attributes"].(map[string]interface{})
+			if !valid {
+				continue
+			}
+
+			dn, valid := attributes["dn"].(string)
+			if !valid {
+				continue
+			}
+
+			pathSegments := parsePath(dn)
+			currentNode := rootNode
+			currentDn := ""
+
+			for i, segment := range pathSegments {
+				if i == 0 && segment == "uni" {
+					continue
+				}
+
+				currentDn = strings.TrimPrefix(currentDn+"/"+segment, "/")
+
+				prefix := strings.Split(segment, "-")[0]
+				className := getAciClass(prefix)
+				if className == "" {
+					className = segment
+				}
+
+				childNodes, valid := currentNode["children"].(map[string]interface{})
+				if !valid {
+					childNodes = map[string]interface{}{}
+					currentNode["children"] = childNodes
+				}
+
+				if _, exists := childNodes[className]; !exists {
+					childNodes[className] = map[string]interface{}{
+						"attributes": nil,
+						"children":   []map[string]interface{}{},
 					}
 				}
+
+				nextNode, valid := childNodes[className].(map[string]interface{})
+				if !valid {
+					continue
+				}
+				currentNode = nextNode
 			}
+
+			childList, valid := currentNode["children"].([]map[string]interface{})
+			if !valid {
+				childList = []map[string]interface{}{}
+			}
+
+			childList = append(childList, map[string]interface{}{
+				resourceType: resourceAttributes,
+			})
+
+			currentNode["children"] = childList
 		}
 	}
 
-	for parentDn, children := range parentChildMap {
-		if parent, exists := resourceMap[parentDn]; exists {
-			attachChildren(parent, children)
-		} else {
-			// If parent doesn't exist, create placeholder item
-			missingParent := map[string]interface{}{
-				"unknownParent": map[string]interface{}{
-					"attributes": map[string]interface{}{
-						"dn": parentDn,
-					},
-					"children": children,
-				},
-			}
-			resourceMap[parentDn] = missingParent
-		}
+	return map[string]interface{}{
+		"uni": rootNode,
 	}
+}
 
-	tree := make(map[string]interface{})
-	for _, resource := range resourceMap {
-		for key, obj := range resource {
-			if key == "unknownParent" {
-				children := obj.(map[string]interface{})["children"].([]map[string]interface{})
-				for _, child := range children {
-					for childKey, childValue := range child {
-						tree[childKey] = childValue
-					}
+func parsePath(dn string) []string {
+	var pathSegments []string
+	var segmentBuffer string
+	inBracket := false
+
+	for _, char := range dn {
+		switch char {
+		case '/':
+			if !inBracket {
+				if segmentBuffer != "" {
+					pathSegments = append(pathSegments, segmentBuffer)
+					segmentBuffer = ""
 				}
 			} else {
-				if attributes, ok := obj.(map[string]interface{})["attributes"].(map[string]interface{}); ok {
-					if parentDn, ok := attributes["parent_dn"].(string); !ok || parentDn == "" {
-						tree[key] = obj
-					}
-				}
+				segmentBuffer += string(char)
 			}
+		case '[':
+			inBracket = true
+			segmentBuffer += string(char)
+		case ']':
+			inBracket = false
+			segmentBuffer += string(char)
+		default:
+			segmentBuffer += string(char)
 		}
 	}
 
-	return tree
-}
+	if segmentBuffer != "" {
+		pathSegments = append(pathSegments, segmentBuffer)
+	}
 
-func attachChildren(parent map[string]interface{}, children []map[string]interface{}) {
-	for _, value := range parent {
-		if obj, ok := value.(map[string]interface{}); ok {
-			if objChildren, ok := obj["children"].([]map[string]interface{}); ok {
-				obj["children"] = append(objChildren, children...)
-			} else {
-				obj["children"] = children
-			}
-		}
-	}
-}
-
-func removeAttributes(obj map[string]interface{}) {
-	if attributes, ok := obj["attributes"].(map[string]interface{}); ok {
-		delete(attributes, "parent_dn")
-	}
-	if children, ok := obj["children"].([]map[string]interface{}); ok {
-		for _, child := range children {
-			for _, childObj := range child {
-				removeAttributes(childObj.(map[string]interface{}))
-			}
-		}
-	}
-}
-
-func traverseAndRemoveAttributes(data []map[string]interface{}) {
-	for _, item := range data {
-		for _, value := range item {
-			removeAttributes(value.(map[string]interface{}))
-		}
-	}
+	return pathSegments
 }
 
 func main() {
 	if len(os.Args) != 1 {
-		fmt.Println("Usage: go run aci_converter.go")
+		fmt.Println("Usage: no arguments needed")
 		os.Exit(1)
 	}
 
 	outputFile := "payload.json"
 
+	// Run Terraform commands, generate the plan JSON
 	planJSON, err := runTerraform()
 	if err != nil {
 		log.Fatalf("Error running Terraform: %v", err)
 	}
 
+	// Read the plan file and unmarshal it into a Plan struct
 	plan, err := readPlan(planJSON)
 	if err != nil {
 		log.Fatalf("Error reading plan: %v", err)
 	}
 
-	jsonDump := createItemList(plan)
+	// Create the payload list from the plan
+	payloadList := createPayloadList(plan)
 
-	aciPayload := constructTree(jsonDump)
+	// Construct the tree from the payload list
+	aciPayload := constructTree(payloadList)
 
+	// Writes the final ACI payload to the output file
 	err = writeToFile(outputFile, aciPayload)
 	if err != nil {
 		log.Fatalf("Error writing output file: %v", err)

@@ -529,7 +529,7 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 		}
 
 		if (planData.Id.IsUnknown() || planData.Id.IsNull()) {{if .HasParent }}&& !planData.ParentDn.IsUnknown() {{end}}{{range .Properties}}{{if .IsNaming}}&& !planData.{{ .Name }}.IsUnknown() {{end}}{{end}}{
-			set{{.ResourceClassName}}Id(ctx, planData)
+			Set{{.ResourceClassName}}Id(ctx, planData)
 		}
 
 		if stateData == nil && !globalAllowExistingOnCreate && !planData.Id.IsUnknown() && !planData.Id.IsNull() {

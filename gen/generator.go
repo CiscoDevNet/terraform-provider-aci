@@ -414,15 +414,12 @@ func renderTemplate(templateName, outputFileName, outputPath string, outputData 
 	if strings.Contains(templateName, "go.tmpl") {
 		bytes, err = format.Source(buffer.Bytes())
 		if err != nil {
-			// If the template is not valid Go code, write the code as text to a file for debugging purposes
-			// This is done because the error message from the format.Source function is not very helpful
+
 			os.WriteFile(fmt.Sprintf("%s/failed_render.go", outputPath), buffer.Bytes(), 0644)
 			panic(err)
 		}
 	}
 
-	// check if file already exists because all files generated should not exist and cleaned during the cleanDirectories functions
-	// when a file already exists, the generation process is stopped to prevent overwriting existing files (main use case is to prevent overwriting migrated documentation files)
 	_, error := os.Stat(fmt.Sprintf("%s/%s", outputPath, outputFileName))
 	if error == nil {
 		panic(fmt.Sprintf("File %s already exists", fmt.Sprintf("%s/%s", outputPath, outputFileName)))
@@ -697,6 +694,34 @@ func genAnnotationUnsupported() []string {
 	return classes
 }
 
+func renderTemplateModels(templateName, outputFileName, outputPath string, outputData interface{}) {
+	templateData, err := os.ReadFile(fmt.Sprintf("%s/%s", templatePath, templateName))
+	if err != nil {
+		panic(err)
+	}
+	var buffer bytes.Buffer
+	tmpl := template.Must(template.New("").Funcs(templateFuncs).Parse(string(templateData)))
+
+	err = tmpl.Execute(&buffer, outputData)
+	if err != nil {
+		panic(err)
+	}
+	bytes := buffer.Bytes()
+	if strings.Contains(templateName, "go.tmpl") {
+		bytes, err = format.Source(buffer.Bytes())
+		if err != nil {
+			os.WriteFile(fmt.Sprintf("%s/failed_render.go", outputPath), buffer.Bytes(), 0644)
+			panic(err)
+		}
+	}
+
+	outputFile, err := os.Create(fmt.Sprintf("%s/%s", outputPath, outputFileName))
+	if err != nil {
+		panic(err)
+	}
+	outputFile.Write(bytes)
+}
+
 func main() {
 	getClassMetadata()
 	cleanDirectories()
@@ -786,6 +811,24 @@ func main() {
 			renderTemplate("resource_test.go.tmpl", fmt.Sprintf("resource_%s_%s_test.go", providerName, model.ResourceName), providerPath, model)
 			renderTemplate("datasource_test.go.tmpl", fmt.Sprintf("data_source_%s_%s_test.go", providerName, model.ResourceName), providerPath, model)
 			renderTemplate("conversion.go.tmpl", fmt.Sprintf("conversion_%s.go", model.ResourceName), conversionPath, model)
+
+			allModels := []Model{}
+
+			for _, model := range classModels {
+				if len(model.IdentifiedBy) > 0 || model.Include {
+					model.ResourceName = GetResourceName(model.PkgName, definitions)
+
+					allModels = append(allModels, model)
+				}
+			}
+
+			// Create a map or struct to hold the data for the template
+			data := map[string]interface{}{
+				"Models": allModels,
+			}
+
+			renderTemplateModels("resourceMap.go.tmpl", "resourceMap.go", conversionPath, data)
+
 		}
 	}
 

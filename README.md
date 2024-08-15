@@ -292,7 +292,7 @@ To compile the provider, run `make build`. This will build the provider with san
 
 The aci_converter.go is a tool that can be used to convert the Terraform configuration to an ACI payload. 
 
-1. Navigate to the converter directory
+1. Navigate to the conversion directory
 2. Create configuration in main.tf
-3. Run `go run converter.go` 
+3. Run './conversion'
 4. The ACI payload for the Terraform Plan will be written to payload.json

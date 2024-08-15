@@ -1,9 +1,25 @@
+package convert_funcs
+
+import (
+	"context"
+	"encoding/json"
+	
+
+	//"github.com/CiscoDevNet/terraform-provider-aci/v2/convert_funcs"
+	//"github.com/CiscoDevNet/terraform-provider-aci/v2/convert_funcs"
+
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider"
+	"github.com/ciscoecosystem/aci-go-client/v2/container"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 {{- $resourceClassName := .ResourceClassName }}
 {{- $resourceName := .ResourceName }}
 {{- $properties := .Properties }}
 {{- $children := .Children }}
 
-func create{{ $resourceClassName }}(attributes map[string]interface{}) map[string]interface{} {
+
+func Create{{ $resourceClassName }}(attributes map[string]interface{}) map[string]interface{} {
 	ctx := context.Background()
 	var diags diag.Diagnostics
 	data := &provider.{{ $resourceClassName }}ResourceModel{}
@@ -15,7 +31,7 @@ func create{{ $resourceClassName }}(attributes map[string]interface{}) map[strin
 	{{- end }}
 
 	{{- range $properties }}
-	if v, ok := attributes["{{ .SnakeCaseName }}"].(string); ok && v != "" {
+	if v, ok := attributes["{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}"].(string); ok && v != "" {
 		data.{{- if eq .Name "Id" }}{{ $resourceClassName }}{{ .Name }}{{- else }}{{ .Name }}{{- end }} = types.StringValue(v)
 	}
 	{{- end }}
@@ -24,22 +40,26 @@ func create{{ $resourceClassName }}(attributes map[string]interface{}) map[strin
 	plan{{ .ResourceClassName }} := convertTo{{ .ResourceClassName }}{{ $resourceClassName }}(attributes["{{ .ResourceName }}"])
 	{{- end }}
 
-	newAci{{ $resourceClassName }} := provider.Get{{ $resourceClassName }}CreateJsonPayload(ctx, &diags, data
+	newAci{{ $resourceClassName }} := provider.Get{{ $resourceClassName }}CreateJsonPayload(ctx, &diags, true, data
 		{{- range $children }}, plan{{ .ResourceClassName }}, plan{{ .ResourceClassName }}{{- end }})
 
 	jsonPayload := newAci{{ $resourceClassName }}.EncodeJSON(container.EncodeOptIndent("", "  "))
-	payload, err := parseCustomJSON(jsonPayload)
-	if err != nil {
-		log.Fatalf("Error unmarshalling JSON: %v\n", err)
-	}
+
+
+
+	var customData map[string]interface{}
+	json.Unmarshal(jsonPayload, &customData)
+	
+
+	payload := customData
+
+	
 
 	provider.Set{{ $resourceClassName }}Id(ctx, data)
 	attrs := payload["{{lowercaseFirst $resourceClassName }}"].(map[string]interface{})["attributes"].(map[string]interface{})
 	attrs["dn"] = data.Id.ValueString()
 
-	if status, ok := attributes["status"].(string); ok && status != "" {
-		attrs["status"] = status
-	}
+	
 
 	return payload
 }
@@ -52,7 +72,7 @@ func convertTo{{ .ResourceClassName }}{{ $resourceClassName }}(resources interfa
 			resourceMap := resource.(map[string]interface{})
 			planResources = append(planResources, provider.{{ .ResourceClassName }}{{ $resourceClassName }}ResourceModel{
 				{{- range .Properties }}
-				{{ .Name }}: types.StringValue(resourceMap["{{ .SnakeCaseName }}"].(string)),
+				{{ .Name }}: types.StringValue(resourceMap["{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}"].(string)),
 				{{- end }}
 			})
 		}
@@ -60,3 +80,5 @@ func convertTo{{ .ResourceClassName }}{{ $resourceClassName }}(resources interfa
 	return planResources
 }
 {{- end }}
+
+

@@ -1,0 +1,9 @@
+package convert_funcs
+
+type createFunc func(map[string]interface{}) map[string]interface{}
+
+var ResourceMap = map[string]createFunc{
+    {{- range $index, $model := .Models }}
+    "aci_{{ $model.ResourceName }}": Create{{ $model.ResourceClassName }},
+    {{- end }}
+}

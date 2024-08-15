@@ -1,0 +1,7 @@
+package convert_funcs
+
+var resourceMap = map[string]createFunc{
+{{- range . }}
+	"{{ .PkgName }}" : convert_funcs.Create{{.ResourceClassName }},
+{{- end }}
+}

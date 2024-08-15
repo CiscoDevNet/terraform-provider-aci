@@ -17,9 +17,43 @@ provider "aci" {
   insecure = true
 }
 
+# Defines an Application EPG Resource.
+
+resource "aci_application_epg" "fooapplication_epg" {
+    parent_dn  = "uni/tn-common/ap-default"
+    name                    = "haris_demo_epg"
+    description             = "from terraform"
+    annotation              = "tag_epg"
+    contract_exception_tag  = "0"
+    flood_in_encapsulation  = "disabled"
+    forwarding_control      = "none"
+    
+    relation_to_bridge_domain= [{
+      annotation = "annotation1"
+      bridge_domain_name = "default"
+    }]
+}
+
+
+resource "aci_application_epg" "fooapplication_epg2" {
+    parent_dn  = "uni/tn-common/ap-default"
+    name                    = "new_epg2"
+    description             = "from terraform"
+    annotation              = "tag_epg"
+    contract_exception_tag  = "0"
+    flood_in_encapsulation  = "disabled"
+    forwarding_control      = "none"
+    
+    relation_to_bridge_domain= [{
+      annotation = "annotation1"
+      bridge_domain_name = "default"
+    }]
+}
+
+
 # Define an ACI Tenant Resource.
 
-/* SUCCESS
+/*
 resource "aci_endpoint_tag_ip" "full_example_tenant" {
   parent_dn    = "uni/tn-demo_tenant"
   annotation   = "annotation"
@@ -41,12 +75,12 @@ resource "aci_endpoint_tag_ip" "full_example_tenant" {
     }
   ]
 }
-
 */
+
 //SUCCESS
 /*
 resource "aci_vrf_fallback_route_group" "full_example_vrf" {
-  parent_dn   = "uni/tn-mgmt/extmgmt-default/instp-test_name"
+  parent_dn   = "uni/tn-demo_tenant"
   annotation  = "annotation"
   description = "description"
   name        = "fallback_route_group"
@@ -196,16 +230,7 @@ resource "aci_annotation" "terraform_annotation" {
 
 */
 
-resource "aci_application_epg" "fooapplication_epg" {
-    parent_dn  = "aci_application_profile.app_profile_for_epg.id"
-    name                    = "demo_epg"
-    description             = "from terraform"
-    annotation              = "tag_epg"
-    name_alias              = "alias_epg"
-   
-}
-
-
+/*
 resource "aci_pim_route_map_policy" "full_example_tenant" {
   parent_dn   = "uni/tn-demo_tenant"
   annotation  = "annotation"
@@ -227,7 +252,7 @@ resource "aci_pim_route_map_policy" "full_example_tenant" {
     }
   ]
 }
-
+*/
 # Define an ACI Tenant VRF Resource.
 # resource "aci_vrf" "terraform_vrf" {
 #     tenant_dn   = aci_tenant.terraform_tenant.id
