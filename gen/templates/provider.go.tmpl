@@ -204,7 +204,7 @@ func (p *AciProvider) Configure(ctx context.Context, req provider.ConfigureReque
 func (p *AciProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
 		{{- range . }}
-			{{- if and (or .IdentifiedBy .Include) (not (and .MaxOneClassAllowed (hasPrefix .RnFormat  "rs")))}}
+			{{- if or (and .IdentifiedBy (not (and .MaxOneClassAllowed (hasPrefix .RnFormat  "rs")))) .Include}}
 		New{{.ResourceClassName}}Resource,
 			{{- end }}
 		{{- end }}
@@ -215,7 +215,7 @@ func (p *AciProvider) Resources(ctx context.Context) []func() resource.Resource 
 func (p *AciProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
 		{{- range . }}
-			{{- if and (or .IdentifiedBy .Include) (not (and .MaxOneClassAllowed (hasPrefix .RnFormat  "rs")))}}
+			{{- if or (and .IdentifiedBy (not (and .MaxOneClassAllowed (hasPrefix .RnFormat  "rs")))) .Include}}
 		New{{.ResourceClassName}}DataSource,
 			{{- end }}
 		{{- end }}

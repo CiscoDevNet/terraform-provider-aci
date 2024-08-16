@@ -73,7 +73,7 @@ func (d *InfraHPathSDataSource) Schema(ctx context.Context, req datasource.Schem
 				Computed:            true,
 				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
 			},
-			"relation_to_host_paths": schema.SetNestedAttribute{
+			"relation_to_host_path": schema.SetNestedAttribute{
 				MarkdownDescription: ``,
 				Computed:            true,
 				NestedObject: schema.NestedAttributeObject{

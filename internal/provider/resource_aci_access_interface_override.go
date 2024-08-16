@@ -52,7 +52,7 @@ type InfraHPathSResourceModel struct {
 	NameAlias               types.String `tfsdk:"name_alias"`
 	OwnerKey                types.String `tfsdk:"owner_key"`
 	OwnerTag                types.String `tfsdk:"owner_tag"`
-	InfraRsHPathAtt         types.Set    `tfsdk:"relation_to_host_paths"`
+	InfraRsHPathAtt         types.Set    `tfsdk:"relation_to_host_path"`
 	InfraRsPathToAccBaseGrp types.Set    `tfsdk:"relation_to_access_interface_policy_group"`
 	TagAnnotation           types.Set    `tfsdk:"annotations"`
 	TagTag                  types.Set    `tfsdk:"tags"`
@@ -261,7 +261,7 @@ func (r *InfraHPathSResource) Schema(ctx context.Context, req resource.SchemaReq
 				},
 				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
 			},
-			"relation_to_host_paths": schema.SetNestedAttribute{
+			"relation_to_host_path": schema.SetNestedAttribute{
 				MarkdownDescription: ``,
 				Optional:            true,
 				Computed:            true,

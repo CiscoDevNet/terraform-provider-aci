@@ -6,7 +6,7 @@ resource "aci_access_interface_override" "full_example" {
   name_alias  = "name_alias_1"
   owner_key   = "owner_key_1"
   owner_tag   = "owner_tag_1"
-  relation_to_host_paths = [
+  relation_to_host_path = [
     {
       annotation = "annotation_1"
       target_dn  = "topology/pod-1/paths-101/pathep-[eth1/1]"
