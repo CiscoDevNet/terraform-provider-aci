@@ -34,9 +34,9 @@ resource "aci_application_epg" "fooapplication_epg" {
     }]
 }
 
-
+/*
 resource "aci_application_epg" "fooapplication_epg2" {
-    parent_dn  = "uni/tn-common/ap-default"
+    parent_dn  = "uni/tn-common/ap-default222"
     name                    = "new_epg2"
     description             = "from terraform"
     annotation              = "tag_epg"
@@ -49,7 +49,7 @@ resource "aci_application_epg" "fooapplication_epg2" {
       bridge_domain_name = "default"
     }]
 }
-
+*/
 
 # Define an ACI Tenant Resource.
 

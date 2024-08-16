@@ -1,0 +1,18 @@
+package convert_funcs
+
+
+type GetAciClass func(string) string
+
+func AciClassMap(prefix string) string {
+    mapping := map[string]string{
+        {{- range $index, $model := .Models }}
+        "{{ trimRnName $model.RnFormat }}": "{{ $model.ResourceClassName }}",
+        {{- end }}
+    }
+
+    if class, found := mapping[prefix]; found {
+        return class
+    }
+    return ""
+}
+

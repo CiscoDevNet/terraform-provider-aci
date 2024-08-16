@@ -103,6 +103,7 @@ func writeToFile(outputFile string, data map[string]interface{}) error {
 	return nil
 }
 
+// Create functions need to be revised, need condition statement to either call delete or create jsonPayload
 func createPayload(resourceType string, values map[string]interface{}, status string) map[string]interface{} {
 	if createFunc, exists := convert_funcs.ResourceMap[resourceType]; exists {
 		payload := createFunc(values)
@@ -138,32 +139,23 @@ func createPayloadList(plan Plan) []map[string]interface{} {
 func constructTree(resources []map[string]interface{}) map[string]interface{} {
 
 	rootNode := map[string]interface{}{
-		"attributes": nil,
-		"children":   map[string]interface{}{},
+		"children": map[string]interface{}{},
 	}
 
 	for _, resourceList := range resources {
 		for resourceType, resourceData := range resourceList {
-			resourceAttributes, valid := resourceData.(map[string]interface{})
-			if !valid {
-				continue
-			}
+			resourceAttributes := resourceData.(map[string]interface{})
 
-			attributes, valid := resourceAttributes["attributes"].(map[string]interface{})
-			if !valid {
-				continue
-			}
+			attributes := resourceAttributes["attributes"].(map[string]interface{})
 
-			dn, valid := attributes["dn"].(string)
-			if !valid {
-				continue
-			}
+			dn := attributes["dn"].(string)
 
 			pathSegments := parsePath(dn)
 			currentNode := rootNode
 			currentDn := ""
 
 			for i, segment := range pathSegments {
+
 				if i == 0 && segment == "uni" {
 					continue
 				}
@@ -176,8 +168,8 @@ func constructTree(resources []map[string]interface{}) map[string]interface{} {
 					className = segment
 				}
 
-				childNodes, valid := currentNode["children"].(map[string]interface{})
-				if !valid {
+				childNodes, ok := currentNode["children"].(map[string]interface{})
+				if !ok {
 					childNodes = map[string]interface{}{}
 					currentNode["children"] = childNodes
 				}
@@ -189,15 +181,15 @@ func constructTree(resources []map[string]interface{}) map[string]interface{} {
 					}
 				}
 
-				nextNode, valid := childNodes[className].(map[string]interface{})
-				if !valid {
+				nextNode, ok := childNodes[className].(map[string]interface{})
+				if !ok {
 					continue
 				}
 				currentNode = nextNode
 			}
 
-			childList, valid := currentNode["children"].([]map[string]interface{})
-			if !valid {
+			childList, ok := currentNode["children"].([]map[string]interface{})
+			if !ok {
 				childList = []map[string]interface{}{}
 			}
 
@@ -216,33 +208,33 @@ func constructTree(resources []map[string]interface{}) map[string]interface{} {
 
 func parsePath(dn string) []string {
 	var pathSegments []string
-	var segmentBuffer string
+	var tempSegment string
 	inBracket := false
 
 	for _, char := range dn {
 		switch char {
 		case '/':
 			if !inBracket {
-				if segmentBuffer != "" {
-					pathSegments = append(pathSegments, segmentBuffer)
-					segmentBuffer = ""
+				if tempSegment != "" {
+					pathSegments = append(pathSegments, tempSegment)
+					tempSegment = ""
 				}
 			} else {
-				segmentBuffer += string(char)
+				tempSegment += string(char)
 			}
 		case '[':
 			inBracket = true
-			segmentBuffer += string(char)
+			tempSegment += string(char)
 		case ']':
 			inBracket = false
-			segmentBuffer += string(char)
+			tempSegment += string(char)
 		default:
-			segmentBuffer += string(char)
+			tempSegment += string(char)
 		}
 	}
 
-	if segmentBuffer != "" {
-		pathSegments = append(pathSegments, segmentBuffer)
+	if tempSegment != "" {
+		pathSegments = append(pathSegments, tempSegment)
 	}
 
 	return pathSegments
@@ -268,13 +260,10 @@ func main() {
 		log.Fatalf("Error reading plan: %v", err)
 	}
 
-	// Create the payload list from the plan
 	payloadList := createPayloadList(plan)
 
-	// Construct the tree from the payload list
 	aciPayload := constructTree(payloadList)
 
-	// Writes the final ACI payload to the output file
 	err = writeToFile(outputFile, aciPayload)
 	if err != nil {
 		log.Fatalf("Error writing output file: %v", err)

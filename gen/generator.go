@@ -81,6 +81,7 @@ const pubhupDevnetBaseUrl = "https://pubhub.devnetcloud.com/media/model-doc-late
 // The map contains a key which is the name of the function used in the template and a value which is the function itself
 // The functions itself are defined in the current file
 var templateFuncs = template.FuncMap{
+	"trimRnName":                        trimRnName,
 	"lowercaseFirst":                    LowercaseFirst,
 	"snakeCase":                         Underscore,
 	"validatorString":                   ValidatorString,
@@ -822,12 +823,12 @@ func main() {
 				}
 			}
 
-			// Create a map or struct to hold the data for the template
 			data := map[string]interface{}{
 				"Models": allModels,
 			}
 
 			renderTemplateModels("resourceMap.go.tmpl", "resourceMap.go", conversionPath, data)
+			renderTemplateModels("getAciClass.go.tmpl", "getAciClass.go", conversionPath, data)
 
 		}
 	}
@@ -1081,6 +1082,26 @@ func (m *Model) SetClassLabel(classDetails interface{}, child bool) {
 		labels = append(labels, m.Label)
 		resourceNames[m.PkgName] = m.Label
 	}
+}
+
+func trimRnName(resourceNamingFormat string) string {
+	placeholderRegex := regexp.MustCompile(`\{[^}]}`)
+
+	resourceNamingWithoutPlaceholders := placeholderRegex.ReplaceAllString(resourceNamingFormat, "")
+
+	prefix := ""
+
+	for _, character := range resourceNamingWithoutPlaceholders {
+		if character == '-' || character == '/' || character == '_' {
+			break
+		}
+		prefix += string(character)
+	}
+
+	if len(prefix) > 0 {
+		return prefix
+	}
+	return ""
 }
 
 // Remove duplicates from a slice of interfaces

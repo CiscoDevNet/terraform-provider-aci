@@ -1,6 +1,5 @@
 {
   "uni": {
-    "attributes": null,
     "children": {
       "fvTenant": {
         "attributes": null,
@@ -21,30 +20,6 @@
                         "floodOnEncap": "disabled",
                         "fwdCtrl": "none",
                         "name": "haris_demo_epg",
-                        "status": "created"
-                      },
-                      "children": [
-                        {
-                          "fvRsBd": {
-                            "attributes": {
-                              "annotation": "annotation1",
-                              "tnFvBDName": "default"
-                            }
-                          }
-                        }
-                      ]
-                    }
-                  },
-                  {
-                    "fvAEPg": {
-                      "attributes": {
-                        "annotation": "tag_epg",
-                        "descr": "from terraform",
-                        "dn": "uni/tn-common/ap-default/epg-new_epg2",
-                        "exceptionTag": "0",
-                        "floodOnEncap": "disabled",
-                        "fwdCtrl": "none",
-                        "name": "new_epg2",
                         "status": "created"
                       },
                       "children": [
