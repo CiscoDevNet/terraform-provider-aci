@@ -712,9 +712,9 @@ func main() {
 	for _, model := range classModels {
 
 		// Only render resources and datasources when the class has a unique identifier or is marked as include in the classes definitions YAML file
-		// And only render when the class is also not a Rs object and is not set to max one class allowed
-		// TODO might need to extend this last condition in the future
-		if (len(model.IdentifiedBy) > 0 || model.Include) && !(strings.HasPrefix(model.RnFormat, "rs") && model.MaxOneClassAllowed) {
+		// And if the class has a unique identifier, only render when the class is also not a Rs object and is not set to max one class allowed
+		// TODO might need to modify this last condition in the future
+		if (len(model.IdentifiedBy) > 0 && !(strings.HasPrefix(model.RnFormat, "rs") && model.MaxOneClassAllowed)) || model.Include {
 
 			// All classmodels have been read, thus now the model, child and relational resources names can be set
 			// When done before additional files would need to be opened and read which would slow down the generation process
@@ -726,7 +726,7 @@ func main() {
 			childMap := make(map[string]Model, 0)
 			for childName, childModel := range model.Children {
 				childModel.ChildResourceName = GetResourceName(childModel.PkgName, definitions)
-				if len(childModel.IdentifiedBy) > 0 {
+				if len(childModel.IdentifiedBy) > 0 && !(strings.HasPrefix(childModel.RnFormat, "rs") && childModel.MaxOneClassAllowed) {
 					// TODO add logic to determine the naming for plural child resources
 					childModel.ResourceNameDocReference = childModel.ChildResourceName
 					childModel.ResourceName = fmt.Sprintf("%ss", childModel.ChildResourceName)

@@ -26,7 +26,7 @@ all:
   owner_tag: "owner_tag_1"
 
 children:
-  relation_to_host_paths:
+  relation_to_host_path:
     - annotation: "annotation_1"
       target_dn: "target_dn_0"
       deletable_child: true
