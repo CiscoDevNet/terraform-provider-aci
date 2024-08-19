@@ -67,7 +67,7 @@ func resourceAciFabricNodeMember() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"node_type": &schema.Schema{ // Note : -> needs more options
+			"node_type": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -77,7 +77,7 @@ func resourceAciFabricNodeMember() *schema.Resource {
 					"remote-leaf-wan",
 					"tier-2-leaf",
 					"virtual",
-					"leaf",
+					"border-gateway",
 				}, false),
 			},
 
@@ -233,14 +233,14 @@ func resourceAciFabricNodeMemberCreate(ctx context.Context, d *schema.ResourceDa
 		return diag.FromErr(err)
 	}
 
-	d.SetId(fabricNodeIdentP.DistinguishedName)
-	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
-
 	if Commission, ok := d.GetOk("commission"); ok {
 		if Commission.(string) == "no" {
 			decommissionFabricNodeMemberFromController("false", "no", d, m)
 		}
 	}
+
+	d.SetId(fabricNodeIdentP.DistinguishedName)
+	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
 	return resourceAciFabricNodeMemberRead(ctx, d, m)
 }
