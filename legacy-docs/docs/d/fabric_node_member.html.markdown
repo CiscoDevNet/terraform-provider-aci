@@ -11,6 +11,15 @@ description: |-
 
 Data source for ACI Fabric Node Member
 
+## API Information ##
+
+* `Class` - fabricNodeIdentP
+* `Distinguished Name` - uni/controller/nodeidentpol/nodep-{serial}
+
+## GUI Information ##
+
+* `Location` -Fabric -> Inventory -> Fabric Mambership
+
 ## Example Usage
 
 ```hcl
@@ -21,17 +30,17 @@ data "aci_fabric_node_member" "example" {
 
 ## Argument Reference
 
-- `serial` - (Required) serial of Object fabric_node_member.
+- `serial` - (Required) Serial Number for the new Fabric Node Member. Type: String.
 
 ## Attribute Reference
 
-- `id` - Attribute id set to the Dn of the Fabric Node Member.
-- `annotation` - (Optional) annotation for object fabric_node_member.
-- `ext_pool_id` - (Optional) ext_pool_id for object fabric_node_member.
-- `fabric_id` - (Optional) place holder for a value
-- `name_alias` - (Optional) name_alias for object fabric_node_member.
-- `node_id` - (Optional) node id
-- `node_type` - (Optional) node_type for object fabric_node_member.
-- `pod_id` - (Optional) pod id
-- `role` - (Optional) system role type
-- `serial` - (Optional) serial number
+- `id` - (Read-Only) Attribute id set to the Dn of the Fabric Node Member. Type: String.
+- `annotation` - (Read-Only) Specifies the annotation of a Fabric Node member. Type: String.
+- `ext_pool_id` - (Read-Only) External pool ID for object Fabric Node member. Type: String.
+- `fabric_id` - (Read-Only) Fabric ID for the new Fabric Node Member. Type: String.
+- `name_alias` - (Read-Only) Name alias for object Fabric Node member. Type: String.
+- `node_id` - (Read-Only) Node ID Number for the new Fabric Node Member. Type: String.
+- `node_type` - (Read-Only) Node type for object Fabric Node member. Type: String.
+- `pod_id` - (Read-Only) The pod id of the new Fabric Node Member. Type: String.
+- `role` - (Read-Only) Role for the new Fabric Node Member. Type: String.
+- `commission` - (Read-Only) Commission a node from the switch. Type: String.
