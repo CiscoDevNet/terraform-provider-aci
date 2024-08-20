@@ -1,25 +1,97 @@
 {
   "uni": {
-    "children": {
-      "fvTenant": {
-        "attributes": null,
-        "children": {
-          "fvAp": {
-            "attributes": null,
-            "children": {
-              "fvAEPg": {
-                "attributes": null,
+    "children": [
+      {
+        "fvTenant": {
+          "attributes": {
+            "dn": "uni/tn-common"
+          },
+          "children": [
+            {
+              "fvEpIpTag": {
+                "attributes": {
+                  "dn": "uni/tn-common/eptags/epiptag-[10.0.0.2]-test_ctx_name"
+                },
+                "children": [
+                  {
+                    "tagAnnotation": {
+                      "attributes": {
+                        "dn": "uni/tn-common/eptags/epiptag-[10.0.0.2]-test_ctx_name/annotationKey-[test_key]",
+                        "key": "test_key",
+                        "parent_dn": "uni/tn-common/eptags/epiptag-[10.0.0.2]-test_ctx_name",
+                        "status": "created",
+                        "value": "test_value"
+                      },
+                      "children": [
+                        {
+                          "tagAnnotation": {
+                            "attributes": {
+                              "dn": "uni/tn-common/eptags/epiptag-[10.0.0.2]-test_ctx_name/annotationKey-[test_key]/annotationKey-[test_keya]",
+                              "key": "test_keya",
+                              "parent_dn": "uni/tn-common/eptags/epiptag-[10.0.0.2]-test_ctx_name/annotationKey-[test_key]",
+                              "status": "created",
+                              "value": "test_valuea"
+                            },
+                            "children": null
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "fvAp": {
+                "attributes": {
+                  "dn": "uni/tn-common/ap-default"
+                },
                 "children": [
                   {
                     "fvAEPg": {
                       "attributes": {
                         "annotation": "tag_epg",
                         "descr": "from terraform",
-                        "dn": "uni/tn-common/ap-default/epg-haris_demo_epg",
+                        "dn": "uni/tn-common/ap-default/epg-new_epg",
                         "exceptionTag": "0",
                         "floodOnEncap": "disabled",
                         "fwdCtrl": "none",
-                        "name": "haris_demo_epg",
+                        "name": "new_epg",
+                        "parent_dn": "uni/tn-common/ap-default",
+                        "status": "created"
+                      },
+                      "children": [
+                        {
+                          "fvRsBd": {
+                            "attributes": {
+                              "annotation": "annotation1",
+                              "tnFvBDName": "default"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "fvAp": {
+                "attributes": {
+                  "dn": "uni/tn-common/ap-default222"
+                },
+                "children": [
+                  {
+                    "fvAEPg": {
+                      "attributes": {
+                        "annotation": "tag_epg",
+                        "descr": "from terraform",
+                        "dn": "uni/tn-common/ap-default222/epg-new_epg2",
+                        "exceptionTag": "0",
+                        "floodOnEncap": "disabled",
+                        "fwdCtrl": "none",
+                        "name": "new_epg2",
+                        "parent_dn": "uni/tn-common/ap-default222",
                         "status": "created"
                       },
                       "children": [
@@ -37,9 +109,76 @@
                 ]
               }
             }
-          }
+          ]
+        }
+      },
+      {
+        "fvTenant": {
+          "attributes": {
+            "dn": "uni/tn-mgmt"
+          },
+          "children": [
+            {
+              "mgmtInstP": {
+                "attributes": {
+                  "dn": "uni/tn-mgmt/extmgmt-default/instp-test_name"
+                },
+                "children": [
+                  {
+                    "netflowMonitorPol": {
+                      "attributes": {
+                        "annotation": "annotation",
+                        "descr": "description",
+                        "dn": "uni/tn-mgmt/extmgmt-default/instp-test_name/monitorpol-netfow_monitor",
+                        "name": "netfow_monitor",
+                        "nameAlias": "name_alias",
+                        "ownerKey": "owner_key",
+                        "ownerTag": "owner_tag",
+                        "parent_dn": "uni/tn-mgmt/extmgmt-default/instp-test_name",
+                        "status": "created"
+                      },
+                      "children": [
+                        {
+                          "netflowRsMonitorToExporter": {
+                            "attributes": {
+                              "annotation": "annotation_1",
+                              "tnNetflowExporterPolName": "aci_netflow_exporter_policy.example.name"
+                            }
+                          }
+                        },
+                        {
+                          "netflowRsMonitorToRecord": {
+                            "attributes": {
+                              "annotation": "annotation_1",
+                              "tnNetflowRecordPolName": "aci_netflow_record_policy.example.name"
+                            }
+                          }
+                        },
+                        {
+                          "tagAnnotation": {
+                            "attributes": {
+                              "key": "key_0",
+                              "value": "value_1"
+                            }
+                          }
+                        },
+                        {
+                          "tagTag": {
+                            "attributes": {
+                              "key": "key_0",
+                              "value": "value_1"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          ]
         }
       }
-    }
+    ]
   }
 }

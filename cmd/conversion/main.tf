@@ -21,7 +21,7 @@ provider "aci" {
 
 resource "aci_application_epg" "fooapplication_epg" {
     parent_dn  = "uni/tn-common/ap-default"
-    name                    = "haris_demo_epg"
+    name                    = "new_epg"
     description             = "from terraform"
     annotation              = "tag_epg"
     contract_exception_tag  = "0"
@@ -34,7 +34,7 @@ resource "aci_application_epg" "fooapplication_epg" {
     }]
 }
 
-/*
+
 resource "aci_application_epg" "fooapplication_epg2" {
     parent_dn  = "uni/tn-common/ap-default222"
     name                    = "new_epg2"
@@ -49,13 +49,13 @@ resource "aci_application_epg" "fooapplication_epg2" {
       bridge_domain_name = "default"
     }]
 }
-*/
+
 
 # Define an ACI Tenant Resource.
 
 /*
 resource "aci_endpoint_tag_ip" "full_example_tenant" {
-  parent_dn    = "uni/tn-demo_tenant"
+  parent_dn    = "uni/tn-common"
   annotation   = "annotation"
   vrf_name     = "test_ctx_name"
   id_attribute = "1"
@@ -65,7 +65,7 @@ resource "aci_endpoint_tag_ip" "full_example_tenant" {
   annotations = [
     {
       key   = "key_0"
-      value = "value_1"
+      value = "vaule_1"
     }
   ]
   tags = [
@@ -80,7 +80,7 @@ resource "aci_endpoint_tag_ip" "full_example_tenant" {
 //SUCCESS
 /*
 resource "aci_vrf_fallback_route_group" "full_example_vrf" {
-  parent_dn   = "uni/tn-demo_tenant"
+  parent_dn   = "uni/tn-common"
   annotation  = "annotation"
   description = "description"
   name        = "fallback_route_group"
@@ -167,7 +167,7 @@ resource "aci_external_management_network_instance_profile" "full_example333" {
 
 */
 
-/*
+
 resource "aci_netflow_monitor_policy" "full_example_tenant" {
   parent_dn   = "uni/tn-mgmt/extmgmt-default/instp-test_name"
   annotation  = "annotation"
@@ -201,7 +201,7 @@ resource "aci_netflow_monitor_policy" "full_example_tenant" {
     }
   ]
 }
-*/
+
 
 
 /*
@@ -221,14 +221,21 @@ resource "aci_tag" "example_tenant" {
 
 //DEFINES AN ACI ANNOTATION ------- TEST
 
-/*
+
 resource "aci_annotation" "terraform_annotation" {
-  parent_dn = "uni/tn-example_tenant"
+  parent_dn = "uni/tn-common/eptags/epiptag-[10.0.0.2]-test_ctx_name"
   key       = "test_key"
   value     = "test_value"
 }
 
-*/
+
+resource "aci_annotation" "terraform_annotation2" {
+  parent_dn = "uni/tn-common/eptags/epiptag-[10.0.0.2]-test_ctx_name/annotationKey-[test_key]"
+  key       = "test_keya"
+  value     = "test_valuea"
+}
+
+
 
 /*
 resource "aci_pim_route_map_policy" "full_example_tenant" {
@@ -253,6 +260,7 @@ resource "aci_pim_route_map_policy" "full_example_tenant" {
   ]
 }
 */
+
 # Define an ACI Tenant VRF Resource.
 # resource "aci_vrf" "terraform_vrf" {
 #     tenant_dn   = aci_tenant.terraform_tenant.id
