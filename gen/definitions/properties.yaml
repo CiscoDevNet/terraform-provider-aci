@@ -921,35 +921,36 @@ netflowExporterPol:
     - dstAddr
     - dstPort
   overwrites:
-    dst_addr: "destination_address"
+    dst_addr: "destination_ip_address"
     dst_port: "destination_port"
-    src_addr: "source_address"
+    src_addr: "source_ip_address"
     ver: "version"
+    dscp: "qos_dscp_value"
   documentation:
     dstAddr: "The destination IP address of the remote node."
     dstPort: "The destination port of the remote node."
-    dscp: "The DSCP value of the Netflow Exporter Policy object."
+    dscp: "The DSCP value of the %s object."
     srcAddr: "The source IP address."
-    ver: "The collector version."
+    ver: "The NetFlow Exporter Version of the %s object."
     sourceIpType: "The type of the source IP address: It can be one of the available management IP address for a given leaf or a custom IP Address."
   default_values:
     parent_dn: "uni/infra"
   test_values:
     default:
       name: "netfow_exporter_default"
-      destination_address: "2.2.2.1"
-      source_address: "1.1.1.1/10"
+      destination_ip_address: "2.2.2.1"
+      source_ip_address: "1.1.1.1/10"
       destination_port: "https"
     all:
       name: "netfow_exporter"
-      destination_address: "12.12.12.1"
-      source_address: "11.11.11.1/11"
+      destination_ip_address: "12.12.12.1"
+      source_ip_address: "11.11.11.1/11"
       destination_port: "ssh"
       version: "v9"
     resource_required:
-      source_address: "1.1.1.1/10"
       name: "netfow_exporter"
-      destination_address: "2.2.2.1"
+      source_ip_address: "1.1.1.1/10"
+      destination_ip_address: "2.2.2.1"
       destination_port: "https"
     datasource_required:
       name: "netfow_exporter"
@@ -962,6 +963,28 @@ netflowExporterPol:
     - class_name: "fvTenant"
       parent_dependency: ""
       parent_dn: "aci_tenant.test.id"
+
+netflowRsExporterToEPg:
+  parents:
+    - class_name: "netflowExporterPol"
+      target_classes:
+        - "fvEPg"
+  targets:
+    - class_name: "fvAEPg"
+      target_dn: "uni/tn-test_tenant/ap-test_ap/epg-test_epg"
+      relation_resource_name: "epg"
+      static: true
+
+netflowRsExporterToCtx:
+  parents:
+    - class_name: "netflowExporterPol"
+      target_classes:
+        - "fvCtx"
+  targets:
+    - class_name: "fvCtx"
+      target_dn: "uni/tn-test_tenant/ctx-test_vrf"
+      relation_resource_name: "vrf"
+      static: true
 
 rtctrlProfile:
   default_values:

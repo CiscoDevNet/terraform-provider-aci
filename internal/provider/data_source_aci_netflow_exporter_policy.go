@@ -58,12 +58,12 @@ func (d *NetflowExporterPolDataSource) Schema(ctx context.Context, req datasourc
 				Computed:            true,
 				MarkdownDescription: `The description of the Netflow Exporter Policy object.`,
 			},
-			"dscp": schema.StringAttribute{
+			"qos_dscp_value": schema.StringAttribute{
 				CustomType:          customTypes.NetflowExporterPolDscpStringType{},
 				Computed:            true,
 				MarkdownDescription: `The DSCP value of the Netflow Exporter Policy object.`,
 			},
-			"destination_address": schema.StringAttribute{
+			"destination_ip_address": schema.StringAttribute{
 				Computed:            true,
 				MarkdownDescription: `The destination IP address of the remote node.`,
 			},
@@ -92,13 +92,45 @@ func (d *NetflowExporterPolDataSource) Schema(ctx context.Context, req datasourc
 				Computed:            true,
 				MarkdownDescription: `The type of the source IP address: It can be one of the available management IP address for a given leaf or a custom IP Address.`,
 			},
-			"source_address": schema.StringAttribute{
+			"source_ip_address": schema.StringAttribute{
 				Computed:            true,
 				MarkdownDescription: `The source IP address.`,
 			},
 			"version": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The collector version.`,
+				MarkdownDescription: `The NetFlow Exporter Version of the Netflow Exporter Policy object.`,
+			},
+			"relation_to_vrf": schema.SetNestedAttribute{
+				MarkdownDescription: `Points to the Ctx behind which the Netflow Exporter Resides`,
+				Computed:            true,
+				NestedObject: schema.NestedAttributeObject{
+					Attributes: map[string]schema.Attribute{
+						"annotation": schema.StringAttribute{
+							Computed:            true,
+							MarkdownDescription: `The annotation of the Relation To VRF object.`,
+						},
+						"target_dn": schema.StringAttribute{
+							Computed:            true,
+							MarkdownDescription: `The distinguished name of the target.`,
+						},
+					},
+				},
+			},
+			"relation_to_epg": schema.SetNestedAttribute{
+				MarkdownDescription: `Points to the EPg behind which the Netflow Exporter Resides`,
+				Computed:            true,
+				NestedObject: schema.NestedAttributeObject{
+					Attributes: map[string]schema.Attribute{
+						"annotation": schema.StringAttribute{
+							Computed:            true,
+							MarkdownDescription: `The annotation of the Relation To EPG object.`,
+						},
+						"target_dn": schema.StringAttribute{
+							Computed:            true,
+							MarkdownDescription: `The distinguished name of the target.`,
+						},
+					},
+				},
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,

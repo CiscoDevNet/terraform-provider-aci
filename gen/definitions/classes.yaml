@@ -352,6 +352,20 @@ netflowExporterPol:
     - "Fabric -> Access Policies -> Policies -> Interface -> NetFlow -> NetFlow Exporters"
   sub_category: "Tenant Policies"
 
+netflowRsExporterToEPg:
+  resource_name: "relation_to_epg"
+  ui_locations:
+    - "Tenants -> Policies -> NetFlow -> NetFlow Exporters"
+    - "Fabric -> Access Policies -> Policies -> Interface -> NetFlow -> NetFlow Exporters"
+  sub_category: "Tenant Policies"
+
+netflowRsExporterToCtx:
+  resource_name: "relation_to_vrf"
+  ui_locations:
+    - "Tenants -> Policies -> NetFlow -> NetFlow Exporters"
+    - "Fabric -> Access Policies -> Policies -> Interface -> NetFlow -> NetFlow Exporters"
+  sub_category: "Tenant Policies"
+
 netflowRecordPol:
   resource_name: "netflow_record_policy"
   ui_locations:
