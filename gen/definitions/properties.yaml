@@ -915,6 +915,7 @@ qosDppPol:
     admin_st: "admin_state"
   parents:
     - class_name: "fvTenant"
+      parent_dn: "aci_tenant.test.id"
 
 netflowExporterPol:
   resource_required:
