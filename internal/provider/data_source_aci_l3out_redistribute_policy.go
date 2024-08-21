@@ -130,7 +130,7 @@ func (d *L3extRsRedistributePolDataSource) Read(ctx context.Context, req datasou
 		return
 	}
 
-	setL3extRsRedistributePolId(ctx, data)
+	SetL3extRsRedistributePolId(ctx, data)
 
 	// Create a copy of the Id for when not found during getAndSetL3extRsRedistributePolAttributes
 	cachedId := data.Id.ValueString()

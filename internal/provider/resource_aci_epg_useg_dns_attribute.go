@@ -122,7 +122,7 @@ func (r *FvDnsAttrResource) ModifyPlan(ctx context.Context, req resource.ModifyP
 		}
 
 		if (planData.Id.IsUnknown() || planData.Id.IsNull()) && !planData.ParentDn.IsUnknown() && !planData.Name.IsUnknown() {
-			setFvDnsAttrId(ctx, planData)
+			SetFvDnsAttrId(ctx, planData)
 		}
 
 		if stateData == nil && !globalAllowExistingOnCreate && !planData.Id.IsUnknown() && !planData.Id.IsNull() {
@@ -313,7 +313,7 @@ func (r *FvDnsAttrResource) Create(ctx context.Context, req resource.CreateReque
 	var stateData *FvDnsAttrResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
 	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
-		setFvDnsAttrId(ctx, stateData)
+		SetFvDnsAttrId(ctx, stateData)
 	}
 	getAndSetFvDnsAttrAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
@@ -334,7 +334,7 @@ func (r *FvDnsAttrResource) Create(ctx context.Context, req resource.CreateReque
 	}
 
 	if data.Id.IsUnknown() || data.Id.IsNull() {
-		setFvDnsAttrId(ctx, data)
+		SetFvDnsAttrId(ctx, data)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_epg_useg_dns_attribute with id '%s'", data.Id.ValueString()))
@@ -345,7 +345,7 @@ func (r *FvDnsAttrResource) Create(ctx context.Context, req resource.CreateReque
 	var tagTagPlan, tagTagState []TagTagFvDnsAttrResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvDnsAttrCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetFvDnsAttrCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -410,7 +410,7 @@ func (r *FvDnsAttrResource) Update(ctx context.Context, req resource.UpdateReque
 	var tagTagPlan, tagTagState []TagTagFvDnsAttrResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvDnsAttrCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetFvDnsAttrCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -578,7 +578,7 @@ func setFvDnsAttrParentDn(ctx context.Context, dn string, data *FvDnsAttrResourc
 	data.ParentDn = basetypes.NewStringValue(dn[:rnIndex])
 }
 
-func setFvDnsAttrId(ctx context.Context, data *FvDnsAttrResourceModel) {
+func SetFvDnsAttrId(ctx context.Context, data *FvDnsAttrResourceModel) {
 	rn := getFvDnsAttrRn(ctx, data)
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
@@ -662,7 +662,7 @@ func getFvDnsAttrTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostic
 	return childPayloads
 }
 
-func getFvDnsAttrCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *FvDnsAttrResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvDnsAttrResourceModel, tagTagPlan, tagTagState []TagTagFvDnsAttrResourceModel) *container.Container {
+func GetFvDnsAttrCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *FvDnsAttrResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvDnsAttrResourceModel, tagTagPlan, tagTagState []TagTagFvDnsAttrResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 

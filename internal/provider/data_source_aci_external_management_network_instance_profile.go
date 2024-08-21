@@ -154,7 +154,7 @@ func (d *MgmtInstPDataSource) Read(ctx context.Context, req datasource.ReadReque
 		return
 	}
 
-	setMgmtInstPId(ctx, data)
+	SetMgmtInstPId(ctx, data)
 
 	// Create a copy of the Id for when not found during getAndSetMgmtInstPAttributes
 	cachedId := data.Id.ValueString()

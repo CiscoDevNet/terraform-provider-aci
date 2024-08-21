@@ -134,7 +134,7 @@ func (r *FhsTrustCtrlPolResource) ModifyPlan(ctx context.Context, req resource.M
 		}
 
 		if (planData.Id.IsUnknown() || planData.Id.IsNull()) && !planData.ParentDn.IsUnknown() && !planData.Name.IsUnknown() {
-			setFhsTrustCtrlPolId(ctx, planData)
+			SetFhsTrustCtrlPolId(ctx, planData)
 		}
 
 		if stateData == nil && !globalAllowExistingOnCreate && !planData.Id.IsUnknown() && !planData.Id.IsNull() {
@@ -388,7 +388,7 @@ func (r *FhsTrustCtrlPolResource) Create(ctx context.Context, req resource.Creat
 	var stateData *FhsTrustCtrlPolResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
 	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
-		setFhsTrustCtrlPolId(ctx, stateData)
+		SetFhsTrustCtrlPolId(ctx, stateData)
 	}
 	getAndSetFhsTrustCtrlPolAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
@@ -409,7 +409,7 @@ func (r *FhsTrustCtrlPolResource) Create(ctx context.Context, req resource.Creat
 	}
 
 	if data.Id.IsUnknown() || data.Id.IsNull() {
-		setFhsTrustCtrlPolId(ctx, data)
+		SetFhsTrustCtrlPolId(ctx, data)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_trust_control_policy with id '%s'", data.Id.ValueString()))
@@ -420,7 +420,7 @@ func (r *FhsTrustCtrlPolResource) Create(ctx context.Context, req resource.Creat
 	var tagTagPlan, tagTagState []TagTagFhsTrustCtrlPolResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFhsTrustCtrlPolCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetFhsTrustCtrlPolCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -485,7 +485,7 @@ func (r *FhsTrustCtrlPolResource) Update(ctx context.Context, req resource.Updat
 	var tagTagPlan, tagTagState []TagTagFhsTrustCtrlPolResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFhsTrustCtrlPolCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetFhsTrustCtrlPolCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -668,7 +668,7 @@ func setFhsTrustCtrlPolParentDn(ctx context.Context, dn string, data *FhsTrustCt
 	data.ParentDn = basetypes.NewStringValue(dn[:rnIndex])
 }
 
-func setFhsTrustCtrlPolId(ctx context.Context, data *FhsTrustCtrlPolResourceModel) {
+func SetFhsTrustCtrlPolId(ctx context.Context, data *FhsTrustCtrlPolResourceModel) {
 	rn := getFhsTrustCtrlPolRn(ctx, data)
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
@@ -752,7 +752,7 @@ func getFhsTrustCtrlPolTagTagChildPayloads(ctx context.Context, diags *diag.Diag
 	return childPayloads
 }
 
-func getFhsTrustCtrlPolCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *FhsTrustCtrlPolResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFhsTrustCtrlPolResourceModel, tagTagPlan, tagTagState []TagTagFhsTrustCtrlPolResourceModel) *container.Container {
+func GetFhsTrustCtrlPolCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *FhsTrustCtrlPolResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFhsTrustCtrlPolResourceModel, tagTagPlan, tagTagState []TagTagFhsTrustCtrlPolResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 

@@ -126,7 +126,7 @@ func (r *RtctrlProfileResource) ModifyPlan(ctx context.Context, req resource.Mod
 		}
 
 		if (planData.Id.IsUnknown() || planData.Id.IsNull()) && !planData.ParentDn.IsUnknown() && !planData.Name.IsUnknown() {
-			setRtctrlProfileId(ctx, planData)
+			SetRtctrlProfileId(ctx, planData)
 		}
 
 		if stateData == nil && !globalAllowExistingOnCreate && !planData.Id.IsUnknown() && !planData.Id.IsNull() {
@@ -332,7 +332,7 @@ func (r *RtctrlProfileResource) Create(ctx context.Context, req resource.CreateR
 	var stateData *RtctrlProfileResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
 	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
-		setRtctrlProfileId(ctx, stateData)
+		SetRtctrlProfileId(ctx, stateData)
 	}
 	getAndSetRtctrlProfileAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
@@ -353,7 +353,7 @@ func (r *RtctrlProfileResource) Create(ctx context.Context, req resource.CreateR
 	}
 
 	if data.Id.IsUnknown() || data.Id.IsNull() {
-		setRtctrlProfileId(ctx, data)
+		SetRtctrlProfileId(ctx, data)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_route_control_profile with id '%s'", data.Id.ValueString()))
@@ -364,7 +364,7 @@ func (r *RtctrlProfileResource) Create(ctx context.Context, req resource.CreateR
 	var tagTagPlan, tagTagState []TagTagRtctrlProfileResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getRtctrlProfileCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetRtctrlProfileCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -429,7 +429,7 @@ func (r *RtctrlProfileResource) Update(ctx context.Context, req resource.UpdateR
 	var tagTagPlan, tagTagState []TagTagRtctrlProfileResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getRtctrlProfileCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetRtctrlProfileCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -600,7 +600,7 @@ func setRtctrlProfileParentDn(ctx context.Context, dn string, data *RtctrlProfil
 	data.ParentDn = basetypes.NewStringValue(dn[:rnIndex])
 }
 
-func setRtctrlProfileId(ctx context.Context, data *RtctrlProfileResourceModel) {
+func SetRtctrlProfileId(ctx context.Context, data *RtctrlProfileResourceModel) {
 	rn := getRtctrlProfileRn(ctx, data)
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
@@ -684,7 +684,7 @@ func getRtctrlProfileTagTagChildPayloads(ctx context.Context, diags *diag.Diagno
 	return childPayloads
 }
 
-func getRtctrlProfileCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *RtctrlProfileResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationRtctrlProfileResourceModel, tagTagPlan, tagTagState []TagTagRtctrlProfileResourceModel) *container.Container {
+func GetRtctrlProfileCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *RtctrlProfileResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationRtctrlProfileResourceModel, tagTagPlan, tagTagState []TagTagRtctrlProfileResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 

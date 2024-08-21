@@ -142,7 +142,7 @@ func (d *QosCustomPolDataSource) Read(ctx context.Context, req datasource.ReadRe
 		return
 	}
 
-	setQosCustomPolId(ctx, data)
+	SetQosCustomPolId(ctx, data)
 
 	// Create a copy of the Id for when not found during getAndSetQosCustomPolAttributes
 	cachedId := data.Id.ValueString()

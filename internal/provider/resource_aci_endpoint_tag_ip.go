@@ -121,7 +121,7 @@ func (r *FvEpIpTagResource) ModifyPlan(ctx context.Context, req resource.ModifyP
 		}
 
 		if (planData.Id.IsUnknown() || planData.Id.IsNull()) && !planData.ParentDn.IsUnknown() && !planData.CtxName.IsUnknown() && !planData.Ip.IsUnknown() {
-			setFvEpIpTagId(ctx, planData)
+			SetFvEpIpTagId(ctx, planData)
 		}
 
 		if stateData == nil && !globalAllowExistingOnCreate && !planData.Id.IsUnknown() && !planData.Id.IsNull() {
@@ -303,7 +303,7 @@ func (r *FvEpIpTagResource) Create(ctx context.Context, req resource.CreateReque
 	var stateData *FvEpIpTagResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
 	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
-		setFvEpIpTagId(ctx, stateData)
+		SetFvEpIpTagId(ctx, stateData)
 	}
 	getAndSetFvEpIpTagAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
@@ -324,7 +324,7 @@ func (r *FvEpIpTagResource) Create(ctx context.Context, req resource.CreateReque
 	}
 
 	if data.Id.IsUnknown() || data.Id.IsNull() {
-		setFvEpIpTagId(ctx, data)
+		SetFvEpIpTagId(ctx, data)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_endpoint_tag_ip with id '%s'", data.Id.ValueString()))
@@ -335,7 +335,7 @@ func (r *FvEpIpTagResource) Create(ctx context.Context, req resource.CreateReque
 	var tagTagPlan, tagTagState []TagTagFvEpIpTagResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvEpIpTagCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetFvEpIpTagCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -400,7 +400,7 @@ func (r *FvEpIpTagResource) Update(ctx context.Context, req resource.UpdateReque
 	var tagTagPlan, tagTagState []TagTagFvEpIpTagResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvEpIpTagCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetFvEpIpTagCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -567,7 +567,7 @@ func setFvEpIpTagParentDn(ctx context.Context, dn string, data *FvEpIpTagResourc
 	data.ParentDn = basetypes.NewStringValue(parentDn)
 }
 
-func setFvEpIpTagId(ctx context.Context, data *FvEpIpTagResourceModel) {
+func SetFvEpIpTagId(ctx context.Context, data *FvEpIpTagResourceModel) {
 	rn := getFvEpIpTagRn(ctx, data)
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
@@ -651,7 +651,7 @@ func getFvEpIpTagTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostic
 	return childPayloads
 }
 
-func getFvEpIpTagCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *FvEpIpTagResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvEpIpTagResourceModel, tagTagPlan, tagTagState []TagTagFvEpIpTagResourceModel) *container.Container {
+func GetFvEpIpTagCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *FvEpIpTagResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvEpIpTagResourceModel, tagTagPlan, tagTagState []TagTagFvEpIpTagResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 

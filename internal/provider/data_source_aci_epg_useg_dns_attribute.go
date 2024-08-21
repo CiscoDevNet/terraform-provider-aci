@@ -146,7 +146,7 @@ func (d *FvDnsAttrDataSource) Read(ctx context.Context, req datasource.ReadReque
 		return
 	}
 
-	setFvDnsAttrId(ctx, data)
+	SetFvDnsAttrId(ctx, data)
 
 	// Create a copy of the Id for when not found during getAndSetFvDnsAttrAttributes
 	cachedId := data.Id.ValueString()

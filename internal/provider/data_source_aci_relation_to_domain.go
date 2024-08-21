@@ -222,7 +222,7 @@ func (d *FvRsDomAttDataSource) Read(ctx context.Context, req datasource.ReadRequ
 		return
 	}
 
-	setFvRsDomAttId(ctx, data)
+	SetFvRsDomAttId(ctx, data)
 
 	// Create a copy of the Id for when not found during getAndSetFvRsDomAttAttributes
 	cachedId := data.Id.ValueString()

@@ -231,7 +231,7 @@ func (d *QosDppPolDataSource) Read(ctx context.Context, req datasource.ReadReque
 		data.ParentDn = basetypes.NewStringValue("uni/infra")
 	}
 
-	setQosDppPolId(ctx, data)
+	SetQosDppPolId(ctx, data)
 
 	// Create a copy of the Id for when not found during getAndSetQosDppPolAttributes
 	cachedId := data.Id.ValueString()

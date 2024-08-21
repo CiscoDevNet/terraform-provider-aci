@@ -1,0 +1,88 @@
+package convert_funcs
+
+import (
+	"context"
+	"encoding/json"
+
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider"
+	"github.com/ciscoecosystem/aci-go-client/v2/container"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
+
+{{- $resourceClassName := .ResourceClassName }}
+{{- $resourceName := .ResourceName }}
+{{- $properties := .Properties }}
+{{- $children := .Children }}
+
+func Create{{ $resourceClassName }}(attributes map[string]interface{}, status string) map[string]interface{} {
+	ctx := context.Background()
+	var diags diag.Diagnostics
+	data := &provider.{{ $resourceClassName }}ResourceModel{}
+
+	{{- if .HasParent }}
+	if v, ok := attributes["parent_dn"].(string); ok && v != "" {
+		data.ParentDn = types.StringValue(v)
+	}
+	{{- end }}
+
+	{{- range $properties }}
+	if v, ok := attributes["{{ overwriteProperty .PkgName .SnakeCaseName $.Definitions }}"].(string); ok && v != "" {
+		data.{{ if eq .Name "Id" }}{{ $resourceClassName }}{{ .Name }}{{ else }}{{ .Name }}{{ end }} = types.StringValue(v)
+	}
+	{{- end }}
+
+	{{- range $children }}
+	plan{{ .ResourceClassName }} := convertTo{{ .ResourceClassName }}{{ $resourceClassName }}(attributes["{{ .ResourceName }}"])
+	{{- end }}
+
+
+	if status == "deleted" {
+
+	provider.Set{{ $resourceClassName }}Id(ctx, data)
+
+	
+			deletePayload := provider.GetDeleteJsonPayload(ctx, &diags, "{{ lowercaseFirst $resourceClassName }}", data.Id.ValueString())
+			if deletePayload != nil {
+				jsonPayload := deletePayload.EncodeJSON(container.EncodeOptIndent("", "  "))
+				var customData map[string]interface{}
+				json.Unmarshal(jsonPayload, &customData)
+				return customData
+			}
+		
+	}
+
+
+	newAci{{ $resourceClassName }} := provider.Get{{ $resourceClassName }}CreateJsonPayload(ctx, &diags, true, data
+		{{- range $children }}, plan{{ .ResourceClassName }}, plan{{ .ResourceClassName }}{{- end }})
+
+	jsonPayload := newAci{{ $resourceClassName }}.EncodeJSON(container.EncodeOptIndent("", "  "))
+
+	var customData map[string]interface{}
+	json.Unmarshal(jsonPayload, &customData)
+
+	payload := customData
+
+	provider.Set{{ $resourceClassName }}Id(ctx, data)
+	attrs := payload["{{ lowercaseFirst $resourceClassName }}"].(map[string]interface{})["attributes"].(map[string]interface{})
+	attrs["dn"] = data.Id.ValueString()
+
+	return payload
+}
+
+{{- range $children }}
+func convertTo{{ .ResourceClassName }}{{ $resourceClassName }}(resources interface{}) []provider.{{ .ResourceClassName }}{{ $resourceClassName }}ResourceModel {
+	var planResources []provider.{{ .ResourceClassName }}{{ $resourceClassName }}ResourceModel
+	if resources, ok := resources.([]interface{}); ok {
+		for _, resource := range resources {
+			resourceMap := resource.(map[string]interface{})
+			planResources = append(planResources, provider.{{ .ResourceClassName }}{{ $resourceClassName }}ResourceModel{
+				{{- range .Properties }}
+				{{ .Name }}: types.StringValue(resourceMap["{{ overwriteProperty .PkgName .SnakeCaseName $.Definitions }}"].(string)),
+				{{- end }}
+			})
+		}
+	}
+	return planResources
+}
+{{- end }}

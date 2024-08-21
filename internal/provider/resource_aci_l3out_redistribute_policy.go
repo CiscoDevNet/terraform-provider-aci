@@ -117,7 +117,7 @@ func (r *L3extRsRedistributePolResource) ModifyPlan(ctx context.Context, req res
 		}
 
 		if (planData.Id.IsUnknown() || planData.Id.IsNull()) && !planData.ParentDn.IsUnknown() && !planData.Src.IsUnknown() && !planData.TnRtctrlProfileName.IsUnknown() {
-			setL3extRsRedistributePolId(ctx, planData)
+			SetL3extRsRedistributePolId(ctx, planData)
 		}
 
 		if stateData == nil && !globalAllowExistingOnCreate && !planData.Id.IsUnknown() && !planData.Id.IsNull() {
@@ -275,7 +275,7 @@ func (r *L3extRsRedistributePolResource) Create(ctx context.Context, req resourc
 	var stateData *L3extRsRedistributePolResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
 	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
-		setL3extRsRedistributePolId(ctx, stateData)
+		SetL3extRsRedistributePolId(ctx, stateData)
 	}
 	getAndSetL3extRsRedistributePolAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
@@ -296,7 +296,7 @@ func (r *L3extRsRedistributePolResource) Create(ctx context.Context, req resourc
 	}
 
 	if data.Id.IsUnknown() || data.Id.IsNull() {
-		setL3extRsRedistributePolId(ctx, data)
+		SetL3extRsRedistributePolId(ctx, data)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_l3out_redistribute_policy with id '%s'", data.Id.ValueString()))
@@ -307,7 +307,7 @@ func (r *L3extRsRedistributePolResource) Create(ctx context.Context, req resourc
 	var tagTagPlan, tagTagState []TagTagL3extRsRedistributePolResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getL3extRsRedistributePolCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetL3extRsRedistributePolCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -372,7 +372,7 @@ func (r *L3extRsRedistributePolResource) Update(ctx context.Context, req resourc
 	var tagTagPlan, tagTagState []TagTagL3extRsRedistributePolResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getL3extRsRedistributePolCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetL3extRsRedistributePolCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -528,7 +528,7 @@ func setL3extRsRedistributePolParentDn(ctx context.Context, dn string, data *L3e
 	data.ParentDn = basetypes.NewStringValue(dn[:rnIndex])
 }
 
-func setL3extRsRedistributePolId(ctx context.Context, data *L3extRsRedistributePolResourceModel) {
+func SetL3extRsRedistributePolId(ctx context.Context, data *L3extRsRedistributePolResourceModel) {
 	rn := getL3extRsRedistributePolRn(ctx, data)
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
@@ -612,7 +612,7 @@ func getL3extRsRedistributePolTagTagChildPayloads(ctx context.Context, diags *di
 	return childPayloads
 }
 
-func getL3extRsRedistributePolCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *L3extRsRedistributePolResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationL3extRsRedistributePolResourceModel, tagTagPlan, tagTagState []TagTagL3extRsRedistributePolResourceModel) *container.Container {
+func GetL3extRsRedistributePolCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *L3extRsRedistributePolResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationL3extRsRedistributePolResourceModel, tagTagPlan, tagTagState []TagTagL3extRsRedistributePolResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 

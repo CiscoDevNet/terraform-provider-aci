@@ -71,6 +71,7 @@ const (
 	resourcesDocsPath       = "./docs/resources"
 	datasourcesDocsPath     = "./docs/data-sources"
 	providerPath            = "./internal/provider/"
+	conversionPath          = "./convert_funcs"
 )
 
 const providerName = "aci"
@@ -80,6 +81,9 @@ const pubhupDevnetBaseUrl = "https://pubhub.devnetcloud.com/media/model-doc-late
 // The map contains a key which is the name of the function used in the template and a value which is the function itself
 // The functions itself are defined in the current file
 var templateFuncs = template.FuncMap{
+	"extractPrefix":                     extractPrefix,
+	"trimRnName":                        trimRnName,
+	"lowercaseFirst":                    LowercaseFirst,
 	"snakeCase":                         Underscore,
 	"validatorString":                   ValidatorString,
 	"containsString":                    ContainsString,
@@ -216,6 +220,21 @@ func GetChildAttributesFromBlocks(className string, legacyBlocks []LegacyBlock) 
 	return legacyAttributes
 }
 
+func LowercaseFirst(str string) string {
+	if len(str) == 0 {
+		return str
+	}
+	return strings.ToLower(string(str[0])) + str[1:]
+}
+
+func extractPrefix(rnFormat string) string {
+	segments := strings.Split(rnFormat, "/")
+	lastSegment := segments[len(segments)-1]
+
+	prefix := strings.SplitN(lastSegment, "-", 2)[0]
+
+	return prefix
+}
 func GetNewChildAttributes(legacyAttributes map[string]LegacyAttribute, properties map[string]Property) []Property {
 	result := []Property{}
 	for _, property := range properties {
@@ -433,6 +452,34 @@ func renderTemplate(templateName, outputFileName, outputPath string, outputData 
 	outputFile.Write(bytes)
 }
 
+func renderTemplateModels(templateName, outputFileName, outputPath string, outputData interface{}) {
+	templateData, err := os.ReadFile(fmt.Sprintf("%s/%s", templatePath, templateName))
+	if err != nil {
+		panic(err)
+	}
+	var buffer bytes.Buffer
+	tmpl := template.Must(template.New("").Funcs(templateFuncs).Parse(string(templateData)))
+
+	err = tmpl.Execute(&buffer, outputData)
+	if err != nil {
+		panic(err)
+	}
+	bytes := buffer.Bytes()
+	if strings.Contains(templateName, "go.tmpl") {
+		bytes, err = format.Source(buffer.Bytes())
+		if err != nil {
+			os.WriteFile(fmt.Sprintf("%s/failed_render.go", outputPath), buffer.Bytes(), 0644)
+			panic(err)
+		}
+	}
+
+	outputFile, err := os.Create(fmt.Sprintf("%s/%s", outputPath, outputFileName))
+	if err != nil {
+		panic(err)
+	}
+	outputFile.Write(bytes)
+}
+
 // Creates a map of models for the resources and datasources from the meta data and definitions
 func getClassModels(definitions Definitions) map[string]Model {
 	files, err := os.ReadDir(metaPath)
@@ -580,6 +627,7 @@ func cleanDirectories() {
 	cleanDirectory(resourcesDocsPath, []string{})
 	cleanDirectory(datasourcesDocsPath, []string{})
 	cleanDirectory(testVarsPath, []string{})
+	cleanDirectory(conversionPath, []string{})
 
 	// The *ExamplesPath directories are removed and recreated to ensure all previously rendered files are removed
 	// The provider example file is not removed because it contains static provider configuration
@@ -775,6 +823,25 @@ func main() {
 			renderTemplate("datasource.md.tmpl", fmt.Sprintf("%s.md", model.ResourceName), datasourcesDocsPath, model)
 			renderTemplate("resource_test.go.tmpl", fmt.Sprintf("resource_%s_%s_test.go", providerName, model.ResourceName), providerPath, model)
 			renderTemplate("datasource_test.go.tmpl", fmt.Sprintf("data_source_%s_%s_test.go", providerName, model.ResourceName), providerPath, model)
+			renderTemplate("conversion.go.tmpl", fmt.Sprintf("conversion_%s.go", model.ResourceName), conversionPath, model)
+
+			allModels := []Model{}
+
+			for _, model := range classModels {
+				if len(model.IdentifiedBy) > 0 || model.Include {
+					model.ResourceName = GetResourceName(model.PkgName, definitions)
+
+					allModels = append(allModels, model)
+				}
+			}
+
+			data := map[string]interface{}{
+				"Models": allModels,
+			}
+
+			renderTemplateModels("resourceMap.go.tmpl", "resourceMap.go", conversionPath, data)
+			renderTemplateModels("getAciClass.go.tmpl", "getAciClass.go", conversionPath, data)
+			renderTemplateModels("new.go.tmpl", "dn_to_aci.go", conversionPath, data)
 
 		}
 	}
@@ -1028,6 +1095,26 @@ func (m *Model) SetClassLabel(classDetails interface{}, child bool) {
 		labels = append(labels, m.Label)
 		resourceNames[m.PkgName] = m.Label
 	}
+}
+
+func trimRnName(resourceNamingFormat string) string {
+	placeholderRegex := regexp.MustCompile(`\{[^}]}`)
+
+	resourceNamingWithoutPlaceholders := placeholderRegex.ReplaceAllString(resourceNamingFormat, "")
+
+	prefix := ""
+
+	for _, character := range resourceNamingWithoutPlaceholders {
+		if character == '-' || character == '/' || character == '_' {
+			break
+		}
+		prefix += string(character)
+	}
+
+	if len(prefix) > 0 {
+		return prefix
+	}
+	return ""
 }
 
 // Remove duplicates from a slice of interfaces
@@ -2027,6 +2114,22 @@ func getTestDependency(className string, targetMap map[interface{}]interface{}, 
 	}
 
 	return testDependency
+}
+
+func mergeDuplicateKeys(mapping map[string]map[string]string) map[string]map[string]string {
+	mergedMapping := make(map[string]map[string]string)
+
+	for childClass, prefixMap := range mapping {
+		if existingMap, found := mergedMapping[childClass]; found {
+			for prefix, className := range prefixMap {
+				existingMap[prefix] = className
+			}
+		} else {
+			mergedMapping[childClass] = prefixMap
+		}
+	}
+
+	return mergedMapping
 }
 
 func GetTestTargetDn(targets []interface{}, resourceName, targetDnValue string, reference bool, targetClasses interface{}, index int) string {

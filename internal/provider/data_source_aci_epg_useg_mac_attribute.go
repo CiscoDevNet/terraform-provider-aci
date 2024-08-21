@@ -146,7 +146,7 @@ func (d *FvMacAttrDataSource) Read(ctx context.Context, req datasource.ReadReque
 		return
 	}
 
-	setFvMacAttrId(ctx, data)
+	SetFvMacAttrId(ctx, data)
 
 	// Create a copy of the Id for when not found during getAndSetFvMacAttrAttributes
 	cachedId := data.Id.ValueString()

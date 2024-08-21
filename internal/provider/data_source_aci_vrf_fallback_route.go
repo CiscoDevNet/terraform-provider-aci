@@ -138,7 +138,7 @@ func (d *FvFBRouteDataSource) Read(ctx context.Context, req datasource.ReadReque
 		return
 	}
 
-	setFvFBRouteId(ctx, data)
+	SetFvFBRouteId(ctx, data)
 
 	// Create a copy of the Id for when not found during getAndSetFvFBRouteAttributes
 	cachedId := data.Id.ValueString()

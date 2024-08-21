@@ -179,7 +179,7 @@ func (d *InfraHPathSDataSource) Read(ctx context.Context, req datasource.ReadReq
 		data.ParentDn = basetypes.NewStringValue("uni/infra")
 	}
 
-	setInfraHPathSId(ctx, data)
+	SetInfraHPathSId(ctx, data)
 
 	// Create a copy of the Id for when not found during getAndSetInfraHPathSAttributes
 	cachedId := data.Id.ValueString()

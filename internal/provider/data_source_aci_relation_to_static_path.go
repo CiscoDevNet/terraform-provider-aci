@@ -146,7 +146,7 @@ func (d *FvRsPathAttDataSource) Read(ctx context.Context, req datasource.ReadReq
 		return
 	}
 
-	setFvRsPathAttId(ctx, data)
+	SetFvRsPathAttId(ctx, data)
 
 	// Create a copy of the Id for when not found during getAndSetFvRsPathAttAttributes
 	cachedId := data.Id.ValueString()

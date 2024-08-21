@@ -162,7 +162,7 @@ func (r *InfraHPathSResource) ModifyPlan(ctx context.Context, req resource.Modif
 		}
 
 		if (planData.Id.IsUnknown() || planData.Id.IsNull()) && !planData.ParentDn.IsUnknown() && !planData.Name.IsUnknown() {
-			setInfraHPathSId(ctx, planData)
+			SetInfraHPathSId(ctx, planData)
 		}
 
 		if stateData == nil && !globalAllowExistingOnCreate && !planData.Id.IsUnknown() && !planData.Id.IsNull() {
@@ -407,7 +407,7 @@ func (r *InfraHPathSResource) Create(ctx context.Context, req resource.CreateReq
 	var stateData *InfraHPathSResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
 	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
-		setInfraHPathSId(ctx, stateData)
+		SetInfraHPathSId(ctx, stateData)
 	}
 	getAndSetInfraHPathSAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
@@ -428,7 +428,7 @@ func (r *InfraHPathSResource) Create(ctx context.Context, req resource.CreateReq
 	}
 
 	if data.Id.IsUnknown() || data.Id.IsNull() {
-		setInfraHPathSId(ctx, data)
+		SetInfraHPathSId(ctx, data)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_access_interface_override with id '%s'", data.Id.ValueString()))
@@ -445,7 +445,7 @@ func (r *InfraHPathSResource) Create(ctx context.Context, req resource.CreateReq
 	var tagTagPlan, tagTagState []TagTagInfraHPathSResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getInfraHPathSCreateJsonPayload(ctx, &resp.Diagnostics, true, data, infraRsHPathAttPlan, infraRsHPathAttState, infraRsPathToAccBaseGrpPlan, infraRsPathToAccBaseGrpState, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetInfraHPathSCreateJsonPayload(ctx, &resp.Diagnostics, true, data, infraRsHPathAttPlan, infraRsHPathAttState, infraRsPathToAccBaseGrpPlan, infraRsPathToAccBaseGrpState, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -516,7 +516,7 @@ func (r *InfraHPathSResource) Update(ctx context.Context, req resource.UpdateReq
 	var tagTagPlan, tagTagState []TagTagInfraHPathSResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getInfraHPathSCreateJsonPayload(ctx, &resp.Diagnostics, false, data, infraRsHPathAttPlan, infraRsHPathAttState, infraRsPathToAccBaseGrpPlan, infraRsPathToAccBaseGrpState, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetInfraHPathSCreateJsonPayload(ctx, &resp.Diagnostics, false, data, infraRsHPathAttPlan, infraRsHPathAttState, infraRsPathToAccBaseGrpPlan, infraRsPathToAccBaseGrpState, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -711,7 +711,7 @@ func setInfraHPathSParentDn(ctx context.Context, dn string, data *InfraHPathSRes
 	data.ParentDn = basetypes.NewStringValue(dn[:rnIndex])
 }
 
-func setInfraHPathSId(ctx context.Context, data *InfraHPathSResourceModel) {
+func SetInfraHPathSId(ctx context.Context, data *InfraHPathSResourceModel) {
 	rn := getInfraHPathSRn(ctx, data)
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
@@ -850,7 +850,7 @@ func getInfraHPathSTagTagChildPayloads(ctx context.Context, diags *diag.Diagnost
 	return childPayloads
 }
 
-func getInfraHPathSCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *InfraHPathSResourceModel, infraRsHPathAttPlan, infraRsHPathAttState []InfraRsHPathAttInfraHPathSResourceModel, infraRsPathToAccBaseGrpPlan, infraRsPathToAccBaseGrpState []InfraRsPathToAccBaseGrpInfraHPathSResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationInfraHPathSResourceModel, tagTagPlan, tagTagState []TagTagInfraHPathSResourceModel) *container.Container {
+func GetInfraHPathSCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *InfraHPathSResourceModel, infraRsHPathAttPlan, infraRsHPathAttState []InfraRsHPathAttInfraHPathSResourceModel, infraRsPathToAccBaseGrpPlan, infraRsPathToAccBaseGrpState []InfraRsPathToAccBaseGrpInfraHPathSResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationInfraHPathSResourceModel, tagTagPlan, tagTagState []TagTagInfraHPathSResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 
