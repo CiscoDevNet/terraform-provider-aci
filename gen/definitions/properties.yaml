@@ -956,7 +956,7 @@ infraRsHPathAtt:
       target_dn: "topology/pod-1/paths-101/pathep-[eth1/1]"
       relation_resource_name: "host_path"
       static: true
-    
+
 infraRsPathToAccBaseGrp:
   parents:
     - class_name: "infraHPathS"
@@ -968,3 +968,56 @@ infraRsPathToAccBaseGrp:
       relation_resource_name: "access_interface_policy_group"
       static: true
 
+l3extRsLblToInstP:
+  documentation:
+    tDn: "The distinguished name (DN) of the External Network Instance Profile object."
+  test_values:
+    test_values_for_parent:
+      - target_dn: "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile1"
+      - target_dn: "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile2"
+  parents:
+    - class_name: "l3extConsLbl"
+      parent_dependency: "l3extOut"
+      parent_dn: "aci_l3out_consumer_label.test.id"
+      target_classes:
+        - "l3extInstP"
+  targets:
+    - class_name: "l3extInstP"
+      target_dn: "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile"
+      relation_resource_name: "external_network_instance_profile"
+      parent_dependency: "l3extOut"
+      properties:
+        name: "inst_profile"
+      static: true
+
+l3extRsLblToProfile:
+  documentation:
+    tDn: "The distinguished name (DN) of the Route Control Profile object."
+  test_values:
+    default:
+      direction: "import"
+    all:
+      direction: "export"
+    resource_required:
+      direction: "import"
+    datasource_required:
+      direction: "import"
+    datasource_non_existing:
+      direction: "import"
+    test_values_for_parent:
+      - target_dn: "uni/tn-test_tenant/prof-rt_ctrl_profile1"
+      - target_dn: "uni/tn-test_tenant/prof-rt_ctrl_profile2"
+  parents:
+    - class_name: "l3extConsLbl" #
+      parent_dependency: "l3extOut"
+      parent_dn: "aci_l3out_consumer_label.test.id"
+      target_classes:
+        - "rtctrlProfile"
+  targets:
+    - class_name: "rtctrlProfile"
+      target_dn: "uni/tn-test_tenant/prof-rt_ctrl_profile"
+      relation_resource_name: "route_control_profile"
+      parent_dependency: "fvTenant"
+      properties:
+        name: "rt_ctrl_profile"
+      static: true

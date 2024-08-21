@@ -58,6 +58,15 @@ data "aci_l3out_consumer_label" "example_l3_outside" {
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `tag` (tag) - (string) Specifies the color of a policy label.
 
+* `relation_to_external_network_instance_profiles` - (list) A list of Relation To External Network Instance Profiles (ACI object [l3extRsLblToInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extRsLblToInstP/overview)) pointing to External Network Instance Profile (ACI Object [l3extInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extInstP/overview)). This attribute is supported in ACI versions: 5.0(1k) and later.
+  * `annotation` (annotation) - (string) The annotation of the Relation To External Network Instance Profile object.
+  * `target_dn` (tDn) - (string) The distinguished name (DN) of the External Network Instance Profile object.
+
+* `relation_to_route_control_profiles` - (list) A list of Relation To Route Control Profiles (ACI object [l3extRsLblToProfile](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extRsLblToProfile/overview)) pointing to Route Control Profile (ACI Object [rtctrlProfile](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/rtctrlProfile/overview)). This attribute is supported in ACI versions: 5.0(1k) and later.
+  * `annotation` (annotation) - (string) The annotation of the Relation To Route Control Profile object.
+  * `direction` (direction) - (string) The connector direction.
+  * `target_dn` (tDn) - (string) The distinguished name (DN) of the Route Control Profile object.
+
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
   * `key` (key) - (string) The key used to uniquely identify this configuration object.
   * `value` (value) - (string) The value of the property.

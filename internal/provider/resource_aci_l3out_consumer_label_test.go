@@ -167,6 +167,16 @@ func TestAccResourceL3extConsLblWithL3extOut(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.1.value", "test_value"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_external_network_instance_profiles.0.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_external_network_instance_profiles.0.target_dn", "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_external_network_instance_profiles.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_external_network_instance_profiles.1.target_dn", "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile2"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_route_control_profiles.0.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_route_control_profiles.0.direction", "export"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_route_control_profiles.0.target_dn", "uni/tn-test_tenant/prof-rt_ctrl_profile"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_route_control_profiles.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_route_control_profiles.1.direction", "import"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_route_control_profiles.1.target_dn", "uni/tn-test_tenant/prof-rt_ctrl_profile2"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "tags.1.key", "key_1"),
@@ -194,6 +204,18 @@ func TestAccResourceL3extConsLblWithL3extOut(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.#", "2"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_external_network_instance_profiles.0.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_external_network_instance_profiles.0.target_dn", "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_external_network_instance_profiles.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_external_network_instance_profiles.1.target_dn", "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile2"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_external_network_instance_profiles.#", "2"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_route_control_profiles.0.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_route_control_profiles.0.direction", "export"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_route_control_profiles.0.target_dn", "uni/tn-test_tenant/prof-rt_ctrl_profile"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_route_control_profiles.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_route_control_profiles.1.direction", "import"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_route_control_profiles.1.target_dn", "uni/tn-test_tenant/prof-rt_ctrl_profile2"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_route_control_profiles.#", "2"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "tags.1.key", "key_1"),
@@ -209,6 +231,13 @@ func TestAccResourceL3extConsLblWithL3extOut(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.0.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.#", "1"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_external_network_instance_profiles.0.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_external_network_instance_profiles.0.target_dn", "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile2"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_external_network_instance_profiles.#", "1"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_route_control_profiles.0.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_route_control_profiles.0.direction", "import"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_route_control_profiles.0.target_dn", "uni/tn-test_tenant/prof-rt_ctrl_profile2"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_route_control_profiles.#", "1"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "tags.0.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "tags.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "tags.#", "1"),
@@ -220,12 +249,17 @@ func TestAccResourceL3extConsLblWithL3extOut(t *testing.T) {
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.#", "0"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_external_network_instance_profiles.#", "0"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_route_control_profiles.#", "0"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "tags.#", "0"),
 				),
 			},
 		},
 	})
 }
+
+const testChildDependencyConfigL3extConsLbl = `
+`
 
 const testConfigL3extConsLblMinDependencyWithL3extOutAllowExisting = testConfigL3extOutMin + `
 resource "aci_l3out_consumer_label" "allow_test" {
@@ -273,7 +307,7 @@ resource "aci_l3out_consumer_label" "test" {
   tag = "yellow-green"
 }
 `
-const testConfigL3extConsLblChildrenDependencyWithL3extOut = testConfigL3extOutMin + `
+const testConfigL3extConsLblChildrenDependencyWithL3extOut = testChildDependencyConfigL3extConsLbl + testConfigL3extOutMin + `
 resource "aci_l3out_consumer_label" "test" {
   parent_dn = aci_l3_outside.test.id
   name = "test_name"
@@ -285,6 +319,28 @@ resource "aci_l3out_consumer_label" "test" {
 	{
 	  key = "key_1"
 	  value = "test_value"
+	},
+  ]
+  relation_to_external_network_instance_profiles = [
+	{
+	  annotation = "annotation_1"
+	  target_dn = "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile"
+	},
+	{
+	  annotation = "annotation_2"
+	  target_dn = "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile2"
+	},
+  ]
+  relation_to_route_control_profiles = [
+	{
+	  annotation = "annotation_1"
+	  direction = "export"
+	  target_dn = "uni/tn-test_tenant/prof-rt_ctrl_profile"
+	},
+	{
+	  annotation = "annotation_2"
+	  direction = "import"
+	  target_dn = "uni/tn-test_tenant/prof-rt_ctrl_profile2"
 	},
   ]
   tags = [
@@ -300,14 +356,14 @@ resource "aci_l3out_consumer_label" "test" {
 }
 `
 
-const testConfigL3extConsLblChildrenRemoveFromConfigDependencyWithL3extOut = testConfigL3extOutMin + `
+const testConfigL3extConsLblChildrenRemoveFromConfigDependencyWithL3extOut = testChildDependencyConfigL3extConsLbl + testConfigL3extOutMin + `
 resource "aci_l3out_consumer_label" "test" {
   parent_dn = aci_l3_outside.test.id
   name = "test_name"
 }
 `
 
-const testConfigL3extConsLblChildrenRemoveOneDependencyWithL3extOut = testConfigL3extOutMin + `
+const testConfigL3extConsLblChildrenRemoveOneDependencyWithL3extOut = testChildDependencyConfigL3extConsLbl + testConfigL3extOutMin + `
 resource "aci_l3out_consumer_label" "test" {
   parent_dn = aci_l3_outside.test.id
   name = "test_name"
@@ -315,6 +371,19 @@ resource "aci_l3out_consumer_label" "test" {
 	{
 	  key = "key_1"
 	  value = "test_value"
+	},
+  ]
+  relation_to_external_network_instance_profiles = [ 
+	{
+	  annotation = "annotation_2"
+	  target_dn = "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile2"
+	},
+  ]
+  relation_to_route_control_profiles = [ 
+	{
+	  annotation = "annotation_2"
+	  direction = "import"
+	  target_dn = "uni/tn-test_tenant/prof-rt_ctrl_profile2"
 	},
   ]
   tags = [ 
@@ -326,11 +395,13 @@ resource "aci_l3out_consumer_label" "test" {
 }
 `
 
-const testConfigL3extConsLblChildrenRemoveAllDependencyWithL3extOut = testConfigL3extOutMin + `
+const testConfigL3extConsLblChildrenRemoveAllDependencyWithL3extOut = testChildDependencyConfigL3extConsLbl + testConfigL3extOutMin + `
 resource "aci_l3out_consumer_label" "test" {
   parent_dn = aci_l3_outside.test.id
   name = "test_name"
   annotations = []
+  relation_to_external_network_instance_profiles = []
+  relation_to_route_control_profiles = []
   tags = []
 }
 `
