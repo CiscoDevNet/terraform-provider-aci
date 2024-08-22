@@ -123,7 +123,9 @@ func createPayloadList(plan Plan) []map[string]interface{} {
 	return data
 }
 
-// Work in progress... "panic: assignment to entry in nil map" for cases where AciClassMap() returns "" in this function
+var lastValidNode map[string]interface{}
+
+// Work in progress...
 func constructTree(resources []map[string]interface{}) map[string]interface{} {
 	rootNode := map[string]interface{}{
 		"children": []map[string]interface{}{},
@@ -144,15 +146,12 @@ func constructTree(resources []map[string]interface{}) map[string]interface{} {
 				pathSegments := strings.Split(dn, "/")
 				if len(pathSegments) > 1 {
 					parentDn = strings.Join(pathSegments[:len(pathSegments)-1], "/")
-
 				} else {
 					parentDn = "uni"
 				}
 			}
 
-			if _, parentExists := nodeMap[parentDn]; !parentExists {
-				createParentPath(nodeMap, parentDn)
-			}
+			createParentPath(nodeMap, parentDn)
 
 			currentNode, nodeExists := nodeMap[dn]
 			if !nodeExists {
@@ -177,17 +176,12 @@ func constructTree(resources []map[string]interface{}) map[string]interface{} {
 
 			parentNode := nodeMap[parentDn]
 
-			className := convert_funcs.GetAciClass(strings.Split(dn, "/")[len(strings.Split(dn, "/"))-1])
-			if className == "" {
-				className = resourceType
-			}
-
 			parentChildren, ok := parentNode["children"].([]map[string]interface{})
 			if !ok || parentChildren == nil {
 				parentChildren = []map[string]interface{}{}
 			}
 
-			parentNode["children"] = append(parentChildren, map[string]interface{}{className: currentNode})
+			parentNode["children"] = append(parentChildren, map[string]interface{}{resourceType: currentNode})
 
 			nodeMap[dn] = currentNode
 		}
@@ -201,15 +195,16 @@ func constructTree(resources []map[string]interface{}) map[string]interface{} {
 func createParentPath(nodeMap map[string]map[string]interface{}, parentDn string) {
 	pathSegments := strings.Split(parentDn, "/")
 	currentDn := "uni"
-	var lastValidNode map[string]interface{}
 
 	for _, segment := range pathSegments[1:] {
 		currentDn += "/" + segment
 
-		className := convert_funcs.GetAciClass(strings.Split(segment, "-")[0])
+		className := convert_funcs.AciClassMap(strings.Split(segment, "-")[0])
 
 		if className == "" {
+			//Intended to be 'continue' to skip intermediate segments in dn, currently causes error
 			className = segment
+
 		}
 
 		if _, exists := nodeMap[currentDn]; !exists {
@@ -217,10 +212,9 @@ func createParentPath(nodeMap map[string]map[string]interface{}, parentDn string
 				"attributes": map[string]interface{}{
 					"dn": currentDn,
 				},
-				"children": []map[string]interface{}{}, // Ensure children is always initialized
+				"children": []map[string]interface{}{},
 			}
 
-			// Attach this node to the last valid node or the root if at the top level
 			if lastValidNode == nil {
 				if _, ok := nodeMap["uni"]["children"]; !ok {
 					nodeMap["uni"]["children"] = []map[string]interface{}{}
@@ -236,7 +230,6 @@ func createParentPath(nodeMap map[string]map[string]interface{}, parentDn string
 			nodeMap[currentDn] = newNode
 		}
 
-		// Update the last valid node reference
 		lastValidNode = nodeMap[currentDn]
 	}
 }

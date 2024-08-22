@@ -1,9 +1,11 @@
 package convert_funcs
 
-func GetAciClass(prefix string) string {
+
+type GetAciClass func(string) string
+
+func AciClassMap(prefix string) string {
     mapping := map[string]string{
-    
-        {{- range $pkgName, $model := .Models }}
+        {{- range $index, $model := .Models }}
         "{{ extractPrefix $model.RnFormat }}": "{{ lowercaseFirst $model.ResourceClassName }}",
         {{- end }}
     }

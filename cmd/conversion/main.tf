@@ -9,16 +9,16 @@ terraform {
 # Configure the provider with your Cisco APIC credentials.
 provider "aci" {
   # APIC Username
-  username = "admin"
+  username = " "
   # APIC Password
-  password = "ins3965!"
+  password = " "
   # APIC URL
-  url      = "https://173.36.219.79"
+  url      = " "
   insecure = true
 }
 
 # Defines an Application EPG Resource.
-
+/*
 resource "aci_application_epg" "fooapplication_epg" {
     parent_dn  = "uni/tn-common/ap-default"
     name                    = "new_epg"
@@ -33,8 +33,8 @@ resource "aci_application_epg" "fooapplication_epg" {
       bridge_domain_name = "default"
     }]
 }
-
-
+*/
+/*
 resource "aci_application_epg" "fooapplication_epg2" {
     parent_dn  = "uni/tn-common/ap-default222"
     name                    = "new_epg2"
@@ -50,7 +50,7 @@ resource "aci_application_epg" "fooapplication_epg2" {
     }]
 }
 
-
+*/
 # Define an ACI Tenant Resource.
 
 /*
@@ -107,8 +107,7 @@ resource "aci_vrf_fallback_route_group" "full_example_vrf" {
     }
   ]
 }
-*/
-/*
+
 resource "aci_external_management_network_instance_profile" "full_example" {
   annotation  = "woidid"
   description = "description"
@@ -237,7 +236,6 @@ resource "aci_annotation" "terraform_annotation2" {
 
 
 
-/*
 resource "aci_pim_route_map_policy" "full_example_tenant" {
   parent_dn   = "uni/tn-demo_tenant"
   annotation  = "annotation"
@@ -259,7 +257,7 @@ resource "aci_pim_route_map_policy" "full_example_tenant" {
     }
   ]
 }
-*/
+
 
 # Define an ACI Tenant VRF Resource.
 # resource "aci_vrf" "terraform_vrf" {

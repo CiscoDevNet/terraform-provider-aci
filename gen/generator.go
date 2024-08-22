@@ -841,7 +841,7 @@ func main() {
 
 			renderTemplateModels("resourceMap.go.tmpl", "resourceMap.go", conversionPath, data)
 			renderTemplateModels("getAciClass.go.tmpl", "getAciClass.go", conversionPath, data)
-			renderTemplateModels("new.go.tmpl", "dn_to_aci.go", conversionPath, data)
+			//renderTemplateModels("new.go.tmpl", "dn_to_aci.go", conversionPath, data)
 
 		}
 	}
