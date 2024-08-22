@@ -281,6 +281,11 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 			{{- end}}
 				),
 			},
+			// Refresh State before import testing to ensure that the state is up to date
+			{
+				RefreshState: true,
+				ExpectNonEmptyPlan: {{.class_in_parent}},
+			},
 			// Import testing with children
 			{	
 				ResourceName:      "aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}",
