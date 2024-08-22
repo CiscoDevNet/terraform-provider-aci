@@ -554,7 +554,7 @@ func (c *Client) do(req *http.Request, skipLoggingPayload bool) (*container.Cont
 			log.Printf("[DEBUG] HTTP response unique string %s %s %s", req.Method, req.URL.String(), bodyStr)
 		}
 
-		if (resp.StatusCode < 500 || resp.StatusCode > 504) && resp.StatusCode != 405 {
+		if (resp.StatusCode < 500 || resp.StatusCode > 504) && resp.StatusCode != 405 && !isApicNotFound(resp.StatusCode, bodyStr, resp.Header) {
 			obj, err := container.ParseJSON(bodyBytes)
 			if err != nil {
 				log.Printf("[ERROR] Error occured while json parsing: %+v", err)
@@ -783,4 +783,12 @@ func (client *Client) PostObjectConfig(objectDn string, objectMap map[string]int
 	}
 
 	return CheckForErrors(respCont, "POST", false)
+}
+
+func isApicNotFound(statusCode int, responseBody string, responseHeader http.Header) bool {
+	serverType := responseHeader.Values("Server")
+	if statusCode == 404 && strings.Contains(responseBody, "<hr><center>Cisco APIC</center>") && len(serverType) == 1 && serverType[0] == "Cisco APIC" {
+		return true
+	}
+	return false
 }

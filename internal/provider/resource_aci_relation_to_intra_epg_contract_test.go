@@ -125,6 +125,11 @@ func TestAccResourceFvRsIntraEpgWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "tags.1.value", "test_value"),
 				),
 			},
+			// Refresh State before import testing to ensure that the state is up to date
+			{
+				RefreshState:       true,
+				ExpectNonEmptyPlan: false,
+			},
 			// Import testing with children
 			{
 				ResourceName:      "aci_relation_to_intra_epg_contract.test",
@@ -286,6 +291,11 @@ func TestAccResourceFvRsIntraEpgWithFvESg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_relation_to_intra_epg_contract.test", "tags.1.value", "test_value"),
 				),
+			},
+			// Refresh State before import testing to ensure that the state is up to date
+			{
+				RefreshState:       true,
+				ExpectNonEmptyPlan: false,
 			},
 			// Import testing with children
 			{

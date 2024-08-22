@@ -51,6 +51,8 @@ type BridgeDomainAttributes struct {
 
 	BridgeDomain_type string `json:",omitempty"`
 
+	Seg string `json:",omitempty"`
+
 	UnicastRoute string `json:",omitempty"`
 
 	UnkMacUcastAct string `json:",omitempty"`
@@ -117,6 +119,8 @@ func (fvBD *BridgeDomain) ToMap() (map[string]string, error) {
 
 	A(fvBDMap, "nameAlias", fvBD.NameAlias)
 
+	A(fvBDMap, "seg", fvBD.Seg)
+
 	A(fvBDMap, "type", fvBD.BridgeDomain_type)
 
 	A(fvBDMap, "unicastRoute", fvBD.UnicastRoute)
@@ -181,6 +185,8 @@ func BridgeDomainFromContainerList(cont *container.Container, index int) *Bridge
 			NameAlias: G(BridgeDomainCont, "nameAlias"),
 
 			BridgeDomain_type: G(BridgeDomainCont, "type"),
+
+			Seg: G(BridgeDomainCont, "seg"),
 
 			UnicastRoute: G(BridgeDomainCont, "unicastRoute"),
 

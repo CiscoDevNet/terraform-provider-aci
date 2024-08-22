@@ -173,6 +173,11 @@ func TestAccResourceRtctrlProfileWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "tags.1.value", "test_value"),
 				),
 			},
+			// Refresh State before import testing to ensure that the state is up to date
+			{
+				RefreshState:       true,
+				ExpectNonEmptyPlan: false,
+			},
 			// Import testing with children
 			{
 				ResourceName:      "aci_route_control_profile.test",
@@ -382,6 +387,11 @@ func TestAccResourceRtctrlProfileWithL3extOut(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "tags.1.value", "test_value"),
 				),
+			},
+			// Refresh State before import testing to ensure that the state is up to date
+			{
+				RefreshState:       true,
+				ExpectNonEmptyPlan: false,
 			},
 			// Import testing with children
 			{

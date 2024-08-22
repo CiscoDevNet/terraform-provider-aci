@@ -362,6 +362,11 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "tags.1.value", "test_value"),
 				),
 			},
+			// Refresh State before import testing to ensure that the state is up to date
+			{
+				RefreshState:       true,
+				ExpectNonEmptyPlan: false,
+			},
 			// Import testing with children
 			{
 				ResourceName:      "aci_application_epg.test",

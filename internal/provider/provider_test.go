@@ -8,6 +8,7 @@ import (
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/aci"
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
+	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
 	"github.com/hashicorp/terraform-plugin-mux/tf5to6server"
 	"github.com/hashicorp/terraform-plugin-mux/tf6muxserver"
@@ -44,6 +45,9 @@ var testAccProtoV6ProviderFactories = map[string]func() (tfprotov6.ProviderServe
 }
 
 func testAccPreCheck(t *testing.T) {
+	// globalAnnotation is explicitly set here, as the provider initialization in acceptance tests differs from the standard initialization process.
+	setGlobalAnnotation(basetypes.NewStringNull(), "ACI_ANNOTATION")
+
 	if v := os.Getenv("ACI_USERNAME"); v == "" {
 		t.Fatal("ACI_USERNAME must be set for acceptance tests")
 	}

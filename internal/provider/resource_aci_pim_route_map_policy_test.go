@@ -157,6 +157,11 @@ func TestAccResourcePimRouteMapPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "tags.1.value", "test_value"),
 				),
 			},
+			// Refresh State before import testing to ensure that the state is up to date
+			{
+				RefreshState:       true,
+				ExpectNonEmptyPlan: false,
+			},
 			// Import testing with children
 			{
 				ResourceName:      "aci_pim_route_map_policy.test",

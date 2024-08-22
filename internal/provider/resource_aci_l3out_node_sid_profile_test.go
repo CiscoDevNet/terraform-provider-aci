@@ -157,6 +157,11 @@ func TestAccResourceMplsNodeSidPWithL3extLoopBackIfP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "tags.1.value", "test_value"),
 				),
 			},
+			// Refresh State before import testing to ensure that the state is up to date
+			{
+				RefreshState:       true,
+				ExpectNonEmptyPlan: false,
+			},
 			// Import testing with children
 			{
 				ResourceName:      "aci_l3out_node_sid_profile.test",

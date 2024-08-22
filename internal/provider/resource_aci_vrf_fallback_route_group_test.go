@@ -156,6 +156,11 @@ func TestAccResourceFvFBRGroupWithFvCtx(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_routes.0.prefix_address", "2.2.2.2/24"),
 				),
 			},
+			// Refresh State before import testing to ensure that the state is up to date
+			{
+				RefreshState:       true,
+				ExpectNonEmptyPlan: false,
+			},
 			// Import testing with children
 			{
 				ResourceName:      "aci_vrf_fallback_route_group.test",

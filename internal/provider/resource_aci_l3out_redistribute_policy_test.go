@@ -134,6 +134,11 @@ func TestAccResourceL3extRsRedistributePolWithL3extOut(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "tags.1.value", "test_value"),
 				),
 			},
+			// Refresh State before import testing to ensure that the state is up to date
+			{
+				RefreshState:       true,
+				ExpectNonEmptyPlan: true,
+			},
 			// Import testing with children
 			{
 				ResourceName:      "aci_l3out_redistribute_policy.test",

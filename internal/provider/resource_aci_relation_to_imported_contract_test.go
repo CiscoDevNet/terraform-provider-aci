@@ -133,6 +133,11 @@ func TestAccResourceFvRsConsIfWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_relation_to_imported_contract.test", "tags.1.value", "test_value"),
 				),
 			},
+			// Refresh State before import testing to ensure that the state is up to date
+			{
+				RefreshState:       true,
+				ExpectNonEmptyPlan: false,
+			},
 			// Import testing with children
 			{
 				ResourceName:      "aci_relation_to_imported_contract.test",
@@ -302,6 +307,11 @@ func TestAccResourceFvRsConsIfWithFvESg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_relation_to_imported_contract.test", "tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_relation_to_imported_contract.test", "tags.1.value", "test_value"),
 				),
+			},
+			// Refresh State before import testing to ensure that the state is up to date
+			{
+				RefreshState:       true,
+				ExpectNonEmptyPlan: false,
 			},
 			// Import testing with children
 			{

@@ -149,6 +149,11 @@ func TestAccResourceFvRsFcPathAttWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "tags.1.value", "test_value"),
 				),
 			},
+			// Refresh State before import testing to ensure that the state is up to date
+			{
+				RefreshState:       true,
+				ExpectNonEmptyPlan: false,
+			},
 			// Import testing with children
 			{
 				ResourceName:      "aci_relation_to_fibre_channel_path.test",
