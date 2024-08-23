@@ -111,7 +111,11 @@ All examples for the {{.ResourceNameAsDescription}} resource can be found in the
         {{- if .DefaultValue }}
   - Default: `{{ .DefaultValue }}`
         {{- end}}
-        {{- if .ValidValues }}{{$i := 1}}{{$length := len .ValidValues}}
+        {{- if .HasCustomType}}{{$i := 1}}{{$length := len .ValidValues}}
+  - Valid Values:
+    * One of {{ range .ValidValues}} `{{ . }}`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
+    * Or a value in the range of `{{index .Validators 0 "min"}}` to `{{index .Validators 0 "max"}}`.
+        {{- else if .ValidValues }}{{$i := 1}}{{$length := len .ValidValues}}
   - Valid Values:{{ range .ValidValues}} `{{ . }}`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
         {{- end}}
       {{- end}}
