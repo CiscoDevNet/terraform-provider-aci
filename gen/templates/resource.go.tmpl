@@ -15,12 +15,9 @@ import (
 	
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
-	{{- range .Properties}}
-		{{- if and (lt 0 (len .ValidValuesMap)) (lt 0 (len .Validators))}}
-	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/validators"
-	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
-		{{- break}}
-		{{- end}}
+	{{- if .HasCustomTypeProperties}}
+		"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/validators"
+		customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	{{- end}}
 	{{- if or .HasBitmask .HasChildWithoutIdentifier}}
 	"github.com/hashicorp/terraform-plugin-framework-validators/setvalidator"
@@ -75,7 +72,7 @@ type {{.ResourceClassName}}ResourceModel struct {
 	{{ .Name }} types.Set `tfsdk:"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}"`
 		{{- else if eq .Name "Id"}}
 	{{.ResourceClassName}}{{ .Name }} types.String `tfsdk:"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}"`
-		{{- else if and (lt 0 (len .ValidValuesMap)) (lt 0 (len .Validators))}}
+		{{- else if .HasCustomType}}
 	{{ .Name }} customTypes.{{.ResourceClassName}}{{.Name}}StringValue `tfsdk:"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}"`
 		{{- else}}
 	{{ .Name }} types.String `tfsdk:"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}"`
@@ -105,7 +102,7 @@ func getEmpty{{.ResourceClassName}}ResourceModel() *{{.ResourceClassName}}Resour
 		{{ .Name }}: types.SetNull(types.StringType),
 			{{- else if eq .Name "Id"}}
 		{{.ResourceClassName}}{{ .Name }}: basetypes.NewStringNull(),
-			{{- else if and (lt 0 (len .ValidValuesMap)) (lt 0 (len .Validators))}}
+			{{- else if .HasCustomType}}
 		{{ .Name }}: customTypes.New{{.ResourceClassName}}{{.Name}}StringNull(),
 			{{- else}}
 		{{ .Name }}: basetypes.NewStringNull(),
@@ -147,7 +144,7 @@ type {{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel struct {
 	{{ .Name }} types.Set `tfsdk:"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}"`
 		{{- else if eq .Name "Id"}}
 	{{.ResourceClassName}}{{ .Name }} types.String `tfsdk:"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}"`
-		{{- else if and (lt 0 (len .ValidValuesMap)) (lt 0 (len .Validators))}}
+		{{- else if .HasCustomType}}
 	{{ .Name }} customTypes.{{.ResourceClassName}}{{.Name}}StringValue `tfsdk:"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}"`
 		{{- else}}
 	{{ .Name }} types.String `tfsdk:"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}"`
@@ -162,7 +159,7 @@ func getEmpty{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel() {{.Res
 	{{ .Name }}: types.SetNull(types.StringType),
 			{{- else if eq .Name "Id"}}
 	{{.ResourceClassName}}{{ .Name }}: basetypes.NewStringNull(),
-			{{- else if and (lt 0 (len .ValidValuesMap)) (lt 0 (len .Validators))}}
+			{{- else if .HasCustomType}}
 	{{ .Name }}: customTypes.New{{.ResourceClassName}}{{.Name}}StringNull(),
 			{{- else}}
 	{{ .Name }}: basetypes.NewStringNull(),
@@ -295,7 +292,7 @@ func (r *{{.ResourceClassName}}Resource) UpgradeState(ctx context.Context) map[i
 					{{- end}}
 					{{- range .Properties}}
 						{{- if isLegacyAttribute .Name $.LegacyAttributes}}
-							{{- if and (lt 0 (len .ValidValuesMap)) (lt 0 (len .Validators))}}
+							{{- if .HasCustomType}}
 					{{ .Name }}: customTypes.{{.ResourceClassName}}{{.Name}}StringValue{ StringValue: priorStateData.{{ .Name }} },
 							{{- else}}
 					{{ .Name }}: priorStateData.{{ .Name }},
@@ -354,7 +351,7 @@ func (r *{{.ResourceClassName}}Resource) UpgradeState(ctx context.Context) map[i
 						{{- $AttributeName := getLegacyChildAttribute $PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
 							{{- if eq $AttributeName ""}}
 						{{ .Name }}: basetypes.NewStringNull(),
-								{{- else if and (lt 0 (len .ValidValuesMap)) (lt 0 (len .Validators))}}
+								{{- else if .HasCustomType}}
 						{{ .Name }}: customTypes.{{.ResourceClassName}}{{.Name}}StringValue{StringValue: priorStateData{{.ResourceClassName}}.{{ $AttributeName }}},
 								{{- else}}
 						{{ .Name }}: priorStateData{{.ResourceClassName}}.{{ $AttributeName }},
@@ -563,7 +560,7 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 		{{ if .LegacyAttributes}}{{ $ResourceClassName := .ResourceClassName}}
 		{{ range .LegacyAttributes}}{{$SetName := .Name}}
 			{{- if and (ne .ReplacedBy.AttributeName "") (eq (getMigrationType .ValueType) "String") (isNewAttributeStringType .ReplacedBy.AttributeName) }}
-				{{- if .NeedCustomType}}
+				{{- if .NeedsCustomType}}
 		if !configData.{{ .Name }}.IsNull() {
 			planData.Deprecated{{ .Name }} = configData.{{ .Name }}.StringValue
 		} else if !configData.Deprecated{{ .Name }}.IsNull() { 
@@ -712,7 +709,7 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 						{{- if eq .Name "Annotation"}}
 					{{ .ResourceClassName }}.{{ .Name }} = planData.Annotation
 						{{- else if ne .DefaultValue ""}}
-							{{- if and (lt 0 (len .ValidValuesMap)) (lt 0 (len .Validators))}}
+							{{- if .HasCustomType}}
 					{{ .ResourceClassName }}.{{ .Name }} = customTypes.New{{.ResourceClassName}}{{.Name}}StringValue("{{ .DefaultValue }}") // Default to default value from meta when not found
 							{{- else}}
 					{{ .ResourceClassName }}.{{ .Name }} = basetypes.NewStringValue("{{ .DefaultValue }}") // Default to default value from meta when not found
@@ -779,7 +776,7 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 						{{- if eq .Name "Annotation"}}
 					{{ .Name }}: planData.Annotation,
 						{{- else if and (ne $AttributeName "") (not (isNewNamedClassAttribute $Overwrite)) }}
-							{{- if and (lt 0 (len .ValidValuesMap)) (lt 0 (len .Validators))}}
+							{{- if .HasCustomType}}
 					{{ .Name }}: customTypes.{{.ResourceClassName}}{{.Name}}StringValue{StringValue: attributeValue.{{ .Name }}},
 							{{- else}}
 					{{ .Name }}: attributeValue.{{ .Name }},
@@ -960,7 +957,7 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 			},
 				{{- else}}
 			"{{$OverwritePropertyName}}": schema.StringAttribute{
-					{{- if and (lt 0 (len .ValidValuesMap)) (lt 0 (len .Validators))}}
+					{{- if .HasCustomType}}
 				CustomType: customTypes.{{.ResourceClassName}}{{.Name}}StringType{},
 					{{- end}}
 					{{- if or .IsNaming .IsRequired}}
@@ -990,7 +987,7 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 					{{- if eq .Name "Annotation"}}
 				Default: stringdefault.StaticString(globalAnnotation),
 					{{- end}}
-					{{- if and (lt 0 (len .ValidValuesMap)) (lt 0 (len .Validators))}}
+					{{- if .HasCustomType}}
 				Validators: []validator.String{
 					stringvalidator.Any(
 						stringvalidator.OneOf({{- validatorString .ValidValues}}),
@@ -1053,7 +1050,7 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 						},
 						{{- else}}
 						"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": schema.StringAttribute{
-							{{- if and (lt 0 (len .ValidValuesMap)) (lt 0 (len .Validators))}}
+							{{- if .HasCustomType}}
 							CustomType: customTypes.{{.ResourceClassName}}{{.Name}}StringType{},
 							{{- end}}
 							{{- if and (or .IsNaming .IsRequired) (not $.HasReadOnlyProperties)}}
@@ -1067,7 +1064,7 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 								stringplanmodifier.UseStateForUnknown(),
 							},
 							{{- end}}
-							{{- if and (lt 0 (len .ValidValuesMap)) (lt 0 (len .Validators))}}
+							{{- if .HasCustomType}}
 							Validators: []validator.String{
 								stringvalidator.Any(
 									stringvalidator.OneOf({{- validatorString .ValidValues}}),
@@ -1394,7 +1391,7 @@ func getAndSet{{.ResourceClassName}}Attributes(ctx context.Context, diags *diag.
 				}
 						{{- else}}
 				if attributeName == "{{.PropertyName}}" {
-							{{- if and (lt 0 (len .ValidValuesMap)) (lt 0 (len .Validators))}}
+							{{- if .HasCustomType}}
 					data.{{.Name}} = customTypes.New{{.ResourceClassName}}{{.Name}}StringValue(attributeValue.(string))
 							{{- else}}
 					data.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}} = basetypes.NewStringValue(attributeValue.(string))
@@ -1446,7 +1443,7 @@ func getAndSet{{.ResourceClassName}}Attributes(ctx context.Context, diags *diag.
 								}
 										{{- else}}
 								if childAttributeName == "{{.PropertyName}}" {
-											{{- if and (lt 0 (len .ValidValuesMap)) (lt 0 (len .Validators))}}
+											{{- if .HasCustomType}}
 									{{.ResourceClassName}}{{$.ResourceClassName}}.{{.Name}} = customTypes.New{{.ResourceClassName}}{{.Name}}StringValue(childAttributeValue.(string))
 											{{- else}}
 									{{.ResourceClassName}}{{$.ResourceClassName}}.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}} = basetypes.NewStringValue(childAttributeValue.(string))

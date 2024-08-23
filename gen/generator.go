@@ -768,7 +768,7 @@ func main() {
 			}
 			model.TestVars = testVarsMap
 			for propertyName, property := range model.Properties {
-				if len(property.ValidValuesMap) > 0 && len(property.Validators) > 0 {
+				if property.HasCustomType {
 					renderTemplate("custom_type.go.tmpl", fmt.Sprintf("%s_%s.go", model.PkgName, propertyName), "./internal/custom_types", property)
 				}
 			}
@@ -882,6 +882,7 @@ type Model struct {
 	HasChildNamedProperties   bool
 	Include                   bool
 	HasReadOnlyProperties     bool
+	HasCustomTypeProperties   bool
 }
 
 type TestDependency struct {
@@ -905,14 +906,14 @@ type LegacyBlock struct {
 }
 
 type LegacyAttribute struct {
-	Name           string
-	AttributeName  string
-	ValueType      []string
-	ReplacedBy     ReplacementAttribute
-	Optional       bool
-	Computed       bool
-	Required       bool
-	NeedCustomType bool
+	Name            string
+	AttributeName   string
+	ValueType       []string
+	ReplacedBy      ReplacementAttribute
+	Optional        bool
+	Computed        bool
+	Required        bool
+	NeedsCustomType bool
 }
 
 type ReplacementAttribute struct {
@@ -941,11 +942,12 @@ type Property struct {
 	Validators               []interface{}
 	IdentifyProperties       []Property
 	// Below booleans are used during template rendering to determine correct rendering the go code
-	IsNaming     bool
-	CreateOnly   bool
-	IsRequired   bool
-	IgnoreInTest bool
-	ReadOnly     bool
+	IsNaming      bool
+	CreateOnly    bool
+	IsRequired    bool
+	IgnoreInTest  bool
+	ReadOnly      bool
+	HasCustomType bool
 }
 
 // A Definitions represents the ACI class and property definitions as defined in the definitions YAML files
@@ -1351,6 +1353,7 @@ func (m *Model) SetClassProperties(classDetails interface{}) {
 				IgnoreInTest:             ignoreInTest,
 				IgnoreInTestExampleValue: ignoreInTestExampleValue,
 				ReadOnly:                 slices.Contains(readOnlyProperties, propertyName),
+				HasCustomType:            false,
 			}
 
 			if requiredProperty(GetOverwriteAttributeName(m.PkgName, propertyName, m.Definitions), m.PkgName, m.Definitions) || property.IsNaming {
@@ -1407,13 +1410,18 @@ func (m *Model) SetClassProperties(classDetails interface{}) {
 				property.ValidValuesMap = make(map[string]string)
 				for _, details := range propertyValue.(map[string]interface{})["validValues"].([]interface{}) {
 					validValueName := details.(map[string]interface{})["localName"].(string)
-					if validValueName != "defaultValue" && !isInSlice(removedValidValuesList, validValueName) {
+					validValueKey := details.(map[string]interface{})["value"].(string)
+					if validValueName != "defaultValue" && !IsInSlice(removedValidValuesList, validValueName) {
 						property.ValidValues = append(property.ValidValues, validValueName)
-						property.ValidValuesMap[details.(map[string]interface{})["value"].(string)] = validValueName
+						property.ValidValuesMap[validValueKey] = validValueName
 					}
 				}
 				if len(property.ValidValues) > 0 {
 					m.HasValidValues = true
+				}
+				if len(property.ValidValuesMap) > 0 && len(property.Validators) > 0 {
+					property.HasCustomType = true
+					m.HasCustomTypeProperties = true
 				}
 			}
 
@@ -1640,23 +1648,23 @@ func (m *Model) GetLegacyAttribute(attributeName, className string, attributeVal
 		}
 	}
 
-	needCustomType := false
+	needsCustomType := false
 	for _, property := range m.Properties {
 		if propertyName == property.Name && len(property.ValidValuesMap) > 0 && len(property.Validators) > 0 {
-			needCustomType = true
+			needsCustomType = true
 			break
 		}
 
 	}
 
 	legacyAttribute := LegacyAttribute{
-		Name:           propertyName,
-		AttributeName:  attributeName,
-		ValueType:      valueType,
-		Optional:       optional,
-		Computed:       computed,
-		Required:       required,
-		NeedCustomType: needCustomType,
+		Name:            propertyName,
+		AttributeName:   attributeName,
+		ValueType:       valueType,
+		Optional:        optional,
+		Computed:        computed,
+		Required:        required,
+		NeedsCustomType: needsCustomType,
 	}
 
 	if replacedBy != nil {
@@ -2365,7 +2373,7 @@ func IsInterfaceSlice(input interface{}) bool {
 	return ok
 }
 
-func isInSlice(slice []interface{}, element interface{}) bool {
+func IsInSlice(slice []interface{}, element interface{}) bool {
 	if len(slice) == 0 {
 		return false
 	}
