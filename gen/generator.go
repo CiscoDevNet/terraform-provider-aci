@@ -445,6 +445,31 @@ func renderTemplate(templateName, outputFileName, outputPath string, outputData 
 	outputFile.Write(bytes)
 }
 
+// Creates a map of models for the resources and datasources from the meta data and definitions
+func getClassModels(definitions Definitions) map[string]Model {
+	files, err := os.ReadDir(metaPath)
+	if err != nil {
+		panic(err)
+	}
+	classModels := make(map[string]Model)
+	pkgNames := []string{}
+	for _, file := range files {
+		if path.Ext(file.Name()) != ".json" {
+			continue
+		}
+		pkgNames = append(pkgNames, strings.TrimSuffix(file.Name(), path.Ext(file.Name())))
+	}
+	for _, pkgName := range pkgNames {
+
+		classModel := Model{PkgName: pkgName}
+		classModel.setClassModel(metaPath, false, definitions, []string{}, pkgNames)
+		classModel.ResourceName = GetResourceName(pkgName, definitions)
+		classModels[pkgName] = classModel
+
+	}
+	return classModels
+}
+
 // Retrieves the testVars for a model from the testVars YAML file
 func getTestVars(model Model) (map[string]interface{}, error) {
 	testVarsMap := make(map[string]interface{})
