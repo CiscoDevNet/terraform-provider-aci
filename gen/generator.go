@@ -82,9 +82,6 @@ const pubhupDevnetBaseUrl = "https://pubhub.devnetcloud.com/media/model-doc-late
 // The functions itself are defined in the current file
 var templateFuncs = template.FuncMap{
 	"isStringType":                      isStringType,
-	"trimPrefixBasedOnClass":            trimPrefixBasedOnClass,
-	"getRnPrefix":                       getRnPrefix,
-	"extractPrefix":                     extractPrefix,
 	"lowercaseFirst":                    LowercaseFirst,
 	"snakeCase":                         Underscore,
 	"validatorString":                   ValidatorString,
@@ -139,30 +136,6 @@ func ContainsRequired(properties map[string]Property) bool {
 	return false
 }
 
-func trimPrefixBasedOnClass(rnFormat string, resourceClassName string) string {
-	// Split the rnFormat by the "-" character to separate segments
-	segments := strings.Split(rnFormat, "-")
-
-	// If there is only one segment, return it as is
-	if len(segments) == 1 {
-		return segments[0]
-	}
-
-	// If there are multiple segments, we can apply a more sophisticated rule.
-	// Let's assume the goal is to find the segment that most likely matches the prefix structure:
-	// Typically, the prefix is the first or second segment.
-
-	// Example dynamic rule: The prefix is often the segment that does not contain brackets "[]"
-	for _, segment := range segments {
-		if !strings.Contains(segment, "[") && !strings.Contains(segment, "]") {
-			return segment
-		}
-	}
-
-	// Fallback: return the first segment if no other rule applies
-	return segments[0]
-}
-
 func Replace(oldValue, newValue, inputString string) string {
 	return strings.Replace(inputString, oldValue, newValue, -1)
 }
@@ -214,11 +187,6 @@ func GetPropertyNameForLegacyAttribute(name string, legacyAttributes map[string]
 	}
 	return ""
 }
-func getRnPrefix(rnFormat string) string {
-	// Split the rnFormat by "-" and take the first element
-	parts := strings.Split(rnFormat, "-")
-	return parts[0]
-}
 
 func GetLegacyChildAttribute(className, overwriteProperty string, property Property, legacyAttributes map[string]LegacyAttribute, legacyBlocks []LegacyBlock) string {
 
@@ -258,14 +226,6 @@ func LowercaseFirst(str string) string {
 	return strings.ToLower(string(str[0])) + str[1:]
 }
 
-func extractPrefix(rnFormat string) string {
-	segments := strings.Split(rnFormat, "/")
-	lastSegment := segments[len(segments)-1]
-
-	prefix := strings.SplitN(lastSegment, "-", 2)[0]
-
-	return prefix
-}
 func GetNewChildAttributes(legacyAttributes map[string]LegacyAttribute, properties map[string]Property) []Property {
 	result := []Property{}
 	for _, property := range properties {
