@@ -288,4 +288,16 @@ To compile the provider, run `make build`. This will build the provider with san
 
 <strong>NOTE:</strong> Currently only resource properties supports the reflecting manual changes made in CISCO ACI. Manual changes to relationship is not taken care by the provider.
 
+### Payload Generation
 
+To export a Terraform Plan as an ACI Payload:
+
+1. Navigate to conversion directory 
+$cd cmd/conversion
+
+2. Create your desired configuration in main.tf
+
+3. Run:
+$ go run main.go
+
+4. Payload will be written to payload.json

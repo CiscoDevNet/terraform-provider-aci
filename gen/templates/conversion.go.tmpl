@@ -10,15 +10,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-{{- $resourceClassName := .ResourceClassName }}
-{{- $resourceName := .ResourceName }}
-{{- $properties := .Properties }}
-{{- $children := .Children }}
-
-func Create{{ $resourceClassName }}(attributes map[string]interface{}, status string) map[string]interface{} {
+func Create{{ .ResourceClassName }}(attributes map[string]interface{}, status string) map[string]interface{} {
 	ctx := context.Background()
 	var diags diag.Diagnostics
-	data := &provider.{{ $resourceClassName }}ResourceModel{}
+	data := &provider.{{ .ResourceClassName }}ResourceModel{}
 
 	{{- if .HasParent }}
 	if v, ok := attributes["parent_dn"].(string); ok && v != "" {
@@ -26,57 +21,58 @@ func Create{{ $resourceClassName }}(attributes map[string]interface{}, status st
 	}
 	{{- end }}
 
-	{{- range $properties }}
-	if v, ok := attributes["{{ overwriteProperty .PkgName .SnakeCaseName $.Definitions }}"].(string); ok && v != "" {
-		data.{{ if eq .Name "Id" }}{{ $resourceClassName }}{{ .Name }}{{ else }}{{ .Name }}{{ end }} = types.StringValue(v)
-	}
-	{{- end }}
 
-	{{- range $children }}
-	plan{{ .ResourceClassName }} := convertTo{{ .ResourceClassName }}{{ $resourceClassName }}(attributes["{{ .ResourceName }}"])
+	{{- range .Properties }}
+    {{- if eq .GoType "types.String" }}
+        if v, ok := attributes["{{ overwriteProperty .PkgName .SnakeCaseName $.Definitions }}"].(string); ok && v != "" {
+            data.{{ if eq .Name "Id" }}{{ $.ResourceClassName }}{{ .Name }}{{ else }}{{ .Name }}{{ end }} = types.StringValue(v)
+        }
+    {{- end }}
+{{- end }}
+
+	
+
+	{{- range .Children }}
+	plan{{ .ResourceClassName }} := convertTo{{ .ResourceClassName }}{{ $.ResourceClassName }}(attributes["{{ .ResourceName }}"])
 	{{- end }}
 
 
 	if status == "deleted" {
+		provider.Set{{ .ResourceClassName }}Id(ctx, data)
 
-	provider.Set{{ $resourceClassName }}Id(ctx, data)
-
-	
-			deletePayload := provider.GetDeleteJsonPayload(ctx, &diags, "{{ lowercaseFirst $resourceClassName }}", data.Id.ValueString())
-			if deletePayload != nil {
-				jsonPayload := deletePayload.EncodeJSON(container.EncodeOptIndent("", "  "))
-				var customData map[string]interface{}
-				json.Unmarshal(jsonPayload, &customData)
-				return customData
-			}
-		
+		deletePayload := provider.GetDeleteJsonPayload(ctx, &diags, "{{ lowercaseFirst .ResourceClassName }}", data.Id.ValueString())
+		if deletePayload != nil {
+			jsonPayload := deletePayload.EncodeJSON(container.EncodeOptIndent("", "  "))
+			var customData map[string]interface{}
+			json.Unmarshal(jsonPayload, &customData)
+			return customData
+		}
 	}
 
+	newAci{{ .ResourceClassName }} := provider.Get{{ .ResourceClassName }}CreateJsonPayload(ctx, &diags, true, data
+		{{- range .Children }}, plan{{ .ResourceClassName }}, plan{{ .ResourceClassName }}{{- end }})
 
-	newAci{{ $resourceClassName }} := provider.Get{{ $resourceClassName }}CreateJsonPayload(ctx, &diags, true, data
-		{{- range $children }}, plan{{ .ResourceClassName }}, plan{{ .ResourceClassName }}{{- end }})
-
-	jsonPayload := newAci{{ $resourceClassName }}.EncodeJSON(container.EncodeOptIndent("", "  "))
+	jsonPayload := newAci{{ .ResourceClassName }}.EncodeJSON(container.EncodeOptIndent("", "  "))
 
 	var customData map[string]interface{}
 	json.Unmarshal(jsonPayload, &customData)
 
 	payload := customData
 
-	provider.Set{{ $resourceClassName }}Id(ctx, data)
-	attrs := payload["{{ lowercaseFirst $resourceClassName }}"].(map[string]interface{})["attributes"].(map[string]interface{})
+	provider.Set{{ .ResourceClassName }}Id(ctx, data)
+	attrs := payload["{{ lowercaseFirst .ResourceClassName }}"].(map[string]interface{})["attributes"].(map[string]interface{})
 	attrs["dn"] = data.Id.ValueString()
 
 	return payload
 }
 
-{{- range $children }}
-func convertTo{{ .ResourceClassName }}{{ $resourceClassName }}(resources interface{}) []provider.{{ .ResourceClassName }}{{ $resourceClassName }}ResourceModel {
-	var planResources []provider.{{ .ResourceClassName }}{{ $resourceClassName }}ResourceModel
+{{- range .Children }}
+func convertTo{{ .ResourceClassName }}{{ $.ResourceClassName }}(resources interface{}) []provider.{{ .ResourceClassName }}{{ $.ResourceClassName }}ResourceModel {
+	var planResources []provider.{{ .ResourceClassName }}{{ $.ResourceClassName }}ResourceModel
 	if resources, ok := resources.([]interface{}); ok {
 		for _, resource := range resources {
 			resourceMap := resource.(map[string]interface{})
-			planResources = append(planResources, provider.{{ .ResourceClassName }}{{ $resourceClassName }}ResourceModel{
+			planResources = append(planResources, provider.{{ .ResourceClassName }}{{ $.ResourceClassName }}ResourceModel{
 				{{- range .Properties }}
 				{{ .Name }}: types.StringValue(resourceMap["{{ overwriteProperty .PkgName .SnakeCaseName $.Definitions }}"].(string)),
 				{{- end }}

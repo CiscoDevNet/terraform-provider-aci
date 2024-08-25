@@ -81,8 +81,10 @@ const pubhupDevnetBaseUrl = "https://pubhub.devnetcloud.com/media/model-doc-late
 // The map contains a key which is the name of the function used in the template and a value which is the function itself
 // The functions itself are defined in the current file
 var templateFuncs = template.FuncMap{
+	"isStringType":                      isStringType,
+	"trimPrefixBasedOnClass":            trimPrefixBasedOnClass,
+	"getRnPrefix":                       getRnPrefix,
 	"extractPrefix":                     extractPrefix,
-	"trimRnName":                        trimRnName,
 	"lowercaseFirst":                    LowercaseFirst,
 	"snakeCase":                         Underscore,
 	"validatorString":                   ValidatorString,
@@ -137,6 +139,30 @@ func ContainsRequired(properties map[string]Property) bool {
 	return false
 }
 
+func trimPrefixBasedOnClass(rnFormat string, resourceClassName string) string {
+	// Split the rnFormat by the "-" character to separate segments
+	segments := strings.Split(rnFormat, "-")
+
+	// If there is only one segment, return it as is
+	if len(segments) == 1 {
+		return segments[0]
+	}
+
+	// If there are multiple segments, we can apply a more sophisticated rule.
+	// Let's assume the goal is to find the segment that most likely matches the prefix structure:
+	// Typically, the prefix is the first or second segment.
+
+	// Example dynamic rule: The prefix is often the segment that does not contain brackets "[]"
+	for _, segment := range segments {
+		if !strings.Contains(segment, "[") && !strings.Contains(segment, "]") {
+			return segment
+		}
+	}
+
+	// Fallback: return the first segment if no other rule applies
+	return segments[0]
+}
+
 func Replace(oldValue, newValue, inputString string) string {
 	return strings.Replace(inputString, oldValue, newValue, -1)
 }
@@ -187,6 +213,11 @@ func GetPropertyNameForLegacyAttribute(name string, legacyAttributes map[string]
 		}
 	}
 	return ""
+}
+func getRnPrefix(rnFormat string) string {
+	// Split the rnFormat by "-" and take the first element
+	parts := strings.Split(rnFormat, "-")
+	return parts[0]
 }
 
 func GetLegacyChildAttribute(className, overwriteProperty string, property Property, legacyAttributes map[string]LegacyAttribute, legacyBlocks []LegacyBlock) string {
@@ -415,6 +446,8 @@ func renderTemplate(templateName, outputFileName, outputPath string, outputData 
 	// The templates have a different data structure, thus based on the template name the output data is casted to the correct type
 	if templateName == "provider.go.tmpl" {
 		err = tmpl.Execute(&buffer, outputData.(map[string]Model))
+	} else if templateName == "resourceMap.go.tmpl" {
+		err = tmpl.Execute(&buffer, outputData.(map[string]Model))
 	} else if templateName == "index.md.tmpl" {
 		err = tmpl.Execute(&buffer, outputData.(ProviderModel))
 	} else if strings.Contains(templateName, "_test.go.tmpl") {
@@ -498,7 +531,9 @@ func getClassModels(definitions Definitions) map[string]Model {
 
 		classModel := Model{PkgName: pkgName}
 		classModel.setClassModel(metaPath, false, definitions, []string{}, pkgNames)
+		classModel.ResourceName = GetResourceName(pkgName, definitions)
 		classModels[pkgName] = classModel
+
 	}
 	return classModels
 }
@@ -520,7 +555,7 @@ func getTestVars(model Model) (map[string]interface{}, error) {
 	return testVarsMap, nil
 }
 
-// Retrieves the property and classs overwrite definitions from the definitions YAML files
+// Retrieves the property and classes overwrite definitions from the definitions YAML files
 func getDefinitions() Definitions {
 	definitions := Definitions{}
 	files, err := os.ReadDir(definitionsPath)
@@ -742,6 +777,8 @@ func main() {
 	annotationUnsupported := genAnnotationUnsupported()
 
 	renderTemplate("provider.go.tmpl", "provider.go", providerPath, classModels)
+	renderTemplate("resourceMap.go.tmpl", "resourceMap.go", conversionPath, classModels)
+
 	renderTemplate("index.md.tmpl", "index.md", docsPath, ProviderModel{Example: string(getExampleCode(providerExamplePath))})
 	if len(annotationUnsupported) > 0 {
 		err := os.Remove(filepath.Join(providerPath, "annotation_unsupported.go"))
@@ -823,25 +860,7 @@ func main() {
 			renderTemplate("datasource.md.tmpl", fmt.Sprintf("%s.md", model.ResourceName), datasourcesDocsPath, model)
 			renderTemplate("resource_test.go.tmpl", fmt.Sprintf("resource_%s_%s_test.go", providerName, model.ResourceName), providerPath, model)
 			renderTemplate("datasource_test.go.tmpl", fmt.Sprintf("data_source_%s_%s_test.go", providerName, model.ResourceName), providerPath, model)
-			renderTemplate("conversion.go.tmpl", fmt.Sprintf("conversion_%s.go", model.ResourceName), conversionPath, model)
-
-			allModels := []Model{}
-
-			for _, model := range classModels {
-				if len(model.IdentifiedBy) > 0 || model.Include {
-					model.ResourceName = GetResourceName(model.PkgName, definitions)
-
-					allModels = append(allModels, model)
-				}
-			}
-
-			data := map[string]interface{}{
-				"Models": allModels,
-			}
-
-			renderTemplateModels("resourceMap.go.tmpl", "resourceMap.go", conversionPath, data)
-			renderTemplateModels("getAciClass.go.tmpl", "getAciClass.go", conversionPath, data)
-			//renderTemplateModels("new.go.tmpl", "dn_to_aci.go", conversionPath, data)
+			renderTemplate("conversion.go.tmpl", fmt.Sprintf("%s.go", model.ResourceName), conversionPath, model)
 
 		}
 	}
@@ -982,10 +1001,12 @@ type Property struct {
 	Versions                 string
 	NamedPropertyClass       string
 	IgnoreInTestExampleValue string
-	ValidValues              []string
-	IdentifiedBy             []interface{}
-	Validators               []interface{}
-	IdentifyProperties       []Property
+	GoType                   string // Add this field
+
+	ValidValues        []string
+	IdentifiedBy       []interface{}
+	Validators         []interface{}
+	IdentifyProperties []Property
 	// Below booleans are used during template rendering to determine correct rendering the go code
 	IsNaming     bool
 	CreateOnly   bool
@@ -1303,6 +1324,11 @@ func (m *Model) SetResourceNotesAndWarnigns(classPkgName string, definitions Def
 	}
 }
 
+func isStringType(property Property) bool {
+	// Logic to determine if a property is of type "types.String"
+	return property.GoType == "types.String"
+}
+
 func (m *Model) SetResourceNameAsDescription(classPkgName string, definitions Definitions) {
 	m.ResourceNameAsDescription = GetResourceNameAsDescription(GetResourceName(classPkgName, definitions), definitions)
 }
@@ -1513,6 +1539,16 @@ func (m *Model) SetClassProperties(classDetails interface{}) {
 				targetRelationalPropertyClasses[property.SnakeCaseName] = namedClassName
 				namedProperties[propertyName] = property
 				m.HasNamedProperties = true
+			}
+
+			uiType := propertyValue.(map[string]interface{})["uitype"].(string)
+
+			if uiType == "string" {
+				property.GoType = "types.String"
+			} else if uiType == "set" {
+				property.GoType = "types.Set"
+			} else if uiType == "list" {
+				property.GoType = "types.List"
 			}
 
 			properties[propertyName] = property

@@ -9,18 +9,18 @@ terraform {
 # Configure the provider with your Cisco APIC credentials.
 provider "aci" {
   # APIC Username
-  username = " "
+  username = ""
   # APIC Password
-  password = " "
+  password = ""
   # APIC URL
-  url      = " "
+  url      = ""
   insecure = true
 }
 
 # Defines an Application EPG Resource.
 /*
 resource "aci_application_epg" "fooapplication_epg" {
-    parent_dn  = "uni/tn-common/ap-default"
+    parent_dn  = "uni/tn-mgmt/ap-default"
     name                    = "new_epg"
     description             = "from terraform"
     annotation              = "tag_epg"
@@ -28,10 +28,6 @@ resource "aci_application_epg" "fooapplication_epg" {
     flood_in_encapsulation  = "disabled"
     forwarding_control      = "none"
     
-    relation_to_bridge_domain= [{
-      annotation = "annotation1"
-      bridge_domain_name = "default"
-    }]
 }
 */
 /*
@@ -49,10 +45,25 @@ resource "aci_application_epg" "fooapplication_epg2" {
       bridge_domain_name = "default"
     }]
 }
-
 */
-# Define an ACI Tenant Resource.
+/*
+resource "aci_application_epg" "fooapplication_epg5" {
+    parent_dn  = "uni/tn-common/ap-default232"
+    name                    = "new_epg5"
+    description             = "from terraform"
+    annotation              = "tag_epg"
+    contract_exception_tag  = "0"
+    flood_in_encapsulation  = "disabled"
+    forwarding_control      = "none"
+    
+    relation_to_bridge_domain= [{
+      annotation = "annotation1"
+      bridge_domain_name = "default"
+    }]
+}
+*/
 
+# Define an ACI Tenant Resource.
 /*
 resource "aci_endpoint_tag_ip" "full_example_tenant" {
   parent_dn    = "uni/tn-common"
@@ -62,22 +73,11 @@ resource "aci_endpoint_tag_ip" "full_example_tenant" {
   ip           = "10.0.0.2"
   name         = "WOW"
   name_alias   = "name_alias"
-  annotations = [
-    {
-      key   = "key_0"
-      value = "vaule_1"
-    }
-  ]
-  tags = [
-    {
-      key   = "key_0"
-      value = "value_1"
-    }
-  ]
+  
 }
 */
 
-//SUCCESS
+
 /*
 resource "aci_vrf_fallback_route_group" "full_example_vrf" {
   parent_dn   = "uni/tn-common"
@@ -107,7 +107,8 @@ resource "aci_vrf_fallback_route_group" "full_example_vrf" {
     }
   ]
 }
-
+*/
+/*
 resource "aci_external_management_network_instance_profile" "full_example" {
   annotation  = "woidid"
   description = "description"
@@ -135,8 +136,8 @@ resource "aci_external_management_network_instance_profile" "full_example" {
   ]
 }
 */
-/* SUCCESS
 
+/*
 resource "aci_external_management_network_instance_profile" "full_example333" {
   annotation  = "annotation"
   description = "description"
@@ -163,12 +164,12 @@ resource "aci_external_management_network_instance_profile" "full_example333" {
     }
   ]
 }
-
 */
+
 
 /*
 resource "aci_netflow_monitor_policy" "full_example_tenant" {
-  parent_dn   = "uni/tn-mgmt/extmgmt-default/instp-test_name"
+  parent_dn   = "uni/tn-mgmt"
   annotation  = "annotation"
   description = "description"
   name        = "netfow_monitor"
@@ -220,22 +221,22 @@ resource "aci_tag" "example_tenant" {
 
 //DEFINES AN ACI ANNOTATION ------- TEST
 
-
+/*
 resource "aci_annotation" "terraform_annotation" {
   parent_dn = "uni/tn-common/eptags/epiptag-[10.0.0.2]-test_ctx_name"
   key       = "test_key"
   value     = "test_value"
 }
-
-
+*/
+/*
 resource "aci_annotation" "terraform_annotation2" {
   parent_dn = "uni/tn-common/eptags/epiptag-[10.0.0.2]-test_ctx_name/annotationKey-[test_key]"
   key       = "test_keya"
   value     = "test_valuea"
 }
+*/
 
-
-
+/*
 resource "aci_pim_route_map_policy" "full_example_tenant" {
   parent_dn   = "uni/tn-demo_tenant"
   annotation  = "annotation"
@@ -257,7 +258,7 @@ resource "aci_pim_route_map_policy" "full_example_tenant" {
     }
   ]
 }
-
+*/
 
 # Define an ACI Tenant VRF Resource.
 # resource "aci_vrf" "terraform_vrf" {

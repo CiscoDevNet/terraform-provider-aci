@@ -1,9 +1,13 @@
+
+
 package convert_funcs
 
 type createFunc func(map[string]interface{}, string) map[string]interface{}
 
 var ResourceMap = map[string]createFunc{
-    {{- range $pkgName, $model := .Models }}
-    "aci_{{ $model.ResourceName }}": Create{{ $model.ResourceClassName }},
-    {{- end }}
+ {{- range . }}
+			{{- if or (and .IdentifiedBy (not (and .MaxOneClassAllowed (hasPrefix .RnFormat  "rs")))) .Include}}
+    "aci_{{ .ResourceName }}": Create{{ .ResourceClassName }},
+   {{end}}
+      {{end}}
 }

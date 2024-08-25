@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/convert_funcs"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/dict"
 )
 
 type Plan struct {
@@ -123,119 +124,182 @@ func createPayloadList(plan Plan) []map[string]interface{} {
 	return data
 }
 
-var lastValidNode map[string]interface{}
+type TreeNode struct {
+	Attributes map[string]interface{} `json:"attributes,omitempty"`
+	Children   map[string]*TreeNode   `json:"children,omitempty"`
+	ClassName  string                 `json:"-"`
+}
 
-// Work in progress...
+func NewTreeNode(className string, attributes map[string]interface{}) *TreeNode {
+	return &TreeNode{
+		ClassName:  className,
+		Attributes: attributes,
+		Children:   make(map[string]*TreeNode),
+	}
+}
+
 func constructTree(resources []map[string]interface{}) map[string]interface{} {
-	rootNode := map[string]interface{}{
-		"children": []map[string]interface{}{},
-	}
+	rootNode := NewTreeNode("uni", map[string]interface{}{"dn": "uni"})
 
-	nodeMap := map[string]map[string]interface{}{
-		"uni": rootNode,
-	}
+	dnMap := make(map[string]*TreeNode)
+	dnMap["uni"] = rootNode
 
 	for _, resourceList := range resources {
 		for resourceType, resourceData := range resourceList {
 			resourceAttributes := resourceData.(map[string]interface{})
-			attributes := resourceAttributes["attributes"].(map[string]interface{})
-			dn := attributes["dn"].(string)
+			attributes := safeMapInterface(resourceAttributes, "attributes")
+			dn := safeString(attributes, "dn")
 
-			parentDn, hasParentDn := attributes["parent_dn"].(string)
-			if !hasParentDn || parentDn == "" {
-				pathSegments := strings.Split(dn, "/")
-				if len(pathSegments) > 1 {
-					parentDn = strings.Join(pathSegments[:len(pathSegments)-1], "/")
-				} else {
-					parentDn = "uni"
+			var children []map[string]interface{}
+			if rawChildren, ok := resourceAttributes["children"].([]interface{}); ok {
+				for _, child := range rawChildren {
+					if childMap, ok := child.(map[string]interface{}); ok {
+						children = append(children, childMap)
+					}
 				}
 			}
 
-			createParentPath(nodeMap, parentDn)
-
-			currentNode, nodeExists := nodeMap[dn]
-			if !nodeExists {
-				currentNode = map[string]interface{}{
-					"attributes": attributes,
-					"children":   resourceAttributes["children"],
-				}
-			} else {
-
-				existingChildren, ok := currentNode["children"].([]map[string]interface{})
-				if !ok || existingChildren == nil {
-					existingChildren = []map[string]interface{}{}
-				}
-
-				newChildren, ok := resourceAttributes["children"].([]map[string]interface{})
-				if ok && newChildren != nil {
-					currentNode["children"] = append(existingChildren, newChildren...)
-				} else {
-					currentNode["children"] = existingChildren
-				}
-			}
-
-			parentNode := nodeMap[parentDn]
-
-			parentChildren, ok := parentNode["children"].([]map[string]interface{})
-			if !ok || parentChildren == nil {
-				parentChildren = []map[string]interface{}{}
-			}
-
-			parentNode["children"] = append(parentChildren, map[string]interface{}{resourceType: currentNode})
-
-			nodeMap[dn] = currentNode
+			buildParentPath(dnMap, rootNode, resourceType, dn, attributes, children)
 		}
 	}
 
-	return map[string]interface{}{
-		"uni": rootNode,
+	return map[string]interface{}{rootNode.ClassName: exportTree(rootNode)}
+}
+
+func buildParentPath(dnMap map[string]*TreeNode, rootNode *TreeNode, resourceType, dn string, attributes map[string]interface{}, children []map[string]interface{}) {
+	if dn == "" && resourceType == "" {
+		return
+	}
+
+	cursor := rootNode
+	if dn != "" {
+		cursor = traverseOrCreatePath(dnMap, rootNode, resourceType, dn)
+	}
+
+	var leafNode *TreeNode
+	if existingLeafNode, exists := dnMap[dn]; exists {
+
+		for key, value := range attributes {
+			existingLeafNode.Attributes[key] = value
+		}
+		leafNode = existingLeafNode
+	} else {
+		leafNode = NewTreeNode(resourceType, attributes)
+		cursor.Children[dn] = leafNode
+		dnMap[dn] = leafNode
+	}
+
+	for _, child := range children {
+		for childClassName, childData := range child {
+			childAttributes := safeMapInterface(childData.(map[string]interface{}), "attributes")
+			childDn := safeString(childAttributes, "dn")
+
+			childKey := childDn
+			if childDn == "" {
+				childKey = generateUniqueKeyForNonDnNode(childClassName, childAttributes)
+			}
+
+			if _, exists := leafNode.Children[childKey]; !exists {
+				childNode := NewTreeNode(childClassName, childAttributes)
+				leafNode.Children[childKey] = childNode
+				dnMap[childKey] = childNode
+			}
+
+			if grandChildren, ok := childData.(map[string]interface{})["children"].([]interface{}); ok {
+				for _, grandchild := range grandChildren {
+					if grandchildMap, ok := grandchild.(map[string]interface{}); ok {
+						buildParentPath(dnMap, leafNode, childClassName, childDn, safeMapInterface(grandchildMap, "attributes"), []map[string]interface{}{grandchildMap})
+					}
+				}
+			}
+		}
 	}
 }
 
-func createParentPath(nodeMap map[string]map[string]interface{}, parentDn string) {
-	pathSegments := strings.Split(parentDn, "/")
-	currentDn := "uni"
+func generateUniqueKeyForNonDnNode(resourceType string, attributes map[string]interface{}) string {
+	return fmt.Sprintf("%s-%v", resourceType, attributes["name"])
+}
 
-	for _, segment := range pathSegments[1:] {
-		currentDn += "/" + segment
+func traverseOrCreatePath(dnMap map[string]*TreeNode, rootNode *TreeNode, resourceType, dn string) *TreeNode {
+	pathSegments := strings.Split(dn, "/")
+	cursor := rootNode
 
-		className := convert_funcs.AciClassMap(strings.Split(segment, "-")[0])
+	classNames := parseClassNames(pathSegments, resourceType)
 
-		if className == "" {
-			//Intended to be 'continue' to skip intermediate segments in dn, currently causes error
-			className = segment
+	for i := 1; i < len(pathSegments); i++ {
+		className := classNames[i-1]
+		currentDn := strings.Join(pathSegments[:i+1], "/")
 
+		if existingNode, exists := dnMap[currentDn]; exists {
+			cursor = existingNode
+		} else {
+			newNode := NewTreeNode(className, map[string]interface{}{
+				"dn": currentDn,
+			})
+			cursor.Children[currentDn] = newNode
+			cursor = newNode
+			dnMap[currentDn] = newNode
 		}
-
-		if _, exists := nodeMap[currentDn]; !exists {
-			newNode := map[string]interface{}{
-				"attributes": map[string]interface{}{
-					"dn": currentDn,
-				},
-				"children": []map[string]interface{}{},
-			}
-
-			if lastValidNode == nil {
-				if _, ok := nodeMap["uni"]["children"]; !ok {
-					nodeMap["uni"]["children"] = []map[string]interface{}{}
-				}
-				nodeMap["uni"]["children"] = append(nodeMap["uni"]["children"].([]map[string]interface{}), map[string]interface{}{className: newNode})
-			} else {
-				if _, ok := lastValidNode["children"]; !ok {
-					lastValidNode["children"] = []map[string]interface{}{}
-				}
-				lastValidNode["children"] = append(lastValidNode["children"].([]map[string]interface{}), map[string]interface{}{className: newNode})
-			}
-
-			nodeMap[currentDn] = newNode
-		}
-
-		lastValidNode = nodeMap[currentDn]
 	}
+
+	return cursor
+}
+
+func parseClassNames(pathSegments []string, resourceType string) []string {
+	classNames := []string{resourceType}
+	for i := len(pathSegments) - 2; i >= 0; i-- {
+		prefix := strings.Split(pathSegments[i], "-")[0]
+		if pathSegments[i] == "uni" {
+			break
+		}
+		className := dict.GetDnToAciClassMap(classNames[len(classNames)-1], prefix)
+		classNames = append(classNames, className)
+	}
+
+	for i, j := 0, len(classNames)-1; i < j; i, j = i+1, j-1 {
+		classNames[i], classNames[j] = classNames[j], classNames[i]
+	}
+	return classNames
+
+}
+
+func exportTree(node *TreeNode) map[string]interface{} {
+	if node == nil {
+		return nil
+	}
+
+	result := map[string]interface{}{
+		"attributes": node.Attributes,
+	}
+
+	if len(node.Children) > 0 {
+		children := []map[string]interface{}{}
+		for _, child := range node.Children {
+			children = append(children, map[string]interface{}{
+				child.ClassName: exportTree(child),
+			})
+		}
+		result["children"] = children
+	}
+
+	return result
+}
+
+func safeMapInterface(data map[string]interface{}, key string) map[string]interface{} {
+	if value, ok := data[key].(map[string]interface{}); ok {
+		return value
+	}
+	return nil
+}
+
+func safeString(data map[string]interface{}, key string) string {
+	if value, ok := data[key].(string); ok {
+		return value
+	}
+	return ""
 }
 
 func main() {
-
 	if len(os.Args) != 1 {
 		fmt.Println("Usage: no arguments needed")
 		os.Exit(1)
@@ -255,17 +319,9 @@ func main() {
 
 	payloadList := createPayloadList(plan)
 
-	jsonData, err := json.MarshalIndent(payloadList, "", "  ")
-	if err != nil {
-		fmt.Println("Error:", err)
-		return
-	}
+	aciTree := constructTree(payloadList)
 
-	fmt.Println(string(jsonData))
-
-	aciPayload := constructTree(payloadList)
-
-	err = writeToFile(outputFile, aciPayload)
+	err = writeToFile(outputFile, aciTree)
 	if err != nil {
 		log.Fatalf("Error writing output file: %v", err)
 	}
