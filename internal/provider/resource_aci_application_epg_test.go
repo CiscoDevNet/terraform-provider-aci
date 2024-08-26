@@ -661,6 +661,15 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "tags.#", "0"),
 				),
 			},
+			// Update with minimum config and customtype semantic equivalent values
+			{
+				Config:             testConfigFvAEPgCustomTypeDependencyWithFvAp,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_application_epg.test", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "priority", "1"),
+				),
+			},
 		},
 	})
 }
@@ -1125,5 +1134,13 @@ resource "aci_application_epg" "test" {
   relation_to_taboo_contracts = []
   relation_to_trust_control_policy = []
   tags = []
+}
+`
+
+const testConfigFvAEPgCustomTypeDependencyWithFvAp = testConfigFvApMinDependencyWithFvTenant + `
+resource "aci_application_epg" "test" {
+  parent_dn = aci_application_profile.test.id
+  name = "test_name"
+  priority = "1"
 }
 `

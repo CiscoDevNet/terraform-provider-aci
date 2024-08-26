@@ -17,6 +17,10 @@ datasource_required:
 resource_required:
   name: "test_name"
 
+customtype:
+  name: "test_name"
+  priority: "1"
+
 all:
   annotation: "annotation"
   description: "description_1"

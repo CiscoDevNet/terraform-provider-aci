@@ -16,6 +16,10 @@ datasource_required:
 resource_required:
   contract_name: "test_tn_vz_br_cp_name"
 
+customtype:
+  priority: "1"
+  contract_name: "test_tn_vz_br_cp_name"
+
 all:
   annotation: "annotation"
   match_criteria: "All"

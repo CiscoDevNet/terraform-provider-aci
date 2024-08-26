@@ -51,6 +51,17 @@ resource_required:
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName $testValue "resource_required" 0 $.Definitions}}"
     {{- end}}
   {{- end}}
+  {{- if .HasCustomTypeProperties}}
+
+customtype:
+    {{- range .Properties}}{{$testValue := createTestValue .SnakeCaseName}}{{$overwritePropertyName := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
+      {{- if .HasCustomType}}
+  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: {{$validValuesMap := .ValidValuesMap}}{{range $key, $value := $validValuesMap}}{{if or (ne $value "unspecified") (eq (len $validValuesMap) 1)}}"{{$key}}"{{break}}{{end}}{{end}}
+      {{- else if or .IsNaming (or .IsRequired (isRequiredInTestValue .PkgName $overwritePropertyName $.Definitions "resource_required"))}}
+  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName $testValue "resource_required" 0 $.Definitions}}"
+      {{- end}}
+    {{- end}}
+  {{- end}}
 {{- end }}
 {{- if .HasReadOnlyProperties}}
 

@@ -183,6 +183,15 @@ func TestAccResourceFvRsConsIfWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_relation_to_imported_contract.test", "tags.#", "0"),
 				),
 			},
+			// Update with minimum config and customtype semantic equivalent values
+			{
+				Config:             testConfigFvRsConsIfCustomTypeDependencyWithFvAEPg,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_relation_to_imported_contract.test", "imported_contract_name", "test_tn_vz_cp_if_name"),
+					resource.TestCheckResourceAttr("aci_relation_to_imported_contract.test", "priority", "1"),
+				),
+			},
 		},
 	})
 }
@@ -358,6 +367,15 @@ func TestAccResourceFvRsConsIfWithFvESg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_relation_to_imported_contract.test", "tags.#", "0"),
 				),
 			},
+			// Update with minimum config and customtype semantic equivalent values
+			{
+				Config:             testConfigFvRsConsIfCustomTypeDependencyWithFvESg,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_relation_to_imported_contract.test", "imported_contract_name", "test_tn_vz_cp_if_name"),
+					resource.TestCheckResourceAttr("aci_relation_to_imported_contract.test", "priority", "1"),
+				),
+			},
 		},
 	})
 }
@@ -460,6 +478,14 @@ resource "aci_relation_to_imported_contract" "test" {
 }
 `
 
+const testConfigFvRsConsIfCustomTypeDependencyWithFvAEPg = testConfigFvAEPgMinDependencyWithFvAp + `
+resource "aci_relation_to_imported_contract" "test" {
+  parent_dn = aci_application_epg.test.id
+  imported_contract_name = "test_tn_vz_cp_if_name"
+  priority = "1"
+}
+`
+
 const testConfigFvRsConsIfMinDependencyWithFvESgAllowExisting = testConfigFvESgMinDependencyWithFvAp + `
 resource "aci_relation_to_imported_contract" "allow_test" {
   parent_dn = aci_endpoint_security_group.test.id
@@ -555,5 +581,13 @@ resource "aci_relation_to_imported_contract" "test" {
   imported_contract_name = "test_tn_vz_cp_if_name"
   annotations = []
   tags = []
+}
+`
+
+const testConfigFvRsConsIfCustomTypeDependencyWithFvESg = testConfigFvESgMinDependencyWithFvAp + `
+resource "aci_relation_to_imported_contract" "test" {
+  parent_dn = aci_endpoint_security_group.test.id
+  imported_contract_name = "test_tn_vz_cp_if_name"
+  priority = "1"
 }
 `

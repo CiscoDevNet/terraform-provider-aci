@@ -183,6 +183,15 @@ func TestAccResourceMgmtRsOoBConsWithMgmtInstP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "tags.#", "0"),
 				),
 			},
+			// Update with minimum config and customtype semantic equivalent values
+			{
+				Config:             testConfigMgmtRsOoBConsCustomTypeDependencyWithMgmtInstP,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "out_of_band_contract_name", "test_tn_vz_oob_br_cp_name"),
+					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "priority", "1"),
+				),
+			},
 		},
 	})
 }
@@ -282,5 +291,13 @@ resource "aci_relation_to_consumed_out_of_band_contract" "test" {
   out_of_band_contract_name = "test_tn_vz_oob_br_cp_name"
   annotations = []
   tags = []
+}
+`
+
+const testConfigMgmtRsOoBConsCustomTypeDependencyWithMgmtInstP = testConfigMgmtInstPMin + `
+resource "aci_relation_to_consumed_out_of_band_contract" "test" {
+  parent_dn = aci_external_management_network_instance_profile.test.id
+  out_of_band_contract_name = "test_tn_vz_oob_br_cp_name"
+  priority = "1"
 }
 `

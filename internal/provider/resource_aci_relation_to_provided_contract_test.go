@@ -191,6 +191,15 @@ func TestAccResourceFvRsProvWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_relation_to_provided_contract.test", "tags.#", "0"),
 				),
 			},
+			// Update with minimum config and customtype semantic equivalent values
+			{
+				Config:             testConfigFvRsProvCustomTypeDependencyWithFvAEPg,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_relation_to_provided_contract.test", "contract_name", "test_tn_vz_br_cp_name"),
+					resource.TestCheckResourceAttr("aci_relation_to_provided_contract.test", "priority", "1"),
+				),
+			},
 		},
 	})
 }
@@ -374,6 +383,15 @@ func TestAccResourceFvRsProvWithFvESg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_relation_to_provided_contract.test", "tags.#", "0"),
 				),
 			},
+			// Update with minimum config and customtype semantic equivalent values
+			{
+				Config:             testConfigFvRsProvCustomTypeDependencyWithFvESg,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_relation_to_provided_contract.test", "contract_name", "test_tn_vz_br_cp_name"),
+					resource.TestCheckResourceAttr("aci_relation_to_provided_contract.test", "priority", "1"),
+				),
+			},
 		},
 	})
 }
@@ -478,6 +496,14 @@ resource "aci_relation_to_provided_contract" "test" {
 }
 `
 
+const testConfigFvRsProvCustomTypeDependencyWithFvAEPg = testConfigFvAEPgMinDependencyWithFvAp + `
+resource "aci_relation_to_provided_contract" "test" {
+  parent_dn = aci_application_epg.test.id
+  contract_name = "test_tn_vz_br_cp_name"
+  priority = "1"
+}
+`
+
 const testConfigFvRsProvMinDependencyWithFvESgAllowExisting = testConfigFvESgMinDependencyWithFvAp + `
 resource "aci_relation_to_provided_contract" "allow_test" {
   parent_dn = aci_endpoint_security_group.test.id
@@ -575,5 +601,13 @@ resource "aci_relation_to_provided_contract" "test" {
   contract_name = "test_tn_vz_br_cp_name"
   annotations = []
   tags = []
+}
+`
+
+const testConfigFvRsProvCustomTypeDependencyWithFvESg = testConfigFvESgMinDependencyWithFvAp + `
+resource "aci_relation_to_provided_contract" "test" {
+  parent_dn = aci_endpoint_security_group.test.id
+  contract_name = "test_tn_vz_br_cp_name"
+  priority = "1"
 }
 `

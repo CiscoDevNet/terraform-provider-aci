@@ -39,6 +39,17 @@ datasource_required:
 resource_required:
   name: "test_name"
 
+customtype:
+  excessive_burst: "0xffffffffffffffff"
+  burst: "0xffffffffffffffff"
+  conform_mark_cos: "0xffff"
+  conform_mark_dscp: "0xffff"
+  exceed_mark_cos: "0xffff"
+  exceed_mark_dscp: "0xffff"
+  name: "test_name"
+  violate_mark_cos: "0xffff"
+  violate_mark_dscp: "0xffff"
+
 all:
   admin_state: "disabled"
   annotation: "annotation"

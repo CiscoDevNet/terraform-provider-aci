@@ -267,6 +267,18 @@ func TestAccResourceNetflowExporterPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "tags.#", "0"),
 				),
 			},
+			// Update with minimum config and customtype semantic equivalent values
+			{
+				Config:             testConfigNetflowExporterPolCustomTypeDependencyWithFvTenant,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "destination_ip_address", "2.2.2.1"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "destination_port", "110"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "name", "netfow_exporter"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "qos_dscp_value", "0"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "source_ip_address", "1.1.1.1/10"),
+				),
+			},
 		},
 	})
 }
@@ -424,5 +436,16 @@ resource "aci_netflow_exporter_policy" "test" {
   relation_to_epg = []
   relation_to_vrf = []
   tags = []
+}
+`
+
+const testConfigNetflowExporterPolCustomTypeDependencyWithFvTenant = testConfigFvTenantMin + `
+resource "aci_netflow_exporter_policy" "test" {
+  parent_dn = aci_tenant.test.id
+  destination_ip_address = "2.2.2.1"
+  destination_port = "110"
+  name = "netfow_exporter"
+  qos_dscp_value = "0"
+  source_ip_address = "1.1.1.1/10"
 }
 `
