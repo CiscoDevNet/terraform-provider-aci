@@ -375,6 +375,22 @@ func TestAccResourceQosDppPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "tags.#", "0"),
 				),
 			},
+			// Update with minimum config and customtype semantic equivalent values
+			{
+				Config:             testConfigQosDppPolCustomTypeDependencyWithFvTenant,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "burst", "0xffffffffffffffff"),
+					resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "conform_mark_cos", "0xffff"),
+					resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "conform_mark_dscp", "0xffff"),
+					resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "exceed_mark_cos", "0xffff"),
+					resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "exceed_mark_dscp", "0xffff"),
+					resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "excessive_burst", "0xffffffffffffffff"),
+					resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "violate_mark_cos", "0xffff"),
+					resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "violate_mark_dscp", "0xffff"),
+				),
+			},
 		},
 	})
 }
@@ -522,5 +538,20 @@ resource "aci_data_plane_policing_policy" "test" {
   name = "test_name"
   annotations = []
   tags = []
+}
+`
+
+const testConfigQosDppPolCustomTypeDependencyWithFvTenant = testConfigFvTenantMin + `
+resource "aci_data_plane_policing_policy" "test" {
+  parent_dn = aci_tenant.test.id
+  burst = "0xffffffffffffffff"
+  conform_mark_cos = "0xffff"
+  conform_mark_dscp = "0xffff"
+  exceed_mark_cos = "0xffff"
+  exceed_mark_dscp = "0xffff"
+  excessive_burst = "0xffffffffffffffff"
+  name = "test_name"
+  violate_mark_cos = "0xffff"
+  violate_mark_dscp = "0xffff"
 }
 `

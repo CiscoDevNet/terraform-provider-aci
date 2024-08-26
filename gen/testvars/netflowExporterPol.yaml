@@ -27,6 +27,13 @@ resource_required:
   name: "netfow_exporter"
   source_ip_address: "1.1.1.1/10"
 
+customtype:
+  qos_dscp_value: "0"
+  destination_ip_address: "2.2.2.1"
+  destination_port: "110"
+  name: "netfow_exporter"
+  source_ip_address: "1.1.1.1/10"
+
 all:
   annotation: "annotation"
   description: "description_1"

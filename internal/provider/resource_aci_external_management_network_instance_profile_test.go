@@ -214,6 +214,14 @@ func TestAccResourceMgmtInstP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "tags.#", "0"),
 				),
 			},
+			// Update with minimum config and customtype semantic equivalent values
+			{
+				Config: testConfigMgmtInstPCustomType,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "priority", "1"),
+				),
+			},
 		},
 	})
 }
@@ -328,5 +336,12 @@ resource "aci_external_management_network_instance_profile" "test" {
   annotations = []
   relation_to_consumed_out_of_band_contracts = []
   tags = []
+}
+`
+
+const testConfigMgmtInstPCustomType = `
+resource "aci_external_management_network_instance_profile" "test" {
+  name = "test_name"
+  priority = "1"
 }
 `

@@ -22,6 +22,11 @@ datasource_required:
 resource_required:
   name: "test_name"
 
+customtype:
+  name: "test_name"
+  priority: "1"
+  target_dscp: "0"
+
 all:
   annotation: "annotation"
   description: "description_1"

@@ -255,6 +255,15 @@ func TestAccResourceVzOOBBrCP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "tags.#", "0"),
 				),
 			},
+			// Update with minimum config and customtype semantic equivalent values
+			{
+				Config: testConfigVzOOBBrCPCustomType,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "priority", "1"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "target_dscp", "0"),
+				),
+			},
 		},
 	})
 }
@@ -359,5 +368,13 @@ resource "aci_out_of_band_contract" "test" {
   name = "test_name"
   annotations = []
   tags = []
+}
+`
+
+const testConfigVzOOBBrCPCustomType = `
+resource "aci_out_of_band_contract" "test" {
+  name = "test_name"
+  priority = "1"
+  target_dscp = "0"
 }
 `
