@@ -368,7 +368,7 @@ payload.json output:
 
 Default expects main.tf to be in the same file as converter. To run the converter with your Terraform file in a seperate directory, run:
 
-$ go run main.go -dir path/to/your/main/tf
+$ go run main.go -dir path/to/your/main.tf
 
 To test to confirm if a generated payload is valid, use test flag:
   
