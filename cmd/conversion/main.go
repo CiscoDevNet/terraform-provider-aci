@@ -41,11 +41,11 @@ type Change struct {
 	} `json:"change"`
 }
 
-func runTerraform(workingDir string) (string, error) {
+func runTerraform(terraformDir string) (string, error) {
 	planBin := "plan.bin"
 	planJSON := "plan.json"
 
-	if err := os.Chdir(workingDir); err != nil {
+	if err := os.Chdir(terraformDir); err != nil {
 		return "", fmt.Errorf("failed to change directory: %w", err)
 	}
 
@@ -352,11 +352,11 @@ func safeString(data map[string]interface{}, key string) string {
 
 func main() {
 	testFlag := flag.Bool("test", false, "Run the test to POST payload to APIC and validate change")
-	workingDir := flag.String("dir", ".", "Path to the directory containing Terraform file")
+	terraformDir := flag.String("dir", ".", "Path to the directory containing Terraform file")
 
 	flag.Parse()
 
-	planJSON, err := runTerraform(*workingDir)
+	planJSON, err := runTerraform(*terraformDir)
 	if err != nil {
 		log.Fatalf("Error running Terraform: %v", err)
 	}
