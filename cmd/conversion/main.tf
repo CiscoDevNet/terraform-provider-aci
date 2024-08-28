@@ -9,11 +9,11 @@ terraform {
 # Configure the provider with your Cisco APIC credentials.
 provider "aci" {
   # APIC Username
-  username = ""
+  username = "admin"
   # APIC Password
   password = ""
   # APIC URL
-  url      = ""
+  url      = "https://sandboxapicdc.cisco.com"
   insecure = true
 }
 
@@ -38,7 +38,6 @@ resource "aci_application_epg" "fooapplication_epg2" {
     annotation              = "tag_epg"
     contract_exception_tag  = "0"
     flood_in_encapsulation  = "disabled"
-    forwarding_control      = "none"
     
     relation_to_bridge_domain= [{
       annotation = "annotation1"
@@ -46,9 +45,10 @@ resource "aci_application_epg" "fooapplication_epg2" {
     }]
 }
 */
+
 /*
 resource "aci_application_epg" "fooapplication_epg5" {
-    parent_dn  = "uni/tn-common/ap-default232"
+    parent_dn  = "uni/tn-mgmt/ap-default555"
     name                    = "new_epg5"
     description             = "from terraform"
     annotation              = "tag_epg"
@@ -77,7 +77,7 @@ resource "aci_endpoint_tag_ip" "full_example_tenant" {
 }
 */
 
-
+//SUCCESS
 /*
 resource "aci_vrf_fallback_route_group" "full_example_vrf" {
   parent_dn   = "uni/tn-common"

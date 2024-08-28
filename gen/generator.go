@@ -933,12 +933,11 @@ type Property struct {
 	Versions                 string
 	NamedPropertyClass       string
 	IgnoreInTestExampleValue string
-	GoType                   string // Add this field
-
-	ValidValues        []string
-	IdentifiedBy       []interface{}
-	Validators         []interface{}
-	IdentifyProperties []Property
+	GoType                   string
+	ValidValues              []string
+	IdentifiedBy             []interface{}
+	Validators               []interface{}
+	IdentifyProperties       []Property
 	// Below booleans are used during template rendering to determine correct rendering the go code
 	IsNaming     bool
 	CreateOnly   bool
@@ -2082,22 +2081,6 @@ func getTestDependency(className string, targetMap map[interface{}]interface{}, 
 	}
 
 	return testDependency
-}
-
-func mergeDuplicateKeys(mapping map[string]map[string]string) map[string]map[string]string {
-	mergedMapping := make(map[string]map[string]string)
-
-	for childClass, prefixMap := range mapping {
-		if existingMap, found := mergedMapping[childClass]; found {
-			for prefix, className := range prefixMap {
-				existingMap[prefix] = className
-			}
-		} else {
-			mergedMapping[childClass] = prefixMap
-		}
-	}
-
-	return mergedMapping
 }
 
 func GetTestTargetDn(targets []interface{}, resourceName, targetDnValue string, reference bool, targetClasses interface{}, index int) string {

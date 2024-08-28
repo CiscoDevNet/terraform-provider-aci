@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -10,6 +11,11 @@ import (
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/convert_funcs"
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/dict"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/test"
+)
+
+const (
+	payloadFile = "payload.json"
 )
 
 type Plan struct {
@@ -35,9 +41,17 @@ type Change struct {
 	} `json:"change"`
 }
 
-func runTerraform() (string, error) {
+func runTerraform(workingDir string) (string, error) {
 	planBin := "plan.bin"
 	planJSON := "plan.json"
+
+	if err := os.Chdir(workingDir); err != nil {
+		return "", fmt.Errorf("failed to change directory: %w", err)
+	}
+
+	if err := exec.Command("terraform", "init").Run(); err != nil {
+		return "", fmt.Errorf("failed to run terraform init: %w", err)
+	}
 
 	if err := exec.Command("terraform", "plan", "-out="+planBin).Run(); err != nil {
 		return "", fmt.Errorf("failed to run terraform plan: %w", err)
@@ -45,7 +59,7 @@ func runTerraform() (string, error) {
 
 	output, err := os.Create(planJSON)
 	if err != nil {
-		return "", fmt.Errorf("failed to create json file: %w", err)
+		return "", fmt.Errorf("failed to create JSON file: %w", err)
 	}
 	defer output.Close()
 
@@ -68,6 +82,9 @@ func readPlan(jsonFile string) (Plan, error) {
 	if err := json.Unmarshal(data, &plan); err != nil {
 		return plan, fmt.Errorf("failed to parse input file: %w", err)
 	}
+
+	os.Remove("plan.bin")
+	os.Remove("plan.json")
 
 	return plan, nil
 }
@@ -163,7 +180,21 @@ func constructTree(resources []map[string]interface{}) map[string]interface{} {
 		}
 	}
 
-	return map[string]interface{}{rootNode.ClassName: exportTree(rootNode)}
+	removeParentDn(rootNode)
+
+	tenants := filterTenants(rootNode)
+	if len(tenants) > 1 {
+		return map[string]interface{}{
+			"polUni": map[string]interface{}{
+				"attributes": map[string]interface{}{},
+				"children":   tenants,
+			},
+		}
+	}
+
+	return map[string]interface{}{
+		"imdata": tenants,
+	}
 }
 
 func buildParentPath(dnMap map[string]*TreeNode, rootNode *TreeNode, resourceType, dn string, attributes map[string]interface{}, children []map[string]interface{}) {
@@ -178,7 +209,6 @@ func buildParentPath(dnMap map[string]*TreeNode, rootNode *TreeNode, resourceTyp
 
 	var leafNode *TreeNode
 	if existingLeafNode, exists := dnMap[dn]; exists {
-
 		for key, value := range attributes {
 			existingLeafNode.Attributes[key] = value
 		}
@@ -214,6 +244,16 @@ func buildParentPath(dnMap map[string]*TreeNode, rootNode *TreeNode, resourceTyp
 			}
 		}
 	}
+}
+
+func filterTenants(node *TreeNode) []map[string]interface{} {
+	tenants := []map[string]interface{}{}
+	for _, child := range node.Children {
+		if child.ClassName == "fvTenant" {
+			tenants = append(tenants, exportTree(child))
+		}
+	}
+	return tenants
 }
 
 func generateUniqueKeyForNonDnNode(resourceType string, attributes map[string]interface{}) string {
@@ -260,7 +300,6 @@ func parseClassNames(pathSegments []string, resourceType string) []string {
 		classNames[i], classNames[j] = classNames[j], classNames[i]
 	}
 	return classNames
-
 }
 
 func exportTree(node *TreeNode) map[string]interface{} {
@@ -269,20 +308,32 @@ func exportTree(node *TreeNode) map[string]interface{} {
 	}
 
 	result := map[string]interface{}{
-		"attributes": node.Attributes,
+		node.ClassName: map[string]interface{}{
+			"attributes": node.Attributes,
+		},
 	}
 
 	if len(node.Children) > 0 {
 		children := []map[string]interface{}{}
 		for _, child := range node.Children {
-			children = append(children, map[string]interface{}{
-				child.ClassName: exportTree(child),
-			})
+			children = append(children, exportTree(child))
 		}
-		result["children"] = children
+		result[node.ClassName].(map[string]interface{})["children"] = children
 	}
 
 	return result
+}
+
+func removeParentDn(node *TreeNode) {
+	if node == nil {
+		return
+	}
+
+	delete(node.Attributes, "parent_dn")
+
+	for _, child := range node.Children {
+		removeParentDn(child)
+	}
 }
 
 func safeMapInterface(data map[string]interface{}, key string) map[string]interface{} {
@@ -300,14 +351,12 @@ func safeString(data map[string]interface{}, key string) string {
 }
 
 func main() {
-	if len(os.Args) != 1 {
-		fmt.Println("Usage: no arguments needed")
-		os.Exit(1)
-	}
+	testFlag := flag.Bool("test", false, "Run the test to POST payload to APIC and validate change")
+	workingDir := flag.String("dir", ".", "Path to the directory containing Terraform file")
 
-	outputFile := "payload.json"
+	flag.Parse()
 
-	planJSON, err := runTerraform()
+	planJSON, err := runTerraform(*workingDir)
 	if err != nil {
 		log.Fatalf("Error running Terraform: %v", err)
 	}
@@ -321,10 +370,55 @@ func main() {
 
 	aciTree := constructTree(payloadList)
 
-	err = writeToFile(outputFile, aciTree)
+	err = writeToFile(payloadFile, aciTree)
 	if err != nil {
 		log.Fatalf("Error writing output file: %v", err)
 	}
 
-	fmt.Printf("ACI Payload written to %s\n", outputFile)
+	fmt.Printf("ACI Payload written to %s\n", payloadFile)
+
+	if *testFlag {
+		fmt.Println("Testing...")
+
+		if _, err := os.Stat(payloadFile); os.IsNotExist(err) {
+			fmt.Printf("Expected %s not found: %v\n", payloadFile, err)
+			os.Exit(3)
+		}
+
+		payload, err := os.ReadFile(payloadFile)
+		if err != nil {
+			fmt.Printf("Failed to read %s: %v\n", payloadFile, err)
+			os.Exit(4)
+		}
+
+		token, err := test.GetAPICLoginToken()
+		if err != nil {
+			fmt.Printf("Failed to obtain login token: %v\n", err)
+			os.Exit(5)
+		}
+
+		err = test.PostToAPIC(token, payload)
+		if err != nil {
+			fmt.Printf("Failed to post payload to APIC: %v\n", err)
+			os.Exit(6)
+		}
+
+		emptyPlan, err := test.CheckTerraformPlan()
+		if err != nil {
+			fmt.Printf("Terraform plan failed: %v\n", err)
+			os.Exit(7)
+		}
+
+		if !emptyPlan {
+			fmt.Println("Terraform plan detected changes, the conversion was not successful")
+
+			os.Remove("plan.bin")
+			os.Remove("plan.json")
+			os.Exit(8)
+		}
+
+		os.Remove("plan.bin")
+		os.Remove("plan.json")
+		fmt.Println("Test passed: The conversion was successful")
+	}
 }
