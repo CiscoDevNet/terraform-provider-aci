@@ -91,6 +91,14 @@ mgmtSubnet:
     datasource_non_existing:
       ip: "2.2.2.0/24"
 
+mgmtInstP:
+  ignore_customtype_docs:
+    - "Prio"
+
+mgmtRsOoBCons:
+  ignore_customtype_docs:
+    - "Prio"
+
 l3extConsLbl:
   test_values:
     default:
@@ -603,8 +611,6 @@ fvDnsAttr:
       name: "dns_attribute"
     datasource_non_existing:
       name: "dns_attribute_non_existing"
-    all:
-      filter: "test_filter"
   parents:
     - class_name: "fvCrtrn"
       parent_dependency: "fvAEPg"
@@ -941,7 +947,7 @@ netflowExporterPol:
     dscp: "The DSCP value of the %s object."
     srcAddr: "The source IP address."
     ver: "The NetFlow Exporter Version of the %s object."
-    sourceIpType: "The type of the source IP address: It can be one of the available management IP address for a given leaf or a custom IP Address."
+    sourceIpType: "The type of the source IP address for the %s object."
   default_values:
     parent_dn: "uni/infra"
   test_values:

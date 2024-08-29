@@ -65,7 +65,7 @@ data "aci_netflow_exporter_policy" "example_tenant" {
 * `name_alias` (nameAlias) - (string) The name alias of the Netflow Exporter Policy object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
-* `source_ip_type` (sourceIpType) - (string) The type of the source IP address: It can be one of the available management IP address for a given leaf or a custom IP Address.
+* `source_ip_type` (sourceIpType) - (string) The type of the source IP address for the Netflow Exporter Policy object.
 * `source_ip_address` (srcAddr) - (string) The source IP address.
 * `version` (ver) - (string) The NetFlow Exporter Version of the Netflow Exporter Policy object.
 

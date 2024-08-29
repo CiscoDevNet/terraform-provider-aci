@@ -94,9 +94,7 @@ All examples for the External Management Network Instance Profile resource can b
 * `name_alias` (nameAlias) - (string) The name alias of the External Management Network Instance Profile object.
 * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
   - Default: `unspecified`
-  - Valid Values:
-    * `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
-    * Or a value in the range of `0` to `9`.
+  - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
 
 * `relation_to_consumed_out_of_band_contracts` - (list) A list of Relation To Consumed Out Of Band Contracts (ACI object [mgmtRsOoBCons](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/mgmtRsOoBCons/overview)) pointing to Out Of Band Contract (ACI Object [vzOOBBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzOOBBrCP/overview)) which can be configured using the [aci_out_of_band_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/out_of_band_contract) resource.
   
