@@ -130,7 +130,7 @@ All examples for the {{.ResourceNameAsDescription}} resource can be found in the
     {{- if ge $length 1}}
       {{- if .MultiRelationshipClass}}
       {{$RelationshipResourceNames := .RelationshipResourceNames}}
-* `{{- overwriteProperty .PkgName .ResourceName $.Definitions}}` - (list) A list of {{getResourceNameAsDescription .ResourceName $.Definitions}}. This relation{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}} and{{- end}} can point to multiple ACI objects:
+* `{{- overwriteProperty .PkgName .ResourceName $.Definitions}}` - (list) A list of {{getResourceNameAsDescription .ResourceName $.Definitions}} (ACI object {{getDevnetDocForClass .PkgName}}). This relation{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}} and{{- end}} can point to multiple ACI objects:
         {{- range $index, $value := .RelationshipClasses}}
           {{- if le $index (len $RelationshipResourceNames)}}
     - {{getDevnetDocForClass $value}}{{- if ne (index $RelationshipResourceNames $index) ""}} which can be configured using the [aci_{{(index $RelationshipResourceNames $index)}}](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{(index $RelationshipResourceNames $index)}}) resource.{{- else}}. Currently there is no resource available to configure this ACI object.{{- end}}

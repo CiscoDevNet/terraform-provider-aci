@@ -96,7 +96,12 @@ data "aci_application_epg" "example_application_profile" {
   * `annotation` (annotation) - (string) The annotation of the Relation To Custom Qos Policy object.
   * `custom_qos_policy_name` (tnQosCustomPolName) - (string) The Custom QoS traffic policy name.
 
-* `relation_to_domains` - (list) A list of Relation To Domains (ACI object [fvRsDomAtt](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsDomAtt/overview)) pointing to .
+      
+* `relation_to_domains` - (list) A list of Relation To Domains (ACI object [fvRsDomAtt](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsDomAtt/overview)). This relation can point to multiple ACI objects:
+    - [vmmDomP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vmmDomP/overview).
+    - [physDomP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/physDomP/overview).
+    - [fcDomP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fcDomP/overview).
+    - [l2extDomP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l2extDomP/overview).
   * `annotation` (annotation) - (string) The annotation of the Relation To Domain object.
   * `binding_type` (bindingType) - (string) The binding type of the Relation To Domain object.
   * `class_preference` (classPref) - (string) The class preference of the Relation To Domain object. Set 'useg' to allow microsegmentation.

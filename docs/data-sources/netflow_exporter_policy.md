@@ -73,7 +73,11 @@ data "aci_netflow_exporter_policy" "example_tenant" {
   * `annotation` (annotation) - (string) The annotation of the Relation To VRF object.
   * `target_dn` (tDn) - (string) The distinguished name of the target.
 
-* `relation_to_epg` - (list) A list of Relation To EPG (ACI object [netflowRsExporterToEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRsExporterToEPg/overview)) pointing to .
+      
+* `relation_to_epg` - (list) A list of Relation To EPG (ACI object [netflowRsExporterToEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRsExporterToEPg/overview)). This relation can point to multiple ACI objects:
+    - [fvAEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvAEPg/overview).
+    - [l3extInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extInstP/overview).
+    - [l2extInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l2extInstP/overview).
   * `annotation` (annotation) - (string) The annotation of the Relation To EPG object.
   * `target_dn` (tDn) - (string) The distinguished name of the target.
 

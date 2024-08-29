@@ -80,7 +80,17 @@ Data source for ACI {{.ResourceNameAsDescription}}
 {{- end}}
 {{ range .Children }}{{$childVersion := .Versions}}{{$RelationshipClasses := .RelationshipClasses}}{{$length := len .RelationshipClasses}}
     {{- if ge $length 1}}
+      {{- if .MultiRelationshipClass}}
+      {{$RelationshipResourceNames := .RelationshipResourceNames}}
+* `{{- overwriteProperty .PkgName .ResourceName $.Definitions}}` - (list) A list of {{getResourceNameAsDescription .ResourceName $.Definitions}} (ACI object {{getDevnetDocForClass .PkgName}}). This relation{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}} and{{- end}} can point to multiple ACI objects:
+        {{- range $index, $value := .RelationshipClasses}}
+          {{- if le $index (len $RelationshipResourceNames)}}
+    - {{getDevnetDocForClass $value}}.
+          {{- end}}
+        {{- end}}
+      {{- else}}
 * `{{- overwriteProperty .PkgName .ResourceName $.Definitions}}` - (list) A list of {{getResourceNameAsDescription .ResourceName $.Definitions}} (ACI object {{getDevnetDocForClass .PkgName}}) pointing to {{range $index, $value := .RelationshipResourceNames}}{{- if or (eq $length 1) (eq $.PkgName (index $RelationshipClasses $index))}}{{getResourceNameAsDescription $value $.Definitions}} (ACI Object {{getDevnetDocForClass (index $RelationshipClasses $index)}}){{end}}{{end}}.{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
+      {{- end}}
     {{- else}}
 * `{{- overwriteProperty .PkgName .ResourceName $.Definitions}}` - (list) A list of {{getResourceNameAsDescription .ResourceName $.Definitions}} (ACI object {{getDevnetDocForClass .PkgName}}).{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
     {{- end}}
