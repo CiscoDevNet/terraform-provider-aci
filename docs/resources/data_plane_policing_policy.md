@@ -122,7 +122,7 @@ All examples for the Data Plane Policing Policy resource can be found in the [ex
   - Default: `unspecified`
   - Valid Values:
     * `unspecified`.
-    * Or a value in the range of `0` to `5.4975581376e+11`.
+    * Or a value in the range of `0` to `549755813760`.
 * `excessive_burst_unit` (beUnit) - (string) The excessive burst size unit of the Data Plane Policing Policy object. Only applicable for 2R3C policer.
   - Default: `unspecified`
   - Valid Values: `giga`, `kilo`, `mega`, `msec`, `unspecified`, `usec`.
@@ -130,7 +130,7 @@ All examples for the Data Plane Policing Policy resource can be found in the [ex
   - Default: `unspecified`
   - Valid Values:
     * `unspecified`.
-    * Or a value in the range of `0` to `5.4975581376e+11`.
+    * Or a value in the range of `0` to `549755813760`.
 * `burst_unit` (burstUnit) - (string) The burst size unit of the Data Plane Policing Policy object.
   - Default: `unspecified`
   - Valid Values: `giga`, `kilo`, `mega`, `msec`, `unspecified`, `usec`.
