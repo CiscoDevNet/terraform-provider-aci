@@ -615,3 +615,8 @@ l3extRsLblToProfile:
     - "uni/tn-{name}/out-{name}/conslbl-{name}/rslblToProfile-[{tDn}]-{direction}"
   resource_notes:
     - "This resource should not be used in combination with the `l3out_consumer_label` nested attributes of other resources for the same object. Doing so will result in unexpected behaviour."
+
+topSystem:
+  sub_category: "Fabric Inventory"
+  dn_formats:
+    - "topology/pod-{id}/node-{id}/sys"

@@ -460,7 +460,6 @@ func Provider() *schema.Provider {
 			"aci_l2_outside":                               dataSourceAciL2Outside(),
 			"aci_node_mgmt_epg":                            dataSourceAciNodeManagementEPg(),
 			"aci_connection":                               dataSourceAciConnection(),
-			"aci_system":                                   dataSourceAciSystem(),
 			"aci_l3out_bgp_external_policy":                dataSourceAciL3outBgpExternalPolicy(),
 			"aci_l3out_ospf_external_policy":               dataSourceAciL3outOspfExternalPolicy(),
 			"aci_l3out_path_attachment":                    dataSourceAciL3outPathAttachment(),
