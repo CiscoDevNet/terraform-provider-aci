@@ -149,7 +149,7 @@ All examples for the Netflow Exporter Policy resource can be found in the [examp
   * `target_dn` (tDn) - (string) The distinguished name of the target.
 
       
-* `relation_to_epg` - (list) A list of Relation To EPG. This relation can point to multiple ACI objects:
+* `relation_to_epg` - (list) A list of Relation To EPG (ACI object [netflowRsExporterToEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRsExporterToEPg/overview)). This relation can point to multiple ACI objects:
     - [fvAEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvAEPg/overview) which can be configured using the [aci_application_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/application_epg) resource.
     - [l3extInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extInstP/overview) which can be configured using the [aci_external_network_instance_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/external_network_instance_profile) resource.
     - [l2extInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l2extInstP/overview) which can be configured using the [aci_l2out_extepg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l2out_extepg) resource.

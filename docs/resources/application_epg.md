@@ -351,7 +351,7 @@ All examples for the Application EPG resource can be found in the [examples](htt
   * `custom_qos_policy_name` (tnQosCustomPolName) - (string) The Custom QoS traffic policy name.
 
       
-* `relation_to_domains` - (list) A list of Relation To Domains. This relation can point to multiple ACI objects:
+* `relation_to_domains` - (list) A list of Relation To Domains (ACI object [fvRsDomAtt](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsDomAtt/overview)). This relation can point to multiple ACI objects:
     - [vmmDomP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vmmDomP/overview) which can be configured using the [aci_vmm_domain](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vmm_domain) resource.
     - [physDomP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/physDomP/overview) which can be configured using the [aci_physical_domain](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/physical_domain) resource.
     - [fcDomP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fcDomP/overview). Currently there is no resource available to configure this ACI object.
