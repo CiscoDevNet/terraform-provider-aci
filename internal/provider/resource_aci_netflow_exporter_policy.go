@@ -325,7 +325,7 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 				Validators: []validator.String{
 					stringvalidator.OneOf("custom-src-ip", "inband-mgmt-ip", "oob-mgmt-ip", "ptep"),
 				},
-				MarkdownDescription: `The type of the source IP address: It can be one of the available management IP address for a given leaf or a custom IP Address.`,
+				MarkdownDescription: `The type of the source IP address for the Netflow Exporter Policy object.`,
 			},
 			"source_ip_address": schema.StringAttribute{
 				Optional: true,

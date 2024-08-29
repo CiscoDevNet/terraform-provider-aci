@@ -90,7 +90,7 @@ func (d *NetflowExporterPolDataSource) Schema(ctx context.Context, req datasourc
 			},
 			"source_ip_type": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The type of the source IP address: It can be one of the available management IP address for a given leaf or a custom IP Address.`,
+				MarkdownDescription: `The type of the source IP address for the Netflow Exporter Policy object.`,
 			},
 			"source_ip_address": schema.StringAttribute{
 				Computed:            true,

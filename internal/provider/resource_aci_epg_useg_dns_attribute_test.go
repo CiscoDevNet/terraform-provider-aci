@@ -109,7 +109,7 @@ func TestAccResourceFvDnsAttrWithFvCrtrn(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "name", "dns_attribute"),
 					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "annotation", "annotation"),
 					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "description", "description_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "filter", "test_filter"),
+					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "filter", "filter_1"),
 					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "name_alias", "name_alias_1"),
 					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "owner_key", "owner_key_1"),
 					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "owner_tag", "owner_tag_1"),
@@ -244,7 +244,7 @@ resource "aci_epg_useg_dns_attribute" "test" {
   name = "dns_attribute"
   annotation = "annotation"
   description = "description_1"
-  filter = "test_filter"
+  filter = "filter_1"
   name_alias = "name_alias_1"
   owner_key = "owner_key_1"
   owner_tag = "owner_tag_1"
