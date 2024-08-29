@@ -80,7 +80,7 @@ All examples for the {{.ResourceNameAsDescription}} resource can be found in the
       {{- if and .HasCustomType (hasCustomTypeDocs .PkgName .Name $.Definitions)}}{{$i := 1}}{{$length := len .ValidValues}}
   - Valid Values:
     *{{ range .ValidValues}} `{{ . }}`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
-    * Or a value in the range of `{{index .Validators 0 "min"}}` to `{{index .Validators 0 "max"}}`.
+    * Or a value in the range of `{{ printf "%.0f" (index .Validators 0 "min") }}` to `{{ printf "%.0f" (index .Validators 0 "max") }}`.
       {{- else if .ValidValues }}{{$i := 1}}{{$length := len .ValidValues}}
   - Valid Values:{{ range .ValidValues}} `{{ . }}`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
       {{- end}}
@@ -118,7 +118,7 @@ All examples for the {{.ResourceNameAsDescription}} resource can be found in the
         {{- if and .HasCustomType (hasCustomTypeDocs .PkgName .Name $.Definitions)}}{{$i := 1}}{{$length := len .ValidValues}}
   - Valid Values:
     *{{ range .ValidValues}} `{{ . }}`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
-    * Or a value in the range of `{{index .Validators 0 "min"}}` to `{{index .Validators 0 "max"}}`.
+    * Or a value in the range of `{{ printf "%.0f" (index .Validators 0 "min") }}` to `{{ printf "%.0f" (index .Validators 0 "max") }}`.
         {{- else if .ValidValues }}{{$i := 1}}{{$length := len .ValidValues}}
   - Valid Values:{{ range .ValidValues}} `{{ . }}`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
         {{- end}}
