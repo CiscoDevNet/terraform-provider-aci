@@ -4,15 +4,15 @@
 # More details can be found in the [README](https://github.com/CiscoDevNet/terraform-provider-aci/blob/master/README.md).
 subcategory: "L3Out"
 layout: "aci"
-page_title: "ACI: aci_relation_to_route_control_profile"
-sidebar_current: "docs-aci-data-source-aci_relation_to_route_control_profile"
+page_title: "ACI: aci_relation_from_l3out_consumer_label_to_route_control_profile"
+sidebar_current: "docs-aci-data-source-aci_relation_from_l3out_consumer_label_to_route_control_profile"
 description: |-
-  Data source for ACI Relation To Route Control Profile
+  Data source for ACI Relation From L3out Consumer Label To Route Control Profile
 ---
 
-# aci_relation_to_route_control_profile #
+# aci_relation_from_l3out_consumer_label_to_route_control_profile #
 
-Data source for ACI Relation To Route Control Profile
+Data source for ACI Relation From L3out Consumer Label To Route Control Profile
 
 ## API Information ##
 
@@ -30,7 +30,7 @@ Data source for ACI Relation To Route Control Profile
 
 ```hcl
 
-data "aci_relation_to_route_control_profile" "example_l3out_consumer_label" {
+data "aci_relation_from_l3out_consumer_label_to_route_control_profile" "example_l3out_consumer_label" {
   parent_dn = aci_l3out_consumer_label.example.id
   direction = "import"
   target_dn = "uni/tn-example_tenant/prof-rt_ctrl_profile"
@@ -53,8 +53,8 @@ data "aci_relation_to_route_control_profile" "example_l3out_consumer_label" {
 
 ### Read-Only ###
 
-* `id` - (string) The distinguished name (DN) of the Relation To Route Control Profile object.
-* `annotation` (annotation) - (string) The annotation of the Relation To Route Control Profile object.
+* `id` - (string) The distinguished name (DN) of the Relation From L3out Consumer Label To Route Control Profile object.
+* `annotation` (annotation) - (string) The annotation of the Relation From L3out Consumer Label To Route Control Profile object.
 
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
   * `key` (key) - (string) The key used to uniquely identify this configuration object.

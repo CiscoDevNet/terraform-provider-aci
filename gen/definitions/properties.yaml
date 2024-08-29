@@ -50,6 +50,10 @@ global:
   ignores:
     - "userdom"
 
+resource_name_overwrite:
+  relation_from_l3out_consumer_label_to_external_epg: "external_network_instance_profile"
+  relation_from_l3out_consumer_label_to_route_control_profile: "route_control_profile"
+
 l3extRsRedistributePol:
   overwrites:
     src: "source"

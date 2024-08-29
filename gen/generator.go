@@ -323,7 +323,19 @@ func LookupTestValue(classPkgName, propertyName string, testVars map[string]inte
 	}
 
 	if propertyName == "target_dn" {
-		targetResourceName := strings.TrimPrefix(GetResourceName(classPkgName, definitions), "relation_to_")
+		targetResourceName := ""
+		resourceName := GetResourceName(classPkgName, definitions)
+		if strings.HasPrefix(resourceName, "relation_from_") {
+			definitions := getDefinitions().Properties["resource_name_overwrite"].(map[interface{}]interface{})
+			if definitions[resourceName] == nil {
+				targetResourceName = definitions[strings.TrimSuffix(resourceName, "s")].(string)
+			} else {
+				targetResourceName = definitions[resourceName].(string)
+			}
+		} else {
+			targetResourceName = strings.TrimPrefix(GetResourceName(classPkgName, definitions), "relation_to_")
+		}
+
 		targets, ok := testVars["targets"].([]interface{})
 		if ok {
 			for _, target := range targets {
@@ -2035,7 +2047,18 @@ func getTestDependency(className string, targetMap map[interface{}]interface{}, 
 func GetTestTargetDn(targets []interface{}, resourceName, targetDnValue string, reference bool, targetClasses interface{}, index int) string {
 
 	var filteredTargets []interface{}
-	targetResourceName := strings.TrimPrefix(resourceName, "relation_to_")
+	targetResourceName := ""
+
+	if strings.HasPrefix(resourceName, "relation_from_") {
+		definitions := getDefinitions().Properties["resource_name_overwrite"].(map[interface{}]interface{})
+		if definitions[resourceName] == nil {
+			targetResourceName = definitions[strings.TrimSuffix(resourceName, "s")].(string)
+		} else {
+			targetResourceName = definitions[resourceName].(string)
+		}
+	} else {
+		targetResourceName = strings.TrimPrefix(resourceName, "relation_to_")
+	}
 
 	if targetClasses != nil {
 		// CHANGE logic here when allowing for multiple target classes in single resource

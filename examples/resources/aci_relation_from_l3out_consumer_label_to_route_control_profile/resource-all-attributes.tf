@@ -1,5 +1,5 @@
 
-resource "aci_relation_to_route_control_profile" "full_example_l3out_consumer_label" {
+resource "aci_relation_from_l3out_consumer_label_to_route_control_profile" "full_example_l3out_consumer_label" {
   parent_dn  = aci_l3out_consumer_label.example.id
   annotation = "annotation"
   direction  = "import"

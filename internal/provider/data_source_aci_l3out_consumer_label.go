@@ -80,14 +80,14 @@ func (d *L3extConsLblDataSource) Schema(ctx context.Context, req datasource.Sche
 				Computed:            true,
 				MarkdownDescription: `Specifies the color of a policy label.`,
 			},
-			"relation_to_external_network_instance_profiles": schema.SetNestedAttribute{
+			"relation_from_l3out_consumer_label_to_external_epgs": schema.SetNestedAttribute{
 				MarkdownDescription: ``,
 				Computed:            true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"annotation": schema.StringAttribute{
 							Computed:            true,
-							MarkdownDescription: `The annotation of the Relation To External Network Instance Profile object.`,
+							MarkdownDescription: `The annotation of the Relation From L3out Consumer Label To External EPG object.`,
 						},
 						"target_dn": schema.StringAttribute{
 							Computed:            true,
@@ -96,14 +96,14 @@ func (d *L3extConsLblDataSource) Schema(ctx context.Context, req datasource.Sche
 					},
 				},
 			},
-			"relation_to_route_control_profiles": schema.SetNestedAttribute{
+			"relation_from_l3out_consumer_label_to_route_control_profiles": schema.SetNestedAttribute{
 				MarkdownDescription: `Consumer Lable Relation to Routing Policy`,
 				Computed:            true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"annotation": schema.StringAttribute{
 							Computed:            true,
-							MarkdownDescription: `The annotation of the Relation To Route Control Profile object.`,
+							MarkdownDescription: `The annotation of the Relation From L3out Consumer Label To Route Control Profile object.`,
 						},
 						"direction": schema.StringAttribute{
 							Computed:            true,

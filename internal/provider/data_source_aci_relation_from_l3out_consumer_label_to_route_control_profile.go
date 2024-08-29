@@ -28,21 +28,21 @@ type L3extRsLblToProfileDataSource struct {
 }
 
 func (d *L3extRsLblToProfileDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
-	tflog.Debug(ctx, "Start metadata of datasource: aci_relation_to_route_control_profile")
-	resp.TypeName = req.ProviderTypeName + "_relation_to_route_control_profile"
-	tflog.Debug(ctx, "End metadata of datasource: aci_relation_to_route_control_profile")
+	tflog.Debug(ctx, "Start metadata of datasource: aci_relation_from_l3out_consumer_label_to_route_control_profile")
+	resp.TypeName = req.ProviderTypeName + "_relation_from_l3out_consumer_label_to_route_control_profile"
+	tflog.Debug(ctx, "End metadata of datasource: aci_relation_from_l3out_consumer_label_to_route_control_profile")
 }
 
 func (d *L3extRsLblToProfileDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
-	tflog.Debug(ctx, "Start schema of datasource: aci_relation_to_route_control_profile")
+	tflog.Debug(ctx, "Start schema of datasource: aci_relation_from_l3out_consumer_label_to_route_control_profile")
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "The relation_to_route_control_profile datasource for the 'l3extRsLblToProfile' class",
+		MarkdownDescription: "The relation_from_l3out_consumer_label_to_route_control_profile datasource for the 'l3extRsLblToProfile' class",
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Relation To Route Control Profile object.",
+				MarkdownDescription: "The distinguished name (DN) of the Relation From L3out Consumer Label To Route Control Profile object.",
 			},
 			"parent_dn": schema.StringAttribute{
 				Required:            true,
@@ -50,7 +50,7 @@ func (d *L3extRsLblToProfileDataSource) Schema(ctx context.Context, req datasour
 			},
 			"annotation": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The annotation of the Relation To Route Control Profile object.`,
+				MarkdownDescription: `The annotation of the Relation From L3out Consumer Label To Route Control Profile object.`,
 			},
 			"direction": schema.StringAttribute{
 				Required:            true,
@@ -94,11 +94,11 @@ func (d *L3extRsLblToProfileDataSource) Schema(ctx context.Context, req datasour
 			},
 		},
 	}
-	tflog.Debug(ctx, "End schema of datasource: aci_relation_to_route_control_profile")
+	tflog.Debug(ctx, "End schema of datasource: aci_relation_from_l3out_consumer_label_to_route_control_profile")
 }
 
 func (d *L3extRsLblToProfileDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	tflog.Debug(ctx, "Start configure of datasource: aci_relation_to_route_control_profile")
+	tflog.Debug(ctx, "Start configure of datasource: aci_relation_from_l3out_consumer_label_to_route_control_profile")
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
 		return
@@ -116,11 +116,11 @@ func (d *L3extRsLblToProfileDataSource) Configure(ctx context.Context, req datas
 	}
 
 	d.client = client
-	tflog.Debug(ctx, "End configure of datasource: aci_relation_to_route_control_profile")
+	tflog.Debug(ctx, "End configure of datasource: aci_relation_from_l3out_consumer_label_to_route_control_profile")
 }
 
 func (d *L3extRsLblToProfileDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	tflog.Debug(ctx, "Start read of datasource: aci_relation_to_route_control_profile")
+	tflog.Debug(ctx, "Start read of datasource: aci_relation_from_l3out_consumer_label_to_route_control_profile")
 	var data *L3extRsLblToProfileResourceModel
 
 	// Read Terraform configuration data into the model
@@ -135,19 +135,19 @@ func (d *L3extRsLblToProfileDataSource) Read(ctx context.Context, req datasource
 	// Create a copy of the Id for when not found during getAndSetL3extRsLblToProfileAttributes
 	cachedId := data.Id.ValueString()
 
-	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_relation_to_route_control_profile with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_relation_from_l3out_consumer_label_to_route_control_profile with id '%s'", data.Id.ValueString()))
 
 	getAndSetL3extRsLblToProfileAttributes(ctx, &resp.Diagnostics, d.client, data)
 
 	if data.Id.IsNull() {
 		resp.Diagnostics.AddError(
-			"Failed to read aci_relation_to_route_control_profile data source",
-			fmt.Sprintf("The aci_relation_to_route_control_profile data source with id '%s' has not been found", cachedId),
+			"Failed to read aci_relation_from_l3out_consumer_label_to_route_control_profile data source",
+			fmt.Sprintf("The aci_relation_from_l3out_consumer_label_to_route_control_profile data source with id '%s' has not been found", cachedId),
 		)
 		return
 	}
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_relation_to_route_control_profile with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_relation_from_l3out_consumer_label_to_route_control_profile with id '%s'", data.Id.ValueString()))
 }

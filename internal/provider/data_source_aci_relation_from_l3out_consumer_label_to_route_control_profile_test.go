@@ -21,31 +21,31 @@ func TestAccDataSourceL3extRsLblToProfileWithL3extConsLbl(t *testing.T) {
 				Config:             testConfigL3extRsLblToProfileDataSourceDependencyWithL3extConsLbl,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.aci_relation_to_route_control_profile.test", "direction", "import"),
-					resource.TestCheckResourceAttr("data.aci_relation_to_route_control_profile.test", "target_dn", "uni/tn-test_tenant/prof-rt_ctrl_profile"),
-					resource.TestCheckResourceAttr("data.aci_relation_to_route_control_profile.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("data.aci_relation_to_route_control_profile.test", "direction", "import"),
+					resource.TestCheckResourceAttr("data.aci_relation_from_l3out_consumer_label_to_route_control_profile.test", "direction", "import"),
+					resource.TestCheckResourceAttr("data.aci_relation_from_l3out_consumer_label_to_route_control_profile.test", "target_dn", "uni/tn-test_tenant/prof-rt_ctrl_profile"),
+					resource.TestCheckResourceAttr("data.aci_relation_from_l3out_consumer_label_to_route_control_profile.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("data.aci_relation_from_l3out_consumer_label_to_route_control_profile.test", "direction", "import"),
 				),
 			},
 			{
 				Config:      testConfigL3extRsLblToProfileNotExistingL3extConsLbl,
-				ExpectError: regexp.MustCompile("Failed to read aci_relation_to_route_control_profile data source"),
+				ExpectError: regexp.MustCompile("Failed to read aci_relation_from_l3out_consumer_label_to_route_control_profile data source"),
 			},
 		},
 	})
 }
 
 const testConfigL3extRsLblToProfileDataSourceDependencyWithL3extConsLbl = testConfigL3extRsLblToProfileMinDependencyWithL3extConsLbl + `
-data "aci_relation_to_route_control_profile" "test" {
+data "aci_relation_from_l3out_consumer_label_to_route_control_profile" "test" {
   parent_dn = aci_l3out_consumer_label.test.id
   direction = "import"
   target_dn = "uni/tn-test_tenant/prof-rt_ctrl_profile"
-  depends_on = [aci_relation_to_route_control_profile.test]
+  depends_on = [aci_relation_from_l3out_consumer_label_to_route_control_profile.test]
 }
 `
 
 const testConfigL3extRsLblToProfileNotExistingL3extConsLbl = testConfigL3extConsLblMinDependencyWithL3extOut + `
-data "aci_relation_to_route_control_profile" "test_non_existing" {
+data "aci_relation_from_l3out_consumer_label_to_route_control_profile" "test_non_existing" {
   parent_dn = aci_l3out_consumer_label.test.id
   direction = "import"
   target_dn = "uni/tn-test_tenant/prof-rt_ctrl_profile_not_existing"

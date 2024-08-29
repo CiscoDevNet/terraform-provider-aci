@@ -4,26 +4,26 @@
 # More details can be found in the [README](https://github.com/CiscoDevNet/terraform-provider-aci/blob/master/README.md).
 subcategory: "L3Out"
 layout: "aci"
-page_title: "ACI: aci_relation_to_external_network_instance_profile"
-sidebar_current: "docs-aci-resource-aci_relation_to_external_network_instance_profile"
+page_title: "ACI: aci_relation_from_l3out_consumer_label_to_route_control_profile"
+sidebar_current: "docs-aci-resource-aci_relation_from_l3out_consumer_label_to_route_control_profile"
 description: |-
-  Manages ACI Relation To External Network Instance Profile
+  Manages ACI Relation From L3out Consumer Label To Route Control Profile
 ---
 
-# aci_relation_to_external_network_instance_profile #
+# aci_relation_from_l3out_consumer_label_to_route_control_profile #
 
-Manages ACI Relation To External Network Instance Profile
+Manages ACI Relation From L3out Consumer Label To Route Control Profile
 
   -> This resource should not be used in combination with the `l3out_consumer_label` nested attributes of other resources for the same object. Doing so will result in unexpected behaviour.
 
 
 ## API Information ##
 
-* Class: [l3extRsLblToInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extRsLblToInstP/overview)
+* Class: [l3extRsLblToProfile](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extRsLblToProfile/overview)
 
 * Supported in ACI versions: 5.0(1k) and later.
 
-* Distinguished Name Format: `uni/tn-{name}/out-{name}/conslbl-{name}/rslblToInstP-[{tDn}]`
+* Distinguished Name Format: `uni/tn-{name}/out-{name}/conslbl-{name}/rslblToProfile-[{tDn}]-{direction}`
 
 ## GUI Information ##
 
@@ -31,26 +31,28 @@ Manages ACI Relation To External Network Instance Profile
 
 ## Example Usage ##
 
-The configuration snippet below creates a Relation To External Network Instance Profile with only required attributes.
+The configuration snippet below creates a Relation From L3out Consumer Label To Route Control Profile with only required attributes.
 
 ```hcl
 
-resource "aci_relation_to_external_network_instance_profile" "example_l3out_consumer_label" {
+resource "aci_relation_from_l3out_consumer_label_to_route_control_profile" "example_l3out_consumer_label" {
   parent_dn = aci_l3out_consumer_label.example.id
-  target_dn = "uni/tn-example_tenant/out-example_l3_outside/instP-inst_profile"
+  direction = "import"
+  target_dn = "uni/tn-example_tenant/prof-rt_ctrl_profile"
 }
 
 ```
-The configuration snippet below shows all possible attributes of the Relation To External Network Instance Profile.
+The configuration snippet below shows all possible attributes of the Relation From L3out Consumer Label To Route Control Profile.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
 ```hcl
 
-resource "aci_relation_to_external_network_instance_profile" "full_example_l3out_consumer_label" {
+resource "aci_relation_from_l3out_consumer_label_to_route_control_profile" "full_example_l3out_consumer_label" {
   parent_dn  = aci_l3out_consumer_label.example.id
   annotation = "annotation"
-  target_dn  = "uni/tn-example_tenant/out-example_l3_outside/instP-inst_profile"
+  direction  = "import"
+  target_dn  = "uni/tn-example_tenant/prof-rt_ctrl_profile"
   annotations = [
     {
       key   = "key_0"
@@ -67,7 +69,7 @@ resource "aci_relation_to_external_network_instance_profile" "full_example_l3out
 
 ```
 
-All examples for the Relation To External Network Instance Profile resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/resources/aci_relation_to_external_network_instance_profile) folder.
+All examples for the Relation From L3out Consumer Label To Route Control Profile resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/resources/aci_relation_from_l3out_consumer_label_to_route_control_profile) folder.
 
 ## Schema ##
 
@@ -78,15 +80,17 @@ All examples for the Relation To External Network Instance Profile resource can 
   - The distinguished name (DN) of classes below can be used but currently there is no available resource for it:
     - [l3extConsLblDef](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extConsLblDef/overview)
 
-* `target_dn` (tDn) - (string) The distinguished name (DN) of the External Network Instance Profile object.
+* `direction` (direction) - (string) The connector direction.
+  - Valid Values: `export`, `import`.
+* `target_dn` (tDn) - (string) The distinguished name (DN) of the Route Control Profile object.
 
 ### Read-Only ###
 
-* `id` - (string) The distinguished name (DN) of the Relation To External Network Instance Profile object.
+* `id` - (string) The distinguished name (DN) of the Relation From L3out Consumer Label To Route Control Profile object.
 
 ### Optional ###
   
-* `annotation` (annotation) - (string) The annotation of the Relation To External Network Instance Profile object.
+* `annotation` (annotation) - (string) The annotation of the Relation From L3out Consumer Label To Route Control Profile object.
   - Default: `orchestrator:terraform`
 
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
@@ -105,18 +109,18 @@ All examples for the Relation To External Network Instance Profile resource can 
 
 ## Importing
 
-An existing Relation To External Network Instance Profile can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
+An existing Relation From L3out Consumer Label To Route Control Profile can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_relation_to_external_network_instance_profile.example_l3out_consumer_label uni/tn-{name}/out-{name}/conslbl-{name}/rslblToInstP-[{tDn}]
+terraform import aci_relation_from_l3out_consumer_label_to_route_control_profile.example_l3out_consumer_label uni/tn-{name}/out-{name}/conslbl-{name}/rslblToProfile-[{tDn}]-{direction}
 ```
 
-Starting in Terraform version 1.5, an existing Relation To External Network Instance Profile can be imported
+Starting in Terraform version 1.5, an existing Relation From L3out Consumer Label To Route Control Profile can be imported
 using [import blocks](https://developer.hashicorp.com/terraform/language/import) via the following configuration:
 
 ```
 import {
-  id = "uni/tn-{name}/out-{name}/conslbl-{name}/rslblToInstP-[{tDn}]"
-  to = aci_relation_to_external_network_instance_profile.example_l3out_consumer_label
+  id = "uni/tn-{name}/out-{name}/conslbl-{name}/rslblToProfile-[{tDn}]-{direction}"
+  to = aci_relation_from_l3out_consumer_label_to_route_control_profile.example_l3out_consumer_label
 }
 ```
