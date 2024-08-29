@@ -266,9 +266,7 @@ All examples for the Application EPG resource can be found in the [examples](htt
   - Valid Values: `exclude`, `include`.
 * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
   - Default: `unspecified`
-  - Valid Values:
-    * One of  `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
-    * Or a value in the range of `0` to `9`.
+  - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
 * `admin_state` (shutdown) - (string) Withdraw AEPg Configuration from all Nodes in the Fabric.
   - Default: `no`
   - Valid Values: `no`, `yes`.
@@ -356,8 +354,8 @@ All examples for the Application EPG resource can be found in the [examples](htt
 * `relation_to_domains` - (list) A list of Relation To Domains. This relation can point to multiple ACI objects:
     - [vmmDomP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vmmDomP/overview) which can be configured using the [aci_vmm_domain](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vmm_domain) resource.
     - [physDomP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/physDomP/overview) which can be configured using the [aci_physical_domain](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/physical_domain) resource.
-    - [fcDomP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fcDomP/overview). Currently there is no resource is available to configure this ACI object.
-    - [l2extDomP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l2extDomP/overview). Currently there is no resource is available to configure this ACI object.
+    - [fcDomP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fcDomP/overview). Currently there is no resource available to configure this ACI object.
+    - [l2extDomP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l2extDomP/overview). Currently there is no resource available to configure this ACI object.
   
   #### Required ####
   

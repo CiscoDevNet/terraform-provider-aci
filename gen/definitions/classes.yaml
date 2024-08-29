@@ -358,6 +358,11 @@ netflowRsExporterToEPg:
     - "Tenants -> Policies -> NetFlow -> NetFlow Exporters"
     - "Fabric -> Access Policies -> Policies -> Interface -> NetFlow -> NetFlow Exporters"
   sub_category: "Tenant Policies"
+  multi_relationship_class: true
+  relationship_classes:
+    - "fvAEPg"
+    - "l3extInstP"
+    - "l2extInstP"
 
 netflowRsExporterToCtx:
   resource_name: "relation_to_vrf"

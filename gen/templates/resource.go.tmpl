@@ -562,7 +562,20 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 			{{- if and (ne .ReplacedBy.AttributeName "") (eq (getMigrationType .ValueType) "String") (isNewAttributeStringType .ReplacedBy.AttributeName) }}
 				{{- if .NeedsCustomType}}
 		if !configData.{{ .Name }}.IsNull() {
-			planData.Deprecated{{ .Name }} = configData.{{ .Name }}.StringValue
+					{{- range $.Properties}}
+						{{- if eq .Name $SetName}}
+			matchMap := map[string]string{
+							{{- range $key, $value := .ValidValuesMap}}
+				"{{$key}}": "{{$value}}",
+							{{- end}}
+			}
+						{{- end}}
+					{{- end}}
+			if configData{{ .Name }}, ok := matchMap[configData.{{ .Name }}.ValueString()]; ok {
+				planData.Deprecated{{ .Name }} = basetypes.NewStringValue(configData{{ .Name }})
+			} else {
+				planData.Deprecated{{ .Name }} = configData.{{ .Name }}.StringValue
+			}
 		} else if !configData.Deprecated{{ .Name }}.IsNull() { 
 			planData.{{ .Name }} =customTypes.{{$ResourceClassName}}{{.Name}}StringValue{ StringValue: configData.Deprecated{{ .Name }} }
 		} else if stateData != nil { // used to replace use state for unknown
@@ -990,7 +1003,7 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 					{{- if .HasCustomType}}
 				Validators: []validator.String{
 					stringvalidator.Any(
-						stringvalidator.OneOf({{- validatorString .ValidValues}}),
+						stringvalidator.OneOf({{- validatorStringCustomType .ValidValues .ValidValuesMap}}),
 						validators.InBetweenFromString({{- index .Validators 0 "min"}}, {{- index .Validators 0 "max"}}),
 					),
 				},
@@ -1067,7 +1080,7 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 							{{- if .HasCustomType}}
 							Validators: []validator.String{
 								stringvalidator.Any(
-									stringvalidator.OneOf({{- validatorString .ValidValues}}),
+									stringvalidator.OneOf({{- validatorStringCustomType .ValidValues .ValidValuesMap}}),
 									validators.InBetweenFromString({{- index .Validators 0 "min"}}, {{- index .Validators 0 "max"}}),
 								),
 							},
