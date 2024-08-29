@@ -242,7 +242,7 @@ func (r *QosDppPolResource) Schema(ctx context.Context, req resource.SchemaReque
 				},
 				Validators: []validator.String{
 					stringvalidator.Any(
-						stringvalidator.OneOf("unspecified"),
+						stringvalidator.OneOf("0xffffffffffffffff", "unspecified"),
 						validators.InBetweenFromString(0, 5.4975581376e+11),
 					),
 				},
@@ -270,7 +270,7 @@ func (r *QosDppPolResource) Schema(ctx context.Context, req resource.SchemaReque
 				},
 				Validators: []validator.String{
 					stringvalidator.Any(
-						stringvalidator.OneOf("unspecified"),
+						stringvalidator.OneOf("0xffffffffffffffff", "unspecified"),
 						validators.InBetweenFromString(0, 5.4975581376e+11),
 					),
 				},
@@ -310,7 +310,7 @@ func (r *QosDppPolResource) Schema(ctx context.Context, req resource.SchemaReque
 				},
 				Validators: []validator.String{
 					stringvalidator.Any(
-						stringvalidator.OneOf("unspecified"),
+						stringvalidator.OneOf("0xffff", "unspecified"),
 						validators.InBetweenFromString(0, 7),
 					),
 				},
@@ -326,7 +326,7 @@ func (r *QosDppPolResource) Schema(ctx context.Context, req resource.SchemaReque
 				},
 				Validators: []validator.String{
 					stringvalidator.Any(
-						stringvalidator.OneOf("unspecified"),
+						stringvalidator.OneOf("0xffff", "unspecified"),
 						validators.InBetweenFromString(0, 63),
 					),
 				},
@@ -363,7 +363,7 @@ func (r *QosDppPolResource) Schema(ctx context.Context, req resource.SchemaReque
 				},
 				Validators: []validator.String{
 					stringvalidator.Any(
-						stringvalidator.OneOf("unspecified"),
+						stringvalidator.OneOf("0xffff", "unspecified"),
 						validators.InBetweenFromString(0, 7),
 					),
 				},
@@ -379,7 +379,7 @@ func (r *QosDppPolResource) Schema(ctx context.Context, req resource.SchemaReque
 				},
 				Validators: []validator.String{
 					stringvalidator.Any(
-						stringvalidator.OneOf("unspecified"),
+						stringvalidator.OneOf("0xffff", "unspecified"),
 						validators.InBetweenFromString(0, 63),
 					),
 				},
@@ -521,7 +521,7 @@ func (r *QosDppPolResource) Schema(ctx context.Context, req resource.SchemaReque
 				},
 				Validators: []validator.String{
 					stringvalidator.Any(
-						stringvalidator.OneOf("unspecified"),
+						stringvalidator.OneOf("0xffff", "unspecified"),
 						validators.InBetweenFromString(0, 7),
 					),
 				},
@@ -537,7 +537,7 @@ func (r *QosDppPolResource) Schema(ctx context.Context, req resource.SchemaReque
 				},
 				Validators: []validator.String{
 					stringvalidator.Any(
-						stringvalidator.OneOf("unspecified"),
+						stringvalidator.OneOf("0xffff", "unspecified"),
 						validators.InBetweenFromString(0, 63),
 					),
 				},

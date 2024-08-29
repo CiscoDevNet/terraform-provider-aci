@@ -121,7 +121,7 @@ All examples for the Data Plane Policing Policy resource can be found in the [ex
 * `excessive_burst` (be) - (string) The excessive burst size of the Data Plane Policing Policy object. Only applicable for 2R3C policer.
   - Default: `unspecified`
   - Valid Values:
-    * One of  `unspecified`.
+    * `unspecified`.
     * Or a value in the range of `0` to `5.4975581376e+11`.
 * `excessive_burst_unit` (beUnit) - (string) The excessive burst size unit of the Data Plane Policing Policy object. Only applicable for 2R3C policer.
   - Default: `unspecified`
@@ -129,7 +129,7 @@ All examples for the Data Plane Policing Policy resource can be found in the [ex
 * `burst` (burst) - (string) The burst size of the Data Plane Policing Policy object.
   - Default: `unspecified`
   - Valid Values:
-    * One of  `unspecified`.
+    * `unspecified`.
     * Or a value in the range of `0` to `5.4975581376e+11`.
 * `burst_unit` (burstUnit) - (string) The burst size unit of the Data Plane Policing Policy object.
   - Default: `unspecified`
@@ -140,12 +140,12 @@ All examples for the Data Plane Policing Policy resource can be found in the [ex
 * `conform_mark_cos` (conformMarkCos) - (string) The conform mark class of service (CoS) of the Data Plane Policing Policy object.
   - Default: `unspecified`
   - Valid Values:
-    * One of  `unspecified`.
+    * `unspecified`.
     * Or a value in the range of `0` to `7`.
 * `conform_mark_dscp` (conformMarkDscp) - (string) The conform mark differentiated services code point (DSCP) of the Data Plane Policing Policy object.
   - Default: `unspecified`
   - Valid Values:
-    * One of  `unspecified`.
+    * `unspecified`.
     * Or a value in the range of `0` to `63`.
 * `description` (descr) - (string) The description of the Data Plane Policing Policy object.
 * `exceed_action` (exceedAction) - (string) The exceed action of the Data Plane Policing Policy object.
@@ -154,12 +154,12 @@ All examples for the Data Plane Policing Policy resource can be found in the [ex
 * `exceed_mark_cos` (exceedMarkCos) - (string) The exceed mark class of service (CoS) of the Data Plane Policing Policy object.
   - Default: `unspecified`
   - Valid Values:
-    * One of  `unspecified`.
+    * `unspecified`.
     * Or a value in the range of `0` to `7`.
 * `exceed_mark_dscp` (exceedMarkDscp) - (string) The exceed mark differentiated services code point (DSCP) of the Data Plane Policing Policy object.
   - Default: `unspecified`
   - Valid Values:
-    * One of  `unspecified`.
+    * `unspecified`.
     * Or a value in the range of `0` to `63`.
 * `mode` (mode) - (string) Policer mode - bytes or packet policer.
   - Default: `bit`
@@ -189,12 +189,12 @@ All examples for the Data Plane Policing Policy resource can be found in the [ex
 * `violate_mark_cos` (violateMarkCos) - (string) The violate mark class of service (CoS) of the Data Plane Policing Policy object.
   - Default: `unspecified`
   - Valid Values:
-    * One of  `unspecified`.
+    * `unspecified`.
     * Or a value in the range of `0` to `7`.
 * `violate_mark_dscp` (violateMarkDscp) - (string) The violate mark differentiated services code point (DSCP) of the Data Plane Policing Policy object.
   - Default: `unspecified`
   - Valid Values:
-    * One of  `unspecified`.
+    * `unspecified`.
     * Or a value in the range of `0` to `63`.
 
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.

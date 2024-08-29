@@ -1595,7 +1595,20 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 		}
 
 		if !configData.Prio.IsNull() {
-			planData.DeprecatedPrio = configData.Prio.StringValue
+			matchMap := map[string]string{
+				"0": "unspecified",
+				"1": "level3",
+				"2": "level2",
+				"3": "level1",
+				"7": "level6",
+				"8": "level5",
+				"9": "level4",
+			}
+			if configDataPrio, ok := matchMap[configData.Prio.ValueString()]; ok {
+				planData.DeprecatedPrio = basetypes.NewStringValue(configDataPrio)
+			} else {
+				planData.DeprecatedPrio = configData.Prio.StringValue
+			}
 		} else if !configData.DeprecatedPrio.IsNull() {
 			planData.Prio = customTypes.FvAEPgPrioStringValue{StringValue: configData.DeprecatedPrio}
 		} else if stateData != nil { // used to replace use state for unknown

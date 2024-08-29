@@ -407,6 +407,8 @@ fvRsScope:
 fvRsCons:
   ignores:
     - "intent"
+  ignore_customtype_docs:
+    - "Prio"
   parents:
     - class_name: "fvESg"
       parent_dependency: "fvAp"
@@ -416,6 +418,8 @@ fvRsCons:
 fvRsProv:
   ignores:
     - "intent"
+  ignore_customtype_docs:
+    - "Prio"
   parents:
     - class_name: "fvESg"
       parent_dependency: "fvAp"
@@ -423,6 +427,8 @@ fvRsProv:
       parent_dependency: "fvAp"
 
 fvRsConsIf:
+  ignore_customtype_docs:
+    - "Prio"
   parents:
     - class_name: "fvESg"
       parent_dependency: "fvAp"
@@ -660,6 +666,8 @@ fvAEPg:
   remove_valid_values:
     pcTag:
       - "any"
+  ignore_customtype_docs:
+    - "Prio"
   default_values:
     shutdown: "no"
     hasMcastSource: "no"

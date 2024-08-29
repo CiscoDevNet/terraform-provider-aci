@@ -102,7 +102,9 @@ All examples for the Netflow Exporter Policy resource can be found in the [examp
 
 * `destination_ip_address` (dstAddr) - (string) The destination IP address of the remote node.
 * `destination_port` (dstPort) - (string) The destination port of the remote node.
-  - Valid Values: `dns`, `ftpData`, `http`, `https`, `pop3`, `rtsp`, `smtp`, `ssh`, `unspecified`.
+  - Valid Values:
+    * `dns`, `ftpData`, `http`, `https`, `pop3`, `rtsp`, `smtp`, `ssh`, `unspecified`.
+    * Or a value in the range of `0` to `65535`.
 * `name` (name) - (string) The name of the Netflow Exporter Policy object.
 
 ### Read-Only ###
@@ -123,7 +125,7 @@ All examples for the Netflow Exporter Policy resource can be found in the [examp
 * `qos_dscp_value` (dscp) - (string) The DSCP value of the Netflow Exporter Policy object.
   - Default: `CS2`
   - Valid Values:
-    * One of  `AF11`, `AF12`, `AF13`, `AF21`, `AF22`, `AF23`, `AF31`, `AF32`, `AF33`, `AF41`, `AF42`, `AF43`, `CS0`, `CS1`, `CS2`, `CS3`, `CS4`, `CS5`, `CS6`, `CS7`, `EF`, `VA`.
+    * `AF11`, `AF12`, `AF13`, `AF21`, `AF22`, `AF23`, `AF31`, `AF32`, `AF33`, `AF41`, `AF42`, `AF43`, `CS0`, `CS1`, `CS2`, `CS3`, `CS4`, `CS5`, `CS6`, `CS7`, `EF`, `VA`.
     * Or a value in the range of `0` to `63`.
 * `name_alias` (nameAlias) - (string) The name alias of the Netflow Exporter Policy object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
@@ -146,8 +148,11 @@ All examples for the Netflow Exporter Policy resource can be found in the [examp
       - Default: `orchestrator:terraform`
   * `target_dn` (tDn) - (string) The distinguished name of the target.
 
-* `relation_to_epg` - (list) A list of Relation To EPG (ACI object [netflowRsExporterToEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRsExporterToEPg/overview)) pointing to  (ACI Object [fvEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvEPg/overview)).
-    - Max Items: 1
+      
+* `relation_to_epg` - (list) A list of Relation To EPG. This relation can point to multiple ACI objects:
+    - [fvAEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvAEPg/overview) which can be configured using the [aci_application_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/application_epg) resource.
+    - [l3extInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extInstP/overview) which can be configured using the [aci_external_network_instance_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/external_network_instance_profile) resource.
+    - [l2extInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l2extInstP/overview) which can be configured using the [aci_l2out_extepg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l2out_extepg) resource.
   
 
   #### Optional ####

@@ -82,6 +82,7 @@ const pubhupDevnetBaseUrl = "https://pubhub.devnetcloud.com/media/model-doc-late
 var templateFuncs = template.FuncMap{
 	"snakeCase":                         Underscore,
 	"validatorString":                   ValidatorString,
+	"validatorStringCustomType":         ValidatorStringCustomType,
 	"containsString":                    ContainsString,
 	"listToString":                      ListToString,
 	"overwriteProperty":                 GetOverwriteAttributeName,
@@ -123,6 +124,7 @@ var templateFuncs = template.FuncMap{
 	"getNewChildAttributes":             GetNewChildAttributes,
 	"containsRequired":                  ContainsRequired,
 	"hasPrefix":                         strings.HasPrefix,
+	"hasCustomTypeDocs":                 HasCustomTypeDocs,
 }
 
 func ContainsRequired(properties map[string]Property) bool {
@@ -285,6 +287,17 @@ func Underscore(s string) string {
 func ValidatorString(stringList []string) string {
 	sort.Strings(stringList)
 	return fmt.Sprintf("\"%s\"", strings.Join(stringList, "\", \""))
+}
+
+func ValidatorStringCustomType(stringList []string, stringMap map[string]string) string {
+	newStringList := make([]string, len(stringList))
+	copy(newStringList, stringList)
+	for key := range stringMap {
+		if _, err := strconv.ParseFloat(key, 64); err != nil {
+			newStringList = append(newStringList, key)
+		}
+	}
+	return ValidatorString(newStringList)
 }
 
 func ListToString(stringList []string) string {
@@ -2422,4 +2435,20 @@ func IsRequiredInTestValue(classPkgName, propertyName string, definitions Defini
 		}
 	}
 	return false
+}
+
+func HasCustomTypeDocs(classPkgName, propertyName string, definitions Definitions) bool {
+	if classDetails, ok := definitions.Properties[classPkgName]; ok {
+		for key, value := range classDetails.(map[interface{}]interface{}) {
+			if key.(string) == "ignore_customtype_docs" {
+				for _, property := range value.([]interface{}) {
+					if property.(string) == propertyName {
+						return false
+					}
+				}
+
+			}
+		}
+	}
+	return true
 }
