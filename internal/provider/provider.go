@@ -305,6 +305,7 @@ func (p *AciProvider) DataSources(ctx context.Context) []func() datasource.DataS
 		NewTagTagDataSource,
 		NewVzOOBBrCPDataSource,
 		NewAciRestManagedDataSource,
+		NewTopSystemDataSource,
 	}
 }
 
