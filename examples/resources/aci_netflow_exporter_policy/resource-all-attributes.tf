@@ -16,13 +16,13 @@ resource "aci_netflow_exporter_policy" "full_example_tenant" {
   relation_to_vrf = [
     {
       annotation = "annotation_1"
-      target_dn  = "uni/tn-test_tenant/ctx-test_vrf"
+      target_dn  = aci_vrf.example.id
     }
   ]
   relation_to_epg = [
     {
       annotation = "annotation_1"
-      target_dn  = "uni/tn-test_tenant/ap-test_ap/epg-test_epg"
+      target_dn  = aci_application_epg.example.id
     }
   ]
   annotations = [

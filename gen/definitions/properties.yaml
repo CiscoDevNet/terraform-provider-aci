@@ -987,6 +987,7 @@ netflowRsExporterToEPg:
   targets:
     - class_name: "fvAEPg"
       target_dn: "uni/tn-test_tenant/ap-test_ap/epg-test_epg"
+      target_dn_overwrite_docs: "aci_application_epg.example.id"
       relation_resource_name: "epg"
       static: true
 
@@ -998,6 +999,7 @@ netflowRsExporterToCtx:
   targets:
     - class_name: "fvCtx"
       target_dn: "uni/tn-test_tenant/ctx-test_vrf"
+      target_dn_overwrite_docs: "aci_vrf.example.id"
       relation_resource_name: "vrf"
       static: true
 
