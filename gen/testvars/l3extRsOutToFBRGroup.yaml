@@ -43,6 +43,7 @@ targets:
   - class_name: "fvFBRGroup"
     target_dn: "uni/tn-test_tenant/ctx-test_vrf/fbrg-vrf_fallback_route_group_0"
     target_dn_ref: "aci_vrf_fallback_route_group.test_vrf_fallback_route_group_0.id"
+    target_dn_overwrite_docs: ""
     parent_dependency: "fvCtx"
     parent_dependency_dn_ref: "aci_vrf.test.id"
     target_resource_name: "vrf_fallback_route_group"

@@ -143,6 +143,7 @@ targets:
   - class_name: "{{ .ClassName }}"
     target_dn: "{{ .TargetDn }}"
     target_dn_ref: "{{ .TargetDnRef }}"
+    target_dn_overwrite_docs: "{{ .TargetDnOverwriteDocs }}"
     parent_dependency: "{{ .ParentDependency}}"
     parent_dependency_dn_ref: "{{.ParentDependencyDnRef}}"
     target_resource_name: "{{ .TargetResourceName }}"
@@ -160,6 +161,7 @@ child_targets:
         {{- range .ChildTestDependencies }}
   - class_name: "{{ .ClassName }}"
     target_dn: "{{ .TargetDn }}"
+    target_dn_overwrite_docs: "{{ .TargetDnOverwriteDocs }}"
     relation_resource_name: "{{ .RelationResourceName }}"
     static: {{ .Static }}
     {{- if not .Static}}

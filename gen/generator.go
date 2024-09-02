@@ -905,6 +905,7 @@ type TestDependency struct {
 	ParentDnKey           string
 	TargetDn              string
 	TargetDnRef           string
+	TargetDnOverwriteDocs string
 	TargetResourceName    string
 	RelationResourceName  string
 	Static                bool
@@ -2082,6 +2083,10 @@ func getTestDependency(className string, targetMap map[interface{}]interface{}, 
 		testDependency.Static = static.(bool)
 	}
 
+	if targetDnOverwriteDocs, ok := targetMap["target_dn_overwrite_docs"]; ok {
+		testDependency.TargetDnOverwriteDocs = targetDnOverwriteDocs.(string)
+	}
+
 	return testDependency
 }
 
@@ -2099,7 +2104,7 @@ func GetTargetResourceName(resourceName string) string {
 	return resourceName
 }
 
-func GetTestTargetDn(targets []interface{}, resourceName, targetDnValue string, reference bool, targetClasses interface{}, index int) string {
+func GetTestTargetDn(targets []interface{}, resourceName, targetDnValue string, reference bool, targetClasses interface{}, index int, overwriteDocs bool) string {
 	var filteredTargets []interface{}
 	targetResourceName := GetTargetResourceName(resourceName)
 
@@ -2131,6 +2136,9 @@ func GetTestTargetDn(targets []interface{}, resourceName, targetDnValue string, 
 			} else {
 				if reference && !static {
 					return target.(map[interface{}]interface{})["target_dn_ref"].(string)
+				}
+				if v, ok := target.(map[interface{}]interface{})["target_dn_overwrite_docs"].(string); ok && overwriteDocs && v != "" {
+					return v
 				}
 				return target.(map[interface{}]interface{})["target_dn"].(string)
 			}

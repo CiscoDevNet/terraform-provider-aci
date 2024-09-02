@@ -52,9 +52,11 @@ parents:
 child_targets:
   - class_name: "fabricPathEp"
     target_dn: "topology/pod-1/paths-101/pathep-[eth1/1]"
+    target_dn_overwrite_docs: ""
     relation_resource_name: "host_path"
     static: true
   - class_name: "infraAccPortGrp"
     target_dn: "uni/infra/funcprof/accportgrp-access_interface_policy_group"
+    target_dn_overwrite_docs: ""
     relation_resource_name: "access_interface_policy_group"
     static: true
