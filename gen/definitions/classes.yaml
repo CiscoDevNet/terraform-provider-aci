@@ -157,6 +157,7 @@ rtctrlProfile:
     - "Tenants -> Networking -> L3Outs -> Route map for import and export Route Control"
     - "Tenants -> Policies -> Protocol -> Route Maps for Route Control"
   sub_category: "L3Out"
+  migration_version: 1
 
 vzOOBBrCP:
   resource_name: "out_of_band_contract"
@@ -252,6 +253,7 @@ tagAnnotation:
     - "Too many DN formats to display, see model documentation for all possible parents of [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)."
 
 tagTag:
+  migration_version: 1
   ui_locations:
     - "Under every object as Policy Tags in the Operational tab in recent APIC versions."
   resource_notes:

@@ -809,6 +809,8 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 		MarkdownDescription: "The {{.ResourceName}} resource for the '{{.PkgName}}' class",
 		{{- if .LegacyAttributes}}
 		Version: {{add .LegacySchemaVersion 1}},
+		{{- else if .LegacySchemaVersion}}
+		Version: {{.LegacySchemaVersion}},
 		{{- end}}
 
 		Attributes: map[string]schema.Attribute{

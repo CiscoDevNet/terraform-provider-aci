@@ -151,6 +151,7 @@ func (r *RtctrlProfileResource) Schema(ctx context.Context, req resource.SchemaR
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
 		MarkdownDescription: "The route_control_profile resource for the 'rtctrlProfile' class",
+		Version:             1,
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
