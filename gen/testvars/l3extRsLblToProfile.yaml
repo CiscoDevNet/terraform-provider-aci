@@ -46,7 +46,7 @@ parents:
         - "rtctrlProfile"
 targets:
   - class_name: "rtctrlProfile"
-    target_dn: "uni/tn-test_tenant/prof-rt_ctrl_profile"
+    target_dn: "uni/tn-test_tenant/prof-rt_ctrl_profile_1"
     target_dn_ref: "aci_route_control_profile.test_route_control_profile_0.id"
     parent_dependency: "fvTenant"
     parent_dependency_dn_ref: "aci_tenant.test.id"
@@ -55,4 +55,4 @@ targets:
     parent_dn_key: "parent_dn"
     static: true
     properties:
-        name: "rt_ctrl_profile"
+        name: "rt_ctrl_profile_1"

@@ -95,7 +95,7 @@ all:
 {{ if .Children}}
 children:
   {{- range $key, $value := .Children}}{{$name := .ResourceName}}{{$child_deletable := .AllowDelete}}
-  {{.ResourceName}}:
+  {{overwriteProperty .PkgName .ResourceName $.Definitions}}:
   {{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
     - {{ range .Properties}}{{$overwritePropertyName := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}{{- if and (not .IgnoreInTest) (not .ReadOnly)}}{{$overwritePropertyName}}: {{$length := len .ValidValues}}{{if ne $length 0}}"{{ index .ValidValues 0 }}"{{else if not .IsNaming}}"{{overwritePropertyValue .PkgName $overwritePropertyName $overwritePropertyName "all" 0 $.Definitions }}"{{- else}}"{{lookupChildTestValue .PkgName $.ResourceName .SnakeCaseName $.TestVars 0 $.Definitions}}"{{- end}}
       {{ end}}{{ end}}

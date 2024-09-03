@@ -21,7 +21,7 @@ func TestAccDataSourceL3extRsLblToInstPWithL3extConsLbl(t *testing.T) {
 				Config:             testConfigL3extRsLblToInstPDataSourceDependencyWithL3extConsLbl,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.aci_relation_from_l3out_consumer_label_to_external_epg.test", "target_dn", "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile"),
+					resource.TestCheckResourceAttr("data.aci_relation_from_l3out_consumer_label_to_external_epg.test", "target_dn", "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile_1"),
 					resource.TestCheckResourceAttr("data.aci_relation_from_l3out_consumer_label_to_external_epg.test", "annotation", "orchestrator:terraform"),
 				),
 			},
@@ -36,7 +36,7 @@ func TestAccDataSourceL3extRsLblToInstPWithL3extConsLbl(t *testing.T) {
 const testConfigL3extRsLblToInstPDataSourceDependencyWithL3extConsLbl = testConfigL3extRsLblToInstPMinDependencyWithL3extConsLbl + `
 data "aci_relation_from_l3out_consumer_label_to_external_epg" "test" {
   parent_dn = aci_l3out_consumer_label.test.id
-  target_dn = "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile"
+  target_dn = "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile_1"
   depends_on = [aci_relation_from_l3out_consumer_label_to_external_epg.test]
 }
 `
@@ -44,6 +44,6 @@ data "aci_relation_from_l3out_consumer_label_to_external_epg" "test" {
 const testConfigL3extRsLblToInstPNotExistingL3extConsLbl = testConfigL3extConsLblMinDependencyWithL3extOut + `
 data "aci_relation_from_l3out_consumer_label_to_external_epg" "test_non_existing" {
   parent_dn = aci_l3out_consumer_label.test.id
-  target_dn = "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile_not_existing"
+  target_dn = "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile_1_not_existing"
 }
 `

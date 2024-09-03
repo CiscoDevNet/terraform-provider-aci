@@ -54,8 +54,8 @@ type L3extConsLblResourceModel struct {
 	OwnerKey            types.String `tfsdk:"owner_key"`
 	OwnerTag            types.String `tfsdk:"owner_tag"`
 	Tag                 types.String `tfsdk:"tag"`
-	L3extRsLblToInstP   types.Set    `tfsdk:"relation_from_l3out_consumer_label_to_external_epgs"`
-	L3extRsLblToProfile types.Set    `tfsdk:"relation_from_l3out_consumer_label_to_route_control_profiles"`
+	L3extRsLblToInstP   types.Set    `tfsdk:"relation_to_external_epgs"`
+	L3extRsLblToProfile types.Set    `tfsdk:"relation_to_route_control_profiles"`
 	TagAnnotation       types.Set    `tfsdk:"annotations"`
 	TagTag              types.Set    `tfsdk:"tags"`
 }
@@ -290,7 +290,7 @@ func (r *L3extConsLblResource) Schema(ctx context.Context, req resource.SchemaRe
 				},
 				MarkdownDescription: `Specifies the color of a policy label.`,
 			},
-			"relation_from_l3out_consumer_label_to_external_epgs": schema.SetNestedAttribute{
+			"relation_to_external_epgs": schema.SetNestedAttribute{
 				MarkdownDescription: ``,
 				Optional:            true,
 				Computed:            true,
@@ -317,7 +317,7 @@ func (r *L3extConsLblResource) Schema(ctx context.Context, req resource.SchemaRe
 					},
 				},
 			},
-			"relation_from_l3out_consumer_label_to_route_control_profiles": schema.SetNestedAttribute{
+			"relation_to_route_control_profiles": schema.SetNestedAttribute{
 				MarkdownDescription: `Consumer Lable Relation to Routing Policy`,
 				Optional:            true,
 				Computed:            true,

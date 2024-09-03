@@ -22,8 +22,8 @@ func TestAccResourceL3extRsLblToInstPWithL3extConsLbl(t *testing.T) {
 				Config:             testConfigL3extRsLblToInstPMinDependencyWithL3extConsLblAllowExisting,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_external_epg.allow_test", "target_dn", "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile"),
-					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_external_epg.allow_test_2", "target_dn", "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile"),
+					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_external_epg.allow_test", "target_dn", "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile_1"),
+					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_external_epg.allow_test_2", "target_dn", "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile_1"),
 					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_external_epg.allow_test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_external_epg.allow_test_2", "annotation", "orchestrator:terraform"),
 				),
@@ -54,8 +54,8 @@ func TestAccResourceL3extRsLblToInstPWithL3extConsLbl(t *testing.T) {
 				Config:             testConfigL3extRsLblToInstPMinDependencyWithL3extConsLblAllowExisting,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_external_epg.allow_test", "target_dn", "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile"),
-					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_external_epg.allow_test_2", "target_dn", "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile"),
+					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_external_epg.allow_test", "target_dn", "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile_1"),
+					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_external_epg.allow_test_2", "target_dn", "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile_1"),
 					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_external_epg.allow_test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_external_epg.allow_test_2", "annotation", "orchestrator:terraform"),
 				),
@@ -72,7 +72,7 @@ func TestAccResourceL3extRsLblToInstPWithL3extConsLbl(t *testing.T) {
 				Config:             testConfigL3extRsLblToInstPMinDependencyWithL3extConsLbl,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_external_epg.test", "target_dn", "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile"),
+					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_external_epg.test", "target_dn", "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile_1"),
 					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_external_epg.test", "annotation", "orchestrator:terraform"),
 				),
 			},
@@ -81,7 +81,7 @@ func TestAccResourceL3extRsLblToInstPWithL3extConsLbl(t *testing.T) {
 				Config:             testConfigL3extRsLblToInstPAllDependencyWithL3extConsLbl,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_external_epg.test", "target_dn", "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile"),
+					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_external_epg.test", "target_dn", "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile_1"),
 					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_external_epg.test", "annotation", "annotation"),
 				),
 			},
@@ -90,7 +90,7 @@ func TestAccResourceL3extRsLblToInstPWithL3extConsLbl(t *testing.T) {
 				Config:             testConfigL3extRsLblToInstPMinDependencyWithL3extConsLbl,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_external_epg.test", "target_dn", "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile"),
+					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_external_epg.test", "target_dn", "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile_1"),
 				),
 			},
 			// Update with empty strings config or default value
@@ -98,7 +98,7 @@ func TestAccResourceL3extRsLblToInstPWithL3extConsLbl(t *testing.T) {
 				Config:             testConfigL3extRsLblToInstPResetDependencyWithL3extConsLbl,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_external_epg.test", "target_dn", "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile"),
+					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_external_epg.test", "target_dn", "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile_1"),
 					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_external_epg.test", "annotation", "orchestrator:terraform"),
 				),
 			},
@@ -113,7 +113,7 @@ func TestAccResourceL3extRsLblToInstPWithL3extConsLbl(t *testing.T) {
 				Config:             testConfigL3extRsLblToInstPChildrenDependencyWithL3extConsLbl,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_external_epg.test", "target_dn", "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile"),
+					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_external_epg.test", "target_dn", "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile_1"),
 					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_external_epg.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_external_epg.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_external_epg.test", "annotations.0.value", "value_1"),
@@ -185,11 +185,11 @@ const testDependencyConfigL3extRsLblToInstP = `
 const testConfigL3extRsLblToInstPMinDependencyWithL3extConsLblAllowExisting = testDependencyConfigL3extRsLblToInstP + testConfigL3extConsLblMinDependencyWithL3extOut + `
 resource "aci_relation_from_l3out_consumer_label_to_external_epg" "allow_test" {
   parent_dn = aci_l3out_consumer_label.test.id
-  target_dn = "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile"
+  target_dn = "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile_1"
 }
 resource "aci_relation_from_l3out_consumer_label_to_external_epg" "allow_test_2" {
   parent_dn = aci_l3out_consumer_label.test.id
-  target_dn = "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile"
+  target_dn = "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile_1"
   depends_on = [aci_relation_from_l3out_consumer_label_to_external_epg.allow_test]
 }
 `
@@ -197,14 +197,14 @@ resource "aci_relation_from_l3out_consumer_label_to_external_epg" "allow_test_2"
 const testConfigL3extRsLblToInstPMinDependencyWithL3extConsLbl = testDependencyConfigL3extRsLblToInstP + testConfigL3extConsLblMinDependencyWithL3extOut + `
 resource "aci_relation_from_l3out_consumer_label_to_external_epg" "test" {
   parent_dn = aci_l3out_consumer_label.test.id
-  target_dn = "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile"
+  target_dn = "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile_1"
 }
 `
 
 const testConfigL3extRsLblToInstPAllDependencyWithL3extConsLbl = testDependencyConfigL3extRsLblToInstP + testConfigL3extConsLblMinDependencyWithL3extOut + `
 resource "aci_relation_from_l3out_consumer_label_to_external_epg" "test" {
   parent_dn = aci_l3out_consumer_label.test.id
-  target_dn = "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile"
+  target_dn = "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile_1"
   annotation = "annotation"
 }
 `
@@ -212,14 +212,14 @@ resource "aci_relation_from_l3out_consumer_label_to_external_epg" "test" {
 const testConfigL3extRsLblToInstPResetDependencyWithL3extConsLbl = testDependencyConfigL3extRsLblToInstP + testConfigL3extConsLblMinDependencyWithL3extOut + `
 resource "aci_relation_from_l3out_consumer_label_to_external_epg" "test" {
   parent_dn = aci_l3out_consumer_label.test.id
-  target_dn = "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile"
+  target_dn = "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile_1"
   annotation = "orchestrator:terraform"
 }
 `
 const testConfigL3extRsLblToInstPChildrenDependencyWithL3extConsLbl = testDependencyConfigL3extRsLblToInstP + testConfigL3extConsLblMinDependencyWithL3extOut + `
 resource "aci_relation_from_l3out_consumer_label_to_external_epg" "test" {
   parent_dn = aci_l3out_consumer_label.test.id
-  target_dn = "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile"
+  target_dn = "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile_1"
   annotations = [
 	{
 	  key = "key_0"
@@ -246,14 +246,14 @@ resource "aci_relation_from_l3out_consumer_label_to_external_epg" "test" {
 const testConfigL3extRsLblToInstPChildrenRemoveFromConfigDependencyWithL3extConsLbl = testDependencyConfigL3extRsLblToInstP + testConfigL3extConsLblMinDependencyWithL3extOut + `
 resource "aci_relation_from_l3out_consumer_label_to_external_epg" "test" {
   parent_dn = aci_l3out_consumer_label.test.id
-  target_dn = "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile"
+  target_dn = "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile_1"
 }
 `
 
 const testConfigL3extRsLblToInstPChildrenRemoveOneDependencyWithL3extConsLbl = testDependencyConfigL3extRsLblToInstP + testConfigL3extConsLblMinDependencyWithL3extOut + `
 resource "aci_relation_from_l3out_consumer_label_to_external_epg" "test" {
   parent_dn = aci_l3out_consumer_label.test.id
-  target_dn = "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile"
+  target_dn = "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile_1"
   annotations = [ 
 	{
 	  key = "key_1"
@@ -272,7 +272,7 @@ resource "aci_relation_from_l3out_consumer_label_to_external_epg" "test" {
 const testConfigL3extRsLblToInstPChildrenRemoveAllDependencyWithL3extConsLbl = testDependencyConfigL3extRsLblToInstP + testConfigL3extConsLblMinDependencyWithL3extOut + `
 resource "aci_relation_from_l3out_consumer_label_to_external_epg" "test" {
   parent_dn = aci_l3out_consumer_label.test.id
-  target_dn = "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile"
+  target_dn = "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile_1"
   annotations = []
   tags = []
 }

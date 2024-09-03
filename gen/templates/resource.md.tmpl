@@ -122,20 +122,20 @@ All examples for the {{.ResourceNameAsDescription}} resource can be found in the
     {{- if ge $length 1}}
       {{- if .MultiRelationshipClass}}
       {{$RelationshipResourceNames := .RelationshipResourceNames}}
-* `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName $.Definitions}}. This relation{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}} and{{- end}} can point to multiple ACI objects:
+* `{{- overwriteProperty .PkgName .ResourceName $.Definitions}}` - (list) A list of {{getResourceNameAsDescription .ResourceName $.Definitions}}. This relation{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}} and{{- end}} can point to multiple ACI objects:
         {{- range $index, $value := .RelationshipClasses}}
           {{- if le $index (len $RelationshipResourceNames)}}
     - {{getDevnetDocForClass $value}}{{- if ne (index $RelationshipResourceNames $index) ""}} which can be configured using the [aci_{{(index $RelationshipResourceNames $index)}}](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{(index $RelationshipResourceNames $index)}}) resource.{{- else}}. Currently there is no resource is available to configure this ACI object.{{- end}}
           {{- end}}
         {{- end}}
       {{- else}}
-* `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName $.Definitions}} (ACI object {{getDevnetDocForClass .PkgName}}) pointing to {{range $index, $value := .RelationshipResourceNames}}{{- if or (eq $length 1) (eq $.PkgName (index $RelationshipClasses $index))}}{{getResourceNameAsDescription $value $.Definitions}} (ACI Object {{getDevnetDocForClass (index $RelationshipClasses $index)}}){{- if ne $value ""}} which can be configured using the [aci_{{($value)}}](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{($value)}}) resource{{end}}{{end}}{{end}}.{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
+* `{{- overwriteProperty .PkgName .ResourceName $.Definitions}}` - (list) A list of {{getResourceNameAsDescription .ResourceName $.Definitions}} (ACI object {{getDevnetDocForClass .PkgName}}) pointing to {{range $index, $value := .RelationshipResourceNames}}{{- if or (eq $length 1) (eq $.PkgName (index $RelationshipClasses $index))}}{{getResourceNameAsDescription $value $.Definitions}} (ACI Object {{getDevnetDocForClass (index $RelationshipClasses $index)}}){{- if ne $value ""}} which can be configured using the [aci_{{($value)}}](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{($value)}}) resource{{end}}{{end}}{{end}}.{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
     {{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
     - Max Items: 1
     {{- end}}
     {{- end}}
     {{- else}}
-* `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName $.Definitions}} (ACI object {{getDevnetDocForClass .PkgName}}). {{getResourceNameAsDescription .ResourceName $.Definitions}} can also be configured using a separate [aci_{{.ResourceNameDocReference}}](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{.ResourceNameDocReference}}) resource.{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
+* `{{- overwriteProperty .PkgName .ResourceName $.Definitions}}` - (list) A list of {{getResourceNameAsDescription .ResourceName $.Definitions}} (ACI object {{getDevnetDocForClass .PkgName}}). {{getResourceNameAsDescription .ResourceName $.Definitions}} can also be configured using a separate [aci_{{.ResourceNameDocReference}}](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{.ResourceNameDocReference}}) resource.{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
     {{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
     - Max Items: 1
     {{- end}}

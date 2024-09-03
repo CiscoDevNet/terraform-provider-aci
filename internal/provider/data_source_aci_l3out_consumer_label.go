@@ -80,7 +80,7 @@ func (d *L3extConsLblDataSource) Schema(ctx context.Context, req datasource.Sche
 				Computed:            true,
 				MarkdownDescription: `Specifies the color of a policy label.`,
 			},
-			"relation_from_l3out_consumer_label_to_external_epgs": schema.SetNestedAttribute{
+			"relation_to_external_epgs": schema.SetNestedAttribute{
 				MarkdownDescription: ``,
 				Computed:            true,
 				NestedObject: schema.NestedAttributeObject{
@@ -96,7 +96,7 @@ func (d *L3extConsLblDataSource) Schema(ctx context.Context, req datasource.Sche
 					},
 				},
 			},
-			"relation_from_l3out_consumer_label_to_route_control_profiles": schema.SetNestedAttribute{
+			"relation_to_route_control_profiles": schema.SetNestedAttribute{
 				MarkdownDescription: `Consumer Lable Relation to Routing Policy`,
 				Computed:            true,
 				NestedObject: schema.NestedAttributeObject{

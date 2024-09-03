@@ -9,17 +9,17 @@ resource "aci_l3out_consumer_label" "full_example_l3_outside" {
   owner_key   = "owner_key_1"
   owner_tag   = "owner_tag_1"
   tag         = "lemon-chiffon"
-  relation_from_l3out_consumer_label_to_external_epgs = [
+  relation_to_external_epgs = [
     {
       annotation = "annotation_1"
-      target_dn  = "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile"
+      target_dn  = "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile_1"
     }
   ]
-  relation_from_l3out_consumer_label_to_route_control_profiles = [
+  relation_to_route_control_profiles = [
     {
       annotation = "annotation_1"
       direction  = "export"
-      target_dn  = "uni/tn-test_tenant/prof-rt_ctrl_profile"
+      target_dn  = "uni/tn-test_tenant/prof-rt_ctrl_profile_1"
     }
   ]
   annotations = [
