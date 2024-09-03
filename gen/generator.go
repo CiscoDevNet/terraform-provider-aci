@@ -1006,10 +1006,13 @@ func (m *Model) setClassModel(metaPath string, child bool, definitions Definitio
 		}
 	}
 
-	if isMigrationResource(m.PkgName, definitions) {
+	version, changes := isMigrationResource(m.PkgName, definitions)
+	if version {
+		m.SetMigrationVersion(definitions)
+	}
+	if changes {
 		m.SetMigrationClassTypes(definitions)
 		m.SetLegacyChildren(definitions)
-		m.SetMigrationVersion(definitions)
 		m.SetLegacyAttributes(definitions)
 	}
 
@@ -2134,15 +2137,19 @@ func (m *Model) GetOverwriteAttributeMigration(definitions Definitions, attribut
 	return nil
 }
 
-func isMigrationResource(classPkgName string, definitions Definitions) bool {
+func isMigrationResource(classPkgName string, definitions Definitions) (bool, bool) {
+	version := false
+	changes := false
 	if v, ok := definitions.Classes[classPkgName]; ok {
 		for key := range v.(map[interface{}]interface{}) {
 			if key.(string) == "migration_blocks" {
-				return true
+				changes = true
+			} else if key.(string) == "migration_version" {
+				version = true
 			}
 		}
 	}
-	return false
+	return version, changes
 }
 
 // Set variables that are used during the rendering of the example and documentation templates
