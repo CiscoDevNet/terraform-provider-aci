@@ -84,7 +84,7 @@ All examples for the External Management Network Subnet resource can be found in
 * `id` - (string) The distinguished name (DN) of the External Management Network Subnet object.
 
 ### Optional ###
-  
+
 * `annotation` (annotation) - (string) The annotation of the External Management Network Subnet object.
   - Default: `orchestrator:terraform`
 * `description` (descr) - (string) The description of the External Management Network Subnet object.

@@ -85,7 +85,7 @@ All examples for the VRF Fallback Route Group Member resource can be found in th
 * `id` - (string) The distinguished name (DN) of the VRF Fallback Route Group Member object.
 
 ### Optional ###
-  
+
 * `annotation` (annotation) - (string) The annotation of the VRF Fallback Route Group Member object.
   - Default: `orchestrator:terraform`
 * `description` (descr) - (string) The description of the VRF Fallback Route Group Member object.

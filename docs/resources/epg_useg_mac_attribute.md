@@ -88,7 +88,7 @@ All examples for the EPG uSeg MAC Attribute resource can be found in the [exampl
 * `id` - (string) The distinguished name (DN) of the EPG uSeg MAC Attribute object.
 
 ### Optional ###
-  
+
 * `annotation` (annotation) - (string) The annotation of the EPG uSeg MAC Attribute object.
   - Default: `orchestrator:terraform`
 * `description` (descr) - (string) The description of the EPG uSeg MAC Attribute object.

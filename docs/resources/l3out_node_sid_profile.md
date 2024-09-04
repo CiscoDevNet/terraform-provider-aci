@@ -85,7 +85,7 @@ All examples for the L3Out Node SR-MPLS Segment ID Profile resource can be found
 * `id` - (string) The distinguished name (DN) of the L3Out Node SR-MPLS Segment ID Profile object.
 
 ### Optional ###
-  
+
 * `annotation` (annotation) - (string) The annotation of the L3Out Node SR-MPLS Segment ID Profile object.
   - Default: `orchestrator:terraform`
 * `description` (descr) - (string) The description of the L3Out Node SR-MPLS Segment ID Profile object.

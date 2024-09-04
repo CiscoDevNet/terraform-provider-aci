@@ -109,7 +109,7 @@ All examples for the Relation To Taboo Contract resource can be found in the [ex
 * `id` - (string) The distinguished name (DN) of the Relation To Taboo Contract object.
 
 ### Optional ###
-  
+
 * `annotation` (annotation) - (string) The annotation of the Relation To Taboo Contract object.
   - Default: `orchestrator:terraform`
 

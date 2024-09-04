@@ -138,7 +138,7 @@ All examples for the Relation To Provided Contract resource can be found in the 
 * `id` - (string) The distinguished name (DN) of the Relation To Provided Contract object.
 
 ### Optional ###
-  
+
 * `annotation` (annotation) - (string) The annotation of the Relation To Provided Contract object.
   - Default: `orchestrator:terraform`
 * `match_criteria` (matchT) - (string) The provider label match criteria.

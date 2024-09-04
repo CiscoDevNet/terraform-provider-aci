@@ -87,7 +87,7 @@ All examples for the Endpoint Tag IP resource can be found in the [examples](htt
 * `id` - (string) The distinguished name (DN) of the Endpoint Tag IP object.
 
 ### Optional ###
-  
+
 * `annotation` (annotation) - (string) The annotation of the Endpoint Tag IP object.
   - Default: `orchestrator:terraform`
 * `id_attribute` (id) - (string) The identifier of the Endpoint Tag IP object.

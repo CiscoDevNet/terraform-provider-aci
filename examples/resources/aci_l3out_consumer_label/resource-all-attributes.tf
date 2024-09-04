@@ -12,14 +12,14 @@ resource "aci_l3out_consumer_label" "full_example_l3_outside" {
   relation_to_external_epgs = [
     {
       annotation = "annotation_1"
-      target_dn  = "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile_1"
+      target_dn  = aci_external_network_instance_profile.example.id
     }
   ]
   relation_to_route_control_profiles = [
     {
       annotation = "annotation_1"
       direction  = "export"
-      target_dn  = "uni/tn-test_tenant/prof-rt_ctrl_profile_1"
+      target_dn  = aci_route_control_profile.example.id
     }
   ]
   annotations = [

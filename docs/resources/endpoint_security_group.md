@@ -128,7 +128,7 @@ All examples for the Endpoint Security Group resource can be found in the [examp
 * `id` - (string) The distinguished name (DN) of the Endpoint Security Group object.
 
 ### Optional ###
-  
+
 * `annotation` (annotation) - (string) The annotation of the Endpoint Security Group object.
   - Default: `orchestrator:terraform`
 * `description` (descr) - (string) The description of the Endpoint Security Group object.

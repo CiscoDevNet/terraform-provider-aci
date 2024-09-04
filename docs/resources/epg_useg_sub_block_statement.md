@@ -116,7 +116,7 @@ All examples for the EPG uSeg Sub Block Statement resource can be found in the [
 * `id` - (string) The distinguished name (DN) of the EPG uSeg Sub Block Statement object.
 
 ### Optional ###
-  
+
 * `annotation` (annotation) - (string) The annotation of the EPG uSeg Sub Block Statement object.
   - Default: `orchestrator:terraform`
 * `description` (descr) - (string) The description of the EPG uSeg Sub Block Statement object.

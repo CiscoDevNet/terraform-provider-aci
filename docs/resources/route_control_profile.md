@@ -121,7 +121,7 @@ All examples for the Route Control Profile resource can be found in the [example
 * `id` - (string) The distinguished name (DN) of the Route Control Profile object.
 
 ### Optional ###
-  
+
 * `annotation` (annotation) - (string) The annotation of the Route Control Profile object.
   - Default: `orchestrator:terraform`
 * `route_map_continue` (autoContinue) - (string) The route_map_continue applies a continue statement for all user-configured sequences (contexts) in a given BGP route profile so that switches will continue to find matches with subsequent user-configured sequences in the route map. Without the continue statement, after a route matches one of the sequences in a route map, switches will not continue to check other sequences.

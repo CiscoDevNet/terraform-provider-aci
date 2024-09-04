@@ -85,7 +85,7 @@ All examples for the Out Of Band Contract resource can be found in the [examples
 * `id` - (string) The distinguished name (DN) of the Out Of Band Contract object.
 
 ### Optional ###
-  
+
 * `annotation` (annotation) - (string) The annotation of the Out Of Band Contract object.
   - Default: `orchestrator:terraform`
 * `description` (descr) - (string) The description of the Out Of Band Contract object.

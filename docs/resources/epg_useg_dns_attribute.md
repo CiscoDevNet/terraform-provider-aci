@@ -86,7 +86,7 @@ All examples for the EPG uSeg DNS Attribute resource can be found in the [exampl
 * `id` - (string) The distinguished name (DN) of the EPG uSeg DNS Attribute object.
 
 ### Optional ###
-  
+
 * `annotation` (annotation) - (string) The annotation of the EPG uSeg DNS Attribute object.
   - Default: `orchestrator:terraform`
 * `description` (descr) - (string) The description of the EPG uSeg DNS Attribute object.

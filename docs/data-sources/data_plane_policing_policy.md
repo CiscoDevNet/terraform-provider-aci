@@ -43,14 +43,16 @@ data "aci_data_plane_policing_policy" "example_tenant" {
 
 ### Required ###
 
+* `name` (name) - (string) The name of the Data Plane Policing Policy object.
+
+### Optional ###
+
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
   - The distinguished name (DN) of classes below can be used but currently there is no available resource for it:
     - [infraInfra](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraInfra/overview)
 
   - Default: `uni/infra`
-  
-* `name` (name) - (string) The name of the Data Plane Policing Policy object.
 
 ### Read-Only ###
 

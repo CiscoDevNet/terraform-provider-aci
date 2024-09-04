@@ -86,7 +86,7 @@ All examples for the EPG uSeg Block Statement resource can be found in the [exam
 * `id` - (string) The distinguished name (DN) of the EPG uSeg Block Statement object.
 
 ### Optional ###
-  
+
 * `annotation` (annotation) - (string) The annotation of the EPG uSeg Block Statement object.
   - Default: `orchestrator:terraform`
 * `description` (descr) - (string) The description of the EPG uSeg Block Statement object.

@@ -42,13 +42,15 @@ data "aci_access_interface_override" "example" {
 
 ### Required ###
 
+* `name` (name) - (string) The name of the Access Interface Override object.
+
+### Optional ###
+
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - The distinguished name (DN) of classes below can be used but currently there is no available resource for it:
     - [infraInfra](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraInfra/overview)
 
   - Default: `uni/infra`
-  
-* `name` (name) - (string) The name of the Access Interface Override object.
 
 ### Read-Only ###
 

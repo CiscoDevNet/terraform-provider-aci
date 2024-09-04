@@ -236,7 +236,7 @@ All examples for the Application EPG resource can be found in the [examples](htt
 * `id` - (string) The distinguished name (DN) of the Application EPG object.
 
 ### Optional ###
-  
+
 * `annotation` (annotation) - (string) The annotation of the Application EPG object.
   - Default: `orchestrator:terraform`
 * `description` (descr) - (string) The description of the Application EPG object.

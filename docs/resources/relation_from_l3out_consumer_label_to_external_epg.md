@@ -37,7 +37,7 @@ The configuration snippet below creates a Relation From L3Out Consumer Label To 
 
 resource "aci_relation_from_l3out_consumer_label_to_external_epg" "example_l3out_consumer_label" {
   parent_dn = aci_l3out_consumer_label.example.id
-  target_dn = "uni/tn-example_tenant/out-example_l3_outside/instP-inst_profile_2"
+  target_dn = aci_external_network_instance_profile.example.id
 }
 
 ```
@@ -50,7 +50,7 @@ The configuration snippet below shows all possible attributes of the Relation Fr
 resource "aci_relation_from_l3out_consumer_label_to_external_epg" "full_example_l3out_consumer_label" {
   parent_dn  = aci_l3out_consumer_label.example.id
   annotation = "annotation"
-  target_dn  = "uni/tn-example_tenant/out-example_l3_outside/instP-inst_profile_2"
+  target_dn  = aci_external_network_instance_profile.example.id
   annotations = [
     {
       key   = "key_0"
@@ -85,7 +85,7 @@ All examples for the Relation From L3Out Consumer Label To External EPG resource
 * `id` - (string) The distinguished name (DN) of the Relation From L3Out Consumer Label To External EPG object.
 
 ### Optional ###
-  
+
 * `annotation` (annotation) - (string) The annotation of the Relation From L3Out Consumer Label To External EPG object.
   - Default: `orchestrator:terraform`
 

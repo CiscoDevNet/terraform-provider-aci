@@ -85,7 +85,7 @@ All examples for the Relation To NetFlow Exporter resource can be found in the [
 * `id` - (string) The distinguished name (DN) of the Relation To NetFlow Exporter object.
 
 ### Optional ###
-  
+
 * `annotation` (annotation) - (string) The annotation of the Relation To NetFlow Exporter object.
   - Default: `orchestrator:terraform`
 

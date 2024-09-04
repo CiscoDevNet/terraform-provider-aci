@@ -105,7 +105,7 @@ All examples for the Relation To Domain resource can be found in the [examples](
 * `id` - (string) The distinguished name (DN) of the Relation To Domain object.
 
 ### Optional ###
-  
+
 * `annotation` (annotation) - (string) The annotation of the Relation To Domain object.
   - Default: `orchestrator:terraform`
 * `binding_type` (bindingType) - (string) The binding type of the Relation To Domain object.
