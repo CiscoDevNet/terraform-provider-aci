@@ -49,6 +49,7 @@ global:
     Esg: "ESG"
     "External Network Instance Profile": "External EPG"
     L3out: L3Out
+    Netflow: "NetFlow"
   ignores:
     - "userdom"
 

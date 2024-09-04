@@ -206,7 +206,7 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Netflow Exporter Policy object.",
+				MarkdownDescription: "The distinguished name (DN) of the NetFlow Exporter Policy object.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
@@ -229,7 +229,7 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
-				MarkdownDescription: `The annotation of the Netflow Exporter Policy object.`,
+				MarkdownDescription: `The annotation of the NetFlow Exporter Policy object.`,
 			},
 			"description": schema.StringAttribute{
 				Optional: true,
@@ -238,7 +238,7 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The description of the Netflow Exporter Policy object.`,
+				MarkdownDescription: `The description of the NetFlow Exporter Policy object.`,
 			},
 			"qos_dscp_value": schema.StringAttribute{
 				CustomType: customTypes.NetflowExporterPolDscpStringType{},
@@ -254,7 +254,7 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 						validators.InBetweenFromString(0, 63),
 					),
 				},
-				MarkdownDescription: `The DSCP value of the Netflow Exporter Policy object.`,
+				MarkdownDescription: `The DSCP value of the NetFlow Exporter Policy object.`,
 			},
 			"destination_ip_address": schema.StringAttribute{
 				Required: true,
@@ -286,7 +286,7 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
-				MarkdownDescription: `The name of the Netflow Exporter Policy object.`,
+				MarkdownDescription: `The name of the NetFlow Exporter Policy object.`,
 			},
 			"name_alias": schema.StringAttribute{
 				Optional: true,
@@ -295,7 +295,7 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The name alias of the Netflow Exporter Policy object.`,
+				MarkdownDescription: `The name alias of the NetFlow Exporter Policy object.`,
 			},
 			"owner_key": schema.StringAttribute{
 				Optional: true,
@@ -325,7 +325,7 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 				Validators: []validator.String{
 					stringvalidator.OneOf("custom-src-ip", "inband-mgmt-ip", "oob-mgmt-ip", "ptep"),
 				},
-				MarkdownDescription: `The type of the source IP address for the Netflow Exporter Policy object.`,
+				MarkdownDescription: `The type of the source IP address for the NetFlow Exporter Policy object.`,
 			},
 			"source_ip_address": schema.StringAttribute{
 				Optional: true,
@@ -346,7 +346,7 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 				Validators: []validator.String{
 					stringvalidator.OneOf("cisco-v1", "v5", "v9"),
 				},
-				MarkdownDescription: `The NetFlow Exporter Version of the Netflow Exporter Policy object.`,
+				MarkdownDescription: `The NetFlow Exporter Version of the NetFlow Exporter Policy object.`,
 			},
 			"relation_to_vrf": schema.SetNestedAttribute{
 				MarkdownDescription: `Points to the Ctx behind which the Netflow Exporter Resides`,

@@ -44,7 +44,7 @@ func (d *NetflowExporterPolDataSource) Schema(ctx context.Context, req datasourc
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Netflow Exporter Policy object.",
+				MarkdownDescription: "The distinguished name (DN) of the NetFlow Exporter Policy object.",
 			},
 			"parent_dn": schema.StringAttribute{
 				Optional:            true,
@@ -52,16 +52,16 @@ func (d *NetflowExporterPolDataSource) Schema(ctx context.Context, req datasourc
 			},
 			"annotation": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The annotation of the Netflow Exporter Policy object.`,
+				MarkdownDescription: `The annotation of the NetFlow Exporter Policy object.`,
 			},
 			"description": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The description of the Netflow Exporter Policy object.`,
+				MarkdownDescription: `The description of the NetFlow Exporter Policy object.`,
 			},
 			"qos_dscp_value": schema.StringAttribute{
 				CustomType:          customTypes.NetflowExporterPolDscpStringType{},
 				Computed:            true,
-				MarkdownDescription: `The DSCP value of the Netflow Exporter Policy object.`,
+				MarkdownDescription: `The DSCP value of the NetFlow Exporter Policy object.`,
 			},
 			"destination_ip_address": schema.StringAttribute{
 				Computed:            true,
@@ -74,11 +74,11 @@ func (d *NetflowExporterPolDataSource) Schema(ctx context.Context, req datasourc
 			},
 			"name": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: `The name of the Netflow Exporter Policy object.`,
+				MarkdownDescription: `The name of the NetFlow Exporter Policy object.`,
 			},
 			"name_alias": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The name alias of the Netflow Exporter Policy object.`,
+				MarkdownDescription: `The name alias of the NetFlow Exporter Policy object.`,
 			},
 			"owner_key": schema.StringAttribute{
 				Computed:            true,
@@ -90,7 +90,7 @@ func (d *NetflowExporterPolDataSource) Schema(ctx context.Context, req datasourc
 			},
 			"source_ip_type": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The type of the source IP address for the Netflow Exporter Policy object.`,
+				MarkdownDescription: `The type of the source IP address for the NetFlow Exporter Policy object.`,
 			},
 			"source_ip_address": schema.StringAttribute{
 				Computed:            true,
@@ -98,7 +98,7 @@ func (d *NetflowExporterPolDataSource) Schema(ctx context.Context, req datasourc
 			},
 			"version": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The NetFlow Exporter Version of the Netflow Exporter Policy object.`,
+				MarkdownDescription: `The NetFlow Exporter Version of the NetFlow Exporter Policy object.`,
 			},
 			"relation_to_vrf": schema.SetNestedAttribute{
 				MarkdownDescription: `Points to the Ctx behind which the Netflow Exporter Resides`,
