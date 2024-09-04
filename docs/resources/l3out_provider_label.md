@@ -86,7 +86,7 @@ All examples for the L3Out Provider Label resource can be found in the [examples
 * `id` - (string) The distinguished name (DN) of the L3Out Provider Label object.
 
 ### Optional ###
-  
+
 * `annotation` (annotation) - (string) The annotation of the L3Out Provider Label object.
   - Default: `orchestrator:terraform`
 * `description` (descr) - (string) The description of the L3Out Provider Label object.

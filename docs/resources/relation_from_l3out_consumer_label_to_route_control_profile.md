@@ -38,7 +38,7 @@ The configuration snippet below creates a Relation From L3Out Consumer Label To 
 resource "aci_relation_from_l3out_consumer_label_to_route_control_profile" "example_l3out_consumer_label" {
   parent_dn = aci_l3out_consumer_label.example.id
   direction = "import"
-  target_dn = "uni/tn-example_tenant/prof-rt_ctrl_profile_2"
+  target_dn = aci_route_control_profile.example.id
 }
 
 ```
@@ -52,7 +52,7 @@ resource "aci_relation_from_l3out_consumer_label_to_route_control_profile" "full
   parent_dn  = aci_l3out_consumer_label.example.id
   annotation = "annotation"
   direction  = "import"
-  target_dn  = "uni/tn-example_tenant/prof-rt_ctrl_profile_2"
+  target_dn  = aci_route_control_profile.example.id
   annotations = [
     {
       key   = "key_0"
@@ -89,7 +89,7 @@ All examples for the Relation From L3Out Consumer Label To Route Control Profile
 * `id` - (string) The distinguished name (DN) of the Relation From L3Out Consumer Label To Route Control Profile object.
 
 ### Optional ###
-  
+
 * `annotation` (annotation) - (string) The annotation of the Relation From L3Out Consumer Label To Route Control Profile object.
   - Default: `orchestrator:terraform`
 

@@ -85,7 +85,7 @@ All examples for the Pim Route Map Policy resource can be found in the [examples
 * `id` - (string) The distinguished name (DN) of the Pim Route Map Policy object.
 
 ### Optional ###
-  
+
 * `annotation` (annotation) - (string) The annotation of the Pim Route Map Policy object.
   - Default: `orchestrator:terraform`
 * `description` (descr) - (string) The description of the Pim Route Map Policy object.

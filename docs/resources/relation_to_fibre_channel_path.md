@@ -84,7 +84,7 @@ All examples for the Relation To Fibre Channel Path resource can be found in the
 * `id` - (string) The distinguished name (DN) of the Relation To Fibre Channel Path object.
 
 ### Optional ###
-  
+
 * `annotation` (annotation) - (string) The annotation of the Relation To Fibre Channel Path object.
   - Default: `orchestrator:terraform`
 * `description` (descr) - (string) The description of the Relation To Fibre Channel Path object.

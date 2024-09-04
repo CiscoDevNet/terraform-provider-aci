@@ -3,7 +3,7 @@ resource "aci_relation_from_l3out_consumer_label_to_route_control_profile" "full
   parent_dn  = aci_l3out_consumer_label.example.id
   annotation = "annotation"
   direction  = "import"
-  target_dn  = "uni/tn-example_tenant/prof-rt_ctrl_profile_2"
+  target_dn  = aci_route_control_profile.example.id
   annotations = [
     {
       key   = "key_0"

@@ -134,7 +134,7 @@ All examples for the Relation To Contract Master resource can be found in the [e
 * `id` - (string) The distinguished name (DN) of the Relation To Contract Master object.
 
 ### Optional ###
-  
+
 * `annotation` (annotation) - (string) The annotation of the Relation To Contract Master object.
   - Default: `orchestrator:terraform`
 

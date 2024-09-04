@@ -87,7 +87,7 @@ All examples for the Relation To Static Leaf resource can be found in the [examp
 * `id` - (string) The distinguished name (DN) of the Relation To Static Leaf object.
 
 ### Optional ###
-  
+
 * `annotation` (annotation) - (string) The annotation of the Relation To Static Leaf object.
   - Default: `orchestrator:terraform`
 * `description` (descr) - (string) The description of the Relation To Static Leaf object.

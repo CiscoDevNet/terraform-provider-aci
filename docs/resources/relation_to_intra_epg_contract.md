@@ -132,7 +132,7 @@ All examples for the Relation To Intra EPG Contract resource can be found in the
 * `id` - (string) The distinguished name (DN) of the Relation To Intra EPG Contract object.
 
 ### Optional ###
-  
+
 * `annotation` (annotation) - (string) The annotation of the Relation To Intra EPG Contract object.
   - Default: `orchestrator:terraform`
 

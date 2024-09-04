@@ -91,7 +91,7 @@ All examples for the Trust Control Policy resource can be found in the [examples
 * `id` - (string) The distinguished name (DN) of the Trust Control Policy object.
 
 ### Optional ###
-  
+
 * `annotation` (annotation) - (string) The annotation of the Trust Control Policy object.
   - Default: `orchestrator:terraform`
 * `description` (descr) - (string) The description of the Trust Control Policy object.

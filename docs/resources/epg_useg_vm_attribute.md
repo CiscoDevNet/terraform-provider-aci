@@ -128,7 +128,7 @@ All examples for the EPG uSeg VM Attribute resource can be found in the [example
 * `id` - (string) The distinguished name (DN) of the EPG uSeg VM Attribute object.
 
 ### Optional ###
-  
+
 * `annotation` (annotation) - (string) The annotation of the EPG uSeg VM Attribute object.
   - Default: `orchestrator:terraform`
 * `category` (category) - (string) The category of the EPG uSeg VM Attribute object.

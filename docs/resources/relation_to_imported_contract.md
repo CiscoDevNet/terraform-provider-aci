@@ -136,7 +136,7 @@ All examples for the Relation To Imported Contract resource can be found in the 
 * `id` - (string) The distinguished name (DN) of the Relation To Imported Contract object.
 
 ### Optional ###
-  
+
 * `annotation` (annotation) - (string) The annotation of the Relation To Imported Contract object.
   - Default: `orchestrator:terraform`
 * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.

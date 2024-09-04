@@ -81,7 +81,7 @@ All examples for the Relation To VRF Fallback Route Group resource can be found 
 * `id` - (string) The distinguished name (DN) of the Relation To VRF Fallback Route Group object.
 
 ### Optional ###
-  
+
 * `annotation` (annotation) - (string) The annotation of the Relation To VRF Fallback Route Group object.
   - Default: `orchestrator:terraform`
 

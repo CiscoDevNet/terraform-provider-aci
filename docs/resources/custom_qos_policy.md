@@ -85,7 +85,7 @@ All examples for the Custom Qos Policy resource can be found in the [examples](h
 * `id` - (string) The distinguished name (DN) of the Custom Qos Policy object.
 
 ### Optional ###
-  
+
 * `annotation` (annotation) - (string) The annotation of the Custom Qos Policy object.
   - Default: `orchestrator:terraform`
 * `description` (descr) - (string) The description of the Custom Qos Policy object.

@@ -88,7 +88,7 @@ All examples for the Pim Route Map Entry resource can be found in the [examples]
 * `id` - (string) The distinguished name (DN) of the Pim Route Map Entry object.
 
 ### Optional ###
-  
+
 * `action` (action) - (string) The route action of the Pim Route Map Entry object.
   - Default: `permit`
   - Valid Values: `deny`, `permit`.
