@@ -120,7 +120,7 @@ func (r *FvRsFcPathAttResource) ModifyPlan(ctx context.Context, req resource.Mod
 		}
 
 		if (planData.Id.IsUnknown() || planData.Id.IsNull()) && !planData.ParentDn.IsUnknown() && !planData.TDn.IsUnknown() {
-			setFvRsFcPathAttId(ctx, planData)
+			SetFvRsFcPathAttId(ctx, planData)
 		}
 
 		if stateData == nil && !globalAllowExistingOnCreate && !planData.Id.IsUnknown() && !planData.Id.IsNull() {
@@ -296,7 +296,7 @@ func (r *FvRsFcPathAttResource) Create(ctx context.Context, req resource.CreateR
 	var stateData *FvRsFcPathAttResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
 	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
-		setFvRsFcPathAttId(ctx, stateData)
+		SetFvRsFcPathAttId(ctx, stateData)
 	}
 	getAndSetFvRsFcPathAttAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
@@ -317,7 +317,7 @@ func (r *FvRsFcPathAttResource) Create(ctx context.Context, req resource.CreateR
 	}
 
 	if data.Id.IsUnknown() || data.Id.IsNull() {
-		setFvRsFcPathAttId(ctx, data)
+		SetFvRsFcPathAttId(ctx, data)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_relation_to_fibre_channel_path with id '%s'", data.Id.ValueString()))
@@ -328,7 +328,7 @@ func (r *FvRsFcPathAttResource) Create(ctx context.Context, req resource.CreateR
 	var tagTagPlan, tagTagState []TagTagFvRsFcPathAttResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvRsFcPathAttCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetFvRsFcPathAttCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -393,7 +393,7 @@ func (r *FvRsFcPathAttResource) Update(ctx context.Context, req resource.UpdateR
 	var tagTagPlan, tagTagState []TagTagFvRsFcPathAttResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvRsFcPathAttCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetFvRsFcPathAttCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -555,7 +555,7 @@ func setFvRsFcPathAttParentDn(ctx context.Context, dn string, data *FvRsFcPathAt
 	data.ParentDn = basetypes.NewStringValue(dn[:rnIndex])
 }
 
-func setFvRsFcPathAttId(ctx context.Context, data *FvRsFcPathAttResourceModel) {
+func SetFvRsFcPathAttId(ctx context.Context, data *FvRsFcPathAttResourceModel) {
 	rn := getFvRsFcPathAttRn(ctx, data)
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
@@ -639,7 +639,7 @@ func getFvRsFcPathAttTagTagChildPayloads(ctx context.Context, diags *diag.Diagno
 	return childPayloads
 }
 
-func getFvRsFcPathAttCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *FvRsFcPathAttResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvRsFcPathAttResourceModel, tagTagPlan, tagTagState []TagTagFvRsFcPathAttResourceModel) *container.Container {
+func GetFvRsFcPathAttCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *FvRsFcPathAttResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvRsFcPathAttResourceModel, tagTagPlan, tagTagState []TagTagFvRsFcPathAttResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 

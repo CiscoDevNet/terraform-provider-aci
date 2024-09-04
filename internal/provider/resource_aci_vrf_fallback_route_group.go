@@ -176,7 +176,7 @@ func (r *FvFBRGroupResource) ModifyPlan(ctx context.Context, req resource.Modify
 		}
 
 		if (planData.Id.IsUnknown() || planData.Id.IsNull()) && !planData.ParentDn.IsUnknown() && !planData.Name.IsUnknown() {
-			setFvFBRGroupId(ctx, planData)
+			SetFvFBRGroupId(ctx, planData)
 		}
 
 		if stateData == nil && !globalAllowExistingOnCreate && !planData.Id.IsUnknown() && !planData.Id.IsNull() {
@@ -445,7 +445,7 @@ func (r *FvFBRGroupResource) Create(ctx context.Context, req resource.CreateRequ
 	var stateData *FvFBRGroupResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
 	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
-		setFvFBRGroupId(ctx, stateData)
+		SetFvFBRGroupId(ctx, stateData)
 	}
 	getAndSetFvFBRGroupAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
@@ -466,7 +466,7 @@ func (r *FvFBRGroupResource) Create(ctx context.Context, req resource.CreateRequ
 	}
 
 	if data.Id.IsUnknown() || data.Id.IsNull() {
-		setFvFBRGroupId(ctx, data)
+		SetFvFBRGroupId(ctx, data)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_vrf_fallback_route_group with id '%s'", data.Id.ValueString()))
@@ -483,7 +483,7 @@ func (r *FvFBRGroupResource) Create(ctx context.Context, req resource.CreateRequ
 	var tagTagPlan, tagTagState []TagTagFvFBRGroupResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvFBRGroupCreateJsonPayload(ctx, &resp.Diagnostics, true, data, fvFBRMemberPlan, fvFBRMemberState, fvFBRoutePlan, fvFBRouteState, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetFvFBRGroupCreateJsonPayload(ctx, &resp.Diagnostics, true, data, fvFBRMemberPlan, fvFBRMemberState, fvFBRoutePlan, fvFBRouteState, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -554,7 +554,7 @@ func (r *FvFBRGroupResource) Update(ctx context.Context, req resource.UpdateRequ
 	var tagTagPlan, tagTagState []TagTagFvFBRGroupResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvFBRGroupCreateJsonPayload(ctx, &resp.Diagnostics, false, data, fvFBRMemberPlan, fvFBRMemberState, fvFBRoutePlan, fvFBRouteState, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetFvFBRGroupCreateJsonPayload(ctx, &resp.Diagnostics, false, data, fvFBRMemberPlan, fvFBRMemberState, fvFBRoutePlan, fvFBRouteState, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -761,7 +761,7 @@ func setFvFBRGroupParentDn(ctx context.Context, dn string, data *FvFBRGroupResou
 	data.ParentDn = basetypes.NewStringValue(dn[:rnIndex])
 }
 
-func setFvFBRGroupId(ctx context.Context, data *FvFBRGroupResourceModel) {
+func SetFvFBRGroupId(ctx context.Context, data *FvFBRGroupResourceModel) {
 	rn := getFvFBRGroupRn(ctx, data)
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
@@ -945,7 +945,7 @@ func getFvFBRGroupTagTagChildPayloads(ctx context.Context, diags *diag.Diagnosti
 	return childPayloads
 }
 
-func getFvFBRGroupCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *FvFBRGroupResourceModel, fvFBRMemberPlan, fvFBRMemberState []FvFBRMemberFvFBRGroupResourceModel, fvFBRoutePlan, fvFBRouteState []FvFBRouteFvFBRGroupResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvFBRGroupResourceModel, tagTagPlan, tagTagState []TagTagFvFBRGroupResourceModel) *container.Container {
+func GetFvFBRGroupCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *FvFBRGroupResourceModel, fvFBRMemberPlan, fvFBRMemberState []FvFBRMemberFvFBRGroupResourceModel, fvFBRoutePlan, fvFBRouteState []FvFBRouteFvFBRGroupResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvFBRGroupResourceModel, tagTagPlan, tagTagState []TagTagFvFBRGroupResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 

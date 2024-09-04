@@ -355,7 +355,7 @@ func (d *FvESgDataSource) Read(ctx context.Context, req datasource.ReadRequest, 
 		return
 	}
 
-	setFvESgId(ctx, data)
+	SetFvESgId(ctx, data)
 
 	// Create a copy of the Id for when not found during getAndSetFvESgAttributes
 	cachedId := data.Id.ValueString()

@@ -126,7 +126,7 @@ func (d *FvRsSecInheritedDataSource) Read(ctx context.Context, req datasource.Re
 		return
 	}
 
-	setFvRsSecInheritedId(ctx, data)
+	SetFvRsSecInheritedId(ctx, data)
 
 	// Create a copy of the Id for when not found during getAndSetFvRsSecInheritedAttributes
 	cachedId := data.Id.ValueString()

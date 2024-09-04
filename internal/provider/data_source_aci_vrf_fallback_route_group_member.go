@@ -138,7 +138,7 @@ func (d *FvFBRMemberDataSource) Read(ctx context.Context, req datasource.ReadReq
 		return
 	}
 
-	setFvFBRMemberId(ctx, data)
+	SetFvFBRMemberId(ctx, data)
 
 	// Create a copy of the Id for when not found during getAndSetFvFBRMemberAttributes
 	cachedId := data.Id.ValueString()

@@ -118,7 +118,7 @@ func (r *FvFBRMemberResource) ModifyPlan(ctx context.Context, req resource.Modif
 		}
 
 		if (planData.Id.IsUnknown() || planData.Id.IsNull()) && !planData.ParentDn.IsUnknown() && !planData.RnhAddr.IsUnknown() {
-			setFvFBRMemberId(ctx, planData)
+			SetFvFBRMemberId(ctx, planData)
 		}
 
 		if stateData == nil && !globalAllowExistingOnCreate && !planData.Id.IsUnknown() && !planData.Id.IsNull() {
@@ -291,7 +291,7 @@ func (r *FvFBRMemberResource) Create(ctx context.Context, req resource.CreateReq
 	var stateData *FvFBRMemberResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
 	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
-		setFvFBRMemberId(ctx, stateData)
+		SetFvFBRMemberId(ctx, stateData)
 	}
 	getAndSetFvFBRMemberAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
@@ -312,7 +312,7 @@ func (r *FvFBRMemberResource) Create(ctx context.Context, req resource.CreateReq
 	}
 
 	if data.Id.IsUnknown() || data.Id.IsNull() {
-		setFvFBRMemberId(ctx, data)
+		SetFvFBRMemberId(ctx, data)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_vrf_fallback_route_group_member with id '%s'", data.Id.ValueString()))
@@ -323,7 +323,7 @@ func (r *FvFBRMemberResource) Create(ctx context.Context, req resource.CreateReq
 	var tagTagPlan, tagTagState []TagTagFvFBRMemberResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvFBRMemberCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetFvFBRMemberCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -388,7 +388,7 @@ func (r *FvFBRMemberResource) Update(ctx context.Context, req resource.UpdateReq
 	var tagTagPlan, tagTagState []TagTagFvFBRMemberResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvFBRMemberCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetFvFBRMemberCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -550,7 +550,7 @@ func setFvFBRMemberParentDn(ctx context.Context, dn string, data *FvFBRMemberRes
 	data.ParentDn = basetypes.NewStringValue(dn[:rnIndex])
 }
 
-func setFvFBRMemberId(ctx context.Context, data *FvFBRMemberResourceModel) {
+func SetFvFBRMemberId(ctx context.Context, data *FvFBRMemberResourceModel) {
 	rn := getFvFBRMemberRn(ctx, data)
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
@@ -634,7 +634,7 @@ func getFvFBRMemberTagTagChildPayloads(ctx context.Context, diags *diag.Diagnost
 	return childPayloads
 }
 
-func getFvFBRMemberCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *FvFBRMemberResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvFBRMemberResourceModel, tagTagPlan, tagTagState []TagTagFvFBRMemberResourceModel) *container.Container {
+func GetFvFBRMemberCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *FvFBRMemberResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvFBRMemberResourceModel, tagTagPlan, tagTagState []TagTagFvFBRMemberResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 

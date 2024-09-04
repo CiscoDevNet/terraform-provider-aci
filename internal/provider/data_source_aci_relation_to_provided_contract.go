@@ -134,7 +134,7 @@ func (d *FvRsProvDataSource) Read(ctx context.Context, req datasource.ReadReques
 		return
 	}
 
-	setFvRsProvId(ctx, data)
+	SetFvRsProvId(ctx, data)
 
 	// Create a copy of the Id for when not found during getAndSetFvRsProvAttributes
 	cachedId := data.Id.ValueString()

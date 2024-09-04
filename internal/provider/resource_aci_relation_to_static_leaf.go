@@ -122,7 +122,7 @@ func (r *FvRsNodeAttResource) ModifyPlan(ctx context.Context, req resource.Modif
 		}
 
 		if (planData.Id.IsUnknown() || planData.Id.IsNull()) && !planData.ParentDn.IsUnknown() && !planData.TDn.IsUnknown() {
-			setFvRsNodeAttId(ctx, planData)
+			SetFvRsNodeAttId(ctx, planData)
 		}
 
 		if stateData == nil && !globalAllowExistingOnCreate && !planData.Id.IsUnknown() && !planData.Id.IsNull() {
@@ -309,7 +309,7 @@ func (r *FvRsNodeAttResource) Create(ctx context.Context, req resource.CreateReq
 	var stateData *FvRsNodeAttResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
 	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
-		setFvRsNodeAttId(ctx, stateData)
+		SetFvRsNodeAttId(ctx, stateData)
 	}
 	getAndSetFvRsNodeAttAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
@@ -330,7 +330,7 @@ func (r *FvRsNodeAttResource) Create(ctx context.Context, req resource.CreateReq
 	}
 
 	if data.Id.IsUnknown() || data.Id.IsNull() {
-		setFvRsNodeAttId(ctx, data)
+		SetFvRsNodeAttId(ctx, data)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_relation_to_static_leaf with id '%s'", data.Id.ValueString()))
@@ -341,7 +341,7 @@ func (r *FvRsNodeAttResource) Create(ctx context.Context, req resource.CreateReq
 	var tagTagPlan, tagTagState []TagTagFvRsNodeAttResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvRsNodeAttCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetFvRsNodeAttCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -406,7 +406,7 @@ func (r *FvRsNodeAttResource) Update(ctx context.Context, req resource.UpdateReq
 	var tagTagPlan, tagTagState []TagTagFvRsNodeAttResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvRsNodeAttCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := GetFvRsNodeAttCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -571,7 +571,7 @@ func setFvRsNodeAttParentDn(ctx context.Context, dn string, data *FvRsNodeAttRes
 	data.ParentDn = basetypes.NewStringValue(dn[:rnIndex])
 }
 
-func setFvRsNodeAttId(ctx context.Context, data *FvRsNodeAttResourceModel) {
+func SetFvRsNodeAttId(ctx context.Context, data *FvRsNodeAttResourceModel) {
 	rn := getFvRsNodeAttRn(ctx, data)
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
@@ -655,7 +655,7 @@ func getFvRsNodeAttTagTagChildPayloads(ctx context.Context, diags *diag.Diagnost
 	return childPayloads
 }
 
-func getFvRsNodeAttCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *FvRsNodeAttResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvRsNodeAttResourceModel, tagTagPlan, tagTagState []TagTagFvRsNodeAttResourceModel) *container.Container {
+func GetFvRsNodeAttCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *FvRsNodeAttResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvRsNodeAttResourceModel, tagTagPlan, tagTagState []TagTagFvRsNodeAttResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 

@@ -150,7 +150,7 @@ func (d *RtctrlProfileDataSource) Read(ctx context.Context, req datasource.ReadR
 		return
 	}
 
-	setRtctrlProfileId(ctx, data)
+	SetRtctrlProfileId(ctx, data)
 
 	// Create a copy of the Id for when not found during getAndSetRtctrlProfileAttributes
 	cachedId := data.Id.ValueString()

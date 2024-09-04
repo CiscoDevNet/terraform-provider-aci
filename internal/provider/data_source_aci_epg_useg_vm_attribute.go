@@ -162,7 +162,7 @@ func (d *FvVmAttrDataSource) Read(ctx context.Context, req datasource.ReadReques
 		return
 	}
 
-	setFvVmAttrId(ctx, data)
+	SetFvVmAttrId(ctx, data)
 
 	// Create a copy of the Id for when not found during getAndSetFvVmAttrAttributes
 	cachedId := data.Id.ValueString()

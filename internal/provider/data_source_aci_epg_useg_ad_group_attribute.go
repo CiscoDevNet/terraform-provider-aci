@@ -146,7 +146,7 @@ func (d *FvIdGroupAttrDataSource) Read(ctx context.Context, req datasource.ReadR
 		return
 	}
 
-	setFvIdGroupAttrId(ctx, data)
+	SetFvIdGroupAttrId(ctx, data)
 
 	// Create a copy of the Id for when not found during getAndSetFvIdGroupAttrAttributes
 	cachedId := data.Id.ValueString()

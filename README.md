@@ -286,6 +286,94 @@ To compile the provider, run `make build`. This will build the provider with san
   }
   ```
 
-<strong>NOTE:</strong> Currently only resource properties supports the reflecting manual changes made in CISCO ACI. Manual changes to relationship is not taken care by the provider.
+<strong>NOTE:</strong> Currently only resource properties supports the reflecting manual changes made in Cisco ACI. Manual changes to relationship is not taken care by the provider.
+
+### Payload Generation
+
+To export a Terraform Plan as an ACI Payload:
+
+1. Navigate to conversion directory 
+$cd cmd/conversion
+
+2. Create your desired configuration in main.tf
+
+3. Run:
+$ go run main.go
+
+4. Payload will be written to payload.json
+
+Example Terraform configuration:
+
+resource "aci_application_epg" "fooapplication_epg2" {
+    parent_dn  = "uni/tn-common/ap-default222"
+    name                    = "new_epg2"
+    description             = "from terraform"
+    annotation              = "tag_epg"
+    contract_exception_tag  = "0"
+    flood_in_encapsulation  = "disabled"
+    
+    relation_to_bridge_domain= [{
+      annotation = "annotation1"
+      bridge_domain_name = "default"
+    }]
+}
+
+payload.json output:
+
+{
+  "imdata": [
+    {
+      "fvTenant": {
+        "attributes": {
+          "dn": "uni/tn-common"
+        },
+        "children": [
+          {
+            "fvAp": {
+              "attributes": {
+                "dn": "uni/tn-common/ap-default222"
+              },
+              "children": [
+                {
+                  "fvAEPg": {
+                    "attributes": {
+                      "annotation": "tag_epg",
+                      "descr": "from terraform",
+                      "dn": "uni/tn-common/ap-default222/epg-new_epg2",
+                      "exceptionTag": "0",
+                      "name": "new_epg2",
+                      "status": "created"
+                    },
+                    "children": [
+                      {
+                        "fvRsBd": {
+                          "attributes": {
+                            "annotation": "annotation1",
+                            "tnFvBDName": "default"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
 
 
+Default expects main.tf to be in the same file as converter. To run the converter with your Terraform file in a seperate directory, run:
+
+$ go run main.go -dir path/to/your/main.tf
+
+To test to confirm if a generated payload is valid, use test flag:
+  
+$ go run main.go -test
+  
+This will POST payload.json to the specificed APIC in test.go, then checks to see if Terraform Plan reflects these changes as expected (no changes planned = success)
+
+                

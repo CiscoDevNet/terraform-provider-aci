@@ -130,7 +130,7 @@ func (d *FvRsConsDataSource) Read(ctx context.Context, req datasource.ReadReques
 		return
 	}
 
-	setFvRsConsId(ctx, data)
+	SetFvRsConsId(ctx, data)
 
 	// Create a copy of the Id for when not found during getAndSetFvRsConsAttributes
 	cachedId := data.Id.ValueString()
