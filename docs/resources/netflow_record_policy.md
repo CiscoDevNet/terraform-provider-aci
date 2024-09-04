@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_netflow_record_policy"
 sidebar_current: "docs-aci-resource-aci_netflow_record_policy"
 description: |-
-  Manages ACI Netflow Record Policy
+  Manages ACI NetFlow Record Policy
 ---
 
 # aci_netflow_record_policy #
 
-Manages ACI Netflow Record Policy
+Manages ACI NetFlow Record Policy
 
 
 
@@ -34,7 +34,7 @@ Manages ACI Netflow Record Policy
 
 ## Example Usage ##
 
-The configuration snippet below creates a Netflow Record Policy with only required attributes.
+The configuration snippet below creates a NetFlow Record Policy with only required attributes.
 
 ```hcl
 
@@ -44,7 +44,7 @@ resource "aci_netflow_record_policy" "example_tenant" {
 }
 
 ```
-The configuration snippet below shows all possible attributes of the Netflow Record Policy.
+The configuration snippet below shows all possible attributes of the NetFlow Record Policy.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
@@ -76,17 +76,17 @@ resource "aci_netflow_record_policy" "full_example_tenant" {
 
 ```
 
-All examples for the Netflow Record Policy resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/resources/aci_netflow_record_policy) folder.
+All examples for the NetFlow Record Policy resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/resources/aci_netflow_record_policy) folder.
 
 ## Schema ##
 
 ### Required ###
 
-* `name` (name) - (string) The name of the Netflow Record Policy object.
+* `name` (name) - (string) The name of the NetFlow Record Policy object.
 
 ### Read-Only ###
 
-* `id` - (string) The distinguished name (DN) of the Netflow Record Policy object.
+* `id` - (string) The distinguished name (DN) of the NetFlow Record Policy object.
 
 ### Optional ###
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
@@ -96,16 +96,16 @@ All examples for the Netflow Record Policy resource can be found in the [example
 
   - Default: `uni/infra`
   
-* `annotation` (annotation) - (string) The annotation of the Netflow Record Policy object.
+* `annotation` (annotation) - (string) The annotation of the NetFlow Record Policy object.
   - Default: `orchestrator:terraform`
-* `collect_parameters` (collect) - (list) Collect parameters of the Netflow Record Policy object.
+* `collect_parameters` (collect) - (list) Collect parameters of the NetFlow Record Policy object.
   - Default: `src-intf`.
   - Valid Values: `count-bytes`, `count-pkts`, `pkt-disp`, `sampler-id`, `src-intf`, `tcp-flags`, `ts-first`, `ts-recent`.
-* `description` (descr) - (string) The description of the Netflow Record Policy object.
-* `match_parameters` (match) - (list) Match parameters of the Netflow Record Policy object.
+* `description` (descr) - (string) The description of the NetFlow Record Policy object.
+* `match_parameters` (match) - (list) Match parameters of the NetFlow Record Policy object.
   - Default: `unspecified`.
   - Valid Values: `dst-ip`, `dst-ipv4`, `dst-ipv6`, `dst-mac`, `dst-port`, `ethertype`, `proto`, `src-ip`, `src-ipv4`, `src-ipv6`, `src-mac`, `src-port`, `tos`, `vlan`.
-* `name_alias` (nameAlias) - (string) The name alias of the Netflow Record Policy object.
+* `name_alias` (nameAlias) - (string) The name alias of the NetFlow Record Policy object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 
@@ -125,13 +125,13 @@ All examples for the Netflow Record Policy resource can be found in the [example
 
 ## Importing
 
-An existing Netflow Record Policy can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
+An existing NetFlow Record Policy can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
 terraform import aci_netflow_record_policy.example_tenant uni/infra/recordpol-{name}
 ```
 
-Starting in Terraform version 1.5, an existing Netflow Record Policy can be imported
+Starting in Terraform version 1.5, an existing NetFlow Record Policy can be imported
 using [import blocks](https://developer.hashicorp.com/terraform/language/import) via the following configuration:
 
 ```

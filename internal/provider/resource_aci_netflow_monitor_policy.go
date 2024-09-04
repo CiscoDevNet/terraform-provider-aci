@@ -191,7 +191,7 @@ func (r *NetflowMonitorPolResource) Schema(ctx context.Context, req resource.Sch
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Netflow Monitor Policy object.",
+				MarkdownDescription: "The distinguished name (DN) of the NetFlow Monitor Policy object.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
@@ -214,7 +214,7 @@ func (r *NetflowMonitorPolResource) Schema(ctx context.Context, req resource.Sch
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
-				MarkdownDescription: `The annotation of the Netflow Monitor Policy object.`,
+				MarkdownDescription: `The annotation of the NetFlow Monitor Policy object.`,
 			},
 			"description": schema.StringAttribute{
 				Optional: true,
@@ -223,7 +223,7 @@ func (r *NetflowMonitorPolResource) Schema(ctx context.Context, req resource.Sch
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The description of the Netflow Monitor Policy object.`,
+				MarkdownDescription: `The description of the NetFlow Monitor Policy object.`,
 			},
 			"name": schema.StringAttribute{
 				Required: true,
@@ -232,7 +232,7 @@ func (r *NetflowMonitorPolResource) Schema(ctx context.Context, req resource.Sch
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
-				MarkdownDescription: `The name of the Netflow Monitor Policy object.`,
+				MarkdownDescription: `The name of the NetFlow Monitor Policy object.`,
 			},
 			"name_alias": schema.StringAttribute{
 				Optional: true,
@@ -241,7 +241,7 @@ func (r *NetflowMonitorPolResource) Schema(ctx context.Context, req resource.Sch
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The name alias of the Netflow Monitor Policy object.`,
+				MarkdownDescription: `The name alias of the NetFlow Monitor Policy object.`,
 			},
 			"owner_key": schema.StringAttribute{
 				Optional: true,
@@ -276,7 +276,7 @@ func (r *NetflowMonitorPolResource) Schema(ctx context.Context, req resource.Sch
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
-							MarkdownDescription: `The annotation of the Relation To Netflow Exporter object.`,
+							MarkdownDescription: `The annotation of the Relation To NetFlow Exporter object.`,
 						},
 						"netflow_exporter_policy_name": schema.StringAttribute{
 							Required: true,
@@ -306,7 +306,7 @@ func (r *NetflowMonitorPolResource) Schema(ctx context.Context, req resource.Sch
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
-							MarkdownDescription: `The annotation of the Relation To Netflow Record object.`,
+							MarkdownDescription: `The annotation of the Relation To NetFlow Record object.`,
 						},
 						"netflow_record_policy_name": schema.StringAttribute{
 							Optional: true,

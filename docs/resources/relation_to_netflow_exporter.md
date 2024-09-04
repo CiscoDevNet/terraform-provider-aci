@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_relation_to_netflow_exporter"
 sidebar_current: "docs-aci-resource-aci_relation_to_netflow_exporter"
 description: |-
-  Manages ACI Relation To Netflow Exporter
+  Manages ACI Relation To NetFlow Exporter
 ---
 
 # aci_relation_to_netflow_exporter #
 
-Manages ACI Relation To Netflow Exporter
+Manages ACI Relation To NetFlow Exporter
 
 
 
@@ -34,7 +34,7 @@ Manages ACI Relation To Netflow Exporter
 
 ## Example Usage ##
 
-The configuration snippet below creates a Relation To Netflow Exporter with only required attributes.
+The configuration snippet below creates a Relation To NetFlow Exporter with only required attributes.
 
 ```hcl
 
@@ -44,7 +44,7 @@ resource "aci_relation_to_netflow_exporter" "example_netflow_monitor_policy" {
 }
 
 ```
-The configuration snippet below shows all possible attributes of the Relation To Netflow Exporter.
+The configuration snippet below shows all possible attributes of the Relation To NetFlow Exporter.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
@@ -70,7 +70,7 @@ resource "aci_relation_to_netflow_exporter" "full_example_netflow_monitor_policy
 
 ```
 
-All examples for the Relation To Netflow Exporter resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/resources/aci_relation_to_netflow_exporter) folder.
+All examples for the Relation To NetFlow Exporter resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/resources/aci_relation_to_netflow_exporter) folder.
 
 ## Schema ##
 
@@ -82,11 +82,11 @@ All examples for the Relation To Netflow Exporter resource can be found in the [
 
 ### Read-Only ###
 
-* `id` - (string) The distinguished name (DN) of the Relation To Netflow Exporter object.
+* `id` - (string) The distinguished name (DN) of the Relation To NetFlow Exporter object.
 
 ### Optional ###
   
-* `annotation` (annotation) - (string) The annotation of the Relation To Netflow Exporter object.
+* `annotation` (annotation) - (string) The annotation of the Relation To NetFlow Exporter object.
   - Default: `orchestrator:terraform`
 
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
@@ -105,13 +105,13 @@ All examples for the Relation To Netflow Exporter resource can be found in the [
 
 ## Importing
 
-An existing Relation To Netflow Exporter can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
+An existing Relation To NetFlow Exporter can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
 terraform import aci_relation_to_netflow_exporter.example_netflow_monitor_policy uni/infra/monitorpol-{name}/rsmonitorToExporter-{tnNetflowExporterPolName}
 ```
 
-Starting in Terraform version 1.5, an existing Relation To Netflow Exporter can be imported
+Starting in Terraform version 1.5, an existing Relation To NetFlow Exporter can be imported
 using [import blocks](https://developer.hashicorp.com/terraform/language/import) via the following configuration:
 
 ```

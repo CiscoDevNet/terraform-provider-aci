@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_netflow_exporter_policy"
 sidebar_current: "docs-aci-resource-aci_netflow_exporter_policy"
 description: |-
-  Manages ACI Netflow Exporter Policy
+  Manages ACI NetFlow Exporter Policy
 ---
 
 # aci_netflow_exporter_policy #
 
-Manages ACI Netflow Exporter Policy
+Manages ACI NetFlow Exporter Policy
 
 
 
@@ -34,7 +34,7 @@ Manages ACI Netflow Exporter Policy
 
 ## Example Usage ##
 
-The configuration snippet below creates a Netflow Exporter Policy with only required attributes.
+The configuration snippet below creates a NetFlow Exporter Policy with only required attributes.
 
 ```hcl
 
@@ -46,7 +46,7 @@ resource "aci_netflow_exporter_policy" "example_tenant" {
 }
 
 ```
-The configuration snippet below shows all possible attributes of the Netflow Exporter Policy.
+The configuration snippet below shows all possible attributes of the NetFlow Exporter Policy.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
@@ -94,7 +94,7 @@ resource "aci_netflow_exporter_policy" "full_example_tenant" {
 
 ```
 
-All examples for the Netflow Exporter Policy resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/resources/aci_netflow_exporter_policy) folder.
+All examples for the NetFlow Exporter Policy resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/resources/aci_netflow_exporter_policy) folder.
 
 ## Schema ##
 
@@ -105,11 +105,11 @@ All examples for the Netflow Exporter Policy resource can be found in the [examp
   - Valid Values:
     * `dns`, `ftpData`, `http`, `https`, `pop3`, `rtsp`, `smtp`, `ssh`, `unspecified`.
     * Or a value in the range of `0` to `65535`.
-* `name` (name) - (string) The name of the Netflow Exporter Policy object.
+* `name` (name) - (string) The name of the NetFlow Exporter Policy object.
 
 ### Read-Only ###
 
-* `id` - (string) The distinguished name (DN) of the Netflow Exporter Policy object.
+* `id` - (string) The distinguished name (DN) of the NetFlow Exporter Policy object.
 
 ### Optional ###
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
@@ -119,22 +119,22 @@ All examples for the Netflow Exporter Policy resource can be found in the [examp
 
   - Default: `uni/infra`
   
-* `annotation` (annotation) - (string) The annotation of the Netflow Exporter Policy object.
+* `annotation` (annotation) - (string) The annotation of the NetFlow Exporter Policy object.
   - Default: `orchestrator:terraform`
-* `description` (descr) - (string) The description of the Netflow Exporter Policy object.
-* `qos_dscp_value` (dscp) - (string) The DSCP value of the Netflow Exporter Policy object.
+* `description` (descr) - (string) The description of the NetFlow Exporter Policy object.
+* `qos_dscp_value` (dscp) - (string) The DSCP value of the NetFlow Exporter Policy object.
   - Default: `CS2`
   - Valid Values:
     * `AF11`, `AF12`, `AF13`, `AF21`, `AF22`, `AF23`, `AF31`, `AF32`, `AF33`, `AF41`, `AF42`, `AF43`, `CS0`, `CS1`, `CS2`, `CS3`, `CS4`, `CS5`, `CS6`, `CS7`, `EF`, `VA`.
     * Or a value in the range of `0` to `63`.
-* `name_alias` (nameAlias) - (string) The name alias of the Netflow Exporter Policy object.
+* `name_alias` (nameAlias) - (string) The name alias of the NetFlow Exporter Policy object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
-* `source_ip_type` (sourceIpType) - (string) The type of the source IP address for the Netflow Exporter Policy object.
+* `source_ip_type` (sourceIpType) - (string) The type of the source IP address for the NetFlow Exporter Policy object.
   - Default: `custom-src-ip`
   - Valid Values: `custom-src-ip`, `inband-mgmt-ip`, `oob-mgmt-ip`, `ptep`.
 * `source_ip_address` (srcAddr) - (string) The source IP address.
-* `version` (ver) - (string) The NetFlow Exporter Version of the Netflow Exporter Policy object.
+* `version` (ver) - (string) The NetFlow Exporter Version of the NetFlow Exporter Policy object.
   - Default: `v9`
   - Valid Values: `cisco-v1`, `v5`, `v9`.
 
@@ -177,13 +177,13 @@ All examples for the Netflow Exporter Policy resource can be found in the [examp
 
 ## Importing
 
-An existing Netflow Exporter Policy can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
+An existing NetFlow Exporter Policy can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
 terraform import aci_netflow_exporter_policy.example_tenant uni/infra/exporterpol-{name}
 ```
 
-Starting in Terraform version 1.5, an existing Netflow Exporter Policy can be imported
+Starting in Terraform version 1.5, an existing NetFlow Exporter Policy can be imported
 using [import blocks](https://developer.hashicorp.com/terraform/language/import) via the following configuration:
 
 ```

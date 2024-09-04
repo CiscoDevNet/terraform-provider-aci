@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_netflow_monitor_policy"
 sidebar_current: "docs-aci-resource-aci_netflow_monitor_policy"
 description: |-
-  Manages ACI Netflow Monitor Policy
+  Manages ACI NetFlow Monitor Policy
 ---
 
 # aci_netflow_monitor_policy #
 
-Manages ACI Netflow Monitor Policy
+Manages ACI NetFlow Monitor Policy
 
 
 
@@ -34,7 +34,7 @@ Manages ACI Netflow Monitor Policy
 
 ## Example Usage ##
 
-The configuration snippet below creates a Netflow Monitor Policy with only required attributes.
+The configuration snippet below creates a NetFlow Monitor Policy with only required attributes.
 
 ```hcl
 
@@ -44,7 +44,7 @@ resource "aci_netflow_monitor_policy" "example_tenant" {
 }
 
 ```
-The configuration snippet below shows all possible attributes of the Netflow Monitor Policy.
+The configuration snippet below shows all possible attributes of the NetFlow Monitor Policy.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
@@ -86,17 +86,17 @@ resource "aci_netflow_monitor_policy" "full_example_tenant" {
 
 ```
 
-All examples for the Netflow Monitor Policy resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/resources/aci_netflow_monitor_policy) folder.
+All examples for the NetFlow Monitor Policy resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/resources/aci_netflow_monitor_policy) folder.
 
 ## Schema ##
 
 ### Required ###
 
-* `name` (name) - (string) The name of the Netflow Monitor Policy object.
+* `name` (name) - (string) The name of the NetFlow Monitor Policy object.
 
 ### Read-Only ###
 
-* `id` - (string) The distinguished name (DN) of the Netflow Monitor Policy object.
+* `id` - (string) The distinguished name (DN) of the NetFlow Monitor Policy object.
 
 ### Optional ###
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
@@ -106,14 +106,14 @@ All examples for the Netflow Monitor Policy resource can be found in the [exampl
 
   - Default: `uni/infra`
   
-* `annotation` (annotation) - (string) The annotation of the Netflow Monitor Policy object.
+* `annotation` (annotation) - (string) The annotation of the NetFlow Monitor Policy object.
   - Default: `orchestrator:terraform`
-* `description` (descr) - (string) The description of the Netflow Monitor Policy object.
-* `name_alias` (nameAlias) - (string) The name alias of the Netflow Monitor Policy object.
+* `description` (descr) - (string) The description of the NetFlow Monitor Policy object.
+* `name_alias` (nameAlias) - (string) The name alias of the NetFlow Monitor Policy object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 
-* `relation_to_netflow_exporters` - (list) A list of Relation To Netflow Exporters (ACI object [netflowRsMonitorToExporter](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRsMonitorToExporter/overview)) pointing to Netflow Exporter Policy (ACI Object [netflowExporterPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowExporterPol/overview)) which can be configured using the [aci_netflow_exporter_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/netflow_exporter_policy) resource.
+* `relation_to_netflow_exporters` - (list) A list of Relation To NetFlow Exporters (ACI object [netflowRsMonitorToExporter](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRsMonitorToExporter/overview)) pointing to NetFlow Exporter Policy (ACI Object [netflowExporterPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowExporterPol/overview)) which can be configured using the [aci_netflow_exporter_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/netflow_exporter_policy) resource.
   
   #### Required ####
   
@@ -121,16 +121,16 @@ All examples for the Netflow Monitor Policy resource can be found in the [exampl
 
   #### Optional ####
     
-  * `annotation` (annotation) - (string) The annotation of the Relation To Netflow Exporter object.
+  * `annotation` (annotation) - (string) The annotation of the Relation To NetFlow Exporter object.
       - Default: `orchestrator:terraform`
 
-* `relation_to_netflow_record` - (list) A list of Relation To Netflow Record (ACI object [netflowRsMonitorToRecord](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRsMonitorToRecord/overview)) pointing to Netflow Record Policy (ACI Object [netflowRecordPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRecordPol/overview)) which can be configured using the [aci_netflow_record_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/netflow_record_policy) resource.
+* `relation_to_netflow_record` - (list) A list of Relation To NetFlow Record (ACI object [netflowRsMonitorToRecord](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRsMonitorToRecord/overview)) pointing to NetFlow Record Policy (ACI Object [netflowRecordPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRecordPol/overview)) which can be configured using the [aci_netflow_record_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/netflow_record_policy) resource.
     - Max Items: 1
   
 
   #### Optional ####
     
-  * `annotation` (annotation) - (string) The annotation of the Relation To Netflow Record object.
+  * `annotation` (annotation) - (string) The annotation of the Relation To NetFlow Record object.
       - Default: `orchestrator:terraform`
   * `netflow_record_policy_name` (tnNetflowRecordPolName) - (string) Name.
 
@@ -150,13 +150,13 @@ All examples for the Netflow Monitor Policy resource can be found in the [exampl
 
 ## Importing
 
-An existing Netflow Monitor Policy can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
+An existing NetFlow Monitor Policy can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
 terraform import aci_netflow_monitor_policy.example_tenant uni/infra/monitorpol-{name}
 ```
 
-Starting in Terraform version 1.5, an existing Netflow Monitor Policy can be imported
+Starting in Terraform version 1.5, an existing NetFlow Monitor Policy can be imported
 using [import blocks](https://developer.hashicorp.com/terraform/language/import) via the following configuration:
 
 ```

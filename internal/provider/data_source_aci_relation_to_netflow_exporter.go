@@ -42,7 +42,7 @@ func (d *NetflowRsMonitorToExporterDataSource) Schema(ctx context.Context, req d
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Relation To Netflow Exporter object.",
+				MarkdownDescription: "The distinguished name (DN) of the Relation To NetFlow Exporter object.",
 			},
 			"parent_dn": schema.StringAttribute{
 				Required:            true,
@@ -50,7 +50,7 @@ func (d *NetflowRsMonitorToExporterDataSource) Schema(ctx context.Context, req d
 			},
 			"annotation": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The annotation of the Relation To Netflow Exporter object.`,
+				MarkdownDescription: `The annotation of the Relation To NetFlow Exporter object.`,
 			},
 			"netflow_exporter_policy_name": schema.StringAttribute{
 				Required:            true,

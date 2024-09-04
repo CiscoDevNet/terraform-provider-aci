@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_netflow_record_policy"
 sidebar_current: "docs-aci-data-source-aci_netflow_record_policy"
 description: |-
-  Data source for ACI Netflow Record Policy
+  Data source for ACI NetFlow Record Policy
 ---
 
 # aci_netflow_record_policy #
 
-Data source for ACI Netflow Record Policy
+Data source for ACI NetFlow Record Policy
 
 ## API Information ##
 
@@ -52,16 +52,16 @@ data "aci_netflow_record_policy" "example_tenant" {
 
   - Default: `uni/infra`
   
-* `name` (name) - (string) The name of the Netflow Record Policy object.
+* `name` (name) - (string) The name of the NetFlow Record Policy object.
 
 ### Read-Only ###
 
-* `id` - (string) The distinguished name (DN) of the Netflow Record Policy object.
-* `annotation` (annotation) - (string) The annotation of the Netflow Record Policy object.
-* `collect_parameters` (collect) - (list) Collect parameters of the Netflow Record Policy object.
-* `description` (descr) - (string) The description of the Netflow Record Policy object.
-* `match_parameters` (match) - (list) Match parameters of the Netflow Record Policy object.
-* `name_alias` (nameAlias) - (string) The name alias of the Netflow Record Policy object.
+* `id` - (string) The distinguished name (DN) of the NetFlow Record Policy object.
+* `annotation` (annotation) - (string) The annotation of the NetFlow Record Policy object.
+* `collect_parameters` (collect) - (list) Collect parameters of the NetFlow Record Policy object.
+* `description` (descr) - (string) The description of the NetFlow Record Policy object.
+* `match_parameters` (match) - (list) Match parameters of the NetFlow Record Policy object.
+* `name_alias` (nameAlias) - (string) The name alias of the NetFlow Record Policy object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 

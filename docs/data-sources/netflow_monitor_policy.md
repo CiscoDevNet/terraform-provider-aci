@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_netflow_monitor_policy"
 sidebar_current: "docs-aci-data-source-aci_netflow_monitor_policy"
 description: |-
-  Data source for ACI Netflow Monitor Policy
+  Data source for ACI NetFlow Monitor Policy
 ---
 
 # aci_netflow_monitor_policy #
 
-Data source for ACI Netflow Monitor Policy
+Data source for ACI NetFlow Monitor Policy
 
 ## API Information ##
 
@@ -52,23 +52,23 @@ data "aci_netflow_monitor_policy" "example_tenant" {
 
   - Default: `uni/infra`
   
-* `name` (name) - (string) The name of the Netflow Monitor Policy object.
+* `name` (name) - (string) The name of the NetFlow Monitor Policy object.
 
 ### Read-Only ###
 
-* `id` - (string) The distinguished name (DN) of the Netflow Monitor Policy object.
-* `annotation` (annotation) - (string) The annotation of the Netflow Monitor Policy object.
-* `description` (descr) - (string) The description of the Netflow Monitor Policy object.
-* `name_alias` (nameAlias) - (string) The name alias of the Netflow Monitor Policy object.
+* `id` - (string) The distinguished name (DN) of the NetFlow Monitor Policy object.
+* `annotation` (annotation) - (string) The annotation of the NetFlow Monitor Policy object.
+* `description` (descr) - (string) The description of the NetFlow Monitor Policy object.
+* `name_alias` (nameAlias) - (string) The name alias of the NetFlow Monitor Policy object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 
-* `relation_to_netflow_exporters` - (list) A list of Relation To Netflow Exporters (ACI object [netflowRsMonitorToExporter](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRsMonitorToExporter/overview)) pointing to Netflow Exporter Policy (ACI Object [netflowExporterPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowExporterPol/overview)).
-  * `annotation` (annotation) - (string) The annotation of the Relation To Netflow Exporter object.
+* `relation_to_netflow_exporters` - (list) A list of Relation To NetFlow Exporters (ACI object [netflowRsMonitorToExporter](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRsMonitorToExporter/overview)) pointing to NetFlow Exporter Policy (ACI Object [netflowExporterPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowExporterPol/overview)).
+  * `annotation` (annotation) - (string) The annotation of the Relation To NetFlow Exporter object.
   * `netflow_exporter_policy_name` (tnNetflowExporterPolName) - (string) Name.
 
-* `relation_to_netflow_record` - (list) A list of Relation To Netflow Record (ACI object [netflowRsMonitorToRecord](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRsMonitorToRecord/overview)) pointing to Netflow Record Policy (ACI Object [netflowRecordPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRecordPol/overview)).
-  * `annotation` (annotation) - (string) The annotation of the Relation To Netflow Record object.
+* `relation_to_netflow_record` - (list) A list of Relation To NetFlow Record (ACI object [netflowRsMonitorToRecord](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRsMonitorToRecord/overview)) pointing to NetFlow Record Policy (ACI Object [netflowRecordPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRecordPol/overview)).
+  * `annotation` (annotation) - (string) The annotation of the Relation To NetFlow Record object.
   * `netflow_record_policy_name` (tnNetflowRecordPolName) - (string) Name.
 
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.

@@ -141,7 +141,7 @@ func (r *NetflowRsMonitorToExporterResource) Schema(ctx context.Context, req res
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Relation To Netflow Exporter object.",
+				MarkdownDescription: "The distinguished name (DN) of the Relation To NetFlow Exporter object.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
@@ -162,7 +162,7 @@ func (r *NetflowRsMonitorToExporterResource) Schema(ctx context.Context, req res
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
-				MarkdownDescription: `The annotation of the Relation To Netflow Exporter object.`,
+				MarkdownDescription: `The annotation of the Relation To NetFlow Exporter object.`,
 			},
 			"netflow_exporter_policy_name": schema.StringAttribute{
 				Required: true,

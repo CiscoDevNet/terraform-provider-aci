@@ -44,7 +44,7 @@ func (d *NetflowRecordPolDataSource) Schema(ctx context.Context, req datasource.
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Netflow Record Policy object.",
+				MarkdownDescription: "The distinguished name (DN) of the NetFlow Record Policy object.",
 			},
 			"parent_dn": schema.StringAttribute{
 				Optional:            true,
@@ -52,29 +52,29 @@ func (d *NetflowRecordPolDataSource) Schema(ctx context.Context, req datasource.
 			},
 			"annotation": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The annotation of the Netflow Record Policy object.`,
+				MarkdownDescription: `The annotation of the NetFlow Record Policy object.`,
 			},
 			"collect_parameters": schema.SetAttribute{
 				Computed:            true,
-				MarkdownDescription: `Collect parameters of the Netflow Record Policy object.`,
+				MarkdownDescription: `Collect parameters of the NetFlow Record Policy object.`,
 				ElementType:         types.StringType,
 			},
 			"description": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The description of the Netflow Record Policy object.`,
+				MarkdownDescription: `The description of the NetFlow Record Policy object.`,
 			},
 			"match_parameters": schema.SetAttribute{
 				Computed:            true,
-				MarkdownDescription: `Match parameters of the Netflow Record Policy object.`,
+				MarkdownDescription: `Match parameters of the NetFlow Record Policy object.`,
 				ElementType:         types.StringType,
 			},
 			"name": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: `The name of the Netflow Record Policy object.`,
+				MarkdownDescription: `The name of the NetFlow Record Policy object.`,
 			},
 			"name_alias": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The name alias of the Netflow Record Policy object.`,
+				MarkdownDescription: `The name alias of the NetFlow Record Policy object.`,
 			},
 			"owner_key": schema.StringAttribute{
 				Computed:            true,

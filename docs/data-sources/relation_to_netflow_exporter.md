@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_relation_to_netflow_exporter"
 sidebar_current: "docs-aci-data-source-aci_relation_to_netflow_exporter"
 description: |-
-  Data source for ACI Relation To Netflow Exporter
+  Data source for ACI Relation To NetFlow Exporter
 ---
 
 # aci_relation_to_netflow_exporter #
 
-Data source for ACI Relation To Netflow Exporter
+Data source for ACI Relation To NetFlow Exporter
 
 ## API Information ##
 
@@ -51,8 +51,8 @@ data "aci_relation_to_netflow_exporter" "example_netflow_monitor_policy" {
 
 ### Read-Only ###
 
-* `id` - (string) The distinguished name (DN) of the Relation To Netflow Exporter object.
-* `annotation` (annotation) - (string) The annotation of the Relation To Netflow Exporter object.
+* `id` - (string) The distinguished name (DN) of the Relation To NetFlow Exporter object.
+* `annotation` (annotation) - (string) The annotation of the Relation To NetFlow Exporter object.
 
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
   * `key` (key) - (string) The key used to uniquely identify this configuration object.

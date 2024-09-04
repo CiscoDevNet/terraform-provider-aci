@@ -156,7 +156,7 @@ func (r *NetflowRecordPolResource) Schema(ctx context.Context, req resource.Sche
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Netflow Record Policy object.",
+				MarkdownDescription: "The distinguished name (DN) of the NetFlow Record Policy object.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
@@ -179,10 +179,10 @@ func (r *NetflowRecordPolResource) Schema(ctx context.Context, req resource.Sche
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
-				MarkdownDescription: `The annotation of the Netflow Record Policy object.`,
+				MarkdownDescription: `The annotation of the NetFlow Record Policy object.`,
 			},
 			"collect_parameters": schema.SetAttribute{
-				MarkdownDescription: `Collect parameters of the Netflow Record Policy object.`,
+				MarkdownDescription: `Collect parameters of the NetFlow Record Policy object.`,
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
@@ -203,10 +203,10 @@ func (r *NetflowRecordPolResource) Schema(ctx context.Context, req resource.Sche
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The description of the Netflow Record Policy object.`,
+				MarkdownDescription: `The description of the NetFlow Record Policy object.`,
 			},
 			"match_parameters": schema.SetAttribute{
-				MarkdownDescription: `Match parameters of the Netflow Record Policy object.`,
+				MarkdownDescription: `Match parameters of the NetFlow Record Policy object.`,
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
@@ -227,7 +227,7 @@ func (r *NetflowRecordPolResource) Schema(ctx context.Context, req resource.Sche
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
-				MarkdownDescription: `The name of the Netflow Record Policy object.`,
+				MarkdownDescription: `The name of the NetFlow Record Policy object.`,
 			},
 			"name_alias": schema.StringAttribute{
 				Optional: true,
@@ -236,7 +236,7 @@ func (r *NetflowRecordPolResource) Schema(ctx context.Context, req resource.Sche
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The name alias of the Netflow Record Policy object.`,
+				MarkdownDescription: `The name alias of the NetFlow Record Policy object.`,
 			},
 			"owner_key": schema.StringAttribute{
 				Optional: true,
