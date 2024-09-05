@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_l3out_redistribute_policy"
 sidebar_current: "docs-aci-data-source-aci_l3out_redistribute_policy"
 description: |-
-  Data source for ACI L3out Redistribute Policy
+  Data source for ACI L3Out Redistribute Policy
 ---
 
 # aci_l3out_redistribute_policy #
 
-Data source for ACI L3out Redistribute Policy
+Data source for ACI L3Out Redistribute Policy
 
 ## API Information ##
 
@@ -44,14 +44,14 @@ data "aci_l3out_redistribute_policy" "example_l3_outside" {
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_l3_outside](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3_outside) ([l3extOut](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extOut/overview))
-* `source` (src) - (string) The source of the L3out Redistribute Policy object.
+* `source` (src) - (string) The source of the L3Out Redistribute Policy object.
   - Valid Values: `attached-host`, `direct`, `static`.
 * `route_control_profile_name` (tnRtctrlProfileName) - (string) The name of the Route Control Profile object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/route_control_profile) with `aci_route_control_profile.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/route_control_profile) with `data.aci_route_control_profile.example.name`.
 
 ### Read-Only ###
 
-* `id` - (string) The distinguished name (DN) of the L3out Redistribute Policy object.
-* `annotation` (annotation) - (string) The annotation of the L3out Redistribute Policy object.
+* `id` - (string) The distinguished name (DN) of the L3Out Redistribute Policy object.
+* `annotation` (annotation) - (string) The annotation of the L3Out Redistribute Policy object.
 
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
   * `key` (key) - (string) The key used to uniquely identify this configuration object.

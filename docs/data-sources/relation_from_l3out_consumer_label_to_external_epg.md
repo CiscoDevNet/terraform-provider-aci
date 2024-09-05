@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_relation_from_l3out_consumer_label_to_external_epg"
 sidebar_current: "docs-aci-data-source-aci_relation_from_l3out_consumer_label_to_external_epg"
 description: |-
-  Data source for ACI Relation From L3out Consumer Label To External EPG
+  Data source for ACI Relation From L3Out Consumer Label To External EPG
 ---
 
 # aci_relation_from_l3out_consumer_label_to_external_epg #
 
-Data source for ACI Relation From L3out Consumer Label To External EPG
+Data source for ACI Relation From L3Out Consumer Label To External EPG
 
 ## API Information ##
 
@@ -46,12 +46,12 @@ data "aci_relation_from_l3out_consumer_label_to_external_epg" "example_l3out_con
   - The distinguished name (DN) of classes below can be used but currently there is no available resource for it:
     - [l3extConsLblDef](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extConsLblDef/overview)
 
-* `target_dn` (tDn) - (string) The distinguished name (DN) of the External Network Instance Profile object.
+* `target_dn` (tDn) - (string) The distinguished name (DN) of the External EPG object.
 
 ### Read-Only ###
 
-* `id` - (string) The distinguished name (DN) of the Relation From L3out Consumer Label To External EPG object.
-* `annotation` (annotation) - (string) The annotation of the Relation From L3out Consumer Label To External EPG object.
+* `id` - (string) The distinguished name (DN) of the Relation From L3Out Consumer Label To External EPG object.
+* `annotation` (annotation) - (string) The annotation of the Relation From L3Out Consumer Label To External EPG object.
 
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
   * `key` (key) - (string) The key used to uniquely identify this configuration object.

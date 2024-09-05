@@ -149,7 +149,7 @@ func (r *MplsNodeSidPResource) Schema(ctx context.Context, req resource.SchemaRe
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the L3out Node SR-MPLS Segment ID Profile object.",
+				MarkdownDescription: "The distinguished name (DN) of the L3Out Node SR-MPLS Segment ID Profile object.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
@@ -170,7 +170,7 @@ func (r *MplsNodeSidPResource) Schema(ctx context.Context, req resource.SchemaRe
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
-				MarkdownDescription: `The annotation of the L3out Node SR-MPLS Segment ID Profile object.`,
+				MarkdownDescription: `The annotation of the L3Out Node SR-MPLS Segment ID Profile object.`,
 			},
 			"description": schema.StringAttribute{
 				Optional: true,
@@ -179,7 +179,7 @@ func (r *MplsNodeSidPResource) Schema(ctx context.Context, req resource.SchemaRe
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The description of the L3out Node SR-MPLS Segment ID Profile object.`,
+				MarkdownDescription: `The description of the L3Out Node SR-MPLS Segment ID Profile object.`,
 			},
 			"loopback_address": schema.StringAttribute{
 				Optional: true,
@@ -188,7 +188,7 @@ func (r *MplsNodeSidPResource) Schema(ctx context.Context, req resource.SchemaRe
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The loopback address of the L3out Node SR-MPLS Segment ID Profile object.`,
+				MarkdownDescription: `The loopback address of the L3Out Node SR-MPLS Segment ID Profile object.`,
 			},
 			"name": schema.StringAttribute{
 				Optional: true,
@@ -197,7 +197,7 @@ func (r *MplsNodeSidPResource) Schema(ctx context.Context, req resource.SchemaRe
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The name of the L3out Node SR-MPLS Segment ID Profile object.`,
+				MarkdownDescription: `The name of the L3Out Node SR-MPLS Segment ID Profile object.`,
 			},
 			"name_alias": schema.StringAttribute{
 				Optional: true,
@@ -206,7 +206,7 @@ func (r *MplsNodeSidPResource) Schema(ctx context.Context, req resource.SchemaRe
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The name alias of the L3out Node SR-MPLS Segment ID Profile object.`,
+				MarkdownDescription: `The name alias of the L3Out Node SR-MPLS Segment ID Profile object.`,
 			},
 			"segment_id": schema.StringAttribute{
 				Required: true,
@@ -215,7 +215,7 @@ func (r *MplsNodeSidPResource) Schema(ctx context.Context, req resource.SchemaRe
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
-				MarkdownDescription: `The segment ID of the L3out Node SR-MPLS Segment ID Profile object.`,
+				MarkdownDescription: `The segment ID of the L3Out Node SR-MPLS Segment ID Profile object.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,

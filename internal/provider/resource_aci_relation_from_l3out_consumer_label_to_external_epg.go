@@ -141,7 +141,7 @@ func (r *L3extRsLblToInstPResource) Schema(ctx context.Context, req resource.Sch
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Relation From L3out Consumer Label To External EPG object.",
+				MarkdownDescription: "The distinguished name (DN) of the Relation From L3Out Consumer Label To External EPG object.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
@@ -162,7 +162,7 @@ func (r *L3extRsLblToInstPResource) Schema(ctx context.Context, req resource.Sch
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
-				MarkdownDescription: `The annotation of the Relation From L3out Consumer Label To External EPG object.`,
+				MarkdownDescription: `The annotation of the Relation From L3Out Consumer Label To External EPG object.`,
 			},
 			"target_dn": schema.StringAttribute{
 				Required: true,
@@ -171,7 +171,7 @@ func (r *L3extRsLblToInstPResource) Schema(ctx context.Context, req resource.Sch
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
-				MarkdownDescription: `The distinguished name (DN) of the External Network Instance Profile object.`,
+				MarkdownDescription: `The distinguished name (DN) of the External EPG object.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,

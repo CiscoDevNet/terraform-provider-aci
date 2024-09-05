@@ -198,7 +198,7 @@ func (r *L3extConsLblResource) Schema(ctx context.Context, req resource.SchemaRe
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the L3out Consumer Label object.",
+				MarkdownDescription: "The distinguished name (DN) of the L3Out Consumer Label object.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
@@ -219,7 +219,7 @@ func (r *L3extConsLblResource) Schema(ctx context.Context, req resource.SchemaRe
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
-				MarkdownDescription: `The annotation of the L3out Consumer Label object.`,
+				MarkdownDescription: `The annotation of the L3Out Consumer Label object.`,
 			},
 			"description": schema.StringAttribute{
 				Optional: true,
@@ -228,7 +228,7 @@ func (r *L3extConsLblResource) Schema(ctx context.Context, req resource.SchemaRe
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The description of the L3out Consumer Label object.`,
+				MarkdownDescription: `The description of the L3Out Consumer Label object.`,
 			},
 			"name": schema.StringAttribute{
 				Required: true,
@@ -237,7 +237,7 @@ func (r *L3extConsLblResource) Schema(ctx context.Context, req resource.SchemaRe
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
-				MarkdownDescription: `The name of the L3out Consumer Label object.`,
+				MarkdownDescription: `The name of the L3Out Consumer Label object.`,
 			},
 			"name_alias": schema.StringAttribute{
 				Optional: true,
@@ -246,7 +246,7 @@ func (r *L3extConsLblResource) Schema(ctx context.Context, req resource.SchemaRe
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The name alias of the L3out Consumer Label object.`,
+				MarkdownDescription: `The name alias of the L3Out Consumer Label object.`,
 			},
 			"owner": schema.StringAttribute{
 				Optional: true,
@@ -258,7 +258,7 @@ func (r *L3extConsLblResource) Schema(ctx context.Context, req resource.SchemaRe
 				Validators: []validator.String{
 					stringvalidator.OneOf("infra", "tenant"),
 				},
-				MarkdownDescription: `The owner of the L3out Consumer Label object.`,
+				MarkdownDescription: `The owner of the L3Out Consumer Label object.`,
 			},
 			"owner_key": schema.StringAttribute{
 				Optional: true,
@@ -305,14 +305,14 @@ func (r *L3extConsLblResource) Schema(ctx context.Context, req resource.SchemaRe
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
-							MarkdownDescription: `The annotation of the Relation From L3out Consumer Label To External EPG object.`,
+							MarkdownDescription: `The annotation of the Relation From L3Out Consumer Label To External EPG object.`,
 						},
 						"target_dn": schema.StringAttribute{
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
-							MarkdownDescription: `The distinguished name (DN) of the External Network Instance Profile object.`,
+							MarkdownDescription: `The distinguished name (DN) of the External EPG object.`,
 						},
 					},
 				},
@@ -332,7 +332,7 @@ func (r *L3extConsLblResource) Schema(ctx context.Context, req resource.SchemaRe
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
-							MarkdownDescription: `The annotation of the Relation From L3out Consumer Label To Route Control Profile object.`,
+							MarkdownDescription: `The annotation of the Relation From L3Out Consumer Label To Route Control Profile object.`,
 						},
 						"direction": schema.StringAttribute{
 							Required: true,

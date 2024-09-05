@@ -153,7 +153,7 @@ func (r *L3extProvLblResource) Schema(ctx context.Context, req resource.SchemaRe
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the L3out Provider Label object.",
+				MarkdownDescription: "The distinguished name (DN) of the L3Out Provider Label object.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
@@ -174,7 +174,7 @@ func (r *L3extProvLblResource) Schema(ctx context.Context, req resource.SchemaRe
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
-				MarkdownDescription: `The annotation of the L3out Provider Label object.`,
+				MarkdownDescription: `The annotation of the L3Out Provider Label object.`,
 			},
 			"description": schema.StringAttribute{
 				Optional: true,
@@ -183,7 +183,7 @@ func (r *L3extProvLblResource) Schema(ctx context.Context, req resource.SchemaRe
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The description of the L3out Provider Label object.`,
+				MarkdownDescription: `The description of the L3Out Provider Label object.`,
 			},
 			"name": schema.StringAttribute{
 				Required: true,
@@ -192,7 +192,7 @@ func (r *L3extProvLblResource) Schema(ctx context.Context, req resource.SchemaRe
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
-				MarkdownDescription: `The name of the L3out Provider Label object.`,
+				MarkdownDescription: `The name of the L3Out Provider Label object.`,
 			},
 			"name_alias": schema.StringAttribute{
 				Optional: true,
@@ -201,7 +201,7 @@ func (r *L3extProvLblResource) Schema(ctx context.Context, req resource.SchemaRe
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The name alias of the L3out Provider Label object.`,
+				MarkdownDescription: `The name alias of the L3Out Provider Label object.`,
 			},
 			"owner_key": schema.StringAttribute{
 				Optional: true,

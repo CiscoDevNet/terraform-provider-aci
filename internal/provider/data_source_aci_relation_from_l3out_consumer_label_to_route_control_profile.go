@@ -42,7 +42,7 @@ func (d *L3extRsLblToProfileDataSource) Schema(ctx context.Context, req datasour
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Relation From L3out Consumer Label To Route Control Profile object.",
+				MarkdownDescription: "The distinguished name (DN) of the Relation From L3Out Consumer Label To Route Control Profile object.",
 			},
 			"parent_dn": schema.StringAttribute{
 				Required:            true,
@@ -50,7 +50,7 @@ func (d *L3extRsLblToProfileDataSource) Schema(ctx context.Context, req datasour
 			},
 			"annotation": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The annotation of the Relation From L3out Consumer Label To Route Control Profile object.`,
+				MarkdownDescription: `The annotation of the Relation From L3Out Consumer Label To Route Control Profile object.`,
 			},
 			"direction": schema.StringAttribute{
 				Required:            true,

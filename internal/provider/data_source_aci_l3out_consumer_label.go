@@ -42,7 +42,7 @@ func (d *L3extConsLblDataSource) Schema(ctx context.Context, req datasource.Sche
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the L3out Consumer Label object.",
+				MarkdownDescription: "The distinguished name (DN) of the L3Out Consumer Label object.",
 			},
 			"parent_dn": schema.StringAttribute{
 				Required:            true,
@@ -50,23 +50,23 @@ func (d *L3extConsLblDataSource) Schema(ctx context.Context, req datasource.Sche
 			},
 			"annotation": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The annotation of the L3out Consumer Label object.`,
+				MarkdownDescription: `The annotation of the L3Out Consumer Label object.`,
 			},
 			"description": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The description of the L3out Consumer Label object.`,
+				MarkdownDescription: `The description of the L3Out Consumer Label object.`,
 			},
 			"name": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: `The name of the L3out Consumer Label object.`,
+				MarkdownDescription: `The name of the L3Out Consumer Label object.`,
 			},
 			"name_alias": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The name alias of the L3out Consumer Label object.`,
+				MarkdownDescription: `The name alias of the L3Out Consumer Label object.`,
 			},
 			"owner": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The owner of the L3out Consumer Label object.`,
+				MarkdownDescription: `The owner of the L3Out Consumer Label object.`,
 			},
 			"owner_key": schema.StringAttribute{
 				Computed:            true,
@@ -87,11 +87,11 @@ func (d *L3extConsLblDataSource) Schema(ctx context.Context, req datasource.Sche
 					Attributes: map[string]schema.Attribute{
 						"annotation": schema.StringAttribute{
 							Computed:            true,
-							MarkdownDescription: `The annotation of the Relation From L3out Consumer Label To External EPG object.`,
+							MarkdownDescription: `The annotation of the Relation From L3Out Consumer Label To External EPG object.`,
 						},
 						"target_dn": schema.StringAttribute{
 							Computed:            true,
-							MarkdownDescription: `The distinguished name (DN) of the External Network Instance Profile object.`,
+							MarkdownDescription: `The distinguished name (DN) of the External EPG object.`,
 						},
 					},
 				},
@@ -103,7 +103,7 @@ func (d *L3extConsLblDataSource) Schema(ctx context.Context, req datasource.Sche
 					Attributes: map[string]schema.Attribute{
 						"annotation": schema.StringAttribute{
 							Computed:            true,
-							MarkdownDescription: `The annotation of the Relation From L3out Consumer Label To Route Control Profile object.`,
+							MarkdownDescription: `The annotation of the Relation From L3Out Consumer Label To Route Control Profile object.`,
 						},
 						"direction": schema.StringAttribute{
 							Computed:            true,

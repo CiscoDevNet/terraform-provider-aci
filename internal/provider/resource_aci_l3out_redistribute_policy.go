@@ -146,7 +146,7 @@ func (r *L3extRsRedistributePolResource) Schema(ctx context.Context, req resourc
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the L3out Redistribute Policy object.",
+				MarkdownDescription: "The distinguished name (DN) of the L3Out Redistribute Policy object.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
@@ -167,7 +167,7 @@ func (r *L3extRsRedistributePolResource) Schema(ctx context.Context, req resourc
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
-				MarkdownDescription: `The annotation of the L3out Redistribute Policy object.`,
+				MarkdownDescription: `The annotation of the L3Out Redistribute Policy object.`,
 			},
 			"source": schema.StringAttribute{
 				Required: true,
@@ -179,7 +179,7 @@ func (r *L3extRsRedistributePolResource) Schema(ctx context.Context, req resourc
 				Validators: []validator.String{
 					stringvalidator.OneOf("attached-host", "direct", "static"),
 				},
-				MarkdownDescription: `The source of the L3out Redistribute Policy object.`,
+				MarkdownDescription: `The source of the L3Out Redistribute Policy object.`,
 			},
 			"route_control_profile_name": schema.StringAttribute{
 				Required: true,

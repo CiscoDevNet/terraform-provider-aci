@@ -146,7 +146,7 @@ func (r *L3extRsLblToProfileResource) Schema(ctx context.Context, req resource.S
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Relation From L3out Consumer Label To Route Control Profile object.",
+				MarkdownDescription: "The distinguished name (DN) of the Relation From L3Out Consumer Label To Route Control Profile object.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
@@ -167,7 +167,7 @@ func (r *L3extRsLblToProfileResource) Schema(ctx context.Context, req resource.S
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
-				MarkdownDescription: `The annotation of the Relation From L3out Consumer Label To Route Control Profile object.`,
+				MarkdownDescription: `The annotation of the Relation From L3Out Consumer Label To Route Control Profile object.`,
 			},
 			"direction": schema.StringAttribute{
 				Required: true,

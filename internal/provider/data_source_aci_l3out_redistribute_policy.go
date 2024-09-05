@@ -42,7 +42,7 @@ func (d *L3extRsRedistributePolDataSource) Schema(ctx context.Context, req datas
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the L3out Redistribute Policy object.",
+				MarkdownDescription: "The distinguished name (DN) of the L3Out Redistribute Policy object.",
 			},
 			"parent_dn": schema.StringAttribute{
 				Required:            true,
@@ -50,11 +50,11 @@ func (d *L3extRsRedistributePolDataSource) Schema(ctx context.Context, req datas
 			},
 			"annotation": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The annotation of the L3out Redistribute Policy object.`,
+				MarkdownDescription: `The annotation of the L3Out Redistribute Policy object.`,
 			},
 			"source": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: `The source of the L3out Redistribute Policy object.`,
+				MarkdownDescription: `The source of the L3Out Redistribute Policy object.`,
 			},
 			"route_control_profile_name": schema.StringAttribute{
 				Required:            true,

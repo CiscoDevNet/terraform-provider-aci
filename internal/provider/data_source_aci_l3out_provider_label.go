@@ -42,7 +42,7 @@ func (d *L3extProvLblDataSource) Schema(ctx context.Context, req datasource.Sche
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the L3out Provider Label object.",
+				MarkdownDescription: "The distinguished name (DN) of the L3Out Provider Label object.",
 			},
 			"parent_dn": schema.StringAttribute{
 				Required:            true,
@@ -50,19 +50,19 @@ func (d *L3extProvLblDataSource) Schema(ctx context.Context, req datasource.Sche
 			},
 			"annotation": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The annotation of the L3out Provider Label object.`,
+				MarkdownDescription: `The annotation of the L3Out Provider Label object.`,
 			},
 			"description": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The description of the L3out Provider Label object.`,
+				MarkdownDescription: `The description of the L3Out Provider Label object.`,
 			},
 			"name": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: `The name of the L3out Provider Label object.`,
+				MarkdownDescription: `The name of the L3Out Provider Label object.`,
 			},
 			"name_alias": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The name alias of the L3out Provider Label object.`,
+				MarkdownDescription: `The name alias of the L3Out Provider Label object.`,
 			},
 			"owner_key": schema.StringAttribute{
 				Computed:            true,

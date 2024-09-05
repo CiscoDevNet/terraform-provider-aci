@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_l3out_provider_label"
 sidebar_current: "docs-aci-resource-aci_l3out_provider_label"
 description: |-
-  Manages ACI L3out Provider Label
+  Manages ACI L3Out Provider Label
 ---
 
 # aci_l3out_provider_label #
 
-Manages ACI L3out Provider Label
+Manages ACI L3Out Provider Label
 
 
 
@@ -30,7 +30,7 @@ Manages ACI L3out Provider Label
 
 ## Example Usage ##
 
-The configuration snippet below creates a L3out Provider Label with only required attributes.
+The configuration snippet below creates a L3Out Provider Label with only required attributes.
 
 ```hcl
 
@@ -40,7 +40,7 @@ resource "aci_l3out_provider_label" "example_l3_outside" {
 }
 
 ```
-The configuration snippet below shows all possible attributes of the L3out Provider Label.
+The configuration snippet below shows all possible attributes of the L3Out Provider Label.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
@@ -71,7 +71,7 @@ resource "aci_l3out_provider_label" "full_example_l3_outside" {
 
 ```
 
-All examples for the L3out Provider Label resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/resources/aci_l3out_provider_label) folder.
+All examples for the L3Out Provider Label resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/resources/aci_l3out_provider_label) folder.
 
 ## Schema ##
 
@@ -79,18 +79,18 @@ All examples for the L3out Provider Label resource can be found in the [examples
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_l3_outside](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3_outside) ([l3extOut](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extOut/overview))
-* `name` (name) - (string) The name of the L3out Provider Label object.
+* `name` (name) - (string) The name of the L3Out Provider Label object.
 
 ### Read-Only ###
 
-* `id` - (string) The distinguished name (DN) of the L3out Provider Label object.
+* `id` - (string) The distinguished name (DN) of the L3Out Provider Label object.
 
 ### Optional ###
   
-* `annotation` (annotation) - (string) The annotation of the L3out Provider Label object.
+* `annotation` (annotation) - (string) The annotation of the L3Out Provider Label object.
   - Default: `orchestrator:terraform`
-* `description` (descr) - (string) The description of the L3out Provider Label object.
-* `name_alias` (nameAlias) - (string) The name alias of the L3out Provider Label object.
+* `description` (descr) - (string) The description of the L3Out Provider Label object.
+* `name_alias` (nameAlias) - (string) The name alias of the L3Out Provider Label object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `tag` (tag) - (string) Specifies the color of a policy label.
@@ -112,13 +112,13 @@ All examples for the L3out Provider Label resource can be found in the [examples
 
 ## Importing
 
-An existing L3out Provider Label can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
+An existing L3Out Provider Label can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
 terraform import aci_l3out_provider_label.example_l3_outside uni/tn-{name}/out-{name}/provlbl-{name}
 ```
 
-Starting in Terraform version 1.5, an existing L3out Provider Label can be imported
+Starting in Terraform version 1.5, an existing L3Out Provider Label can be imported
 using [import blocks](https://developer.hashicorp.com/terraform/language/import) via the following configuration:
 
 ```

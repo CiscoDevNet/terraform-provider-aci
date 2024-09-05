@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_l3out_provider_label"
 sidebar_current: "docs-aci-data-source-aci_l3out_provider_label"
 description: |-
-  Data source for ACI L3out Provider Label
+  Data source for ACI L3Out Provider Label
 ---
 
 # aci_l3out_provider_label #
 
-Data source for ACI L3out Provider Label
+Data source for ACI L3Out Provider Label
 
 ## API Information ##
 
@@ -43,14 +43,14 @@ data "aci_l3out_provider_label" "example_l3_outside" {
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_l3_outside](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3_outside) ([l3extOut](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extOut/overview))
-* `name` (name) - (string) The name of the L3out Provider Label object.
+* `name` (name) - (string) The name of the L3Out Provider Label object.
 
 ### Read-Only ###
 
-* `id` - (string) The distinguished name (DN) of the L3out Provider Label object.
-* `annotation` (annotation) - (string) The annotation of the L3out Provider Label object.
-* `description` (descr) - (string) The description of the L3out Provider Label object.
-* `name_alias` (nameAlias) - (string) The name alias of the L3out Provider Label object.
+* `id` - (string) The distinguished name (DN) of the L3Out Provider Label object.
+* `annotation` (annotation) - (string) The annotation of the L3Out Provider Label object.
+* `description` (descr) - (string) The description of the L3Out Provider Label object.
+* `name_alias` (nameAlias) - (string) The name alias of the L3Out Provider Label object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `tag` (tag) - (string) Specifies the color of a policy label.

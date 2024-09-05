@@ -47,6 +47,8 @@ global:
     Ip: "IP"
     Ad: "AD"
     Esg: "ESG"
+    "External Network Instance Profile": "External EPG"
+    L3out: L3Out
   ignores:
     - "userdom"
 
@@ -977,7 +979,7 @@ l3extRsLblToInstP:
   overwrites:
     relation_from_l3out_consumer_label_to_external_epgs: "relation_to_external_epgs"
   documentation:
-    tDn: "The distinguished name (DN) of the External Network Instance Profile object."
+    tDn: "The distinguished name (DN) of the External EPG object."
   test_values:
     test_values_for_parent:
       - target_dn: "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile_1"

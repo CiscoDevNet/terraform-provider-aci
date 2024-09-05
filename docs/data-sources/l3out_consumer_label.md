@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_l3out_consumer_label"
 sidebar_current: "docs-aci-data-source-aci_l3out_consumer_label"
 description: |-
-  Data source for ACI L3out Consumer Label
+  Data source for ACI L3Out Consumer Label
 ---
 
 # aci_l3out_consumer_label #
 
-Data source for ACI L3out Consumer Label
+Data source for ACI L3Out Consumer Label
 
 ## API Information ##
 
@@ -45,25 +45,25 @@ data "aci_l3out_consumer_label" "example_l3_outside" {
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_l3_outside](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3_outside) ([l3extOut](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extOut/overview))
-* `name` (name) - (string) The name of the L3out Consumer Label object.
+* `name` (name) - (string) The name of the L3Out Consumer Label object.
 
 ### Read-Only ###
 
-* `id` - (string) The distinguished name (DN) of the L3out Consumer Label object.
-* `annotation` (annotation) - (string) The annotation of the L3out Consumer Label object.
-* `description` (descr) - (string) The description of the L3out Consumer Label object.
-* `name_alias` (nameAlias) - (string) The name alias of the L3out Consumer Label object.
-* `owner` (owner) - (string) The owner of the L3out Consumer Label object.
+* `id` - (string) The distinguished name (DN) of the L3Out Consumer Label object.
+* `annotation` (annotation) - (string) The annotation of the L3Out Consumer Label object.
+* `description` (descr) - (string) The description of the L3Out Consumer Label object.
+* `name_alias` (nameAlias) - (string) The name alias of the L3Out Consumer Label object.
+* `owner` (owner) - (string) The owner of the L3Out Consumer Label object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `tag` (tag) - (string) Specifies the color of a policy label.
 
-* `relation_to_external_epgs` - (list) A list of Relation From L3out Consumer Label To External EPGs (ACI object [l3extRsLblToInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extRsLblToInstP/overview)) pointing to External Network Instance Profile (ACI Object [l3extInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extInstP/overview)). This attribute is supported in ACI versions: 5.0(1k) and later.
-  * `annotation` (annotation) - (string) The annotation of the Relation From L3out Consumer Label To External EPG object.
-  * `target_dn` (tDn) - (string) The distinguished name (DN) of the External Network Instance Profile object.
+* `relation_to_external_epgs` - (list) A list of Relation From L3Out Consumer Label To External EPGs (ACI object [l3extRsLblToInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extRsLblToInstP/overview)) pointing to External EPG (ACI Object [l3extInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extInstP/overview)). This attribute is supported in ACI versions: 5.0(1k) and later.
+  * `annotation` (annotation) - (string) The annotation of the Relation From L3Out Consumer Label To External EPG object.
+  * `target_dn` (tDn) - (string) The distinguished name (DN) of the External EPG object.
 
-* `relation_to_route_control_profiles` - (list) A list of Relation From L3out Consumer Label To Route Control Profiles (ACI object [l3extRsLblToProfile](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extRsLblToProfile/overview)) pointing to Route Control Profile (ACI Object [rtctrlProfile](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/rtctrlProfile/overview)). This attribute is supported in ACI versions: 5.0(1k) and later.
-  * `annotation` (annotation) - (string) The annotation of the Relation From L3out Consumer Label To Route Control Profile object.
+* `relation_to_route_control_profiles` - (list) A list of Relation From L3Out Consumer Label To Route Control Profiles (ACI object [l3extRsLblToProfile](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extRsLblToProfile/overview)) pointing to Route Control Profile (ACI Object [rtctrlProfile](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/rtctrlProfile/overview)). This attribute is supported in ACI versions: 5.0(1k) and later.
+  * `annotation` (annotation) - (string) The annotation of the Relation From L3Out Consumer Label To Route Control Profile object.
   * `direction` (direction) - (string) The connector direction.
   * `target_dn` (tDn) - (string) The distinguished name (DN) of the Route Control Profile object.
 
