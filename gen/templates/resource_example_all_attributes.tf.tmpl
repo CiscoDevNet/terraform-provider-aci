@@ -19,7 +19,7 @@ resource "aci_{{$.ResourceName}}" "full_example_{{getResourceName $key $.Definit
     {{- else}}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = "{{lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions}}"
   {{- end}}{{- end}}{{- end}}
-  {{- range $key, $value := $.Children}}{{$ChildResourceName := .ResourceName}}
+  {{- range $key, $value := $.Children}}{{$ChildResourceName := overwriteProperty .PkgName .ResourceName $.Definitions}}
   {{$ChildResourceName}} = [
     { {{- range .Properties}}{{- if not .ReadOnly }}{{- if ne .NamedPropertyClass ""}}
       {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = aci_{{getResourceName .NamedPropertyClass $.Definitions}}.example.name
@@ -48,7 +48,7 @@ resource "aci_{{$.ResourceName}}" "full_example" {
     {{- else}}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = "{{lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions}}"
   {{- end}}{{- end}}{{- end}}
-  {{- range $key, $value := $.Children}}{{$ChildResourceName := .ResourceName}}
+  {{- range $key, $value := $.Children}}{{$ChildResourceName := overwriteProperty .PkgName .ResourceName $.Definitions}}
   {{$ChildResourceName}} = [
     { {{- range .Properties}}{{- if not .ReadOnly }}{{- if ne .NamedPropertyClass ""}}
       {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = aci_{{getResourceName .NamedPropertyClass $.Definitions}}.example.name

@@ -16,33 +16,33 @@ import (
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ datasource.DataSource = &L3extRsRedistributePolDataSource{}
+var _ datasource.DataSource = &L3extRsLblToInstPDataSource{}
 
-func NewL3extRsRedistributePolDataSource() datasource.DataSource {
-	return &L3extRsRedistributePolDataSource{}
+func NewL3extRsLblToInstPDataSource() datasource.DataSource {
+	return &L3extRsLblToInstPDataSource{}
 }
 
-// L3extRsRedistributePolDataSource defines the data source implementation.
-type L3extRsRedistributePolDataSource struct {
+// L3extRsLblToInstPDataSource defines the data source implementation.
+type L3extRsLblToInstPDataSource struct {
 	client *client.Client
 }
 
-func (d *L3extRsRedistributePolDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
-	tflog.Debug(ctx, "Start metadata of datasource: aci_l3out_redistribute_policy")
-	resp.TypeName = req.ProviderTypeName + "_l3out_redistribute_policy"
-	tflog.Debug(ctx, "End metadata of datasource: aci_l3out_redistribute_policy")
+func (d *L3extRsLblToInstPDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
+	tflog.Debug(ctx, "Start metadata of datasource: aci_relation_from_l3out_consumer_label_to_external_epg")
+	resp.TypeName = req.ProviderTypeName + "_relation_from_l3out_consumer_label_to_external_epg"
+	tflog.Debug(ctx, "End metadata of datasource: aci_relation_from_l3out_consumer_label_to_external_epg")
 }
 
-func (d *L3extRsRedistributePolDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
-	tflog.Debug(ctx, "Start schema of datasource: aci_l3out_redistribute_policy")
+func (d *L3extRsLblToInstPDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+	tflog.Debug(ctx, "Start schema of datasource: aci_relation_from_l3out_consumer_label_to_external_epg")
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "The l3out_redistribute_policy datasource for the 'l3extRsRedistributePol' class",
+		MarkdownDescription: "The relation_from_l3out_consumer_label_to_external_epg datasource for the 'l3extRsLblToInstP' class",
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the L3Out Redistribute Policy object.",
+				MarkdownDescription: "The distinguished name (DN) of the Relation From L3Out Consumer Label To External EPG object.",
 			},
 			"parent_dn": schema.StringAttribute{
 				Required:            true,
@@ -50,15 +50,11 @@ func (d *L3extRsRedistributePolDataSource) Schema(ctx context.Context, req datas
 			},
 			"annotation": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The annotation of the L3Out Redistribute Policy object.`,
+				MarkdownDescription: `The annotation of the Relation From L3Out Consumer Label To External EPG object.`,
 			},
-			"source": schema.StringAttribute{
+			"target_dn": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: `The source of the L3Out Redistribute Policy object.`,
-			},
-			"route_control_profile_name": schema.StringAttribute{
-				Required:            true,
-				MarkdownDescription: `The name of the Route Control Profile object.`,
+				MarkdownDescription: `The distinguished name (DN) of the External EPG object.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,
@@ -94,11 +90,11 @@ func (d *L3extRsRedistributePolDataSource) Schema(ctx context.Context, req datas
 			},
 		},
 	}
-	tflog.Debug(ctx, "End schema of datasource: aci_l3out_redistribute_policy")
+	tflog.Debug(ctx, "End schema of datasource: aci_relation_from_l3out_consumer_label_to_external_epg")
 }
 
-func (d *L3extRsRedistributePolDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	tflog.Debug(ctx, "Start configure of datasource: aci_l3out_redistribute_policy")
+func (d *L3extRsLblToInstPDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
+	tflog.Debug(ctx, "Start configure of datasource: aci_relation_from_l3out_consumer_label_to_external_epg")
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
 		return
@@ -116,12 +112,12 @@ func (d *L3extRsRedistributePolDataSource) Configure(ctx context.Context, req da
 	}
 
 	d.client = client
-	tflog.Debug(ctx, "End configure of datasource: aci_l3out_redistribute_policy")
+	tflog.Debug(ctx, "End configure of datasource: aci_relation_from_l3out_consumer_label_to_external_epg")
 }
 
-func (d *L3extRsRedistributePolDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	tflog.Debug(ctx, "Start read of datasource: aci_l3out_redistribute_policy")
-	var data *L3extRsRedistributePolResourceModel
+func (d *L3extRsLblToInstPDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
+	tflog.Debug(ctx, "Start read of datasource: aci_relation_from_l3out_consumer_label_to_external_epg")
+	var data *L3extRsLblToInstPResourceModel
 
 	// Read Terraform configuration data into the model
 	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
@@ -130,24 +126,24 @@ func (d *L3extRsRedistributePolDataSource) Read(ctx context.Context, req datasou
 		return
 	}
 
-	setL3extRsRedistributePolId(ctx, data)
+	setL3extRsLblToInstPId(ctx, data)
 
-	// Create a copy of the Id for when not found during getAndSetL3extRsRedistributePolAttributes
+	// Create a copy of the Id for when not found during getAndSetL3extRsLblToInstPAttributes
 	cachedId := data.Id.ValueString()
 
-	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_l3out_redistribute_policy with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_relation_from_l3out_consumer_label_to_external_epg with id '%s'", data.Id.ValueString()))
 
-	getAndSetL3extRsRedistributePolAttributes(ctx, &resp.Diagnostics, d.client, data)
+	getAndSetL3extRsLblToInstPAttributes(ctx, &resp.Diagnostics, d.client, data)
 
 	if data.Id.IsNull() {
 		resp.Diagnostics.AddError(
-			"Failed to read aci_l3out_redistribute_policy data source",
-			fmt.Sprintf("The aci_l3out_redistribute_policy data source with id '%s' has not been found", cachedId),
+			"Failed to read aci_relation_from_l3out_consumer_label_to_external_epg data source",
+			fmt.Sprintf("The aci_relation_from_l3out_consumer_label_to_external_epg data source with id '%s' has not been found", cachedId),
 		)
 		return
 	}
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_l3out_redistribute_policy with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_relation_from_l3out_consumer_label_to_external_epg with id '%s'", data.Id.ValueString()))
 }

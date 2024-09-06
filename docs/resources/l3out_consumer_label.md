@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_l3out_consumer_label"
 sidebar_current: "docs-aci-resource-aci_l3out_consumer_label"
 description: |-
-  Manages ACI L3out Consumer Label
+  Manages ACI L3Out Consumer Label
 ---
 
 # aci_l3out_consumer_label #
 
-Manages ACI L3out Consumer Label
+Manages ACI L3Out Consumer Label
 
 
 
@@ -32,7 +32,7 @@ Manages ACI L3out Consumer Label
 
 ## Example Usage ##
 
-The configuration snippet below creates a L3out Consumer Label with only required attributes.
+The configuration snippet below creates a L3Out Consumer Label with only required attributes.
 
 ```hcl
 
@@ -42,7 +42,7 @@ resource "aci_l3out_consumer_label" "example_l3_outside" {
 }
 
 ```
-The configuration snippet below shows all possible attributes of the L3out Consumer Label.
+The configuration snippet below shows all possible attributes of the L3Out Consumer Label.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
@@ -58,6 +58,19 @@ resource "aci_l3out_consumer_label" "full_example_l3_outside" {
   owner_key   = "owner_key_1"
   owner_tag   = "owner_tag_1"
   tag         = "lemon-chiffon"
+  relation_to_external_epgs = [
+    {
+      annotation = "annotation_1"
+      target_dn  = "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile_1"
+    }
+  ]
+  relation_to_route_control_profiles = [
+    {
+      annotation = "annotation_1"
+      direction  = "export"
+      target_dn  = "uni/tn-test_tenant/prof-rt_ctrl_profile_1"
+    }
+  ]
   annotations = [
     {
       key   = "key_0"
@@ -74,7 +87,7 @@ resource "aci_l3out_consumer_label" "full_example_l3_outside" {
 
 ```
 
-All examples for the L3out Consumer Label resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/resources/aci_l3out_consumer_label) folder.
+All examples for the L3Out Consumer Label resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/resources/aci_l3out_consumer_label) folder.
 
 ## Schema ##
 
@@ -82,25 +95,48 @@ All examples for the L3out Consumer Label resource can be found in the [examples
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_l3_outside](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3_outside) ([l3extOut](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extOut/overview))
-* `name` (name) - (string) The name of the L3out Consumer Label object.
+* `name` (name) - (string) The name of the L3Out Consumer Label object.
 
 ### Read-Only ###
 
-* `id` - (string) The distinguished name (DN) of the L3out Consumer Label object.
+* `id` - (string) The distinguished name (DN) of the L3Out Consumer Label object.
 
 ### Optional ###
   
-* `annotation` (annotation) - (string) The annotation of the L3out Consumer Label object.
+* `annotation` (annotation) - (string) The annotation of the L3Out Consumer Label object.
   - Default: `orchestrator:terraform`
-* `description` (descr) - (string) The description of the L3out Consumer Label object.
-* `name_alias` (nameAlias) - (string) The name alias of the L3out Consumer Label object.
-* `owner` (owner) - (string) The owner of the L3out Consumer Label object.
+* `description` (descr) - (string) The description of the L3Out Consumer Label object.
+* `name_alias` (nameAlias) - (string) The name alias of the L3Out Consumer Label object.
+* `owner` (owner) - (string) The owner of the L3Out Consumer Label object.
   - Default: `infra`
   - Valid Values: `infra`, `tenant`.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `tag` (tag) - (string) Specifies the color of a policy label.
   - Valid Values: `alice-blue`, `antique-white`, `aqua`, `aquamarine`, `azure`, `beige`, `bisque`, `black`, `blanched-almond`, `blue`, `blue-violet`, `brown`, `burlywood`, `cadet-blue`, `chartreuse`, `chocolate`, `coral`, `cornflower-blue`, `cornsilk`, `crimson`, `cyan`, `dark-blue`, `dark-cyan`, `dark-goldenrod`, `dark-gray`, `dark-green`, `dark-khaki`, `dark-magenta`, `dark-olive-green`, `dark-orange`, `dark-orchid`, `dark-red`, `dark-salmon`, `dark-sea-green`, `dark-slate-blue`, `dark-slate-gray`, `dark-turquoise`, `dark-violet`, `deep-pink`, `deep-sky-blue`, `dim-gray`, `dodger-blue`, `fire-brick`, `floral-white`, `forest-green`, `fuchsia`, `gainsboro`, `ghost-white`, `gold`, `goldenrod`, `gray`, `green`, `green-yellow`, `honeydew`, `hot-pink`, `indian-red`, `indigo`, `ivory`, `khaki`, `lavender`, `lavender-blush`, `lawn-green`, `lemon-chiffon`, `light-blue`, `light-coral`, `light-cyan`, `light-goldenrod-yellow`, `light-gray`, `light-green`, `light-pink`, `light-salmon`, `light-sea-green`, `light-sky-blue`, `light-slate-gray`, `light-steel-blue`, `light-yellow`, `lime`, `lime-green`, `linen`, `magenta`, `maroon`, `medium-aquamarine`, `medium-blue`, `medium-orchid`, `medium-purple`, `medium-sea-green`, `medium-slate-blue`, `medium-spring-green`, `medium-turquoise`, `medium-violet-red`, `midnight-blue`, `mint-cream`, `misty-rose`, `moccasin`, `navajo-white`, `navy`, `old-lace`, `olive`, `olive-drab`, `orange`, `orange-red`, `orchid`, `pale-goldenrod`, `pale-green`, `pale-turquoise`, `pale-violet-red`, `papaya-whip`, `peachpuff`, `peru`, `pink`, `plum`, `powder-blue`, `purple`, `red`, `rosy-brown`, `royal-blue`, `saddle-brown`, `salmon`, `sandy-brown`, `sea-green`, `seashell`, `sienna`, `silver`, `sky-blue`, `slate-blue`, `slate-gray`, `snow`, `spring-green`, `steel-blue`, `tan`, `teal`, `thistle`, `tomato`, `turquoise`, `violet`, `wheat`, `white`, `white-smoke`, `yellow`, `yellow-green`.
+
+* `relation_to_external_epgs` - (list) A list of Relation From L3Out Consumer Label To External EPGs (ACI object [l3extRsLblToInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extRsLblToInstP/overview)) pointing to External EPG (ACI Object [l3extInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extInstP/overview)) which can be configured using the [aci_external_network_instance_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/external_network_instance_profile) resource. This attribute is supported in ACI versions: 5.0(1k) and later.
+  
+  #### Required ####
+  
+  * `target_dn` (tDn) - (string) The distinguished name (DN) of the External EPG object.
+
+  #### Optional ####
+    
+  * `annotation` (annotation) - (string) The annotation of the Relation From L3Out Consumer Label To External EPG object.
+      - Default: `orchestrator:terraform`
+
+* `relation_to_route_control_profiles` - (list) A list of Relation From L3Out Consumer Label To Route Control Profiles (ACI object [l3extRsLblToProfile](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extRsLblToProfile/overview)) pointing to Route Control Profile (ACI Object [rtctrlProfile](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/rtctrlProfile/overview)) which can be configured using the [aci_route_control_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/route_control_profile) resource. This attribute is supported in ACI versions: 5.0(1k) and later.
+  
+  #### Required ####
+  
+  * `direction` (direction) - (string) The connector direction.
+  * `target_dn` (tDn) - (string) The distinguished name (DN) of the Route Control Profile object.
+
+  #### Optional ####
+    
+  * `annotation` (annotation) - (string) The annotation of the Relation From L3Out Consumer Label To Route Control Profile object.
+      - Default: `orchestrator:terraform`
 
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   
@@ -118,13 +154,13 @@ All examples for the L3out Consumer Label resource can be found in the [examples
 
 ## Importing
 
-An existing L3out Consumer Label can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
+An existing L3Out Consumer Label can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
 terraform import aci_l3out_consumer_label.example_l3_outside uni/tn-{name}/out-{name}/conslbl-{name}
 ```
 
-Starting in Terraform version 1.5, an existing L3out Consumer Label can be imported
+Starting in Terraform version 1.5, an existing L3Out Consumer Label can be imported
 using [import blocks](https://developer.hashicorp.com/terraform/language/import) via the following configuration:
 
 ```

@@ -30,6 +30,22 @@ all:
   tag: "lemon-chiffon"
 
 children:
+  relation_to_external_epgs:
+    - annotation: "annotation_1"
+      target_dn: "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile_1"
+      
+    - annotation: "annotation_2"
+      target_dn: "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile_2"
+      
+  relation_to_route_control_profiles:
+    - annotation: "annotation_1"
+      direction: "export"
+      target_dn: "uni/tn-test_tenant/prof-rt_ctrl_profile_1"
+      
+    - annotation: "annotation_2"
+      direction: "import"
+      target_dn: "uni/tn-test_tenant/prof-rt_ctrl_profile_2"
+      
   annotations:
     - key: "key_0"
       value: "value_1"
@@ -49,3 +65,12 @@ parents:
     parent_dependency: ""
     parent_dn: "aci_l3_outside.test.id"
     class_in_parent: false
+child_targets:
+  - class_name: "l3extInstP"
+    target_dn: "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile_1"
+    relation_resource_name: "external_network_instance_profile"
+    static: true
+  - class_name: "rtctrlProfile"
+    target_dn: "uni/tn-test_tenant/prof-rt_ctrl_profile_1"
+    relation_resource_name: "route_control_profile"
+    static: true

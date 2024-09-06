@@ -323,7 +323,19 @@ func LookupTestValue(classPkgName, propertyName string, testVars map[string]inte
 	}
 
 	if propertyName == "target_dn" {
-		targetResourceName := strings.TrimPrefix(GetResourceName(classPkgName, definitions), "relation_to_")
+		targetResourceName := ""
+		resourceName := GetResourceName(classPkgName, definitions)
+		if strings.HasPrefix(resourceName, "relation_from_") {
+			definitions := getDefinitions().Properties["resource_name_overwrite"].(map[interface{}]interface{})
+			if definitions[resourceName] == nil {
+				targetResourceName = definitions[strings.TrimSuffix(resourceName, "s")].(string)
+			} else {
+				targetResourceName = definitions[resourceName].(string)
+			}
+		} else {
+			targetResourceName = strings.TrimPrefix(GetResourceName(classPkgName, definitions), "relation_to_")
+		}
+
 		targets, ok := testVars["targets"].([]interface{})
 		if ok {
 			for _, target := range targets {
@@ -340,7 +352,6 @@ func LookupTestValue(classPkgName, propertyName string, testVars map[string]inte
 // Retrieves a value for a attribute of a aci class when defined in the testVars YAML file of the class
 // Returns "test_value_for_child" if no value is defined in the testVars YAML file
 func LookupChildTestValue(classPkgName, childResourceName, propertyName string, testVars map[string]interface{}, testValueIndex int, definitions Definitions) interface{} {
-
 	propertyName = GetOverwriteAttributeName(classPkgName, propertyName, definitions)
 
 	overwritePropertyValue := GetOverwriteAttributeValue(classPkgName, propertyName, "", "test_values_for_parent", testValueIndex, definitions)
@@ -2032,10 +2043,23 @@ func getTestDependency(className string, targetMap map[interface{}]interface{}, 
 	return testDependency
 }
 
-func GetTestTargetDn(targets []interface{}, resourceName, targetDnValue string, reference bool, targetClasses interface{}, index int) string {
+func GetTargetResourceName(resourceName string) string {
+	definitions := getDefinitions().Properties["resource_name_overwrite"].(map[interface{}]interface{})
+	if definitions[resourceName] != nil {
+		return definitions[resourceName].(string)
+	} else if definitions[resourceName] == nil {
+		if definitions[strings.TrimSuffix(resourceName, "s")] != nil {
+			return definitions[strings.TrimSuffix(resourceName, "s")].(string)
+		} else {
+			return strings.TrimPrefix(resourceName, "relation_to_")
+		}
+	}
+	return resourceName
+}
 
+func GetTestTargetDn(targets []interface{}, resourceName, targetDnValue string, reference bool, targetClasses interface{}, index int) string {
 	var filteredTargets []interface{}
-	targetResourceName := strings.TrimPrefix(resourceName, "relation_to_")
+	targetResourceName := GetTargetResourceName(resourceName)
 
 	if targetClasses != nil {
 		// CHANGE logic here when allowing for multiple target classes in single resource

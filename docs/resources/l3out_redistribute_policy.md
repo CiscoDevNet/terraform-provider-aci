@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_l3out_redistribute_policy"
 sidebar_current: "docs-aci-resource-aci_l3out_redistribute_policy"
 description: |-
-  Manages ACI L3out Redistribute Policy
+  Manages ACI L3Out Redistribute Policy
 ---
 
 # aci_l3out_redistribute_policy #
 
-Manages ACI L3out Redistribute Policy
+Manages ACI L3Out Redistribute Policy
 
 
 
@@ -30,7 +30,7 @@ Manages ACI L3out Redistribute Policy
 
 ## Example Usage ##
 
-The configuration snippet below creates a L3out Redistribute Policy with only required attributes.
+The configuration snippet below creates a L3Out Redistribute Policy with only required attributes.
 
 ```hcl
 
@@ -41,7 +41,7 @@ resource "aci_l3out_redistribute_policy" "example_l3_outside" {
 }
 
 ```
-The configuration snippet below shows all possible attributes of the L3out Redistribute Policy.
+The configuration snippet below shows all possible attributes of the L3Out Redistribute Policy.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
@@ -68,7 +68,7 @@ resource "aci_l3out_redistribute_policy" "full_example_l3_outside" {
 
 ```
 
-All examples for the L3out Redistribute Policy resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/resources/aci_l3out_redistribute_policy) folder.
+All examples for the L3Out Redistribute Policy resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/resources/aci_l3out_redistribute_policy) folder.
 
 ## Schema ##
 
@@ -76,17 +76,17 @@ All examples for the L3out Redistribute Policy resource can be found in the [exa
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_l3_outside](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3_outside) ([l3extOut](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extOut/overview))
-* `source` (src) - (string) The source of the L3out Redistribute Policy object.
+* `source` (src) - (string) The source of the L3Out Redistribute Policy object.
   - Valid Values: `attached-host`, `direct`, `static`.
 * `route_control_profile_name` (tnRtctrlProfileName) - (string) The name of the Route Control Profile object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/route_control_profile) with `aci_route_control_profile.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/route_control_profile) with `data.aci_route_control_profile.example.name`.
 
 ### Read-Only ###
 
-* `id` - (string) The distinguished name (DN) of the L3out Redistribute Policy object.
+* `id` - (string) The distinguished name (DN) of the L3Out Redistribute Policy object.
 
 ### Optional ###
   
-* `annotation` (annotation) - (string) The annotation of the L3out Redistribute Policy object.
+* `annotation` (annotation) - (string) The annotation of the L3Out Redistribute Policy object.
   - Default: `orchestrator:terraform`
 
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
@@ -105,13 +105,13 @@ All examples for the L3out Redistribute Policy resource can be found in the [exa
 
 ## Importing
 
-An existing L3out Redistribute Policy can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
+An existing L3Out Redistribute Policy can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
 terraform import aci_l3out_redistribute_policy.example_l3_outside uni/tn-{name}/out-{name}/rsredistributePol-[{tnRtctrlProfileName}]-{src}
 ```
 
-Starting in Terraform version 1.5, an existing L3out Redistribute Policy can be imported
+Starting in Terraform version 1.5, an existing L3Out Redistribute Policy can be imported
 using [import blocks](https://developer.hashicorp.com/terraform/language/import) via the following configuration:
 
 ```

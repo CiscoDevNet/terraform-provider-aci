@@ -80,9 +80,9 @@ Data source for ACI {{.ResourceNameAsDescription}}
 {{- end}}
 {{ range .Children }}{{$childVersion := .Versions}}{{$RelationshipClasses := .RelationshipClasses}}{{$length := len .RelationshipClasses}}
     {{- if ge $length 1}}
-* `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName $.Definitions}} (ACI object {{getDevnetDocForClass .PkgName}}) pointing to {{range $index, $value := .RelationshipResourceNames}}{{- if or (eq $length 1) (eq $.PkgName (index $RelationshipClasses $index))}}{{getResourceNameAsDescription $value $.Definitions}} (ACI Object {{getDevnetDocForClass (index $RelationshipClasses $index)}}){{end}}{{end}}.{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
+* `{{- overwriteProperty .PkgName .ResourceName $.Definitions}}` - (list) A list of {{getResourceNameAsDescription .ResourceName $.Definitions}} (ACI object {{getDevnetDocForClass .PkgName}}) pointing to {{range $index, $value := .RelationshipResourceNames}}{{- if or (eq $length 1) (eq $.PkgName (index $RelationshipClasses $index))}}{{getResourceNameAsDescription $value $.Definitions}} (ACI Object {{getDevnetDocForClass (index $RelationshipClasses $index)}}){{end}}{{end}}.{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
     {{- else}}
-* `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName $.Definitions}} (ACI object {{getDevnetDocForClass .PkgName}}).{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
+* `{{- overwriteProperty .PkgName .ResourceName $.Definitions}}` - (list) A list of {{getResourceNameAsDescription .ResourceName $.Definitions}} (ACI object {{getDevnetDocForClass .PkgName}}).{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
     {{- end}}
 
   {{- range .Properties}}

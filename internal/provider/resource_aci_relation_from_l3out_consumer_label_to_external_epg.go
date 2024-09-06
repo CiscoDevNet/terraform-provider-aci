@@ -28,42 +28,34 @@ import (
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &MplsNodeSidPResource{}
-var _ resource.ResourceWithImportState = &MplsNodeSidPResource{}
+var _ resource.Resource = &L3extRsLblToInstPResource{}
+var _ resource.ResourceWithImportState = &L3extRsLblToInstPResource{}
 
-func NewMplsNodeSidPResource() resource.Resource {
-	return &MplsNodeSidPResource{}
+func NewL3extRsLblToInstPResource() resource.Resource {
+	return &L3extRsLblToInstPResource{}
 }
 
-// MplsNodeSidPResource defines the resource implementation.
-type MplsNodeSidPResource struct {
+// L3extRsLblToInstPResource defines the resource implementation.
+type L3extRsLblToInstPResource struct {
 	client *client.Client
 }
 
-// MplsNodeSidPResourceModel describes the resource data model.
-type MplsNodeSidPResourceModel struct {
+// L3extRsLblToInstPResourceModel describes the resource data model.
+type L3extRsLblToInstPResourceModel struct {
 	Id            types.String `tfsdk:"id"`
 	ParentDn      types.String `tfsdk:"parent_dn"`
 	Annotation    types.String `tfsdk:"annotation"`
-	Descr         types.String `tfsdk:"description"`
-	LoopbackAddr  types.String `tfsdk:"loopback_address"`
-	Name          types.String `tfsdk:"name"`
-	NameAlias     types.String `tfsdk:"name_alias"`
-	Sidoffset     types.String `tfsdk:"segment_id"`
+	TDn           types.String `tfsdk:"target_dn"`
 	TagAnnotation types.Set    `tfsdk:"annotations"`
 	TagTag        types.Set    `tfsdk:"tags"`
 }
 
-func getEmptyMplsNodeSidPResourceModel() *MplsNodeSidPResourceModel {
-	return &MplsNodeSidPResourceModel{
-		Id:           basetypes.NewStringNull(),
-		ParentDn:     basetypes.NewStringNull(),
-		Annotation:   basetypes.NewStringNull(),
-		Descr:        basetypes.NewStringNull(),
-		LoopbackAddr: basetypes.NewStringNull(),
-		Name:         basetypes.NewStringNull(),
-		NameAlias:    basetypes.NewStringNull(),
-		Sidoffset:    basetypes.NewStringNull(),
+func getEmptyL3extRsLblToInstPResourceModel() *L3extRsLblToInstPResourceModel {
+	return &L3extRsLblToInstPResourceModel{
+		Id:         basetypes.NewStringNull(),
+		ParentDn:   basetypes.NewStringNull(),
+		Annotation: basetypes.NewStringNull(),
+		TDn:        basetypes.NewStringNull(),
 		TagAnnotation: types.SetNull(types.ObjectType{
 			AttrTypes: map[string]attr.Type{
 				"key":   types.StringType,
@@ -79,39 +71,39 @@ func getEmptyMplsNodeSidPResourceModel() *MplsNodeSidPResourceModel {
 	}
 }
 
-// TagAnnotationMplsNodeSidPResourceModel describes the resource data model for the children without relation ships.
-type TagAnnotationMplsNodeSidPResourceModel struct {
+// TagAnnotationL3extRsLblToInstPResourceModel describes the resource data model for the children without relation ships.
+type TagAnnotationL3extRsLblToInstPResourceModel struct {
 	Key   types.String `tfsdk:"key"`
 	Value types.String `tfsdk:"value"`
 }
 
-func getEmptyTagAnnotationMplsNodeSidPResourceModel() TagAnnotationMplsNodeSidPResourceModel {
-	return TagAnnotationMplsNodeSidPResourceModel{
+func getEmptyTagAnnotationL3extRsLblToInstPResourceModel() TagAnnotationL3extRsLblToInstPResourceModel {
+	return TagAnnotationL3extRsLblToInstPResourceModel{
 		Key:   basetypes.NewStringNull(),
 		Value: basetypes.NewStringNull(),
 	}
 }
 
-// TagTagMplsNodeSidPResourceModel describes the resource data model for the children without relation ships.
-type TagTagMplsNodeSidPResourceModel struct {
+// TagTagL3extRsLblToInstPResourceModel describes the resource data model for the children without relation ships.
+type TagTagL3extRsLblToInstPResourceModel struct {
 	Key   types.String `tfsdk:"key"`
 	Value types.String `tfsdk:"value"`
 }
 
-func getEmptyTagTagMplsNodeSidPResourceModel() TagTagMplsNodeSidPResourceModel {
-	return TagTagMplsNodeSidPResourceModel{
+func getEmptyTagTagL3extRsLblToInstPResourceModel() TagTagL3extRsLblToInstPResourceModel {
+	return TagTagL3extRsLblToInstPResourceModel{
 		Key:   basetypes.NewStringNull(),
 		Value: basetypes.NewStringNull(),
 	}
 }
 
-type MplsNodeSidPIdentifier struct {
-	Sidoffset types.String
+type L3extRsLblToInstPIdentifier struct {
+	TDn types.String
 }
 
-func (r *MplsNodeSidPResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
+func (r *L3extRsLblToInstPResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
 	if !req.Plan.Raw.IsNull() {
-		var planData, stateData *MplsNodeSidPResourceModel
+		var planData, stateData *L3extRsLblToInstPResourceModel
 		resp.Diagnostics.Append(req.Plan.Get(ctx, &planData)...)
 		resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
 
@@ -119,12 +111,12 @@ func (r *MplsNodeSidPResource) ModifyPlan(ctx context.Context, req resource.Modi
 			return
 		}
 
-		if (planData.Id.IsUnknown() || planData.Id.IsNull()) && !planData.ParentDn.IsUnknown() && !planData.Sidoffset.IsUnknown() {
-			setMplsNodeSidPId(ctx, planData)
+		if (planData.Id.IsUnknown() || planData.Id.IsNull()) && !planData.ParentDn.IsUnknown() && !planData.TDn.IsUnknown() {
+			setL3extRsLblToInstPId(ctx, planData)
 		}
 
 		if stateData == nil && !globalAllowExistingOnCreate && !planData.Id.IsUnknown() && !planData.Id.IsNull() {
-			CheckDn(ctx, &resp.Diagnostics, r.client, "mplsNodeSidP", planData.Id.ValueString())
+			CheckDn(ctx, &resp.Diagnostics, r.client, "l3extRsLblToInstP", planData.Id.ValueString())
 			if resp.Diagnostics.HasError() {
 				return
 			}
@@ -134,22 +126,22 @@ func (r *MplsNodeSidPResource) ModifyPlan(ctx context.Context, req resource.Modi
 	}
 }
 
-func (r *MplsNodeSidPResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	tflog.Debug(ctx, "Start metadata of resource: aci_l3out_node_sid_profile")
-	resp.TypeName = req.ProviderTypeName + "_l3out_node_sid_profile"
-	tflog.Debug(ctx, "End metadata of resource: aci_l3out_node_sid_profile")
+func (r *L3extRsLblToInstPResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	tflog.Debug(ctx, "Start metadata of resource: aci_relation_from_l3out_consumer_label_to_external_epg")
+	resp.TypeName = req.ProviderTypeName + "_relation_from_l3out_consumer_label_to_external_epg"
+	tflog.Debug(ctx, "End metadata of resource: aci_relation_from_l3out_consumer_label_to_external_epg")
 }
 
-func (r *MplsNodeSidPResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
-	tflog.Debug(ctx, "Start schema of resource: aci_l3out_node_sid_profile")
+func (r *L3extRsLblToInstPResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+	tflog.Debug(ctx, "Start schema of resource: aci_relation_from_l3out_consumer_label_to_external_epg")
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "The l3out_node_sid_profile resource for the 'mplsNodeSidP' class",
+		MarkdownDescription: "The relation_from_l3out_consumer_label_to_external_epg resource for the 'l3extRsLblToInstP' class",
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the L3Out Node SR-MPLS Segment ID Profile object.",
+				MarkdownDescription: "The distinguished name (DN) of the Relation From L3Out Consumer Label To External EPG object.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
@@ -170,52 +162,16 @@ func (r *MplsNodeSidPResource) Schema(ctx context.Context, req resource.SchemaRe
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
-				MarkdownDescription: `The annotation of the L3Out Node SR-MPLS Segment ID Profile object.`,
+				MarkdownDescription: `The annotation of the Relation From L3Out Consumer Label To External EPG object.`,
 			},
-			"description": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				MarkdownDescription: `The description of the L3Out Node SR-MPLS Segment ID Profile object.`,
-			},
-			"loopback_address": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				MarkdownDescription: `The loopback address of the L3Out Node SR-MPLS Segment ID Profile object.`,
-			},
-			"name": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				MarkdownDescription: `The name of the L3Out Node SR-MPLS Segment ID Profile object.`,
-			},
-			"name_alias": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				MarkdownDescription: `The name alias of the L3Out Node SR-MPLS Segment ID Profile object.`,
-			},
-			"segment_id": schema.StringAttribute{
+			"target_dn": schema.StringAttribute{
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
-				MarkdownDescription: `The segment ID of the L3Out Node SR-MPLS Segment ID Profile object.`,
+				MarkdownDescription: `The distinguished name (DN) of the External EPG object.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,
@@ -271,11 +227,11 @@ func (r *MplsNodeSidPResource) Schema(ctx context.Context, req resource.SchemaRe
 			},
 		},
 	}
-	tflog.Debug(ctx, "End schema of resource: aci_l3out_node_sid_profile")
+	tflog.Debug(ctx, "End schema of resource: aci_relation_from_l3out_consumer_label_to_external_epg")
 }
 
-func (r *MplsNodeSidPResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	tflog.Debug(ctx, "Start configure of resource: aci_l3out_node_sid_profile")
+func (r *L3extRsLblToInstPResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+	tflog.Debug(ctx, "Start configure of resource: aci_relation_from_l3out_consumer_label_to_external_epg")
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
 		return
@@ -293,27 +249,27 @@ func (r *MplsNodeSidPResource) Configure(ctx context.Context, req resource.Confi
 	}
 
 	r.client = client
-	tflog.Debug(ctx, "End configure of resource: aci_l3out_node_sid_profile")
+	tflog.Debug(ctx, "End configure of resource: aci_relation_from_l3out_consumer_label_to_external_epg")
 }
 
-func (r *MplsNodeSidPResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	tflog.Debug(ctx, "Start create of resource: aci_l3out_node_sid_profile")
+func (r *L3extRsLblToInstPResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	tflog.Debug(ctx, "Start create of resource: aci_relation_from_l3out_consumer_label_to_external_epg")
 	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
-	var stateData *MplsNodeSidPResourceModel
+	var stateData *L3extRsLblToInstPResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
 	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
-		setMplsNodeSidPId(ctx, stateData)
+		setL3extRsLblToInstPId(ctx, stateData)
 	}
-	getAndSetMplsNodeSidPAttributes(ctx, &resp.Diagnostics, r.client, stateData)
+	getAndSetL3extRsLblToInstPAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
 		resp.Diagnostics.AddError(
 			"Object Already Exists",
-			fmt.Sprintf("The mplsNodeSidP object with DN '%s' already exists.", stateData.Id.ValueString()),
+			fmt.Sprintf("The l3extRsLblToInstP object with DN '%s' already exists.", stateData.Id.ValueString()),
 		)
 		return
 	}
 
-	var data *MplsNodeSidPResourceModel
+	var data *L3extRsLblToInstPResourceModel
 
 	// Read Terraform plan data into the model
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
@@ -323,18 +279,18 @@ func (r *MplsNodeSidPResource) Create(ctx context.Context, req resource.CreateRe
 	}
 
 	if data.Id.IsUnknown() || data.Id.IsNull() {
-		setMplsNodeSidPId(ctx, data)
+		setL3extRsLblToInstPId(ctx, data)
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_l3out_node_sid_profile with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_relation_from_l3out_consumer_label_to_external_epg with id '%s'", data.Id.ValueString()))
 
-	var tagAnnotationPlan, tagAnnotationState []TagAnnotationMplsNodeSidPResourceModel
+	var tagAnnotationPlan, tagAnnotationState []TagAnnotationL3extRsLblToInstPResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
 	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
-	var tagTagPlan, tagTagState []TagTagMplsNodeSidPResourceModel
+	var tagTagPlan, tagTagState []TagTagL3extRsLblToInstPResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getMplsNodeSidPCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := getL3extRsLblToInstPCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -345,16 +301,16 @@ func (r *MplsNodeSidPResource) Create(ctx context.Context, req resource.CreateRe
 		return
 	}
 
-	getAndSetMplsNodeSidPAttributes(ctx, &resp.Diagnostics, r.client, data)
+	getAndSetL3extRsLblToInstPAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_l3out_node_sid_profile with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_relation_from_l3out_consumer_label_to_external_epg with id '%s'", data.Id.ValueString()))
 }
 
-func (r *MplsNodeSidPResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
-	tflog.Debug(ctx, "Start read of resource: aci_l3out_node_sid_profile")
-	var data *MplsNodeSidPResourceModel
+func (r *L3extRsLblToInstPResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+	tflog.Debug(ctx, "Start read of resource: aci_relation_from_l3out_consumer_label_to_external_epg")
+	var data *L3extRsLblToInstPResourceModel
 
 	// Read Terraform prior state data into the model
 	resp.Diagnostics.Append(req.State.Get(ctx, &data)...)
@@ -363,25 +319,25 @@ func (r *MplsNodeSidPResource) Read(ctx context.Context, req resource.ReadReques
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Read of resource aci_l3out_node_sid_profile with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Read of resource aci_relation_from_l3out_consumer_label_to_external_epg with id '%s'", data.Id.ValueString()))
 
-	getAndSetMplsNodeSidPAttributes(ctx, &resp.Diagnostics, r.client, data)
+	getAndSetL3extRsLblToInstPAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save updated data into Terraform state
 	if data.Id.IsNull() {
-		var emptyData *MplsNodeSidPResourceModel
+		var emptyData *L3extRsLblToInstPResourceModel
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_l3out_node_sid_profile with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_relation_from_l3out_consumer_label_to_external_epg with id '%s'", data.Id.ValueString()))
 }
 
-func (r *MplsNodeSidPResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	tflog.Debug(ctx, "Start update of resource: aci_l3out_node_sid_profile")
-	var data *MplsNodeSidPResourceModel
-	var stateData *MplsNodeSidPResourceModel
+func (r *L3extRsLblToInstPResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+	tflog.Debug(ctx, "Start update of resource: aci_relation_from_l3out_consumer_label_to_external_epg")
+	var data *L3extRsLblToInstPResourceModel
+	var stateData *L3extRsLblToInstPResourceModel
 
 	// Read Terraform plan data into the model
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
@@ -391,15 +347,15 @@ func (r *MplsNodeSidPResource) Update(ctx context.Context, req resource.UpdateRe
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_l3out_node_sid_profile with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_relation_from_l3out_consumer_label_to_external_epg with id '%s'", data.Id.ValueString()))
 
-	var tagAnnotationPlan, tagAnnotationState []TagAnnotationMplsNodeSidPResourceModel
+	var tagAnnotationPlan, tagAnnotationState []TagAnnotationL3extRsLblToInstPResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
 	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
-	var tagTagPlan, tagTagState []TagTagMplsNodeSidPResourceModel
+	var tagTagPlan, tagTagState []TagTagL3extRsLblToInstPResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getMplsNodeSidPCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := getL3extRsLblToInstPCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -411,16 +367,16 @@ func (r *MplsNodeSidPResource) Update(ctx context.Context, req resource.UpdateRe
 		return
 	}
 
-	getAndSetMplsNodeSidPAttributes(ctx, &resp.Diagnostics, r.client, data)
+	getAndSetL3extRsLblToInstPAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_l3out_node_sid_profile with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_relation_from_l3out_consumer_label_to_external_epg with id '%s'", data.Id.ValueString()))
 }
 
-func (r *MplsNodeSidPResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	tflog.Debug(ctx, "Start delete of resource: aci_l3out_node_sid_profile")
-	var data *MplsNodeSidPResourceModel
+func (r *L3extRsLblToInstPResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	tflog.Debug(ctx, "Start delete of resource: aci_relation_from_l3out_consumer_label_to_external_epg")
+	var data *L3extRsLblToInstPResourceModel
 
 	// Read Terraform prior state data into the model
 	resp.Diagnostics.Append(req.State.Get(ctx, &data)...)
@@ -429,8 +385,8 @@ func (r *MplsNodeSidPResource) Delete(ctx context.Context, req resource.DeleteRe
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Delete of resource aci_l3out_node_sid_profile with id '%s'", data.Id.ValueString()))
-	jsonPayload := GetDeleteJsonPayload(ctx, &resp.Diagnostics, "mplsNodeSidP", data.Id.ValueString())
+	tflog.Debug(ctx, fmt.Sprintf("Delete of resource aci_relation_from_l3out_consumer_label_to_external_epg with id '%s'", data.Id.ValueString()))
+	jsonPayload := GetDeleteJsonPayload(ctx, &resp.Diagnostics, "l3extRsLblToInstP", data.Id.ValueString())
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -438,58 +394,46 @@ func (r *MplsNodeSidPResource) Delete(ctx context.Context, req resource.DeleteRe
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_l3out_node_sid_profile with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_relation_from_l3out_consumer_label_to_external_epg with id '%s'", data.Id.ValueString()))
 }
 
-func (r *MplsNodeSidPResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	tflog.Debug(ctx, "Start import state of resource: aci_l3out_node_sid_profile")
+func (r *L3extRsLblToInstPResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	tflog.Debug(ctx, "Start import state of resource: aci_relation_from_l3out_consumer_label_to_external_epg")
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 
-	var stateData *MplsNodeSidPResourceModel
+	var stateData *L3extRsLblToInstPResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
-	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_l3out_node_sid_profile with id '%s'", stateData.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_relation_from_l3out_consumer_label_to_external_epg with id '%s'", stateData.Id.ValueString()))
 
-	tflog.Debug(ctx, "End import of state resource: aci_l3out_node_sid_profile")
+	tflog.Debug(ctx, "End import of state resource: aci_relation_from_l3out_consumer_label_to_external_epg")
 }
 
-func getAndSetMplsNodeSidPAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *MplsNodeSidPResourceModel) {
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "mplsNodeSidP,tagAnnotation,tagTag"), "GET", nil)
+func getAndSetL3extRsLblToInstPAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *L3extRsLblToInstPResourceModel) {
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "l3extRsLblToInstP,tagAnnotation,tagTag"), "GET", nil)
 
-	*data = *getEmptyMplsNodeSidPResourceModel()
+	*data = *getEmptyL3extRsLblToInstPResourceModel()
 
 	if diags.HasError() {
 		return
 	}
-	if requestData.Search("imdata").Search("mplsNodeSidP").Data() != nil {
-		classReadInfo := requestData.Search("imdata").Search("mplsNodeSidP").Data().([]interface{})
+	if requestData.Search("imdata").Search("l3extRsLblToInstP").Data() != nil {
+		classReadInfo := requestData.Search("imdata").Search("l3extRsLblToInstP").Data().([]interface{})
 		if len(classReadInfo) == 1 {
 			attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
 			for attributeName, attributeValue := range attributes {
 				if attributeName == "dn" {
 					data.Id = basetypes.NewStringValue(attributeValue.(string))
-					setMplsNodeSidPParentDn(ctx, attributeValue.(string), data)
+					setL3extRsLblToInstPParentDn(ctx, attributeValue.(string), data)
 				}
 				if attributeName == "annotation" {
 					data.Annotation = basetypes.NewStringValue(attributeValue.(string))
 				}
-				if attributeName == "descr" {
-					data.Descr = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "loopbackAddr" {
-					data.LoopbackAddr = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "name" {
-					data.Name = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "nameAlias" {
-					data.NameAlias = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "sidoffset" {
-					data.Sidoffset = basetypes.NewStringValue(attributeValue.(string))
+				if attributeName == "tDn" {
+					data.TDn = basetypes.NewStringValue(attributeValue.(string))
 				}
 			}
-			TagAnnotationMplsNodeSidPList := make([]TagAnnotationMplsNodeSidPResourceModel, 0)
-			TagTagMplsNodeSidPList := make([]TagTagMplsNodeSidPResourceModel, 0)
+			TagAnnotationL3extRsLblToInstPList := make([]TagAnnotationL3extRsLblToInstPResourceModel, 0)
+			TagTagL3extRsLblToInstPList := make([]TagTagL3extRsLblToInstPResourceModel, 0)
 			_, ok := classReadInfo[0].(map[string]interface{})["children"]
 			if ok {
 				children := classReadInfo[0].(map[string]interface{})["children"].([]interface{})
@@ -497,40 +441,40 @@ func getAndSetMplsNodeSidPAttributes(ctx context.Context, diags *diag.Diagnostic
 					for childClassName, childClassDetails := range child.(map[string]interface{}) {
 						childAttributes := childClassDetails.(map[string]interface{})["attributes"].(map[string]interface{})
 						if childClassName == "tagAnnotation" {
-							TagAnnotationMplsNodeSidP := getEmptyTagAnnotationMplsNodeSidPResourceModel()
+							TagAnnotationL3extRsLblToInstP := getEmptyTagAnnotationL3extRsLblToInstPResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "key" {
-									TagAnnotationMplsNodeSidP.Key = basetypes.NewStringValue(childAttributeValue.(string))
+									TagAnnotationL3extRsLblToInstP.Key = basetypes.NewStringValue(childAttributeValue.(string))
 								}
 								if childAttributeName == "value" {
-									TagAnnotationMplsNodeSidP.Value = basetypes.NewStringValue(childAttributeValue.(string))
+									TagAnnotationL3extRsLblToInstP.Value = basetypes.NewStringValue(childAttributeValue.(string))
 								}
 							}
-							TagAnnotationMplsNodeSidPList = append(TagAnnotationMplsNodeSidPList, TagAnnotationMplsNodeSidP)
+							TagAnnotationL3extRsLblToInstPList = append(TagAnnotationL3extRsLblToInstPList, TagAnnotationL3extRsLblToInstP)
 						}
 						if childClassName == "tagTag" {
-							TagTagMplsNodeSidP := getEmptyTagTagMplsNodeSidPResourceModel()
+							TagTagL3extRsLblToInstP := getEmptyTagTagL3extRsLblToInstPResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "key" {
-									TagTagMplsNodeSidP.Key = basetypes.NewStringValue(childAttributeValue.(string))
+									TagTagL3extRsLblToInstP.Key = basetypes.NewStringValue(childAttributeValue.(string))
 								}
 								if childAttributeName == "value" {
-									TagTagMplsNodeSidP.Value = basetypes.NewStringValue(childAttributeValue.(string))
+									TagTagL3extRsLblToInstP.Value = basetypes.NewStringValue(childAttributeValue.(string))
 								}
 							}
-							TagTagMplsNodeSidPList = append(TagTagMplsNodeSidPList, TagTagMplsNodeSidP)
+							TagTagL3extRsLblToInstPList = append(TagTagL3extRsLblToInstPList, TagTagL3extRsLblToInstP)
 						}
 					}
 				}
 			}
-			tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationMplsNodeSidPList)
+			tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationL3extRsLblToInstPList)
 			data.TagAnnotation = tagAnnotationSet
-			tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagMplsNodeSidPList)
+			tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagL3extRsLblToInstPList)
 			data.TagTag = tagTagSet
 		} else {
 			diags.AddError(
 				"too many results in response",
-				fmt.Sprintf("%v matches returned for class 'mplsNodeSidP'. Please report this issue to the provider developers.", len(classReadInfo)),
+				fmt.Sprintf("%v matches returned for class 'l3extRsLblToInstP'. Please report this issue to the provider developers.", len(classReadInfo)),
 			)
 		}
 	} else {
@@ -538,9 +482,9 @@ func getAndSetMplsNodeSidPAttributes(ctx context.Context, diags *diag.Diagnostic
 	}
 }
 
-func getMplsNodeSidPRn(ctx context.Context, data *MplsNodeSidPResourceModel) string {
-	rn := "nodesidp-{sidoffset}"
-	for _, identifier := range []string{"sidoffset"} {
+func getL3extRsLblToInstPRn(ctx context.Context, data *L3extRsLblToInstPResourceModel) string {
+	rn := "rslblToInstP-[{tDn}]"
+	for _, identifier := range []string{"tDn"} {
 		fieldName := fmt.Sprintf("%s%s", strings.ToUpper(identifier[:1]), identifier[1:])
 		fieldValue := reflect.ValueOf(data).Elem().FieldByName(fieldName).Interface().(basetypes.StringValue).ValueString()
 		rn = strings.ReplaceAll(rn, fmt.Sprintf("{%s}", identifier), fieldValue)
@@ -548,7 +492,7 @@ func getMplsNodeSidPRn(ctx context.Context, data *MplsNodeSidPResourceModel) str
 	return rn
 }
 
-func setMplsNodeSidPParentDn(ctx context.Context, dn string, data *MplsNodeSidPResourceModel) {
+func setL3extRsLblToInstPParentDn(ctx context.Context, dn string, data *L3extRsLblToInstPResourceModel) {
 	bracketIndex := 0
 	rnIndex := 0
 	for i := len(dn) - 1; i >= 0; i-- {
@@ -564,12 +508,12 @@ func setMplsNodeSidPParentDn(ctx context.Context, dn string, data *MplsNodeSidPR
 	data.ParentDn = basetypes.NewStringValue(dn[:rnIndex])
 }
 
-func setMplsNodeSidPId(ctx context.Context, data *MplsNodeSidPResourceModel) {
-	rn := getMplsNodeSidPRn(ctx, data)
+func setL3extRsLblToInstPId(ctx context.Context, data *L3extRsLblToInstPResourceModel) {
+	rn := getL3extRsLblToInstPRn(ctx, data)
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
 
-func getMplsNodeSidPTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *MplsNodeSidPResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationMplsNodeSidPResourceModel) []map[string]interface{} {
+func getL3extRsLblToInstPTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *L3extRsLblToInstPResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationL3extRsLblToInstPResourceModel) []map[string]interface{} {
 
 	childPayloads := []map[string]interface{}{}
 	if !data.TagAnnotation.IsUnknown() {
@@ -608,7 +552,7 @@ func getMplsNodeSidPTagAnnotationChildPayloads(ctx context.Context, diags *diag.
 
 	return childPayloads
 }
-func getMplsNodeSidPTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *MplsNodeSidPResourceModel, tagTagPlan, tagTagState []TagTagMplsNodeSidPResourceModel) []map[string]interface{} {
+func getL3extRsLblToInstPTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *L3extRsLblToInstPResourceModel, tagTagPlan, tagTagState []TagTagL3extRsLblToInstPResourceModel) []map[string]interface{} {
 
 	childPayloads := []map[string]interface{}{}
 	if !data.TagTag.IsUnknown() {
@@ -648,7 +592,7 @@ func getMplsNodeSidPTagTagChildPayloads(ctx context.Context, diags *diag.Diagnos
 	return childPayloads
 }
 
-func getMplsNodeSidPCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *MplsNodeSidPResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationMplsNodeSidPResourceModel, tagTagPlan, tagTagState []TagTagMplsNodeSidPResourceModel) *container.Container {
+func getL3extRsLblToInstPCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *L3extRsLblToInstPResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationL3extRsLblToInstPResourceModel, tagTagPlan, tagTagState []TagTagL3extRsLblToInstPResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 
@@ -657,13 +601,13 @@ func getMplsNodeSidPCreateJsonPayload(ctx context.Context, diags *diag.Diagnosti
 	}
 	childPayloads := []map[string]interface{}{}
 
-	TagAnnotationchildPayloads := getMplsNodeSidPTagAnnotationChildPayloads(ctx, diags, data, tagAnnotationPlan, tagAnnotationState)
+	TagAnnotationchildPayloads := getL3extRsLblToInstPTagAnnotationChildPayloads(ctx, diags, data, tagAnnotationPlan, tagAnnotationState)
 	if TagAnnotationchildPayloads == nil {
 		return nil
 	}
 	childPayloads = append(childPayloads, TagAnnotationchildPayloads...)
 
-	TagTagchildPayloads := getMplsNodeSidPTagTagChildPayloads(ctx, diags, data, tagTagPlan, tagTagState)
+	TagTagchildPayloads := getL3extRsLblToInstPTagTagChildPayloads(ctx, diags, data, tagTagPlan, tagTagState)
 	if TagTagchildPayloads == nil {
 		return nil
 	}
@@ -673,23 +617,11 @@ func getMplsNodeSidPCreateJsonPayload(ctx context.Context, diags *diag.Diagnosti
 	if !data.Annotation.IsNull() && !data.Annotation.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["annotation"] = data.Annotation.ValueString()
 	}
-	if !data.Descr.IsNull() && !data.Descr.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["descr"] = data.Descr.ValueString()
-	}
-	if !data.LoopbackAddr.IsNull() && !data.LoopbackAddr.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["loopbackAddr"] = data.LoopbackAddr.ValueString()
-	}
-	if !data.Name.IsNull() && !data.Name.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["name"] = data.Name.ValueString()
-	}
-	if !data.NameAlias.IsNull() && !data.NameAlias.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["nameAlias"] = data.NameAlias.ValueString()
-	}
-	if !data.Sidoffset.IsNull() && !data.Sidoffset.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["sidoffset"] = data.Sidoffset.ValueString()
+	if !data.TDn.IsNull() && !data.TDn.IsUnknown() {
+		payloadMap["attributes"].(map[string]string)["tDn"] = data.TDn.ValueString()
 	}
 
-	payload, err := json.Marshal(map[string]interface{}{"mplsNodeSidP": payloadMap})
+	payload, err := json.Marshal(map[string]interface{}{"l3extRsLblToInstP": payloadMap})
 	if err != nil {
 		diags.AddError(
 			"Marshalling of json payload failed",

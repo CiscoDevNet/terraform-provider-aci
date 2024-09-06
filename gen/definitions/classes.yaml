@@ -59,7 +59,7 @@ fvAEPg:
     fvRsNodeAtt:
       relation_fv_rs_node_att: relation_to_static_leafs
       node_dn: relation_to_static_leafs.target_dn
-      encap:  relation_to_static_leafs.encapsulation
+      encap: relation_to_static_leafs.encapsulation
       description: relation_to_static_leafs.description
       deployment_immediacy: relation_to_static_leafs.deployment_immediacy
       mode: relation_to_static_leafs.mode
@@ -153,6 +153,7 @@ mgmtInB:
   resource_name: "node_mgmt_epg"
 
 rtctrlProfile:
+  resource_name: "route_control_profile"
   ui_locations:
     - "Tenants -> Networking -> L3Outs -> Route map for import and export Route Control"
     - "Tenants -> Policies -> Protocol -> Route Maps for Route Control"
@@ -594,3 +595,23 @@ infraRsPathToAccBaseGrp:
     - "Fabric -> Access Policies -> Interfaces -> Spine Interfaces -> Overrides"
   sub_category: "Access Policies"
   resource_name: "relation_to_access_interface_policy_group"
+
+l3extRsLblToInstP:
+  resource_name: "relation_from_l3out_consumer_label_to_external_epg"
+  ui_locations:
+    - "Tenants -> Networking -> L3Outs -> Policy -> Main -> Consumer Label"
+  sub_category: "L3Out"
+  dn_formats:
+    - "uni/tn-{name}/out-{name}/conslbl-{name}/rslblToInstP-[{tDn}]"
+  resource_notes:
+    - "This resource should not be used in combination with the `l3out_consumer_label` nested attributes of other resources for the same object. Doing so will result in unexpected behaviour."
+
+l3extRsLblToProfile:
+  resource_name: "relation_from_l3out_consumer_label_to_route_control_profile"
+  ui_locations:
+    - "Tenants -> Networking -> L3Outs -> Policy -> Main -> Consumer Label"
+  sub_category: "L3Out"
+  dn_formats:
+    - "uni/tn-{name}/out-{name}/conslbl-{name}/rslblToProfile-[{tDn}]-{direction}"
+  resource_notes:
+    - "This resource should not be used in combination with the `l3out_consumer_label` nested attributes of other resources for the same object. Doing so will result in unexpected behaviour."

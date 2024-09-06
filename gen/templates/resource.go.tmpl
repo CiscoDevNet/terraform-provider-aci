@@ -73,7 +73,7 @@ type {{.ResourceClassName}}ResourceModel struct {
 		{{- end}}
 	{{- end}}
 	{{- range .Children}}
-	{{ .ResourceClassName }} types.Set `tfsdk:"{{- .ResourceName}}"`
+	{{ .ResourceClassName }} types.Set `tfsdk:"{{overwriteProperty .PkgName .ResourceName $.Definitions}}"`
 	{{- end}}
 	{{- if .LegacyAttributes}}
 		{{- range .LegacyAttributes}}{{- if ne .ReplacedBy.AttributeName "" }}
@@ -965,7 +965,7 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 				{{- end}}
 			{{- end}}
 			{{- range .Children}}
-			"{{- .ResourceName}}": schema.SetNestedAttribute{
+			"{{overwriteProperty .PkgName .ResourceName $.Definitions}}": schema.SetNestedAttribute{
 				MarkdownDescription: `{{.Comment}}`,
 				Optional:            true,
 				Computed:            true,

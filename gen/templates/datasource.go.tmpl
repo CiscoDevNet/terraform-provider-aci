@@ -105,7 +105,7 @@ func (d *{{.ResourceClassName}}DataSource) Schema(ctx context.Context, req datas
 			},{{- end}}
 			{{- end}}
 			{{- range .Children}}
-			"{{.ResourceName}}": schema.SetNestedAttribute{
+			"{{overwriteProperty .PkgName .ResourceName $.Definitions}}": schema.SetNestedAttribute{
 				MarkdownDescription: `{{.Comment}}`,
 				Computed:            true,
 				NestedObject: schema.NestedAttributeObject{

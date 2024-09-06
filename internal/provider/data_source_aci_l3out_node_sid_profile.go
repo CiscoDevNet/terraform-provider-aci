@@ -42,7 +42,7 @@ func (d *MplsNodeSidPDataSource) Schema(ctx context.Context, req datasource.Sche
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the L3out Node SR-MPLS Segment ID Profile object.",
+				MarkdownDescription: "The distinguished name (DN) of the L3Out Node SR-MPLS Segment ID Profile object.",
 			},
 			"parent_dn": schema.StringAttribute{
 				Required:            true,
@@ -50,27 +50,27 @@ func (d *MplsNodeSidPDataSource) Schema(ctx context.Context, req datasource.Sche
 			},
 			"annotation": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The annotation of the L3out Node SR-MPLS Segment ID Profile object.`,
+				MarkdownDescription: `The annotation of the L3Out Node SR-MPLS Segment ID Profile object.`,
 			},
 			"description": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The description of the L3out Node SR-MPLS Segment ID Profile object.`,
+				MarkdownDescription: `The description of the L3Out Node SR-MPLS Segment ID Profile object.`,
 			},
 			"loopback_address": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The loopback address of the L3out Node SR-MPLS Segment ID Profile object.`,
+				MarkdownDescription: `The loopback address of the L3Out Node SR-MPLS Segment ID Profile object.`,
 			},
 			"name": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The name of the L3out Node SR-MPLS Segment ID Profile object.`,
+				MarkdownDescription: `The name of the L3Out Node SR-MPLS Segment ID Profile object.`,
 			},
 			"name_alias": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The name alias of the L3out Node SR-MPLS Segment ID Profile object.`,
+				MarkdownDescription: `The name alias of the L3Out Node SR-MPLS Segment ID Profile object.`,
 			},
 			"segment_id": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: `The segment ID of the L3out Node SR-MPLS Segment ID Profile object.`,
+				MarkdownDescription: `The segment ID of the L3Out Node SR-MPLS Segment ID Profile object.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,
