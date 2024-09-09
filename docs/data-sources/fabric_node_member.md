@@ -30,17 +30,17 @@ data "aci_fabric_node_member" "example" {
 
 ## Argument Reference
 
-- `serial` - (Required) Serial Number for the new Fabric Node Member. Type: String.
+- `serial` - (Required) Serial Number of the Fabric Node Member. Type: String.
 
 ## Attribute Reference
 
-- `id` - (Read-Only) Attribute id set to the Dn of the Fabric Node Member. Type: String.
-- `annotation` - (Read-Only) Specifies the annotation of a Fabric Node member. Type: String.
-- `ext_pool_id` - (Read-Only) External pool ID for object Fabric Node member. Type: String.
-- `fabric_id` - (Read-Only) Fabric ID for the new Fabric Node Member. Type: String.
-- `name_alias` - (Read-Only) Name alias for object Fabric Node member. Type: String.
-- `node_id` - (Read-Only) Node ID Number for the new Fabric Node Member. Type: String.
-- `node_type` - (Read-Only) Node type for object Fabric Node member. Type: String.
-- `pod_id` - (Read-Only) The pod id of the new Fabric Node Member. Type: String.
-- `role` - (Read-Only) Role for the new Fabric Node Member. Type: String.
-- `commission` - (Read-Only) Commission a node from the switch. Type: String.
+- `id` - (Read-Only) Attribute ID set to the DN of the Fabric Node Member. Type: String.
+- `annotation` - (Read-Only) Specifies the annotation of a Fabric Node Member. Type: String.
+- `ext_pool_id` - (Read-Only) External pool ID of object Fabric Node Member. Type: String.
+- `fabric_id` - (Read-Only) Fabric ID of the Fabric Node Member. Type: String.
+- `name_alias` - (Read-Only) Name alias of object Fabric Node Member. Type: String.
+- `node_id` - (Read-Only) Node ID Number of the Fabric Node Member. Type: String.
+- `node_type` - (Read-Only) Node type of object Fabric Node Member. Type: String.
+- `pod_id` - (Read-Only) Pod ID of the Fabric Node Member. Type: String.
+- `role` - (Read-Only) Role of the Fabric Node Member. Type: String.
+- `commission` - (Read-Only) Commission a node from the switch to make it an active member of the fabric. Type: String.
