@@ -41,22 +41,24 @@ resource "aci_fabric_node_member" "example" {
 
 ## Argument Reference
 
-- `serial` - (Required) Serial Number for the new Fabric Node Member. Type: String.
+- `serial` - (Required) Serial Number of the Fabric Node Member. Type: String.
 - `name` - (Required) Name of Fabric Node member. Type: String.
 - `annotation` - (Optional) Specifies the annotation of a Fabric Node member. Type: String.
 - `description` - (Optional) Specifies the description of a Fabric Node member. Type: String.
-- `ext_pool_id` - (Optional) External pool ID for object Fabric Node member. Default value: "0". Type: String.
-- `fabric_id` - (Optional) Fabric ID for the new Fabric Node Member. Default value: "1". Type: String.
-- `name_alias` - (Optional) Name alias for object Fabric Node member. Type: String.
-- `node_id` - (Optional) Node ID Number for the new Fabric Node Member. Allowed value range: "101" - "4000". Default value: "0". Type: String.
-- `node_type` - (Optional) Node type for object Fabric Node member. Type: String.
-  Allowed values: "unspecified", "remote-leaf-wan". Default value: "unspecified". Type: String.
-- `pod_id` - (Optional) The pod id of the new Fabric Node Member. Allowed value range: "1" - "254". Default value: "1". Type: String.
-- `role` - (Optional) Role for the new Fabric Node Member. Type: String.
+- `ext_pool_id` - (Optional) External pool ID of object Fabric Node member. Default value: "0". Type: String.
+- `fabric_id` - (Optional) Fabric ID of the Fabric Node Member. Default value: "1". Type: String.
+- `name_alias` - (Optional) Name alias of object Fabric Node member. Type: String.
+- `node_id` - (Optional) Node ID Number of the Fabric Node Member. Type: String.
+  Allowed value range: "101" - "4000". Default value: "0".
+- `node_type` - (Optional) Node type of object Fabric Node member. Type: String.
+  Allowed values are "unspecified", "remote-leaf-wan", "tier-2-leaf", "virtual", "border-gateway". Default value: "unspecified".
+- `pod_id` - (Optional) The pod ID of the Fabric Node Member. Type: String.
+  Allowed value range: "1" - "254". Default value: "1".
+- `role` - (Optional) Role of the Fabric Node Member. Type: String.
   Allowed values: "unspecified", "leaf", "spine". Default value: "unspecified". Type: String.
-- `commission` - (Optional) Commission a node from the switch. Type: String.
-  Allowed values: "yes", "no". Default value: "yes".  Type: String. 
-  - When commission is set to "no" the node will only be decommissioned and not removed from the controller.
+- `commission` - (Optional) Commission a node from the switch to make it an active member of the fabric. Type: String.
+  Allowed values: "yes", "no". Default value: "yes".
+  - When commission is set to "no" the node will only be decommissioned and not removed from the APIC. This node can be recommissioned and does not need to be created as a new object.
 
 ## Attribute Reference
 
