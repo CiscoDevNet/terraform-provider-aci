@@ -2199,7 +2199,7 @@ func (m *Model) GetOverwriteAttributeMigration(definitions Definitions, attribut
 				for classNameDefinition, classValues := range value.(map[interface{}]interface{}) {
 					if classNameDefinition.(string) == className {
 						for migrationKey, migrationValue := range classValues.(map[interface{}]interface{}) {
-							if strings.Contains(migrationKey.(string), attributeName) {
+							if migrationKey.(string) == attributeName {
 								return ReplacementAttribute{AttributeName: migrationValue.(string), ClassName: className}
 							}
 						}
