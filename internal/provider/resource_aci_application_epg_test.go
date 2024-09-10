@@ -661,7 +661,7 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "tags.#", "0"),
 				),
 			},
-			// Update with minimum config and customtype semantic equivalent values
+			// Update with minimum config and custom type semantic equivalent values
 			{
 				Config:             testConfigFvAEPgCustomTypeDependencyWithFvAp,
 				ExpectNonEmptyPlan: false,

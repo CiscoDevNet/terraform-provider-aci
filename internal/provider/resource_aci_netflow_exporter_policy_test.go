@@ -272,7 +272,7 @@ func TestAccResourceNetflowExporterPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "tags.#", "0"),
 				),
 			},
-			// Update with minimum config and customtype semantic equivalent values
+			// Update with minimum config and custom type semantic equivalent values
 			{
 				Config:             testConfigNetflowExporterPolCustomTypeDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,

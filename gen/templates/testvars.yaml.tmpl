@@ -53,7 +53,7 @@ resource_required:
   {{- end}}
   {{- if .HasCustomTypeProperties}}
 
-customtype:
+custom_type:
     {{- range .Properties}}{{$testValue := createTestValue .SnakeCaseName}}{{$overwritePropertyName := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
       {{- if .HasCustomType}}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: {{$validValuesMap := .ValidValuesMap}}{{range $key, $value := $validValuesMap}}{{if or (ne $value "unspecified") (eq (len $validValuesMap) 1)}}"{{$key}}"{{break}}{{end}}{{end}}

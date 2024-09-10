@@ -27,7 +27,7 @@ resource_required:
   name: "netfow_exporter"
   source_ip_address: "1.1.1.1/10"
 
-customtype:
+custom_type:
   qos_dscp_value: "0"
   destination_ip_address: "2.2.2.1"
   destination_port: "110"
@@ -84,5 +84,5 @@ child_targets:
   - class_name: "fvAEPg"
     target_dn: "uni/tn-test_tenant/ap-test_ap/epg-test_epg"
     target_dn_overwrite_docs: "aci_application_epg.example.id"
-    relation_resource_name: "epg"
+    relation_resource_name: "application_epg"
     static: true

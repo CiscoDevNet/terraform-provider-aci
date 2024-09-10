@@ -214,7 +214,7 @@ func TestAccResourceMgmtInstP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "tags.#", "0"),
 				),
 			},
-			// Update with minimum config and customtype semantic equivalent values
+			// Update with minimum config and custom type semantic equivalent values
 			{
 				Config: testConfigMgmtInstPCustomType,
 				Check: resource.ComposeAggregateTestCheckFunc(

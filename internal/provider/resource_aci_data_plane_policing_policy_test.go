@@ -375,7 +375,7 @@ func TestAccResourceQosDppPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "tags.#", "0"),
 				),
 			},
-			// Update with minimum config and customtype semantic equivalent values
+			// Update with minimum config and custom type semantic equivalent values
 			{
 				Config:             testConfigQosDppPolCustomTypeDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,

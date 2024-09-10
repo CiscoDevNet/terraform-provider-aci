@@ -412,13 +412,13 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 				),
 			},
 		{{- end}}
-		{{- if $.customtype}}
-			// Update with minimum config and customtype semantic equivalent values
+		{{- if $.custom_type}}
+			// Update with minimum config and custom type semantic equivalent values
 			{
 				Config: testConfig{{$.resourceClassName}}CustomTypeDependencyWith{{capitalize .class_name}},
 				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
-			{{- range $key, $value := $.customtype}}
+			{{- range $key, $value := $.custom_type}}
 				{{- if eq $key "target_dn" }}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}", "{{$key}}", "{{getTestTargetDn $.targets $.resourceName $value false $target_classes 0 false}}"),
 				{{- else }}
@@ -821,12 +821,12 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 				),
 			},
 	{{- end}}
-		{{- if $.customtype}}
-			// Update with minimum config and customtype semantic equivalent values
+		{{- if $.custom_type}}
+			// Update with minimum config and custom type semantic equivalent values
 			{
 				Config: testConfig{{$.resourceClassName}}CustomType,
 				Check: resource.ComposeAggregateTestCheckFunc(
-			{{- range $key, $value := $.customtype}}
+			{{- range $key, $value := $.custom_type}}
 				{{- if eq $key "target_dn" }}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{getTestTargetDn $.targets $.resourceName $value false nil 0 false}}"),
 				{{- else }}
@@ -1070,11 +1070,11 @@ resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClas
 `
 		{{- end}}
 
-		{{if $.customtype}}
+		{{if $.custom_type}}
 const testConfig{{$.resourceClassName}}CustomTypeDependencyWith{{capitalize .class_name}} = {{- if $dependencies }} testDependencyConfig{{$.resourceClassName}} + {{- end }} testConfig{{capitalize .class_name}}Min{{- if ne .parent_dependency ""}}DependencyWith{{capitalize .parent_dependency}}{{if and (ne .parent_dependency_name nil) (ne .parent_dependency_name "")}}{{capitalize .parent_dependency_name }}{{- end }}{{- end}} + `
 resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}" {
   parent_dn = {{.parent_dn}}
-  		{{- range $key, $value := $.customtype}}
+  		{{- range $key, $value := $.custom_type}}
   			{{- if eq $key "target_dn" }}{{$attributeValue := getTestTargetDn $.targets $.resourceName $value true $target_classes 0 false}}
   {{$key}} = {{if containsString $attributeValue "."}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}
   			{{- else }}
@@ -1246,10 +1246,10 @@ resource "aci_{{$.resourceName}}" "test" {
 `
 	{{- end}}
 
-	{{if $.customtype}}
+	{{if $.custom_type}}
 const testConfig{{.resourceClassName}}CustomType = `
 resource "aci_{{$.resourceName}}" "test" {
-	{{- range $key, $value := $.customtype}}
+	{{- range $key, $value := $.custom_type}}
   {{$key}} = "{{$value}}"
 	{{- end}}
 }

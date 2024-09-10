@@ -57,6 +57,10 @@ resource_name_overwrite:
   relation_from_l3out_consumer_label_to_external_epg: "external_network_instance_profile"
   relation_to_external_epgs: "external_network_instance_profile"
   relation_from_l3out_consumer_label_to_route_control_profile: "route_control_profile"
+  relation_to_vrf: "vrf"
+  relation_from_netflow_exporter_to_vrf: "vrf"
+  relation_to_epg: "application_epg"
+  relation_from_netflow_exporter_to_epg: "application_epg"
 
 l3extRsRedistributePol:
   overwrites:
@@ -93,11 +97,11 @@ mgmtSubnet:
       ip: "2.2.2.0/24"
 
 mgmtInstP:
-  ignore_customtype_docs:
+  ignore_custom_type_docs:
     - "Prio"
 
 mgmtRsOoBCons:
-  ignore_customtype_docs:
+  ignore_custom_type_docs:
     - "Prio"
 
 l3extConsLbl:
@@ -416,7 +420,7 @@ fvRsScope:
 fvRsCons:
   ignores:
     - "intent"
-  ignore_customtype_docs:
+  ignore_custom_type_docs:
     - "Prio"
   parents:
     - class_name: "fvESg"
@@ -427,7 +431,7 @@ fvRsCons:
 fvRsProv:
   ignores:
     - "intent"
-  ignore_customtype_docs:
+  ignore_custom_type_docs:
     - "Prio"
   parents:
     - class_name: "fvESg"
@@ -436,7 +440,7 @@ fvRsProv:
       parent_dependency: "fvAp"
 
 fvRsConsIf:
-  ignore_customtype_docs:
+  ignore_custom_type_docs:
     - "Prio"
   parents:
     - class_name: "fvESg"
@@ -673,7 +677,7 @@ fvAEPg:
   remove_valid_values:
     pcTag:
       - "any"
-  ignore_customtype_docs:
+  ignore_custom_type_docs:
     - "Prio"
   default_values:
     shutdown: "no"
@@ -981,6 +985,8 @@ netflowExporterPol:
       parent_dn: "aci_tenant.test.id"
 
 netflowRsExporterToEPg:
+  overwrites:
+    relation_from_netflow_exporter_to_epg: "relation_to_epg"
   parents:
     - class_name: "netflowExporterPol"
       target_classes:
@@ -989,10 +995,12 @@ netflowRsExporterToEPg:
     - class_name: "fvAEPg"
       target_dn: "uni/tn-test_tenant/ap-test_ap/epg-test_epg"
       target_dn_overwrite_docs: "aci_application_epg.example.id"
-      relation_resource_name: "epg"
+      relation_resource_name: "application_epg"
       static: true
 
 netflowRsExporterToCtx:
+  overwrites:
+    relation_from_netflow_exporter_to_vrf: "relation_to_vrf"
   parents:
     - class_name: "netflowExporterPol"
       target_classes:
