@@ -39,7 +39,7 @@ datasource_required:
 resource_required:
   name: "test_name"
 
-customtype:
+custom_type:
   excessive_burst: "0xffffffffffffffff"
   burst: "0xffffffffffffffff"
   conform_mark_cos: "0xffff"

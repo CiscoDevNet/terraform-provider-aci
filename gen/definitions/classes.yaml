@@ -353,7 +353,7 @@ netflowExporterPol:
   sub_category: "Tenant Policies"
 
 netflowRsExporterToEPg:
-  resource_name: "relation_to_epg"
+  resource_name: "relation_from_netflow_exporter_to_epg"
   ui_locations:
     - "Tenants -> Policies -> NetFlow -> NetFlow Exporters"
     - "Fabric -> Access Policies -> Policies -> Interface -> NetFlow -> NetFlow Exporters"
@@ -365,7 +365,7 @@ netflowRsExporterToEPg:
     - "l2extInstP"
 
 netflowRsExporterToCtx:
-  resource_name: "relation_to_vrf"
+  resource_name: "relation_from_netflow_exporter_to_vrf"
   ui_locations:
     - "Tenants -> Policies -> NetFlow -> NetFlow Exporters"
     - "Fabric -> Access Policies -> Policies -> Interface -> NetFlow -> NetFlow Exporters"

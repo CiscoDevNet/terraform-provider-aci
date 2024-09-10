@@ -107,7 +107,7 @@ func (d *NetflowExporterPolDataSource) Schema(ctx context.Context, req datasourc
 					Attributes: map[string]schema.Attribute{
 						"annotation": schema.StringAttribute{
 							Computed:            true,
-							MarkdownDescription: `The annotation of the Relation To VRF object.`,
+							MarkdownDescription: `The annotation of the Relation From NetFlow Exporter To VRF object.`,
 						},
 						"target_dn": schema.StringAttribute{
 							Computed:            true,
@@ -123,7 +123,7 @@ func (d *NetflowExporterPolDataSource) Schema(ctx context.Context, req datasourc
 					Attributes: map[string]schema.Attribute{
 						"annotation": schema.StringAttribute{
 							Computed:            true,
-							MarkdownDescription: `The annotation of the Relation To EPG object.`,
+							MarkdownDescription: `The annotation of the Relation From NetFlow Exporter To EPG object.`,
 						},
 						"target_dn": schema.StringAttribute{
 							Computed:            true,

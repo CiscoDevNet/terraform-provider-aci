@@ -138,18 +138,18 @@ All examples for the NetFlow Exporter Policy resource can be found in the [examp
   - Default: `v9`
   - Valid Values: `cisco-v1`, `v5`, `v9`.
 
-* `relation_to_vrf` - (list) A list of Relation To VRF (ACI object [netflowRsExporterToCtx](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRsExporterToCtx/overview)) pointing to VRF (ACI Object [fvCtx](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvCtx/overview)) which can be configured using the [aci_vrf](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vrf) resource.
+* `relation_to_vrf` - (list) A list of Relation From NetFlow Exporter To VRF (ACI object [netflowRsExporterToCtx](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRsExporterToCtx/overview)) pointing to VRF (ACI Object [fvCtx](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvCtx/overview)) which can be configured using the [aci_vrf](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vrf) resource.
     - Max Items: 1
   
 
   #### Optional ####
     
-  * `annotation` (annotation) - (string) The annotation of the Relation To VRF object.
+  * `annotation` (annotation) - (string) The annotation of the Relation From NetFlow Exporter To VRF object.
       - Default: `orchestrator:terraform`
   * `target_dn` (tDn) - (string) The distinguished name of the target.
 
       
-* `relation_to_epg` - (list) A list of Relation To EPG (ACI object [netflowRsExporterToEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRsExporterToEPg/overview)). This relation can point to multiple ACI objects:
+* `relation_to_epg` - (list) A list of Relation From NetFlow Exporter To EPG (ACI object [netflowRsExporterToEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRsExporterToEPg/overview)). This relation can point to multiple ACI objects:
     - [fvAEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvAEPg/overview) which can be configured using the [aci_application_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/application_epg) resource.
     - [l3extInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extInstP/overview) which can be configured using the [aci_external_network_instance_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/external_network_instance_profile) resource.
     - [l2extInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l2extInstP/overview) which can be configured using the [aci_l2out_extepg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l2out_extepg) resource.
@@ -157,7 +157,7 @@ All examples for the NetFlow Exporter Policy resource can be found in the [examp
 
   #### Optional ####
     
-  * `annotation` (annotation) - (string) The annotation of the Relation To EPG object.
+  * `annotation` (annotation) - (string) The annotation of the Relation From NetFlow Exporter To EPG object.
       - Default: `orchestrator:terraform`
   * `target_dn` (tDn) - (string) The distinguished name of the target.
 

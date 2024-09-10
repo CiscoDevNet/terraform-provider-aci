@@ -15,7 +15,7 @@ datasource_required:
 resource_required:
   out_of_band_contract_name: "test_tn_vz_oob_br_cp_name"
 
-customtype:
+custom_type:
   priority: "1"
   out_of_band_contract_name: "test_tn_vz_oob_br_cp_name"
 

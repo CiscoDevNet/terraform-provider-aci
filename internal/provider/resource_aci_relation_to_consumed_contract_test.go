@@ -183,7 +183,7 @@ func TestAccResourceFvRsConsWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "tags.#", "0"),
 				),
 			},
-			// Update with minimum config and customtype semantic equivalent values
+			// Update with minimum config and custom type semantic equivalent values
 			{
 				Config:             testConfigFvRsConsCustomTypeDependencyWithFvAEPg,
 				ExpectNonEmptyPlan: false,
@@ -367,7 +367,7 @@ func TestAccResourceFvRsConsWithFvESg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "tags.#", "0"),
 				),
 			},
-			// Update with minimum config and customtype semantic equivalent values
+			// Update with minimum config and custom type semantic equivalent values
 			{
 				Config:             testConfigFvRsConsCustomTypeDependencyWithFvESg,
 				ExpectNonEmptyPlan: false,

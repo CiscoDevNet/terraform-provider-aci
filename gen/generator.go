@@ -2448,7 +2448,7 @@ func IsRequiredInTestValue(classPkgName, propertyName string, definitions Defini
 func HasCustomTypeDocs(classPkgName, propertyName string, definitions Definitions) bool {
 	if classDetails, ok := definitions.Properties[classPkgName]; ok {
 		for key, value := range classDetails.(map[interface{}]interface{}) {
-			if key.(string) == "ignore_customtype_docs" {
+			if key.(string) == "ignore_custom_type_docs" {
 				for _, property := range value.([]interface{}) {
 					if property.(string) == propertyName {
 						return false

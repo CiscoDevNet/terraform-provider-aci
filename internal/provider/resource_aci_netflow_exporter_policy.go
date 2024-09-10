@@ -366,7 +366,7 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
-							MarkdownDescription: `The annotation of the Relation To VRF object.`,
+							MarkdownDescription: `The annotation of the Relation From NetFlow Exporter To VRF object.`,
 						},
 						"target_dn": schema.StringAttribute{
 							Optional: true,
@@ -397,7 +397,7 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
-							MarkdownDescription: `The annotation of the Relation To EPG object.`,
+							MarkdownDescription: `The annotation of the Relation From NetFlow Exporter To EPG object.`,
 						},
 						"target_dn": schema.StringAttribute{
 							Optional: true,
