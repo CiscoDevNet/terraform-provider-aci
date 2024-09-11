@@ -67,7 +67,6 @@ func dataSourceAciFabricNodeMember() *schema.Resource {
 
 			"commission": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
 		}),
