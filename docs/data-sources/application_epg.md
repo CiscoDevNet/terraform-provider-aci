@@ -63,7 +63,7 @@ data "aci_application_epg" "example_application_profile" {
 * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
 * `admin_state` (shutdown) - (string) Withdraw AEPg Configuration from all Nodes in the Fabric.
 
-* `epg_useg_block_statement` - (list) A list of EPG uSeg Block Statement (ACI object [fvCrtrn](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvCrtrn/overview)). This attribute is supported in ACI versions: 1.1(1j) and later.
+* `epg_useg_block_statement` - (map) A map of EPG uSeg Block Statement (ACI object [fvCrtrn](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvCrtrn/overview)). This attribute is supported in ACI versions: 1.1(1j) and later.
   * `annotation` (annotation) - (string) The annotation of the EPG uSeg Block Statement object.
   * `description` (descr) - (string) The description of the EPG uSeg Block Statement object.
   * `match` (match) - (string) The Matching Rule Type of the EPG uSeg Block Statement object.
@@ -74,11 +74,11 @@ data "aci_application_epg" "example_application_profile" {
   * `precedence` (prec) - (string) The precedence of the EPG uSeg Block Statement object.
   * `scope` (scope) - (string) The scope of the EPG uSeg Block Statement object.
 
-* `relation_to_application_epg_monitoring_policy` - (list) A list of Relation To Application EPG Monitoring Policy (ACI object [fvRsAEPgMonPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsAEPgMonPol/overview)) pointing to Monitoring Policy (ACI Object [monEPGPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/monEPGPol/overview)).
+* `relation_to_application_epg_monitoring_policy` - (map) A map of Relation To Application EPG Monitoring Policy (ACI object [fvRsAEPgMonPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsAEPgMonPol/overview)) pointing to Monitoring Policy (ACI Object [monEPGPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/monEPGPol/overview)).
   * `annotation` (annotation) - (string) The annotation of the Relation To Application EPG Monitoring Policy object.
   * `monitoring_policy_name` (tnMonEPGPolName) - (string) The name of the monitoring policy.
 
-* `relation_to_bridge_domain` - (list) A list of Relation To Bridge Domain (ACI object [fvRsBd](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsBd/overview)) pointing to Bridge Domain (ACI Object [fvBD](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvBD/overview)).
+* `relation_to_bridge_domain` - (map) A map of Relation To Bridge Domain (ACI object [fvRsBd](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsBd/overview)) pointing to Bridge Domain (ACI Object [fvBD](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvBD/overview)).
   * `annotation` (annotation) - (string) The annotation of the Relation To Bridge Domain object.
   * `bridge_domain_name` (tnFvBDName) - (string) The name of the bridge domain associated with this EPG.
 
@@ -92,7 +92,7 @@ data "aci_application_epg" "example_application_profile" {
   * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
   * `imported_contract_name` (tnVzCPIfName) - (string) The contract interface name.
 
-* `relation_to_custom_qos_policy` - (list) A list of Relation To Custom Qos Policy (ACI object [fvRsCustQosPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsCustQosPol/overview)) pointing to Custom Qos Policy (ACI Object [qosCustomPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/qosCustomPol/overview)).
+* `relation_to_custom_qos_policy` - (map) A map of Relation To Custom Qos Policy (ACI object [fvRsCustQosPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsCustQosPol/overview)) pointing to Custom Qos Policy (ACI Object [qosCustomPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/qosCustomPol/overview)).
   * `annotation` (annotation) - (string) The annotation of the Relation To Custom Qos Policy object.
   * `custom_qos_policy_name` (tnQosCustomPolName) - (string) The Custom QoS traffic policy name.
 
@@ -129,11 +129,11 @@ data "aci_application_epg" "example_application_profile" {
   * `untagged` (untagged) - (string) The untagged status of the Relation To Domain object.
   * `vnet_only` (vnetOnly) - (string) The VNET only status of the Relation To Domain object.
 
-* `relation_to_data_plane_policing_policy` - (list) A list of Relation To Data Plane Policing Policy (ACI object [fvRsDppPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsDppPol/overview)) pointing to Data Plane Policing Policy (ACI Object [qosDppPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/qosDppPol/overview)). This attribute is supported in ACI versions: 3.0(1k) and later.
+* `relation_to_data_plane_policing_policy` - (map) A map of Relation To Data Plane Policing Policy (ACI object [fvRsDppPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsDppPol/overview)) pointing to Data Plane Policing Policy (ACI Object [qosDppPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/qosDppPol/overview)). This attribute is supported in ACI versions: 3.0(1k) and later.
   * `annotation` (annotation) - (string) The annotation of the Relation To Data Plane Policing Policy object.
   * `data_plane_policing_policy_name` (tnQosDppPolName) - (string) Name.
 
-* `relation_to_fibre_channel_paths` - (list) A list of Relation To Fibre Channel Paths (ACI object [fvRsFcPathAtt](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsFcPathAtt/overview)) pointing to  (ACI Object [fabricPathEp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fabricPathEp/overview)). This attribute is supported in ACI versions: 2.0(1m) and later.
+* `relation_to_fibre_channel_paths` - (list) A list of Relation To Fibre Channel Paths (ACI object [fvRsFcPathAtt](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsFcPathAtt/overview)) pointing to Fabric Path Endpoint (ACI Object [fabricPathEp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fabricPathEp/overview)). This attribute is supported in ACI versions: 2.0(1m) and later.
   * `annotation` (annotation) - (string) The annotation of the Relation To Fibre Channel Path object.
   * `description` (descr) - (string) The description of the Relation To Fibre Channel Path object.
   * `target_dn` (tDn) - (string) The distinguished name of the target.
@@ -152,7 +152,7 @@ data "aci_application_epg" "example_application_profile" {
   * `mode` (mode) - (string) The static association mode with the path of the Relation To Static Leaf object.
   * `target_dn` (tDn) - (string) The distinguished name of the target of this static binding.
 
-* `relation_to_static_paths` - (list) A list of Relation To Static Paths (ACI object [fvRsPathAtt](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsPathAtt/overview)) pointing to  (ACI Object [fabricPathEp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fabricPathEp/overview)).
+* `relation_to_static_paths` - (list) A list of Relation To Static Paths (ACI object [fvRsPathAtt](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsPathAtt/overview)) pointing to Fabric Path Endpoint (ACI Object [fabricPathEp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fabricPathEp/overview)).
   * `annotation` (annotation) - (string) The annotation of the Relation To Static Path object.
   * `description` (descr) - (string) The description of the Relation To Static Path object.
   * `encapsulation` (encap) - (string) The VLAN encapsulation of the Relation To Static Path object.
@@ -175,7 +175,7 @@ data "aci_application_epg" "example_application_profile" {
   * `annotation` (annotation) - (string) The annotation of the Relation To Contract Master object.
   * `target_dn` (tDn) - (string) The distinguished name of the target.
 
-* `relation_to_trust_control_policy` - (list) A list of Relation To Trust Control Policy (ACI object [fvRsTrustCtrl](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsTrustCtrl/overview)) pointing to Trust Control Policy (ACI Object [fhsTrustCtrlPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fhsTrustCtrlPol/overview)). This attribute is supported in ACI versions: 3.0(1k) and later.
+* `relation_to_trust_control_policy` - (map) A map of Relation To Trust Control Policy (ACI object [fvRsTrustCtrl](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsTrustCtrl/overview)) pointing to Trust Control Policy (ACI Object [fhsTrustCtrlPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fhsTrustCtrlPol/overview)). This attribute is supported in ACI versions: 3.0(1k) and later.
   * `annotation` (annotation) - (string) The annotation of the Relation To Trust Control Policy object.
   * `trust_control_policy_name` (tnFhsTrustCtrlPolName) - (string) Name.
 

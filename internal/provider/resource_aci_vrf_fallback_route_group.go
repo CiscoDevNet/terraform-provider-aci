@@ -13,12 +13,12 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
-	"github.com/hashicorp/terraform-plugin-framework-validators/setvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
@@ -51,7 +51,7 @@ type FvFBRGroupResourceModel struct {
 	Name          types.String `tfsdk:"name"`
 	NameAlias     types.String `tfsdk:"name_alias"`
 	FvFBRMember   types.Set    `tfsdk:"vrf_fallback_route_group_members"`
-	FvFBRoute     types.Set    `tfsdk:"vrf_fallback_routes"`
+	FvFBRoute     types.Object `tfsdk:"vrf_fallback_route"`
 	TagAnnotation types.Set    `tfsdk:"annotations"`
 	TagTag        types.Set    `tfsdk:"tags"`
 }
@@ -73,14 +73,12 @@ func getEmptyFvFBRGroupResourceModel() *FvFBRGroupResourceModel {
 				"fallback_member": types.StringType,
 			},
 		}),
-		FvFBRoute: types.SetNull(types.ObjectType{
-			AttrTypes: map[string]attr.Type{
-				"annotation":     types.StringType,
-				"description":    types.StringType,
-				"prefix_address": types.StringType,
-				"name":           types.StringType,
-				"name_alias":     types.StringType,
-			},
+		FvFBRoute: types.ObjectNull(map[string]attr.Type{
+			"annotation":     types.StringType,
+			"description":    types.StringType,
+			"prefix_address": types.StringType,
+			"name":           types.StringType,
+			"name_alias":     types.StringType,
 		}),
 		TagAnnotation: types.SetNull(types.ObjectType{
 			AttrTypes: map[string]attr.Type{
@@ -135,6 +133,14 @@ func getEmptyFvFBRouteFvFBRGroupResourceModel() FvFBRouteFvFBRGroupResourceModel
 	}
 }
 
+var FvFBRouteFvFBRGroupType = map[string]attr.Type{
+	"annotation":     types.StringType,
+	"description":    types.StringType,
+	"prefix_address": types.StringType,
+	"name":           types.StringType,
+	"name_alias":     types.StringType,
+}
+
 // TagAnnotationFvFBRGroupResourceModel describes the resource data model for the children without relation ships.
 type TagAnnotationFvFBRGroupResourceModel struct {
 	Key   types.String `tfsdk:"key"`
@@ -167,9 +173,10 @@ type FvFBRGroupIdentifier struct {
 
 func (r *FvFBRGroupResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
 	if !req.Plan.Raw.IsNull() {
-		var planData, stateData *FvFBRGroupResourceModel
+		var planData, stateData, configData *FvFBRGroupResourceModel
 		resp.Diagnostics.Append(req.Plan.Get(ctx, &planData)...)
 		resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
+		resp.Diagnostics.Append(req.Config.Get(ctx, &configData)...)
 
 		if resp.Diagnostics.HasError() {
 			return
@@ -183,6 +190,12 @@ func (r *FvFBRGroupResource) ModifyPlan(ctx context.Context, req resource.Modify
 			CheckDn(ctx, &resp.Diagnostics, r.client, "fvFBRGroup", planData.Id.ValueString())
 			if resp.Diagnostics.HasError() {
 				return
+			}
+		}
+		if !configData.FvFBRoute.IsNull() && stateData != nil {
+			if IsEmptySingleNestedAttribute(configData.FvFBRoute.Attributes()) {
+				FvFBRouteObject, _ := types.ObjectValueFrom(ctx, FvFBRouteFvFBRGroupType, getEmptyFvFBRouteFvFBRGroupResourceModel())
+				planData.FvFBRoute = FvFBRouteObject
 			}
 		}
 
@@ -306,57 +319,56 @@ func (r *FvFBRGroupResource) Schema(ctx context.Context, req resource.SchemaRequ
 					},
 				},
 			},
-			"vrf_fallback_routes": schema.SetNestedAttribute{
+			"vrf_fallback_route": schema.SingleNestedAttribute{
 				MarkdownDescription: ``,
 				Optional:            true,
 				Computed:            true,
-				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+				PlanModifiers: []planmodifier.Object{
+					objectplanmodifier.UseStateForUnknown(),
 				},
-				Validators: []validator.Set{
-					setvalidator.SizeAtMost(1),
+				Validators: []validator.Object{
+					MakeSingleNestedAttributeRequiredAttributesNotProvidedValidator("vrf_fallback_route", []string{"prefix_address"}),
 				},
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"annotation": schema.StringAttribute{
-							Optional: true,
-							Computed: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
-							},
-							MarkdownDescription: `The annotation of the VRF Fallback Route object.`,
+				Attributes: map[string]schema.Attribute{
+					"annotation": schema.StringAttribute{
+						Optional: true,
+						Computed: true,
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.UseStateForUnknown(),
 						},
-						"description": schema.StringAttribute{
-							Optional: true,
-							Computed: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
-							},
-							MarkdownDescription: `The description of the VRF Fallback Route object.`,
+						MarkdownDescription: `The annotation of the VRF Fallback Route object.`,
+					},
+					"description": schema.StringAttribute{
+						Optional: true,
+						Computed: true,
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.UseStateForUnknown(),
 						},
-						"prefix_address": schema.StringAttribute{
-							Required: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
-							},
-							MarkdownDescription: `The prefix address of the VRF Fallback Route object.`,
+						MarkdownDescription: `The description of the VRF Fallback Route object.`,
+					},
+					"prefix_address": schema.StringAttribute{
+						Optional: true,
+						Computed: true,
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.UseStateForUnknown(),
 						},
-						"name": schema.StringAttribute{
-							Optional: true,
-							Computed: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
-							},
-							MarkdownDescription: `The name of the VRF Fallback Route object.`,
+						MarkdownDescription: `The prefix address of the VRF Fallback Route object.`,
+					},
+					"name": schema.StringAttribute{
+						Optional: true,
+						Computed: true,
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.UseStateForUnknown(),
 						},
-						"name_alias": schema.StringAttribute{
-							Optional: true,
-							Computed: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
-							},
-							MarkdownDescription: `The name alias of the VRF Fallback Route object.`,
+						MarkdownDescription: `The name of the VRF Fallback Route object.`,
+					},
+					"name_alias": schema.StringAttribute{
+						Optional: true,
+						Computed: true,
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.UseStateForUnknown(),
 						},
+						MarkdownDescription: `The name alias of the VRF Fallback Route object.`,
 					},
 				},
 			},
@@ -474,9 +486,9 @@ func (r *FvFBRGroupResource) Create(ctx context.Context, req resource.CreateRequ
 	var fvFBRMemberPlan, fvFBRMemberState []FvFBRMemberFvFBRGroupResourceModel
 	data.FvFBRMember.ElementsAs(ctx, &fvFBRMemberPlan, false)
 	stateData.FvFBRMember.ElementsAs(ctx, &fvFBRMemberState, false)
-	var fvFBRoutePlan, fvFBRouteState []FvFBRouteFvFBRGroupResourceModel
-	data.FvFBRoute.ElementsAs(ctx, &fvFBRoutePlan, false)
-	stateData.FvFBRoute.ElementsAs(ctx, &fvFBRouteState, false)
+	var fvFBRoutePlan, fvFBRouteState FvFBRouteFvFBRGroupResourceModel
+	data.FvFBRoute.As(ctx, &fvFBRoutePlan, basetypes.ObjectAsOptions{})
+	stateData.FvFBRoute.As(ctx, &fvFBRouteState, basetypes.ObjectAsOptions{})
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationFvFBRGroupResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
 	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
@@ -545,9 +557,9 @@ func (r *FvFBRGroupResource) Update(ctx context.Context, req resource.UpdateRequ
 	var fvFBRMemberPlan, fvFBRMemberState []FvFBRMemberFvFBRGroupResourceModel
 	data.FvFBRMember.ElementsAs(ctx, &fvFBRMemberPlan, false)
 	stateData.FvFBRMember.ElementsAs(ctx, &fvFBRMemberState, false)
-	var fvFBRoutePlan, fvFBRouteState []FvFBRouteFvFBRGroupResourceModel
-	data.FvFBRoute.ElementsAs(ctx, &fvFBRoutePlan, false)
-	stateData.FvFBRoute.ElementsAs(ctx, &fvFBRouteState, false)
+	var fvFBRoutePlan, fvFBRouteState FvFBRouteFvFBRGroupResourceModel
+	data.FvFBRoute.As(ctx, &fvFBRoutePlan, basetypes.ObjectAsOptions{})
+	stateData.FvFBRoute.As(ctx, &fvFBRouteState, basetypes.ObjectAsOptions{})
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationFvFBRGroupResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
 	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
@@ -718,8 +730,13 @@ func getAndSetFvFBRGroupAttributes(ctx context.Context, diags *diag.Diagnostics,
 			}
 			fvFBRMemberSet, _ := types.SetValueFrom(ctx, data.FvFBRMember.ElementType(ctx), FvFBRMemberFvFBRGroupList)
 			data.FvFBRMember = fvFBRMemberSet
-			fvFBRouteSet, _ := types.SetValueFrom(ctx, data.FvFBRoute.ElementType(ctx), FvFBRouteFvFBRGroupList)
-			data.FvFBRoute = fvFBRouteSet
+			if len(FvFBRouteFvFBRGroupList) == 1 {
+				fvFBRouteObject, _ := types.ObjectValueFrom(ctx, FvFBRouteFvFBRGroupType, FvFBRouteFvFBRGroupList[0])
+				data.FvFBRoute = fvFBRouteObject
+			} else {
+				fvFBRouteObject, _ := types.ObjectValueFrom(ctx, FvFBRouteFvFBRGroupType, getEmptyFvFBRouteFvFBRGroupResourceModel())
+				data.FvFBRoute = fvFBRouteObject
+			}
 			tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationFvFBRGroupList)
 			data.TagAnnotation = tagAnnotationSet
 			tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagFvFBRGroupList)
@@ -816,52 +833,37 @@ func getFvFBRGroupFvFBRMemberChildPayloads(ctx context.Context, diags *diag.Diag
 
 	return childPayloads
 }
-func getFvFBRGroupFvFBRouteChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvFBRGroupResourceModel, fvFBRoutePlan, fvFBRouteState []FvFBRouteFvFBRGroupResourceModel) []map[string]interface{} {
+func getFvFBRGroupFvFBRouteChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvFBRGroupResourceModel, fvFBRoutePlan, fvFBRouteState FvFBRouteFvFBRGroupResourceModel) []map[string]interface{} {
 
 	childPayloads := []map[string]interface{}{}
 	if !data.FvFBRoute.IsUnknown() {
-		fvFBRouteIdentifiers := []FvFBRouteIdentifier{}
-		for _, fvFBRoute := range fvFBRoutePlan {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !fvFBRoute.Annotation.IsUnknown() && !fvFBRoute.Annotation.IsNull() {
-				childMap["attributes"]["annotation"] = fvFBRoute.Annotation.ValueString()
+		childMap := map[string]map[string]interface{}{"attributes": {}}
+		if !IsEmptySingleNestedAttribute(data.FvFBRoute.Attributes()) {
+			if !fvFBRoutePlan.Annotation.IsUnknown() && !fvFBRoutePlan.Annotation.IsNull() {
+				childMap["attributes"]["annotation"] = fvFBRoutePlan.Annotation.ValueString()
 			} else {
 				childMap["attributes"]["annotation"] = globalAnnotation
 			}
-			if !fvFBRoute.Descr.IsUnknown() && !fvFBRoute.Descr.IsNull() {
-				childMap["attributes"]["descr"] = fvFBRoute.Descr.ValueString()
+			if !fvFBRoutePlan.Descr.IsUnknown() && !fvFBRoutePlan.Descr.IsNull() {
+				childMap["attributes"]["descr"] = fvFBRoutePlan.Descr.ValueString()
 			}
-			if !fvFBRoute.FbrPrefix.IsUnknown() && !fvFBRoute.FbrPrefix.IsNull() {
-				childMap["attributes"]["fbrPrefix"] = fvFBRoute.FbrPrefix.ValueString()
+			if !fvFBRoutePlan.FbrPrefix.IsUnknown() && !fvFBRoutePlan.FbrPrefix.IsNull() {
+				childMap["attributes"]["fbrPrefix"] = fvFBRoutePlan.FbrPrefix.ValueString()
 			}
-			if !fvFBRoute.Name.IsUnknown() && !fvFBRoute.Name.IsNull() {
-				childMap["attributes"]["name"] = fvFBRoute.Name.ValueString()
+			if !fvFBRoutePlan.Name.IsUnknown() && !fvFBRoutePlan.Name.IsNull() {
+				childMap["attributes"]["name"] = fvFBRoutePlan.Name.ValueString()
 			}
-			if !fvFBRoute.NameAlias.IsUnknown() && !fvFBRoute.NameAlias.IsNull() {
-				childMap["attributes"]["nameAlias"] = fvFBRoute.NameAlias.ValueString()
+			if !fvFBRoutePlan.NameAlias.IsUnknown() && !fvFBRoutePlan.NameAlias.IsNull() {
+				childMap["attributes"]["nameAlias"] = fvFBRoutePlan.NameAlias.ValueString()
 			}
-			childPayloads = append(childPayloads, map[string]interface{}{"fvFBRoute": childMap})
-			fvFBRouteIdentifier := FvFBRouteIdentifier{}
-			fvFBRouteIdentifier.FbrPrefix = fvFBRoute.FbrPrefix
-			fvFBRouteIdentifiers = append(fvFBRouteIdentifiers, fvFBRouteIdentifier)
+		} else {
+			childMap["attributes"]["fbrPrefix"] = fvFBRouteState.FbrPrefix.ValueString()
+			childMap["attributes"]["status"] = "deleted"
 		}
-		for _, fvFBRoute := range fvFBRouteState {
-			delete := true
-			for _, fvFBRouteIdentifier := range fvFBRouteIdentifiers {
-				if fvFBRouteIdentifier.FbrPrefix == fvFBRoute.FbrPrefix {
-					delete = false
-					break
-				}
-			}
-			if delete {
-				childMap := map[string]map[string]interface{}{"attributes": {}}
-				childMap["attributes"]["status"] = "deleted"
-				childMap["attributes"]["fbrPrefix"] = fvFBRoute.FbrPrefix.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"fvFBRoute": childMap})
-			}
-		}
+		childPayloads = append(childPayloads, map[string]interface{}{"fvFBRoute": childMap})
 	} else {
-		data.FvFBRoute = types.SetNull(data.FvFBRoute.ElementType(ctx))
+		FvFBRouteObject, _ := types.ObjectValueFrom(ctx, FvFBRouteFvFBRGroupType, getEmptyFvFBRouteFvFBRGroupResourceModel())
+		data.FvFBRoute = FvFBRouteObject
 	}
 
 	return childPayloads
@@ -945,7 +947,7 @@ func getFvFBRGroupTagTagChildPayloads(ctx context.Context, diags *diag.Diagnosti
 	return childPayloads
 }
 
-func getFvFBRGroupCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *FvFBRGroupResourceModel, fvFBRMemberPlan, fvFBRMemberState []FvFBRMemberFvFBRGroupResourceModel, fvFBRoutePlan, fvFBRouteState []FvFBRouteFvFBRGroupResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvFBRGroupResourceModel, tagTagPlan, tagTagState []TagTagFvFBRGroupResourceModel) *container.Container {
+func getFvFBRGroupCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *FvFBRGroupResourceModel, fvFBRMemberPlan, fvFBRMemberState []FvFBRMemberFvFBRGroupResourceModel, fvFBRoutePlan, fvFBRouteState FvFBRouteFvFBRGroupResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvFBRGroupResourceModel, tagTagPlan, tagTagState []TagTagFvFBRGroupResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 

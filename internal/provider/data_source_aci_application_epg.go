@@ -217,79 +217,73 @@ func (d *FvAEPgDataSource) Schema(ctx context.Context, req datasource.SchemaRequ
 				Computed:            true,
 				MarkdownDescription: `Withdraw AEPg Configuration from all Nodes in the Fabric.`,
 			},
-			"epg_useg_block_statement": schema.SetNestedAttribute{
+			"epg_useg_block_statement": schema.SingleNestedAttribute{
 				MarkdownDescription: `A criterion.`,
 				Computed:            true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"annotation": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The annotation of the EPG uSeg Block Statement object.`,
-						},
-						"description": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The description of the EPG uSeg Block Statement object.`,
-						},
-						"match": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The Matching Rule Type of the EPG uSeg Block Statement object.`,
-						},
-						"name": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The name of the EPG uSeg Block Statement object.`,
-						},
-						"name_alias": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The name alias of the EPG uSeg Block Statement object.`,
-						},
-						"owner_key": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The key for enabling clients to own their data for entity correlation.`,
-						},
-						"owner_tag": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
-						},
-						"precedence": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The precedence of the EPG uSeg Block Statement object.`,
-						},
-						"scope": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The scope of the EPG uSeg Block Statement object.`,
-						},
+				Attributes: map[string]schema.Attribute{
+					"annotation": schema.StringAttribute{
+						Computed:            true,
+						MarkdownDescription: `The annotation of the EPG uSeg Block Statement object.`,
+					},
+					"description": schema.StringAttribute{
+						Computed:            true,
+						MarkdownDescription: `The description of the EPG uSeg Block Statement object.`,
+					},
+					"match": schema.StringAttribute{
+						Computed:            true,
+						MarkdownDescription: `The Matching Rule Type of the EPG uSeg Block Statement object.`,
+					},
+					"name": schema.StringAttribute{
+						Computed:            true,
+						MarkdownDescription: `The name of the EPG uSeg Block Statement object.`,
+					},
+					"name_alias": schema.StringAttribute{
+						Computed:            true,
+						MarkdownDescription: `The name alias of the EPG uSeg Block Statement object.`,
+					},
+					"owner_key": schema.StringAttribute{
+						Computed:            true,
+						MarkdownDescription: `The key for enabling clients to own their data for entity correlation.`,
+					},
+					"owner_tag": schema.StringAttribute{
+						Computed:            true,
+						MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
+					},
+					"precedence": schema.StringAttribute{
+						Computed:            true,
+						MarkdownDescription: `The precedence of the EPG uSeg Block Statement object.`,
+					},
+					"scope": schema.StringAttribute{
+						Computed:            true,
+						MarkdownDescription: `The scope of the EPG uSeg Block Statement object.`,
 					},
 				},
 			},
-			"relation_to_application_epg_monitoring_policy": schema.SetNestedAttribute{
+			"relation_to_application_epg_monitoring_policy": schema.SingleNestedAttribute{
 				MarkdownDescription: `A source relation to the monitoring policy model for the endpoint group semantic scope. This is an internal object.`,
 				Computed:            true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"annotation": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The annotation of the Relation To Application EPG Monitoring Policy object.`,
-						},
-						"monitoring_policy_name": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The name of the monitoring policy.`,
-						},
+				Attributes: map[string]schema.Attribute{
+					"annotation": schema.StringAttribute{
+						Computed:            true,
+						MarkdownDescription: `The annotation of the Relation To Application EPG Monitoring Policy object.`,
+					},
+					"monitoring_policy_name": schema.StringAttribute{
+						Computed:            true,
+						MarkdownDescription: `The name of the monitoring policy.`,
 					},
 				},
 			},
-			"relation_to_bridge_domain": schema.SetNestedAttribute{
+			"relation_to_bridge_domain": schema.SingleNestedAttribute{
 				MarkdownDescription: `A source relation to the bridge domain associated to this endpoint group. This is an internal object.`,
 				Computed:            true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"annotation": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The annotation of the Relation To Bridge Domain object.`,
-						},
-						"bridge_domain_name": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The name of the bridge domain associated with this EPG.`,
-						},
+				Attributes: map[string]schema.Attribute{
+					"annotation": schema.StringAttribute{
+						Computed:            true,
+						MarkdownDescription: `The annotation of the Relation To Bridge Domain object.`,
+					},
+					"bridge_domain_name": schema.StringAttribute{
+						Computed:            true,
+						MarkdownDescription: `The name of the bridge domain associated with this EPG.`,
 					},
 				},
 			},
@@ -335,19 +329,17 @@ func (d *FvAEPgDataSource) Schema(ctx context.Context, req datasource.SchemaRequ
 					},
 				},
 			},
-			"relation_to_custom_qos_policy": schema.SetNestedAttribute{
+			"relation_to_custom_qos_policy": schema.SingleNestedAttribute{
 				MarkdownDescription: `A source relation to a custom QoS policy that enables different levels of service to be assigned to network traffic, including specifications for the Differentiated Services Code Point (DSCP) value(s) and the 802.1p Dot1p priority. This is an internal object.`,
 				Computed:            true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"annotation": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The annotation of the Relation To Custom Qos Policy object.`,
-						},
-						"custom_qos_policy_name": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The Custom QoS traffic policy name.`,
-						},
+				Attributes: map[string]schema.Attribute{
+					"annotation": schema.StringAttribute{
+						Computed:            true,
+						MarkdownDescription: `The annotation of the Relation To Custom Qos Policy object.`,
+					},
+					"custom_qos_policy_name": schema.StringAttribute{
+						Computed:            true,
+						MarkdownDescription: `The Custom QoS traffic policy name.`,
 					},
 				},
 			},
@@ -463,19 +455,17 @@ func (d *FvAEPgDataSource) Schema(ctx context.Context, req datasource.SchemaRequ
 					},
 				},
 			},
-			"relation_to_data_plane_policing_policy": schema.SetNestedAttribute{
+			"relation_to_data_plane_policing_policy": schema.SingleNestedAttribute{
 				MarkdownDescription: `Relationship for Dpp QOS policy`,
 				Computed:            true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"annotation": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The annotation of the Relation To Data Plane Policing Policy object.`,
-						},
-						"data_plane_policing_policy_name": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `Name.`,
-						},
+				Attributes: map[string]schema.Attribute{
+					"annotation": schema.StringAttribute{
+						Computed:            true,
+						MarkdownDescription: `The annotation of the Relation To Data Plane Policing Policy object.`,
+					},
+					"data_plane_policing_policy_name": schema.StringAttribute{
+						Computed:            true,
+						MarkdownDescription: `Name.`,
 					},
 				},
 			},
@@ -655,19 +645,17 @@ func (d *FvAEPgDataSource) Schema(ctx context.Context, req datasource.SchemaRequ
 					},
 				},
 			},
-			"relation_to_trust_control_policy": schema.SetNestedAttribute{
+			"relation_to_trust_control_policy": schema.SingleNestedAttribute{
 				MarkdownDescription: `Relationship for FHS trust control`,
 				Computed:            true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"annotation": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The annotation of the Relation To Trust Control Policy object.`,
-						},
-						"trust_control_policy_name": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `Name.`,
-						},
+				Attributes: map[string]schema.Attribute{
+					"annotation": schema.StringAttribute{
+						Computed:            true,
+						MarkdownDescription: `The annotation of the Relation To Trust Control Policy object.`,
+					},
+					"trust_control_policy_name": schema.StringAttribute{
+						Computed:            true,
+						MarkdownDescription: `Name.`,
 					},
 				},
 			},

@@ -9,6 +9,9 @@ import (
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	"github.com/hashicorp/terraform-plugin-testing/knownvalue"
+	"github.com/hashicorp/terraform-plugin-testing/statecheck"
+	"github.com/hashicorp/terraform-plugin-testing/tfjsonpath"
 )
 
 func TestAccResourceInfraHPathS(t *testing.T) {
@@ -149,12 +152,10 @@ func TestAccResourceInfraHPathS(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_access_interface_override.test", "annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_access_interface_override.test", "annotations.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_access_interface_override.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_access_interface_override.test", "relation_to_access_interface_policy_group.0.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_access_interface_override.test", "relation_to_access_interface_policy_group.0.target_dn", "uni/infra/funcprof/accportgrp-access_interface_policy_group"),
-					resource.TestCheckResourceAttr("aci_access_interface_override.test", "relation_to_access_interface_policy_group.#", "1"),
-					resource.TestCheckResourceAttr("aci_access_interface_override.test", "relation_to_host_path.0.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_access_interface_override.test", "relation_to_host_path.0.target_dn", "topology/pod-1/paths-101/pathep-[eth1/1]"),
-					resource.TestCheckResourceAttr("aci_access_interface_override.test", "relation_to_host_path.#", "1"),
+					resource.TestCheckResourceAttr("aci_access_interface_override.test", "relation_to_access_interface_policy_group.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_access_interface_override.test", "relation_to_access_interface_policy_group.target_dn", "uni/infra/funcprof/accportgrp-access_interface_policy_group"),
+					resource.TestCheckResourceAttr("aci_access_interface_override.test", "relation_to_host_path.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_access_interface_override.test", "relation_to_host_path.target_dn", "topology/pod-1/paths-101/pathep-[eth1/1]"),
 					resource.TestCheckResourceAttr("aci_access_interface_override.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_access_interface_override.test", "tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_access_interface_override.test", "tags.1.key", "key_1"),
@@ -176,12 +177,10 @@ func TestAccResourceInfraHPathS(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_access_interface_override.test", "annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_access_interface_override.test", "annotations.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_access_interface_override.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_access_interface_override.test", "relation_to_access_interface_policy_group.0.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_access_interface_override.test", "relation_to_access_interface_policy_group.0.target_dn", "uni/infra/funcprof/accportgrp-access_interface_policy_group"),
-					resource.TestCheckResourceAttr("aci_access_interface_override.test", "relation_to_access_interface_policy_group.#", "1"),
-					resource.TestCheckResourceAttr("aci_access_interface_override.test", "relation_to_host_path.0.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_access_interface_override.test", "relation_to_host_path.0.target_dn", "topology/pod-1/paths-101/pathep-[eth1/1]"),
-					resource.TestCheckResourceAttr("aci_access_interface_override.test", "relation_to_host_path.#", "1"),
+					resource.TestCheckResourceAttr("aci_access_interface_override.test", "relation_to_access_interface_policy_group.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_access_interface_override.test", "relation_to_access_interface_policy_group.target_dn", "uni/infra/funcprof/accportgrp-access_interface_policy_group"),
+					resource.TestCheckResourceAttr("aci_access_interface_override.test", "relation_to_host_path.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_access_interface_override.test", "relation_to_host_path.target_dn", "topology/pod-1/paths-101/pathep-[eth1/1]"),
 					resource.TestCheckResourceAttr("aci_access_interface_override.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_access_interface_override.test", "tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_access_interface_override.test", "tags.1.key", "key_1"),
@@ -201,12 +200,30 @@ func TestAccResourceInfraHPathS(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_access_interface_override.test", "annotations.0.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_access_interface_override.test", "annotations.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_access_interface_override.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_access_interface_override.test", "relation_to_access_interface_policy_group.#", "0"),
-					resource.TestCheckResourceAttr("aci_access_interface_override.test", "relation_to_host_path.#", "0"),
 					resource.TestCheckResourceAttr("aci_access_interface_override.test", "tags.0.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_access_interface_override.test", "tags.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_access_interface_override.test", "tags.#", "1"),
 				),
+				ConfigStateChecks: []statecheck.StateCheck{
+					statecheck.ExpectKnownValue("aci_access_interface_override.test",
+						tfjsonpath.New("relation_to_access_interface_policy_group"),
+						knownvalue.MapExact(
+							map[string]knownvalue.Check{
+								"annotation": knownvalue.Null(),
+								"target_dn":  knownvalue.Null(),
+							},
+						),
+					),
+					statecheck.ExpectKnownValue("aci_access_interface_override.test",
+						tfjsonpath.New("relation_to_host_path"),
+						knownvalue.MapExact(
+							map[string]knownvalue.Check{
+								"annotation": knownvalue.Null(),
+								"target_dn":  knownvalue.Null(),
+							},
+						),
+					),
+				},
 			},
 			// Update with all children removed
 			{
@@ -218,10 +235,28 @@ func TestAccResourceInfraHPathS(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_access_interface_override.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_access_interface_override.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_access_interface_override.test", "annotations.#", "0"),
-					resource.TestCheckResourceAttr("aci_access_interface_override.test", "relation_to_access_interface_policy_group.#", "0"),
-					resource.TestCheckResourceAttr("aci_access_interface_override.test", "relation_to_host_path.#", "0"),
 					resource.TestCheckResourceAttr("aci_access_interface_override.test", "tags.#", "0"),
 				),
+				ConfigStateChecks: []statecheck.StateCheck{
+					statecheck.ExpectKnownValue("aci_access_interface_override.test",
+						tfjsonpath.New("relation_to_access_interface_policy_group"),
+						knownvalue.MapExact(
+							map[string]knownvalue.Check{
+								"annotation": knownvalue.Null(),
+								"target_dn":  knownvalue.Null(),
+							},
+						),
+					),
+					statecheck.ExpectKnownValue("aci_access_interface_override.test",
+						tfjsonpath.New("relation_to_host_path"),
+						knownvalue.MapExact(
+							map[string]knownvalue.Check{
+								"annotation": knownvalue.Null(),
+								"target_dn":  knownvalue.Null(),
+							},
+						),
+					),
+				},
 			},
 		},
 	})
@@ -280,18 +315,14 @@ resource "aci_access_interface_override" "test" {
 	  value = "test_value"
 	},
   ]
-  relation_to_access_interface_policy_group = [
-	{
-	  annotation = "annotation_1"
-	  target_dn = "uni/infra/funcprof/accportgrp-access_interface_policy_group"
-	},
-  ]
-  relation_to_host_path = [
-	{
-	  annotation = "annotation_1"
-	  target_dn = "topology/pod-1/paths-101/pathep-[eth1/1]"
-	},
-  ]
+  relation_to_access_interface_policy_group = {
+    annotation = "annotation_1"
+    target_dn = "uni/infra/funcprof/accportgrp-access_interface_policy_group"
+  }
+  relation_to_host_path = {
+    annotation = "annotation_1"
+    target_dn = "topology/pod-1/paths-101/pathep-[eth1/1]"
+  }
   tags = [
 	{
 	  key = "key_0"
@@ -320,8 +351,8 @@ resource "aci_access_interface_override" "test" {
 	  value = "test_value"
 	},
   ]
-  relation_to_access_interface_policy_group = []
-  relation_to_host_path = []
+  relation_to_access_interface_policy_group = {}
+  relation_to_host_path = {}
   tags = [ 
 	{
 	  key = "key_1"
@@ -335,8 +366,8 @@ const testConfigInfraHPathSChildrenRemoveAll = testChildDependencyConfigInfraHPa
 resource "aci_access_interface_override" "test" {
   name = "host_path_selector"
   annotations = []
-  relation_to_access_interface_policy_group = []
-  relation_to_host_path = []
+  relation_to_access_interface_policy_group = {}
+  relation_to_host_path = {}
   tags = []
 }
 `

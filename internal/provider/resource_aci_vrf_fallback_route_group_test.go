@@ -9,6 +9,9 @@ import (
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	"github.com/hashicorp/terraform-plugin-testing/knownvalue"
+	"github.com/hashicorp/terraform-plugin-testing/statecheck"
+	"github.com/hashicorp/terraform-plugin-testing/tfjsonpath"
 )
 
 func TestAccResourceFvFBRGroupWithFvCtx(t *testing.T) {
@@ -139,6 +142,11 @@ func TestAccResourceFvFBRGroupWithFvCtx(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "tags.1.value", "test_value"),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_route.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_route.description", "description_1"),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_route.name", "name_1"),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_route.name_alias", "name_alias_1"),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_route.prefix_address", "2.2.2.2/24"),
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_route_group_members.0.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_route_group_members.0.description", "description_1"),
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_route_group_members.0.fallback_member", "2.2.2.2"),
@@ -149,11 +157,6 @@ func TestAccResourceFvFBRGroupWithFvCtx(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_route_group_members.1.fallback_member", "2.2.2.3"),
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_route_group_members.1.name", "name_2"),
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_route_group_members.1.name_alias", "name_alias_2"),
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_routes.0.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_routes.0.description", "description_1"),
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_routes.0.name", "name_1"),
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_routes.0.name_alias", "name_alias_1"),
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_routes.0.prefix_address", "2.2.2.2/24"),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -182,6 +185,11 @@ func TestAccResourceFvFBRGroupWithFvCtx(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "tags.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "tags.#", "2"),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_route.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_route.description", "description_1"),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_route.name", "name_1"),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_route.name_alias", "name_alias_1"),
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_route.prefix_address", "2.2.2.2/24"),
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_route_group_members.0.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_route_group_members.0.description", "description_1"),
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_route_group_members.0.fallback_member", "2.2.2.2"),
@@ -193,12 +201,6 @@ func TestAccResourceFvFBRGroupWithFvCtx(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_route_group_members.1.name", "name_2"),
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_route_group_members.1.name_alias", "name_alias_2"),
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_route_group_members.#", "2"),
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_routes.0.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_routes.0.description", "description_1"),
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_routes.0.name", "name_1"),
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_routes.0.name_alias", "name_alias_1"),
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_routes.0.prefix_address", "2.2.2.2/24"),
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_routes.#", "1"),
 				),
 			},
 			// Update with children first child removed
@@ -218,8 +220,21 @@ func TestAccResourceFvFBRGroupWithFvCtx(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_route_group_members.0.name", "name_2"),
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_route_group_members.0.name_alias", "name_alias_2"),
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_route_group_members.#", "1"),
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_routes.#", "0"),
 				),
+				ConfigStateChecks: []statecheck.StateCheck{
+					statecheck.ExpectKnownValue("aci_vrf_fallback_route_group.test",
+						tfjsonpath.New("vrf_fallback_route"),
+						knownvalue.MapExact(
+							map[string]knownvalue.Check{
+								"annotation":     knownvalue.Null(),
+								"description":    knownvalue.Null(),
+								"name":           knownvalue.Null(),
+								"name_alias":     knownvalue.Null(),
+								"prefix_address": knownvalue.Null(),
+							},
+						),
+					),
+				},
 			},
 			// Update with all children removed
 			{
@@ -229,8 +244,21 @@ func TestAccResourceFvFBRGroupWithFvCtx(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "annotations.#", "0"),
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "tags.#", "0"),
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_route_group_members.#", "0"),
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group.test", "vrf_fallback_routes.#", "0"),
 				),
+				ConfigStateChecks: []statecheck.StateCheck{
+					statecheck.ExpectKnownValue("aci_vrf_fallback_route_group.test",
+						tfjsonpath.New("vrf_fallback_route"),
+						knownvalue.MapExact(
+							map[string]knownvalue.Check{
+								"annotation":     knownvalue.Null(),
+								"description":    knownvalue.Null(),
+								"name":           knownvalue.Null(),
+								"name_alias":     knownvalue.Null(),
+								"prefix_address": knownvalue.Null(),
+							},
+						),
+					),
+				},
 			},
 		},
 	})
@@ -298,6 +326,13 @@ resource "aci_vrf_fallback_route_group" "test" {
 	  value = "test_value"
 	},
   ]
+  vrf_fallback_route = {
+    annotation = "annotation_1"
+    description = "description_1"
+    name = "name_1"
+    name_alias = "name_alias_1"
+    prefix_address = "2.2.2.2/24"
+  }
   vrf_fallback_route_group_members = [
 	{
 	  annotation = "annotation_1"
@@ -312,15 +347,6 @@ resource "aci_vrf_fallback_route_group" "test" {
 	  fallback_member = "2.2.2.3"
 	  name = "name_2"
 	  name_alias = "name_alias_2"
-	},
-  ]
-  vrf_fallback_routes = [
-	{
-	  annotation = "annotation_1"
-	  description = "description_1"
-	  name = "name_1"
-	  name_alias = "name_alias_1"
-	  prefix_address = "2.2.2.2/24"
 	},
   ]
 }
@@ -349,6 +375,7 @@ resource "aci_vrf_fallback_route_group" "test" {
 	  value = "test_value"
 	},
   ]
+  vrf_fallback_route = {}
   vrf_fallback_route_group_members = [ 
 	{
 	  annotation = "annotation_2"
@@ -358,7 +385,6 @@ resource "aci_vrf_fallback_route_group" "test" {
 	  name_alias = "name_alias_2"
 	},
   ]
-  vrf_fallback_routes = []
 }
 `
 
@@ -368,7 +394,7 @@ resource "aci_vrf_fallback_route_group" "test" {
   name = "fallback_route_group"
   annotations = []
   tags = []
+  vrf_fallback_route = {}
   vrf_fallback_route_group_members = []
-  vrf_fallback_routes = []
 }
 `

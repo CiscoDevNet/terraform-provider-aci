@@ -53,20 +53,20 @@ parents:
 targets:
   - class_name: "fabricPathEp"
     target_dn: "topology/pod-1/paths-101/pathep-[eth1/1]"
-    target_dn_ref: "aci_.test__0.id"
+    target_dn_ref: "aci_fabric_path_endpoint.test_fabric_path_endpoint_0.id"
     parent_dependency: ""
     parent_dependency_dn_ref: ""
-    target_resource_name: ""
+    target_resource_name: "fabric_path_endpoint"
     relation_resource_name: "static_path"
     parent_dn_key: "parent_dn"
     static: true
     properties:
   - class_name: "fabricPathEp"
     target_dn: "topology/pod-1/paths-101/pathep-[eth1/2]"
-    target_dn_ref: "aci_.test__1.id"
+    target_dn_ref: "aci_fabric_path_endpoint.test_fabric_path_endpoint_1.id"
     parent_dependency: ""
     parent_dependency_dn_ref: ""
-    target_resource_name: ""
+    target_resource_name: "fabric_path_endpoint"
     relation_resource_name: "static_path"
     parent_dn_key: "parent_dn"
     static: true

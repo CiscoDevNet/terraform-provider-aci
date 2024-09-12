@@ -54,18 +54,14 @@ resource "aci_access_interface_override" "full_example" {
   name_alias  = "name_alias_1"
   owner_key   = "owner_key_1"
   owner_tag   = "owner_tag_1"
-  relation_to_host_path = [
-    {
-      annotation = "annotation_1"
-      target_dn  = "topology/pod-1/paths-101/pathep-[eth1/1]"
-    }
-  ]
-  relation_to_access_interface_policy_group = [
-    {
-      annotation = "annotation_1"
-      target_dn  = "uni/infra/funcprof/accportgrp-access_interface_policy_group"
-    }
-  ]
+  relation_to_host_path = {
+    annotation = "annotation_1"
+    target_dn  = "topology/pod-1/paths-101/pathep-[eth1/1]"
+  }
+  relation_to_access_interface_policy_group = {
+    annotation = "annotation_1"
+    target_dn  = "uni/infra/funcprof/accportgrp-access_interface_policy_group"
+  }
   annotations = [
     {
       key   = "key_0"
@@ -108,8 +104,7 @@ All examples for the Access Interface Override resource can be found in the [exa
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 
-* `relation_to_host_path` - (list) A list of Relation To Host Path (ACI object [infraRsHPathAtt](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraRsHPathAtt/overview)) pointing to  (ACI Object [fabricPathEp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fabricPathEp/overview)).
-    - Max Items: 1
+* `relation_to_host_path` - (map) A map of Relation To Host Path (ACI object [infraRsHPathAtt](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraRsHPathAtt/overview)) pointing to Fabric Path Endpoint (ACI Object [fabricPathEp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fabricPathEp/overview)).
   
   #### Required ####
   
@@ -120,8 +115,7 @@ All examples for the Access Interface Override resource can be found in the [exa
   * `annotation` (annotation) - (string) The annotation of the Relation To Host Path object.
       - Default: `orchestrator:terraform`
 
-* `relation_to_access_interface_policy_group` - (list) A list of Relation To Access Interface Policy Group (ACI object [infraRsPathToAccBaseGrp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraRsPathToAccBaseGrp/overview)) pointing to  (ACI Object [infraAccBaseGrp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraAccBaseGrp/overview)).
-    - Max Items: 1
+* `relation_to_access_interface_policy_group` - (map) A map of Relation To Access Interface Policy Group (ACI object [infraRsPathToAccBaseGrp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraRsPathToAccBaseGrp/overview)) pointing to Access Interface Policy Group (ACI Object [infraAccBaseGrp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraAccBaseGrp/overview)) which can be configured using the [aci_access_interface_policy_group](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/access_interface_policy_group) resource.
   
 
   #### Optional ####

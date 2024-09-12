@@ -22,6 +22,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
@@ -63,7 +64,7 @@ type FvESgResourceModel struct {
 	FvRsConsIf                 types.Set    `tfsdk:"relation_to_imported_contracts"`
 	FvRsIntraEpg               types.Set    `tfsdk:"relation_to_intra_epg_contracts"`
 	FvRsProv                   types.Set    `tfsdk:"relation_to_provided_contracts"`
-	FvRsScope                  types.Set    `tfsdk:"relation_to_vrf"`
+	FvRsScope                  types.Object `tfsdk:"relation_to_vrf"`
 	FvRsSecInherited           types.Set    `tfsdk:"relation_to_contract_masters"`
 	TagAnnotation              types.Set    `tfsdk:"annotations"`
 	TagTag                     types.Set    `tfsdk:"tags"`
@@ -121,11 +122,9 @@ func getEmptyFvESgResourceModel() *FvESgResourceModel {
 				"contract_name":  types.StringType,
 			},
 		}),
-		FvRsScope: types.SetNull(types.ObjectType{
-			AttrTypes: map[string]attr.Type{
-				"annotation": types.StringType,
-				"vrf_name":   types.StringType,
-			},
+		FvRsScope: types.ObjectNull(map[string]attr.Type{
+			"annotation": types.StringType,
+			"vrf_name":   types.StringType,
 		}),
 		FvRsSecInherited: types.SetNull(types.ObjectType{
 			AttrTypes: map[string]attr.Type{
@@ -229,6 +228,11 @@ func getEmptyFvRsScopeFvESgResourceModel() FvRsScopeFvESgResourceModel {
 		Annotation:  basetypes.NewStringNull(),
 		TnFvCtxName: basetypes.NewStringNull(),
 	}
+}
+
+var FvRsScopeFvESgType = map[string]attr.Type{
+	"annotation": types.StringType,
+	"vrf_name":   types.StringType,
 }
 
 // FvRsSecInheritedFvESgResourceModel describes the resource data model for the children without relation ships.
@@ -580,20 +584,12 @@ func (r *FvESgResource) UpgradeState(ctx context.Context) map[int64]resource.Sta
 				FvRsProvSet, _ := types.SetValueFrom(ctx, FvRsProvType, FvRsProvList)
 				upgradedStateData.FvRsProv = FvRsProvSet
 
-				FvRsScopeList := make([]FvRsScopeFvESgResourceModel, 0)
-				FvRsScope := FvRsScopeFvESgResourceModel{
+				FvRsScopeObject := FvRsScopeFvESgResourceModel{
 					Annotation:  basetypes.NewStringNull(),
 					TnFvCtxName: basetypes.NewStringValue(GetMOName(priorStateData.FvRsScope.ValueString())),
 				}
-				FvRsScopeList = append(FvRsScopeList, FvRsScope)
-				FvRsScopeType := types.ObjectType{
-					AttrTypes: map[string]attr.Type{
-						"annotation": basetypes.StringType{},
-						"vrf_name":   basetypes.StringType{},
-					},
-				}
-				FvRsScopeSet, _ := types.SetValueFrom(ctx, FvRsScopeType, FvRsScopeList)
-				upgradedStateData.FvRsScope = FvRsScopeSet
+				fvRsScopeObject, _ := types.ObjectValueFrom(ctx, FvRsScopeFvESgType, FvRsScopeObject)
+				upgradedStateData.FvRsScope = fvRsScopeObject
 
 				FvRsSecInheritedList := make([]FvRsSecInheritedFvESgResourceModel, 0)
 				var priorStateDataFvRsSecInheritedList []string
@@ -741,6 +737,12 @@ func (r *FvESgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanR
 				return
 			}
 		}
+		if !configData.FvRsScope.IsNull() && stateData != nil {
+			if IsEmptySingleNestedAttribute(configData.FvRsScope.Attributes()) {
+				FvRsScopeObject, _ := types.ObjectValueFrom(ctx, FvRsScopeFvESgType, getEmptyFvRsScopeFvESgResourceModel())
+				planData.FvRsScope = FvRsScopeObject
+			}
+		}
 
 		if !configData.MatchT.IsNull() {
 			planData.DeprecatedMatchT = configData.MatchT
@@ -774,7 +776,6 @@ func (r *FvESgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanR
 			planData.DeprecatedPrefGrMemb = stateData.DeprecatedPrefGrMemb
 		}
 
-		// HasNamedProperties false
 		if !configData.FvRsSecInherited.IsNull() && stateData != nil {
 			var attributeValues []FvRsSecInheritedFvESgResourceModel
 			var newAttributeValues, stateAttributeValues []string
@@ -838,7 +839,6 @@ func (r *FvESgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanR
 			planData.DeprecatedFvRsSecInherited = stateData.DeprecatedFvRsSecInherited
 		}
 
-		// HasNamedProperties true
 		if !configData.FvRsIntraEpg.IsNull() && stateData != nil {
 			var attributeValues []FvRsIntraEpgFvESgResourceModel
 			var newAttributeValues, stateAttributeValues []string
@@ -903,28 +903,23 @@ func (r *FvESgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanR
 		}
 
 		if !configData.FvRsScope.IsNull() && stateData != nil {
-			var attributeValues []FvRsScopeFvESgResourceModel
-			configData.FvRsScope.ElementsAs(ctx, &attributeValues, false)
-			for _, attributeValue := range attributeValues {
-				if GetMOName(stateData.DeprecatedFvRsScope.ValueString()) == attributeValue.TnFvCtxName.ValueString() {
+			if IsEmptySingleNestedAttribute(configData.FvRsScope.Attributes()) {
+				planData.FvRsScope = configData.FvRsScope
+				planData.DeprecatedFvRsScope = basetypes.NewStringNull()
+			} else {
+				var attributeValues FvRsScopeFvESgResourceModel
+				configData.FvRsScope.As(ctx, &attributeValues, basetypes.ObjectAsOptions{})
+				if GetMOName(stateData.DeprecatedFvRsScope.ValueString()) == attributeValues.TnFvCtxName.ValueString() && !attributeValues.TnFvCtxName.IsNull() {
 					planData.DeprecatedFvRsScope = stateData.DeprecatedFvRsScope
 				}
 			}
 		} else if !configData.DeprecatedFvRsScope.IsNull() {
-			FvRsScopeList := make([]FvRsScopeFvESgResourceModel, 0)
 			FvRsScope := FvRsScopeFvESgResourceModel{
 				Annotation:  planData.Annotation,
 				TnFvCtxName: basetypes.NewStringValue(GetMOName(configData.DeprecatedFvRsScope.ValueString())),
 			}
-			FvRsScopeList = append(FvRsScopeList, FvRsScope)
-			FvRsScopeType := types.ObjectType{
-				AttrTypes: map[string]attr.Type{
-					"annotation": basetypes.StringType{},
-					"vrf_name":   basetypes.StringType{},
-				},
-			}
-			FvRsScopeSet, _ := types.SetValueFrom(ctx, FvRsScopeType, FvRsScopeList)
-			planData.FvRsScope = FvRsScopeSet
+			FvRsScopeObject, _ := types.ObjectValueFrom(ctx, FvRsScopeFvESgType, FvRsScope)
+			planData.FvRsScope = FvRsScopeObject
 		} else if stateData != nil { // used to replace use state for unknown
 			planData.DeprecatedFvRsScope = stateData.DeprecatedFvRsScope
 		}
@@ -1459,36 +1454,31 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 					},
 				},
 			},
-			"relation_to_vrf": schema.SetNestedAttribute{
+			"relation_to_vrf": schema.SingleNestedAttribute{
 				MarkdownDescription: ``,
 				Optional:            true,
 				Computed:            true,
-				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+				PlanModifiers: []planmodifier.Object{
+					objectplanmodifier.UseStateForUnknown(),
 				},
-				Validators: []validator.Set{
-					setvalidator.SizeAtMost(1),
-				},
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"annotation": schema.StringAttribute{
-							Optional: true,
-							Computed: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
-							},
-							Validators:          []validator.String{},
-							MarkdownDescription: `The annotation of the Relation To VRF object.`,
+				Attributes: map[string]schema.Attribute{
+					"annotation": schema.StringAttribute{
+						Optional: true,
+						Computed: true,
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.UseStateForUnknown(),
 						},
-						"vrf_name": schema.StringAttribute{
-							Optional: true,
-							Computed: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
-							},
-							Validators:          []validator.String{},
-							MarkdownDescription: `The name of the VRF object.`,
+						Validators:          []validator.String{},
+						MarkdownDescription: `The annotation of the Relation To VRF object.`,
+					},
+					"vrf_name": schema.StringAttribute{
+						Optional: true,
+						Computed: true,
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.UseStateForUnknown(),
 						},
+						Validators:          []validator.String{},
+						MarkdownDescription: `The name of the VRF object.`,
 					},
 				},
 			},
@@ -1753,9 +1743,9 @@ func (r *FvESgResource) Create(ctx context.Context, req resource.CreateRequest, 
 	var fvRsProvPlan, fvRsProvState []FvRsProvFvESgResourceModel
 	data.FvRsProv.ElementsAs(ctx, &fvRsProvPlan, false)
 	stateData.FvRsProv.ElementsAs(ctx, &fvRsProvState, false)
-	var fvRsScopePlan, fvRsScopeState []FvRsScopeFvESgResourceModel
-	data.FvRsScope.ElementsAs(ctx, &fvRsScopePlan, false)
-	stateData.FvRsScope.ElementsAs(ctx, &fvRsScopeState, false)
+	var fvRsScopePlan, fvRsScopeState FvRsScopeFvESgResourceModel
+	data.FvRsScope.As(ctx, &fvRsScopePlan, basetypes.ObjectAsOptions{})
+	stateData.FvRsScope.As(ctx, &fvRsScopeState, basetypes.ObjectAsOptions{})
 	var fvRsSecInheritedPlan, fvRsSecInheritedState []FvRsSecInheritedFvESgResourceModel
 	data.FvRsSecInherited.ElementsAs(ctx, &fvRsSecInheritedPlan, false)
 	stateData.FvRsSecInherited.ElementsAs(ctx, &fvRsSecInheritedState, false)
@@ -1817,6 +1807,13 @@ func (r *FvESgResource) Update(ctx context.Context, req resource.UpdateRequest, 
 	// Read Terraform plan data into the model
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
 	resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
+	// Error out when child object fvRsScope is being deleted
+	if IsEmptySingleNestedAttribute(data.FvRsScope.Attributes()) && !IsEmptySingleNestedAttribute(stateData.FvRsScope.Attributes()) {
+		resp.Diagnostics.AddError(
+			"FvRsScope object cannot be deleted",
+			"deletion of child is only possible upon deletion of the parent",
+		)
+	}
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -1836,9 +1833,9 @@ func (r *FvESgResource) Update(ctx context.Context, req resource.UpdateRequest, 
 	var fvRsProvPlan, fvRsProvState []FvRsProvFvESgResourceModel
 	data.FvRsProv.ElementsAs(ctx, &fvRsProvPlan, false)
 	stateData.FvRsProv.ElementsAs(ctx, &fvRsProvState, false)
-	var fvRsScopePlan, fvRsScopeState []FvRsScopeFvESgResourceModel
-	data.FvRsScope.ElementsAs(ctx, &fvRsScopePlan, false)
-	stateData.FvRsScope.ElementsAs(ctx, &fvRsScopeState, false)
+	var fvRsScopePlan, fvRsScopeState FvRsScopeFvESgResourceModel
+	data.FvRsScope.As(ctx, &fvRsScopePlan, basetypes.ObjectAsOptions{})
+	stateData.FvRsScope.As(ctx, &fvRsScopeState, basetypes.ObjectAsOptions{})
 	var fvRsSecInheritedPlan, fvRsSecInheritedState []FvRsSecInheritedFvESgResourceModel
 	data.FvRsSecInherited.ElementsAs(ctx, &fvRsSecInheritedPlan, false)
 	stateData.FvRsSecInherited.ElementsAs(ctx, &fvRsSecInheritedState, false)
@@ -2082,8 +2079,13 @@ func getAndSetFvESgAttributes(ctx context.Context, diags *diag.Diagnostics, clie
 			data.FvRsIntraEpg = fvRsIntraEpgSet
 			fvRsProvSet, _ := types.SetValueFrom(ctx, data.FvRsProv.ElementType(ctx), FvRsProvFvESgList)
 			data.FvRsProv = fvRsProvSet
-			fvRsScopeSet, _ := types.SetValueFrom(ctx, data.FvRsScope.ElementType(ctx), FvRsScopeFvESgList)
-			data.FvRsScope = fvRsScopeSet
+			if len(FvRsScopeFvESgList) == 1 {
+				fvRsScopeObject, _ := types.ObjectValueFrom(ctx, FvRsScopeFvESgType, FvRsScopeFvESgList[0])
+				data.FvRsScope = fvRsScopeObject
+			} else {
+				fvRsScopeObject, _ := types.ObjectValueFrom(ctx, FvRsScopeFvESgType, getEmptyFvRsScopeFvESgResourceModel())
+				data.FvRsScope = fvRsScopeObject
+			}
 			fvRsSecInheritedSet, _ := types.SetValueFrom(ctx, data.FvRsSecInherited.ElementType(ctx), FvRsSecInheritedFvESgList)
 			data.FvRsSecInherited = fvRsSecInheritedSet
 			tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationFvESgList)
@@ -2309,31 +2311,25 @@ func getFvESgFvRsProvChildPayloads(ctx context.Context, diags *diag.Diagnostics,
 
 	return childPayloads
 }
-func getFvESgFvRsScopeChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvESgResourceModel, fvRsScopePlan, fvRsScopeState []FvRsScopeFvESgResourceModel) []map[string]interface{} {
+func getFvESgFvRsScopeChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvESgResourceModel, fvRsScopePlan, fvRsScopeState FvRsScopeFvESgResourceModel) []map[string]interface{} {
 
 	childPayloads := []map[string]interface{}{}
 	if !data.FvRsScope.IsUnknown() {
-		for _, fvRsScope := range fvRsScopePlan {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !fvRsScope.Annotation.IsUnknown() && !fvRsScope.Annotation.IsNull() {
-				childMap["attributes"]["annotation"] = fvRsScope.Annotation.ValueString()
+		childMap := map[string]map[string]interface{}{"attributes": {}}
+		if !IsEmptySingleNestedAttribute(data.FvRsScope.Attributes()) {
+			if !fvRsScopePlan.Annotation.IsUnknown() && !fvRsScopePlan.Annotation.IsNull() {
+				childMap["attributes"]["annotation"] = fvRsScopePlan.Annotation.ValueString()
 			} else {
 				childMap["attributes"]["annotation"] = globalAnnotation
 			}
-			if !fvRsScope.TnFvCtxName.IsUnknown() && !fvRsScope.TnFvCtxName.IsNull() {
-				childMap["attributes"]["tnFvCtxName"] = fvRsScope.TnFvCtxName.ValueString()
+			if !fvRsScopePlan.TnFvCtxName.IsUnknown() && !fvRsScopePlan.TnFvCtxName.IsNull() {
+				childMap["attributes"]["tnFvCtxName"] = fvRsScopePlan.TnFvCtxName.ValueString()
 			}
-			childPayloads = append(childPayloads, map[string]interface{}{"fvRsScope": childMap})
 		}
-		if len(fvRsScopePlan) == 0 && len(fvRsScopeState) == 1 {
-			diags.AddError(
-				"FvRsScope object cannot be deleted",
-				"deletion of child is only possible upon deletion of the parent",
-			)
-			return nil
-		}
+		childPayloads = append(childPayloads, map[string]interface{}{"fvRsScope": childMap})
 	} else {
-		data.FvRsScope = types.SetNull(data.FvRsScope.ElementType(ctx))
+		FvRsScopeObject, _ := types.ObjectValueFrom(ctx, FvRsScopeFvESgType, getEmptyFvRsScopeFvESgResourceModel())
+		data.FvRsScope = FvRsScopeObject
 	}
 
 	return childPayloads
@@ -2458,7 +2454,7 @@ func getFvESgTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, d
 	return childPayloads
 }
 
-func getFvESgCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *FvESgResourceModel, fvRsConsPlan, fvRsConsState []FvRsConsFvESgResourceModel, fvRsConsIfPlan, fvRsConsIfState []FvRsConsIfFvESgResourceModel, fvRsIntraEpgPlan, fvRsIntraEpgState []FvRsIntraEpgFvESgResourceModel, fvRsProvPlan, fvRsProvState []FvRsProvFvESgResourceModel, fvRsScopePlan, fvRsScopeState []FvRsScopeFvESgResourceModel, fvRsSecInheritedPlan, fvRsSecInheritedState []FvRsSecInheritedFvESgResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvESgResourceModel, tagTagPlan, tagTagState []TagTagFvESgResourceModel) *container.Container {
+func getFvESgCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *FvESgResourceModel, fvRsConsPlan, fvRsConsState []FvRsConsFvESgResourceModel, fvRsConsIfPlan, fvRsConsIfState []FvRsConsIfFvESgResourceModel, fvRsIntraEpgPlan, fvRsIntraEpgState []FvRsIntraEpgFvESgResourceModel, fvRsProvPlan, fvRsProvState []FvRsProvFvESgResourceModel, fvRsScopePlan, fvRsScopeState FvRsScopeFvESgResourceModel, fvRsSecInheritedPlan, fvRsSecInheritedState []FvRsSecInheritedFvESgResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvESgResourceModel, tagTagPlan, tagTagState []TagTagFvESgResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 

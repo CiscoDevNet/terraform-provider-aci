@@ -85,12 +85,10 @@ resource "aci_endpoint_security_group" "full_example_application_profile" {
       contract_name  = aci_contract.example.name
     }
   ]
-  relation_to_vrf = [
-    {
-      annotation = "annotation_1"
-      vrf_name   = aci_vrf.example.name
-    }
-  ]
+  relation_to_vrf = {
+    annotation = "annotation_1"
+    vrf_name   = aci_vrf.example.name
+  }
   relation_to_contract_masters = [
     {
       annotation = "annotation_1"
@@ -204,8 +202,7 @@ All examples for the Endpoint Security Group resource can be found in the [examp
       - Default: `unspecified`
       - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
 
-* `relation_to_vrf` - (list) A list of Relation To VRF (ACI object [fvRsScope](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsScope/overview)) pointing to VRF (ACI Object [fvCtx](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvCtx/overview)) which can be configured using the [aci_vrf](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vrf) resource.
-    - Max Items: 1
+* `relation_to_vrf` - (map) A map of Relation To VRF (ACI object [fvRsScope](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsScope/overview)) pointing to VRF (ACI Object [fvCtx](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvCtx/overview)) which can be configured using the [aci_vrf](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vrf) resource.
   
 
   #### Optional ####

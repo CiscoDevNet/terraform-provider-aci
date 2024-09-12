@@ -66,18 +66,14 @@ resource "aci_netflow_exporter_policy" "full_example_tenant" {
   source_ip_type         = "custom-src-ip"
   source_ip_address      = "1.1.1.1/10"
   version                = "v9"
-  relation_to_vrf = [
-    {
-      annotation = "annotation_1"
-      target_dn  = aci_vrf.example.id
-    }
-  ]
-  relation_to_epg = [
-    {
-      annotation = "annotation_1"
-      target_dn  = aci_application_epg.example.id
-    }
-  ]
+  relation_to_vrf = {
+    annotation = "annotation_1"
+    target_dn  = aci_vrf.example.id
+  }
+  relation_to_epg = {
+    annotation = "annotation_1"
+    target_dn  = aci_application_epg.example.id
+  }
   annotations = [
     {
       key   = "key_0"
@@ -138,8 +134,7 @@ All examples for the NetFlow Exporter Policy resource can be found in the [examp
   - Default: `v9`
   - Valid Values: `cisco-v1`, `v5`, `v9`.
 
-* `relation_to_vrf` - (list) A list of Relation From NetFlow Exporter To VRF (ACI object [netflowRsExporterToCtx](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRsExporterToCtx/overview)) pointing to VRF (ACI Object [fvCtx](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvCtx/overview)) which can be configured using the [aci_vrf](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vrf) resource.
-    - Max Items: 1
+* `relation_to_vrf` - (map) A map of Relation From NetFlow Exporter To VRF (ACI object [netflowRsExporterToCtx](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRsExporterToCtx/overview)) pointing to VRF (ACI Object [fvCtx](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvCtx/overview)) which can be configured using the [aci_vrf](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vrf) resource.
   
 
   #### Optional ####

@@ -137,16 +137,18 @@ All examples for the {{.ResourceNameAsDescription}} resource can be found in the
           {{- end}}
         {{- end}}
       {{- else}}
-* `{{- overwriteProperty .PkgName .ResourceName $.Definitions}}` - (list) A list of {{getResourceNameAsDescription .ResourceName $.Definitions}} (ACI object {{getDevnetDocForClass .PkgName}}) pointing to {{range $index, $value := .RelationshipResourceNames}}{{- if or (eq $length 1) (eq $.PkgName (index $RelationshipClasses $index))}}{{getResourceNameAsDescription $value $.Definitions}} (ACI Object {{getDevnetDocForClass (index $RelationshipClasses $index)}}){{- if ne $value ""}} which can be configured using the [aci_{{($value)}}](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{($value)}}) resource{{end}}{{end}}{{end}}.{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
-    {{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
-    - Max Items: 1
-    {{- end}}
+        {{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+* `{{- overwriteProperty .PkgName .ResourceName $.Definitions}}` - (map) A map of {{getResourceNameAsDescription .ResourceName $.Definitions}} (ACI object {{getDevnetDocForClass .PkgName}}) pointing to {{range $index, $value := .RelationshipResourceNames}}{{- if or (eq $length 1) (eq $.PkgName (index $RelationshipClasses $index))}}{{getResourceNameAsDescription $value $.Definitions}} (ACI Object {{getDevnetDocForClass (index $RelationshipClasses $index)}}){{- if and (ne $value "") (isResourceClass (index $RelationshipClasses $index)) }} which can be configured using the [aci_{{($value)}}](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{($value)}}) resource{{end}}{{end}}{{end}}.{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
+        {{- else}}
+* `{{- overwriteProperty .PkgName .ResourceName $.Definitions}}` - (list) A list of {{getResourceNameAsDescription .ResourceName $.Definitions}} (ACI object {{getDevnetDocForClass .PkgName}}) pointing to {{range $index, $value := .RelationshipResourceNames}}{{- if or (eq $length 1) (eq $.PkgName (index $RelationshipClasses $index))}}{{getResourceNameAsDescription $value $.Definitions}} (ACI Object {{getDevnetDocForClass (index $RelationshipClasses $index)}}){{- if and (ne $value "") (isResourceClass (index $RelationshipClasses $index)) }} which can be configured using the [aci_{{($value)}}](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{($value)}}) resource{{end}}{{end}}{{end}}.{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
+        {{- end}}
     {{- end}}
     {{- else}}
+      {{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+* `{{- overwriteProperty .PkgName .ResourceName $.Definitions}}` - (map) A map of {{getResourceNameAsDescription .ResourceName $.Definitions}} (ACI object {{getDevnetDocForClass .PkgName}}). {{getResourceNameAsDescription .ResourceName $.Definitions}} can also be configured using a separate [aci_{{.ResourceNameDocReference}}](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{.ResourceNameDocReference}}) resource.{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
+      {{- else}}
 * `{{- overwriteProperty .PkgName .ResourceName $.Definitions}}` - (list) A list of {{getResourceNameAsDescription .ResourceName $.Definitions}} (ACI object {{getDevnetDocForClass .PkgName}}). {{getResourceNameAsDescription .ResourceName $.Definitions}} can also be configured using a separate [aci_{{.ResourceNameDocReference}}](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{.ResourceNameDocReference}}) resource.{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
-    {{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
-    - Max Items: 1
-    {{- end}}
+      {{- end}}
     {{- end}}
   {{ if containsRequired .Properties}}
   #### Required ####

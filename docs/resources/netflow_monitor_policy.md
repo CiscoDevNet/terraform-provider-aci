@@ -64,12 +64,10 @@ resource "aci_netflow_monitor_policy" "full_example_tenant" {
       netflow_exporter_policy_name = aci_netflow_exporter_policy.example.name
     }
   ]
-  relation_to_netflow_record = [
-    {
-      annotation                 = "annotation_1"
-      netflow_record_policy_name = aci_netflow_record_policy.example.name
-    }
-  ]
+  relation_to_netflow_record = {
+    annotation                 = "annotation_1"
+    netflow_record_policy_name = aci_netflow_record_policy.example.name
+  }
   annotations = [
     {
       key   = "key_0"
@@ -124,8 +122,7 @@ All examples for the NetFlow Monitor Policy resource can be found in the [exampl
   * `annotation` (annotation) - (string) The annotation of the Relation To NetFlow Exporter object.
       - Default: `orchestrator:terraform`
 
-* `relation_to_netflow_record` - (list) A list of Relation To NetFlow Record (ACI object [netflowRsMonitorToRecord](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRsMonitorToRecord/overview)) pointing to NetFlow Record Policy (ACI Object [netflowRecordPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRecordPol/overview)) which can be configured using the [aci_netflow_record_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/netflow_record_policy) resource.
-    - Max Items: 1
+* `relation_to_netflow_record` - (map) A map of Relation To NetFlow Record (ACI object [netflowRsMonitorToRecord](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRsMonitorToRecord/overview)) pointing to NetFlow Record Policy (ACI Object [netflowRecordPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRecordPol/overview)) which can be configured using the [aci_netflow_record_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/netflow_record_policy) resource.
   
 
   #### Optional ####
