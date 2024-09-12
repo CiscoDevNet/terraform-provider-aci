@@ -89,19 +89,17 @@ func (d *NetflowMonitorPolDataSource) Schema(ctx context.Context, req datasource
 					},
 				},
 			},
-			"relation_to_netflow_record": schema.SetNestedAttribute{
+			"relation_to_netflow_record": schema.SingleNestedAttribute{
 				MarkdownDescription: ``,
 				Computed:            true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"annotation": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The annotation of the Relation To NetFlow Record object.`,
-						},
-						"netflow_record_policy_name": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `Name.`,
-						},
+				Attributes: map[string]schema.Attribute{
+					"annotation": schema.StringAttribute{
+						Computed:            true,
+						MarkdownDescription: `The annotation of the Relation To NetFlow Record object.`,
+					},
+					"netflow_record_policy_name": schema.StringAttribute{
+						Computed:            true,
+						MarkdownDescription: `Name.`,
 					},
 				},
 			},

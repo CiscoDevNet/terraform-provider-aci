@@ -334,6 +334,10 @@ netflowMonitorPol:
     - "Tenants -> Policies -> NetFlow -> NetFlow Monitors"
     - "Fabric -> Access Policies -> Policies -> Interface -> NetFlow -> NetFlow Monitors"
   sub_category: "Tenant Policies"
+  type_changes:
+    - attribute: "netflowRsMonitorToRecord"
+      old_type: "SetNestedAttribute"
+      version: 0
 
 netflowRsMonitorToRecord:
   resource_name: "relation_to_netflow_record"
@@ -536,6 +540,12 @@ vzBrCP:
 
 vzTaboo:
   resource_name: "taboo_contract"
+
+fabricPathEp:
+  resource_name: "fabric_path_endpoint"
+
+infraAccBaseGrp:
+  resource_name: "access_interface_policy_group"
 
 fvCrtrn:
   resource_name: "epg_useg_block_statement"

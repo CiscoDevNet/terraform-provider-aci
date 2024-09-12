@@ -20,6 +20,21 @@ resource "aci_{{$.ResourceName}}" "full_example_{{getResourceName $key $.Definit
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = "{{lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions}}"
   {{- end}}{{- end}}{{- end}}
   {{- range $key, $value := $.Children}}{{$ChildResourceName := overwriteProperty .PkgName .ResourceName $.Definitions}}
+    {{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+  {{$ChildResourceName}} = {
+    {{- range .Properties}}{{- if not .ReadOnly }}{{- if ne .NamedPropertyClass ""}}
+      {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = aci_{{getResourceName .NamedPropertyClass $.Definitions}}.example.name
+        {{- else if eq .SnakeCaseName "t_dn" }}
+          {{- range $index, $testParent := $.TestVars.parents }}{{$attributeVale := getTestTargetDn $.TestVars.child_targets $ChildResourceName "target_dn_0" true nil 0 true | replace "test_0" "example_2" }}
+      target_dn = {{if containsString $attributeVale "."}}{{$attributeVale}}{{else}}"{{$attributeVale}}"{{end}}
+          {{- break}}
+          {{- end}}
+        {{- else if .IgnoreInTest}}
+      {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = "{{.IgnoreInTestExampleValue}}"
+        {{- else}}
+      {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = "{{lookupChildTestValue .PkgName $ChildResourceName .SnakeCaseName $.TestVars 0 $.Definitions}}"{{- end}}{{ end}}{{- end}}
+  }
+    {{- else}}
   {{$ChildResourceName}} = [
     { {{- range .Properties}}{{- if not .ReadOnly }}{{- if ne .NamedPropertyClass ""}}
       {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = aci_{{getResourceName .NamedPropertyClass $.Definitions}}.example.name
@@ -34,6 +49,7 @@ resource "aci_{{$.ResourceName}}" "full_example_{{getResourceName $key $.Definit
       {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = "{{lookupChildTestValue .PkgName $ChildResourceName .SnakeCaseName $.TestVars 0 $.Definitions}}"{{- end}}{{ end}}{{- end}}
     }
   ]
+    {{- end}}
   {{- end}}
 }
 {{ end}}
@@ -49,6 +65,18 @@ resource "aci_{{$.ResourceName}}" "full_example" {
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = "{{lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions}}"
   {{- end}}{{- end}}{{- end}}
   {{- range $key, $value := $.Children}}{{$ChildResourceName := overwriteProperty .PkgName .ResourceName $.Definitions}}
+    {{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+  {{$ChildResourceName}} = {
+    {{- range .Properties}}{{- if not .ReadOnly }}{{- if ne .NamedPropertyClass ""}}
+      {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = aci_{{getResourceName .NamedPropertyClass $.Definitions}}.example.name
+        {{- else if eq .SnakeCaseName "t_dn" }}{{$attributeVale := getTestTargetDn $.TestVars.child_targets $ChildResourceName "target_dn_0" true nil 0 true | replace "test_0" "example_2" }}
+      target_dn = {{if containsString $attributeVale "."}}{{$attributeVale}}{{else}}"{{$attributeVale}}"{{end}}
+        {{- else if .IgnoreInTest}}
+      {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = "{{.IgnoreInTestExampleValue}}"
+        {{- else}}
+      {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = "{{lookupChildTestValue .PkgName $ChildResourceName .SnakeCaseName $.TestVars 0 $.Definitions}}"{{- end}}{{ end}}{{- end}}
+  }
+    {{- else}}
   {{$ChildResourceName}} = [
     { {{- range .Properties}}{{- if not .ReadOnly }}{{- if ne .NamedPropertyClass ""}}
       {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = aci_{{getResourceName .NamedPropertyClass $.Definitions}}.example.name
@@ -60,6 +88,7 @@ resource "aci_{{$.ResourceName}}" "full_example" {
       {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = "{{lookupChildTestValue .PkgName $ChildResourceName .SnakeCaseName $.TestVars 0 $.Definitions}}"{{- end}}{{ end}}{{- end}}
     }
   ]
+    {{- end}}
   {{- end}}
 }
 {{ end}}

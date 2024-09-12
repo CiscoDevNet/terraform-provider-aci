@@ -111,6 +111,26 @@ func (d *{{.ResourceClassName}}DataSource) Schema(ctx context.Context, req datas
 			},{{- end}}
 			{{- end}}
 			{{- range .Children}}
+				{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+			"{{overwriteProperty .PkgName .ResourceName $.Definitions}}": schema.SingleNestedAttribute{
+				MarkdownDescription: `{{.Comment}}`,
+				Computed:            true,
+				Attributes: map[string]schema.Attribute{
+					{{- range .Properties}}
+						{{- if eq .ValueType "bitmask"}}
+					"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": schema.SetAttribute{
+						Computed:            true,
+						MarkdownDescription: `{{.Comment}}`,
+						ElementType: types.StringType,
+					},{{else}}
+					"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": schema.StringAttribute{
+						Computed:            true,
+						MarkdownDescription: `{{.Comment}}`,
+					},{{- end}}
+					{{- end}}
+				},
+			},
+				{{- else}}
 			"{{overwriteProperty .PkgName .ResourceName $.Definitions}}": schema.SetNestedAttribute{
 				MarkdownDescription: `{{.Comment}}`,
 				Computed:            true,
@@ -134,6 +154,7 @@ func (d *{{.ResourceClassName}}DataSource) Schema(ctx context.Context, req datas
 					},
 				},
 			},
+				{{- end}}
 			{{- end}}
 		},
 		{{- if .LegacyAttributes}}

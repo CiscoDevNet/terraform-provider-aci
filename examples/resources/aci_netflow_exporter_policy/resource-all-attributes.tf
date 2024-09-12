@@ -13,18 +13,14 @@ resource "aci_netflow_exporter_policy" "full_example_tenant" {
   source_ip_type         = "custom-src-ip"
   source_ip_address      = "1.1.1.1/10"
   version                = "v9"
-  relation_to_vrf = [
-    {
-      annotation = "annotation_1"
-      target_dn  = aci_vrf.example.id
-    }
-  ]
-  relation_to_epg = [
-    {
-      annotation = "annotation_1"
-      target_dn  = aci_application_epg.example.id
-    }
-  ]
+  relation_to_vrf = {
+    annotation = "annotation_1"
+    target_dn  = aci_vrf.example.id
+  }
+  relation_to_epg = {
+    annotation = "annotation_1"
+    target_dn  = aci_application_epg.example.id
+  }
   annotations = [
     {
       key   = "key_0"

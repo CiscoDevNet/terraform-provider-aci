@@ -209,19 +209,17 @@ func (d *FvESgDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 					},
 				},
 			},
-			"relation_to_vrf": schema.SetNestedAttribute{
+			"relation_to_vrf": schema.SingleNestedAttribute{
 				MarkdownDescription: ``,
 				Computed:            true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"annotation": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The annotation of the Relation To VRF object.`,
-						},
-						"vrf_name": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The name of the VRF object.`,
-						},
+				Attributes: map[string]schema.Attribute{
+					"annotation": schema.StringAttribute{
+						Computed:            true,
+						MarkdownDescription: `The annotation of the Relation To VRF object.`,
+					},
+					"vrf_name": schema.StringAttribute{
+						Computed:            true,
+						MarkdownDescription: `The name of the VRF object.`,
 					},
 				},
 			},

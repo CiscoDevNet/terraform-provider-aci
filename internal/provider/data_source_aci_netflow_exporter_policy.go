@@ -100,35 +100,31 @@ func (d *NetflowExporterPolDataSource) Schema(ctx context.Context, req datasourc
 				Computed:            true,
 				MarkdownDescription: `The NetFlow Exporter Version of the NetFlow Exporter Policy object.`,
 			},
-			"relation_to_vrf": schema.SetNestedAttribute{
+			"relation_to_vrf": schema.SingleNestedAttribute{
 				MarkdownDescription: `Points to the Ctx behind which the Netflow Exporter Resides`,
 				Computed:            true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"annotation": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The annotation of the Relation From NetFlow Exporter To VRF object.`,
-						},
-						"target_dn": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The distinguished name of the target.`,
-						},
+				Attributes: map[string]schema.Attribute{
+					"annotation": schema.StringAttribute{
+						Computed:            true,
+						MarkdownDescription: `The annotation of the Relation From NetFlow Exporter To VRF object.`,
+					},
+					"target_dn": schema.StringAttribute{
+						Computed:            true,
+						MarkdownDescription: `The distinguished name of the target.`,
 					},
 				},
 			},
-			"relation_to_epg": schema.SetNestedAttribute{
+			"relation_to_epg": schema.SingleNestedAttribute{
 				MarkdownDescription: `Points to the EPg behind which the Netflow Exporter Resides`,
 				Computed:            true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"annotation": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The annotation of the Relation From NetFlow Exporter To EPG object.`,
-						},
-						"target_dn": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The distinguished name of the target.`,
-						},
+				Attributes: map[string]schema.Attribute{
+					"annotation": schema.StringAttribute{
+						Computed:            true,
+						MarkdownDescription: `The annotation of the Relation From NetFlow Exporter To EPG object.`,
+					},
+					"target_dn": schema.StringAttribute{
+						Computed:            true,
+						MarkdownDescription: `The distinguished name of the target.`,
 					},
 				},
 			},

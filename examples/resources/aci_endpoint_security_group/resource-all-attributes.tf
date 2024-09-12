@@ -38,12 +38,10 @@ resource "aci_endpoint_security_group" "full_example_application_profile" {
       contract_name  = aci_contract.example.name
     }
   ]
-  relation_to_vrf = [
-    {
-      annotation = "annotation_1"
-      vrf_name   = aci_vrf.example.name
-    }
-  ]
+  relation_to_vrf = {
+    annotation = "annotation_1"
+    vrf_name   = aci_vrf.example.name
+  }
   relation_to_contract_masters = [
     {
       annotation = "annotation_1"

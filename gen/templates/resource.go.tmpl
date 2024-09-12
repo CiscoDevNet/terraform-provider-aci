@@ -8,41 +8,26 @@ import (
 	"context"
 	"fmt"
 	"encoding/json"
-	{{- if .IdentifiedBy}}
 	"reflect"
-	{{- end}}
 	"strings"
 	
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
-	{{- if .HasCustomTypeProperties}}
-		"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/validators"
-		customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
-	{{- end}}
-	{{- if or .HasBitmask .HasChildWithoutIdentifier}}
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/validators"
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/hashicorp/terraform-plugin-framework-validators/setvalidator"
-	{{- end}}
-	{{- if .HasValidValues}}
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
-	{{- end}}
-	{{- if .LegacyAttributes}}
 	"github.com/hashicorp/terraform-plugin-framework/attr"
-	{{- end}}
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
-	{{- if or .HasAnnotation}}
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
-	{{- end}}
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
-	{{- if or .HasChild .HasBitmask}}
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setplanmodifier"
-	{{- end}}
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
-	{{- if or .HasValidValues .HasChildWithoutIdentifier}}
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
-	{{- end}}
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
@@ -79,7 +64,11 @@ type {{.ResourceClassName}}ResourceModel struct {
 		{{- end}}
 	{{- end}}
 	{{- range .Children}}
+		{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+	{{ .ResourceClassName }} types.Object `tfsdk:"{{overwriteProperty .PkgName .ResourceName $.Definitions}}"`
+		{{- else}}
 	{{ .ResourceClassName }} types.Set `tfsdk:"{{overwriteProperty .PkgName .ResourceName $.Definitions}}"`
+		{{- end}}
 	{{- end}}
 	{{- if .LegacyAttributes}}
 		{{- range .LegacyAttributes}}{{- if ne .ReplacedBy.AttributeName "" }}
@@ -109,6 +98,17 @@ func getEmpty{{.ResourceClassName}}ResourceModel() *{{.ResourceClassName}}Resour
 			{{- end}}
 		{{- end}}
 		{{- range .Children}}
+			{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+		{{ .ResourceClassName }}: types.ObjectNull(map[string]attr.Type{
+			{{- range .Properties}}
+				{{- if eq .ValueType "bitmask"}}
+				"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": types.SetType(types.StringType),
+				{{- else}}
+				"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": types.StringType,
+				{{- end}}
+			{{- end}}
+		}),
+			{{- else}}
 		{{ .ResourceClassName }}: types.SetNull(types.ObjectType{
 			AttrTypes: map[string]attr.Type{
 			{{- range .Properties}}
@@ -120,6 +120,7 @@ func getEmpty{{.ResourceClassName}}ResourceModel() *{{.ResourceClassName}}Resour
 			{{- end}}
 			},
 		}),
+			{{- end}}
 		{{- end}}
 		{{- if .LegacyAttributes}}
 			{{- range .LegacyAttributes}}{{- if ne .ReplacedBy.AttributeName "" }}
@@ -167,6 +168,17 @@ func getEmpty{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel() {{.Res
 		{{- end}}
 	}
 }
+	{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+var {{.ResourceClassName}}{{$.ResourceClassName}}Type = map[string]attr.Type{
+	{{- range .Properties}}
+		{{- if eq .ValueType "bitmask"}}
+		"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": types.SetType(types.StringType),
+		{{- else}}
+		"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": types.StringType,
+		{{- end}}
+	{{- end}}
+}
+	{{- end}}
 {{- end}}
 
 {{if .IdentifiedBy}}
@@ -312,109 +324,135 @@ func (r *{{.ResourceClassName}}Resource) UpgradeState(ctx context.Context) map[i
 
 				{{ range .Children}}
 					{{- if isLegacyChild .PkgName $.LegacyChildren}}{{ $PkgName := .PkgName}}
-				{{.ResourceClassName}}List := make([]{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel, 0)
 					{{- $childClassType := getValueFromMap .PkgName $.MigrationClassTypes}}
-						{{- if eq $childClassType "string" }}
-				{{.ResourceClassName}} := {{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel{
-							{{- range .Properties}}
+						{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+							{{- if eq $childClassType "string" }}
+				{{.ResourceClassName}}Object := {{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel{
+								{{- range .Properties}}
 						{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
 						{{- $AttributeName := getLegacyChildAttribute $PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
-								{{- if eq $AttributeName ""}}
+									{{- if eq $AttributeName ""}}
 					{{ .Name }}: basetypes.NewStringNull(),
-								{{- else}}
-									{{- if isNewNamedClassAttribute $Overwrite }}
-					{{ .Name }}: basetypes.NewStringValue(GetMOName(priorStateData.{{ $AttributeName }}.ValueString())),
 									{{- else}}
+										{{- if isNewNamedClassAttribute $Overwrite }}
+					{{ .Name }}: basetypes.NewStringValue(GetMOName(priorStateData.{{ $AttributeName }}.ValueString())),
+										{{- else}}
 					{{ .Name }}: priorStateData.{{ $AttributeName }},
+										{{- end}}
 									{{- end}}
 								{{- end}}
-							{{- end}}
+				}
+				{{ .PkgName }}Object, _ := types.ObjectValueFrom(ctx, {{ .ResourceClassName }}{{$.ResourceClassName}}Type, {{.ResourceClassName}}Object)
+				upgradedStateData.{{ .ResourceClassName }} = {{ .PkgName }}Object
+							{{- end }}
+						{{- else}}
+				{{.ResourceClassName}}List := make([]{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel, 0)
+							{{- if eq $childClassType "string" }}
+				{{.ResourceClassName}} := {{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel{
+								{{- range .Properties}}
+						{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
+						{{- $AttributeName := getLegacyChildAttribute $PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
+									{{- if eq $AttributeName ""}}
+					{{ .Name }}: basetypes.NewStringNull(),
+									{{- else}}
+										{{- if isNewNamedClassAttribute $Overwrite }}
+					{{ .Name }}: basetypes.NewStringValue(GetMOName(priorStateData.{{ $AttributeName }}.ValueString())),
+										{{- else}}
+					{{ .Name }}: priorStateData.{{ $AttributeName }},
+										{{- end}}
+									{{- end}}
+								{{- end}}
 				}
 				{{.ResourceClassName}}List = append({{.ResourceClassName}}List, {{.ResourceClassName}})
 				{{.ResourceClassName}}Type := types.ObjectType{
 					AttrTypes: map[string]attr.Type{
-					{{- range .Properties}}
+								{{- range .Properties}}
 						{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
 						"{{$Overwrite}}": basetypes.StringType{},
-					{{- end}}
+								{{- end}}
 					},
 				}
 				{{.ResourceClassName}}Set, _ := types.SetValueFrom(ctx, {{.ResourceClassName}}Type, {{.ResourceClassName}}List)
 				upgradedStateData.{{.ResourceClassName}} = {{.ResourceClassName}}Set
-						{{- else if eq $childClassType "block,set" }}
+							{{- else if eq $childClassType "block,set" }}
 				var priorStateData{{.ResourceClassName}}List []{{ .ResourceClassName }}{{$.ResourceClassName}}ResourceModelV{{$.LegacySchemaVersion}}
 				priorStateData.{{.ResourceClassName}}.ElementsAs(ctx, &priorStateData{{.ResourceClassName}}List, false)
 				for _, priorStateData{{.ResourceClassName}} := range priorStateData{{.ResourceClassName}}List {
 					{{ .ResourceClassName }} := {{ .ResourceClassName }}{{$.ResourceClassName}}ResourceModel {
-						{{- range .Properties}}
+								{{- range .Properties}}
 						{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
 						{{- $AttributeName := getLegacyChildAttribute $PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
-							{{- if eq $AttributeName ""}}
+									{{- if eq $AttributeName ""}}
 						{{ .Name }}: basetypes.NewStringNull(),
-								{{- else if .HasCustomType}}
+									{{- else if .HasCustomType}}
 						{{ .Name }}: customTypes.{{.ResourceClassName}}{{.Name}}StringValue{StringValue: priorStateData{{.ResourceClassName}}.{{ $AttributeName }}},
-								{{- else}}
+									{{- else}}
 						{{ .Name }}: priorStateData{{.ResourceClassName}}.{{ $AttributeName }},
+									{{- end}}
 								{{- end}}
-						{{- end}}
 					}
 					{{.ResourceClassName}}List = append({{.ResourceClassName}}List, {{ .ResourceClassName }})
 				}
 				{{.ResourceClassName}}Type := types.ObjectType{
 					AttrTypes: map[string]attr.Type{
-					{{- range .Properties}}
+								{{- range .Properties}}
 						{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
 						"{{$Overwrite}}": basetypes.StringType{},
-					{{- end}}
+								{{- end}}
 					},
 				}
 				{{.ResourceClassName}}Set, _ := types.SetValueFrom(ctx, {{.ResourceClassName}}Type, {{.ResourceClassName}}List)
 				upgradedStateData.{{.ResourceClassName}} = {{.ResourceClassName}}Set
-						{{- else if eq $childClassType "set,string" }}
+							{{- else if eq $childClassType "set,string" }}
 				var priorStateData{{.ResourceClassName}}List []string
 				priorStateData.{{.ResourceClassName}}.ElementsAs(ctx, &priorStateData{{.ResourceClassName}}List, false)
 				for _, priorStateData{{.ResourceClassName}} := range priorStateData{{.ResourceClassName}}List {
 					{{ .ResourceClassName }} := {{ .ResourceClassName }}{{$.ResourceClassName}}ResourceModel {
-						{{- range .Properties}}
-						{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
-						{{- $AttributeName := getLegacyChildAttribute $PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
-							{{- if eq $AttributeName ""}}
+								{{- range .Properties}}
+							{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
+							{{- $AttributeName := getLegacyChildAttribute $PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
+									{{- if eq $AttributeName ""}}
 						{{ .Name }}: basetypes.NewStringNull(),
-							{{- else}}
-								{{- if isNewNamedClassAttribute $Overwrite }}
+									{{- else}}
+										{{- if isNewNamedClassAttribute $Overwrite }}
 						{{ .Name }}: basetypes.NewStringValue(GetMOName(priorStateData{{ .ResourceClassName }})),
-								{{- else if eq .Name "TDn"}}
+										{{- else if eq .Name "TDn"}}
 						{{ .Name }}: basetypes.NewStringValue(priorStateData{{ .ResourceClassName }}),
+										{{- end}}
+									{{- end}}
 								{{- end}}
-							{{- end}}
-						{{- end}}
 					}
 					{{.ResourceClassName}}List = append({{.ResourceClassName}}List, {{ .ResourceClassName }})
 				}
 				{{.ResourceClassName}}Type := types.ObjectType{
 					AttrTypes: map[string]attr.Type{
-					{{- range .Properties}}
-						{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
+								{{- range .Properties}}
+							{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
 						"{{$Overwrite}}": basetypes.StringType{},
-					{{- end}}
+								{{- end}}
 					},
 				}
 				{{.ResourceClassName}}Set, _ := types.SetValueFrom(ctx, {{.ResourceClassName}}Type, {{.ResourceClassName}}List)
 				upgradedStateData.{{.ResourceClassName}} = {{.ResourceClassName}}Set
+							{{- end}}
 						{{- end}}
-
 					{{ else}}
+						{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+				// {{ .ResourceClassName }} is a child of {{ $.ResourceClassName }}.
+				upgradedStateData.{{ .ResourceClassName }} = types.ObjectNull({{ .ResourceClassName }}{{$.ResourceClassName}}Type)
+						{{- else}}
 				upgradedStateData.{{ .ResourceClassName }} = types.SetNull(
 					types.ObjectType{
 						AttrTypes: map[string]attr.Type{
 							{{- range .Properties}}
 								{{- if ne .ValueType "bitmask"}}
-									"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": basetypes.StringType{},
+								"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": basetypes.StringType{},
 								{{- end}}
 							{{- end}}
 						},
 					},
 				)
+						{{- end}}
 					{{ end}}
 				{{- end}}
 
@@ -537,10 +575,10 @@ func set{{ .ResourceClassName }}LegacyAttributes(ctx context.Context, diags *dia
 
 func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
     if !req.Plan.Raw.IsNull() {
-		var planData, stateData{{ if .LegacyAttributes}}, configData{{end}} *{{.ResourceClassName}}ResourceModel
+		var planData, stateData{{ if or .LegacyAttributes (containsSingleNestedChildren .Children)}}, configData{{end}} *{{.ResourceClassName}}ResourceModel
 		resp.Diagnostics.Append(req.Plan.Get(ctx, &planData)...)
 		resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
-		{{ if .LegacyAttributes}}resp.Diagnostics.Append(req.Config.Get(ctx, &configData)...){{end}}
+		{{ if or .LegacyAttributes (containsSingleNestedChildren .Children)}}resp.Diagnostics.Append(req.Config.Get(ctx, &configData)...){{end}}
 
 		if resp.Diagnostics.HasError() {
 			return
@@ -557,6 +595,19 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 			}
 		}
 
+		{{- if containsSingleNestedChildren .Children}}
+			{{- range $.Children}}
+				{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+		if !configData.{{ .ResourceClassName }}.IsNull() && stateData != nil {
+			if IsEmptySingleNestedAttribute(configData.{{ .ResourceClassName }}.Attributes()) {
+				{{.ResourceClassName}}Object, _ := types.ObjectValueFrom(ctx, {{.ResourceClassName}}{{$.ResourceClassName}}Type, getEmpty{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel())
+				planData.{{.ResourceClassName}} = {{.ResourceClassName}}Object
+			}
+		}
+
+				{{- end}}
+			{{- end}}
+		{{- end}}
 		{{ if .LegacyAttributes}}{{ $ResourceClassName := .ResourceClassName}}
 		{{ range .LegacyAttributes}}{{$SetName := .Name}}
 			{{- if and (ne .ReplacedBy.AttributeName "") (eq (getMigrationType .ValueType) "String") (isNewAttributeStringType .ReplacedBy.AttributeName) }}
@@ -592,44 +643,83 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 			{{- end}}
 			{{- else if and (ne .ReplacedBy.AttributeName "") (eq (getMigrationType .ValueType) "String") }}
 				{{- range $.Children}}
-					{{- if isLegacyChild .PkgName $.LegacyChildren}}
+					{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
 						{{- if eq $SetName (capitalize .PkgName)}}
+		if !configData.{{ $SetName }}.IsNull() && stateData != nil {
+			if IsEmptySingleNestedAttribute(configData.{{ $SetName }}.Attributes()) {
+				planData.{{ $SetName }} = configData.{{ $SetName }}
+				planData.Deprecated{{ $SetName }} = basetypes.NewStringNull()
+			} else {
+				var attributeValues {{$SetName}}{{$.ResourceClassName}}ResourceModel
+				configData.{{ $SetName }}.As(ctx, &attributeValues, basetypes.ObjectAsOptions{})
+								{{- range .Properties}}
+							{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
+							{{- $AttributeName := getLegacyChildAttribute .PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
+									{{- if ne $AttributeName ""}}
+				if GetMOName(stateData.Deprecated{{$SetName}}.ValueString()) == attributeValues.{{ .Name }}.ValueString() && !attributeValues.{{ .Name }}.IsNull() {
+					planData.Deprecated{{$SetName}} = stateData.Deprecated{{$SetName}}
+				}
+			}
+								{{- end}}
+							{{- end}}
+		} else if !configData.Deprecated{{ $SetName }}.IsNull() {
+			{{$SetName}} := {{$SetName}}{{$.ResourceClassName}}ResourceModel{
+								{{- range .Properties}}
+								{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
+								{{- $AttributeName := getLegacyChildAttribute .PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
+									{{- if eq .Name "Annotation"}}
+				{{ .Name }}: planData.Annotation,
+									{{- else if eq $AttributeName ""}}
+				{{ .Name }}: basetypes.NewStringNull(),
+									{{- else}}
+				{{ .Name }}: {{- if isNewNamedClassAttribute $Overwrite }}basetypes.NewStringValue(GetMOName(configData.Deprecated{{ $AttributeName }}.ValueString())){{- else }}configData.Deprecated{{ .Name }}{{- end }},
+									{{- end}}
+								{{- end}}
+			}
+			{{$SetName}}Object, _ := types.ObjectValueFrom(ctx, {{$SetName}}{{$.ResourceClassName}}Type, {{$SetName}})
+			planData.{{$SetName}} = {{$SetName}}Object
+		} else if stateData != nil { // used to replace use state for unknown
+			planData.Deprecated{{$SetName}} = stateData.Deprecated{{$SetName}}
+		}					{{- end}}	
+						{{- else}}
+							{{- if isLegacyChild .PkgName $.LegacyChildren}}
+								{{- if eq $SetName (capitalize .PkgName)}}
 		if !configData.{{ $SetName }}.IsNull() && stateData != nil {
 			var attributeValues []{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel
 			configData.{{.ResourceClassName}}.ElementsAs(ctx, &attributeValues, false)
 			for _, attributeValue := range attributeValues {
-						{{- range .Properties}}
-						{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
-						{{- $AttributeName := getLegacyChildAttribute .PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
-							{{- if ne $AttributeName ""}}
+								{{- range .Properties}}
+								{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
+								{{- $AttributeName := getLegacyChildAttribute .PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
+									{{- if ne $AttributeName ""}}
 				if GetMOName(stateData.Deprecated{{.ResourceClassName}}.ValueString()) == attributeValue.{{ .Name }}.ValueString() {
 					planData.Deprecated{{.ResourceClassName}} = stateData.Deprecated{{.ResourceClassName}}
 				}
-							{{- end}}
-						{{- end}}
+									{{- end}}
+								{{- end}}
 			}	
 		} else if !configData.Deprecated{{ $SetName }}.IsNull() {
 			{{.ResourceClassName}}List := make([]{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel, 0)
 			{{.ResourceClassName}} := {{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel{
-						{{- range .Properties}}
-						{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
-						{{- $AttributeName := getLegacyChildAttribute .PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
-							{{- if eq .Name "Annotation"}}
+								{{- range .Properties}}
+								{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
+								{{- $AttributeName := getLegacyChildAttribute .PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
+									{{- if eq .Name "Annotation"}}
 				{{ .Name }}: planData.Annotation,
-							{{- else if eq $AttributeName ""}}
+									{{- else if eq $AttributeName ""}}
 				{{ .Name }}: basetypes.NewStringNull(),
-							{{- else}}
+									{{- else}}
 				{{ .Name }}: {{- if isNewNamedClassAttribute $Overwrite }}basetypes.NewStringValue(GetMOName(configData.Deprecated{{ $AttributeName }}.ValueString())){{- else }}configData.Deprecated{{ .Name }}{{- end }},
-							{{- end}}
-						{{- end}}
+									{{- end}}
+								{{- end}}
 			}
 			{{.ResourceClassName}}List = append({{.ResourceClassName}}List, {{.ResourceClassName}})
 			{{.ResourceClassName}}Type := types.ObjectType{
 				AttrTypes: map[string]attr.Type{
-				{{- range .Properties}}
+								{{- range .Properties}}
 					{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
 					"{{$Overwrite}}": basetypes.StringType{},
-				{{- end}}
+								{{- end}}
 				},
 			}
 			{{.ResourceClassName}}Set, _ := types.SetValueFrom(ctx, {{.ResourceClassName}}Type, {{.ResourceClassName}}List)
@@ -637,6 +727,7 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 		} else if stateData != nil { // used to replace use state for unknown
 			planData.Deprecated{{.ResourceClassName}} = stateData.Deprecated{{.ResourceClassName}}
 		}
+							{{- end }}
 						{{- end }}
 					{{- end }}
 				{{- end }}
@@ -644,7 +735,6 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 				{{- range $.Children}}
 					{{- if isLegacyChild .PkgName $.LegacyChildren}}
 						{{- if eq $SetName (capitalize .PkgName)}}
-		// HasNamedProperties {{.HasNamedProperties}}
 		if !configData.{{ $SetName }}.IsNull() && stateData != nil {
 			var attributeValues []{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel
 			var newAttributeValues, stateAttributeValues []string
@@ -844,6 +934,169 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 		resp.Diagnostics.Append(resp.Plan.Set(ctx, &planData)...)
 	}
 }
+{{- if .TypeChanges}}
+	{{- range $version, $value := .TypeChanges}}
+type {{$.ResourceClassName}}ResourceModelV{{$version}} struct {
+	Id types.String `tfsdk:"id"`
+	{{- if $.HasParent}}
+	ParentDn types.String `tfsdk:"parent_dn"`
+	{{- end}}
+	{{- range $.Properties}}{{$oldType := getOldType .PropertyName $value}}
+		{{- if ne $oldType ""}}
+	// {{.PropertyName}}
+		{{- else if eq .ValueType "bitmask"}}
+	{{ .Name }} types.Set `tfsdk:"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}"`
+		{{- else if eq .Name "Id"}}
+	{{.ResourceClassName}}{{ .Name }} types.String `tfsdk:"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}"`
+		{{- else}}
+	{{ .Name }} types.String `tfsdk:"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}"`
+		{{- end}}
+	{{- end}}
+	{{- range $.Children}}{{$oldType := getOldType .PkgName $value}}
+		{{- if ne $oldType ""}}
+			{{- if eq $oldType "SetNestedAttribute"}}
+	{{ .ResourceClassName }} types.Set `tfsdk:"{{- .ResourceName}}"`
+			{{- end}}
+		{{- else if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+	{{ .ResourceClassName }} types.Object `tfsdk:"{{- .ResourceName}}"`
+		{{- else}}
+	{{ .ResourceClassName }} types.Set `tfsdk:"{{- .ResourceName}}"`
+		{{- end}}
+	{{- end}}
+}
+	{{- end}}
+
+func (r *{{.ResourceClassName}}Resource) UpgradeState(ctx context.Context) map[int64]resource.StateUpgrader {
+	return map[int64]resource.StateUpgrader{
+		{{- range $version, $value := .TypeChanges}}
+		{{$version}}: {
+			PriorSchema: &schema.Schema{
+				Attributes: map[string]schema.Attribute{
+					"id": schema.StringAttribute{
+						Required: false,
+						Optional: true,
+						Computed: true,
+					},
+					{{- if $.HasParent}}
+					"parent_dn": schema.StringAttribute{
+						Required: false,
+						Optional: true,
+						Computed: true,
+					},
+					{{- end}}
+					{{- range $.Properties}}{{$oldType := getOldType .PropertyName $value}}
+						{{- if ne $oldType ""}}
+					// {{.PropertyName}} // Add logic when needed, current no type change on properties
+						{{- else }}
+					"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": schema.StringAttribute{
+						Required: {{- if or .IsNaming .IsRequired}}true{{else}}false{{end}},
+						Optional: {{- if not .ReadOnly}}true{{else}}false{{end}},
+						Computed: true,
+					},
+						{{- end}}
+					{{- end}}
+					{{- range $.Children}}{{$oldType := getOldType .PkgName $value}}
+						{{- if ne $oldType ""}}
+							{{- if eq $oldType "SetNestedAttribute"}}
+					"{{- .ResourceName}}": schema.SetNestedAttribute{
+						Required: false,
+						Optional: true,
+						Computed: true,
+						NestedObject: schema.NestedAttributeObject{
+							Attributes: map[string]schema.Attribute{
+							{{- range .Properties}}{{$oldType := getOldType .PropertyName $value}}
+								{{- if ne $oldType ""}}
+								// {{.PropertyName}} // Add logic when needed, current no type change on properties
+								{{- else }}
+								"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": schema.StringAttribute{
+									Required: {{- if or .IsNaming .IsRequired}}true{{else}}false{{end}},
+									Optional: {{- if or .IsNaming .IsRequired}}false{{else}}true{{end}},
+									Computed: {{- if or .IsNaming .IsRequired}}false{{else}}true{{end}},
+								},
+								{{- end}}
+							{{- end}}
+							},
+						},
+					},
+							{{- end}}
+						{{- else if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+					// "{{- .ResourceName}}" map
+						{{- else}}
+					"{{- .ResourceName}}": schema.SetNestedAttribute{
+						Required: false,
+						Optional: true,
+						Computed: true,
+						NestedObject: schema.NestedAttributeObject{
+							Attributes: map[string]schema.Attribute{
+							{{- range .Properties}}{{$oldType := getOldType .PropertyName $value}}
+								{{- if ne $oldType ""}}
+								// {{.PropertyName}} // Add logic when needed, current no type change on properties
+								{{- else }}
+								"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": schema.StringAttribute{
+									Required: {{- if or .IsNaming .IsRequired}}true{{else}}false{{end}},
+									Optional: {{- if or .IsNaming .IsRequired}}false{{else}}true{{end}},
+									Computed: {{- if or .IsNaming .IsRequired}}false{{else}}true{{end}},
+								},
+								{{- end}}
+							{{- end}}
+							},
+						},
+					},
+						{{- end}}
+	{{- end}}
+				},
+			},
+			StateUpgrader: func(ctx context.Context, req resource.UpgradeStateRequest, resp *resource.UpgradeStateResponse) {
+				var priorStateData {{$.ResourceClassName}}ResourceModelV{{$version}}
+
+				resp.Diagnostics.Append(req.State.Get(ctx, &priorStateData)...)
+
+				if resp.Diagnostics.HasError() {
+					return
+				}
+
+				upgradedStateData := {{$.ResourceClassName}}ResourceModel{
+					Id:         priorStateData.Id,
+					{{- if $.HasParent}}
+					ParentDn:   priorStateData.ParentDn,
+					{{- end}}
+					{{- range $.Properties}}{{$oldType := getOldType .PropertyName $value}}
+						{{- if ne $oldType ""}}
+					// {{.PropertyName}} // Add logic when needed, current no type change on properties
+						{{- else }}
+					{{ .Name }}: priorStateData.{{ .Name }},
+						{{- end}}
+					{{- end}}
+					{{- range $.Children}}{{$oldType := getOldType .PkgName $value}}
+						{{- if ne $oldType ""}}
+					{{.ResourceClassName}}: types.ObjectNull({{.ResourceClassName}}{{$.ResourceClassName}}Type),
+						{{- else }}
+					{{ .ResourceClassName }}: priorStateData.{{ .ResourceClassName }},
+						{{- end}}
+					{{- end}}
+				}
+
+				{{- range $.Children}}{{$oldType := getOldType .PkgName $value}}
+					{{- if ne $oldType ""}}
+				
+				var {{.ResourceClassName}}{{$.ResourceClassName}}List []{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel
+				priorStateData.{{.ResourceClassName}}.ElementsAs(ctx, &{{.ResourceClassName}}{{$.ResourceClassName}}List, false)
+
+				if len({{.ResourceClassName}}{{$.ResourceClassName}}List) > 0 {
+					{{.ResourceClassName}}Object, _ := types.ObjectValueFrom(ctx, {{.ResourceClassName}}{{$.ResourceClassName}}Type, {{.ResourceClassName}}{{$.ResourceClassName}}List[0])
+					upgradedStateData.{{.ResourceClassName}} = {{.ResourceClassName}}Object
+				}
+					{{- end}}
+				{{- end}}
+
+				resp.Diagnostics.Append(resp.State.Set(ctx, upgradedStateData)...)
+			},
+		},
+		{{- end}}
+	}
+}
+
+{{- end }}
 
 func (r *{{.ResourceClassName}}Resource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	tflog.Debug(ctx, "Start metadata of resource: aci_{{.ResourceName}}")
@@ -860,6 +1113,9 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 		Version: {{add .LegacySchemaVersion 1}},
 		{{- else if .LegacySchemaVersion}}
 		Version: {{.LegacySchemaVersion}},
+		{{- end}}
+		{{- if .TypeChanges}}
+		Version: {{.SchemaVersion}},
 		{{- end}}
 
 		Attributes: map[string]schema.Attribute{
@@ -1024,6 +1280,69 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 				{{- end}}
 			{{- end}}
 			{{- range .Children}}
+				{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+			"{{overwriteProperty .PkgName .ResourceName $.Definitions}}": schema.SingleNestedAttribute{
+				MarkdownDescription: `{{.Comment}}`,
+				Optional:            true,
+				Computed:            true,
+				PlanModifiers: []planmodifier.Object{
+					objectplanmodifier.UseStateForUnknown(),
+				},
+				{{- if .RequiredPropertiesNames }}
+				Validators: []validator.Object{
+					MakeSingleNestedAttributeRequiredAttributesNotProvidedValidator("{{.ResourceName}}", []string{"{{listToString .RequiredPropertiesNames}}"}),
+				},
+				{{- end }}
+				Attributes: map[string]schema.Attribute{
+				{{- range .Properties}}
+					{{- if eq .ValueType "bitmask"}}
+					"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": schema.SetAttribute{
+						MarkdownDescription: `{{.Comment}}`,
+						{{- if not .ReadOnly }}
+						Optional:            true,
+						{{- end }}
+						Computed:            true,
+						{{- if not .ReadOnly }}
+						PlanModifiers: []planmodifier.Set{
+							setplanmodifier.UseStateForUnknown(),
+						},
+						{{- end }}
+						{{- if .ValidValues}}
+						Validators: []validator.Set{
+							setvalidator.SizeAtMost({{ len .ValidValues }}),
+							setvalidator.ValueStringsAre(
+								stringvalidator.OneOf({{- validatorString .ValidValues}}),
+							),
+						},
+						{{- end}}
+						ElementType: types.StringType,
+					},
+					{{- else}}
+					"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": schema.StringAttribute{
+						Optional:            true,
+						Computed:            true,
+						{{- if not .ReadOnly }}
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.UseStateForUnknown(),
+						},
+						{{- end}}
+						{{- if or .ValidValues $.HasReadOnlyProperties}}
+						Validators: []validator.String{
+							{{- if .ValidValues}}
+							stringvalidator.OneOf({{- validatorString .ValidValues}}),
+							{{- end}}
+							{{- if or .IsNaming .IsRequired}}
+							MakeStringRequired(),
+							{{- end}}
+						},
+						{{- end}}
+						MarkdownDescription: `{{.Comment}}`,
+					},
+					{{- end}}
+					{{- end}}
+					},
+				},
+				{{- else }}
 			"{{overwriteProperty .PkgName .ResourceName $.Definitions}}": schema.SetNestedAttribute{
 				MarkdownDescription: `{{.Comment}}`,
 				Optional:            true,
@@ -1031,11 +1350,6 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
 				},
-				{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
-				Validators: []validator.Set{
-					setvalidator.SizeAtMost(1),
-				},
-				{{- end}}
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 					{{- range .Properties}}
@@ -1101,6 +1415,7 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 					},
 				},
 			},
+			{{- end}}
 			{{- end}}
 		},
 		{{- if .LegacyAttributes}}
@@ -1216,9 +1531,15 @@ func (r *{{.ResourceClassName}}Resource) Create(ctx context.Context, req resourc
 
 	{{ if .HasChild}}
 		{{- range .Children}}
+			{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+	var {{.PkgName}}Plan, {{.PkgName}}State {{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel
+	data.{{ .ResourceClassName }}.As(ctx, &{{.PkgName}}Plan, basetypes.ObjectAsOptions{})
+	stateData.{{ .ResourceClassName }}.As(ctx, &{{.PkgName}}State, basetypes.ObjectAsOptions{})
+			{{- else}}
 	var {{.PkgName}}Plan, {{.PkgName}}State []{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel
 	data.{{ .ResourceClassName }}.ElementsAs(ctx, &{{.PkgName}}Plan, false)
 	stateData.{{ .ResourceClassName }}.ElementsAs(ctx, &{{.PkgName}}State, false)
+			{{- end}}
 		{{- end}}
 	jsonPayload := get{{.ResourceClassName}}CreateJsonPayload(ctx, &resp.Diagnostics, true, data{{- range .Children}}, {{.PkgName}}Plan, {{.PkgName}}State{{- end}})	
 	{{- else}}
@@ -1278,6 +1599,17 @@ func (r *{{.ResourceClassName}}Resource) Update(ctx context.Context, req resourc
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
 	{{- if .HasChild}}
 	resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
+		{{- range .Children}}
+			{{- if and (or (not .IdentifiedBy) .MaxOneClassAllowed) (not .AllowDelete)}}
+	// Error out when child object {{.PkgName}} is being deleted
+	if IsEmptySingleNestedAttribute(data.{{ .ResourceClassName }}.Attributes()) && !IsEmptySingleNestedAttribute(stateData.{{ .ResourceClassName }}.Attributes()) {
+		resp.Diagnostics.AddError(
+			"{{ .ResourceClassName }} object cannot be deleted",
+			"deletion of child is only possible upon deletion of the parent",
+		)
+	}
+			{{- end}}
+		{{- end}}
 	{{- end}}
 
 	if resp.Diagnostics.HasError() {
@@ -1288,9 +1620,15 @@ func (r *{{.ResourceClassName}}Resource) Update(ctx context.Context, req resourc
 	
 	{{ if .HasChild}}
 		{{- range .Children}}
+			{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+	var {{.PkgName}}Plan, {{.PkgName}}State {{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel
+	data.{{ .ResourceClassName }}.As(ctx, &{{.PkgName}}Plan, basetypes.ObjectAsOptions{})
+	stateData.{{ .ResourceClassName }}.As(ctx, &{{.PkgName}}State, basetypes.ObjectAsOptions{})
+			{{- else}}
 	var {{.PkgName}}Plan, {{.PkgName}}State []{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel
 	data.{{ .ResourceClassName }}.ElementsAs(ctx, &{{.PkgName}}Plan, false)
 	stateData.{{ .ResourceClassName }}.ElementsAs(ctx, &{{.PkgName}}State, false)
+			{{- end}}
 		{{- end}}
 	jsonPayload := get{{.ResourceClassName}}CreateJsonPayload(ctx, &resp.Diagnostics, false, data{{- range .Children}}, {{.PkgName}}Plan, {{.PkgName}}State{{- end}})	
 	{{- else}}
@@ -1473,8 +1811,18 @@ func getAndSet{{.ResourceClassName}}Attributes(ctx context.Context, diags *diag.
 				}
 			}
 				{{- range .Children}}
+					{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+			if len({{.ResourceClassName}}{{$.ResourceClassName}}List) == 1 {
+				{{ .PkgName }}Object, _ := types.ObjectValueFrom(ctx, {{ .ResourceClassName }}{{$.ResourceClassName}}Type, {{ .ResourceClassName }}{{$.ResourceClassName}}List[0])
+				data.{{ .ResourceClassName }} = {{ .PkgName }}Object
+			} else {
+				{{ .PkgName }}Object, _ := types.ObjectValueFrom(ctx, {{ .ResourceClassName }}{{$.ResourceClassName}}Type, getEmpty{{ .ResourceClassName }}{{$.ResourceClassName}}ResourceModel())
+				data.{{ .ResourceClassName }} = {{ .PkgName }}Object
+			}
+					{{- else}}
 			{{ .PkgName }}Set, _ := types.SetValueFrom(ctx, data.{{ .ResourceClassName }}.ElementType(ctx), {{ .ResourceClassName }}{{$.ResourceClassName}}List)
 			data.{{ .ResourceClassName }} = {{ .PkgName }}Set
+					{{- end}}
 				{{- end}}
 			{{- end}}
 			{{- if .LegacyAttributes}}
@@ -1539,51 +1887,79 @@ func set{{.ResourceClassName}}Id(ctx context.Context, data *{{.ResourceClassName
 }
 
 {{ range .Children}}
-func get{{$.ResourceClassName}}{{ .ResourceClassName }}ChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *{{$.ResourceClassName}}ResourceModel, {{.PkgName}}Plan, {{.PkgName}}State []{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel) []map[string]interface{} {
+func get{{$.ResourceClassName}}{{ .ResourceClassName }}ChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *{{$.ResourceClassName}}ResourceModel, {{.PkgName}}Plan, {{.PkgName}}State {{if not ( or (not .IdentifiedBy) .MaxOneClassAllowed)}}[]{{end}}{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel) []map[string]interface{} {
 	
 	childPayloads := []map[string]interface{}{}
 	if !data.{{ .ResourceClassName }}.IsUnknown() {
-	{{- if and .IdentifiedBy (not (and .MaxOneClassAllowed (hasPrefix .RnFormat  "rs")))}}
+	{{- if and (and .IdentifiedBy (not (and .MaxOneClassAllowed (hasPrefix .RnFormat  "rs")))) (not (or (not .IdentifiedBy) .MaxOneClassAllowed))}}
 		{{ .PkgName }}Identifiers := []{{ .ResourceClassName }}Identifier{}
 	{{- end}}
+		{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+		childMap := map[string]map[string]interface{}{"attributes": {}}
+		if !IsEmptySingleNestedAttribute(data.{{ .ResourceClassName }}.Attributes()) {
+			{{- range .Properties}}
+				if !{{ .PkgName }}Plan.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}.IsUnknown() &&  !{{ .PkgName }}Plan.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}.IsNull(){
+				{{- if eq .ValueType "bitmask"}}
+					var tmp{{ .Name }} []string
+					{{ .PkgName }}.{{ .Name }}.ElementsAs(ctx, &tmp{{ .Name }}, false)
+					childMap["attributes"]["{{ .PropertyName }}"] = strings.Join(tmp{{ .Name }}, ",")				
+				{{- else if eq .Name "Id"}}
+					childMap["attributes"]["{{ .PropertyName }}"] = {{ .PkgName }}Plan.{{.ResourceClassName}}{{ .Name }}.ValueString()
+				{{- else}}
+					childMap["attributes"]["{{ .PropertyName }}"] = {{ .PkgName }}Plan.{{ .Name }}.ValueString()
+				{{- end}}
+				} {{- if eq .Name "Annotation" }} else {
+					childMap["attributes"]["annotation"] = globalAnnotation
+				} {{- end}}
+			{{- end}}
+		}{{- if .AllowDelete}} else {
+			{{- range .Properties}}
+				{{- if .IsNaming }}
+			childMap["attributes"]["{{.PropertyName}}"] = {{.PkgName}}State.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}.ValueString()
+				{{- end}}
+			{{- end}}
+			childMap["attributes"]["status"] = "deleted"
+		}{{- end}}
+		childPayloads = append(childPayloads, map[string]interface{}{"{{ .PkgName }}": childMap})
+		{{- else}}
 		for _, {{ .PkgName }} := range {{ .PkgName }}Plan {
 			childMap := map[string]map[string]interface{}{"attributes": {}}
-		{{- range .Properties}}
+			{{- range .Properties}}
 			if !{{ .PkgName }}.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}.IsUnknown() &&  !{{ .PkgName }}.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}.IsNull(){
-			{{- if eq .ValueType "bitmask"}}
+				{{- if eq .ValueType "bitmask"}}
 				var tmp{{ .Name }} []string
 				{{ .PkgName }}.{{ .Name }}.ElementsAs(ctx, &tmp{{ .Name }}, false)
 				childMap["attributes"]["{{ .PropertyName }}"] = strings.Join(tmp{{ .Name }}, ",")				
-			{{- else if eq .Name "Id"}}
+				{{- else if eq .Name "Id"}}
 				childMap["attributes"]["{{ .PropertyName }}"] = {{ .PkgName }}.{{.ResourceClassName}}{{ .Name }}.ValueString()
-			{{- else}}
+				{{- else}}
 				childMap["attributes"]["{{ .PropertyName }}"] = {{ .PkgName }}.{{ .Name }}.ValueString()
-			{{- end}}
+				{{- end}}
 			} {{- if eq .Name "Annotation" }} else {
 				childMap["attributes"]["annotation"] = globalAnnotation
 			} {{- end}}
-		{{- end}}
+			{{- end}}
 			childPayloads = append(childPayloads, map[string]interface{}{"{{ .PkgName }}": childMap})
-		{{- if and .IdentifiedBy (not (and .MaxOneClassAllowed (hasPrefix .RnFormat  "rs")))}}
+			{{- if and .IdentifiedBy (not (and .MaxOneClassAllowed (hasPrefix .RnFormat  "rs")))}}
 			{{ .PkgName }}Identifier := {{ .ResourceClassName }}Identifier{}
-				{{- range .Properties}}
-					{{- if .IsNaming}}
+					{{- range .Properties}}
+						{{- if .IsNaming}}
 			{{ .PkgName }}Identifier.{{.Name}} = {{ .PkgName }}.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}
+						{{- end}}
 					{{- end}}
-				{{- end}}
 			{{ .PkgName }}Identifiers = append({{ .PkgName }}Identifiers, {{ .PkgName }}Identifier)
-		{{- end}}
+			{{- end}}
 		}
-		{{- if and .IdentifiedBy (not (and .MaxOneClassAllowed (hasPrefix .RnFormat  "rs")))}}
+			{{- if and .IdentifiedBy (not (and .MaxOneClassAllowed (hasPrefix .RnFormat  "rs")))}}
 		for _, {{ .PkgName }} := range {{ .PkgName }}State {
 			delete := true
 			for _, {{ .PkgName }}Identifier := range {{ .PkgName }}Identifiers { {{$i := 1}}{{$length := len .IdentifiedBy}}
 				if 
-				{{- range .Properties}}
-					{{- if .IsNaming }}
+					{{- range .Properties}}
+						{{- if .IsNaming }}
 					{{ .PkgName }}Identifier.{{.Name}} == {{ .PkgName }}.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}{{- if ne $length $i}} {{$i = add $i 1}} && {{- end}}
-					{{- end}}
-				{{- end}} {
+						{{- end}}
+					{{- end}} {
 					delete = false
 					break
 				}
@@ -1591,45 +1967,53 @@ func get{{$.ResourceClassName}}{{ .ResourceClassName }}ChildPayloads(ctx context
 			if delete {
 				childMap := map[string]map[string]interface{}{"attributes": {}}
 				childMap["attributes"]["status"] = "deleted"
-			{{- range .Properties}}
-				{{- if .IsNaming }}
+				{{- range .Properties}}
+					{{- if .IsNaming }}
 				childMap["attributes"]["{{.PropertyName}}"] = {{ .PkgName }}.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}.ValueString()
+					{{- end}}
 				{{- end}}
-			{{- end}}
 				childPayloads = append(childPayloads, map[string]interface{}{"{{ .PkgName }}": childMap})
 			}
 		}
-		{{- else}}
+			{{- else}}
+				{{- if not (or (not .IdentifiedBy) .MaxOneClassAllowed)}}
 		if len({{ .PkgName }}Plan) == 0 && len({{ .PkgName }}State) == 1 {
-			{{- if .AllowDelete}}
+					{{- if .AllowDelete}}
 			childMap := map[string]map[string]interface{}{"attributes": {}}
 			childMap["attributes"]["status"] = "deleted"
-			{{- if .IdentifiedBy}}
-				{{- range .Properties}}
-					{{- if .IsNaming }}
+						{{- if .IdentifiedBy}}
+							{{- range .Properties}}
+								{{- if .IsNaming }}
 			childMap["attributes"]["{{.PropertyName}}"] = {{ .PkgName }}State[0].{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}.ValueString()
-					{{- end}}
-				{{- end}}
-			{{- end}}
+								{{- end}}
+							{{- end}}
+						{{- end}}
 			childPayloads = append(childPayloads, map[string]interface{}{"{{ .PkgName }}": childMap})
-			{{- else}}
+					{{- else}}
 			diags.AddError(
 				"{{ .ResourceClassName }} object cannot be deleted",
 				"deletion of child is only possible upon deletion of the parent",
 			)
 			return nil
-			{{- end }}
+					{{- end }}
 		}
+				{{- end}}
+			{{- end}}
 		{{- end}}
 	} else {
+		{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+		{{ .ResourceClassName }}Object, _ := types.ObjectValueFrom(ctx, {{.ResourceClassName}}{{$.ResourceClassName}}Type, getEmpty{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel())
+		data.{{ .ResourceClassName }} = {{ .ResourceClassName }}Object
+		{{- else}}
 		data.{{ .ResourceClassName }} = types.SetNull(data.{{ .ResourceClassName }}.ElementType(ctx))
+		{{- end}}
 	}
 
 	return childPayloads
 }
 {{- end}}
 
-func get{{.ResourceClassName}}CreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *{{.ResourceClassName}}ResourceModel{{- range .Children}}, {{.PkgName}}Plan, {{.PkgName}}State []{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel{{- end}}) *container.Container {
+func get{{.ResourceClassName}}CreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *{{.ResourceClassName}}ResourceModel{{- range .Children}}, {{.PkgName}}Plan, {{.PkgName}}State {{if not ( or (not .IdentifiedBy) .MaxOneClassAllowed)}}[]{{end}}{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel{{- end}}) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 

@@ -62,31 +62,25 @@ resource "aci_application_epg" "full_example_application_profile" {
   preferred_group_member = "exclude"
   priority               = "level1"
   admin_state            = "no"
-  epg_useg_block_statement = [
-    {
-      annotation  = "annotation_1"
-      description = "description_1"
-      match       = "all"
-      name        = "criterion"
-      name_alias  = "name_alias_1"
-      owner_key   = "owner_key_1"
-      owner_tag   = "owner_tag_1"
-      precedence  = "1"
-      scope       = "scope-bd"
-    }
-  ]
-  relation_to_application_epg_monitoring_policy = [
-    {
-      annotation             = "annotation_1"
-      monitoring_policy_name = aci_monitoring_policy.example.name
-    }
-  ]
-  relation_to_bridge_domain = [
-    {
-      annotation         = "annotation_1"
-      bridge_domain_name = aci_bridge_domain.example.name
-    }
-  ]
+  epg_useg_block_statement = {
+    annotation  = "annotation_1"
+    description = "description_1"
+    match       = "all"
+    name        = "criterion"
+    name_alias  = "name_alias_1"
+    owner_key   = "owner_key_1"
+    owner_tag   = "owner_tag_1"
+    precedence  = "1"
+    scope       = "scope-bd"
+  }
+  relation_to_application_epg_monitoring_policy = {
+    annotation             = "annotation_1"
+    monitoring_policy_name = aci_monitoring_policy.example.name
+  }
+  relation_to_bridge_domain = {
+    annotation         = "annotation_1"
+    bridge_domain_name = aci_bridge_domain.example.name
+  }
   relation_to_consumed_contracts = [
     {
       annotation    = "annotation_1"
@@ -101,12 +95,10 @@ resource "aci_application_epg" "full_example_application_profile" {
       imported_contract_name = aci_imported_contract.example.name
     }
   ]
-  relation_to_custom_qos_policy = [
-    {
-      annotation             = "annotation_1"
-      custom_qos_policy_name = aci_custom_qos_policy.example.name
-    }
-  ]
+  relation_to_custom_qos_policy = {
+    annotation             = "annotation_1"
+    custom_qos_policy_name = aci_custom_qos_policy.example.name
+  }
   relation_to_domains = [
     {
       annotation                    = "annotation_1"
@@ -137,12 +129,10 @@ resource "aci_application_epg" "full_example_application_profile" {
       vnet_only                     = "no"
     }
   ]
-  relation_to_data_plane_policing_policy = [
-    {
-      annotation                      = "annotation_1"
-      data_plane_policing_policy_name = aci_data_plane_policing_policy.example.name
-    }
-  ]
+  relation_to_data_plane_policing_policy = {
+    annotation                      = "annotation_1"
+    data_plane_policing_policy_name = aci_data_plane_policing_policy.example.name
+  }
   relation_to_fibre_channel_paths = [
     {
       annotation  = "annotation_1"
@@ -199,12 +189,10 @@ resource "aci_application_epg" "full_example_application_profile" {
       target_dn  = aci_application_epg.test_application_epg_0.id
     }
   ]
-  relation_to_trust_control_policy = [
-    {
-      annotation                = "annotation_1"
-      trust_control_policy_name = aci_trust_control_policy.example.name
-    }
-  ]
+  relation_to_trust_control_policy = {
+    annotation                = "annotation_1"
+    trust_control_policy_name = aci_trust_control_policy.example.name
+  }
   annotations = [
     {
       key   = "key_0"
@@ -271,8 +259,7 @@ All examples for the Application EPG resource can be found in the [examples](htt
   - Default: `no`
   - Valid Values: `no`, `yes`.
 
-* `epg_useg_block_statement` - (list) A list of EPG uSeg Block Statement (ACI object [fvCrtrn](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvCrtrn/overview)). EPG uSeg Block Statement can also be configured using a separate [aci_](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/) resource. This attribute is supported in ACI versions: 1.1(1j) and later.
-    - Max Items: 1
+* `epg_useg_block_statement` - (map) A map of EPG uSeg Block Statement (ACI object [fvCrtrn](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvCrtrn/overview)). EPG uSeg Block Statement can also be configured using a separate [aci_epg_useg_block_statement](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/epg_useg_block_statement) resource. This attribute is supported in ACI versions: 1.1(1j) and later.
   
 
   #### Optional ####
@@ -292,8 +279,7 @@ All examples for the Application EPG resource can be found in the [examples](htt
       - Default: `scope-bd`
       - Valid Values: `scope-bd`, `scope-vrf`.
 
-* `relation_to_application_epg_monitoring_policy` - (list) A list of Relation To Application EPG Monitoring Policy (ACI object [fvRsAEPgMonPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsAEPgMonPol/overview)) pointing to Monitoring Policy (ACI Object [monEPGPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/monEPGPol/overview)) which can be configured using the [aci_monitoring_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/monitoring_policy) resource.
-    - Max Items: 1
+* `relation_to_application_epg_monitoring_policy` - (map) A map of Relation To Application EPG Monitoring Policy (ACI object [fvRsAEPgMonPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsAEPgMonPol/overview)) pointing to Monitoring Policy (ACI Object [monEPGPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/monEPGPol/overview)) which can be configured using the [aci_monitoring_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/monitoring_policy) resource.
   
 
   #### Optional ####
@@ -302,8 +288,7 @@ All examples for the Application EPG resource can be found in the [examples](htt
       - Default: `orchestrator:terraform`
   * `monitoring_policy_name` (tnMonEPGPolName) - (string) The name of the monitoring policy.
 
-* `relation_to_bridge_domain` - (list) A list of Relation To Bridge Domain (ACI object [fvRsBd](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsBd/overview)) pointing to Bridge Domain (ACI Object [fvBD](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvBD/overview)) which can be configured using the [aci_bridge_domain](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bridge_domain) resource.
-    - Max Items: 1
+* `relation_to_bridge_domain` - (map) A map of Relation To Bridge Domain (ACI object [fvRsBd](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsBd/overview)) pointing to Bridge Domain (ACI Object [fvBD](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvBD/overview)) which can be configured using the [aci_bridge_domain](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bridge_domain) resource.
   
 
   #### Optional ####
@@ -340,8 +325,7 @@ All examples for the Application EPG resource can be found in the [examples](htt
       - Default: `unspecified`
       - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
 
-* `relation_to_custom_qos_policy` - (list) A list of Relation To Custom Qos Policy (ACI object [fvRsCustQosPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsCustQosPol/overview)) pointing to Custom Qos Policy (ACI Object [qosCustomPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/qosCustomPol/overview)) which can be configured using the [aci_custom_qos_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/custom_qos_policy) resource.
-    - Max Items: 1
+* `relation_to_custom_qos_policy` - (map) A map of Relation To Custom Qos Policy (ACI object [fvRsCustQosPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsCustQosPol/overview)) pointing to Custom Qos Policy (ACI Object [qosCustomPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/qosCustomPol/overview)) which can be configured using the [aci_custom_qos_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/custom_qos_policy) resource.
   
 
   #### Optional ####
@@ -418,8 +402,7 @@ All examples for the Application EPG resource can be found in the [examples](htt
       - Default: `no`
       - Valid Values: `no`, `yes`.
 
-* `relation_to_data_plane_policing_policy` - (list) A list of Relation To Data Plane Policing Policy (ACI object [fvRsDppPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsDppPol/overview)) pointing to Data Plane Policing Policy (ACI Object [qosDppPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/qosDppPol/overview)) which can be configured using the [aci_data_plane_policing_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/data_plane_policing_policy) resource. This attribute is supported in ACI versions: 3.0(1k) and later.
-    - Max Items: 1
+* `relation_to_data_plane_policing_policy` - (map) A map of Relation To Data Plane Policing Policy (ACI object [fvRsDppPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsDppPol/overview)) pointing to Data Plane Policing Policy (ACI Object [qosDppPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/qosDppPol/overview)) which can be configured using the [aci_data_plane_policing_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/data_plane_policing_policy) resource. This attribute is supported in ACI versions: 3.0(1k) and later.
   
 
   #### Optional ####
@@ -428,7 +411,7 @@ All examples for the Application EPG resource can be found in the [examples](htt
       - Default: `orchestrator:terraform`
   * `data_plane_policing_policy_name` (tnQosDppPolName) - (string) Name.
 
-* `relation_to_fibre_channel_paths` - (list) A list of Relation To Fibre Channel Paths (ACI object [fvRsFcPathAtt](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsFcPathAtt/overview)) pointing to  (ACI Object [fabricPathEp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fabricPathEp/overview)). This attribute is supported in ACI versions: 2.0(1m) and later.
+* `relation_to_fibre_channel_paths` - (list) A list of Relation To Fibre Channel Paths (ACI object [fvRsFcPathAtt](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsFcPathAtt/overview)) pointing to Fabric Path Endpoint (ACI Object [fabricPathEp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fabricPathEp/overview)). This attribute is supported in ACI versions: 2.0(1m) and later.
   
   #### Required ####
   
@@ -475,7 +458,7 @@ All examples for the Application EPG resource can be found in the [examples](htt
       - Default: `regular`
       - Valid Values: `native`, `regular`, `untagged`.
 
-* `relation_to_static_paths` - (list) A list of Relation To Static Paths (ACI object [fvRsPathAtt](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsPathAtt/overview)) pointing to  (ACI Object [fabricPathEp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fabricPathEp/overview)).
+* `relation_to_static_paths` - (list) A list of Relation To Static Paths (ACI object [fvRsPathAtt](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsPathAtt/overview)) pointing to Fabric Path Endpoint (ACI Object [fabricPathEp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fabricPathEp/overview)).
   
   #### Required ####
   
@@ -534,8 +517,7 @@ All examples for the Application EPG resource can be found in the [examples](htt
   * `annotation` (annotation) - (string) The annotation of the Relation To Contract Master object.
       - Default: `orchestrator:terraform`
 
-* `relation_to_trust_control_policy` - (list) A list of Relation To Trust Control Policy (ACI object [fvRsTrustCtrl](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsTrustCtrl/overview)) pointing to Trust Control Policy (ACI Object [fhsTrustCtrlPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fhsTrustCtrlPol/overview)) which can be configured using the [aci_trust_control_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/trust_control_policy) resource. This attribute is supported in ACI versions: 3.0(1k) and later.
-    - Max Items: 1
+* `relation_to_trust_control_policy` - (map) A map of Relation To Trust Control Policy (ACI object [fvRsTrustCtrl](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsTrustCtrl/overview)) pointing to Trust Control Policy (ACI Object [fhsTrustCtrlPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fhsTrustCtrlPol/overview)) which can be configured using the [aci_trust_control_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/trust_control_policy) resource. This attribute is supported in ACI versions: 3.0(1k) and later.
   
 
   #### Optional ####

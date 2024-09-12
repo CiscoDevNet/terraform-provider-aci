@@ -92,31 +92,29 @@ func (d *FvFBRGroupDataSource) Schema(ctx context.Context, req datasource.Schema
 					},
 				},
 			},
-			"vrf_fallback_routes": schema.SetNestedAttribute{
+			"vrf_fallback_route": schema.SingleNestedAttribute{
 				MarkdownDescription: ``,
 				Computed:            true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"annotation": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The annotation of the VRF Fallback Route object.`,
-						},
-						"description": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The description of the VRF Fallback Route object.`,
-						},
-						"prefix_address": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The prefix address of the VRF Fallback Route object.`,
-						},
-						"name": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The name of the VRF Fallback Route object.`,
-						},
-						"name_alias": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The name alias of the VRF Fallback Route object.`,
-						},
+				Attributes: map[string]schema.Attribute{
+					"annotation": schema.StringAttribute{
+						Computed:            true,
+						MarkdownDescription: `The annotation of the VRF Fallback Route object.`,
+					},
+					"description": schema.StringAttribute{
+						Computed:            true,
+						MarkdownDescription: `The description of the VRF Fallback Route object.`,
+					},
+					"prefix_address": schema.StringAttribute{
+						Computed:            true,
+						MarkdownDescription: `The prefix address of the VRF Fallback Route object.`,
+					},
+					"name": schema.StringAttribute{
+						Computed:            true,
+						MarkdownDescription: `The name of the VRF Fallback Route object.`,
+					},
+					"name_alias": schema.StringAttribute{
+						Computed:            true,
+						MarkdownDescription: `The name alias of the VRF Fallback Route object.`,
 					},
 				},
 			},

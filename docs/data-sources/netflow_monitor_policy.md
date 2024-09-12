@@ -69,7 +69,7 @@ data "aci_netflow_monitor_policy" "example_tenant" {
   * `annotation` (annotation) - (string) The annotation of the Relation To NetFlow Exporter object.
   * `netflow_exporter_policy_name` (tnNetflowExporterPolName) - (string) Name.
 
-* `relation_to_netflow_record` - (list) A list of Relation To NetFlow Record (ACI object [netflowRsMonitorToRecord](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRsMonitorToRecord/overview)) pointing to NetFlow Record Policy (ACI Object [netflowRecordPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRecordPol/overview)).
+* `relation_to_netflow_record` - (map) A map of Relation To NetFlow Record (ACI object [netflowRsMonitorToRecord](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRsMonitorToRecord/overview)) pointing to NetFlow Record Policy (ACI Object [netflowRecordPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRecordPol/overview)).
   * `annotation` (annotation) - (string) The annotation of the Relation To NetFlow Record object.
   * `netflow_record_policy_name` (tnNetflowRecordPolName) - (string) Name.
 

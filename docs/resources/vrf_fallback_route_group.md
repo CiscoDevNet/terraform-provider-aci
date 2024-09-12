@@ -61,15 +61,13 @@ resource "aci_vrf_fallback_route_group" "full_example_vrf" {
       fallback_member = "2.2.2.2"
     }
   ]
-  vrf_fallback_routes = [
-    {
-      annotation     = "annotation_1"
-      description    = "description_1"
-      prefix_address = "2.2.2.2/24"
-      name           = "name_1"
-      name_alias     = "name_alias_1"
-    }
-  ]
+  vrf_fallback_route = {
+    annotation     = "annotation_1"
+    description    = "description_1"
+    prefix_address = "2.2.2.2/24"
+    name           = "name_1"
+    name_alias     = "name_alias_1"
+  }
   annotations = [
     {
       key   = "key_0"
@@ -121,8 +119,7 @@ All examples for the VRF Fallback Route Group resource can be found in the [exam
   * `name` (name) - (string) The name of the VRF Fallback Route Group Member object.
   * `name_alias` (nameAlias) - (string) The name alias of the VRF Fallback Route Group Member object.
 
-* `vrf_fallback_routes` - (list) A list of VRF Fallback Routes (ACI object [fvFBRoute](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvFBRoute/overview)). VRF Fallback Routes can also be configured using a separate [aci_vrf_fallback_route](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vrf_fallback_route) resource.
-    - Max Items: 1
+* `vrf_fallback_route` - (map) A map of VRF Fallback Route (ACI object [fvFBRoute](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvFBRoute/overview)). VRF Fallback Route can also be configured using a separate [aci_vrf_fallback_route](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vrf_fallback_route) resource.
   
   #### Required ####
   

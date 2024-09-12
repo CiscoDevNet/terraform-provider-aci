@@ -78,7 +78,7 @@ data "aci_endpoint_security_group" "example_application_profile" {
   * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
   * `contract_name` (tnVzBrCPName) - (string) The provider contract name.
 
-* `relation_to_vrf` - (list) A list of Relation To VRF (ACI object [fvRsScope](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsScope/overview)) pointing to VRF (ACI Object [fvCtx](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvCtx/overview)).
+* `relation_to_vrf` - (map) A map of Relation To VRF (ACI object [fvRsScope](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsScope/overview)) pointing to VRF (ACI Object [fvCtx](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvCtx/overview)).
   * `annotation` (annotation) - (string) The annotation of the Relation To VRF object.
   * `vrf_name` (tnFvCtxName) - (string) The name of the VRF object.
 

@@ -125,11 +125,23 @@ var templateFuncs = template.FuncMap{
 	"containsRequired":                  ContainsRequired,
 	"hasPrefix":                         strings.HasPrefix,
 	"hasCustomTypeDocs":                 HasCustomTypeDocs,
+	"containsSingleNestedChildren":      ContainsSingleNestedChildren,
+	"isResourceClass":                   IsResourceClass,
+	"getOldType":                        GetOldType,
 }
 
 func ContainsRequired(properties map[string]Property) bool {
 	for _, property := range properties {
 		if property.IsRequired {
+			return true
+		}
+	}
+	return false
+}
+
+func ContainsSingleNestedChildren(children map[string]Model) bool {
+	for _, child := range children {
+		if len(child.IdentifiedBy) == 0 || child.MaxOneClassAllowed {
 			return true
 		}
 	}
@@ -249,7 +261,11 @@ var resourceNames = map[string]string{}
 var targetRelationalPropertyClasses = map[string]string{}
 var alwaysIncludeChildren = []string{"tag:Annotation", "tag:Tag"}
 var excludeChildResourceNamesFromDocs = []string{"", "annotation", "tag"}
-var classesWithoutResource = []string{}
+var classesWithoutResource = []string{"fabricPathEp"}
+
+func IsResourceClass(className string) bool {
+	return !slices.Contains(classesWithoutResource, className)
+}
 
 func GetResourceNameAsDescription(s string, definitions Definitions) string {
 	resourceName := cases.Title(language.English).String(strings.ReplaceAll(s, "_", " "))
@@ -753,9 +769,9 @@ func main() {
 			childMap := make(map[string]Model, 0)
 			for childName, childModel := range model.Children {
 				childModel.ChildResourceName = GetResourceName(childModel.PkgName, definitions)
-				if len(childModel.IdentifiedBy) > 0 && !(strings.HasPrefix(childModel.RnFormat, "rs") && childModel.MaxOneClassAllowed) {
+				childModel.ResourceNameDocReference = childModel.ChildResourceName
+				if len(childModel.IdentifiedBy) > 0 && !childModel.MaxOneClassAllowed {
 					// TODO add logic to determine the naming for plural child resources
-					childModel.ResourceNameDocReference = childModel.ChildResourceName
 					childModel.ResourceName = fmt.Sprintf("%ss", childModel.ChildResourceName)
 				} else {
 					childModel.ResourceName = childModel.ChildResourceName
@@ -869,6 +885,7 @@ type Model struct {
 	DnFormats                 []interface{}
 	Properties                map[string]Property
 	NamedProperties           map[string]Property
+	RequiredPropertiesNames   []string
 	LegacyAttributes          map[string]LegacyAttribute
 	LegacyBlocks              []LegacyBlock
 	LegacySchemaVersion       int
@@ -879,6 +896,8 @@ type Model struct {
 	TestVars                  map[string]interface{}
 	Definitions               Definitions
 	ResourceNameAsDescription string
+	TypeChanges               map[int][]TypeChange
+	SchemaVersion             int
 	// Below booleans are used during template rendering to determine correct rendering the go code
 	AllowDelete               bool
 	AllowChildDelete          bool
@@ -896,6 +915,11 @@ type Model struct {
 	Include                   bool
 	HasReadOnlyProperties     bool
 	HasCustomTypeProperties   bool
+}
+
+type TypeChange struct {
+	OldType   string
+	Attribute string
 }
 
 type TestDependency struct {
@@ -1053,6 +1077,46 @@ func (m *Model) setClassModel(metaPath string, child bool, definitions Definitio
 		m.SetLegacyAttributes(definitions)
 	}
 
+	m.SetStateUpgradeTypeChanges(definitions)
+
+}
+
+func (m *Model) SetStateUpgradeTypeChanges(definitions Definitions) {
+	if v, ok := definitions.Classes[m.PkgName]; ok {
+		for key, value := range v.(map[interface{}]interface{}) {
+			if key.(string) == "type_changes" {
+				m.TypeChanges = make(map[int][]TypeChange)
+				for _, value := range value.([]interface{}) {
+					var version int
+					change := TypeChange{}
+					for key, value := range value.(map[interface{}]interface{}) {
+						if key.(string) == "old_type" {
+							change.OldType = value.(string)
+						}
+						if key.(string) == "attribute" {
+							change.Attribute = value.(string)
+						}
+						if key.(string) == "version" {
+							version = value.(int)
+						}
+					}
+					m.TypeChanges[version] = append(m.TypeChanges[version], change)
+					if version >= m.SchemaVersion {
+						m.SchemaVersion = version + 1
+					}
+				}
+			}
+		}
+	}
+}
+
+func GetOldType(attributeName string, typeChanges []TypeChange) string {
+	for _, change := range typeChanges {
+		if change.Attribute == attributeName {
+			return change.OldType
+		}
+	}
+	return ""
 }
 
 func (m *Model) SetClassLabel(classDetails interface{}, child bool) {
@@ -1373,6 +1437,7 @@ func (m *Model) SetClassProperties(classDetails interface{}) {
 			if requiredProperty(GetOverwriteAttributeName(m.PkgName, propertyName, m.Definitions), m.PkgName, m.Definitions) || property.IsNaming {
 				property.IsRequired = true
 				requiredCount += 1
+				m.RequiredPropertiesNames = append(m.RequiredPropertiesNames, GetOverwriteAttributeName(m.PkgName, property.SnakeCaseName, m.Definitions))
 			}
 
 			if !property.IsRequired {

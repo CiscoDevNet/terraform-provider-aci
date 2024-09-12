@@ -35,7 +35,7 @@ children:
       name_alias: "name_alias_2"
       fallback_member: "2.2.2.3"
       
-  vrf_fallback_routes:
+  vrf_fallback_route:
     - annotation: "annotation_1"
       description: "description_1"
       prefix_address: "2.2.2.2/24"

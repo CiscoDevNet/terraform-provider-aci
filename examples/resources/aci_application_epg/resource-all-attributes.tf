@@ -15,31 +15,25 @@ resource "aci_application_epg" "full_example_application_profile" {
   preferred_group_member = "exclude"
   priority               = "level1"
   admin_state            = "no"
-  epg_useg_block_statement = [
-    {
-      annotation  = "annotation_1"
-      description = "description_1"
-      match       = "all"
-      name        = "criterion"
-      name_alias  = "name_alias_1"
-      owner_key   = "owner_key_1"
-      owner_tag   = "owner_tag_1"
-      precedence  = "1"
-      scope       = "scope-bd"
-    }
-  ]
-  relation_to_application_epg_monitoring_policy = [
-    {
-      annotation             = "annotation_1"
-      monitoring_policy_name = aci_monitoring_policy.example.name
-    }
-  ]
-  relation_to_bridge_domain = [
-    {
-      annotation         = "annotation_1"
-      bridge_domain_name = aci_bridge_domain.example.name
-    }
-  ]
+  epg_useg_block_statement = {
+    annotation  = "annotation_1"
+    description = "description_1"
+    match       = "all"
+    name        = "criterion"
+    name_alias  = "name_alias_1"
+    owner_key   = "owner_key_1"
+    owner_tag   = "owner_tag_1"
+    precedence  = "1"
+    scope       = "scope-bd"
+  }
+  relation_to_application_epg_monitoring_policy = {
+    annotation             = "annotation_1"
+    monitoring_policy_name = aci_monitoring_policy.example.name
+  }
+  relation_to_bridge_domain = {
+    annotation         = "annotation_1"
+    bridge_domain_name = aci_bridge_domain.example.name
+  }
   relation_to_consumed_contracts = [
     {
       annotation    = "annotation_1"
@@ -54,12 +48,10 @@ resource "aci_application_epg" "full_example_application_profile" {
       imported_contract_name = aci_imported_contract.example.name
     }
   ]
-  relation_to_custom_qos_policy = [
-    {
-      annotation             = "annotation_1"
-      custom_qos_policy_name = aci_custom_qos_policy.example.name
-    }
-  ]
+  relation_to_custom_qos_policy = {
+    annotation             = "annotation_1"
+    custom_qos_policy_name = aci_custom_qos_policy.example.name
+  }
   relation_to_domains = [
     {
       annotation                    = "annotation_1"
@@ -90,12 +82,10 @@ resource "aci_application_epg" "full_example_application_profile" {
       vnet_only                     = "no"
     }
   ]
-  relation_to_data_plane_policing_policy = [
-    {
-      annotation                      = "annotation_1"
-      data_plane_policing_policy_name = aci_data_plane_policing_policy.example.name
-    }
-  ]
+  relation_to_data_plane_policing_policy = {
+    annotation                      = "annotation_1"
+    data_plane_policing_policy_name = aci_data_plane_policing_policy.example.name
+  }
   relation_to_fibre_channel_paths = [
     {
       annotation  = "annotation_1"
@@ -152,12 +142,10 @@ resource "aci_application_epg" "full_example_application_profile" {
       target_dn  = aci_application_epg.test_application_epg_0.id
     }
   ]
-  relation_to_trust_control_policy = [
-    {
-      annotation                = "annotation_1"
-      trust_control_policy_name = aci_trust_control_policy.example.name
-    }
-  ]
+  relation_to_trust_control_policy = {
+    annotation                = "annotation_1"
+    trust_control_policy_name = aci_trust_control_policy.example.name
+  }
   annotations = [
     {
       key   = "key_0"

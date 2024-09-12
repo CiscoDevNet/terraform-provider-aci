@@ -9,12 +9,31 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/ciscoecosystem/aci-go-client/v2/models"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
+
+func IsEmptySingleNestedAttribute(attributes map[string]attr.Value) bool {
+	for _, value := range attributes {
+		if !value.IsNull() {
+			return false
+		}
+	}
+	return true
+}
+
+func SingleNestedAttributeRequiredAttributesNotProvided(attributes map[string]attr.Value, requiredAttributes []string) bool {
+	for _, requiredAttribute := range requiredAttributes {
+		if attributes[requiredAttribute].IsNull() {
+			return true
+		}
+	}
+	return false
+}
 
 func ContainsString(strings []string, matchString string) bool {
 	for _, stringValue := range strings {
@@ -205,4 +224,46 @@ func (v MakeStringRequiredValidator) ValidateString(ctx context.Context, req val
 // differences.
 func MakeStringRequired() validator.String {
 	return MakeStringRequiredValidator{}
+}
+
+// SingleNestedAttributeRequiredAttributesNotProvidedValidator validates that all required attributes are provided when it is not {}
+// {} logic is needed in order to remove the child object from APIC
+
+var _ validator.Object = SingleNestedAttributeRequiredAttributesNotProvidedValidator{}
+
+type SingleNestedAttributeRequiredAttributesNotProvidedValidator struct {
+	attributeName      string
+	requiredAttributes []string
+}
+
+func (v SingleNestedAttributeRequiredAttributesNotProvidedValidator) Description(_ context.Context) string {
+	return "is required"
+}
+
+func (v SingleNestedAttributeRequiredAttributesNotProvidedValidator) MarkdownDescription(ctx context.Context) string {
+	return v.Description(ctx)
+}
+
+func (v SingleNestedAttributeRequiredAttributesNotProvidedValidator) ValidateObject(ctx context.Context, req validator.ObjectRequest, resp *validator.ObjectResponse) {
+	if req.ConfigValue.IsNull() {
+		return
+	}
+
+	if !IsEmptySingleNestedAttribute(req.ConfigValue.Attributes()) && SingleNestedAttributeRequiredAttributesNotProvided(req.ConfigValue.Attributes(), v.requiredAttributes) {
+		errMessage := fmt.Sprintf("Inappropriate value for attribute \"%s\": attribute \"%s\" is required.", v.attributeName, strings.Join(v.requiredAttributes, ", "))
+		if len(v.requiredAttributes) > 1 {
+			errMessage = fmt.Sprintf("Inappropriate values for attribute \"%s\": attributes \"%s\" are required.", v.attributeName, strings.Join(v.requiredAttributes, "\", \""))
+		}
+		resp.Diagnostics.AddError(
+			"Incorrect attribute value type",
+			errMessage,
+		)
+	}
+}
+
+func MakeSingleNestedAttributeRequiredAttributesNotProvidedValidator(atributeName string, requiredAttributes []string) validator.Object {
+	return SingleNestedAttributeRequiredAttributesNotProvidedValidator{
+		attributeName:      atributeName,
+		requiredAttributes: requiredAttributes,
+	}
 }

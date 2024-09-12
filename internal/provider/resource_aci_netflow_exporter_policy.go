@@ -15,13 +15,13 @@ import (
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/validators"
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
-	"github.com/hashicorp/terraform-plugin-framework-validators/setvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
@@ -61,8 +61,8 @@ type NetflowExporterPolResourceModel struct {
 	SourceIpType           types.String                                     `tfsdk:"source_ip_type"`
 	SrcAddr                types.String                                     `tfsdk:"source_ip_address"`
 	Ver                    types.String                                     `tfsdk:"version"`
-	NetflowRsExporterToCtx types.Set                                        `tfsdk:"relation_to_vrf"`
-	NetflowRsExporterToEPg types.Set                                        `tfsdk:"relation_to_epg"`
+	NetflowRsExporterToCtx types.Object                                     `tfsdk:"relation_to_vrf"`
+	NetflowRsExporterToEPg types.Object                                     `tfsdk:"relation_to_epg"`
 	TagAnnotation          types.Set                                        `tfsdk:"annotations"`
 	TagTag                 types.Set                                        `tfsdk:"tags"`
 }
@@ -83,17 +83,13 @@ func getEmptyNetflowExporterPolResourceModel() *NetflowExporterPolResourceModel 
 		SourceIpType: basetypes.NewStringNull(),
 		SrcAddr:      basetypes.NewStringNull(),
 		Ver:          basetypes.NewStringNull(),
-		NetflowRsExporterToCtx: types.SetNull(types.ObjectType{
-			AttrTypes: map[string]attr.Type{
-				"annotation": types.StringType,
-				"target_dn":  types.StringType,
-			},
+		NetflowRsExporterToCtx: types.ObjectNull(map[string]attr.Type{
+			"annotation": types.StringType,
+			"target_dn":  types.StringType,
 		}),
-		NetflowRsExporterToEPg: types.SetNull(types.ObjectType{
-			AttrTypes: map[string]attr.Type{
-				"annotation": types.StringType,
-				"target_dn":  types.StringType,
-			},
+		NetflowRsExporterToEPg: types.ObjectNull(map[string]attr.Type{
+			"annotation": types.StringType,
+			"target_dn":  types.StringType,
 		}),
 		TagAnnotation: types.SetNull(types.ObjectType{
 			AttrTypes: map[string]attr.Type{
@@ -123,6 +119,11 @@ func getEmptyNetflowRsExporterToCtxNetflowExporterPolResourceModel() NetflowRsEx
 	}
 }
 
+var NetflowRsExporterToCtxNetflowExporterPolType = map[string]attr.Type{
+	"annotation": types.StringType,
+	"target_dn":  types.StringType,
+}
+
 // NetflowRsExporterToEPgNetflowExporterPolResourceModel describes the resource data model for the children without relation ships.
 type NetflowRsExporterToEPgNetflowExporterPolResourceModel struct {
 	Annotation types.String `tfsdk:"annotation"`
@@ -134,6 +135,11 @@ func getEmptyNetflowRsExporterToEPgNetflowExporterPolResourceModel() NetflowRsEx
 		Annotation: basetypes.NewStringNull(),
 		TDn:        basetypes.NewStringNull(),
 	}
+}
+
+var NetflowRsExporterToEPgNetflowExporterPolType = map[string]attr.Type{
+	"annotation": types.StringType,
+	"target_dn":  types.StringType,
 }
 
 // TagAnnotationNetflowExporterPolResourceModel describes the resource data model for the children without relation ships.
@@ -168,9 +174,10 @@ type NetflowExporterPolIdentifier struct {
 
 func (r *NetflowExporterPolResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
 	if !req.Plan.Raw.IsNull() {
-		var planData, stateData *NetflowExporterPolResourceModel
+		var planData, stateData, configData *NetflowExporterPolResourceModel
 		resp.Diagnostics.Append(req.Plan.Get(ctx, &planData)...)
 		resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
+		resp.Diagnostics.Append(req.Config.Get(ctx, &configData)...)
 
 		if resp.Diagnostics.HasError() {
 			return
@@ -184,6 +191,18 @@ func (r *NetflowExporterPolResource) ModifyPlan(ctx context.Context, req resourc
 			CheckDn(ctx, &resp.Diagnostics, r.client, "netflowExporterPol", planData.Id.ValueString())
 			if resp.Diagnostics.HasError() {
 				return
+			}
+		}
+		if !configData.NetflowRsExporterToCtx.IsNull() && stateData != nil {
+			if IsEmptySingleNestedAttribute(configData.NetflowRsExporterToCtx.Attributes()) {
+				NetflowRsExporterToCtxObject, _ := types.ObjectValueFrom(ctx, NetflowRsExporterToCtxNetflowExporterPolType, getEmptyNetflowRsExporterToCtxNetflowExporterPolResourceModel())
+				planData.NetflowRsExporterToCtx = NetflowRsExporterToCtxObject
+			}
+		}
+		if !configData.NetflowRsExporterToEPg.IsNull() && stateData != nil {
+			if IsEmptySingleNestedAttribute(configData.NetflowRsExporterToEPg.Attributes()) {
+				NetflowRsExporterToEPgObject, _ := types.ObjectValueFrom(ctx, NetflowRsExporterToEPgNetflowExporterPolType, getEmptyNetflowRsExporterToEPgNetflowExporterPolResourceModel())
+				planData.NetflowRsExporterToEPg = NetflowRsExporterToEPgObject
 			}
 		}
 
@@ -348,65 +367,55 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 				},
 				MarkdownDescription: `The NetFlow Exporter Version of the NetFlow Exporter Policy object.`,
 			},
-			"relation_to_vrf": schema.SetNestedAttribute{
+			"relation_to_vrf": schema.SingleNestedAttribute{
 				MarkdownDescription: `Points to the Ctx behind which the Netflow Exporter Resides`,
 				Optional:            true,
 				Computed:            true,
-				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+				PlanModifiers: []planmodifier.Object{
+					objectplanmodifier.UseStateForUnknown(),
 				},
-				Validators: []validator.Set{
-					setvalidator.SizeAtMost(1),
-				},
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"annotation": schema.StringAttribute{
-							Optional: true,
-							Computed: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
-							},
-							MarkdownDescription: `The annotation of the Relation From NetFlow Exporter To VRF object.`,
+				Attributes: map[string]schema.Attribute{
+					"annotation": schema.StringAttribute{
+						Optional: true,
+						Computed: true,
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.UseStateForUnknown(),
 						},
-						"target_dn": schema.StringAttribute{
-							Optional: true,
-							Computed: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
-							},
-							MarkdownDescription: `The distinguished name of the target.`,
+						MarkdownDescription: `The annotation of the Relation From NetFlow Exporter To VRF object.`,
+					},
+					"target_dn": schema.StringAttribute{
+						Optional: true,
+						Computed: true,
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.UseStateForUnknown(),
 						},
+						MarkdownDescription: `The distinguished name of the target.`,
 					},
 				},
 			},
-			"relation_to_epg": schema.SetNestedAttribute{
+			"relation_to_epg": schema.SingleNestedAttribute{
 				MarkdownDescription: `Points to the EPg behind which the Netflow Exporter Resides`,
 				Optional:            true,
 				Computed:            true,
-				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+				PlanModifiers: []planmodifier.Object{
+					objectplanmodifier.UseStateForUnknown(),
 				},
-				Validators: []validator.Set{
-					setvalidator.SizeAtMost(1),
-				},
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"annotation": schema.StringAttribute{
-							Optional: true,
-							Computed: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
-							},
-							MarkdownDescription: `The annotation of the Relation From NetFlow Exporter To EPG object.`,
+				Attributes: map[string]schema.Attribute{
+					"annotation": schema.StringAttribute{
+						Optional: true,
+						Computed: true,
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.UseStateForUnknown(),
 						},
-						"target_dn": schema.StringAttribute{
-							Optional: true,
-							Computed: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
-							},
-							MarkdownDescription: `The distinguished name of the target.`,
+						MarkdownDescription: `The annotation of the Relation From NetFlow Exporter To EPG object.`,
+					},
+					"target_dn": schema.StringAttribute{
+						Optional: true,
+						Computed: true,
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.UseStateForUnknown(),
 						},
+						MarkdownDescription: `The distinguished name of the target.`,
 					},
 				},
 			},
@@ -521,12 +530,12 @@ func (r *NetflowExporterPolResource) Create(ctx context.Context, req resource.Cr
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_netflow_exporter_policy with id '%s'", data.Id.ValueString()))
 
-	var netflowRsExporterToCtxPlan, netflowRsExporterToCtxState []NetflowRsExporterToCtxNetflowExporterPolResourceModel
-	data.NetflowRsExporterToCtx.ElementsAs(ctx, &netflowRsExporterToCtxPlan, false)
-	stateData.NetflowRsExporterToCtx.ElementsAs(ctx, &netflowRsExporterToCtxState, false)
-	var netflowRsExporterToEPgPlan, netflowRsExporterToEPgState []NetflowRsExporterToEPgNetflowExporterPolResourceModel
-	data.NetflowRsExporterToEPg.ElementsAs(ctx, &netflowRsExporterToEPgPlan, false)
-	stateData.NetflowRsExporterToEPg.ElementsAs(ctx, &netflowRsExporterToEPgState, false)
+	var netflowRsExporterToCtxPlan, netflowRsExporterToCtxState NetflowRsExporterToCtxNetflowExporterPolResourceModel
+	data.NetflowRsExporterToCtx.As(ctx, &netflowRsExporterToCtxPlan, basetypes.ObjectAsOptions{})
+	stateData.NetflowRsExporterToCtx.As(ctx, &netflowRsExporterToCtxState, basetypes.ObjectAsOptions{})
+	var netflowRsExporterToEPgPlan, netflowRsExporterToEPgState NetflowRsExporterToEPgNetflowExporterPolResourceModel
+	data.NetflowRsExporterToEPg.As(ctx, &netflowRsExporterToEPgPlan, basetypes.ObjectAsOptions{})
+	stateData.NetflowRsExporterToEPg.As(ctx, &netflowRsExporterToEPgState, basetypes.ObjectAsOptions{})
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationNetflowExporterPolResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
 	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
@@ -592,12 +601,12 @@ func (r *NetflowExporterPolResource) Update(ctx context.Context, req resource.Up
 
 	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_netflow_exporter_policy with id '%s'", data.Id.ValueString()))
 
-	var netflowRsExporterToCtxPlan, netflowRsExporterToCtxState []NetflowRsExporterToCtxNetflowExporterPolResourceModel
-	data.NetflowRsExporterToCtx.ElementsAs(ctx, &netflowRsExporterToCtxPlan, false)
-	stateData.NetflowRsExporterToCtx.ElementsAs(ctx, &netflowRsExporterToCtxState, false)
-	var netflowRsExporterToEPgPlan, netflowRsExporterToEPgState []NetflowRsExporterToEPgNetflowExporterPolResourceModel
-	data.NetflowRsExporterToEPg.ElementsAs(ctx, &netflowRsExporterToEPgPlan, false)
-	stateData.NetflowRsExporterToEPg.ElementsAs(ctx, &netflowRsExporterToEPgState, false)
+	var netflowRsExporterToCtxPlan, netflowRsExporterToCtxState NetflowRsExporterToCtxNetflowExporterPolResourceModel
+	data.NetflowRsExporterToCtx.As(ctx, &netflowRsExporterToCtxPlan, basetypes.ObjectAsOptions{})
+	stateData.NetflowRsExporterToCtx.As(ctx, &netflowRsExporterToCtxState, basetypes.ObjectAsOptions{})
+	var netflowRsExporterToEPgPlan, netflowRsExporterToEPgState NetflowRsExporterToEPgNetflowExporterPolResourceModel
+	data.NetflowRsExporterToEPg.As(ctx, &netflowRsExporterToEPgPlan, basetypes.ObjectAsOptions{})
+	stateData.NetflowRsExporterToEPg.As(ctx, &netflowRsExporterToEPgState, basetypes.ObjectAsOptions{})
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationNetflowExporterPolResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
 	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
@@ -772,10 +781,20 @@ func getAndSetNetflowExporterPolAttributes(ctx context.Context, diags *diag.Diag
 					}
 				}
 			}
-			netflowRsExporterToCtxSet, _ := types.SetValueFrom(ctx, data.NetflowRsExporterToCtx.ElementType(ctx), NetflowRsExporterToCtxNetflowExporterPolList)
-			data.NetflowRsExporterToCtx = netflowRsExporterToCtxSet
-			netflowRsExporterToEPgSet, _ := types.SetValueFrom(ctx, data.NetflowRsExporterToEPg.ElementType(ctx), NetflowRsExporterToEPgNetflowExporterPolList)
-			data.NetflowRsExporterToEPg = netflowRsExporterToEPgSet
+			if len(NetflowRsExporterToCtxNetflowExporterPolList) == 1 {
+				netflowRsExporterToCtxObject, _ := types.ObjectValueFrom(ctx, NetflowRsExporterToCtxNetflowExporterPolType, NetflowRsExporterToCtxNetflowExporterPolList[0])
+				data.NetflowRsExporterToCtx = netflowRsExporterToCtxObject
+			} else {
+				netflowRsExporterToCtxObject, _ := types.ObjectValueFrom(ctx, NetflowRsExporterToCtxNetflowExporterPolType, getEmptyNetflowRsExporterToCtxNetflowExporterPolResourceModel())
+				data.NetflowRsExporterToCtx = netflowRsExporterToCtxObject
+			}
+			if len(NetflowRsExporterToEPgNetflowExporterPolList) == 1 {
+				netflowRsExporterToEPgObject, _ := types.ObjectValueFrom(ctx, NetflowRsExporterToEPgNetflowExporterPolType, NetflowRsExporterToEPgNetflowExporterPolList[0])
+				data.NetflowRsExporterToEPg = netflowRsExporterToEPgObject
+			} else {
+				netflowRsExporterToEPgObject, _ := types.ObjectValueFrom(ctx, NetflowRsExporterToEPgNetflowExporterPolType, getEmptyNetflowRsExporterToEPgNetflowExporterPolResourceModel())
+				data.NetflowRsExporterToEPg = netflowRsExporterToEPgObject
+			}
 			tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationNetflowExporterPolList)
 			data.TagAnnotation = tagAnnotationSet
 			tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagNetflowExporterPolList)
@@ -822,56 +841,52 @@ func setNetflowExporterPolId(ctx context.Context, data *NetflowExporterPolResour
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
 
-func getNetflowExporterPolNetflowRsExporterToCtxChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *NetflowExporterPolResourceModel, netflowRsExporterToCtxPlan, netflowRsExporterToCtxState []NetflowRsExporterToCtxNetflowExporterPolResourceModel) []map[string]interface{} {
+func getNetflowExporterPolNetflowRsExporterToCtxChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *NetflowExporterPolResourceModel, netflowRsExporterToCtxPlan, netflowRsExporterToCtxState NetflowRsExporterToCtxNetflowExporterPolResourceModel) []map[string]interface{} {
 
 	childPayloads := []map[string]interface{}{}
 	if !data.NetflowRsExporterToCtx.IsUnknown() {
-		for _, netflowRsExporterToCtx := range netflowRsExporterToCtxPlan {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !netflowRsExporterToCtx.Annotation.IsUnknown() && !netflowRsExporterToCtx.Annotation.IsNull() {
-				childMap["attributes"]["annotation"] = netflowRsExporterToCtx.Annotation.ValueString()
+		childMap := map[string]map[string]interface{}{"attributes": {}}
+		if !IsEmptySingleNestedAttribute(data.NetflowRsExporterToCtx.Attributes()) {
+			if !netflowRsExporterToCtxPlan.Annotation.IsUnknown() && !netflowRsExporterToCtxPlan.Annotation.IsNull() {
+				childMap["attributes"]["annotation"] = netflowRsExporterToCtxPlan.Annotation.ValueString()
 			} else {
 				childMap["attributes"]["annotation"] = globalAnnotation
 			}
-			if !netflowRsExporterToCtx.TDn.IsUnknown() && !netflowRsExporterToCtx.TDn.IsNull() {
-				childMap["attributes"]["tDn"] = netflowRsExporterToCtx.TDn.ValueString()
+			if !netflowRsExporterToCtxPlan.TDn.IsUnknown() && !netflowRsExporterToCtxPlan.TDn.IsNull() {
+				childMap["attributes"]["tDn"] = netflowRsExporterToCtxPlan.TDn.ValueString()
 			}
-			childPayloads = append(childPayloads, map[string]interface{}{"netflowRsExporterToCtx": childMap})
-		}
-		if len(netflowRsExporterToCtxPlan) == 0 && len(netflowRsExporterToCtxState) == 1 {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
+		} else {
 			childMap["attributes"]["status"] = "deleted"
-			childPayloads = append(childPayloads, map[string]interface{}{"netflowRsExporterToCtx": childMap})
 		}
+		childPayloads = append(childPayloads, map[string]interface{}{"netflowRsExporterToCtx": childMap})
 	} else {
-		data.NetflowRsExporterToCtx = types.SetNull(data.NetflowRsExporterToCtx.ElementType(ctx))
+		NetflowRsExporterToCtxObject, _ := types.ObjectValueFrom(ctx, NetflowRsExporterToCtxNetflowExporterPolType, getEmptyNetflowRsExporterToCtxNetflowExporterPolResourceModel())
+		data.NetflowRsExporterToCtx = NetflowRsExporterToCtxObject
 	}
 
 	return childPayloads
 }
-func getNetflowExporterPolNetflowRsExporterToEPgChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *NetflowExporterPolResourceModel, netflowRsExporterToEPgPlan, netflowRsExporterToEPgState []NetflowRsExporterToEPgNetflowExporterPolResourceModel) []map[string]interface{} {
+func getNetflowExporterPolNetflowRsExporterToEPgChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *NetflowExporterPolResourceModel, netflowRsExporterToEPgPlan, netflowRsExporterToEPgState NetflowRsExporterToEPgNetflowExporterPolResourceModel) []map[string]interface{} {
 
 	childPayloads := []map[string]interface{}{}
 	if !data.NetflowRsExporterToEPg.IsUnknown() {
-		for _, netflowRsExporterToEPg := range netflowRsExporterToEPgPlan {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !netflowRsExporterToEPg.Annotation.IsUnknown() && !netflowRsExporterToEPg.Annotation.IsNull() {
-				childMap["attributes"]["annotation"] = netflowRsExporterToEPg.Annotation.ValueString()
+		childMap := map[string]map[string]interface{}{"attributes": {}}
+		if !IsEmptySingleNestedAttribute(data.NetflowRsExporterToEPg.Attributes()) {
+			if !netflowRsExporterToEPgPlan.Annotation.IsUnknown() && !netflowRsExporterToEPgPlan.Annotation.IsNull() {
+				childMap["attributes"]["annotation"] = netflowRsExporterToEPgPlan.Annotation.ValueString()
 			} else {
 				childMap["attributes"]["annotation"] = globalAnnotation
 			}
-			if !netflowRsExporterToEPg.TDn.IsUnknown() && !netflowRsExporterToEPg.TDn.IsNull() {
-				childMap["attributes"]["tDn"] = netflowRsExporterToEPg.TDn.ValueString()
+			if !netflowRsExporterToEPgPlan.TDn.IsUnknown() && !netflowRsExporterToEPgPlan.TDn.IsNull() {
+				childMap["attributes"]["tDn"] = netflowRsExporterToEPgPlan.TDn.ValueString()
 			}
-			childPayloads = append(childPayloads, map[string]interface{}{"netflowRsExporterToEPg": childMap})
-		}
-		if len(netflowRsExporterToEPgPlan) == 0 && len(netflowRsExporterToEPgState) == 1 {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
+		} else {
 			childMap["attributes"]["status"] = "deleted"
-			childPayloads = append(childPayloads, map[string]interface{}{"netflowRsExporterToEPg": childMap})
 		}
+		childPayloads = append(childPayloads, map[string]interface{}{"netflowRsExporterToEPg": childMap})
 	} else {
-		data.NetflowRsExporterToEPg = types.SetNull(data.NetflowRsExporterToEPg.ElementType(ctx))
+		NetflowRsExporterToEPgObject, _ := types.ObjectValueFrom(ctx, NetflowRsExporterToEPgNetflowExporterPolType, getEmptyNetflowRsExporterToEPgNetflowExporterPolResourceModel())
+		data.NetflowRsExporterToEPg = NetflowRsExporterToEPgObject
 	}
 
 	return childPayloads
@@ -955,7 +970,7 @@ func getNetflowExporterPolTagTagChildPayloads(ctx context.Context, diags *diag.D
 	return childPayloads
 }
 
-func getNetflowExporterPolCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *NetflowExporterPolResourceModel, netflowRsExporterToCtxPlan, netflowRsExporterToCtxState []NetflowRsExporterToCtxNetflowExporterPolResourceModel, netflowRsExporterToEPgPlan, netflowRsExporterToEPgState []NetflowRsExporterToEPgNetflowExporterPolResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationNetflowExporterPolResourceModel, tagTagPlan, tagTagState []TagTagNetflowExporterPolResourceModel) *container.Container {
+func getNetflowExporterPolCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *NetflowExporterPolResourceModel, netflowRsExporterToCtxPlan, netflowRsExporterToCtxState NetflowRsExporterToCtxNetflowExporterPolResourceModel, netflowRsExporterToEPgPlan, netflowRsExporterToEPgState NetflowRsExporterToEPgNetflowExporterPolResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationNetflowExporterPolResourceModel, tagTagPlan, tagTagState []TagTagNetflowExporterPolResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 

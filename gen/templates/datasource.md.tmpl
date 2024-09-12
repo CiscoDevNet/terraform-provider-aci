@@ -100,10 +100,18 @@ Data source for ACI {{.ResourceNameAsDescription}}
           {{- end}}
         {{- end}}
       {{- else}}
+      {{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+* `{{- overwriteProperty .PkgName .ResourceName $.Definitions}}` - (map) A map of {{getResourceNameAsDescription .ResourceName $.Definitions}} (ACI object {{getDevnetDocForClass .PkgName}}) pointing to {{range $index, $value := .RelationshipResourceNames}}{{- if or (eq $length 1) (eq $.PkgName (index $RelationshipClasses $index))}}{{getResourceNameAsDescription $value $.Definitions}} (ACI Object {{getDevnetDocForClass (index $RelationshipClasses $index)}}){{end}}{{end}}.{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
+      {{- else}}
 * `{{- overwriteProperty .PkgName .ResourceName $.Definitions}}` - (list) A list of {{getResourceNameAsDescription .ResourceName $.Definitions}} (ACI object {{getDevnetDocForClass .PkgName}}) pointing to {{range $index, $value := .RelationshipResourceNames}}{{- if or (eq $length 1) (eq $.PkgName (index $RelationshipClasses $index))}}{{getResourceNameAsDescription $value $.Definitions}} (ACI Object {{getDevnetDocForClass (index $RelationshipClasses $index)}}){{end}}{{end}}.{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
       {{- end}}
+      {{- end}}
     {{- else}}
+      {{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+* `{{- overwriteProperty .PkgName .ResourceName $.Definitions}}` - (map) A map of {{getResourceNameAsDescription .ResourceName $.Definitions}} (ACI object {{getDevnetDocForClass .PkgName}}).{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
+      {{- else}}
 * `{{- overwriteProperty .PkgName .ResourceName $.Definitions}}` - (list) A list of {{getResourceNameAsDescription .ResourceName $.Definitions}} (ACI object {{getDevnetDocForClass .PkgName}}).{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
+      {{- end}}
     {{- end}}
 
   {{- range .Properties}}

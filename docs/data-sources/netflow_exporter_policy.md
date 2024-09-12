@@ -71,7 +71,7 @@ data "aci_netflow_exporter_policy" "example_tenant" {
 * `source_ip_address` (srcAddr) - (string) The source IP address.
 * `version` (ver) - (string) The NetFlow Exporter Version of the NetFlow Exporter Policy object.
 
-* `relation_to_vrf` - (list) A list of Relation From NetFlow Exporter To VRF (ACI object [netflowRsExporterToCtx](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRsExporterToCtx/overview)) pointing to VRF (ACI Object [fvCtx](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvCtx/overview)).
+* `relation_to_vrf` - (map) A map of Relation From NetFlow Exporter To VRF (ACI object [netflowRsExporterToCtx](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRsExporterToCtx/overview)) pointing to VRF (ACI Object [fvCtx](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvCtx/overview)).
   * `annotation` (annotation) - (string) The annotation of the Relation From NetFlow Exporter To VRF object.
   * `target_dn` (tDn) - (string) The distinguished name of the target.
 

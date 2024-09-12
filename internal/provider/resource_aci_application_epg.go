@@ -22,6 +22,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
@@ -64,14 +65,14 @@ type FvAEPgResourceModel struct {
 	PrefGrMemb                 types.String                      `tfsdk:"preferred_group_member"`
 	Prio                       customTypes.FvAEPgPrioStringValue `tfsdk:"priority"`
 	Shutdown                   types.String                      `tfsdk:"admin_state"`
-	FvCrtrn                    types.Set                         `tfsdk:"epg_useg_block_statement"`
-	FvRsAEPgMonPol             types.Set                         `tfsdk:"relation_to_application_epg_monitoring_policy"`
-	FvRsBd                     types.Set                         `tfsdk:"relation_to_bridge_domain"`
+	FvCrtrn                    types.Object                      `tfsdk:"epg_useg_block_statement"`
+	FvRsAEPgMonPol             types.Object                      `tfsdk:"relation_to_application_epg_monitoring_policy"`
+	FvRsBd                     types.Object                      `tfsdk:"relation_to_bridge_domain"`
 	FvRsCons                   types.Set                         `tfsdk:"relation_to_consumed_contracts"`
 	FvRsConsIf                 types.Set                         `tfsdk:"relation_to_imported_contracts"`
-	FvRsCustQosPol             types.Set                         `tfsdk:"relation_to_custom_qos_policy"`
+	FvRsCustQosPol             types.Object                      `tfsdk:"relation_to_custom_qos_policy"`
 	FvRsDomAtt                 types.Set                         `tfsdk:"relation_to_domains"`
-	FvRsDppPol                 types.Set                         `tfsdk:"relation_to_data_plane_policing_policy"`
+	FvRsDppPol                 types.Object                      `tfsdk:"relation_to_data_plane_policing_policy"`
 	FvRsFcPathAtt              types.Set                         `tfsdk:"relation_to_fibre_channel_paths"`
 	FvRsIntraEpg               types.Set                         `tfsdk:"relation_to_intra_epg_contracts"`
 	FvRsNodeAtt                types.Set                         `tfsdk:"relation_to_static_leafs"`
@@ -79,7 +80,7 @@ type FvAEPgResourceModel struct {
 	FvRsProtBy                 types.Set                         `tfsdk:"relation_to_taboo_contracts"`
 	FvRsProv                   types.Set                         `tfsdk:"relation_to_provided_contracts"`
 	FvRsSecInherited           types.Set                         `tfsdk:"relation_to_contract_masters"`
-	FvRsTrustCtrl              types.Set                         `tfsdk:"relation_to_trust_control_policy"`
+	FvRsTrustCtrl              types.Object                      `tfsdk:"relation_to_trust_control_policy"`
 	TagAnnotation              types.Set                         `tfsdk:"annotations"`
 	TagTag                     types.Set                         `tfsdk:"tags"`
 	DeprecatedExceptionTag     types.String                      `tfsdk:"exception_tag"`
@@ -128,30 +129,24 @@ func getEmptyFvAEPgResourceModel() *FvAEPgResourceModel {
 		PrefGrMemb:     basetypes.NewStringNull(),
 		Prio:           customTypes.NewFvAEPgPrioStringNull(),
 		Shutdown:       basetypes.NewStringNull(),
-		FvCrtrn: types.SetNull(types.ObjectType{
-			AttrTypes: map[string]attr.Type{
-				"annotation":  types.StringType,
-				"description": types.StringType,
-				"match":       types.StringType,
-				"name":        types.StringType,
-				"name_alias":  types.StringType,
-				"owner_key":   types.StringType,
-				"owner_tag":   types.StringType,
-				"precedence":  types.StringType,
-				"scope":       types.StringType,
-			},
+		FvCrtrn: types.ObjectNull(map[string]attr.Type{
+			"annotation":  types.StringType,
+			"description": types.StringType,
+			"match":       types.StringType,
+			"name":        types.StringType,
+			"name_alias":  types.StringType,
+			"owner_key":   types.StringType,
+			"owner_tag":   types.StringType,
+			"precedence":  types.StringType,
+			"scope":       types.StringType,
 		}),
-		FvRsAEPgMonPol: types.SetNull(types.ObjectType{
-			AttrTypes: map[string]attr.Type{
-				"annotation":             types.StringType,
-				"monitoring_policy_name": types.StringType,
-			},
+		FvRsAEPgMonPol: types.ObjectNull(map[string]attr.Type{
+			"annotation":             types.StringType,
+			"monitoring_policy_name": types.StringType,
 		}),
-		FvRsBd: types.SetNull(types.ObjectType{
-			AttrTypes: map[string]attr.Type{
-				"annotation":         types.StringType,
-				"bridge_domain_name": types.StringType,
-			},
+		FvRsBd: types.ObjectNull(map[string]attr.Type{
+			"annotation":         types.StringType,
+			"bridge_domain_name": types.StringType,
 		}),
 		FvRsCons: types.SetNull(types.ObjectType{
 			AttrTypes: map[string]attr.Type{
@@ -167,11 +162,9 @@ func getEmptyFvAEPgResourceModel() *FvAEPgResourceModel {
 				"imported_contract_name": types.StringType,
 			},
 		}),
-		FvRsCustQosPol: types.SetNull(types.ObjectType{
-			AttrTypes: map[string]attr.Type{
-				"annotation":             types.StringType,
-				"custom_qos_policy_name": types.StringType,
-			},
+		FvRsCustQosPol: types.ObjectNull(map[string]attr.Type{
+			"annotation":             types.StringType,
+			"custom_qos_policy_name": types.StringType,
 		}),
 		FvRsDomAtt: types.SetNull(types.ObjectType{
 			AttrTypes: map[string]attr.Type{
@@ -203,11 +196,9 @@ func getEmptyFvAEPgResourceModel() *FvAEPgResourceModel {
 				"vnet_only":                     types.StringType,
 			},
 		}),
-		FvRsDppPol: types.SetNull(types.ObjectType{
-			AttrTypes: map[string]attr.Type{
-				"annotation":                      types.StringType,
-				"data_plane_policing_policy_name": types.StringType,
-			},
+		FvRsDppPol: types.ObjectNull(map[string]attr.Type{
+			"annotation":                      types.StringType,
+			"data_plane_policing_policy_name": types.StringType,
 		}),
 		FvRsFcPathAtt: types.SetNull(types.ObjectType{
 			AttrTypes: map[string]attr.Type{
@@ -265,11 +256,9 @@ func getEmptyFvAEPgResourceModel() *FvAEPgResourceModel {
 				"target_dn":  types.StringType,
 			},
 		}),
-		FvRsTrustCtrl: types.SetNull(types.ObjectType{
-			AttrTypes: map[string]attr.Type{
-				"annotation":                types.StringType,
-				"trust_control_policy_name": types.StringType,
-			},
+		FvRsTrustCtrl: types.ObjectNull(map[string]attr.Type{
+			"annotation":                types.StringType,
+			"trust_control_policy_name": types.StringType,
 		}),
 		TagAnnotation: types.SetNull(types.ObjectType{
 			AttrTypes: map[string]attr.Type{
@@ -338,6 +327,18 @@ func getEmptyFvCrtrnFvAEPgResourceModel() FvCrtrnFvAEPgResourceModel {
 	}
 }
 
+var FvCrtrnFvAEPgType = map[string]attr.Type{
+	"annotation":  types.StringType,
+	"description": types.StringType,
+	"match":       types.StringType,
+	"name":        types.StringType,
+	"name_alias":  types.StringType,
+	"owner_key":   types.StringType,
+	"owner_tag":   types.StringType,
+	"precedence":  types.StringType,
+	"scope":       types.StringType,
+}
+
 // FvRsAEPgMonPolFvAEPgResourceModel describes the resource data model for the children without relation ships.
 type FvRsAEPgMonPolFvAEPgResourceModel struct {
 	Annotation      types.String `tfsdk:"annotation"`
@@ -351,6 +352,11 @@ func getEmptyFvRsAEPgMonPolFvAEPgResourceModel() FvRsAEPgMonPolFvAEPgResourceMod
 	}
 }
 
+var FvRsAEPgMonPolFvAEPgType = map[string]attr.Type{
+	"annotation":             types.StringType,
+	"monitoring_policy_name": types.StringType,
+}
+
 // FvRsBdFvAEPgResourceModel describes the resource data model for the children without relation ships.
 type FvRsBdFvAEPgResourceModel struct {
 	Annotation types.String `tfsdk:"annotation"`
@@ -362,6 +368,11 @@ func getEmptyFvRsBdFvAEPgResourceModel() FvRsBdFvAEPgResourceModel {
 		Annotation: basetypes.NewStringNull(),
 		TnFvBDName: basetypes.NewStringNull(),
 	}
+}
+
+var FvRsBdFvAEPgType = map[string]attr.Type{
+	"annotation":         types.StringType,
+	"bridge_domain_name": types.StringType,
 }
 
 // FvRsConsFvAEPgResourceModel describes the resource data model for the children without relation ships.
@@ -405,6 +416,11 @@ func getEmptyFvRsCustQosPolFvAEPgResourceModel() FvRsCustQosPolFvAEPgResourceMod
 		Annotation:         basetypes.NewStringNull(),
 		TnQosCustomPolName: basetypes.NewStringNull(),
 	}
+}
+
+var FvRsCustQosPolFvAEPgType = map[string]attr.Type{
+	"annotation":             types.StringType,
+	"custom_qos_policy_name": types.StringType,
 }
 
 // FvRsDomAttFvAEPgResourceModel describes the resource data model for the children without relation ships.
@@ -479,6 +495,11 @@ func getEmptyFvRsDppPolFvAEPgResourceModel() FvRsDppPolFvAEPgResourceModel {
 		Annotation:      basetypes.NewStringNull(),
 		TnQosDppPolName: basetypes.NewStringNull(),
 	}
+}
+
+var FvRsDppPolFvAEPgType = map[string]attr.Type{
+	"annotation":                      types.StringType,
+	"data_plane_policing_policy_name": types.StringType,
 }
 
 // FvRsFcPathAttFvAEPgResourceModel describes the resource data model for the children without relation ships.
@@ -611,6 +632,11 @@ func getEmptyFvRsTrustCtrlFvAEPgResourceModel() FvRsTrustCtrlFvAEPgResourceModel
 		Annotation:            basetypes.NewStringNull(),
 		TnFhsTrustCtrlPolName: basetypes.NewStringNull(),
 	}
+}
+
+var FvRsTrustCtrlFvAEPgType = map[string]attr.Type{
+	"annotation":                types.StringType,
+	"trust_control_policy_name": types.StringType,
 }
 
 // TagAnnotationFvAEPgResourceModel describes the resource data model for the children without relation ships.
@@ -939,51 +965,22 @@ func (r *FvAEPgResource) UpgradeState(ctx context.Context) map[int64]resource.St
 					DeprecatedFvRsTrustCtrl:  priorStateData.FvRsTrustCtrl,
 				}
 
-				upgradedStateData.FvCrtrn = types.SetNull(
-					types.ObjectType{
-						AttrTypes: map[string]attr.Type{
-							"annotation":  basetypes.StringType{},
-							"description": basetypes.StringType{},
-							"match":       basetypes.StringType{},
-							"name":        basetypes.StringType{},
-							"name_alias":  basetypes.StringType{},
-							"owner_key":   basetypes.StringType{},
-							"owner_tag":   basetypes.StringType{},
-							"precedence":  basetypes.StringType{},
-							"scope":       basetypes.StringType{},
-						},
-					},
-				)
+				// FvCrtrn is a child of FvAEPg.
+				upgradedStateData.FvCrtrn = types.ObjectNull(FvCrtrnFvAEPgType)
 
-				FvRsAEPgMonPolList := make([]FvRsAEPgMonPolFvAEPgResourceModel, 0)
-				FvRsAEPgMonPol := FvRsAEPgMonPolFvAEPgResourceModel{
+				FvRsAEPgMonPolObject := FvRsAEPgMonPolFvAEPgResourceModel{
 					Annotation:      basetypes.NewStringNull(),
 					TnMonEPGPolName: basetypes.NewStringValue(GetMOName(priorStateData.FvRsAEPgMonPol.ValueString())),
 				}
-				FvRsAEPgMonPolList = append(FvRsAEPgMonPolList, FvRsAEPgMonPol)
-				FvRsAEPgMonPolType := types.ObjectType{
-					AttrTypes: map[string]attr.Type{
-						"annotation":             basetypes.StringType{},
-						"monitoring_policy_name": basetypes.StringType{},
-					},
-				}
-				FvRsAEPgMonPolSet, _ := types.SetValueFrom(ctx, FvRsAEPgMonPolType, FvRsAEPgMonPolList)
-				upgradedStateData.FvRsAEPgMonPol = FvRsAEPgMonPolSet
+				fvRsAEPgMonPolObject, _ := types.ObjectValueFrom(ctx, FvRsAEPgMonPolFvAEPgType, FvRsAEPgMonPolObject)
+				upgradedStateData.FvRsAEPgMonPol = fvRsAEPgMonPolObject
 
-				FvRsBdList := make([]FvRsBdFvAEPgResourceModel, 0)
-				FvRsBd := FvRsBdFvAEPgResourceModel{
+				FvRsBdObject := FvRsBdFvAEPgResourceModel{
 					Annotation: basetypes.NewStringNull(),
 					TnFvBDName: basetypes.NewStringValue(GetMOName(priorStateData.FvRsBd.ValueString())),
 				}
-				FvRsBdList = append(FvRsBdList, FvRsBd)
-				FvRsBdType := types.ObjectType{
-					AttrTypes: map[string]attr.Type{
-						"annotation":         basetypes.StringType{},
-						"bridge_domain_name": basetypes.StringType{},
-					},
-				}
-				FvRsBdSet, _ := types.SetValueFrom(ctx, FvRsBdType, FvRsBdList)
-				upgradedStateData.FvRsBd = FvRsBdSet
+				fvRsBdObject, _ := types.ObjectValueFrom(ctx, FvRsBdFvAEPgType, FvRsBdObject)
+				upgradedStateData.FvRsBd = fvRsBdObject
 
 				FvRsConsList := make([]FvRsConsFvAEPgResourceModel, 0)
 				var priorStateDataFvRsConsList []string
@@ -1025,20 +1022,12 @@ func (r *FvAEPgResource) UpgradeState(ctx context.Context) map[int64]resource.St
 				FvRsConsIfSet, _ := types.SetValueFrom(ctx, FvRsConsIfType, FvRsConsIfList)
 				upgradedStateData.FvRsConsIf = FvRsConsIfSet
 
-				FvRsCustQosPolList := make([]FvRsCustQosPolFvAEPgResourceModel, 0)
-				FvRsCustQosPol := FvRsCustQosPolFvAEPgResourceModel{
+				FvRsCustQosPolObject := FvRsCustQosPolFvAEPgResourceModel{
 					Annotation:         basetypes.NewStringNull(),
 					TnQosCustomPolName: basetypes.NewStringValue(GetMOName(priorStateData.FvRsCustQosPol.ValueString())),
 				}
-				FvRsCustQosPolList = append(FvRsCustQosPolList, FvRsCustQosPol)
-				FvRsCustQosPolType := types.ObjectType{
-					AttrTypes: map[string]attr.Type{
-						"annotation":             basetypes.StringType{},
-						"custom_qos_policy_name": basetypes.StringType{},
-					},
-				}
-				FvRsCustQosPolSet, _ := types.SetValueFrom(ctx, FvRsCustQosPolType, FvRsCustQosPolList)
-				upgradedStateData.FvRsCustQosPol = FvRsCustQosPolSet
+				fvRsCustQosPolObject, _ := types.ObjectValueFrom(ctx, FvRsCustQosPolFvAEPgType, FvRsCustQosPolObject)
+				upgradedStateData.FvRsCustQosPol = fvRsCustQosPolObject
 
 				upgradedStateData.FvRsDomAtt = types.SetNull(
 					types.ObjectType{
@@ -1073,20 +1062,12 @@ func (r *FvAEPgResource) UpgradeState(ctx context.Context) map[int64]resource.St
 					},
 				)
 
-				FvRsDppPolList := make([]FvRsDppPolFvAEPgResourceModel, 0)
-				FvRsDppPol := FvRsDppPolFvAEPgResourceModel{
+				FvRsDppPolObject := FvRsDppPolFvAEPgResourceModel{
 					Annotation:      basetypes.NewStringNull(),
 					TnQosDppPolName: basetypes.NewStringValue(GetMOName(priorStateData.FvRsDppPol.ValueString())),
 				}
-				FvRsDppPolList = append(FvRsDppPolList, FvRsDppPol)
-				FvRsDppPolType := types.ObjectType{
-					AttrTypes: map[string]attr.Type{
-						"annotation":                      basetypes.StringType{},
-						"data_plane_policing_policy_name": basetypes.StringType{},
-					},
-				}
-				FvRsDppPolSet, _ := types.SetValueFrom(ctx, FvRsDppPolType, FvRsDppPolList)
-				upgradedStateData.FvRsDppPol = FvRsDppPolSet
+				fvRsDppPolObject, _ := types.ObjectValueFrom(ctx, FvRsDppPolFvAEPgType, FvRsDppPolObject)
+				upgradedStateData.FvRsDppPol = fvRsDppPolObject
 
 				FvRsFcPathAttList := make([]FvRsFcPathAttFvAEPgResourceModel, 0)
 				var priorStateDataFvRsFcPathAttList []string
@@ -1246,20 +1227,12 @@ func (r *FvAEPgResource) UpgradeState(ctx context.Context) map[int64]resource.St
 				FvRsSecInheritedSet, _ := types.SetValueFrom(ctx, FvRsSecInheritedType, FvRsSecInheritedList)
 				upgradedStateData.FvRsSecInherited = FvRsSecInheritedSet
 
-				FvRsTrustCtrlList := make([]FvRsTrustCtrlFvAEPgResourceModel, 0)
-				FvRsTrustCtrl := FvRsTrustCtrlFvAEPgResourceModel{
+				FvRsTrustCtrlObject := FvRsTrustCtrlFvAEPgResourceModel{
 					Annotation:            basetypes.NewStringNull(),
 					TnFhsTrustCtrlPolName: basetypes.NewStringValue(GetMOName(priorStateData.FvRsTrustCtrl.ValueString())),
 				}
-				FvRsTrustCtrlList = append(FvRsTrustCtrlList, FvRsTrustCtrl)
-				FvRsTrustCtrlType := types.ObjectType{
-					AttrTypes: map[string]attr.Type{
-						"annotation":                basetypes.StringType{},
-						"trust_control_policy_name": basetypes.StringType{},
-					},
-				}
-				FvRsTrustCtrlSet, _ := types.SetValueFrom(ctx, FvRsTrustCtrlType, FvRsTrustCtrlList)
-				upgradedStateData.FvRsTrustCtrl = FvRsTrustCtrlSet
+				fvRsTrustCtrlObject, _ := types.ObjectValueFrom(ctx, FvRsTrustCtrlFvAEPgType, FvRsTrustCtrlObject)
+				upgradedStateData.FvRsTrustCtrl = fvRsTrustCtrlObject
 
 				upgradedStateData.TagAnnotation = types.SetNull(
 					types.ObjectType{
@@ -1521,6 +1494,42 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 				return
 			}
 		}
+		if !configData.FvCrtrn.IsNull() && stateData != nil {
+			if IsEmptySingleNestedAttribute(configData.FvCrtrn.Attributes()) {
+				FvCrtrnObject, _ := types.ObjectValueFrom(ctx, FvCrtrnFvAEPgType, getEmptyFvCrtrnFvAEPgResourceModel())
+				planData.FvCrtrn = FvCrtrnObject
+			}
+		}
+		if !configData.FvRsAEPgMonPol.IsNull() && stateData != nil {
+			if IsEmptySingleNestedAttribute(configData.FvRsAEPgMonPol.Attributes()) {
+				FvRsAEPgMonPolObject, _ := types.ObjectValueFrom(ctx, FvRsAEPgMonPolFvAEPgType, getEmptyFvRsAEPgMonPolFvAEPgResourceModel())
+				planData.FvRsAEPgMonPol = FvRsAEPgMonPolObject
+			}
+		}
+		if !configData.FvRsBd.IsNull() && stateData != nil {
+			if IsEmptySingleNestedAttribute(configData.FvRsBd.Attributes()) {
+				FvRsBdObject, _ := types.ObjectValueFrom(ctx, FvRsBdFvAEPgType, getEmptyFvRsBdFvAEPgResourceModel())
+				planData.FvRsBd = FvRsBdObject
+			}
+		}
+		if !configData.FvRsCustQosPol.IsNull() && stateData != nil {
+			if IsEmptySingleNestedAttribute(configData.FvRsCustQosPol.Attributes()) {
+				FvRsCustQosPolObject, _ := types.ObjectValueFrom(ctx, FvRsCustQosPolFvAEPgType, getEmptyFvRsCustQosPolFvAEPgResourceModel())
+				planData.FvRsCustQosPol = FvRsCustQosPolObject
+			}
+		}
+		if !configData.FvRsDppPol.IsNull() && stateData != nil {
+			if IsEmptySingleNestedAttribute(configData.FvRsDppPol.Attributes()) {
+				FvRsDppPolObject, _ := types.ObjectValueFrom(ctx, FvRsDppPolFvAEPgType, getEmptyFvRsDppPolFvAEPgResourceModel())
+				planData.FvRsDppPol = FvRsDppPolObject
+			}
+		}
+		if !configData.FvRsTrustCtrl.IsNull() && stateData != nil {
+			if IsEmptySingleNestedAttribute(configData.FvRsTrustCtrl.Attributes()) {
+				FvRsTrustCtrlObject, _ := types.ObjectValueFrom(ctx, FvRsTrustCtrlFvAEPgType, getEmptyFvRsTrustCtrlFvAEPgResourceModel())
+				planData.FvRsTrustCtrl = FvRsTrustCtrlObject
+			}
+		}
 
 		if !configData.ExceptionTag.IsNull() {
 			planData.DeprecatedExceptionTag = configData.ExceptionTag
@@ -1624,60 +1633,49 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 		}
 
 		if !configData.FvRsAEPgMonPol.IsNull() && stateData != nil {
-			var attributeValues []FvRsAEPgMonPolFvAEPgResourceModel
-			configData.FvRsAEPgMonPol.ElementsAs(ctx, &attributeValues, false)
-			for _, attributeValue := range attributeValues {
-				if GetMOName(stateData.DeprecatedFvRsAEPgMonPol.ValueString()) == attributeValue.TnMonEPGPolName.ValueString() {
+			if IsEmptySingleNestedAttribute(configData.FvRsAEPgMonPol.Attributes()) {
+				planData.FvRsAEPgMonPol = configData.FvRsAEPgMonPol
+				planData.DeprecatedFvRsAEPgMonPol = basetypes.NewStringNull()
+			} else {
+				var attributeValues FvRsAEPgMonPolFvAEPgResourceModel
+				configData.FvRsAEPgMonPol.As(ctx, &attributeValues, basetypes.ObjectAsOptions{})
+				if GetMOName(stateData.DeprecatedFvRsAEPgMonPol.ValueString()) == attributeValues.TnMonEPGPolName.ValueString() && !attributeValues.TnMonEPGPolName.IsNull() {
 					planData.DeprecatedFvRsAEPgMonPol = stateData.DeprecatedFvRsAEPgMonPol
 				}
 			}
 		} else if !configData.DeprecatedFvRsAEPgMonPol.IsNull() {
-			FvRsAEPgMonPolList := make([]FvRsAEPgMonPolFvAEPgResourceModel, 0)
 			FvRsAEPgMonPol := FvRsAEPgMonPolFvAEPgResourceModel{
 				Annotation:      planData.Annotation,
 				TnMonEPGPolName: basetypes.NewStringValue(GetMOName(configData.DeprecatedFvRsAEPgMonPol.ValueString())),
 			}
-			FvRsAEPgMonPolList = append(FvRsAEPgMonPolList, FvRsAEPgMonPol)
-			FvRsAEPgMonPolType := types.ObjectType{
-				AttrTypes: map[string]attr.Type{
-					"annotation":             basetypes.StringType{},
-					"monitoring_policy_name": basetypes.StringType{},
-				},
-			}
-			FvRsAEPgMonPolSet, _ := types.SetValueFrom(ctx, FvRsAEPgMonPolType, FvRsAEPgMonPolList)
-			planData.FvRsAEPgMonPol = FvRsAEPgMonPolSet
+			FvRsAEPgMonPolObject, _ := types.ObjectValueFrom(ctx, FvRsAEPgMonPolFvAEPgType, FvRsAEPgMonPol)
+			planData.FvRsAEPgMonPol = FvRsAEPgMonPolObject
 		} else if stateData != nil { // used to replace use state for unknown
 			planData.DeprecatedFvRsAEPgMonPol = stateData.DeprecatedFvRsAEPgMonPol
 		}
 
 		if !configData.FvRsBd.IsNull() && stateData != nil {
-			var attributeValues []FvRsBdFvAEPgResourceModel
-			configData.FvRsBd.ElementsAs(ctx, &attributeValues, false)
-			for _, attributeValue := range attributeValues {
-				if GetMOName(stateData.DeprecatedFvRsBd.ValueString()) == attributeValue.TnFvBDName.ValueString() {
+			if IsEmptySingleNestedAttribute(configData.FvRsBd.Attributes()) {
+				planData.FvRsBd = configData.FvRsBd
+				planData.DeprecatedFvRsBd = basetypes.NewStringNull()
+			} else {
+				var attributeValues FvRsBdFvAEPgResourceModel
+				configData.FvRsBd.As(ctx, &attributeValues, basetypes.ObjectAsOptions{})
+				if GetMOName(stateData.DeprecatedFvRsBd.ValueString()) == attributeValues.TnFvBDName.ValueString() && !attributeValues.TnFvBDName.IsNull() {
 					planData.DeprecatedFvRsBd = stateData.DeprecatedFvRsBd
 				}
 			}
 		} else if !configData.DeprecatedFvRsBd.IsNull() {
-			FvRsBdList := make([]FvRsBdFvAEPgResourceModel, 0)
 			FvRsBd := FvRsBdFvAEPgResourceModel{
 				Annotation: planData.Annotation,
 				TnFvBDName: basetypes.NewStringValue(GetMOName(configData.DeprecatedFvRsBd.ValueString())),
 			}
-			FvRsBdList = append(FvRsBdList, FvRsBd)
-			FvRsBdType := types.ObjectType{
-				AttrTypes: map[string]attr.Type{
-					"annotation":         basetypes.StringType{},
-					"bridge_domain_name": basetypes.StringType{},
-				},
-			}
-			FvRsBdSet, _ := types.SetValueFrom(ctx, FvRsBdType, FvRsBdList)
-			planData.FvRsBd = FvRsBdSet
+			FvRsBdObject, _ := types.ObjectValueFrom(ctx, FvRsBdFvAEPgType, FvRsBd)
+			planData.FvRsBd = FvRsBdObject
 		} else if stateData != nil { // used to replace use state for unknown
 			planData.DeprecatedFvRsBd = stateData.DeprecatedFvRsBd
 		}
 
-		// HasNamedProperties true
 		if !configData.FvRsCons.IsNull() && stateData != nil {
 			var attributeValues []FvRsConsFvAEPgResourceModel
 			var newAttributeValues, stateAttributeValues []string
@@ -1744,7 +1742,6 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 			planData.DeprecatedFvRsCons = stateData.DeprecatedFvRsCons
 		}
 
-		// HasNamedProperties false
 		if !configData.FvRsSecInherited.IsNull() && stateData != nil {
 			var attributeValues []FvRsSecInheritedFvAEPgResourceModel
 			var newAttributeValues, stateAttributeValues []string
@@ -1809,60 +1806,49 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 		}
 
 		if !configData.FvRsCustQosPol.IsNull() && stateData != nil {
-			var attributeValues []FvRsCustQosPolFvAEPgResourceModel
-			configData.FvRsCustQosPol.ElementsAs(ctx, &attributeValues, false)
-			for _, attributeValue := range attributeValues {
-				if GetMOName(stateData.DeprecatedFvRsCustQosPol.ValueString()) == attributeValue.TnQosCustomPolName.ValueString() {
+			if IsEmptySingleNestedAttribute(configData.FvRsCustQosPol.Attributes()) {
+				planData.FvRsCustQosPol = configData.FvRsCustQosPol
+				planData.DeprecatedFvRsCustQosPol = basetypes.NewStringNull()
+			} else {
+				var attributeValues FvRsCustQosPolFvAEPgResourceModel
+				configData.FvRsCustQosPol.As(ctx, &attributeValues, basetypes.ObjectAsOptions{})
+				if GetMOName(stateData.DeprecatedFvRsCustQosPol.ValueString()) == attributeValues.TnQosCustomPolName.ValueString() && !attributeValues.TnQosCustomPolName.IsNull() {
 					planData.DeprecatedFvRsCustQosPol = stateData.DeprecatedFvRsCustQosPol
 				}
 			}
 		} else if !configData.DeprecatedFvRsCustQosPol.IsNull() {
-			FvRsCustQosPolList := make([]FvRsCustQosPolFvAEPgResourceModel, 0)
 			FvRsCustQosPol := FvRsCustQosPolFvAEPgResourceModel{
 				Annotation:         planData.Annotation,
 				TnQosCustomPolName: basetypes.NewStringValue(GetMOName(configData.DeprecatedFvRsCustQosPol.ValueString())),
 			}
-			FvRsCustQosPolList = append(FvRsCustQosPolList, FvRsCustQosPol)
-			FvRsCustQosPolType := types.ObjectType{
-				AttrTypes: map[string]attr.Type{
-					"annotation":             basetypes.StringType{},
-					"custom_qos_policy_name": basetypes.StringType{},
-				},
-			}
-			FvRsCustQosPolSet, _ := types.SetValueFrom(ctx, FvRsCustQosPolType, FvRsCustQosPolList)
-			planData.FvRsCustQosPol = FvRsCustQosPolSet
+			FvRsCustQosPolObject, _ := types.ObjectValueFrom(ctx, FvRsCustQosPolFvAEPgType, FvRsCustQosPol)
+			planData.FvRsCustQosPol = FvRsCustQosPolObject
 		} else if stateData != nil { // used to replace use state for unknown
 			planData.DeprecatedFvRsCustQosPol = stateData.DeprecatedFvRsCustQosPol
 		}
 
 		if !configData.FvRsDppPol.IsNull() && stateData != nil {
-			var attributeValues []FvRsDppPolFvAEPgResourceModel
-			configData.FvRsDppPol.ElementsAs(ctx, &attributeValues, false)
-			for _, attributeValue := range attributeValues {
-				if GetMOName(stateData.DeprecatedFvRsDppPol.ValueString()) == attributeValue.TnQosDppPolName.ValueString() {
+			if IsEmptySingleNestedAttribute(configData.FvRsDppPol.Attributes()) {
+				planData.FvRsDppPol = configData.FvRsDppPol
+				planData.DeprecatedFvRsDppPol = basetypes.NewStringNull()
+			} else {
+				var attributeValues FvRsDppPolFvAEPgResourceModel
+				configData.FvRsDppPol.As(ctx, &attributeValues, basetypes.ObjectAsOptions{})
+				if GetMOName(stateData.DeprecatedFvRsDppPol.ValueString()) == attributeValues.TnQosDppPolName.ValueString() && !attributeValues.TnQosDppPolName.IsNull() {
 					planData.DeprecatedFvRsDppPol = stateData.DeprecatedFvRsDppPol
 				}
 			}
 		} else if !configData.DeprecatedFvRsDppPol.IsNull() {
-			FvRsDppPolList := make([]FvRsDppPolFvAEPgResourceModel, 0)
 			FvRsDppPol := FvRsDppPolFvAEPgResourceModel{
 				Annotation:      planData.Annotation,
 				TnQosDppPolName: basetypes.NewStringValue(GetMOName(configData.DeprecatedFvRsDppPol.ValueString())),
 			}
-			FvRsDppPolList = append(FvRsDppPolList, FvRsDppPol)
-			FvRsDppPolType := types.ObjectType{
-				AttrTypes: map[string]attr.Type{
-					"annotation":                      basetypes.StringType{},
-					"data_plane_policing_policy_name": basetypes.StringType{},
-				},
-			}
-			FvRsDppPolSet, _ := types.SetValueFrom(ctx, FvRsDppPolType, FvRsDppPolList)
-			planData.FvRsDppPol = FvRsDppPolSet
+			FvRsDppPolObject, _ := types.ObjectValueFrom(ctx, FvRsDppPolFvAEPgType, FvRsDppPol)
+			planData.FvRsDppPol = FvRsDppPolObject
 		} else if stateData != nil { // used to replace use state for unknown
 			planData.DeprecatedFvRsDppPol = stateData.DeprecatedFvRsDppPol
 		}
 
-		// HasNamedProperties false
 		if !configData.FvRsFcPathAtt.IsNull() && stateData != nil {
 			var attributeValues []FvRsFcPathAttFvAEPgResourceModel
 			var newAttributeValues, stateAttributeValues []string
@@ -1934,7 +1920,6 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 			planData.DeprecatedFvRsFcPathAtt = stateData.DeprecatedFvRsFcPathAtt
 		}
 
-		// HasNamedProperties true
 		if !configData.FvRsConsIf.IsNull() && stateData != nil {
 			var attributeValues []FvRsConsIfFvAEPgResourceModel
 			var newAttributeValues, stateAttributeValues []string
@@ -2001,7 +1986,6 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 			planData.DeprecatedFvRsConsIf = stateData.DeprecatedFvRsConsIf
 		}
 
-		// HasNamedProperties true
 		if !configData.FvRsIntraEpg.IsNull() && stateData != nil {
 			var attributeValues []FvRsIntraEpgFvAEPgResourceModel
 			var newAttributeValues, stateAttributeValues []string
@@ -2065,7 +2049,6 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 			planData.DeprecatedFvRsIntraEpg = stateData.DeprecatedFvRsIntraEpg
 		}
 
-		// HasNamedProperties true
 		if !configData.FvRsProv.IsNull() && stateData != nil {
 			var attributeValues []FvRsProvFvAEPgResourceModel
 			var newAttributeValues, stateAttributeValues []string
@@ -2135,7 +2118,6 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 			planData.DeprecatedFvRsProv = stateData.DeprecatedFvRsProv
 		}
 
-		// HasNamedProperties false
 		if !configData.FvRsPathAtt.IsNull() && stateData != nil {
 			var attributeValues []FvRsPathAttFvAEPgResourceModel
 			var newAttributeValues, stateAttributeValues []string
@@ -2211,7 +2193,6 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 			planData.DeprecatedFvRsPathAtt = stateData.DeprecatedFvRsPathAtt
 		}
 
-		// HasNamedProperties true
 		if !configData.FvRsProtBy.IsNull() && stateData != nil {
 			var attributeValues []FvRsProtByFvAEPgResourceModel
 			var newAttributeValues, stateAttributeValues []string
@@ -2276,28 +2257,23 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 		}
 
 		if !configData.FvRsTrustCtrl.IsNull() && stateData != nil {
-			var attributeValues []FvRsTrustCtrlFvAEPgResourceModel
-			configData.FvRsTrustCtrl.ElementsAs(ctx, &attributeValues, false)
-			for _, attributeValue := range attributeValues {
-				if GetMOName(stateData.DeprecatedFvRsTrustCtrl.ValueString()) == attributeValue.TnFhsTrustCtrlPolName.ValueString() {
+			if IsEmptySingleNestedAttribute(configData.FvRsTrustCtrl.Attributes()) {
+				planData.FvRsTrustCtrl = configData.FvRsTrustCtrl
+				planData.DeprecatedFvRsTrustCtrl = basetypes.NewStringNull()
+			} else {
+				var attributeValues FvRsTrustCtrlFvAEPgResourceModel
+				configData.FvRsTrustCtrl.As(ctx, &attributeValues, basetypes.ObjectAsOptions{})
+				if GetMOName(stateData.DeprecatedFvRsTrustCtrl.ValueString()) == attributeValues.TnFhsTrustCtrlPolName.ValueString() && !attributeValues.TnFhsTrustCtrlPolName.IsNull() {
 					planData.DeprecatedFvRsTrustCtrl = stateData.DeprecatedFvRsTrustCtrl
 				}
 			}
 		} else if !configData.DeprecatedFvRsTrustCtrl.IsNull() {
-			FvRsTrustCtrlList := make([]FvRsTrustCtrlFvAEPgResourceModel, 0)
 			FvRsTrustCtrl := FvRsTrustCtrlFvAEPgResourceModel{
 				Annotation:            planData.Annotation,
 				TnFhsTrustCtrlPolName: basetypes.NewStringValue(GetMOName(configData.DeprecatedFvRsTrustCtrl.ValueString())),
 			}
-			FvRsTrustCtrlList = append(FvRsTrustCtrlList, FvRsTrustCtrl)
-			FvRsTrustCtrlType := types.ObjectType{
-				AttrTypes: map[string]attr.Type{
-					"annotation":                basetypes.StringType{},
-					"trust_control_policy_name": basetypes.StringType{},
-				},
-			}
-			FvRsTrustCtrlSet, _ := types.SetValueFrom(ctx, FvRsTrustCtrlType, FvRsTrustCtrlList)
-			planData.FvRsTrustCtrl = FvRsTrustCtrlSet
+			FvRsTrustCtrlObject, _ := types.ObjectValueFrom(ctx, FvRsTrustCtrlFvAEPgType, FvRsTrustCtrl)
+			planData.FvRsTrustCtrl = FvRsTrustCtrlObject
 		} else if stateData != nil { // used to replace use state for unknown
 			planData.DeprecatedFvRsTrustCtrl = stateData.DeprecatedFvRsTrustCtrl
 		}
@@ -2789,169 +2765,154 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				},
 				MarkdownDescription: `Withdraw AEPg Configuration from all Nodes in the Fabric.`,
 			},
-			"epg_useg_block_statement": schema.SetNestedAttribute{
+			"epg_useg_block_statement": schema.SingleNestedAttribute{
 				MarkdownDescription: `A criterion.`,
 				Optional:            true,
 				Computed:            true,
-				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+				PlanModifiers: []planmodifier.Object{
+					objectplanmodifier.UseStateForUnknown(),
 				},
-				Validators: []validator.Set{
-					setvalidator.SizeAtMost(1),
-				},
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"annotation": schema.StringAttribute{
-							Optional: true,
-							Computed: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
-							},
-							Validators:          []validator.String{},
-							MarkdownDescription: `The annotation of the EPG uSeg Block Statement object.`,
+				Attributes: map[string]schema.Attribute{
+					"annotation": schema.StringAttribute{
+						Optional: true,
+						Computed: true,
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.UseStateForUnknown(),
 						},
-						"description": schema.StringAttribute{
-							Optional: true,
-							Computed: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
-							},
-							Validators:          []validator.String{},
-							MarkdownDescription: `The description of the EPG uSeg Block Statement object.`,
+						Validators:          []validator.String{},
+						MarkdownDescription: `The annotation of the EPG uSeg Block Statement object.`,
+					},
+					"description": schema.StringAttribute{
+						Optional: true,
+						Computed: true,
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.UseStateForUnknown(),
 						},
-						"match": schema.StringAttribute{
-							Optional: true,
-							Computed: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
-							},
-							Validators: []validator.String{
-								stringvalidator.OneOf("all", "any"),
-							},
-							MarkdownDescription: `The Matching Rule Type of the EPG uSeg Block Statement object.`,
+						Validators:          []validator.String{},
+						MarkdownDescription: `The description of the EPG uSeg Block Statement object.`,
+					},
+					"match": schema.StringAttribute{
+						Optional: true,
+						Computed: true,
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.UseStateForUnknown(),
 						},
-						"name": schema.StringAttribute{
-							Optional: true,
-							Computed: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
-							},
-							Validators:          []validator.String{},
-							MarkdownDescription: `The name of the EPG uSeg Block Statement object.`,
+						Validators: []validator.String{
+							stringvalidator.OneOf("all", "any"),
 						},
-						"name_alias": schema.StringAttribute{
-							Optional: true,
-							Computed: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
-							},
-							Validators:          []validator.String{},
-							MarkdownDescription: `The name alias of the EPG uSeg Block Statement object.`,
+						MarkdownDescription: `The Matching Rule Type of the EPG uSeg Block Statement object.`,
+					},
+					"name": schema.StringAttribute{
+						Optional: true,
+						Computed: true,
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.UseStateForUnknown(),
 						},
-						"owner_key": schema.StringAttribute{
-							Optional: true,
-							Computed: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
-							},
-							Validators:          []validator.String{},
-							MarkdownDescription: `The key for enabling clients to own their data for entity correlation.`,
+						Validators:          []validator.String{},
+						MarkdownDescription: `The name of the EPG uSeg Block Statement object.`,
+					},
+					"name_alias": schema.StringAttribute{
+						Optional: true,
+						Computed: true,
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.UseStateForUnknown(),
 						},
-						"owner_tag": schema.StringAttribute{
-							Optional: true,
-							Computed: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
-							},
-							Validators:          []validator.String{},
-							MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
+						Validators:          []validator.String{},
+						MarkdownDescription: `The name alias of the EPG uSeg Block Statement object.`,
+					},
+					"owner_key": schema.StringAttribute{
+						Optional: true,
+						Computed: true,
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.UseStateForUnknown(),
 						},
-						"precedence": schema.StringAttribute{
-							Optional: true,
-							Computed: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
-							},
-							Validators:          []validator.String{},
-							MarkdownDescription: `The precedence of the EPG uSeg Block Statement object.`,
+						Validators:          []validator.String{},
+						MarkdownDescription: `The key for enabling clients to own their data for entity correlation.`,
+					},
+					"owner_tag": schema.StringAttribute{
+						Optional: true,
+						Computed: true,
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.UseStateForUnknown(),
 						},
-						"scope": schema.StringAttribute{
-							Optional: true,
-							Computed: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
-							},
-							Validators: []validator.String{
-								stringvalidator.OneOf("scope-bd", "scope-vrf"),
-							},
-							MarkdownDescription: `The scope of the EPG uSeg Block Statement object.`,
+						Validators:          []validator.String{},
+						MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
+					},
+					"precedence": schema.StringAttribute{
+						Optional: true,
+						Computed: true,
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.UseStateForUnknown(),
 						},
+						Validators:          []validator.String{},
+						MarkdownDescription: `The precedence of the EPG uSeg Block Statement object.`,
+					},
+					"scope": schema.StringAttribute{
+						Optional: true,
+						Computed: true,
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.UseStateForUnknown(),
+						},
+						Validators: []validator.String{
+							stringvalidator.OneOf("scope-bd", "scope-vrf"),
+						},
+						MarkdownDescription: `The scope of the EPG uSeg Block Statement object.`,
 					},
 				},
 			},
-			"relation_to_application_epg_monitoring_policy": schema.SetNestedAttribute{
+			"relation_to_application_epg_monitoring_policy": schema.SingleNestedAttribute{
 				MarkdownDescription: `A source relation to the monitoring policy model for the endpoint group semantic scope. This is an internal object.`,
 				Optional:            true,
 				Computed:            true,
-				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+				PlanModifiers: []planmodifier.Object{
+					objectplanmodifier.UseStateForUnknown(),
 				},
-				Validators: []validator.Set{
-					setvalidator.SizeAtMost(1),
-				},
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"annotation": schema.StringAttribute{
-							Optional: true,
-							Computed: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
-							},
-							Validators:          []validator.String{},
-							MarkdownDescription: `The annotation of the Relation To Application EPG Monitoring Policy object.`,
+				Attributes: map[string]schema.Attribute{
+					"annotation": schema.StringAttribute{
+						Optional: true,
+						Computed: true,
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.UseStateForUnknown(),
 						},
-						"monitoring_policy_name": schema.StringAttribute{
-							Optional: true,
-							Computed: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
-							},
-							Validators:          []validator.String{},
-							MarkdownDescription: `The name of the monitoring policy.`,
+						Validators:          []validator.String{},
+						MarkdownDescription: `The annotation of the Relation To Application EPG Monitoring Policy object.`,
+					},
+					"monitoring_policy_name": schema.StringAttribute{
+						Optional: true,
+						Computed: true,
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.UseStateForUnknown(),
 						},
+						Validators:          []validator.String{},
+						MarkdownDescription: `The name of the monitoring policy.`,
 					},
 				},
 			},
-			"relation_to_bridge_domain": schema.SetNestedAttribute{
+			"relation_to_bridge_domain": schema.SingleNestedAttribute{
 				MarkdownDescription: `A source relation to the bridge domain associated to this endpoint group. This is an internal object.`,
 				Optional:            true,
 				Computed:            true,
-				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+				PlanModifiers: []planmodifier.Object{
+					objectplanmodifier.UseStateForUnknown(),
 				},
-				Validators: []validator.Set{
-					setvalidator.SizeAtMost(1),
-				},
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"annotation": schema.StringAttribute{
-							Optional: true,
-							Computed: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
-							},
-							Validators:          []validator.String{},
-							MarkdownDescription: `The annotation of the Relation To Bridge Domain object.`,
+				Attributes: map[string]schema.Attribute{
+					"annotation": schema.StringAttribute{
+						Optional: true,
+						Computed: true,
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.UseStateForUnknown(),
 						},
-						"bridge_domain_name": schema.StringAttribute{
-							Optional: true,
-							Computed: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
-							},
-							Validators:          []validator.String{},
-							MarkdownDescription: `The name of the bridge domain associated with this EPG.`,
+						Validators:          []validator.String{},
+						MarkdownDescription: `The annotation of the Relation To Bridge Domain object.`,
+					},
+					"bridge_domain_name": schema.StringAttribute{
+						Optional: true,
+						Computed: true,
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.UseStateForUnknown(),
 						},
+						Validators:          []validator.String{},
+						MarkdownDescription: `The name of the bridge domain associated with this EPG.`,
 					},
 				},
 			},
@@ -3049,36 +3010,31 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 					},
 				},
 			},
-			"relation_to_custom_qos_policy": schema.SetNestedAttribute{
+			"relation_to_custom_qos_policy": schema.SingleNestedAttribute{
 				MarkdownDescription: `A source relation to a custom QoS policy that enables different levels of service to be assigned to network traffic, including specifications for the Differentiated Services Code Point (DSCP) value(s) and the 802.1p Dot1p priority. This is an internal object.`,
 				Optional:            true,
 				Computed:            true,
-				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+				PlanModifiers: []planmodifier.Object{
+					objectplanmodifier.UseStateForUnknown(),
 				},
-				Validators: []validator.Set{
-					setvalidator.SizeAtMost(1),
-				},
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"annotation": schema.StringAttribute{
-							Optional: true,
-							Computed: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
-							},
-							Validators:          []validator.String{},
-							MarkdownDescription: `The annotation of the Relation To Custom Qos Policy object.`,
+				Attributes: map[string]schema.Attribute{
+					"annotation": schema.StringAttribute{
+						Optional: true,
+						Computed: true,
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.UseStateForUnknown(),
 						},
-						"custom_qos_policy_name": schema.StringAttribute{
-							Optional: true,
-							Computed: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
-							},
-							Validators:          []validator.String{},
-							MarkdownDescription: `The Custom QoS traffic policy name.`,
+						Validators:          []validator.String{},
+						MarkdownDescription: `The annotation of the Relation To Custom Qos Policy object.`,
+					},
+					"custom_qos_policy_name": schema.StringAttribute{
+						Optional: true,
+						Computed: true,
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.UseStateForUnknown(),
 						},
+						Validators:          []validator.String{},
+						MarkdownDescription: `The Custom QoS traffic policy name.`,
 					},
 				},
 			},
@@ -3358,36 +3314,31 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 					},
 				},
 			},
-			"relation_to_data_plane_policing_policy": schema.SetNestedAttribute{
+			"relation_to_data_plane_policing_policy": schema.SingleNestedAttribute{
 				MarkdownDescription: `Relationship for Dpp QOS policy`,
 				Optional:            true,
 				Computed:            true,
-				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+				PlanModifiers: []planmodifier.Object{
+					objectplanmodifier.UseStateForUnknown(),
 				},
-				Validators: []validator.Set{
-					setvalidator.SizeAtMost(1),
-				},
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"annotation": schema.StringAttribute{
-							Optional: true,
-							Computed: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
-							},
-							Validators:          []validator.String{},
-							MarkdownDescription: `The annotation of the Relation To Data Plane Policing Policy object.`,
+				Attributes: map[string]schema.Attribute{
+					"annotation": schema.StringAttribute{
+						Optional: true,
+						Computed: true,
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.UseStateForUnknown(),
 						},
-						"data_plane_policing_policy_name": schema.StringAttribute{
-							Optional: true,
-							Computed: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
-							},
-							Validators:          []validator.String{},
-							MarkdownDescription: `Name.`,
+						Validators:          []validator.String{},
+						MarkdownDescription: `The annotation of the Relation To Data Plane Policing Policy object.`,
+					},
+					"data_plane_policing_policy_name": schema.StringAttribute{
+						Optional: true,
+						Computed: true,
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.UseStateForUnknown(),
 						},
+						Validators:          []validator.String{},
+						MarkdownDescription: `Name.`,
 					},
 				},
 			},
@@ -3770,36 +3721,31 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 					},
 				},
 			},
-			"relation_to_trust_control_policy": schema.SetNestedAttribute{
+			"relation_to_trust_control_policy": schema.SingleNestedAttribute{
 				MarkdownDescription: `Relationship for FHS trust control`,
 				Optional:            true,
 				Computed:            true,
-				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+				PlanModifiers: []planmodifier.Object{
+					objectplanmodifier.UseStateForUnknown(),
 				},
-				Validators: []validator.Set{
-					setvalidator.SizeAtMost(1),
-				},
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"annotation": schema.StringAttribute{
-							Optional: true,
-							Computed: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
-							},
-							Validators:          []validator.String{},
-							MarkdownDescription: `The annotation of the Relation To Trust Control Policy object.`,
+				Attributes: map[string]schema.Attribute{
+					"annotation": schema.StringAttribute{
+						Optional: true,
+						Computed: true,
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.UseStateForUnknown(),
 						},
-						"trust_control_policy_name": schema.StringAttribute{
-							Optional: true,
-							Computed: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
-							},
-							Validators:          []validator.String{},
-							MarkdownDescription: `Name.`,
+						Validators:          []validator.String{},
+						MarkdownDescription: `The annotation of the Relation To Trust Control Policy object.`,
+					},
+					"trust_control_policy_name": schema.StringAttribute{
+						Optional: true,
+						Computed: true,
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.UseStateForUnknown(),
 						},
+						Validators:          []validator.String{},
+						MarkdownDescription: `Name.`,
 					},
 				},
 			},
@@ -3988,30 +3934,30 @@ func (r *FvAEPgResource) Create(ctx context.Context, req resource.CreateRequest,
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_application_epg with id '%s'", data.Id.ValueString()))
 
-	var fvCrtrnPlan, fvCrtrnState []FvCrtrnFvAEPgResourceModel
-	data.FvCrtrn.ElementsAs(ctx, &fvCrtrnPlan, false)
-	stateData.FvCrtrn.ElementsAs(ctx, &fvCrtrnState, false)
-	var fvRsAEPgMonPolPlan, fvRsAEPgMonPolState []FvRsAEPgMonPolFvAEPgResourceModel
-	data.FvRsAEPgMonPol.ElementsAs(ctx, &fvRsAEPgMonPolPlan, false)
-	stateData.FvRsAEPgMonPol.ElementsAs(ctx, &fvRsAEPgMonPolState, false)
-	var fvRsBdPlan, fvRsBdState []FvRsBdFvAEPgResourceModel
-	data.FvRsBd.ElementsAs(ctx, &fvRsBdPlan, false)
-	stateData.FvRsBd.ElementsAs(ctx, &fvRsBdState, false)
+	var fvCrtrnPlan, fvCrtrnState FvCrtrnFvAEPgResourceModel
+	data.FvCrtrn.As(ctx, &fvCrtrnPlan, basetypes.ObjectAsOptions{})
+	stateData.FvCrtrn.As(ctx, &fvCrtrnState, basetypes.ObjectAsOptions{})
+	var fvRsAEPgMonPolPlan, fvRsAEPgMonPolState FvRsAEPgMonPolFvAEPgResourceModel
+	data.FvRsAEPgMonPol.As(ctx, &fvRsAEPgMonPolPlan, basetypes.ObjectAsOptions{})
+	stateData.FvRsAEPgMonPol.As(ctx, &fvRsAEPgMonPolState, basetypes.ObjectAsOptions{})
+	var fvRsBdPlan, fvRsBdState FvRsBdFvAEPgResourceModel
+	data.FvRsBd.As(ctx, &fvRsBdPlan, basetypes.ObjectAsOptions{})
+	stateData.FvRsBd.As(ctx, &fvRsBdState, basetypes.ObjectAsOptions{})
 	var fvRsConsPlan, fvRsConsState []FvRsConsFvAEPgResourceModel
 	data.FvRsCons.ElementsAs(ctx, &fvRsConsPlan, false)
 	stateData.FvRsCons.ElementsAs(ctx, &fvRsConsState, false)
 	var fvRsConsIfPlan, fvRsConsIfState []FvRsConsIfFvAEPgResourceModel
 	data.FvRsConsIf.ElementsAs(ctx, &fvRsConsIfPlan, false)
 	stateData.FvRsConsIf.ElementsAs(ctx, &fvRsConsIfState, false)
-	var fvRsCustQosPolPlan, fvRsCustQosPolState []FvRsCustQosPolFvAEPgResourceModel
-	data.FvRsCustQosPol.ElementsAs(ctx, &fvRsCustQosPolPlan, false)
-	stateData.FvRsCustQosPol.ElementsAs(ctx, &fvRsCustQosPolState, false)
+	var fvRsCustQosPolPlan, fvRsCustQosPolState FvRsCustQosPolFvAEPgResourceModel
+	data.FvRsCustQosPol.As(ctx, &fvRsCustQosPolPlan, basetypes.ObjectAsOptions{})
+	stateData.FvRsCustQosPol.As(ctx, &fvRsCustQosPolState, basetypes.ObjectAsOptions{})
 	var fvRsDomAttPlan, fvRsDomAttState []FvRsDomAttFvAEPgResourceModel
 	data.FvRsDomAtt.ElementsAs(ctx, &fvRsDomAttPlan, false)
 	stateData.FvRsDomAtt.ElementsAs(ctx, &fvRsDomAttState, false)
-	var fvRsDppPolPlan, fvRsDppPolState []FvRsDppPolFvAEPgResourceModel
-	data.FvRsDppPol.ElementsAs(ctx, &fvRsDppPolPlan, false)
-	stateData.FvRsDppPol.ElementsAs(ctx, &fvRsDppPolState, false)
+	var fvRsDppPolPlan, fvRsDppPolState FvRsDppPolFvAEPgResourceModel
+	data.FvRsDppPol.As(ctx, &fvRsDppPolPlan, basetypes.ObjectAsOptions{})
+	stateData.FvRsDppPol.As(ctx, &fvRsDppPolState, basetypes.ObjectAsOptions{})
 	var fvRsFcPathAttPlan, fvRsFcPathAttState []FvRsFcPathAttFvAEPgResourceModel
 	data.FvRsFcPathAtt.ElementsAs(ctx, &fvRsFcPathAttPlan, false)
 	stateData.FvRsFcPathAtt.ElementsAs(ctx, &fvRsFcPathAttState, false)
@@ -4033,9 +3979,9 @@ func (r *FvAEPgResource) Create(ctx context.Context, req resource.CreateRequest,
 	var fvRsSecInheritedPlan, fvRsSecInheritedState []FvRsSecInheritedFvAEPgResourceModel
 	data.FvRsSecInherited.ElementsAs(ctx, &fvRsSecInheritedPlan, false)
 	stateData.FvRsSecInherited.ElementsAs(ctx, &fvRsSecInheritedState, false)
-	var fvRsTrustCtrlPlan, fvRsTrustCtrlState []FvRsTrustCtrlFvAEPgResourceModel
-	data.FvRsTrustCtrl.ElementsAs(ctx, &fvRsTrustCtrlPlan, false)
-	stateData.FvRsTrustCtrl.ElementsAs(ctx, &fvRsTrustCtrlState, false)
+	var fvRsTrustCtrlPlan, fvRsTrustCtrlState FvRsTrustCtrlFvAEPgResourceModel
+	data.FvRsTrustCtrl.As(ctx, &fvRsTrustCtrlPlan, basetypes.ObjectAsOptions{})
+	stateData.FvRsTrustCtrl.As(ctx, &fvRsTrustCtrlState, basetypes.ObjectAsOptions{})
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationFvAEPgResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
 	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
@@ -4094,6 +4040,20 @@ func (r *FvAEPgResource) Update(ctx context.Context, req resource.UpdateRequest,
 	// Read Terraform plan data into the model
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
 	resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
+	// Error out when child object fvRsBd is being deleted
+	if IsEmptySingleNestedAttribute(data.FvRsBd.Attributes()) && !IsEmptySingleNestedAttribute(stateData.FvRsBd.Attributes()) {
+		resp.Diagnostics.AddError(
+			"FvRsBd object cannot be deleted",
+			"deletion of child is only possible upon deletion of the parent",
+		)
+	}
+	// Error out when child object fvRsCustQosPol is being deleted
+	if IsEmptySingleNestedAttribute(data.FvRsCustQosPol.Attributes()) && !IsEmptySingleNestedAttribute(stateData.FvRsCustQosPol.Attributes()) {
+		resp.Diagnostics.AddError(
+			"FvRsCustQosPol object cannot be deleted",
+			"deletion of child is only possible upon deletion of the parent",
+		)
+	}
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -4101,30 +4061,30 @@ func (r *FvAEPgResource) Update(ctx context.Context, req resource.UpdateRequest,
 
 	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_application_epg with id '%s'", data.Id.ValueString()))
 
-	var fvCrtrnPlan, fvCrtrnState []FvCrtrnFvAEPgResourceModel
-	data.FvCrtrn.ElementsAs(ctx, &fvCrtrnPlan, false)
-	stateData.FvCrtrn.ElementsAs(ctx, &fvCrtrnState, false)
-	var fvRsAEPgMonPolPlan, fvRsAEPgMonPolState []FvRsAEPgMonPolFvAEPgResourceModel
-	data.FvRsAEPgMonPol.ElementsAs(ctx, &fvRsAEPgMonPolPlan, false)
-	stateData.FvRsAEPgMonPol.ElementsAs(ctx, &fvRsAEPgMonPolState, false)
-	var fvRsBdPlan, fvRsBdState []FvRsBdFvAEPgResourceModel
-	data.FvRsBd.ElementsAs(ctx, &fvRsBdPlan, false)
-	stateData.FvRsBd.ElementsAs(ctx, &fvRsBdState, false)
+	var fvCrtrnPlan, fvCrtrnState FvCrtrnFvAEPgResourceModel
+	data.FvCrtrn.As(ctx, &fvCrtrnPlan, basetypes.ObjectAsOptions{})
+	stateData.FvCrtrn.As(ctx, &fvCrtrnState, basetypes.ObjectAsOptions{})
+	var fvRsAEPgMonPolPlan, fvRsAEPgMonPolState FvRsAEPgMonPolFvAEPgResourceModel
+	data.FvRsAEPgMonPol.As(ctx, &fvRsAEPgMonPolPlan, basetypes.ObjectAsOptions{})
+	stateData.FvRsAEPgMonPol.As(ctx, &fvRsAEPgMonPolState, basetypes.ObjectAsOptions{})
+	var fvRsBdPlan, fvRsBdState FvRsBdFvAEPgResourceModel
+	data.FvRsBd.As(ctx, &fvRsBdPlan, basetypes.ObjectAsOptions{})
+	stateData.FvRsBd.As(ctx, &fvRsBdState, basetypes.ObjectAsOptions{})
 	var fvRsConsPlan, fvRsConsState []FvRsConsFvAEPgResourceModel
 	data.FvRsCons.ElementsAs(ctx, &fvRsConsPlan, false)
 	stateData.FvRsCons.ElementsAs(ctx, &fvRsConsState, false)
 	var fvRsConsIfPlan, fvRsConsIfState []FvRsConsIfFvAEPgResourceModel
 	data.FvRsConsIf.ElementsAs(ctx, &fvRsConsIfPlan, false)
 	stateData.FvRsConsIf.ElementsAs(ctx, &fvRsConsIfState, false)
-	var fvRsCustQosPolPlan, fvRsCustQosPolState []FvRsCustQosPolFvAEPgResourceModel
-	data.FvRsCustQosPol.ElementsAs(ctx, &fvRsCustQosPolPlan, false)
-	stateData.FvRsCustQosPol.ElementsAs(ctx, &fvRsCustQosPolState, false)
+	var fvRsCustQosPolPlan, fvRsCustQosPolState FvRsCustQosPolFvAEPgResourceModel
+	data.FvRsCustQosPol.As(ctx, &fvRsCustQosPolPlan, basetypes.ObjectAsOptions{})
+	stateData.FvRsCustQosPol.As(ctx, &fvRsCustQosPolState, basetypes.ObjectAsOptions{})
 	var fvRsDomAttPlan, fvRsDomAttState []FvRsDomAttFvAEPgResourceModel
 	data.FvRsDomAtt.ElementsAs(ctx, &fvRsDomAttPlan, false)
 	stateData.FvRsDomAtt.ElementsAs(ctx, &fvRsDomAttState, false)
-	var fvRsDppPolPlan, fvRsDppPolState []FvRsDppPolFvAEPgResourceModel
-	data.FvRsDppPol.ElementsAs(ctx, &fvRsDppPolPlan, false)
-	stateData.FvRsDppPol.ElementsAs(ctx, &fvRsDppPolState, false)
+	var fvRsDppPolPlan, fvRsDppPolState FvRsDppPolFvAEPgResourceModel
+	data.FvRsDppPol.As(ctx, &fvRsDppPolPlan, basetypes.ObjectAsOptions{})
+	stateData.FvRsDppPol.As(ctx, &fvRsDppPolState, basetypes.ObjectAsOptions{})
 	var fvRsFcPathAttPlan, fvRsFcPathAttState []FvRsFcPathAttFvAEPgResourceModel
 	data.FvRsFcPathAtt.ElementsAs(ctx, &fvRsFcPathAttPlan, false)
 	stateData.FvRsFcPathAtt.ElementsAs(ctx, &fvRsFcPathAttState, false)
@@ -4146,9 +4106,9 @@ func (r *FvAEPgResource) Update(ctx context.Context, req resource.UpdateRequest,
 	var fvRsSecInheritedPlan, fvRsSecInheritedState []FvRsSecInheritedFvAEPgResourceModel
 	data.FvRsSecInherited.ElementsAs(ctx, &fvRsSecInheritedPlan, false)
 	stateData.FvRsSecInherited.ElementsAs(ctx, &fvRsSecInheritedState, false)
-	var fvRsTrustCtrlPlan, fvRsTrustCtrlState []FvRsTrustCtrlFvAEPgResourceModel
-	data.FvRsTrustCtrl.ElementsAs(ctx, &fvRsTrustCtrlPlan, false)
-	stateData.FvRsTrustCtrl.ElementsAs(ctx, &fvRsTrustCtrlState, false)
+	var fvRsTrustCtrlPlan, fvRsTrustCtrlState FvRsTrustCtrlFvAEPgResourceModel
+	data.FvRsTrustCtrl.As(ctx, &fvRsTrustCtrlPlan, basetypes.ObjectAsOptions{})
+	stateData.FvRsTrustCtrl.As(ctx, &fvRsTrustCtrlState, basetypes.ObjectAsOptions{})
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationFvAEPgResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
 	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
@@ -4661,22 +4621,47 @@ func getAndSetFvAEPgAttributes(ctx context.Context, diags *diag.Diagnostics, cli
 					}
 				}
 			}
-			fvCrtrnSet, _ := types.SetValueFrom(ctx, data.FvCrtrn.ElementType(ctx), FvCrtrnFvAEPgList)
-			data.FvCrtrn = fvCrtrnSet
-			fvRsAEPgMonPolSet, _ := types.SetValueFrom(ctx, data.FvRsAEPgMonPol.ElementType(ctx), FvRsAEPgMonPolFvAEPgList)
-			data.FvRsAEPgMonPol = fvRsAEPgMonPolSet
-			fvRsBdSet, _ := types.SetValueFrom(ctx, data.FvRsBd.ElementType(ctx), FvRsBdFvAEPgList)
-			data.FvRsBd = fvRsBdSet
+			if len(FvCrtrnFvAEPgList) == 1 {
+				fvCrtrnObject, _ := types.ObjectValueFrom(ctx, FvCrtrnFvAEPgType, FvCrtrnFvAEPgList[0])
+				data.FvCrtrn = fvCrtrnObject
+			} else {
+				fvCrtrnObject, _ := types.ObjectValueFrom(ctx, FvCrtrnFvAEPgType, getEmptyFvCrtrnFvAEPgResourceModel())
+				data.FvCrtrn = fvCrtrnObject
+			}
+			if len(FvRsAEPgMonPolFvAEPgList) == 1 {
+				fvRsAEPgMonPolObject, _ := types.ObjectValueFrom(ctx, FvRsAEPgMonPolFvAEPgType, FvRsAEPgMonPolFvAEPgList[0])
+				data.FvRsAEPgMonPol = fvRsAEPgMonPolObject
+			} else {
+				fvRsAEPgMonPolObject, _ := types.ObjectValueFrom(ctx, FvRsAEPgMonPolFvAEPgType, getEmptyFvRsAEPgMonPolFvAEPgResourceModel())
+				data.FvRsAEPgMonPol = fvRsAEPgMonPolObject
+			}
+			if len(FvRsBdFvAEPgList) == 1 {
+				fvRsBdObject, _ := types.ObjectValueFrom(ctx, FvRsBdFvAEPgType, FvRsBdFvAEPgList[0])
+				data.FvRsBd = fvRsBdObject
+			} else {
+				fvRsBdObject, _ := types.ObjectValueFrom(ctx, FvRsBdFvAEPgType, getEmptyFvRsBdFvAEPgResourceModel())
+				data.FvRsBd = fvRsBdObject
+			}
 			fvRsConsSet, _ := types.SetValueFrom(ctx, data.FvRsCons.ElementType(ctx), FvRsConsFvAEPgList)
 			data.FvRsCons = fvRsConsSet
 			fvRsConsIfSet, _ := types.SetValueFrom(ctx, data.FvRsConsIf.ElementType(ctx), FvRsConsIfFvAEPgList)
 			data.FvRsConsIf = fvRsConsIfSet
-			fvRsCustQosPolSet, _ := types.SetValueFrom(ctx, data.FvRsCustQosPol.ElementType(ctx), FvRsCustQosPolFvAEPgList)
-			data.FvRsCustQosPol = fvRsCustQosPolSet
+			if len(FvRsCustQosPolFvAEPgList) == 1 {
+				fvRsCustQosPolObject, _ := types.ObjectValueFrom(ctx, FvRsCustQosPolFvAEPgType, FvRsCustQosPolFvAEPgList[0])
+				data.FvRsCustQosPol = fvRsCustQosPolObject
+			} else {
+				fvRsCustQosPolObject, _ := types.ObjectValueFrom(ctx, FvRsCustQosPolFvAEPgType, getEmptyFvRsCustQosPolFvAEPgResourceModel())
+				data.FvRsCustQosPol = fvRsCustQosPolObject
+			}
 			fvRsDomAttSet, _ := types.SetValueFrom(ctx, data.FvRsDomAtt.ElementType(ctx), FvRsDomAttFvAEPgList)
 			data.FvRsDomAtt = fvRsDomAttSet
-			fvRsDppPolSet, _ := types.SetValueFrom(ctx, data.FvRsDppPol.ElementType(ctx), FvRsDppPolFvAEPgList)
-			data.FvRsDppPol = fvRsDppPolSet
+			if len(FvRsDppPolFvAEPgList) == 1 {
+				fvRsDppPolObject, _ := types.ObjectValueFrom(ctx, FvRsDppPolFvAEPgType, FvRsDppPolFvAEPgList[0])
+				data.FvRsDppPol = fvRsDppPolObject
+			} else {
+				fvRsDppPolObject, _ := types.ObjectValueFrom(ctx, FvRsDppPolFvAEPgType, getEmptyFvRsDppPolFvAEPgResourceModel())
+				data.FvRsDppPol = fvRsDppPolObject
+			}
 			fvRsFcPathAttSet, _ := types.SetValueFrom(ctx, data.FvRsFcPathAtt.ElementType(ctx), FvRsFcPathAttFvAEPgList)
 			data.FvRsFcPathAtt = fvRsFcPathAttSet
 			fvRsIntraEpgSet, _ := types.SetValueFrom(ctx, data.FvRsIntraEpg.ElementType(ctx), FvRsIntraEpgFvAEPgList)
@@ -4691,8 +4676,13 @@ func getAndSetFvAEPgAttributes(ctx context.Context, diags *diag.Diagnostics, cli
 			data.FvRsProv = fvRsProvSet
 			fvRsSecInheritedSet, _ := types.SetValueFrom(ctx, data.FvRsSecInherited.ElementType(ctx), FvRsSecInheritedFvAEPgList)
 			data.FvRsSecInherited = fvRsSecInheritedSet
-			fvRsTrustCtrlSet, _ := types.SetValueFrom(ctx, data.FvRsTrustCtrl.ElementType(ctx), FvRsTrustCtrlFvAEPgList)
-			data.FvRsTrustCtrl = fvRsTrustCtrlSet
+			if len(FvRsTrustCtrlFvAEPgList) == 1 {
+				fvRsTrustCtrlObject, _ := types.ObjectValueFrom(ctx, FvRsTrustCtrlFvAEPgType, FvRsTrustCtrlFvAEPgList[0])
+				data.FvRsTrustCtrl = fvRsTrustCtrlObject
+			} else {
+				fvRsTrustCtrlObject, _ := types.ObjectValueFrom(ctx, FvRsTrustCtrlFvAEPgType, getEmptyFvRsTrustCtrlFvAEPgResourceModel())
+				data.FvRsTrustCtrl = fvRsTrustCtrlObject
+			}
 			tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationFvAEPgList)
 			data.TagAnnotation = tagAnnotationSet
 			tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagFvAEPgList)
@@ -4740,106 +4730,96 @@ func setFvAEPgId(ctx context.Context, data *FvAEPgResourceModel) {
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
 
-func getFvAEPgFvCrtrnChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvAEPgResourceModel, fvCrtrnPlan, fvCrtrnState []FvCrtrnFvAEPgResourceModel) []map[string]interface{} {
+func getFvAEPgFvCrtrnChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvAEPgResourceModel, fvCrtrnPlan, fvCrtrnState FvCrtrnFvAEPgResourceModel) []map[string]interface{} {
 
 	childPayloads := []map[string]interface{}{}
 	if !data.FvCrtrn.IsUnknown() {
-		for _, fvCrtrn := range fvCrtrnPlan {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !fvCrtrn.Annotation.IsUnknown() && !fvCrtrn.Annotation.IsNull() {
-				childMap["attributes"]["annotation"] = fvCrtrn.Annotation.ValueString()
+		childMap := map[string]map[string]interface{}{"attributes": {}}
+		if !IsEmptySingleNestedAttribute(data.FvCrtrn.Attributes()) {
+			if !fvCrtrnPlan.Annotation.IsUnknown() && !fvCrtrnPlan.Annotation.IsNull() {
+				childMap["attributes"]["annotation"] = fvCrtrnPlan.Annotation.ValueString()
 			} else {
 				childMap["attributes"]["annotation"] = globalAnnotation
 			}
-			if !fvCrtrn.Descr.IsUnknown() && !fvCrtrn.Descr.IsNull() {
-				childMap["attributes"]["descr"] = fvCrtrn.Descr.ValueString()
+			if !fvCrtrnPlan.Descr.IsUnknown() && !fvCrtrnPlan.Descr.IsNull() {
+				childMap["attributes"]["descr"] = fvCrtrnPlan.Descr.ValueString()
 			}
-			if !fvCrtrn.Match.IsUnknown() && !fvCrtrn.Match.IsNull() {
-				childMap["attributes"]["match"] = fvCrtrn.Match.ValueString()
+			if !fvCrtrnPlan.Match.IsUnknown() && !fvCrtrnPlan.Match.IsNull() {
+				childMap["attributes"]["match"] = fvCrtrnPlan.Match.ValueString()
 			}
-			if !fvCrtrn.Name.IsUnknown() && !fvCrtrn.Name.IsNull() {
-				childMap["attributes"]["name"] = fvCrtrn.Name.ValueString()
+			if !fvCrtrnPlan.Name.IsUnknown() && !fvCrtrnPlan.Name.IsNull() {
+				childMap["attributes"]["name"] = fvCrtrnPlan.Name.ValueString()
 			}
-			if !fvCrtrn.NameAlias.IsUnknown() && !fvCrtrn.NameAlias.IsNull() {
-				childMap["attributes"]["nameAlias"] = fvCrtrn.NameAlias.ValueString()
+			if !fvCrtrnPlan.NameAlias.IsUnknown() && !fvCrtrnPlan.NameAlias.IsNull() {
+				childMap["attributes"]["nameAlias"] = fvCrtrnPlan.NameAlias.ValueString()
 			}
-			if !fvCrtrn.OwnerKey.IsUnknown() && !fvCrtrn.OwnerKey.IsNull() {
-				childMap["attributes"]["ownerKey"] = fvCrtrn.OwnerKey.ValueString()
+			if !fvCrtrnPlan.OwnerKey.IsUnknown() && !fvCrtrnPlan.OwnerKey.IsNull() {
+				childMap["attributes"]["ownerKey"] = fvCrtrnPlan.OwnerKey.ValueString()
 			}
-			if !fvCrtrn.OwnerTag.IsUnknown() && !fvCrtrn.OwnerTag.IsNull() {
-				childMap["attributes"]["ownerTag"] = fvCrtrn.OwnerTag.ValueString()
+			if !fvCrtrnPlan.OwnerTag.IsUnknown() && !fvCrtrnPlan.OwnerTag.IsNull() {
+				childMap["attributes"]["ownerTag"] = fvCrtrnPlan.OwnerTag.ValueString()
 			}
-			if !fvCrtrn.Prec.IsUnknown() && !fvCrtrn.Prec.IsNull() {
-				childMap["attributes"]["prec"] = fvCrtrn.Prec.ValueString()
+			if !fvCrtrnPlan.Prec.IsUnknown() && !fvCrtrnPlan.Prec.IsNull() {
+				childMap["attributes"]["prec"] = fvCrtrnPlan.Prec.ValueString()
 			}
-			if !fvCrtrn.Scope.IsUnknown() && !fvCrtrn.Scope.IsNull() {
-				childMap["attributes"]["scope"] = fvCrtrn.Scope.ValueString()
+			if !fvCrtrnPlan.Scope.IsUnknown() && !fvCrtrnPlan.Scope.IsNull() {
+				childMap["attributes"]["scope"] = fvCrtrnPlan.Scope.ValueString()
 			}
-			childPayloads = append(childPayloads, map[string]interface{}{"fvCrtrn": childMap})
-		}
-		if len(fvCrtrnPlan) == 0 && len(fvCrtrnState) == 1 {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
+		} else {
 			childMap["attributes"]["status"] = "deleted"
-			childPayloads = append(childPayloads, map[string]interface{}{"fvCrtrn": childMap})
 		}
+		childPayloads = append(childPayloads, map[string]interface{}{"fvCrtrn": childMap})
 	} else {
-		data.FvCrtrn = types.SetNull(data.FvCrtrn.ElementType(ctx))
+		FvCrtrnObject, _ := types.ObjectValueFrom(ctx, FvCrtrnFvAEPgType, getEmptyFvCrtrnFvAEPgResourceModel())
+		data.FvCrtrn = FvCrtrnObject
 	}
 
 	return childPayloads
 }
-func getFvAEPgFvRsAEPgMonPolChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvAEPgResourceModel, fvRsAEPgMonPolPlan, fvRsAEPgMonPolState []FvRsAEPgMonPolFvAEPgResourceModel) []map[string]interface{} {
+func getFvAEPgFvRsAEPgMonPolChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvAEPgResourceModel, fvRsAEPgMonPolPlan, fvRsAEPgMonPolState FvRsAEPgMonPolFvAEPgResourceModel) []map[string]interface{} {
 
 	childPayloads := []map[string]interface{}{}
 	if !data.FvRsAEPgMonPol.IsUnknown() {
-		for _, fvRsAEPgMonPol := range fvRsAEPgMonPolPlan {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !fvRsAEPgMonPol.Annotation.IsUnknown() && !fvRsAEPgMonPol.Annotation.IsNull() {
-				childMap["attributes"]["annotation"] = fvRsAEPgMonPol.Annotation.ValueString()
+		childMap := map[string]map[string]interface{}{"attributes": {}}
+		if !IsEmptySingleNestedAttribute(data.FvRsAEPgMonPol.Attributes()) {
+			if !fvRsAEPgMonPolPlan.Annotation.IsUnknown() && !fvRsAEPgMonPolPlan.Annotation.IsNull() {
+				childMap["attributes"]["annotation"] = fvRsAEPgMonPolPlan.Annotation.ValueString()
 			} else {
 				childMap["attributes"]["annotation"] = globalAnnotation
 			}
-			if !fvRsAEPgMonPol.TnMonEPGPolName.IsUnknown() && !fvRsAEPgMonPol.TnMonEPGPolName.IsNull() {
-				childMap["attributes"]["tnMonEPGPolName"] = fvRsAEPgMonPol.TnMonEPGPolName.ValueString()
+			if !fvRsAEPgMonPolPlan.TnMonEPGPolName.IsUnknown() && !fvRsAEPgMonPolPlan.TnMonEPGPolName.IsNull() {
+				childMap["attributes"]["tnMonEPGPolName"] = fvRsAEPgMonPolPlan.TnMonEPGPolName.ValueString()
 			}
-			childPayloads = append(childPayloads, map[string]interface{}{"fvRsAEPgMonPol": childMap})
-		}
-		if len(fvRsAEPgMonPolPlan) == 0 && len(fvRsAEPgMonPolState) == 1 {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
+		} else {
 			childMap["attributes"]["status"] = "deleted"
-			childPayloads = append(childPayloads, map[string]interface{}{"fvRsAEPgMonPol": childMap})
 		}
+		childPayloads = append(childPayloads, map[string]interface{}{"fvRsAEPgMonPol": childMap})
 	} else {
-		data.FvRsAEPgMonPol = types.SetNull(data.FvRsAEPgMonPol.ElementType(ctx))
+		FvRsAEPgMonPolObject, _ := types.ObjectValueFrom(ctx, FvRsAEPgMonPolFvAEPgType, getEmptyFvRsAEPgMonPolFvAEPgResourceModel())
+		data.FvRsAEPgMonPol = FvRsAEPgMonPolObject
 	}
 
 	return childPayloads
 }
-func getFvAEPgFvRsBdChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvAEPgResourceModel, fvRsBdPlan, fvRsBdState []FvRsBdFvAEPgResourceModel) []map[string]interface{} {
+func getFvAEPgFvRsBdChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvAEPgResourceModel, fvRsBdPlan, fvRsBdState FvRsBdFvAEPgResourceModel) []map[string]interface{} {
 
 	childPayloads := []map[string]interface{}{}
 	if !data.FvRsBd.IsUnknown() {
-		for _, fvRsBd := range fvRsBdPlan {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !fvRsBd.Annotation.IsUnknown() && !fvRsBd.Annotation.IsNull() {
-				childMap["attributes"]["annotation"] = fvRsBd.Annotation.ValueString()
+		childMap := map[string]map[string]interface{}{"attributes": {}}
+		if !IsEmptySingleNestedAttribute(data.FvRsBd.Attributes()) {
+			if !fvRsBdPlan.Annotation.IsUnknown() && !fvRsBdPlan.Annotation.IsNull() {
+				childMap["attributes"]["annotation"] = fvRsBdPlan.Annotation.ValueString()
 			} else {
 				childMap["attributes"]["annotation"] = globalAnnotation
 			}
-			if !fvRsBd.TnFvBDName.IsUnknown() && !fvRsBd.TnFvBDName.IsNull() {
-				childMap["attributes"]["tnFvBDName"] = fvRsBd.TnFvBDName.ValueString()
+			if !fvRsBdPlan.TnFvBDName.IsUnknown() && !fvRsBdPlan.TnFvBDName.IsNull() {
+				childMap["attributes"]["tnFvBDName"] = fvRsBdPlan.TnFvBDName.ValueString()
 			}
-			childPayloads = append(childPayloads, map[string]interface{}{"fvRsBd": childMap})
 		}
-		if len(fvRsBdPlan) == 0 && len(fvRsBdState) == 1 {
-			diags.AddError(
-				"FvRsBd object cannot be deleted",
-				"deletion of child is only possible upon deletion of the parent",
-			)
-			return nil
-		}
+		childPayloads = append(childPayloads, map[string]interface{}{"fvRsBd": childMap})
 	} else {
-		data.FvRsBd = types.SetNull(data.FvRsBd.ElementType(ctx))
+		FvRsBdObject, _ := types.ObjectValueFrom(ctx, FvRsBdFvAEPgType, getEmptyFvRsBdFvAEPgResourceModel())
+		data.FvRsBd = FvRsBdObject
 	}
 
 	return childPayloads
@@ -4932,31 +4912,25 @@ func getFvAEPgFvRsConsIfChildPayloads(ctx context.Context, diags *diag.Diagnosti
 
 	return childPayloads
 }
-func getFvAEPgFvRsCustQosPolChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvAEPgResourceModel, fvRsCustQosPolPlan, fvRsCustQosPolState []FvRsCustQosPolFvAEPgResourceModel) []map[string]interface{} {
+func getFvAEPgFvRsCustQosPolChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvAEPgResourceModel, fvRsCustQosPolPlan, fvRsCustQosPolState FvRsCustQosPolFvAEPgResourceModel) []map[string]interface{} {
 
 	childPayloads := []map[string]interface{}{}
 	if !data.FvRsCustQosPol.IsUnknown() {
-		for _, fvRsCustQosPol := range fvRsCustQosPolPlan {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !fvRsCustQosPol.Annotation.IsUnknown() && !fvRsCustQosPol.Annotation.IsNull() {
-				childMap["attributes"]["annotation"] = fvRsCustQosPol.Annotation.ValueString()
+		childMap := map[string]map[string]interface{}{"attributes": {}}
+		if !IsEmptySingleNestedAttribute(data.FvRsCustQosPol.Attributes()) {
+			if !fvRsCustQosPolPlan.Annotation.IsUnknown() && !fvRsCustQosPolPlan.Annotation.IsNull() {
+				childMap["attributes"]["annotation"] = fvRsCustQosPolPlan.Annotation.ValueString()
 			} else {
 				childMap["attributes"]["annotation"] = globalAnnotation
 			}
-			if !fvRsCustQosPol.TnQosCustomPolName.IsUnknown() && !fvRsCustQosPol.TnQosCustomPolName.IsNull() {
-				childMap["attributes"]["tnQosCustomPolName"] = fvRsCustQosPol.TnQosCustomPolName.ValueString()
+			if !fvRsCustQosPolPlan.TnQosCustomPolName.IsUnknown() && !fvRsCustQosPolPlan.TnQosCustomPolName.IsNull() {
+				childMap["attributes"]["tnQosCustomPolName"] = fvRsCustQosPolPlan.TnQosCustomPolName.ValueString()
 			}
-			childPayloads = append(childPayloads, map[string]interface{}{"fvRsCustQosPol": childMap})
 		}
-		if len(fvRsCustQosPolPlan) == 0 && len(fvRsCustQosPolState) == 1 {
-			diags.AddError(
-				"FvRsCustQosPol object cannot be deleted",
-				"deletion of child is only possible upon deletion of the parent",
-			)
-			return nil
-		}
+		childPayloads = append(childPayloads, map[string]interface{}{"fvRsCustQosPol": childMap})
 	} else {
-		data.FvRsCustQosPol = types.SetNull(data.FvRsCustQosPol.ElementType(ctx))
+		FvRsCustQosPolObject, _ := types.ObjectValueFrom(ctx, FvRsCustQosPolFvAEPgType, getEmptyFvRsCustQosPolFvAEPgResourceModel())
+		data.FvRsCustQosPol = FvRsCustQosPolObject
 	}
 
 	return childPayloads
@@ -5074,29 +5048,27 @@ func getFvAEPgFvRsDomAttChildPayloads(ctx context.Context, diags *diag.Diagnosti
 
 	return childPayloads
 }
-func getFvAEPgFvRsDppPolChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvAEPgResourceModel, fvRsDppPolPlan, fvRsDppPolState []FvRsDppPolFvAEPgResourceModel) []map[string]interface{} {
+func getFvAEPgFvRsDppPolChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvAEPgResourceModel, fvRsDppPolPlan, fvRsDppPolState FvRsDppPolFvAEPgResourceModel) []map[string]interface{} {
 
 	childPayloads := []map[string]interface{}{}
 	if !data.FvRsDppPol.IsUnknown() {
-		for _, fvRsDppPol := range fvRsDppPolPlan {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !fvRsDppPol.Annotation.IsUnknown() && !fvRsDppPol.Annotation.IsNull() {
-				childMap["attributes"]["annotation"] = fvRsDppPol.Annotation.ValueString()
+		childMap := map[string]map[string]interface{}{"attributes": {}}
+		if !IsEmptySingleNestedAttribute(data.FvRsDppPol.Attributes()) {
+			if !fvRsDppPolPlan.Annotation.IsUnknown() && !fvRsDppPolPlan.Annotation.IsNull() {
+				childMap["attributes"]["annotation"] = fvRsDppPolPlan.Annotation.ValueString()
 			} else {
 				childMap["attributes"]["annotation"] = globalAnnotation
 			}
-			if !fvRsDppPol.TnQosDppPolName.IsUnknown() && !fvRsDppPol.TnQosDppPolName.IsNull() {
-				childMap["attributes"]["tnQosDppPolName"] = fvRsDppPol.TnQosDppPolName.ValueString()
+			if !fvRsDppPolPlan.TnQosDppPolName.IsUnknown() && !fvRsDppPolPlan.TnQosDppPolName.IsNull() {
+				childMap["attributes"]["tnQosDppPolName"] = fvRsDppPolPlan.TnQosDppPolName.ValueString()
 			}
-			childPayloads = append(childPayloads, map[string]interface{}{"fvRsDppPol": childMap})
-		}
-		if len(fvRsDppPolPlan) == 0 && len(fvRsDppPolState) == 1 {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
+		} else {
 			childMap["attributes"]["status"] = "deleted"
-			childPayloads = append(childPayloads, map[string]interface{}{"fvRsDppPol": childMap})
 		}
+		childPayloads = append(childPayloads, map[string]interface{}{"fvRsDppPol": childMap})
 	} else {
-		data.FvRsDppPol = types.SetNull(data.FvRsDppPol.ElementType(ctx))
+		FvRsDppPolObject, _ := types.ObjectValueFrom(ctx, FvRsDppPolFvAEPgType, getEmptyFvRsDppPolFvAEPgResourceModel())
+		data.FvRsDppPol = FvRsDppPolObject
 	}
 
 	return childPayloads
@@ -5430,29 +5402,27 @@ func getFvAEPgFvRsSecInheritedChildPayloads(ctx context.Context, diags *diag.Dia
 
 	return childPayloads
 }
-func getFvAEPgFvRsTrustCtrlChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvAEPgResourceModel, fvRsTrustCtrlPlan, fvRsTrustCtrlState []FvRsTrustCtrlFvAEPgResourceModel) []map[string]interface{} {
+func getFvAEPgFvRsTrustCtrlChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvAEPgResourceModel, fvRsTrustCtrlPlan, fvRsTrustCtrlState FvRsTrustCtrlFvAEPgResourceModel) []map[string]interface{} {
 
 	childPayloads := []map[string]interface{}{}
 	if !data.FvRsTrustCtrl.IsUnknown() {
-		for _, fvRsTrustCtrl := range fvRsTrustCtrlPlan {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !fvRsTrustCtrl.Annotation.IsUnknown() && !fvRsTrustCtrl.Annotation.IsNull() {
-				childMap["attributes"]["annotation"] = fvRsTrustCtrl.Annotation.ValueString()
+		childMap := map[string]map[string]interface{}{"attributes": {}}
+		if !IsEmptySingleNestedAttribute(data.FvRsTrustCtrl.Attributes()) {
+			if !fvRsTrustCtrlPlan.Annotation.IsUnknown() && !fvRsTrustCtrlPlan.Annotation.IsNull() {
+				childMap["attributes"]["annotation"] = fvRsTrustCtrlPlan.Annotation.ValueString()
 			} else {
 				childMap["attributes"]["annotation"] = globalAnnotation
 			}
-			if !fvRsTrustCtrl.TnFhsTrustCtrlPolName.IsUnknown() && !fvRsTrustCtrl.TnFhsTrustCtrlPolName.IsNull() {
-				childMap["attributes"]["tnFhsTrustCtrlPolName"] = fvRsTrustCtrl.TnFhsTrustCtrlPolName.ValueString()
+			if !fvRsTrustCtrlPlan.TnFhsTrustCtrlPolName.IsUnknown() && !fvRsTrustCtrlPlan.TnFhsTrustCtrlPolName.IsNull() {
+				childMap["attributes"]["tnFhsTrustCtrlPolName"] = fvRsTrustCtrlPlan.TnFhsTrustCtrlPolName.ValueString()
 			}
-			childPayloads = append(childPayloads, map[string]interface{}{"fvRsTrustCtrl": childMap})
-		}
-		if len(fvRsTrustCtrlPlan) == 0 && len(fvRsTrustCtrlState) == 1 {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
+		} else {
 			childMap["attributes"]["status"] = "deleted"
-			childPayloads = append(childPayloads, map[string]interface{}{"fvRsTrustCtrl": childMap})
 		}
+		childPayloads = append(childPayloads, map[string]interface{}{"fvRsTrustCtrl": childMap})
 	} else {
-		data.FvRsTrustCtrl = types.SetNull(data.FvRsTrustCtrl.ElementType(ctx))
+		FvRsTrustCtrlObject, _ := types.ObjectValueFrom(ctx, FvRsTrustCtrlFvAEPgType, getEmptyFvRsTrustCtrlFvAEPgResourceModel())
+		data.FvRsTrustCtrl = FvRsTrustCtrlObject
 	}
 
 	return childPayloads
@@ -5536,7 +5506,7 @@ func getFvAEPgTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, 
 	return childPayloads
 }
 
-func getFvAEPgCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *FvAEPgResourceModel, fvCrtrnPlan, fvCrtrnState []FvCrtrnFvAEPgResourceModel, fvRsAEPgMonPolPlan, fvRsAEPgMonPolState []FvRsAEPgMonPolFvAEPgResourceModel, fvRsBdPlan, fvRsBdState []FvRsBdFvAEPgResourceModel, fvRsConsPlan, fvRsConsState []FvRsConsFvAEPgResourceModel, fvRsConsIfPlan, fvRsConsIfState []FvRsConsIfFvAEPgResourceModel, fvRsCustQosPolPlan, fvRsCustQosPolState []FvRsCustQosPolFvAEPgResourceModel, fvRsDomAttPlan, fvRsDomAttState []FvRsDomAttFvAEPgResourceModel, fvRsDppPolPlan, fvRsDppPolState []FvRsDppPolFvAEPgResourceModel, fvRsFcPathAttPlan, fvRsFcPathAttState []FvRsFcPathAttFvAEPgResourceModel, fvRsIntraEpgPlan, fvRsIntraEpgState []FvRsIntraEpgFvAEPgResourceModel, fvRsNodeAttPlan, fvRsNodeAttState []FvRsNodeAttFvAEPgResourceModel, fvRsPathAttPlan, fvRsPathAttState []FvRsPathAttFvAEPgResourceModel, fvRsProtByPlan, fvRsProtByState []FvRsProtByFvAEPgResourceModel, fvRsProvPlan, fvRsProvState []FvRsProvFvAEPgResourceModel, fvRsSecInheritedPlan, fvRsSecInheritedState []FvRsSecInheritedFvAEPgResourceModel, fvRsTrustCtrlPlan, fvRsTrustCtrlState []FvRsTrustCtrlFvAEPgResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvAEPgResourceModel, tagTagPlan, tagTagState []TagTagFvAEPgResourceModel) *container.Container {
+func getFvAEPgCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *FvAEPgResourceModel, fvCrtrnPlan, fvCrtrnState FvCrtrnFvAEPgResourceModel, fvRsAEPgMonPolPlan, fvRsAEPgMonPolState FvRsAEPgMonPolFvAEPgResourceModel, fvRsBdPlan, fvRsBdState FvRsBdFvAEPgResourceModel, fvRsConsPlan, fvRsConsState []FvRsConsFvAEPgResourceModel, fvRsConsIfPlan, fvRsConsIfState []FvRsConsIfFvAEPgResourceModel, fvRsCustQosPolPlan, fvRsCustQosPolState FvRsCustQosPolFvAEPgResourceModel, fvRsDomAttPlan, fvRsDomAttState []FvRsDomAttFvAEPgResourceModel, fvRsDppPolPlan, fvRsDppPolState FvRsDppPolFvAEPgResourceModel, fvRsFcPathAttPlan, fvRsFcPathAttState []FvRsFcPathAttFvAEPgResourceModel, fvRsIntraEpgPlan, fvRsIntraEpgState []FvRsIntraEpgFvAEPgResourceModel, fvRsNodeAttPlan, fvRsNodeAttState []FvRsNodeAttFvAEPgResourceModel, fvRsPathAttPlan, fvRsPathAttState []FvRsPathAttFvAEPgResourceModel, fvRsProtByPlan, fvRsProtByState []FvRsProtByFvAEPgResourceModel, fvRsProvPlan, fvRsProvState []FvRsProvFvAEPgResourceModel, fvRsSecInheritedPlan, fvRsSecInheritedState []FvRsSecInheritedFvAEPgResourceModel, fvRsTrustCtrlPlan, fvRsTrustCtrlState FvRsTrustCtrlFvAEPgResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvAEPgResourceModel, tagTagPlan, tagTagState []TagTagFvAEPgResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 
