@@ -76,18 +76,18 @@ resource "aci_fabric_node_member" "example" {
 
 ### Optional ###
 
-* `annotation` (annotation) - (string) Specifies the annotation of a Fabric Node member.
+* `annotation` (annotation) - (string) Specifies the annotation of a Fabric Node Member object.
   - Default: `orchestrator:terraform`
-* `description` (descr) - (string) Specifies the description of a Fabric Node member.
-* `ext_pool_id` (extPoolId) - (string) External pool ID of the Fabric Node member.
+* `description` (descr) - (string) Specifies the description of a Fabric Node Member object.
+* `ext_pool_id` (extPoolId) - (string) External pool ID of the Fabric Node Member object.
   - Default: `"0"`.
 * `fabric_id` (fabricId) - (string) Fabric ID of the Fabric Node Member object.
   - Default: `"1"`.
-* `name_alias` (nameAlias) - (string) Name alias of the Fabric Node member.
+* `name_alias` (nameAlias) - (string) Name alias of the Fabric Node Member.
 * `node_id` (nodeId) -  (string) Node ID Number of the Fabric Node Member object.
   - Valid Values: `"101" - "4000"`.
   - Default: `"0"`.
-* `node_type` (nodeType) -  (string) Node type of the Fabric Node member.
+* `node_type` (nodeType) -  (string) Node type of the Fabric Node Member.
   - Valid Values: `unspecified`, `remote-leaf-wan`, `tier-2-leaf`, `virtual`, `border-gateway`.
   - Default: `unspecified`.
 * `pod_id` (podId) -  (string) The pod ID of the Fabric Node Member object.
@@ -96,10 +96,9 @@ resource "aci_fabric_node_member" "example" {
 * `role` (role) -  (Optional) Role of the Fabric Node Member object.
   - Valid Values: `unspecified`, `leaf`, `spine`.
   - Default: `unspecified`.
-* `commission` (commission) -  (string) Commission a node from the switch to make it an active member of the fabric.
+* `commission` (commission) -  (string) Commission adds a new node to the ACI fabric, which allows the node to participate in the fabric's operations and management. When commission is set to "no" the node will only be decommissioned and not removed from the ACI fabric. This node can be recommissioned and does not need to be created as a new object.
   - Valid Values: `yes`, `no`.
   - Default: `yes`.
-  - When commission is set to "no" the node will only be decommissioned and not removed from the APIC. This node can be recommissioned and does not need to be created as a new object.
 
 ## Attribute Reference
 

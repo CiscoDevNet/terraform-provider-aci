@@ -44,13 +44,13 @@ data "aci_fabric_node_member" "example" {
 ### Read-Only ###
 
 * `id` - (string) The distinguished name (DN) of the Fabric Node Member object.
-* `annotation` (annotation) - (string) Specifies the annotation of a Fabric Node member.
-* `description` (descr) - (string) Specifies the description of a Fabric Node member.
-* `ext_pool_id` (extPoolId) - (string) External pool ID of the Fabric Node member.
+* `annotation` (annotation) - (string) Specifies the annotation of a Fabric Node Member object.
+* `description` (descr) - (string) Specifies the description of a Fabric Node Member object.
+* `ext_pool_id` (extPoolId) - (string) External pool ID of the Fabric Node Member object.
 * `fabric_id` (fabricId) - (string) Fabric ID of the Fabric Node Member object.
-* `name_alias` (nameAlias) - (string) Name alias of the Fabric Node member.
+* `name_alias` (nameAlias) - (string) Name alias of the Fabric Node Member.
 * `node_id` (nodeId) -  (string) Node ID Number of the Fabric Node Member object.
-* `node_type` (nodeType) -  (string) Node type of the Fabric Node member.
+* `node_type` (nodeType) -  (string) Node type of the Fabric Node Member.
 * `pod_id` (podId) -  (string) The pod ID of the Fabric Node Member object.
 * `role` (role) -  (string) Role of the Fabric Node Member object.
-* `commission` (commission) -  (string) Commission a node from the switch to make it an active member of the fabric.
+* `commission` (commission) -  (string) Commission adds a new node to the ACI fabric, which allows the node to participate in the fabric's operations and management.

@@ -234,7 +234,7 @@ func resourceAciFabricNodeMemberCreate(ctx context.Context, d *schema.ResourceDa
 	}
 
 	if d.Get("commission").(string) == "no" {
-		decommissionFabricNodeMemberFromController("false", "no", d, m)
+		decommissionFabricNodeMemberFromController("false", "decommission", d, m)
 	}
 
 	d.SetId(fabricNodeIdentP.DistinguishedName)
@@ -282,14 +282,14 @@ func resourceAciFabricNodeMemberUpdate(ctx context.Context, d *schema.ResourceDa
 	}
 
 	if d.Get("commission").(string) == "no" {
-		decommissionFabricNodeMemberFromController("false", "no", d, m)
+		decommissionFabricNodeMemberFromController("false", "decommission", d, m)
 	} else {
 		attachedToSwitch, err := verifyNodeAttachedToSwitch(aciClient, serial)
 		if err != nil {
 			return diag.FromErr(err)
 		}
 		if attachedToSwitch {
-			decommissionFabricNodeMemberFromController("false", "yes", d, m)
+			decommissionFabricNodeMemberFromController("false", "commission", d, m)
 		} else {
 			fabricNodeIdentP := models.NewFabricNodeMember(fmt.Sprintf("controller/nodeidentpol/nodep-%s", serial), "uni", desc, fabricNodeIdentPAttr)
 			fabricNodeIdentP.Status = "modified"
@@ -341,7 +341,7 @@ func resourceAciFabricNodeMemberDelete(ctx context.Context, d *schema.ResourceDa
 		return diag.FromErr(err)
 	}
 	if attachedToSwitch {
-		decommissionFabricNodeMemberFromController("true", "no", d, m)
+		decommissionFabricNodeMemberFromController("true", "decommission", d, m)
 	} else {
 		err = aciClient.DeleteByDn(dn, "fabricNodeIdentP")
 		if err != nil {
@@ -367,35 +367,21 @@ func verifyNodeAttachedToSwitch(aciClient *client.Client, serial string) (bool, 
 	nodeId := G(data.S("dhcpClient", "attributes"), "nodeId")
 	nodeRole := G(data.S("dhcpClient", "attributes"), "nodeRole")
 	if (ip != "0.0.0.0" && nodeId != "0") && (nodeRole == "leaf" || nodeRole == "spine") {
+		log.Printf("[DEBUG] %s: End verification of node attachment to fabric. Node is attached to fabric.", serial)
 		return true, nil
 	}
+	log.Printf("[DEBUG] %s: End verification of node attachment to fabric. Node is not attached to fabric.", serial)
 	return false, nil
 }
 
-func decommissionFabricNodeMemberFromController(removeFromController string, commission string, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	action := "commission"
-	if commission == "no" {
-		action = "decommission"
-	}
+func decommissionFabricNodeMemberFromController(removeFromController string, action string, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning %s of fabric node from controller", d.Id(), action)
 	aciClient := m.(*client.Client)
 
-	// Decommission the node from the controller
-	// if removeFromController is true, the node will be removed from the controller after decommissioning
-	// if removeFromController is false, the node will only be decommissioned
-	nodePayload := []byte(fmt.Sprintf(`{
-		"fabricRsDecommissionNode": {
-			"attributes": {
-				"tDn": "topology/pod-%s/node-%s",
-				"status": "created,modified",
-				"removeFromController": "%s"
-			},
-			"children": []
-		}
-	}`, d.Get("pod_id").(string), d.Get("node_id").(string), removeFromController))
+	var nodePayload []byte
 
 	// Commission the node back to the controller
-	if commission == "yes" {
+	if action == "commission" {
 		nodePayload = []byte(fmt.Sprintf(`{
 			"fabricRsDecommissionNode": {
 				"attributes": {
@@ -405,6 +391,20 @@ func decommissionFabricNodeMemberFromController(removeFromController string, com
 				"children": []
 			}
 		}`, d.Get("pod_id").(string), d.Get("node_id").(string)))
+	} else {
+		// Decommission the node from the controller
+		// if removeFromController is true, the node will be removed from the controller/ACI fabric after decommissioning
+		// if removeFromController is false, the node will only be decommissioned
+		nodePayload = []byte(fmt.Sprintf(`{
+			"fabricRsDecommissionNode": {
+				"attributes": {
+					"tDn": "topology/pod-%s/node-%s",
+					"status": "created,modified",
+					"removeFromController": "%s"
+				},
+				"children": []
+			}
+		}`, d.Get("pod_id").(string), d.Get("node_id").(string), removeFromController))
 	}
 
 	httpRequestPayload, err := aciClient.MakeRestRequestRaw("POST", "api/node/mo/uni/fabric/outofsvc.json", nodePayload, true)
