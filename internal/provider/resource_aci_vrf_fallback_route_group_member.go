@@ -330,6 +330,7 @@ func (r *FvFBRMemberResource) Create(ctx context.Context, req resource.CreateReq
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -444,7 +445,7 @@ func (r *FvFBRMemberResource) ImportState(ctx context.Context, req resource.Impo
 func getAndSetFvFBRMemberAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvFBRMemberResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "fvFBRMember,tagAnnotation,tagTag"), "GET", nil)
 
-	*data = *getEmptyFvFBRMemberResourceModel()
+	readData := getEmptyFvFBRMemberResourceModel()
 
 	if diags.HasError() {
 		return
@@ -455,23 +456,23 @@ func getAndSetFvFBRMemberAttributes(ctx context.Context, diags *diag.Diagnostics
 			attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
 			for attributeName, attributeValue := range attributes {
 				if attributeName == "dn" {
-					data.Id = basetypes.NewStringValue(attributeValue.(string))
-					setFvFBRMemberParentDn(ctx, attributeValue.(string), data)
+					readData.Id = basetypes.NewStringValue(attributeValue.(string))
+					setFvFBRMemberParentDn(ctx, attributeValue.(string), readData)
 				}
 				if attributeName == "annotation" {
-					data.Annotation = basetypes.NewStringValue(attributeValue.(string))
+					readData.Annotation = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "descr" {
-					data.Descr = basetypes.NewStringValue(attributeValue.(string))
+					readData.Descr = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "name" {
-					data.Name = basetypes.NewStringValue(attributeValue.(string))
+					readData.Name = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "nameAlias" {
-					data.NameAlias = basetypes.NewStringValue(attributeValue.(string))
+					readData.NameAlias = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "rnhAddr" {
-					data.RnhAddr = basetypes.NewStringValue(attributeValue.(string))
+					readData.RnhAddr = basetypes.NewStringValue(attributeValue.(string))
 				}
 			}
 			TagAnnotationFvFBRMemberList := make([]TagAnnotationFvFBRMemberResourceModel, 0)
@@ -509,10 +510,10 @@ func getAndSetFvFBRMemberAttributes(ctx context.Context, diags *diag.Diagnostics
 					}
 				}
 			}
-			tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationFvFBRMemberList)
-			data.TagAnnotation = tagAnnotationSet
-			tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagFvFBRMemberList)
-			data.TagTag = tagTagSet
+			tagAnnotationSet, _ := types.SetValueFrom(ctx, readData.TagAnnotation.ElementType(ctx), TagAnnotationFvFBRMemberList)
+			readData.TagAnnotation = tagAnnotationSet
+			tagTagSet, _ := types.SetValueFrom(ctx, readData.TagTag.ElementType(ctx), TagTagFvFBRMemberList)
+			readData.TagTag = tagTagSet
 		} else {
 			diags.AddError(
 				"too many results in response",
@@ -520,8 +521,9 @@ func getAndSetFvFBRMemberAttributes(ctx context.Context, diags *diag.Diagnostics
 			)
 		}
 	} else {
-		data.Id = basetypes.NewStringNull()
+		readData.Id = basetypes.NewStringNull()
 	}
+	*data = *readData
 }
 
 func getFvFBRMemberRn(ctx context.Context, data *FvFBRMemberResourceModel) string {
@@ -671,7 +673,6 @@ func getFvFBRMemberCreateJsonPayload(ctx context.Context, diags *diag.Diagnostic
 	if !data.RnhAddr.IsNull() && !data.RnhAddr.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["rnhAddr"] = data.RnhAddr.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"fvFBRMember": payloadMap})
 	if err != nil {
 		diags.AddError(

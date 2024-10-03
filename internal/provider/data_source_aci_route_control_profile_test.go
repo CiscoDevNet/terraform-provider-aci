@@ -14,11 +14,11 @@ import (
 func TestAccDataSourceRtctrlProfileWithFvTenant(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "1.0(1e)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config:             testConfigRtctrlProfileDataSourceDependencyWithFvTenant,
+				Config:             testConfigRtctrlProfileDataSourceDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("data.aci_route_control_profile.test", "name", "test_name"),
@@ -28,11 +28,12 @@ func TestAccDataSourceRtctrlProfileWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("data.aci_route_control_profile.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("data.aci_route_control_profile.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("data.aci_route_control_profile.test", "route_control_profile_type", "combinable"),
-					resource.TestCheckResourceAttr("data.aci_route_control_profile.test", "route_map_continue", "no"),
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(6d)-4.2(7w),5.1(3e)", ">",
+						resource.TestCheckResourceAttr("data.aci_route_control_profile.test", "route_map_continue", "no")),
 				),
 			},
 			{
-				Config:      testConfigRtctrlProfileNotExistingFvTenant,
+				Config:      testConfigRtctrlProfileNotExistingFvTenant + testConfigDataSourceSystem,
 				ExpectError: regexp.MustCompile("Failed to read aci_route_control_profile data source"),
 			},
 		},
@@ -41,11 +42,11 @@ func TestAccDataSourceRtctrlProfileWithFvTenant(t *testing.T) {
 func TestAccDataSourceRtctrlProfileWithL3extOut(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "1.0(1e)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config:             testConfigRtctrlProfileDataSourceDependencyWithL3extOut,
+				Config:             testConfigRtctrlProfileDataSourceDependencyWithL3extOut + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("data.aci_route_control_profile.test", "name", "test_name"),
@@ -55,11 +56,12 @@ func TestAccDataSourceRtctrlProfileWithL3extOut(t *testing.T) {
 					resource.TestCheckResourceAttr("data.aci_route_control_profile.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("data.aci_route_control_profile.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("data.aci_route_control_profile.test", "route_control_profile_type", "combinable"),
-					resource.TestCheckResourceAttr("data.aci_route_control_profile.test", "route_map_continue", "no"),
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(6d)-4.2(7w),5.1(3e)", ">",
+						resource.TestCheckResourceAttr("data.aci_route_control_profile.test", "route_map_continue", "no")),
 				),
 			},
 			{
-				Config:      testConfigRtctrlProfileNotExistingL3extOut,
+				Config:      testConfigRtctrlProfileNotExistingL3extOut + testConfigDataSourceSystem,
 				ExpectError: regexp.MustCompile("Failed to read aci_route_control_profile data source"),
 			},
 		},

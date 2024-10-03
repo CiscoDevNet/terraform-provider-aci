@@ -297,6 +297,7 @@ func (r *NetflowRsMonitorToExporterResource) Create(ctx context.Context, req res
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -411,7 +412,7 @@ func (r *NetflowRsMonitorToExporterResource) ImportState(ctx context.Context, re
 func getAndSetNetflowRsMonitorToExporterAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *NetflowRsMonitorToExporterResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "netflowRsMonitorToExporter,tagAnnotation,tagTag"), "GET", nil)
 
-	*data = *getEmptyNetflowRsMonitorToExporterResourceModel()
+	readData := getEmptyNetflowRsMonitorToExporterResourceModel()
 
 	if diags.HasError() {
 		return
@@ -422,14 +423,14 @@ func getAndSetNetflowRsMonitorToExporterAttributes(ctx context.Context, diags *d
 			attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
 			for attributeName, attributeValue := range attributes {
 				if attributeName == "dn" {
-					data.Id = basetypes.NewStringValue(attributeValue.(string))
-					setNetflowRsMonitorToExporterParentDn(ctx, attributeValue.(string), data)
+					readData.Id = basetypes.NewStringValue(attributeValue.(string))
+					setNetflowRsMonitorToExporterParentDn(ctx, attributeValue.(string), readData)
 				}
 				if attributeName == "annotation" {
-					data.Annotation = basetypes.NewStringValue(attributeValue.(string))
+					readData.Annotation = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "tnNetflowExporterPolName" {
-					data.TnNetflowExporterPolName = basetypes.NewStringValue(attributeValue.(string))
+					readData.TnNetflowExporterPolName = basetypes.NewStringValue(attributeValue.(string))
 				}
 			}
 			TagAnnotationNetflowRsMonitorToExporterList := make([]TagAnnotationNetflowRsMonitorToExporterResourceModel, 0)
@@ -467,10 +468,10 @@ func getAndSetNetflowRsMonitorToExporterAttributes(ctx context.Context, diags *d
 					}
 				}
 			}
-			tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationNetflowRsMonitorToExporterList)
-			data.TagAnnotation = tagAnnotationSet
-			tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagNetflowRsMonitorToExporterList)
-			data.TagTag = tagTagSet
+			tagAnnotationSet, _ := types.SetValueFrom(ctx, readData.TagAnnotation.ElementType(ctx), TagAnnotationNetflowRsMonitorToExporterList)
+			readData.TagAnnotation = tagAnnotationSet
+			tagTagSet, _ := types.SetValueFrom(ctx, readData.TagTag.ElementType(ctx), TagTagNetflowRsMonitorToExporterList)
+			readData.TagTag = tagTagSet
 		} else {
 			diags.AddError(
 				"too many results in response",
@@ -478,8 +479,9 @@ func getAndSetNetflowRsMonitorToExporterAttributes(ctx context.Context, diags *d
 			)
 		}
 	} else {
-		data.Id = basetypes.NewStringNull()
+		readData.Id = basetypes.NewStringNull()
 	}
+	*data = *readData
 }
 
 func getNetflowRsMonitorToExporterRn(ctx context.Context, data *NetflowRsMonitorToExporterResourceModel) string {
@@ -620,7 +622,6 @@ func getNetflowRsMonitorToExporterCreateJsonPayload(ctx context.Context, diags *
 	if !data.TnNetflowExporterPolName.IsNull() && !data.TnNetflowExporterPolName.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["tnNetflowExporterPolName"] = data.TnNetflowExporterPolName.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"netflowRsMonitorToExporter": payloadMap})
 	if err != nil {
 		diags.AddError(

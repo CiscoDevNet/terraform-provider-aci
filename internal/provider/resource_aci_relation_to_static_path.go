@@ -359,6 +359,7 @@ func (r *FvRsPathAttResource) Create(ctx context.Context, req resource.CreateReq
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -473,7 +474,7 @@ func (r *FvRsPathAttResource) ImportState(ctx context.Context, req resource.Impo
 func getAndSetFvRsPathAttAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvRsPathAttResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "fvRsPathAtt,tagAnnotation,tagTag"), "GET", nil)
 
-	*data = *getEmptyFvRsPathAttResourceModel()
+	readData := getEmptyFvRsPathAttResourceModel()
 
 	if diags.HasError() {
 		return
@@ -484,29 +485,29 @@ func getAndSetFvRsPathAttAttributes(ctx context.Context, diags *diag.Diagnostics
 			attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
 			for attributeName, attributeValue := range attributes {
 				if attributeName == "dn" {
-					data.Id = basetypes.NewStringValue(attributeValue.(string))
-					setFvRsPathAttParentDn(ctx, attributeValue.(string), data)
+					readData.Id = basetypes.NewStringValue(attributeValue.(string))
+					setFvRsPathAttParentDn(ctx, attributeValue.(string), readData)
 				}
 				if attributeName == "annotation" {
-					data.Annotation = basetypes.NewStringValue(attributeValue.(string))
+					readData.Annotation = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "descr" {
-					data.Descr = basetypes.NewStringValue(attributeValue.(string))
+					readData.Descr = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "encap" {
-					data.Encap = basetypes.NewStringValue(attributeValue.(string))
+					readData.Encap = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "instrImedcy" {
-					data.InstrImedcy = basetypes.NewStringValue(attributeValue.(string))
+					readData.InstrImedcy = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "mode" {
-					data.Mode = basetypes.NewStringValue(attributeValue.(string))
+					readData.Mode = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "primaryEncap" {
-					data.PrimaryEncap = basetypes.NewStringValue(attributeValue.(string))
+					readData.PrimaryEncap = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "tDn" {
-					data.TDn = basetypes.NewStringValue(attributeValue.(string))
+					readData.TDn = basetypes.NewStringValue(attributeValue.(string))
 				}
 			}
 			TagAnnotationFvRsPathAttList := make([]TagAnnotationFvRsPathAttResourceModel, 0)
@@ -544,10 +545,10 @@ func getAndSetFvRsPathAttAttributes(ctx context.Context, diags *diag.Diagnostics
 					}
 				}
 			}
-			tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationFvRsPathAttList)
-			data.TagAnnotation = tagAnnotationSet
-			tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagFvRsPathAttList)
-			data.TagTag = tagTagSet
+			tagAnnotationSet, _ := types.SetValueFrom(ctx, readData.TagAnnotation.ElementType(ctx), TagAnnotationFvRsPathAttList)
+			readData.TagAnnotation = tagAnnotationSet
+			tagTagSet, _ := types.SetValueFrom(ctx, readData.TagTag.ElementType(ctx), TagTagFvRsPathAttList)
+			readData.TagTag = tagTagSet
 		} else {
 			diags.AddError(
 				"too many results in response",
@@ -555,8 +556,9 @@ func getAndSetFvRsPathAttAttributes(ctx context.Context, diags *diag.Diagnostics
 			)
 		}
 	} else {
-		data.Id = basetypes.NewStringNull()
+		readData.Id = basetypes.NewStringNull()
 	}
+	*data = *readData
 }
 
 func getFvRsPathAttRn(ctx context.Context, data *FvRsPathAttResourceModel) string {
@@ -712,7 +714,6 @@ func getFvRsPathAttCreateJsonPayload(ctx context.Context, diags *diag.Diagnostic
 	if !data.TDn.IsNull() && !data.TDn.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["tDn"] = data.TDn.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"fvRsPathAtt": payloadMap})
 	if err != nil {
 		diags.AddError(

@@ -23,6 +23,7 @@ import (
 
 	// temporary unused until muxing is removed
 	// "github.com/hashicorp/terraform-plugin-framework/schema/validator"
+	"github.com/hashicorp/terraform-plugin-framework/function"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 )
@@ -32,6 +33,7 @@ var globalAllowExistingOnCreate bool
 
 // Ensure AciProvider satisfies various provider interfaces.
 var _ provider.Provider = &AciProvider{}
+var _ provider.ProviderWithFunctions = &AciProvider{}
 
 // AciProvider defines the provider implementation.
 type AciProvider struct {
@@ -246,6 +248,8 @@ func (p *AciProvider) Resources(ctx context.Context) []func() resource.Resource 
 		NewNetflowRsMonitorToExporterResource,
 		NewPimRouteMapEntryResource,
 		NewPimRouteMapPolResource,
+		NewPkiKeyRingResource,
+		NewPkiTPResource,
 		NewQosCustomPolResource,
 		NewQosDppPolResource,
 		NewRtctrlProfileResource,
@@ -300,6 +304,8 @@ func (p *AciProvider) DataSources(ctx context.Context) []func() datasource.DataS
 		NewNetflowRsMonitorToExporterDataSource,
 		NewPimRouteMapEntryDataSource,
 		NewPimRouteMapPolDataSource,
+		NewPkiKeyRingDataSource,
+		NewPkiTPDataSource,
 		NewQosCustomPolDataSource,
 		NewQosDppPolDataSource,
 		NewRtctrlProfileDataSource,
@@ -432,4 +438,10 @@ func stringToInt(resp *provider.ConfigureResponse, attributeName, stringValue st
 		}
 	}
 	return intValue
+}
+
+func (p *AciProvider) Functions(ctx context.Context) []func() function.Function {
+	return []func() function.Function{
+		NewCompareVersionsFunction,
+	}
 }

@@ -549,6 +549,7 @@ func (r *NetflowExporterPolResource) Create(ctx context.Context, req resource.Cr
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -669,7 +670,7 @@ func (r *NetflowExporterPolResource) ImportState(ctx context.Context, req resour
 func getAndSetNetflowExporterPolAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *NetflowExporterPolResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "netflowExporterPol,netflowRsExporterToCtx,netflowRsExporterToEPg,tagAnnotation,tagTag"), "GET", nil)
 
-	*data = *getEmptyNetflowExporterPolResourceModel()
+	readData := getEmptyNetflowExporterPolResourceModel()
 
 	if diags.HasError() {
 		return
@@ -680,44 +681,44 @@ func getAndSetNetflowExporterPolAttributes(ctx context.Context, diags *diag.Diag
 			attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
 			for attributeName, attributeValue := range attributes {
 				if attributeName == "dn" {
-					data.Id = basetypes.NewStringValue(attributeValue.(string))
-					setNetflowExporterPolParentDn(ctx, attributeValue.(string), data)
+					readData.Id = basetypes.NewStringValue(attributeValue.(string))
+					setNetflowExporterPolParentDn(ctx, attributeValue.(string), readData)
 				}
 				if attributeName == "annotation" {
-					data.Annotation = basetypes.NewStringValue(attributeValue.(string))
+					readData.Annotation = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "descr" {
-					data.Descr = basetypes.NewStringValue(attributeValue.(string))
+					readData.Descr = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "dscp" {
-					data.Dscp = customTypes.NewNetflowExporterPolDscpStringValue(attributeValue.(string))
+					readData.Dscp = customTypes.NewNetflowExporterPolDscpStringValue(attributeValue.(string))
 				}
 				if attributeName == "dstAddr" {
-					data.DstAddr = basetypes.NewStringValue(attributeValue.(string))
+					readData.DstAddr = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "dstPort" {
-					data.DstPort = customTypes.NewNetflowExporterPolDstPortStringValue(attributeValue.(string))
+					readData.DstPort = customTypes.NewNetflowExporterPolDstPortStringValue(attributeValue.(string))
 				}
 				if attributeName == "name" {
-					data.Name = basetypes.NewStringValue(attributeValue.(string))
+					readData.Name = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "nameAlias" {
-					data.NameAlias = basetypes.NewStringValue(attributeValue.(string))
+					readData.NameAlias = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "ownerKey" {
-					data.OwnerKey = basetypes.NewStringValue(attributeValue.(string))
+					readData.OwnerKey = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "ownerTag" {
-					data.OwnerTag = basetypes.NewStringValue(attributeValue.(string))
+					readData.OwnerTag = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "sourceIpType" {
-					data.SourceIpType = basetypes.NewStringValue(attributeValue.(string))
+					readData.SourceIpType = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "srcAddr" {
-					data.SrcAddr = basetypes.NewStringValue(attributeValue.(string))
+					readData.SrcAddr = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "ver" {
-					data.Ver = basetypes.NewStringValue(attributeValue.(string))
+					readData.Ver = basetypes.NewStringValue(attributeValue.(string))
 				}
 			}
 			NetflowRsExporterToCtxNetflowExporterPolList := make([]NetflowRsExporterToCtxNetflowExporterPolResourceModel, 0)
@@ -783,22 +784,22 @@ func getAndSetNetflowExporterPolAttributes(ctx context.Context, diags *diag.Diag
 			}
 			if len(NetflowRsExporterToCtxNetflowExporterPolList) == 1 {
 				netflowRsExporterToCtxObject, _ := types.ObjectValueFrom(ctx, NetflowRsExporterToCtxNetflowExporterPolType, NetflowRsExporterToCtxNetflowExporterPolList[0])
-				data.NetflowRsExporterToCtx = netflowRsExporterToCtxObject
+				readData.NetflowRsExporterToCtx = netflowRsExporterToCtxObject
 			} else {
 				netflowRsExporterToCtxObject, _ := types.ObjectValueFrom(ctx, NetflowRsExporterToCtxNetflowExporterPolType, getEmptyNetflowRsExporterToCtxNetflowExporterPolResourceModel())
-				data.NetflowRsExporterToCtx = netflowRsExporterToCtxObject
+				readData.NetflowRsExporterToCtx = netflowRsExporterToCtxObject
 			}
 			if len(NetflowRsExporterToEPgNetflowExporterPolList) == 1 {
 				netflowRsExporterToEPgObject, _ := types.ObjectValueFrom(ctx, NetflowRsExporterToEPgNetflowExporterPolType, NetflowRsExporterToEPgNetflowExporterPolList[0])
-				data.NetflowRsExporterToEPg = netflowRsExporterToEPgObject
+				readData.NetflowRsExporterToEPg = netflowRsExporterToEPgObject
 			} else {
 				netflowRsExporterToEPgObject, _ := types.ObjectValueFrom(ctx, NetflowRsExporterToEPgNetflowExporterPolType, getEmptyNetflowRsExporterToEPgNetflowExporterPolResourceModel())
-				data.NetflowRsExporterToEPg = netflowRsExporterToEPgObject
+				readData.NetflowRsExporterToEPg = netflowRsExporterToEPgObject
 			}
-			tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationNetflowExporterPolList)
-			data.TagAnnotation = tagAnnotationSet
-			tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagNetflowExporterPolList)
-			data.TagTag = tagTagSet
+			tagAnnotationSet, _ := types.SetValueFrom(ctx, readData.TagAnnotation.ElementType(ctx), TagAnnotationNetflowExporterPolList)
+			readData.TagAnnotation = tagAnnotationSet
+			tagTagSet, _ := types.SetValueFrom(ctx, readData.TagTag.ElementType(ctx), TagTagNetflowExporterPolList)
+			readData.TagTag = tagTagSet
 		} else {
 			diags.AddError(
 				"too many results in response",
@@ -806,8 +807,9 @@ func getAndSetNetflowExporterPolAttributes(ctx context.Context, diags *diag.Diag
 			)
 		}
 	} else {
-		data.Id = basetypes.NewStringNull()
+		readData.Id = basetypes.NewStringNull()
 	}
+	*data = *readData
 }
 
 func getNetflowExporterPolRn(ctx context.Context, data *NetflowExporterPolResourceModel) string {
@@ -1040,7 +1042,6 @@ func getNetflowExporterPolCreateJsonPayload(ctx context.Context, diags *diag.Dia
 	if !data.Ver.IsNull() && !data.Ver.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["ver"] = data.Ver.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"netflowExporterPol": payloadMap})
 	if err != nil {
 		diags.AddError(

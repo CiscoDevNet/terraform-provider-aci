@@ -2,6 +2,7 @@
 # In order to regenerate this file execute `go generate` from the repository root.
 # More details can be found in the [README](https://github.com/CiscoDevNet/terraform-provider-aci/blob/master/README.md).
 
+
 default:
   annotation: "orchestrator:terraform"
   direction: "import"
@@ -44,6 +45,7 @@ parents:
     class_in_parent: false
     target_classes:
         - "rtctrlProfile"
+    test_type: both
 targets:
   - class_name: "rtctrlProfile"
     target_dn: "uni/tn-test_tenant/prof-rt_ctrl_profile_1"
@@ -57,3 +59,4 @@ targets:
     static: true
     properties:
         name: "rt_ctrl_profile_1"
+class_version: 5.0(1k)-

@@ -2,6 +2,7 @@
 # In order to regenerate this file execute `go generate` from the repository root.
 # More details can be found in the [README](https://github.com/CiscoDevNet/terraform-provider-aci/blob/master/README.md).
 
+
 default:
   annotation: "orchestrator:terraform"
   description: ""
@@ -50,3 +51,5 @@ parents:
     parent_dependency: "fvAEPg"
     parent_dn: "aci_epg_useg_block_statement.test.id"
     class_in_parent: false
+    test_type: apic
+class_version: 1.1(1j)-

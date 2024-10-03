@@ -79,7 +79,6 @@ resource "aci_application_epg" "full_example_application_profile" {
       switching_mode                = "AVE"
       target_dn                     = "uni/vmmp-VMware/dom-domain_1"
       untagged                      = "no"
-      vnet_only                     = "no"
     }
   ]
   relation_to_data_plane_policing_policy = {

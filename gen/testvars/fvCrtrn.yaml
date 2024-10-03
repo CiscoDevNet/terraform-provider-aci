@@ -2,6 +2,7 @@
 # In order to regenerate this file execute `go generate` from the repository root.
 # More details can be found in the [README](https://github.com/CiscoDevNet/terraform-provider-aci/blob/master/README.md).
 
+
 default:
   annotation: "orchestrator:terraform"
   description: ""
@@ -10,8 +11,10 @@ default:
   name_alias: ""
   owner_key: ""
   owner_tag: ""
-  precedence: "0"
-  scope: "scope-bd"
+  version_mismatch:
+    4.1(1i):
+      precedence: "0"
+      scope: "scope-bd"
 
 
 all:
@@ -22,8 +25,10 @@ all:
   name_alias: "name_alias_1"
   owner_key: "owner_key_1"
   owner_tag: "owner_tag_1"
-  precedence: "1"
-  scope: "scope-bd"
+  version_mismatch:
+    4.1(1i):
+      precedence: "1"
+      scope: "scope-bd"
 
 children:
   annotations:
@@ -45,3 +50,7 @@ parents:
     parent_dependency: ""
     parent_dn: "aci_application_epg.test.id"
     class_in_parent: false
+    test_type: apic
+class_version: 1.1(1j)-
+
+version_mismatch: true

@@ -2,6 +2,7 @@
 # In order to regenerate this file execute `go generate` from the repository root.
 # More details can be found in the [README](https://github.com/CiscoDevNet/terraform-provider-aci/blob/master/README.md).
 
+
 default:
   annotation: "orchestrator:terraform"
 
@@ -39,12 +40,14 @@ parents:
     class_in_parent: false
     target_classes:
         - "fvAEPg"
+    test_type: both
   - class_name: "fvESg"
     parent_dependency: "fvAp"
     parent_dn: "aci_endpoint_security_group.test.id"
     class_in_parent: false
     target_classes:
         - "fvESg"
+    test_type: both
 targets:
   - class_name: "fvESg"
     target_dn: "uni/tn-test_tenant/ap-test_ap/esg-esg_0"
@@ -90,3 +93,4 @@ targets:
     static: false
     properties:
         name: "epg_3"
+class_version: 2.3(1e)-

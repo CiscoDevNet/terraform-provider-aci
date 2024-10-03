@@ -2,6 +2,7 @@
 # In order to regenerate this file execute `go generate` from the repository root.
 # More details can be found in the [README](https://github.com/CiscoDevNet/terraform-provider-aci/blob/master/README.md).
 
+
 default:
   annotation: "orchestrator:terraform"
   description: ""
@@ -75,6 +76,7 @@ parents:
     parent_dependency: ""
     parent_dn: "aci_tenant.test.id"
     class_in_parent: false
+    test_type: both
 child_targets:
   - class_name: "fvCtx"
     target_dn: "uni/tn-test_tenant/ctx-test_vrf"
@@ -86,3 +88,4 @@ child_targets:
     target_dn_overwrite_docs: "aci_application_epg.example.id"
     relation_resource_name: "application_epg"
     static: true
+class_version: 2.2(1k)-

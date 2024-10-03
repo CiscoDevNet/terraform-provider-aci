@@ -667,6 +667,7 @@ func (r *QosDppPolResource) Create(ctx context.Context, req resource.CreateReque
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -781,7 +782,7 @@ func (r *QosDppPolResource) ImportState(ctx context.Context, req resource.Import
 func getAndSetQosDppPolAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *QosDppPolResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "qosDppPol,tagAnnotation,tagTag"), "GET", nil)
 
-	*data = *getEmptyQosDppPolResourceModel()
+	readData := getEmptyQosDppPolResourceModel()
 
 	if diags.HasError() {
 		return
@@ -792,89 +793,89 @@ func getAndSetQosDppPolAttributes(ctx context.Context, diags *diag.Diagnostics, 
 			attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
 			for attributeName, attributeValue := range attributes {
 				if attributeName == "dn" {
-					data.Id = basetypes.NewStringValue(attributeValue.(string))
-					setQosDppPolParentDn(ctx, attributeValue.(string), data)
+					readData.Id = basetypes.NewStringValue(attributeValue.(string))
+					setQosDppPolParentDn(ctx, attributeValue.(string), readData)
 				}
 				if attributeName == "adminSt" {
-					data.AdminSt = basetypes.NewStringValue(attributeValue.(string))
+					readData.AdminSt = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "annotation" {
-					data.Annotation = basetypes.NewStringValue(attributeValue.(string))
+					readData.Annotation = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "be" {
-					data.Be = customTypes.NewQosDppPolBeStringValue(attributeValue.(string))
+					readData.Be = customTypes.NewQosDppPolBeStringValue(attributeValue.(string))
 				}
 				if attributeName == "beUnit" {
-					data.BeUnit = basetypes.NewStringValue(attributeValue.(string))
+					readData.BeUnit = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "burst" {
-					data.Burst = customTypes.NewQosDppPolBurstStringValue(attributeValue.(string))
+					readData.Burst = customTypes.NewQosDppPolBurstStringValue(attributeValue.(string))
 				}
 				if attributeName == "burstUnit" {
-					data.BurstUnit = basetypes.NewStringValue(attributeValue.(string))
+					readData.BurstUnit = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "conformAction" {
-					data.ConformAction = basetypes.NewStringValue(attributeValue.(string))
+					readData.ConformAction = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "conformMarkCos" {
-					data.ConformMarkCos = customTypes.NewQosDppPolConformMarkCosStringValue(attributeValue.(string))
+					readData.ConformMarkCos = customTypes.NewQosDppPolConformMarkCosStringValue(attributeValue.(string))
 				}
 				if attributeName == "conformMarkDscp" {
-					data.ConformMarkDscp = customTypes.NewQosDppPolConformMarkDscpStringValue(attributeValue.(string))
+					readData.ConformMarkDscp = customTypes.NewQosDppPolConformMarkDscpStringValue(attributeValue.(string))
 				}
 				if attributeName == "descr" {
-					data.Descr = basetypes.NewStringValue(attributeValue.(string))
+					readData.Descr = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "exceedAction" {
-					data.ExceedAction = basetypes.NewStringValue(attributeValue.(string))
+					readData.ExceedAction = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "exceedMarkCos" {
-					data.ExceedMarkCos = customTypes.NewQosDppPolExceedMarkCosStringValue(attributeValue.(string))
+					readData.ExceedMarkCos = customTypes.NewQosDppPolExceedMarkCosStringValue(attributeValue.(string))
 				}
 				if attributeName == "exceedMarkDscp" {
-					data.ExceedMarkDscp = customTypes.NewQosDppPolExceedMarkDscpStringValue(attributeValue.(string))
+					readData.ExceedMarkDscp = customTypes.NewQosDppPolExceedMarkDscpStringValue(attributeValue.(string))
 				}
 				if attributeName == "mode" {
-					data.Mode = basetypes.NewStringValue(attributeValue.(string))
+					readData.Mode = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "name" {
-					data.Name = basetypes.NewStringValue(attributeValue.(string))
+					readData.Name = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "nameAlias" {
-					data.NameAlias = basetypes.NewStringValue(attributeValue.(string))
+					readData.NameAlias = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "ownerKey" {
-					data.OwnerKey = basetypes.NewStringValue(attributeValue.(string))
+					readData.OwnerKey = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "ownerTag" {
-					data.OwnerTag = basetypes.NewStringValue(attributeValue.(string))
+					readData.OwnerTag = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "pir" {
-					data.Pir = basetypes.NewStringValue(attributeValue.(string))
+					readData.Pir = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "pirUnit" {
-					data.PirUnit = basetypes.NewStringValue(attributeValue.(string))
+					readData.PirUnit = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "rate" {
-					data.Rate = basetypes.NewStringValue(attributeValue.(string))
+					readData.Rate = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "rateUnit" {
-					data.RateUnit = basetypes.NewStringValue(attributeValue.(string))
+					readData.RateUnit = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "sharingMode" {
-					data.SharingMode = basetypes.NewStringValue(attributeValue.(string))
+					readData.SharingMode = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "type" {
-					data.Type = basetypes.NewStringValue(attributeValue.(string))
+					readData.Type = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "violateAction" {
-					data.ViolateAction = basetypes.NewStringValue(attributeValue.(string))
+					readData.ViolateAction = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "violateMarkCos" {
-					data.ViolateMarkCos = customTypes.NewQosDppPolViolateMarkCosStringValue(attributeValue.(string))
+					readData.ViolateMarkCos = customTypes.NewQosDppPolViolateMarkCosStringValue(attributeValue.(string))
 				}
 				if attributeName == "violateMarkDscp" {
-					data.ViolateMarkDscp = customTypes.NewQosDppPolViolateMarkDscpStringValue(attributeValue.(string))
+					readData.ViolateMarkDscp = customTypes.NewQosDppPolViolateMarkDscpStringValue(attributeValue.(string))
 				}
 			}
 			TagAnnotationQosDppPolList := make([]TagAnnotationQosDppPolResourceModel, 0)
@@ -912,10 +913,10 @@ func getAndSetQosDppPolAttributes(ctx context.Context, diags *diag.Diagnostics, 
 					}
 				}
 			}
-			tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationQosDppPolList)
-			data.TagAnnotation = tagAnnotationSet
-			tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagQosDppPolList)
-			data.TagTag = tagTagSet
+			tagAnnotationSet, _ := types.SetValueFrom(ctx, readData.TagAnnotation.ElementType(ctx), TagAnnotationQosDppPolList)
+			readData.TagAnnotation = tagAnnotationSet
+			tagTagSet, _ := types.SetValueFrom(ctx, readData.TagTag.ElementType(ctx), TagTagQosDppPolList)
+			readData.TagTag = tagTagSet
 		} else {
 			diags.AddError(
 				"too many results in response",
@@ -923,8 +924,9 @@ func getAndSetQosDppPolAttributes(ctx context.Context, diags *diag.Diagnostics, 
 			)
 		}
 	} else {
-		data.Id = basetypes.NewStringNull()
+		readData.Id = basetypes.NewStringNull()
 	}
+	*data = *readData
 }
 
 func getQosDppPolRn(ctx context.Context, data *QosDppPolResourceModel) string {
@@ -1140,7 +1142,6 @@ func getQosDppPolCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics,
 	if !data.ViolateMarkDscp.IsNull() && !data.ViolateMarkDscp.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["violateMarkDscp"] = data.ViolateMarkDscp.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"qosDppPol": payloadMap})
 	if err != nil {
 		diags.AddError(

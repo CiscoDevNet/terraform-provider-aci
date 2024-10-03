@@ -181,6 +181,7 @@ func (r *TagTagResource) Create(ctx context.Context, req resource.CreateRequest,
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -287,7 +288,7 @@ func (r *TagTagResource) ImportState(ctx context.Context, req resource.ImportSta
 func getAndSetTagTagAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *TagTagResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "GET", nil)
 
-	*data = *getEmptyTagTagResourceModel()
+	readData := getEmptyTagTagResourceModel()
 
 	if diags.HasError() {
 		return
@@ -298,14 +299,14 @@ func getAndSetTagTagAttributes(ctx context.Context, diags *diag.Diagnostics, cli
 			attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
 			for attributeName, attributeValue := range attributes {
 				if attributeName == "dn" {
-					data.Id = basetypes.NewStringValue(attributeValue.(string))
-					setTagTagParentDn(ctx, attributeValue.(string), data)
+					readData.Id = basetypes.NewStringValue(attributeValue.(string))
+					setTagTagParentDn(ctx, attributeValue.(string), readData)
 				}
 				if attributeName == "key" {
-					data.Key = basetypes.NewStringValue(attributeValue.(string))
+					readData.Key = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "value" {
-					data.Value = basetypes.NewStringValue(attributeValue.(string))
+					readData.Value = basetypes.NewStringValue(attributeValue.(string))
 				}
 			}
 		} else {
@@ -315,8 +316,9 @@ func getAndSetTagTagAttributes(ctx context.Context, diags *diag.Diagnostics, cli
 			)
 		}
 	} else {
-		data.Id = basetypes.NewStringNull()
+		readData.Id = basetypes.NewStringNull()
 	}
+	*data = *readData
 }
 
 func getTagTagRn(ctx context.Context, data *TagTagResourceModel) string {
@@ -363,7 +365,6 @@ func getTagTagCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, cr
 	if !data.Value.IsNull() && !data.Value.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["value"] = data.Value.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"tagTag": payloadMap})
 	if err != nil {
 		diags.AddError(

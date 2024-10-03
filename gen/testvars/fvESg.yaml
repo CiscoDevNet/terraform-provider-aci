@@ -2,6 +2,7 @@
 # In order to regenerate this file execute `go generate` from the repository root.
 # More details can be found in the [README](https://github.com/CiscoDevNet/terraform-provider-aci/blob/master/README.md).
 
+
 default:
   annotation: "orchestrator:terraform"
   description: ""
@@ -10,7 +11,9 @@ default:
   name_alias: ""
   intra_esg_isolation: "unenforced"
   preferred_group_member: "exclude"
-  admin_state: "no"
+  version_mismatch:
+    5.2(1g):
+      admin_state: "no"
 
 datasource_non_existing:
   name: "non_existing_name"
@@ -32,7 +35,9 @@ all:
   name_alias: "name_alias_1"
   intra_esg_isolation: "enforced"
   preferred_group_member: "exclude"
-  admin_state: "no"
+  version_mismatch:
+    5.2(1g):
+      admin_state: "no"
 
 children:
   relation_to_consumed_contracts:
@@ -102,6 +107,7 @@ parents:
     parent_dependency: "fvTenant"
     parent_dn: "aci_application_profile.test.id"
     class_in_parent: false
+    test_type: apic
 child_targets:
   - class_name: "fvESg"
     target_dn: "uni/tn-test_tenant/ap-test_ap/esg-esg_0"
@@ -125,3 +131,6 @@ child_targets:
     parent_dn_key: "application_profile_dn"
     properties:
         name: "esg_1"
+class_version: 5.0(1k)-
+
+version_mismatch: true

@@ -399,6 +399,7 @@ func (r *VzOOBBrCPResource) Create(ctx context.Context, req resource.CreateReque
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -513,7 +514,7 @@ func (r *VzOOBBrCPResource) ImportState(ctx context.Context, req resource.Import
 func getAndSetVzOOBBrCPAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *VzOOBBrCPResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "vzOOBBrCP,tagAnnotation,tagTag"), "GET", nil)
 
-	*data = *getEmptyVzOOBBrCPResourceModel()
+	readData := getEmptyVzOOBBrCPResourceModel()
 
 	if diags.HasError() {
 		return
@@ -524,37 +525,37 @@ func getAndSetVzOOBBrCPAttributes(ctx context.Context, diags *diag.Diagnostics, 
 			attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
 			for attributeName, attributeValue := range attributes {
 				if attributeName == "dn" {
-					data.Id = basetypes.NewStringValue(attributeValue.(string))
+					readData.Id = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "annotation" {
-					data.Annotation = basetypes.NewStringValue(attributeValue.(string))
+					readData.Annotation = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "descr" {
-					data.Descr = basetypes.NewStringValue(attributeValue.(string))
+					readData.Descr = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "intent" {
-					data.Intent = basetypes.NewStringValue(attributeValue.(string))
+					readData.Intent = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "name" {
-					data.Name = basetypes.NewStringValue(attributeValue.(string))
+					readData.Name = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "nameAlias" {
-					data.NameAlias = basetypes.NewStringValue(attributeValue.(string))
+					readData.NameAlias = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "ownerKey" {
-					data.OwnerKey = basetypes.NewStringValue(attributeValue.(string))
+					readData.OwnerKey = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "ownerTag" {
-					data.OwnerTag = basetypes.NewStringValue(attributeValue.(string))
+					readData.OwnerTag = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "prio" {
-					data.Prio = customTypes.NewVzOOBBrCPPrioStringValue(attributeValue.(string))
+					readData.Prio = customTypes.NewVzOOBBrCPPrioStringValue(attributeValue.(string))
 				}
 				if attributeName == "scope" {
-					data.Scope = basetypes.NewStringValue(attributeValue.(string))
+					readData.Scope = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "targetDscp" {
-					data.TargetDscp = customTypes.NewVzOOBBrCPTargetDscpStringValue(attributeValue.(string))
+					readData.TargetDscp = customTypes.NewVzOOBBrCPTargetDscpStringValue(attributeValue.(string))
 				}
 			}
 			TagAnnotationVzOOBBrCPList := make([]TagAnnotationVzOOBBrCPResourceModel, 0)
@@ -592,10 +593,10 @@ func getAndSetVzOOBBrCPAttributes(ctx context.Context, diags *diag.Diagnostics, 
 					}
 				}
 			}
-			tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationVzOOBBrCPList)
-			data.TagAnnotation = tagAnnotationSet
-			tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagVzOOBBrCPList)
-			data.TagTag = tagTagSet
+			tagAnnotationSet, _ := types.SetValueFrom(ctx, readData.TagAnnotation.ElementType(ctx), TagAnnotationVzOOBBrCPList)
+			readData.TagAnnotation = tagAnnotationSet
+			tagTagSet, _ := types.SetValueFrom(ctx, readData.TagTag.ElementType(ctx), TagTagVzOOBBrCPList)
+			readData.TagTag = tagTagSet
 		} else {
 			diags.AddError(
 				"too many results in response",
@@ -603,8 +604,9 @@ func getAndSetVzOOBBrCPAttributes(ctx context.Context, diags *diag.Diagnostics, 
 			)
 		}
 	} else {
-		data.Id = basetypes.NewStringNull()
+		readData.Id = basetypes.NewStringNull()
 	}
+	*data = *readData
 }
 
 func getVzOOBBrCPRn(ctx context.Context, data *VzOOBBrCPResourceModel) string {
@@ -753,7 +755,6 @@ func getVzOOBBrCPCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics,
 	if !data.TargetDscp.IsNull() && !data.TargetDscp.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["targetDscp"] = data.TargetDscp.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"vzOOBBrCP": payloadMap})
 	if err != nil {
 		diags.AddError(

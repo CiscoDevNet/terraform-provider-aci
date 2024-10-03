@@ -26,7 +26,6 @@ resource "aci_relation_to_domain" "full_example_application_epg" {
   switching_mode                = "AVE"
   target_dn                     = "uni/vmmp-VMware/dom-domain_2"
   untagged                      = "no"
-  vnet_only                     = "no"
   annotations = [
     {
       key   = "key_0"

@@ -330,6 +330,7 @@ func (r *FvFBRouteResource) Create(ctx context.Context, req resource.CreateReque
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -444,7 +445,7 @@ func (r *FvFBRouteResource) ImportState(ctx context.Context, req resource.Import
 func getAndSetFvFBRouteAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvFBRouteResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "fvFBRoute,tagAnnotation,tagTag"), "GET", nil)
 
-	*data = *getEmptyFvFBRouteResourceModel()
+	readData := getEmptyFvFBRouteResourceModel()
 
 	if diags.HasError() {
 		return
@@ -455,23 +456,23 @@ func getAndSetFvFBRouteAttributes(ctx context.Context, diags *diag.Diagnostics, 
 			attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
 			for attributeName, attributeValue := range attributes {
 				if attributeName == "dn" {
-					data.Id = basetypes.NewStringValue(attributeValue.(string))
-					setFvFBRouteParentDn(ctx, attributeValue.(string), data)
+					readData.Id = basetypes.NewStringValue(attributeValue.(string))
+					setFvFBRouteParentDn(ctx, attributeValue.(string), readData)
 				}
 				if attributeName == "annotation" {
-					data.Annotation = basetypes.NewStringValue(attributeValue.(string))
+					readData.Annotation = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "descr" {
-					data.Descr = basetypes.NewStringValue(attributeValue.(string))
+					readData.Descr = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "fbrPrefix" {
-					data.FbrPrefix = basetypes.NewStringValue(attributeValue.(string))
+					readData.FbrPrefix = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "name" {
-					data.Name = basetypes.NewStringValue(attributeValue.(string))
+					readData.Name = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "nameAlias" {
-					data.NameAlias = basetypes.NewStringValue(attributeValue.(string))
+					readData.NameAlias = basetypes.NewStringValue(attributeValue.(string))
 				}
 			}
 			TagAnnotationFvFBRouteList := make([]TagAnnotationFvFBRouteResourceModel, 0)
@@ -509,10 +510,10 @@ func getAndSetFvFBRouteAttributes(ctx context.Context, diags *diag.Diagnostics, 
 					}
 				}
 			}
-			tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationFvFBRouteList)
-			data.TagAnnotation = tagAnnotationSet
-			tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagFvFBRouteList)
-			data.TagTag = tagTagSet
+			tagAnnotationSet, _ := types.SetValueFrom(ctx, readData.TagAnnotation.ElementType(ctx), TagAnnotationFvFBRouteList)
+			readData.TagAnnotation = tagAnnotationSet
+			tagTagSet, _ := types.SetValueFrom(ctx, readData.TagTag.ElementType(ctx), TagTagFvFBRouteList)
+			readData.TagTag = tagTagSet
 		} else {
 			diags.AddError(
 				"too many results in response",
@@ -520,8 +521,9 @@ func getAndSetFvFBRouteAttributes(ctx context.Context, diags *diag.Diagnostics, 
 			)
 		}
 	} else {
-		data.Id = basetypes.NewStringNull()
+		readData.Id = basetypes.NewStringNull()
 	}
+	*data = *readData
 }
 
 func getFvFBRouteRn(ctx context.Context, data *FvFBRouteResourceModel) string {
@@ -671,7 +673,6 @@ func getFvFBRouteCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics,
 	if !data.NameAlias.IsNull() && !data.NameAlias.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["nameAlias"] = data.NameAlias.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"fvFBRoute": payloadMap})
 	if err != nil {
 		diags.AddError(

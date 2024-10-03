@@ -342,6 +342,7 @@ func (r *FvEpMacTagResource) Create(ctx context.Context, req resource.CreateRequ
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -456,7 +457,7 @@ func (r *FvEpMacTagResource) ImportState(ctx context.Context, req resource.Impor
 func getAndSetFvEpMacTagAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvEpMacTagResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "fvEpMacTag,tagAnnotation,tagTag"), "GET", nil)
 
-	*data = *getEmptyFvEpMacTagResourceModel()
+	readData := getEmptyFvEpMacTagResourceModel()
 
 	if diags.HasError() {
 		return
@@ -467,26 +468,26 @@ func getAndSetFvEpMacTagAttributes(ctx context.Context, diags *diag.Diagnostics,
 			attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
 			for attributeName, attributeValue := range attributes {
 				if attributeName == "dn" {
-					data.Id = basetypes.NewStringValue(attributeValue.(string))
-					setFvEpMacTagParentDn(ctx, attributeValue.(string), data)
+					readData.Id = basetypes.NewStringValue(attributeValue.(string))
+					setFvEpMacTagParentDn(ctx, attributeValue.(string), readData)
 				}
 				if attributeName == "annotation" {
-					data.Annotation = basetypes.NewStringValue(attributeValue.(string))
+					readData.Annotation = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "bdName" {
-					data.BdName = basetypes.NewStringValue(attributeValue.(string))
+					readData.BdName = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "id" {
-					data.FvEpMacTagId = basetypes.NewStringValue(attributeValue.(string))
+					readData.FvEpMacTagId = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "mac" {
-					data.Mac = basetypes.NewStringValue(attributeValue.(string))
+					readData.Mac = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "name" {
-					data.Name = basetypes.NewStringValue(attributeValue.(string))
+					readData.Name = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "nameAlias" {
-					data.NameAlias = basetypes.NewStringValue(attributeValue.(string))
+					readData.NameAlias = basetypes.NewStringValue(attributeValue.(string))
 				}
 			}
 			TagAnnotationFvEpMacTagList := make([]TagAnnotationFvEpMacTagResourceModel, 0)
@@ -524,10 +525,10 @@ func getAndSetFvEpMacTagAttributes(ctx context.Context, diags *diag.Diagnostics,
 					}
 				}
 			}
-			tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationFvEpMacTagList)
-			data.TagAnnotation = tagAnnotationSet
-			tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagFvEpMacTagList)
-			data.TagTag = tagTagSet
+			tagAnnotationSet, _ := types.SetValueFrom(ctx, readData.TagAnnotation.ElementType(ctx), TagAnnotationFvEpMacTagList)
+			readData.TagAnnotation = tagAnnotationSet
+			tagTagSet, _ := types.SetValueFrom(ctx, readData.TagTag.ElementType(ctx), TagTagFvEpMacTagList)
+			readData.TagTag = tagTagSet
 		} else {
 			diags.AddError(
 				"too many results in response",
@@ -535,8 +536,9 @@ func getAndSetFvEpMacTagAttributes(ctx context.Context, diags *diag.Diagnostics,
 			)
 		}
 	} else {
-		data.Id = basetypes.NewStringNull()
+		readData.Id = basetypes.NewStringNull()
 	}
+	*data = *readData
 }
 
 func getFvEpMacTagRn(ctx context.Context, data *FvEpMacTagResourceModel) string {
@@ -691,7 +693,6 @@ func getFvEpMacTagCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics
 	if !data.NameAlias.IsNull() && !data.NameAlias.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["nameAlias"] = data.NameAlias.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"fvEpMacTag": payloadMap})
 	if err != nil {
 		diags.AddError(

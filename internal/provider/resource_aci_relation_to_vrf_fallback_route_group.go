@@ -297,6 +297,7 @@ func (r *L3extRsOutToFBRGroupResource) Create(ctx context.Context, req resource.
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -411,7 +412,7 @@ func (r *L3extRsOutToFBRGroupResource) ImportState(ctx context.Context, req reso
 func getAndSetL3extRsOutToFBRGroupAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *L3extRsOutToFBRGroupResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "l3extRsOutToFBRGroup,tagAnnotation,tagTag"), "GET", nil)
 
-	*data = *getEmptyL3extRsOutToFBRGroupResourceModel()
+	readData := getEmptyL3extRsOutToFBRGroupResourceModel()
 
 	if diags.HasError() {
 		return
@@ -422,14 +423,14 @@ func getAndSetL3extRsOutToFBRGroupAttributes(ctx context.Context, diags *diag.Di
 			attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
 			for attributeName, attributeValue := range attributes {
 				if attributeName == "dn" {
-					data.Id = basetypes.NewStringValue(attributeValue.(string))
-					setL3extRsOutToFBRGroupParentDn(ctx, attributeValue.(string), data)
+					readData.Id = basetypes.NewStringValue(attributeValue.(string))
+					setL3extRsOutToFBRGroupParentDn(ctx, attributeValue.(string), readData)
 				}
 				if attributeName == "annotation" {
-					data.Annotation = basetypes.NewStringValue(attributeValue.(string))
+					readData.Annotation = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "tDn" {
-					data.TDn = basetypes.NewStringValue(attributeValue.(string))
+					readData.TDn = basetypes.NewStringValue(attributeValue.(string))
 				}
 			}
 			TagAnnotationL3extRsOutToFBRGroupList := make([]TagAnnotationL3extRsOutToFBRGroupResourceModel, 0)
@@ -467,10 +468,10 @@ func getAndSetL3extRsOutToFBRGroupAttributes(ctx context.Context, diags *diag.Di
 					}
 				}
 			}
-			tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationL3extRsOutToFBRGroupList)
-			data.TagAnnotation = tagAnnotationSet
-			tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagL3extRsOutToFBRGroupList)
-			data.TagTag = tagTagSet
+			tagAnnotationSet, _ := types.SetValueFrom(ctx, readData.TagAnnotation.ElementType(ctx), TagAnnotationL3extRsOutToFBRGroupList)
+			readData.TagAnnotation = tagAnnotationSet
+			tagTagSet, _ := types.SetValueFrom(ctx, readData.TagTag.ElementType(ctx), TagTagL3extRsOutToFBRGroupList)
+			readData.TagTag = tagTagSet
 		} else {
 			diags.AddError(
 				"too many results in response",
@@ -478,8 +479,9 @@ func getAndSetL3extRsOutToFBRGroupAttributes(ctx context.Context, diags *diag.Di
 			)
 		}
 	} else {
-		data.Id = basetypes.NewStringNull()
+		readData.Id = basetypes.NewStringNull()
 	}
+	*data = *readData
 }
 
 func getL3extRsOutToFBRGroupRn(ctx context.Context, data *L3extRsOutToFBRGroupResourceModel) string {
@@ -620,7 +622,6 @@ func getL3extRsOutToFBRGroupCreateJsonPayload(ctx context.Context, diags *diag.D
 	if !data.TDn.IsNull() && !data.TDn.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["tDn"] = data.TDn.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"l3extRsOutToFBRGroup": payloadMap})
 	if err != nil {
 		diags.AddError(

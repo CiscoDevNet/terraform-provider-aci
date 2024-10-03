@@ -193,7 +193,6 @@ func getEmptyFvAEPgResourceModel() *FvAEPgResourceModel {
 				"switching_mode":                types.StringType,
 				"target_dn":                     types.StringType,
 				"untagged":                      types.StringType,
-				"vnet_only":                     types.StringType,
 			},
 		}),
 		FvRsDppPol: types.ObjectNull(map[string]attr.Type{
@@ -450,7 +449,6 @@ type FvRsDomAttFvAEPgResourceModel struct {
 	SwitchingMode       types.String `tfsdk:"switching_mode"`
 	TDn                 types.String `tfsdk:"target_dn"`
 	Untagged            types.String `tfsdk:"untagged"`
-	VnetOnly            types.String `tfsdk:"vnet_only"`
 }
 
 func getEmptyFvRsDomAttFvAEPgResourceModel() FvRsDomAttFvAEPgResourceModel {
@@ -480,7 +478,6 @@ func getEmptyFvRsDomAttFvAEPgResourceModel() FvRsDomAttFvAEPgResourceModel {
 		SwitchingMode:       basetypes.NewStringNull(),
 		TDn:                 basetypes.NewStringNull(),
 		Untagged:            basetypes.NewStringNull(),
-		VnetOnly:            basetypes.NewStringNull(),
 	}
 }
 
@@ -1057,7 +1054,6 @@ func (r *FvAEPgResource) UpgradeState(ctx context.Context) map[int64]resource.St
 							"switching_mode":                basetypes.StringType{},
 							"target_dn":                     basetypes.StringType{},
 							"untagged":                      basetypes.StringType{},
-							"vnet_only":                     basetypes.StringType{},
 						},
 					},
 				)
@@ -3300,17 +3296,6 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							},
 							MarkdownDescription: `The untagged status of the Relation To Domain object.`,
 						},
-						"vnet_only": schema.StringAttribute{
-							Optional: true,
-							Computed: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
-							},
-							Validators: []validator.String{
-								stringvalidator.OneOf("no", "yes"),
-							},
-							MarkdownDescription: `The VNET only status of the Relation To Domain object.`,
-						},
 					},
 				},
 			},
@@ -3995,6 +3980,7 @@ func (r *FvAEPgResource) Create(ctx context.Context, req resource.CreateRequest,
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -4171,7 +4157,7 @@ func (r *FvAEPgResource) ImportState(ctx context.Context, req resource.ImportSta
 func getAndSetFvAEPgAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvAEPgResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "fvAEPg,fvCrtrn,fvRsAEPgMonPol,fvRsBd,fvRsCons,fvRsConsIf,fvRsCustQosPol,fvRsDomAtt,fvRsDppPol,fvRsFcPathAtt,fvRsIntraEpg,fvRsNodeAtt,fvRsPathAtt,fvRsProtBy,fvRsProv,fvRsSecInherited,fvRsTrustCtrl,tagAnnotation,tagTag"), "GET", nil)
 
-	*data = *getEmptyFvAEPgResourceModel()
+	readData := getEmptyFvAEPgResourceModel()
 
 	if diags.HasError() {
 		return
@@ -4182,55 +4168,55 @@ func getAndSetFvAEPgAttributes(ctx context.Context, diags *diag.Diagnostics, cli
 			attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
 			for attributeName, attributeValue := range attributes {
 				if attributeName == "dn" {
-					data.Id = basetypes.NewStringValue(attributeValue.(string))
-					setFvAEPgParentDn(ctx, attributeValue.(string), data)
+					readData.Id = basetypes.NewStringValue(attributeValue.(string))
+					setFvAEPgParentDn(ctx, attributeValue.(string), readData)
 				}
 				if attributeName == "annotation" {
-					data.Annotation = basetypes.NewStringValue(attributeValue.(string))
+					readData.Annotation = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "descr" {
-					data.Descr = basetypes.NewStringValue(attributeValue.(string))
+					readData.Descr = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "exceptionTag" {
-					data.ExceptionTag = basetypes.NewStringValue(attributeValue.(string))
+					readData.ExceptionTag = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "floodOnEncap" {
-					data.FloodOnEncap = basetypes.NewStringValue(attributeValue.(string))
+					readData.FloodOnEncap = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "fwdCtrl" && attributeValue.(string) == "" {
-					data.FwdCtrl = basetypes.NewStringValue("none")
+					readData.FwdCtrl = basetypes.NewStringValue("none")
 				} else if attributeName == "fwdCtrl" {
-					data.FwdCtrl = basetypes.NewStringValue(attributeValue.(string))
+					readData.FwdCtrl = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "hasMcastSource" {
-					data.HasMcastSource = basetypes.NewStringValue(attributeValue.(string))
+					readData.HasMcastSource = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "isAttrBasedEPg" {
-					data.IsAttrBasedEPg = basetypes.NewStringValue(attributeValue.(string))
+					readData.IsAttrBasedEPg = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "matchT" {
-					data.MatchT = basetypes.NewStringValue(attributeValue.(string))
+					readData.MatchT = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "name" {
-					data.Name = basetypes.NewStringValue(attributeValue.(string))
+					readData.Name = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "nameAlias" {
-					data.NameAlias = basetypes.NewStringValue(attributeValue.(string))
+					readData.NameAlias = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "pcEnfPref" {
-					data.PcEnfPref = basetypes.NewStringValue(attributeValue.(string))
+					readData.PcEnfPref = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "pcTag" {
-					data.PcTag = basetypes.NewStringValue(attributeValue.(string))
+					readData.PcTag = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "prefGrMemb" {
-					data.PrefGrMemb = basetypes.NewStringValue(attributeValue.(string))
+					readData.PrefGrMemb = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "prio" {
-					data.Prio = customTypes.NewFvAEPgPrioStringValue(attributeValue.(string))
+					readData.Prio = customTypes.NewFvAEPgPrioStringValue(attributeValue.(string))
 				}
 				if attributeName == "shutdown" {
-					data.Shutdown = basetypes.NewStringValue(attributeValue.(string))
+					readData.Shutdown = basetypes.NewStringValue(attributeValue.(string))
 				}
 			}
 			FvCrtrnFvAEPgList := make([]FvCrtrnFvAEPgResourceModel, 0)
@@ -4438,9 +4424,6 @@ func getAndSetFvAEPgAttributes(ctx context.Context, diags *diag.Diagnostics, cli
 								if childAttributeName == "untagged" {
 									FvRsDomAttFvAEPg.Untagged = basetypes.NewStringValue(childAttributeValue.(string))
 								}
-								if childAttributeName == "vnetOnly" {
-									FvRsDomAttFvAEPg.VnetOnly = basetypes.NewStringValue(childAttributeValue.(string))
-								}
 							}
 							FvRsDomAttFvAEPgList = append(FvRsDomAttFvAEPgList, FvRsDomAttFvAEPg)
 						}
@@ -4623,71 +4606,71 @@ func getAndSetFvAEPgAttributes(ctx context.Context, diags *diag.Diagnostics, cli
 			}
 			if len(FvCrtrnFvAEPgList) == 1 {
 				fvCrtrnObject, _ := types.ObjectValueFrom(ctx, FvCrtrnFvAEPgType, FvCrtrnFvAEPgList[0])
-				data.FvCrtrn = fvCrtrnObject
+				readData.FvCrtrn = fvCrtrnObject
 			} else {
 				fvCrtrnObject, _ := types.ObjectValueFrom(ctx, FvCrtrnFvAEPgType, getEmptyFvCrtrnFvAEPgResourceModel())
-				data.FvCrtrn = fvCrtrnObject
+				readData.FvCrtrn = fvCrtrnObject
 			}
 			if len(FvRsAEPgMonPolFvAEPgList) == 1 {
 				fvRsAEPgMonPolObject, _ := types.ObjectValueFrom(ctx, FvRsAEPgMonPolFvAEPgType, FvRsAEPgMonPolFvAEPgList[0])
-				data.FvRsAEPgMonPol = fvRsAEPgMonPolObject
+				readData.FvRsAEPgMonPol = fvRsAEPgMonPolObject
 			} else {
 				fvRsAEPgMonPolObject, _ := types.ObjectValueFrom(ctx, FvRsAEPgMonPolFvAEPgType, getEmptyFvRsAEPgMonPolFvAEPgResourceModel())
-				data.FvRsAEPgMonPol = fvRsAEPgMonPolObject
+				readData.FvRsAEPgMonPol = fvRsAEPgMonPolObject
 			}
 			if len(FvRsBdFvAEPgList) == 1 {
 				fvRsBdObject, _ := types.ObjectValueFrom(ctx, FvRsBdFvAEPgType, FvRsBdFvAEPgList[0])
-				data.FvRsBd = fvRsBdObject
+				readData.FvRsBd = fvRsBdObject
 			} else {
 				fvRsBdObject, _ := types.ObjectValueFrom(ctx, FvRsBdFvAEPgType, getEmptyFvRsBdFvAEPgResourceModel())
-				data.FvRsBd = fvRsBdObject
+				readData.FvRsBd = fvRsBdObject
 			}
-			fvRsConsSet, _ := types.SetValueFrom(ctx, data.FvRsCons.ElementType(ctx), FvRsConsFvAEPgList)
-			data.FvRsCons = fvRsConsSet
-			fvRsConsIfSet, _ := types.SetValueFrom(ctx, data.FvRsConsIf.ElementType(ctx), FvRsConsIfFvAEPgList)
-			data.FvRsConsIf = fvRsConsIfSet
+			fvRsConsSet, _ := types.SetValueFrom(ctx, readData.FvRsCons.ElementType(ctx), FvRsConsFvAEPgList)
+			readData.FvRsCons = fvRsConsSet
+			fvRsConsIfSet, _ := types.SetValueFrom(ctx, readData.FvRsConsIf.ElementType(ctx), FvRsConsIfFvAEPgList)
+			readData.FvRsConsIf = fvRsConsIfSet
 			if len(FvRsCustQosPolFvAEPgList) == 1 {
 				fvRsCustQosPolObject, _ := types.ObjectValueFrom(ctx, FvRsCustQosPolFvAEPgType, FvRsCustQosPolFvAEPgList[0])
-				data.FvRsCustQosPol = fvRsCustQosPolObject
+				readData.FvRsCustQosPol = fvRsCustQosPolObject
 			} else {
 				fvRsCustQosPolObject, _ := types.ObjectValueFrom(ctx, FvRsCustQosPolFvAEPgType, getEmptyFvRsCustQosPolFvAEPgResourceModel())
-				data.FvRsCustQosPol = fvRsCustQosPolObject
+				readData.FvRsCustQosPol = fvRsCustQosPolObject
 			}
-			fvRsDomAttSet, _ := types.SetValueFrom(ctx, data.FvRsDomAtt.ElementType(ctx), FvRsDomAttFvAEPgList)
-			data.FvRsDomAtt = fvRsDomAttSet
+			fvRsDomAttSet, _ := types.SetValueFrom(ctx, readData.FvRsDomAtt.ElementType(ctx), FvRsDomAttFvAEPgList)
+			readData.FvRsDomAtt = fvRsDomAttSet
 			if len(FvRsDppPolFvAEPgList) == 1 {
 				fvRsDppPolObject, _ := types.ObjectValueFrom(ctx, FvRsDppPolFvAEPgType, FvRsDppPolFvAEPgList[0])
-				data.FvRsDppPol = fvRsDppPolObject
+				readData.FvRsDppPol = fvRsDppPolObject
 			} else {
 				fvRsDppPolObject, _ := types.ObjectValueFrom(ctx, FvRsDppPolFvAEPgType, getEmptyFvRsDppPolFvAEPgResourceModel())
-				data.FvRsDppPol = fvRsDppPolObject
+				readData.FvRsDppPol = fvRsDppPolObject
 			}
-			fvRsFcPathAttSet, _ := types.SetValueFrom(ctx, data.FvRsFcPathAtt.ElementType(ctx), FvRsFcPathAttFvAEPgList)
-			data.FvRsFcPathAtt = fvRsFcPathAttSet
-			fvRsIntraEpgSet, _ := types.SetValueFrom(ctx, data.FvRsIntraEpg.ElementType(ctx), FvRsIntraEpgFvAEPgList)
-			data.FvRsIntraEpg = fvRsIntraEpgSet
-			fvRsNodeAttSet, _ := types.SetValueFrom(ctx, data.FvRsNodeAtt.ElementType(ctx), FvRsNodeAttFvAEPgList)
-			data.FvRsNodeAtt = fvRsNodeAttSet
-			fvRsPathAttSet, _ := types.SetValueFrom(ctx, data.FvRsPathAtt.ElementType(ctx), FvRsPathAttFvAEPgList)
-			data.FvRsPathAtt = fvRsPathAttSet
-			fvRsProtBySet, _ := types.SetValueFrom(ctx, data.FvRsProtBy.ElementType(ctx), FvRsProtByFvAEPgList)
-			data.FvRsProtBy = fvRsProtBySet
-			fvRsProvSet, _ := types.SetValueFrom(ctx, data.FvRsProv.ElementType(ctx), FvRsProvFvAEPgList)
-			data.FvRsProv = fvRsProvSet
-			fvRsSecInheritedSet, _ := types.SetValueFrom(ctx, data.FvRsSecInherited.ElementType(ctx), FvRsSecInheritedFvAEPgList)
-			data.FvRsSecInherited = fvRsSecInheritedSet
+			fvRsFcPathAttSet, _ := types.SetValueFrom(ctx, readData.FvRsFcPathAtt.ElementType(ctx), FvRsFcPathAttFvAEPgList)
+			readData.FvRsFcPathAtt = fvRsFcPathAttSet
+			fvRsIntraEpgSet, _ := types.SetValueFrom(ctx, readData.FvRsIntraEpg.ElementType(ctx), FvRsIntraEpgFvAEPgList)
+			readData.FvRsIntraEpg = fvRsIntraEpgSet
+			fvRsNodeAttSet, _ := types.SetValueFrom(ctx, readData.FvRsNodeAtt.ElementType(ctx), FvRsNodeAttFvAEPgList)
+			readData.FvRsNodeAtt = fvRsNodeAttSet
+			fvRsPathAttSet, _ := types.SetValueFrom(ctx, readData.FvRsPathAtt.ElementType(ctx), FvRsPathAttFvAEPgList)
+			readData.FvRsPathAtt = fvRsPathAttSet
+			fvRsProtBySet, _ := types.SetValueFrom(ctx, readData.FvRsProtBy.ElementType(ctx), FvRsProtByFvAEPgList)
+			readData.FvRsProtBy = fvRsProtBySet
+			fvRsProvSet, _ := types.SetValueFrom(ctx, readData.FvRsProv.ElementType(ctx), FvRsProvFvAEPgList)
+			readData.FvRsProv = fvRsProvSet
+			fvRsSecInheritedSet, _ := types.SetValueFrom(ctx, readData.FvRsSecInherited.ElementType(ctx), FvRsSecInheritedFvAEPgList)
+			readData.FvRsSecInherited = fvRsSecInheritedSet
 			if len(FvRsTrustCtrlFvAEPgList) == 1 {
 				fvRsTrustCtrlObject, _ := types.ObjectValueFrom(ctx, FvRsTrustCtrlFvAEPgType, FvRsTrustCtrlFvAEPgList[0])
-				data.FvRsTrustCtrl = fvRsTrustCtrlObject
+				readData.FvRsTrustCtrl = fvRsTrustCtrlObject
 			} else {
 				fvRsTrustCtrlObject, _ := types.ObjectValueFrom(ctx, FvRsTrustCtrlFvAEPgType, getEmptyFvRsTrustCtrlFvAEPgResourceModel())
-				data.FvRsTrustCtrl = fvRsTrustCtrlObject
+				readData.FvRsTrustCtrl = fvRsTrustCtrlObject
 			}
-			tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationFvAEPgList)
-			data.TagAnnotation = tagAnnotationSet
-			tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagFvAEPgList)
-			data.TagTag = tagTagSet
-			setFvAEPgLegacyAttributes(ctx, diags, data, classReadInfo)
+			tagAnnotationSet, _ := types.SetValueFrom(ctx, readData.TagAnnotation.ElementType(ctx), TagAnnotationFvAEPgList)
+			readData.TagAnnotation = tagAnnotationSet
+			tagTagSet, _ := types.SetValueFrom(ctx, readData.TagTag.ElementType(ctx), TagTagFvAEPgList)
+			readData.TagTag = tagTagSet
+			setFvAEPgLegacyAttributes(ctx, diags, readData, classReadInfo)
 		} else {
 			diags.AddError(
 				"too many results in response",
@@ -4695,8 +4678,9 @@ func getAndSetFvAEPgAttributes(ctx context.Context, diags *diag.Diagnostics, cli
 			)
 		}
 	} else {
-		data.Id = basetypes.NewStringNull()
+		readData.Id = basetypes.NewStringNull()
 	}
+	*data = *readData
 }
 
 func getFvAEPgRn(ctx context.Context, data *FvAEPgResourceModel) string {
@@ -5018,9 +5002,6 @@ func getFvAEPgFvRsDomAttChildPayloads(ctx context.Context, diags *diag.Diagnosti
 			}
 			if !fvRsDomAtt.Untagged.IsUnknown() && !fvRsDomAtt.Untagged.IsNull() {
 				childMap["attributes"]["untagged"] = fvRsDomAtt.Untagged.ValueString()
-			}
-			if !fvRsDomAtt.VnetOnly.IsUnknown() && !fvRsDomAtt.VnetOnly.IsNull() {
-				childMap["attributes"]["vnetOnly"] = fvRsDomAtt.VnetOnly.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"fvRsDomAtt": childMap})
 			fvRsDomAttIdentifier := FvRsDomAttIdentifier{}
@@ -5666,7 +5647,6 @@ func getFvAEPgCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, cr
 	if !data.Shutdown.IsNull() && !data.Shutdown.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["shutdown"] = data.Shutdown.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"fvAEPg": payloadMap})
 	if err != nil {
 		diags.AddError(

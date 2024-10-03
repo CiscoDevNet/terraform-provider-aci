@@ -372,6 +372,7 @@ func (r *RtctrlProfileResource) Create(ctx context.Context, req resource.CreateR
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -486,7 +487,7 @@ func (r *RtctrlProfileResource) ImportState(ctx context.Context, req resource.Im
 func getAndSetRtctrlProfileAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *RtctrlProfileResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "rtctrlProfile,tagAnnotation,tagTag"), "GET", nil)
 
-	*data = *getEmptyRtctrlProfileResourceModel()
+	readData := getEmptyRtctrlProfileResourceModel()
 
 	if diags.HasError() {
 		return
@@ -497,32 +498,32 @@ func getAndSetRtctrlProfileAttributes(ctx context.Context, diags *diag.Diagnosti
 			attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
 			for attributeName, attributeValue := range attributes {
 				if attributeName == "dn" {
-					data.Id = basetypes.NewStringValue(attributeValue.(string))
-					setRtctrlProfileParentDn(ctx, attributeValue.(string), data)
+					readData.Id = basetypes.NewStringValue(attributeValue.(string))
+					setRtctrlProfileParentDn(ctx, attributeValue.(string), readData)
 				}
 				if attributeName == "annotation" {
-					data.Annotation = basetypes.NewStringValue(attributeValue.(string))
+					readData.Annotation = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "autoContinue" {
-					data.AutoContinue = basetypes.NewStringValue(attributeValue.(string))
+					readData.AutoContinue = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "descr" {
-					data.Descr = basetypes.NewStringValue(attributeValue.(string))
+					readData.Descr = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "name" {
-					data.Name = basetypes.NewStringValue(attributeValue.(string))
+					readData.Name = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "nameAlias" {
-					data.NameAlias = basetypes.NewStringValue(attributeValue.(string))
+					readData.NameAlias = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "ownerKey" {
-					data.OwnerKey = basetypes.NewStringValue(attributeValue.(string))
+					readData.OwnerKey = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "ownerTag" {
-					data.OwnerTag = basetypes.NewStringValue(attributeValue.(string))
+					readData.OwnerTag = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "type" {
-					data.Type = basetypes.NewStringValue(attributeValue.(string))
+					readData.Type = basetypes.NewStringValue(attributeValue.(string))
 				}
 			}
 			TagAnnotationRtctrlProfileList := make([]TagAnnotationRtctrlProfileResourceModel, 0)
@@ -560,10 +561,10 @@ func getAndSetRtctrlProfileAttributes(ctx context.Context, diags *diag.Diagnosti
 					}
 				}
 			}
-			tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationRtctrlProfileList)
-			data.TagAnnotation = tagAnnotationSet
-			tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagRtctrlProfileList)
-			data.TagTag = tagTagSet
+			tagAnnotationSet, _ := types.SetValueFrom(ctx, readData.TagAnnotation.ElementType(ctx), TagAnnotationRtctrlProfileList)
+			readData.TagAnnotation = tagAnnotationSet
+			tagTagSet, _ := types.SetValueFrom(ctx, readData.TagTag.ElementType(ctx), TagTagRtctrlProfileList)
+			readData.TagTag = tagTagSet
 		} else {
 			diags.AddError(
 				"too many results in response",
@@ -571,8 +572,9 @@ func getAndSetRtctrlProfileAttributes(ctx context.Context, diags *diag.Diagnosti
 			)
 		}
 	} else {
-		data.Id = basetypes.NewStringNull()
+		readData.Id = basetypes.NewStringNull()
 	}
+	*data = *readData
 }
 
 func getRtctrlProfileRn(ctx context.Context, data *RtctrlProfileResourceModel) string {
@@ -731,7 +733,6 @@ func getRtctrlProfileCreateJsonPayload(ctx context.Context, diags *diag.Diagnost
 	if !data.Type.IsNull() && !data.Type.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["type"] = data.Type.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"rtctrlProfile": payloadMap})
 	if err != nil {
 		diags.AddError(

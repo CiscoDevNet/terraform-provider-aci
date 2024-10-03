@@ -297,6 +297,7 @@ func (r *L3extRsLblToInstPResource) Create(ctx context.Context, req resource.Cre
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -411,7 +412,7 @@ func (r *L3extRsLblToInstPResource) ImportState(ctx context.Context, req resourc
 func getAndSetL3extRsLblToInstPAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *L3extRsLblToInstPResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "l3extRsLblToInstP,tagAnnotation,tagTag"), "GET", nil)
 
-	*data = *getEmptyL3extRsLblToInstPResourceModel()
+	readData := getEmptyL3extRsLblToInstPResourceModel()
 
 	if diags.HasError() {
 		return
@@ -422,14 +423,14 @@ func getAndSetL3extRsLblToInstPAttributes(ctx context.Context, diags *diag.Diagn
 			attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
 			for attributeName, attributeValue := range attributes {
 				if attributeName == "dn" {
-					data.Id = basetypes.NewStringValue(attributeValue.(string))
-					setL3extRsLblToInstPParentDn(ctx, attributeValue.(string), data)
+					readData.Id = basetypes.NewStringValue(attributeValue.(string))
+					setL3extRsLblToInstPParentDn(ctx, attributeValue.(string), readData)
 				}
 				if attributeName == "annotation" {
-					data.Annotation = basetypes.NewStringValue(attributeValue.(string))
+					readData.Annotation = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "tDn" {
-					data.TDn = basetypes.NewStringValue(attributeValue.(string))
+					readData.TDn = basetypes.NewStringValue(attributeValue.(string))
 				}
 			}
 			TagAnnotationL3extRsLblToInstPList := make([]TagAnnotationL3extRsLblToInstPResourceModel, 0)
@@ -467,10 +468,10 @@ func getAndSetL3extRsLblToInstPAttributes(ctx context.Context, diags *diag.Diagn
 					}
 				}
 			}
-			tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationL3extRsLblToInstPList)
-			data.TagAnnotation = tagAnnotationSet
-			tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagL3extRsLblToInstPList)
-			data.TagTag = tagTagSet
+			tagAnnotationSet, _ := types.SetValueFrom(ctx, readData.TagAnnotation.ElementType(ctx), TagAnnotationL3extRsLblToInstPList)
+			readData.TagAnnotation = tagAnnotationSet
+			tagTagSet, _ := types.SetValueFrom(ctx, readData.TagTag.ElementType(ctx), TagTagL3extRsLblToInstPList)
+			readData.TagTag = tagTagSet
 		} else {
 			diags.AddError(
 				"too many results in response",
@@ -478,8 +479,9 @@ func getAndSetL3extRsLblToInstPAttributes(ctx context.Context, diags *diag.Diagn
 			)
 		}
 	} else {
-		data.Id = basetypes.NewStringNull()
+		readData.Id = basetypes.NewStringNull()
 	}
+	*data = *readData
 }
 
 func getL3extRsLblToInstPRn(ctx context.Context, data *L3extRsLblToInstPResourceModel) string {
@@ -620,7 +622,6 @@ func getL3extRsLblToInstPCreateJsonPayload(ctx context.Context, diags *diag.Diag
 	if !data.TDn.IsNull() && !data.TDn.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["tDn"] = data.TDn.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"l3extRsLblToInstP": payloadMap})
 	if err != nil {
 		diags.AddError(

@@ -399,6 +399,7 @@ func (r *MgmtInstPResource) Create(ctx context.Context, req resource.CreateReque
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -516,7 +517,7 @@ func (r *MgmtInstPResource) ImportState(ctx context.Context, req resource.Import
 func getAndSetMgmtInstPAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *MgmtInstPResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "mgmtInstP,mgmtRsOoBCons,tagAnnotation,tagTag"), "GET", nil)
 
-	*data = *getEmptyMgmtInstPResourceModel()
+	readData := getEmptyMgmtInstPResourceModel()
 
 	if diags.HasError() {
 		return
@@ -527,22 +528,22 @@ func getAndSetMgmtInstPAttributes(ctx context.Context, diags *diag.Diagnostics, 
 			attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
 			for attributeName, attributeValue := range attributes {
 				if attributeName == "dn" {
-					data.Id = basetypes.NewStringValue(attributeValue.(string))
+					readData.Id = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "annotation" {
-					data.Annotation = basetypes.NewStringValue(attributeValue.(string))
+					readData.Annotation = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "descr" {
-					data.Descr = basetypes.NewStringValue(attributeValue.(string))
+					readData.Descr = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "name" {
-					data.Name = basetypes.NewStringValue(attributeValue.(string))
+					readData.Name = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "nameAlias" {
-					data.NameAlias = basetypes.NewStringValue(attributeValue.(string))
+					readData.NameAlias = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "prio" {
-					data.Prio = customTypes.NewMgmtInstPPrioStringValue(attributeValue.(string))
+					readData.Prio = customTypes.NewMgmtInstPPrioStringValue(attributeValue.(string))
 				}
 			}
 			MgmtRsOoBConsMgmtInstPList := make([]MgmtRsOoBConsMgmtInstPResourceModel, 0)
@@ -596,12 +597,12 @@ func getAndSetMgmtInstPAttributes(ctx context.Context, diags *diag.Diagnostics, 
 					}
 				}
 			}
-			mgmtRsOoBConsSet, _ := types.SetValueFrom(ctx, data.MgmtRsOoBCons.ElementType(ctx), MgmtRsOoBConsMgmtInstPList)
-			data.MgmtRsOoBCons = mgmtRsOoBConsSet
-			tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationMgmtInstPList)
-			data.TagAnnotation = tagAnnotationSet
-			tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagMgmtInstPList)
-			data.TagTag = tagTagSet
+			mgmtRsOoBConsSet, _ := types.SetValueFrom(ctx, readData.MgmtRsOoBCons.ElementType(ctx), MgmtRsOoBConsMgmtInstPList)
+			readData.MgmtRsOoBCons = mgmtRsOoBConsSet
+			tagAnnotationSet, _ := types.SetValueFrom(ctx, readData.TagAnnotation.ElementType(ctx), TagAnnotationMgmtInstPList)
+			readData.TagAnnotation = tagAnnotationSet
+			tagTagSet, _ := types.SetValueFrom(ctx, readData.TagTag.ElementType(ctx), TagTagMgmtInstPList)
+			readData.TagTag = tagTagSet
 		} else {
 			diags.AddError(
 				"too many results in response",
@@ -609,8 +610,9 @@ func getAndSetMgmtInstPAttributes(ctx context.Context, diags *diag.Diagnostics, 
 			)
 		}
 	} else {
-		data.Id = basetypes.NewStringNull()
+		readData.Id = basetypes.NewStringNull()
 	}
+	*data = *readData
 }
 
 func getMgmtInstPRn(ctx context.Context, data *MgmtInstPResourceModel) string {
@@ -794,7 +796,6 @@ func getMgmtInstPCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics,
 	if !data.Prio.IsNull() && !data.Prio.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["prio"] = data.Prio.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"mgmtInstP": payloadMap})
 	if err != nil {
 		diags.AddError(

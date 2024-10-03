@@ -357,6 +357,7 @@ func (r *L3extProvLblResource) Create(ctx context.Context, req resource.CreateRe
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -471,7 +472,7 @@ func (r *L3extProvLblResource) ImportState(ctx context.Context, req resource.Imp
 func getAndSetL3extProvLblAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *L3extProvLblResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "l3extProvLbl,tagAnnotation,tagTag"), "GET", nil)
 
-	*data = *getEmptyL3extProvLblResourceModel()
+	readData := getEmptyL3extProvLblResourceModel()
 
 	if diags.HasError() {
 		return
@@ -482,29 +483,29 @@ func getAndSetL3extProvLblAttributes(ctx context.Context, diags *diag.Diagnostic
 			attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
 			for attributeName, attributeValue := range attributes {
 				if attributeName == "dn" {
-					data.Id = basetypes.NewStringValue(attributeValue.(string))
-					setL3extProvLblParentDn(ctx, attributeValue.(string), data)
+					readData.Id = basetypes.NewStringValue(attributeValue.(string))
+					setL3extProvLblParentDn(ctx, attributeValue.(string), readData)
 				}
 				if attributeName == "annotation" {
-					data.Annotation = basetypes.NewStringValue(attributeValue.(string))
+					readData.Annotation = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "descr" {
-					data.Descr = basetypes.NewStringValue(attributeValue.(string))
+					readData.Descr = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "name" {
-					data.Name = basetypes.NewStringValue(attributeValue.(string))
+					readData.Name = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "nameAlias" {
-					data.NameAlias = basetypes.NewStringValue(attributeValue.(string))
+					readData.NameAlias = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "ownerKey" {
-					data.OwnerKey = basetypes.NewStringValue(attributeValue.(string))
+					readData.OwnerKey = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "ownerTag" {
-					data.OwnerTag = basetypes.NewStringValue(attributeValue.(string))
+					readData.OwnerTag = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "tag" {
-					data.Tag = basetypes.NewStringValue(attributeValue.(string))
+					readData.Tag = basetypes.NewStringValue(attributeValue.(string))
 				}
 			}
 			TagAnnotationL3extProvLblList := make([]TagAnnotationL3extProvLblResourceModel, 0)
@@ -542,10 +543,10 @@ func getAndSetL3extProvLblAttributes(ctx context.Context, diags *diag.Diagnostic
 					}
 				}
 			}
-			tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationL3extProvLblList)
-			data.TagAnnotation = tagAnnotationSet
-			tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagL3extProvLblList)
-			data.TagTag = tagTagSet
+			tagAnnotationSet, _ := types.SetValueFrom(ctx, readData.TagAnnotation.ElementType(ctx), TagAnnotationL3extProvLblList)
+			readData.TagAnnotation = tagAnnotationSet
+			tagTagSet, _ := types.SetValueFrom(ctx, readData.TagTag.ElementType(ctx), TagTagL3extProvLblList)
+			readData.TagTag = tagTagSet
 		} else {
 			diags.AddError(
 				"too many results in response",
@@ -553,8 +554,9 @@ func getAndSetL3extProvLblAttributes(ctx context.Context, diags *diag.Diagnostic
 			)
 		}
 	} else {
-		data.Id = basetypes.NewStringNull()
+		readData.Id = basetypes.NewStringNull()
 	}
+	*data = *readData
 }
 
 func getL3extProvLblRn(ctx context.Context, data *L3extProvLblResourceModel) string {
@@ -710,7 +712,6 @@ func getL3extProvLblCreateJsonPayload(ctx context.Context, diags *diag.Diagnosti
 	if !data.Tag.IsNull() && !data.Tag.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["tag"] = data.Tag.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"l3extProvLbl": payloadMap})
 	if err != nil {
 		diags.AddError(

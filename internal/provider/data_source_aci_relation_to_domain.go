@@ -148,10 +148,6 @@ func (d *FvRsDomAttDataSource) Schema(ctx context.Context, req datasource.Schema
 				Computed:            true,
 				MarkdownDescription: `The untagged status of the Relation To Domain object.`,
 			},
-			"vnet_only": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The VNET only status of the Relation To Domain object.`,
-			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,
 				Computed:            true,

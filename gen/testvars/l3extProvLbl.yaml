@@ -2,6 +2,7 @@
 # In order to regenerate this file execute `go generate` from the repository root.
 # More details can be found in the [README](https://github.com/CiscoDevNet/terraform-provider-aci/blob/master/README.md).
 
+
 default:
   annotation: "orchestrator:terraform"
   description: ""
@@ -48,3 +49,5 @@ parents:
     parent_dn: "aci_l3_outside.test.id"
     class_in_parent: false
     parent_dependency_name: "infra"
+    test_type: apic
+class_version: 2.0(1m)-

@@ -14,12 +14,12 @@ import (
 func TestAccResourceRtctrlProfileWithFvTenant(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "1.0(1e)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigRtctrlProfileMinDependencyWithFvTenantAllowExisting,
+				Config:             testConfigRtctrlProfileMinDependencyWithFvTenantAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "name", "test_name"),
@@ -36,8 +36,9 @@ func TestAccResourceRtctrlProfileWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "route_control_profile_type", "combinable"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "route_control_profile_type", "combinable"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "route_map_continue", "no"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "route_map_continue", "no"),
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(6d)-4.2(7w),5.1(3e)", ">",
+						resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "route_map_continue", "no"),
+						resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "route_map_continue", "no")),
 				),
 			},
 		},
@@ -45,12 +46,12 @@ func TestAccResourceRtctrlProfileWithFvTenant(t *testing.T) {
 
 	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "1.0(1e)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:      testConfigRtctrlProfileMinDependencyWithFvTenantAllowExisting,
+				Config:      testConfigRtctrlProfileMinDependencyWithFvTenantAllowExisting + testConfigDataSourceSystem,
 				ExpectError: regexp.MustCompile("Object Already Exists"),
 			},
 		},
@@ -58,12 +59,12 @@ func TestAccResourceRtctrlProfileWithFvTenant(t *testing.T) {
 
 	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "1.0(1e)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigRtctrlProfileMinDependencyWithFvTenantAllowExisting,
+				Config:             testConfigRtctrlProfileMinDependencyWithFvTenantAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "name", "test_name"),
@@ -80,20 +81,21 @@ func TestAccResourceRtctrlProfileWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "route_control_profile_type", "combinable"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "route_control_profile_type", "combinable"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "route_map_continue", "no"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "route_map_continue", "no"),
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(6d)-4.2(7w),5.1(3e)", ">",
+						resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "route_map_continue", "no"),
+						resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "route_map_continue", "no")),
 				),
 			},
 		},
 	})
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "1.0(1e)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigRtctrlProfileMinDependencyWithFvTenant,
+				Config:             testConfigRtctrlProfileMinDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "name", "test_name"),
@@ -103,12 +105,13 @@ func TestAccResourceRtctrlProfileWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_control_profile_type", "combinable"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_map_continue", "no"),
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(6d)-4.2(7w),5.1(3e)", ">",
+						resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_map_continue", "no")),
 				),
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config:             testConfigRtctrlProfileAllDependencyWithFvTenant,
+				Config:             testConfigRtctrlProfileAllDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "name", "test_name"),
@@ -118,12 +121,13 @@ func TestAccResourceRtctrlProfileWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "owner_key", "owner_key_1"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "owner_tag", "owner_tag_1"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_control_profile_type", "combinable"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_map_continue", "no"),
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(6d)-4.2(7w),5.1(3e)", ">",
+						resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_map_continue", "no")),
 				),
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config:             testConfigRtctrlProfileMinDependencyWithFvTenant,
+				Config:             testConfigRtctrlProfileMinDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "name", "test_name"),
@@ -131,7 +135,7 @@ func TestAccResourceRtctrlProfileWithFvTenant(t *testing.T) {
 			},
 			// Update with empty strings config or default value
 			{
-				Config:             testConfigRtctrlProfileResetDependencyWithFvTenant,
+				Config:             testConfigRtctrlProfileResetDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "name", "test_name"),
@@ -141,7 +145,8 @@ func TestAccResourceRtctrlProfileWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_control_profile_type", "combinable"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_map_continue", "no"),
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(6d)-4.2(7w),5.1(3e)", ">",
+						resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_map_continue", "no")),
 				),
 			},
 			// Import testing
@@ -152,7 +157,7 @@ func TestAccResourceRtctrlProfileWithFvTenant(t *testing.T) {
 			},
 			// Update with children
 			{
-				Config:             testConfigRtctrlProfileChildrenDependencyWithFvTenant,
+				Config:             testConfigRtctrlProfileChildrenDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "name", "test_name"),
@@ -162,7 +167,8 @@ func TestAccResourceRtctrlProfileWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_control_profile_type", "combinable"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_map_continue", "no"),
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(6d)-4.2(7w),5.1(3e)", ">",
+						resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_map_continue", "no")),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotations.1.key", "key_1"),
@@ -186,7 +192,7 @@ func TestAccResourceRtctrlProfileWithFvTenant(t *testing.T) {
 			},
 			// Update with children removed from config
 			{
-				Config:             testConfigRtctrlProfileChildrenRemoveFromConfigDependencyWithFvTenant,
+				Config:             testConfigRtctrlProfileChildrenRemoveFromConfigDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotations.0.key", "key_0"),
@@ -203,7 +209,7 @@ func TestAccResourceRtctrlProfileWithFvTenant(t *testing.T) {
 			},
 			// Update with children first child removed
 			{
-				Config:             testConfigRtctrlProfileChildrenRemoveOneDependencyWithFvTenant,
+				Config:             testConfigRtctrlProfileChildrenRemoveOneDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotations.0.key", "key_1"),
@@ -216,7 +222,7 @@ func TestAccResourceRtctrlProfileWithFvTenant(t *testing.T) {
 			},
 			// Update with all children removed
 			{
-				Config:             testConfigRtctrlProfileChildrenRemoveAllDependencyWithFvTenant,
+				Config:             testConfigRtctrlProfileChildrenRemoveAllDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotations.#", "0"),
@@ -224,17 +230,18 @@ func TestAccResourceRtctrlProfileWithFvTenant(t *testing.T) {
 				),
 			},
 		},
+		CheckDestroy: testCheckResourceDestroy,
 	})
 }
 func TestAccResourceRtctrlProfileWithL3extOut(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "1.0(1e)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigRtctrlProfileMinDependencyWithL3extOutAllowExisting,
+				Config:             testConfigRtctrlProfileMinDependencyWithL3extOutAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "name", "test_name"),
@@ -251,8 +258,9 @@ func TestAccResourceRtctrlProfileWithL3extOut(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "route_control_profile_type", "combinable"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "route_control_profile_type", "combinable"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "route_map_continue", "no"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "route_map_continue", "no"),
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(6d)-4.2(7w),5.1(3e)", ">",
+						resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "route_map_continue", "no"),
+						resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "route_map_continue", "no")),
 				),
 			},
 		},
@@ -260,12 +268,12 @@ func TestAccResourceRtctrlProfileWithL3extOut(t *testing.T) {
 
 	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "1.0(1e)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:      testConfigRtctrlProfileMinDependencyWithL3extOutAllowExisting,
+				Config:      testConfigRtctrlProfileMinDependencyWithL3extOutAllowExisting + testConfigDataSourceSystem,
 				ExpectError: regexp.MustCompile("Object Already Exists"),
 			},
 		},
@@ -273,12 +281,12 @@ func TestAccResourceRtctrlProfileWithL3extOut(t *testing.T) {
 
 	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "1.0(1e)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigRtctrlProfileMinDependencyWithL3extOutAllowExisting,
+				Config:             testConfigRtctrlProfileMinDependencyWithL3extOutAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "name", "test_name"),
@@ -295,20 +303,21 @@ func TestAccResourceRtctrlProfileWithL3extOut(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "route_control_profile_type", "combinable"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "route_control_profile_type", "combinable"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "route_map_continue", "no"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "route_map_continue", "no"),
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(6d)-4.2(7w),5.1(3e)", ">",
+						resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "route_map_continue", "no"),
+						resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "route_map_continue", "no")),
 				),
 			},
 		},
 	})
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "1.0(1e)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigRtctrlProfileMinDependencyWithL3extOut,
+				Config:             testConfigRtctrlProfileMinDependencyWithL3extOut + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "name", "test_name"),
@@ -318,12 +327,13 @@ func TestAccResourceRtctrlProfileWithL3extOut(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_control_profile_type", "combinable"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_map_continue", "no"),
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(6d)-4.2(7w),5.1(3e)", ">",
+						resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_map_continue", "no")),
 				),
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config:             testConfigRtctrlProfileAllDependencyWithL3extOut,
+				Config:             testConfigRtctrlProfileAllDependencyWithL3extOut + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "name", "test_name"),
@@ -333,12 +343,13 @@ func TestAccResourceRtctrlProfileWithL3extOut(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "owner_key", "owner_key_1"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "owner_tag", "owner_tag_1"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_control_profile_type", "combinable"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_map_continue", "no"),
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(6d)-4.2(7w),5.1(3e)", ">",
+						resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_map_continue", "no")),
 				),
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config:             testConfigRtctrlProfileMinDependencyWithL3extOut,
+				Config:             testConfigRtctrlProfileMinDependencyWithL3extOut + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "name", "test_name"),
@@ -346,7 +357,7 @@ func TestAccResourceRtctrlProfileWithL3extOut(t *testing.T) {
 			},
 			// Update with empty strings config or default value
 			{
-				Config:             testConfigRtctrlProfileResetDependencyWithL3extOut,
+				Config:             testConfigRtctrlProfileResetDependencyWithL3extOut + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "name", "test_name"),
@@ -356,7 +367,8 @@ func TestAccResourceRtctrlProfileWithL3extOut(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_control_profile_type", "combinable"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_map_continue", "no"),
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(6d)-4.2(7w),5.1(3e)", ">",
+						resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_map_continue", "no")),
 				),
 			},
 			// Import testing
@@ -367,7 +379,7 @@ func TestAccResourceRtctrlProfileWithL3extOut(t *testing.T) {
 			},
 			// Update with children
 			{
-				Config:             testConfigRtctrlProfileChildrenDependencyWithL3extOut,
+				Config:             testConfigRtctrlProfileChildrenDependencyWithL3extOut + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "name", "test_name"),
@@ -377,7 +389,8 @@ func TestAccResourceRtctrlProfileWithL3extOut(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_control_profile_type", "combinable"),
-					resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_map_continue", "no"),
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(6d)-4.2(7w),5.1(3e)", ">",
+						resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_map_continue", "no")),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotations.1.key", "key_1"),
@@ -401,7 +414,7 @@ func TestAccResourceRtctrlProfileWithL3extOut(t *testing.T) {
 			},
 			// Update with children removed from config
 			{
-				Config:             testConfigRtctrlProfileChildrenRemoveFromConfigDependencyWithL3extOut,
+				Config:             testConfigRtctrlProfileChildrenRemoveFromConfigDependencyWithL3extOut + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotations.0.key", "key_0"),
@@ -418,7 +431,7 @@ func TestAccResourceRtctrlProfileWithL3extOut(t *testing.T) {
 			},
 			// Update with children first child removed
 			{
-				Config:             testConfigRtctrlProfileChildrenRemoveOneDependencyWithL3extOut,
+				Config:             testConfigRtctrlProfileChildrenRemoveOneDependencyWithL3extOut + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotations.0.key", "key_1"),
@@ -431,7 +444,7 @@ func TestAccResourceRtctrlProfileWithL3extOut(t *testing.T) {
 			},
 			// Update with all children removed
 			{
-				Config:             testConfigRtctrlProfileChildrenRemoveAllDependencyWithL3extOut,
+				Config:             testConfigRtctrlProfileChildrenRemoveAllDependencyWithL3extOut + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotations.#", "0"),
@@ -439,6 +452,7 @@ func TestAccResourceRtctrlProfileWithL3extOut(t *testing.T) {
 				),
 			},
 		},
+		CheckDestroy: testCheckResourceDestroy,
 	})
 }
 
@@ -471,7 +485,7 @@ resource "aci_route_control_profile" "test" {
   owner_key = "owner_key_1"
   owner_tag = "owner_tag_1"
   route_control_profile_type = "combinable"
-  route_map_continue = "no"
+  route_map_continue = provider::aci::compare_versions(data.aci_system.version.version,">=","4.2(6d)-4.2(7w),5.1(3e)") ? "no" : null
 }
 `
 
@@ -485,7 +499,7 @@ resource "aci_route_control_profile" "test" {
   owner_key = ""
   owner_tag = ""
   route_control_profile_type = "combinable"
-  route_map_continue = "no"
+  route_map_continue = provider::aci::compare_versions(data.aci_system.version.version,">=","4.2(6d)-4.2(7w),5.1(3e)") ? "no" : null
 }
 `
 const testConfigRtctrlProfileChildrenDependencyWithFvTenant = testConfigFvTenantMin + `
@@ -579,7 +593,7 @@ resource "aci_route_control_profile" "test" {
   owner_key = "owner_key_1"
   owner_tag = "owner_tag_1"
   route_control_profile_type = "combinable"
-  route_map_continue = "no"
+  route_map_continue = provider::aci::compare_versions(data.aci_system.version.version,">=","4.2(6d)-4.2(7w),5.1(3e)") ? "no" : null
 }
 `
 
@@ -593,7 +607,7 @@ resource "aci_route_control_profile" "test" {
   owner_key = ""
   owner_tag = ""
   route_control_profile_type = "combinable"
-  route_map_continue = "no"
+  route_map_continue = provider::aci::compare_versions(data.aci_system.version.version,">=","4.2(6d)-4.2(7w),5.1(3e)") ? "no" : null
 }
 `
 const testConfigRtctrlProfileChildrenDependencyWithL3extOut = testConfigL3extOutMin + `

@@ -367,6 +367,7 @@ func (r *FvIpAttrResource) Create(ctx context.Context, req resource.CreateReques
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -481,7 +482,7 @@ func (r *FvIpAttrResource) ImportState(ctx context.Context, req resource.ImportS
 func getAndSetFvIpAttrAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvIpAttrResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "fvIpAttr,tagAnnotation,tagTag"), "GET", nil)
 
-	*data = *getEmptyFvIpAttrResourceModel()
+	readData := getEmptyFvIpAttrResourceModel()
 
 	if diags.HasError() {
 		return
@@ -492,32 +493,32 @@ func getAndSetFvIpAttrAttributes(ctx context.Context, diags *diag.Diagnostics, c
 			attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
 			for attributeName, attributeValue := range attributes {
 				if attributeName == "dn" {
-					data.Id = basetypes.NewStringValue(attributeValue.(string))
-					setFvIpAttrParentDn(ctx, attributeValue.(string), data)
+					readData.Id = basetypes.NewStringValue(attributeValue.(string))
+					setFvIpAttrParentDn(ctx, attributeValue.(string), readData)
 				}
 				if attributeName == "annotation" {
-					data.Annotation = basetypes.NewStringValue(attributeValue.(string))
+					readData.Annotation = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "descr" {
-					data.Descr = basetypes.NewStringValue(attributeValue.(string))
+					readData.Descr = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "ip" {
-					data.Ip = basetypes.NewStringValue(attributeValue.(string))
+					readData.Ip = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "name" {
-					data.Name = basetypes.NewStringValue(attributeValue.(string))
+					readData.Name = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "nameAlias" {
-					data.NameAlias = basetypes.NewStringValue(attributeValue.(string))
+					readData.NameAlias = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "ownerKey" {
-					data.OwnerKey = basetypes.NewStringValue(attributeValue.(string))
+					readData.OwnerKey = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "ownerTag" {
-					data.OwnerTag = basetypes.NewStringValue(attributeValue.(string))
+					readData.OwnerTag = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "usefvSubnet" {
-					data.UsefvSubnet = basetypes.NewStringValue(attributeValue.(string))
+					readData.UsefvSubnet = basetypes.NewStringValue(attributeValue.(string))
 				}
 			}
 			TagAnnotationFvIpAttrList := make([]TagAnnotationFvIpAttrResourceModel, 0)
@@ -555,10 +556,10 @@ func getAndSetFvIpAttrAttributes(ctx context.Context, diags *diag.Diagnostics, c
 					}
 				}
 			}
-			tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationFvIpAttrList)
-			data.TagAnnotation = tagAnnotationSet
-			tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagFvIpAttrList)
-			data.TagTag = tagTagSet
+			tagAnnotationSet, _ := types.SetValueFrom(ctx, readData.TagAnnotation.ElementType(ctx), TagAnnotationFvIpAttrList)
+			readData.TagAnnotation = tagAnnotationSet
+			tagTagSet, _ := types.SetValueFrom(ctx, readData.TagTag.ElementType(ctx), TagTagFvIpAttrList)
+			readData.TagTag = tagTagSet
 		} else {
 			diags.AddError(
 				"too many results in response",
@@ -566,8 +567,9 @@ func getAndSetFvIpAttrAttributes(ctx context.Context, diags *diag.Diagnostics, c
 			)
 		}
 	} else {
-		data.Id = basetypes.NewStringNull()
+		readData.Id = basetypes.NewStringNull()
 	}
+	*data = *readData
 }
 
 func getFvIpAttrRn(ctx context.Context, data *FvIpAttrResourceModel) string {
@@ -726,7 +728,6 @@ func getFvIpAttrCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, 
 	if !data.UsefvSubnet.IsNull() && !data.UsefvSubnet.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["usefvSubnet"] = data.UsefvSubnet.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"fvIpAttr": payloadMap})
 	if err != nil {
 		diags.AddError(

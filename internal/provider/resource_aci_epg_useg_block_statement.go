@@ -376,6 +376,7 @@ func (r *FvCrtrnResource) Create(ctx context.Context, req resource.CreateRequest
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -490,7 +491,7 @@ func (r *FvCrtrnResource) ImportState(ctx context.Context, req resource.ImportSt
 func getAndSetFvCrtrnAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvCrtrnResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "fvCrtrn,tagAnnotation,tagTag"), "GET", nil)
 
-	*data = *getEmptyFvCrtrnResourceModel()
+	readData := getEmptyFvCrtrnResourceModel()
 
 	if diags.HasError() {
 		return
@@ -501,35 +502,35 @@ func getAndSetFvCrtrnAttributes(ctx context.Context, diags *diag.Diagnostics, cl
 			attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
 			for attributeName, attributeValue := range attributes {
 				if attributeName == "dn" {
-					data.Id = basetypes.NewStringValue(attributeValue.(string))
-					setFvCrtrnParentDn(ctx, attributeValue.(string), data)
+					readData.Id = basetypes.NewStringValue(attributeValue.(string))
+					setFvCrtrnParentDn(ctx, attributeValue.(string), readData)
 				}
 				if attributeName == "annotation" {
-					data.Annotation = basetypes.NewStringValue(attributeValue.(string))
+					readData.Annotation = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "descr" {
-					data.Descr = basetypes.NewStringValue(attributeValue.(string))
+					readData.Descr = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "match" {
-					data.Match = basetypes.NewStringValue(attributeValue.(string))
+					readData.Match = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "name" {
-					data.Name = basetypes.NewStringValue(attributeValue.(string))
+					readData.Name = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "nameAlias" {
-					data.NameAlias = basetypes.NewStringValue(attributeValue.(string))
+					readData.NameAlias = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "ownerKey" {
-					data.OwnerKey = basetypes.NewStringValue(attributeValue.(string))
+					readData.OwnerKey = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "ownerTag" {
-					data.OwnerTag = basetypes.NewStringValue(attributeValue.(string))
+					readData.OwnerTag = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "prec" {
-					data.Prec = basetypes.NewStringValue(attributeValue.(string))
+					readData.Prec = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "scope" {
-					data.Scope = basetypes.NewStringValue(attributeValue.(string))
+					readData.Scope = basetypes.NewStringValue(attributeValue.(string))
 				}
 			}
 			TagAnnotationFvCrtrnList := make([]TagAnnotationFvCrtrnResourceModel, 0)
@@ -567,10 +568,10 @@ func getAndSetFvCrtrnAttributes(ctx context.Context, diags *diag.Diagnostics, cl
 					}
 				}
 			}
-			tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationFvCrtrnList)
-			data.TagAnnotation = tagAnnotationSet
-			tagTagSet, _ := types.SetValueFrom(ctx, data.TagTag.ElementType(ctx), TagTagFvCrtrnList)
-			data.TagTag = tagTagSet
+			tagAnnotationSet, _ := types.SetValueFrom(ctx, readData.TagAnnotation.ElementType(ctx), TagAnnotationFvCrtrnList)
+			readData.TagAnnotation = tagAnnotationSet
+			tagTagSet, _ := types.SetValueFrom(ctx, readData.TagTag.ElementType(ctx), TagTagFvCrtrnList)
+			readData.TagTag = tagTagSet
 		} else {
 			diags.AddError(
 				"too many results in response",
@@ -578,8 +579,9 @@ func getAndSetFvCrtrnAttributes(ctx context.Context, diags *diag.Diagnostics, cl
 			)
 		}
 	} else {
-		data.Id = basetypes.NewStringNull()
+		readData.Id = basetypes.NewStringNull()
 	}
+	*data = *readData
 }
 
 func getFvCrtrnRn(ctx context.Context, data *FvCrtrnResourceModel) string {
@@ -735,7 +737,6 @@ func getFvCrtrnCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, c
 	if !data.Scope.IsNull() && !data.Scope.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["scope"] = data.Scope.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"fvCrtrn": payloadMap})
 	if err != nil {
 		diags.AddError(

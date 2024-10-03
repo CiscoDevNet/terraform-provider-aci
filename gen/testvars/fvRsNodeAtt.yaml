@@ -2,6 +2,7 @@
 # In order to regenerate this file execute `go generate` from the repository root.
 # More details can be found in the [README](https://github.com/CiscoDevNet/terraform-provider-aci/blob/master/README.md).
 
+
 default:
   annotation: "orchestrator:terraform"
   description: ""
@@ -48,6 +49,7 @@ parents:
     class_in_parent: false
     target_classes:
         - "fabricNode"
+    test_type: apic
 targets:
   - class_name: "fabricNode"
     target_dn: "topology/pod-1/node-101"
@@ -69,3 +71,4 @@ targets:
     parent_dn_key: "parent_dn"
     static: true
     properties:
+class_version: 1.0(1e)-
