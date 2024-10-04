@@ -1,3 +1,37 @@
+# Terraform Provider ACI - Changelog
+
+All notable changes to this project will be documented in this file.
+
+## 3.0.0 (October 04, 2024)
+
+BREAKING CHANGES:
+- Add stateupgrader logic to support the type change of already released attributes with setnestedattribute that should be singlenestedattribute. this requires a configuration change when the relation_to_netflow_record attribute is defined for already existing aci_netflow_monitor_policy resources
+
+IMPROVEMENTS:
+- Migration of aci_endpoint_security_group into plugin framework
+- Add datasource and resource for fvfbroute in aci_vrf_fallback_route and aci_vrf_fallback_route_group
+- Introduction of a provider level flag to prevent creation of objects that are already existing in apic configuration
+- Display id during plan for plugin framework resources where the dn can be constructed
+- Added useg attribute resource and data-source files
+- Migration of aci_application_epg into plugin framework
+- Add default parent dn for data plane policing policy resource
+- Add read-only pctag attribute to aci_endpoint_security_group resource and datasource
+- [minor] removed legacy route_control_profile resource files and recreated the new route_control_profile resource using the generator
+- Add resource and datasource for host path selector (infrahpaths).
+- Add resource and data source for relation_to_host_path (infrarshpathatt). provide attribute to add access base group to host path selector.
+- Updated terraform plugin testing to v1.10.0 and aci go client to v2.31.0
+- Add relation_from_l3out_consumer_label_to_external_network_instance_profile and relation_from_l3out_consumer_label_to_route_control_profile resources (dcne-153) (#1277)
+- Migration of the data source aci_system into plugin framework
+- Add resource and datasource for netflow exporter policy (netflowexporterpol).
+- Added functionality to commission a node (decommisioned but not removed from controller).
+- Fixed documentation for adding 'commission' argument.
+- Add aci_certificate_authority and aci_key_ring resources and data sources (#1145)
+
+BUG FIXES:
+- Modified functionality of dorestrequest in utils.go to catch the appropriate errors returned by apic
+- Fix to set version to match the pre-migration version when a resource is migrated without changes
+- Resolves deletion of nodes from controller upon destroy.
+
 ## 2.15.0 (July 2, 2024)
 DEPRECATIONS:
 - Deprecate the non-functional `relation_vz_rs_graph_att` attribute from `aci_contract`. Use `relation_vz_rs_subj_graph_att` on `aci_contract_subject` instead.
