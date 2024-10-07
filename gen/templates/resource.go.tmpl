@@ -71,9 +71,13 @@ type {{.ResourceClassName}}ResourceModel struct {
 		{{- end}}
 	{{- end}}
 	{{- if .LegacyAttributes}}
-		{{- range .LegacyAttributes}}{{- if ne .ReplacedBy.AttributeName "" }}
+		{{- range .LegacyAttributes}}
+			{{- if ne .ReplacedBy.AttributeName "" }}
 	Deprecated{{ .Name }} types.{{getMigrationType .ValueType}} `tfsdk:"{{.AttributeName}}"`
-		{{- end }}{{- end }}
+			{{- else if containsString .Name .AttributeName}}
+	{{ .Name }} types.{{getMigrationType .ValueType}} `tfsdk:"{{.AttributeName}}"`
+			{{- end }}
+		{{- end }}
 		{{- range .LegacyBlocks}}
 	Deprecated{{ capitalize .ClassName }} types.Set `tfsdk:"{{.Name}}"`
 		{{- end }}
@@ -123,13 +127,21 @@ func getEmpty{{.ResourceClassName}}ResourceModel() *{{.ResourceClassName}}Resour
 			{{- end}}
 		{{- end}}
 		{{- if .LegacyAttributes}}
-			{{- range .LegacyAttributes}}{{- if ne .ReplacedBy.AttributeName "" }}
-				{{- if eq (getMigrationType .ValueType) "String"}}
+			{{- range .LegacyAttributes}}
+				{{- if ne .ReplacedBy.AttributeName "" }}
+					{{- if eq (getMigrationType .ValueType) "String"}}
 		Deprecated{{ .Name }}: types.{{getMigrationType .ValueType}}{},
-				{{- else if eq (getMigrationType .ValueType) "Set"}}
+					{{- else if eq (getMigrationType .ValueType) "Set"}}
 		Deprecated{{ .Name }}: types.SetNull(types.StringType),
+					{{- end }}
+				{{- else if containsString .Name .AttributeName}}
+					{{- if eq (getMigrationType .ValueType) "String"}}
+		{{ .Name }}: types.{{getMigrationType .ValueType}}{},
+					{{- else if eq (getMigrationType .ValueType) "Set"}}
+		{{ .Name }}: types.SetNull(types.StringType),
+					{{- end }}
 				{{- end }}
-			{{- end }}{{- end }}
+			{{- end }}
 			{{- range .LegacyBlocks}}
 		Deprecated{{ capitalize .ClassName }}: types.SetNull(deprecated{{ capitalize .ClassName }}Type),
 			{{- end }}
@@ -315,14 +327,18 @@ func (r *{{.ResourceClassName}}Resource) UpgradeState(ctx context.Context) map[i
 					{{ .Name }}: types.SetNull(types.StringType),
 						{{- end}}
 					{{- end}}
-					{{- range .LegacyAttributes}}{{- if ne .ReplacedBy.AttributeName "" }}
-						{{- if eq (getMigrationType .ValueType) "String"}}
+					{{- range .LegacyAttributes}}
+						{{- if ne .ReplacedBy.AttributeName "" }}
+							{{- if eq (getMigrationType .ValueType) "String"}}
 					Deprecated{{ .Name }}: priorStateData.{{ .Name }},
-						{{- end }}{{- end }}
+							{{- end }}
+						{{- else if containsString .Name .AttributeName}}
+					{{ .Name }}: priorStateData.{{ .Name }},
+						{{- end }}
 					{{- end }}
 				}
 
-				{{ range .Children}}
+				{{ range .Children}}{{ $ResourceName := .ResourceName }}
 					{{- if isLegacyChild .PkgName $.LegacyChildren}}{{ $PkgName := .PkgName}}
 					{{- $childClassType := getValueFromMap .PkgName $.MigrationClassTypes}}
 						{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
@@ -335,7 +351,11 @@ func (r *{{.ResourceClassName}}Resource) UpgradeState(ctx context.Context) map[i
 					{{ .Name }}: basetypes.NewStringNull(),
 									{{- else}}
 										{{- if isNewNamedClassAttribute $Overwrite }}
+											{{- if isNewNamedClassAttributeMatch $Overwrite $ResourceName}}
 					{{ .Name }}: basetypes.NewStringValue(GetMOName(priorStateData.{{ $AttributeName }}.ValueString())),
+											{{- else}}
+					{{ .Name }}: basetypes.NewStringNull(),
+											{{- end }}
 										{{- else}}
 					{{ .Name }}: priorStateData.{{ $AttributeName }},
 										{{- end}}
@@ -438,7 +458,6 @@ func (r *{{.ResourceClassName}}Resource) UpgradeState(ctx context.Context) map[i
 						{{- end}}
 					{{ else}}
 						{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
-				// {{ .ResourceClassName }} is a child of {{ $.ResourceClassName }}.
 				upgradedStateData.{{ .ResourceClassName }} = types.ObjectNull({{ .ResourceClassName }}{{$.ResourceClassName}}Type)
 						{{- else}}
 				upgradedStateData.{{ .ResourceClassName }} = types.SetNull(
@@ -478,10 +497,26 @@ func (r *{{.ResourceClassName}}Resource) UpgradeState(ctx context.Context) map[i
 	}
 }
 
-func set{{ .ResourceClassName }}LegacyAttributes(ctx context.Context, diags *diag.Diagnostics, data *{{.ResourceClassName}}ResourceModel, classReadInfo []interface{}) {
+func set{{ .ResourceClassName }}LegacyAttributes(ctx context.Context, diags *diag.Diagnostics, data, staticData *{{.ResourceClassName}}ResourceModel, classReadInfo []interface{}) {
 	{{- if .HasParent}}
 	data.DeprecatedParentDn = data.ParentDn
 	{{- end}}
+	{{- range .LegacyAttributes}}
+		{{-  if containsString .Name .AttributeName}}
+			{{- if or (eq (getMigrationType .ValueType) "Set") (eq (getMigrationType .ValueType) "List")}}
+	if !staticData.{{ .Name }}.IsUnknown() && !staticData.{{ .Name }}.IsNull() {
+		data.{{ .Name }} = staticData.{{ .Name }}
+	} else {
+		{{ .Name }}Set, _ := types.SetValueFrom(ctx, types.StringType, []string{})
+		data.{{ .Name }} = {{ .Name }}Set
+	}
+			{{- else}}
+	if !staticData.{{ .Name }}.IsUnknown() {
+		data.{{ .Name }} = staticData.{{ .Name }}
+	}
+			{{- end}}
+		{{- end }}
+	{{- end }}
 	attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
 	for attributeName, attributeValue := range attributes {
 		{{- range .LegacyAttributes}}{{- if ne .ReplacedBy.AttributeName "" }}
@@ -517,18 +552,18 @@ func set{{ .ResourceClassName }}LegacyAttributes(ctx context.Context, diags *dia
 		for _, child := range children {
 			for childClassName, childClassDetails := range child.(map[string]interface{}) {
 				childAttributes := childClassDetails.(map[string]interface{})["attributes"].(map[string]interface{})
-				{{- range .Children}}{{- if isLegacyChild .PkgName $.LegacyChildren}}
+				{{- range .Children}}{{- if isLegacyChild .PkgName $.LegacyChildren}}{{$ResourceName := .ResourceName}}
 				{{- $childClassType := getValueFromMap .PkgName $.MigrationClassTypes}}{{- if eq $childClassType "string" }}
 				if childClassName == "{{ .PkgName }}" {
 					for childAttributeName, childAttributeValue := range childAttributes {
 						{{- range .Properties}}
 						{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
 						{{- $AttributeName := getLegacyChildAttribute .PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
-							{{- if eq $AttributeName (capitalize .PkgName)}}
+							{{- if and (eq $AttributeName (capitalize .PkgName)) (isNewNamedClassAttributeMatch $Overwrite $ResourceName)}}
 						if childAttributeName == "tDn" {
 							data.Deprecated{{.ResourceClassName}} = basetypes.NewStringValue(childAttributeValue.(string))
 						}
-							{{- else if ne $AttributeName ""}}
+							{{- else if and (ne $AttributeName "") (isNewNamedClassAttributeMatch $Overwrite $ResourceName)}}
 						if childAttributeName == "{{.PropertyName}}" {
 							data.Deprecated{{.ResourceClassName}} = basetypes.NewStringValue(childAttributeValue.(string))
 						}
@@ -543,7 +578,7 @@ func set{{ .ResourceClassName }}LegacyAttributes(ctx context.Context, diags *dia
 						{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
 						{{- $AttributeName := getLegacyChildAttribute .PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
 							{{- if eq $AttributeName (capitalize .PkgName)}}
-						if childAttributeName == "tDn" && childAttributeValue != "" {
+						if childAttributeName == "tDn" && childAttributeValue != "" && !ContainsString(Deprecated{{.ResourceClassName}}{{$.ResourceClassName}}List, childAttributeValue.(string)) {
 							Deprecated{{.ResourceClassName}}{{$.ResourceClassName}}List = append(Deprecated{{.ResourceClassName}}{{$.ResourceClassName}}List, childAttributeValue.(string))
 						}{{break}}
 							{{- else if ne $AttributeName ""}}
@@ -642,7 +677,7 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 		}
 			{{- end}}
 			{{- else if and (ne .ReplacedBy.AttributeName "") (eq (getMigrationType .ValueType) "String") }}
-				{{- range $.Children}}
+				{{- range $.Children}}{{$ResourceName := .ResourceName}}
 					{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
 						{{- if eq $SetName (capitalize .PkgName)}}
 		if !configData.{{ $SetName }}.IsNull() && stateData != nil {
@@ -655,13 +690,13 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 								{{- range .Properties}}
 							{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
 							{{- $AttributeName := getLegacyChildAttribute .PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
-									{{- if ne $AttributeName ""}}
+									{{- if and (ne $AttributeName "") (isNewNamedClassAttributeMatch $Overwrite $ResourceName)}}
 				if GetMOName(stateData.Deprecated{{$SetName}}.ValueString()) == attributeValues.{{ .Name }}.ValueString() && !attributeValues.{{ .Name }}.IsNull() {
 					planData.Deprecated{{$SetName}} = stateData.Deprecated{{$SetName}}
 				}
-			}
 								{{- end}}
 							{{- end}}
+			}
 		} else if !configData.Deprecated{{ $SetName }}.IsNull() {
 			{{$SetName}} := {{$SetName}}{{$.ResourceClassName}}ResourceModel{
 								{{- range .Properties}}
@@ -672,7 +707,15 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 									{{- else if eq $AttributeName ""}}
 				{{ .Name }}: basetypes.NewStringNull(),
 									{{- else}}
-				{{ .Name }}: {{- if isNewNamedClassAttribute $Overwrite }}basetypes.NewStringValue(GetMOName(configData.Deprecated{{ $AttributeName }}.ValueString())){{- else }}configData.Deprecated{{ .Name }}{{- end }},
+										{{- if isNewNamedClassAttribute $Overwrite }}
+											{{- if isNewNamedClassAttributeMatch $Overwrite $ResourceName}}
+				{{ .Name }}: basetypes.NewStringValue(GetMOName(configData.Deprecated{{ $AttributeName }}.ValueString())),
+											{{- else}}
+				{{ .Name }}: basetypes.NewStringValue(""),
+											{{- end }}
+										{{- else}}
+				{{ .Name }}: configData.Deprecated{{ .Name }},
+										{{- end}}
 									{{- end}}
 								{{- end}}
 			}
@@ -1119,7 +1162,7 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 		{{- end}}
 
 		Attributes: map[string]schema.Attribute{
-			{{- if .LegacyAttributes}}
+			{{- if .LegacyAttributes}}{{$ResourceName := .ResourceName}}
 			// Deprecated attributes
 				{{- range .LegacyAttributes}}
 					{{- if ne .ReplacedBy.AttributeName "" }}
@@ -1158,6 +1201,39 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 					listvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("{{getConflictingAttributeName .ReplacedBy.AttributeName}}"),
 					}...),
+				},
+			},
+						{{- end}}
+					{{- else if containsString .Name .AttributeName}}
+						{{- if eq (getMigrationType .ValueType) "String"}}
+			"{{.AttributeName}}": schema.StringAttribute{
+				Optional: true,
+				Computed: true,
+				DeprecationMessage: "Remove `{{.AttributeName}}` configuration as it is not used by {{$ResourceName}} configuration. The attribute will be removed in the next major version of the provider.",
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
+			},
+						{{- end}}
+						{{- if eq (getMigrationType .ValueType) "Set"}}
+			"{{.AttributeName}}": schema.SetAttribute{
+				Optional: true,
+				Computed: true,
+				ElementType: types.StringType,
+				DeprecationMessage: "Remove `{{.AttributeName}}` configuration as it is not used by {{$ResourceName}} configuration. The attribute will be removed in the next major version of the provider.",
+				PlanModifiers: []planmodifier.Set{
+					setplanmodifier.UseStateForUnknown(),
+				},
+			},
+						{{- end}}
+						{{- if eq (getMigrationType .ValueType) "List"}}
+			"{{.AttributeName}}": schema.ListAttribute{
+				Optional: true,
+				Computed: true,
+				ElementType: types.StringType,
+				DeprecationMessage: "Remove `{{.AttributeName}}` configuration as it is not used by {{$ResourceName}} configuration. The attribute will be removed in the next major version of the provider.",
+				PlanModifiers: []planmodifier.List{
+					listplanmodifier.UseStateForUnknown(),
 				},
 			},
 						{{- end}}
@@ -1785,7 +1861,7 @@ func getAndSet{{.ResourceClassName}}Attributes(ctx context.Context, diags *diag.
 	{{- else}}
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "GET", nil)
 	{{- end}}
-	
+
 	readData := getEmpty{{.ResourceClassName}}ResourceModel()
 
 	if diags.HasError() {
@@ -1908,7 +1984,7 @@ func getAndSet{{.ResourceClassName}}Attributes(ctx context.Context, diags *diag.
 				{{- end}}
 			{{- end}}
 			{{- if .LegacyAttributes}}
-			set{{ .ResourceClassName }}LegacyAttributes(ctx, diags, readData, classReadInfo)
+			set{{ .ResourceClassName }}LegacyAttributes(ctx, diags, readData, data, classReadInfo)
 			{{- end}}
 		} else {
 			diags.AddError(

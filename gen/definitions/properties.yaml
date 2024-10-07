@@ -16,6 +16,14 @@ global:
     matchT: "The provider label match criteria."
     instrImedcy: "The deployment immediacy of the %s object. Specifies when the policy is pushed into the hardware policy content-addressable memory (CAM)"
     resImedcy: "The resolution immediacy of the %s object. Specifies if policies are resolved immmediately or when needed."
+    tnL3extOutName: "The name of the L3 Outside object."
+    adminSt: "The administrative state of the %s object."
+    ctrl: "The controls for the %s object."
+    queryIntvl: "The query interval (seconds) of the %s object."
+    rspIntvl: "The response interval (seconds) of the %s object."
+    lastMbrIntvl: "The last member interval (seconds) of the %s object. The group state is removed when no host responds before the timeout"
+    startQueryCnt: "The start query count of the %s object."
+    startQueryIntvl: "The query interval (seconds) of the %s object at start-up."
   overwrites:
     count: "apic_count" # count is a terraform reserved schema entry
     provider: "prov" # provider is a terraform reserved schema entry
@@ -37,9 +45,10 @@ global:
     num_ports: "number_of_ports"
     class_pref: "class_preference"
   resource_name_doc_overwrite:
-    Vrf: VRF
+    Vrf: "VRF"
     Sid: "SR-MPLS Segment ID"
     Epg: "EPG"
+    Epgs: "EPGs"
     Useg: "uSeg"
     Vm: "VM"
     Dns: "DNS"
@@ -47,9 +56,13 @@ global:
     Ip: "IP"
     Ad: "AD"
     Esg: "ESG"
-    "External Network Instance Profile": "External EPG"
-    L3out: L3Out
+    External Network Instance Profile: "External EPG"
+    L3out: "L3Out"
     Netflow: "NetFlow"
+    Bd: "BD"
+    Nd: "Neighbor Discovery (ND)"
+    Mld: "MLD"
+    Igmp: "IGMP"
   ignores:
     - "userdom"
 
@@ -795,7 +808,7 @@ fvRsNodeAtt:
 fvRsDomAtt:
   default_values:
     untagged: "no"
-    vnetOnly: "no"
+    # vnetOnly: "no"
     ipamEnabled: "no"
   ignores:
     - "apiMode"
@@ -824,7 +837,7 @@ fvRsDomAtt:
     primaryEncapInner: "The primary inner encapsulation of the %s object. This is used for the portgroup at the VMWare Distributed Virtual Switch (DVS). This VLAN is internal to the DVS and is used for communication between the other VMs and the AVE VM at a host. Traffic is not forwarded to the fabric over the VLAN. Only applicable for Cisco ACI Virtual Edge (AVE) domains."
     secondaryEncapInner: "The secondary inner encapsulation of the %s object. This is used for the portgroup at the VMWare Distributed Virtual Switch (DVS). This VLAN is internal to the DVS and is used for communication between the other VMs and the AVE VM at a host. Traffic is not forwarded to the fabric over the VLAN. Only applicable for Cisco ACI Virtual Edge (AVE) domains."
     untagged: "The untagged status of the %s object."
-    vnetOnly: "The VNET only status of the %s object."
+    # vnetOnly: "The VNET only status of the %s object."
     switchingMode: "The switching mode of the %s object."
     tDn: "The distinguished name of the target Domain object."
   test_values:
@@ -1288,3 +1301,319 @@ pkiKeyRing:
       certificate: -----BEGIN CERTIFICATE-----\\nMIICODCCAaGgAwIBAgIJAIt8XMntue0VMA0GCSqGSIb3DQEBCwUAMDQxDjAMBgNV\\nBAMMBUFkbWluMRUwEwYDVQQKDAxZb3VyIENvbXBhbnkxCzAJBgNVBAYTAlVTMCAX\\nDTE4MDEwOTAwNTk0NFoYDzIxMTcxMjE2MDA1OTQ0WjA0MQ4wDAYDVQQDDAVBZG1p\\nbjEVMBMGA1UECgwMWW91ciBDb21wYW55MQswCQYDVQQGEwJVUzCBnzANBgkqhkiG\\n9w0BAQEFAAOBjQAwgYkCgYEAohG/7axtt7CbSaMP7r+2mhTKbNgh0Ww36C7Ta14i\\nv+VmLyKkQHnXinKGhp6uy3Nug+15a+eIu7CrgpBVMQeCiWfsnwRocKcQJWIYDrWl\\nXHxGQn31yYKR6mylE7Dcj3rMFybnyhezr5D8GcP85YRPmwG9H2hO/0Y1FUnWu9Iw\\nAQkCAwEAAaNQME4wHQYDVR0OBBYEFD0jLXfpkrU/ChzRvfruRs/fy1VXMB8GA1Ud\\nIwQYMBaAFD0jLXfpkrU/ChzRvfruRs/fy1VXMAwGA1UdEwQFMAMBAf8wDQYJKoZI\\nhvcNAQELBQADgYEAOmvre+5tgZ0+F3DgsfxNQqLTrGiBgGCIymPkP/cBXXkNuJyl\\n3ac7tArHQc7WEA4U2R2rZbEq8FC3UJJm4nUVtCPvEh3G9OhN2xwYev79yt6pIn/l\\nKU0Td2OpVyo0eLqjoX5u2G90IBWzhyjFbo+CcKMrSVKj1YOdG0E3OuiJf00=\\n-----END CERTIFICATE-----
       key: -----BEGIN PRIVATE KEY-----\\nMIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAKIRv+2sbbewm0mj\\nD+6/tpoUymzYIdFsN+gu02teIr/lZi8ipEB514pyhoaerstzboPteWvniLuwq4KQ\\nVTEHgoln7J8EaHCnECViGA61pVx8RkJ99cmCkepspROw3I96zBcm58oXs6+Q/BnD\\n/OWET5sBvR9oTv9GNRVJ1rvSMAEJAgMBAAECgYByu3QO0qF9h7X3JEu0Ld4cKBnB\\ngiQ2uJC/et7KxIJ/LOvw9GopBthyt27KwG1ntBkJpkTuAaQHkyNns7vLkNB0S0IR\\n+owVFEcKYq9VCHTaiQU8TDp24gN+yPTrpRuH8YhDVq5SfVdVuTMgHVQdj4ya4VlF\\nGj+a7+ipxtGiLsVGrQJBAM7p0Fm0xmzi+tBOASUAcVrPLcteFIaTBFwfq16dm/ON\\n00Khla8Et5kMBttTbqbukl8mxFjBEEBlhQqb6EdQQ0sCQQDIhHx1a9diG7y/4DQA\\n4KvR3FCYwP8PBORlSamegzCo+P1OzxiEo0amX7yQMA5UyiP/kUsZrme2JBZgna8S\\np4R7AkEAr7rMhSOPUnMD6V4WgsJ5g1Jp5kqkzBaYoVUUSms5RASz4+cwJVCwTX91\\nY1jcpVIBZmaaY3a0wrx13ajEAa0dOQJBAIpjnb4wqpsEh7VpmJqOdSdGxb1XXfFQ\\nsA0T1OQYqQnFppWwqrxIL+d9pZdiA1ITnNqyvUFBNETqDSOrUHwwb2cCQGArE+vu\\nffPUWQ0j+fiK+covFG8NL7H+26NSGB5+Xsn9uwOGLj7K/YT6CbBtr9hJiuWjM1Al\\n0V4ltlTuu2mTMaw=\\n-----END PRIVATE KEY-----
       certificate_authority: "test_name"
+
+fvBD:
+  remove_valid_values:
+    vmac:
+      - "not-applicable"
+  add_valid_values:
+    epMoveDetectMode:
+      - ""
+  ignore_properties_in_test:
+    enableRogueExceptMac: "no"
+  default_values:
+    hostBasedRouting: "no"
+    mcastARPDrop: "yes"
+    enableRogueExceptMac: "no"
+    intersiteBumTrafficAllow: "no"
+    ipLearning: "yes"
+    limitIpLearnToSubnets: "yes"
+    mcastAllow: "no"
+    ipv6McastAllow: "no"
+  overwrites:
+    arp_flood: "arp_flooding"
+    host_based_routing: "advertise_host_routes"
+    unk_mac_ucast_act: "l2_unknown_unicast_flooding"
+    unk_mcast_act: "l3_unknown_multicast_flooding"
+    v6unk_mcast_act: "ipv6_l3_unknown_multicast_flooding"
+    ipv6_mcast_allow: "pim_ipv6"
+    multi_dst_pkt_act: "multi_destination_flooding"
+    unicast_route: "unicast_routing"
+    mac: "custom_mac_address"
+    vmac: "virtual_mac_address"
+    ll_addr: "link_local_ipv6_address"
+    mcast_allow: "pim"
+    mcast_arp_drop: "drop_arp_with_multicast_smac"
+    ep_clear: "clear_remote_mac_entries"
+    ep_move_detect_mode: "endpoint_move_detection_mode"
+    enable_rogue_except_mac: "enable_rogue_exception_mac"
+    type: "bridge_domain_type"
+  documentation:
+    OptimizeWanBandwidth: "Optimize WAN Bandwidth for the %s object."
+    arpFlood: "Enable ARP flooding for the %s object. If flooding is disabled, unicast routing will be performed on the target IP address."
+    enableRogueExceptMac: "Enable rogue exception based on MAC wildcard for the %s object."
+    epClear: "Clear all End-Points in leafs for the %s object."
+    hostBasedRouting: "Advertise host routes (/32 prefixes) out of the L3Out(s) associated to the %s object."
+    intersiteBumTrafficAllow: "Enable intersite Broadcast, Unknown-Unicast and Multicast (BUM) traffic between sites for the %s object."
+    intersiteL2Stretch: "Enable L2 stretch between sites for the %s object."
+    ipLearning: "The IP learning setting of the %s object."
+    ipv6McastAllow: "Enable IPv6 multicast traffic for the %s object."
+    limitIpLearnToSubnets: "Limit IP address learning to subnets for the %s object. Every %s object can have multiple subnets associated with it"
+    mcastARPDrop: "Drop roque multicast ARP packets for the %s object."
+    mcastAllow: "Enable IPv4 multicast traffic for the %s object."
+    bridge_domain_type: "The domain type of the %s object."
+    unicastRoute: "Enable the forwarding method based on predefined forwarding criteria (IP or MAC address)."
+    unkMcastAct: "The forwarding method for unknown layer multicast destinations."
+    v6unkMcastAct: "The forwarding method for unknown IPv6 multicast destinations."
+    vmac: "The virtual MAC address of the %s object. This is used when the the BD/SVI is extended to multiple sites using a L2 Outside."
+  type_overwrites:
+    epMoveDetectMode: "string"
+  test_values:
+    default:
+      endpoint_move_detection_mode: ""
+      custom_mac_address: "00:22:BD:F8:19:FF"
+      link_local_ipv6_address: "::"
+    all:
+      custom_mac_address: "00:22:BD:F8:19:FE"
+      virtual_mac_address: "00:22:BD:F8:19:FB"
+      link_local_ipv6_address: "fe80::1"
+      endpoint_move_detection_mode: "garp"
+      l2_unknown_unicast_flooding: "proxy"
+      limit_ip_learn_to_subnets: "yes"
+  parents:
+    - class_name: "fvTenant"
+      parent_dependency: ""
+      parent_dn: "aci_tenant.test.id"
+
+fvRsABDPolMonPol:
+  overwrites:
+    relation_from_bridge_domain_to_monitoring_policy: "relation_to_monitor_policy"
+  documentation:
+    tnMonEPGPolName: "The name of the Monitoring Policy object."
+
+fvRsBdToEpRet:
+  overwrites:
+    resolve_act: "resolve_action"
+    relation_from_bridge_domain_to_end_point_retention_policy: "relation_to_end_point_retention_policy"
+  documentation:
+    tnFvEpRetPolName: "The name of the Endpoint Retention Policy object."
+    resolveAct: "The action to take for resolving the Endpoint Retention Policy object."
+
+fvRsBDToFhs:
+  overwrites:
+    relation_from_bridge_domain_to_first_hop_security_policy: "relation_to_first_hop_security_policy"
+  documentation:
+    tnFhsBDPolName: "The name of the First Hop Security Policy object."
+
+fvRsBDToNdP:
+  overwrites:
+    relation_from_bridge_domain_to_neighbor_discovery_interface_policy: "relation_to_neighbor_discovery_interface_policy"
+  documentation:
+    tnNdIfPolName: "The name of the Neighbor Discovery Interface Policy object."
+
+fvRsBDToNetflowMonitorPol:
+  overwrites:
+    relation_from_bridge_domain_to_netflow_monitor_policys: "relation_to_netflow_monitor_policy"
+    flt_type: "filter_type"
+  documentation:
+    tnNetflowMonitorPolName: "The name of the NetFlow Monitor Policy object."
+    fltType: "The filter type of the NetFlow Monitor Policy object."
+  test_values:
+    default:
+      filter_type: "ipv4"
+    all:
+      filter_type: "ce"
+    resource_required:
+      filter_type: "ipv4"
+    datasource_required:
+      filter_type: "ipv4"
+    datasource_non_existing:
+      filter_type: "ipv6"
+  parents:
+    - class_name: "fvBD"
+      parent_dependency: "fvTenant"
+      parent_dn: "aci_bridge_domain.test.id"
+
+fvRsBDToOut:
+  overwrites:
+    relation_from_bridge_domain_to_l3_outsides: "relation_to_l3_outsides"
+  parents:
+    - class_name: "fvBD"
+      parent_dependency: "fvTenant"
+      parent_dn: "aci_bridge_domain.test.id"
+
+fvRsBDToProfile:
+  overwrites:
+    relation_from_bridge_domain_to_route_control_profile: "relation_to_route_control_profile"
+
+fvRsBDToRelayP:
+  overwrites:
+    relation_from_bridge_domain_to_dhcp_relay_policy: "relation_to_dhcp_relay_policy"
+  documentation:
+    tnDhcpRelayPName: "The name of the DHCP Relay Policy object."
+
+fvRsCtx:
+  documentation:
+    tnFvCtxName: "The name of the VRF object."
+
+fvRsIgmpsn:
+  documentation:
+    tnIgmpSnoopPolName: "The name of the IGMP Snooping Policy object."
+
+fvRsMldsn:
+  documentation:
+    tnMldSnoopPolName: "The name of the MLD Snooping Policy object."
+
+fvRogueExceptionMac:
+  test_values:
+    default:
+      mac: "00:00:00:00:00:00"
+    resource_required:
+      mac: "00:00:00:00:00:01"
+    datasource_required:
+      mac: "00:00:00:00:00:01"
+    all:
+      mac: "00:00:00:00:00:01"
+    test_values_for_parent:
+      - mac: "00:00:00:00:00:00"
+      - mac: "00:00:00:00:00:01"
+    datasource_non_existing:
+      mac: "00:00:00:00:00:02"
+  parents:
+    - class_name: "fvBD"
+      parent_dependency: "fvTenant"
+      parent_dn: "aci_bridge_domain.test.id"
+
+fvAccP:
+  resource_required:
+    - "encapsulation"
+  documentation:
+    encap: "The VLAN or VXLAN encapsulation of the %s object."
+  test_values:
+    default:
+      encapsulation: "vlan-101"
+    all:
+      encapsulation: "vlan-100"
+    resource_required:
+      encapsulation: "vlan-101"
+
+igmpSnoopPol:
+  overwrites:
+    ctrl: "control"
+    admin_st: "admin_state"
+    last_mbr_intvl: "last_member_interval"
+    query_intvl: "query_interval"
+    rsp_intvl: "response_interval"
+    start_query_cnt: "start_query_count"
+    start_query_intvl: "start_query_interval"
+    ver: "querier_version"
+  default_values:
+    queryIntvl: "125"
+    rspIntvl: "10"
+    startQueryCnt: "2"
+    startQueryIntvl: "31"
+    lastMbrIntvl: "1"
+  test_values:
+    default:
+      control: []
+    all:
+      control: ["fast-leave", "querier"]
+      query_interval: "140"
+      response_interval: "11"
+      start_query_count: "9"
+      start_query_interval: "2"
+      last_member_interval: "3"
+      querier_version: "v2"
+
+mldSnoopPol:
+  overwrites:
+    ctrl: "control"
+    admin_st: "admin_state"
+    last_mbr_intvl: "last_member_interval"
+    query_intvl: "query_interval"
+    rsp_intvl: "response_interval"
+    start_query_cnt: "start_query_count"
+    start_query_intvl: "start_query_interval"
+  default_values:
+    queryIntvl: "125"
+    rspIntvl: "10"
+    startQueryCnt: "2"
+    startQueryIntvl: "31"
+    lastMbrIntvl: "1"
+  test_values:
+    default:
+      control: []
+    all:
+      control: ["fast-leave", "querier"]
+      query_interval: "140"
+      response_interval: "11"
+      start_query_count: "9"
+      start_query_interval: "2"
+      last_member_interval: "3"
+
+ndIfPol:
+  documentation:
+    mtu: "The maximum transmission unit (MTU) of the %s object."
+    hopLimit: "The hop limit of the %s object."
+    nsRetries: "The retransmission count for sending neighbor solicitation (NS) messages."
+    nsIntvl: "The interval (milliseconds) for sending neighbor solicitation (NS) messages."
+    nudRetryBase: "The retransmission base value for neighbor unreachability detection (NUD)."
+    nudRetryInterval: "The retransmission interval (milliseconds) for neighbor unreachability detection (NUD)."
+    nudRetryMaxAttempts: "The maximum number of retransmission attempts for neighbor unreachability detection (NUD)."
+    raIntvl: "The interval (seconds) for sending route advertisement messages."
+    raLifetime: "The default router lifetime (seconds)."
+    reachableTime: "The time (milliseconds) for which a neighbor is considered reachable after receiving reachability confirmation."
+    retransTimer: "The retransmission time (milliseconds) for sending neighbor solicitation messages."
+  overwrites:
+    ctrl: "controller_state"
+    ns_intvl: "neighbor_solicitation_interval"
+    ns_retries: "neighbor_solicitation_retries"
+    ra_intvl: "router_advertisement_interval"
+    ra_lifetime: "router_advertisement_lifetime"
+    retrans_timer: "retransmit_timer"
+  default_values:
+    hopLimit: "64"
+    mtu: "9000"
+    nsIntvl: "1000"
+    nsRetries: "3"
+    nudRetryBase: "1"
+    nudRetryInterval: "1000"
+    nudRetryMaxAttempts: "3"
+    raIntvl: "600"
+    raLifetime: "1800"
+    reachableTime: "0"
+    retransTimer: "0"
+  test_values:
+    default:
+      controller_state: []
+    all:
+      controller_state: ["managed-cfg"]
+      hop_limit: "40"
+      mtu: "8700"
+      neighbor_solicitation_interval: "1500"
+      neighbor_solicitation_retries: "6"
+      nud_retry_base: "2"
+      nud_retry_interval: "1300"
+      nud_retry_max_attempts: "5"
+      router_advertisement_interval: "500"
+      router_advertisement_lifetime: "1500"
+      reachable_time: "2"
+      retransmit_timer: "2"
+
+fhsBDPol:
+  documentation:
+    ipInspectAdminSt: "The IP Inspection Status of the %s object."
+    raGuardAdminSt: "Enable Router Advertisement Guard for the %s object."
+    srcGuardAdminSt: "The Source Guard Status of the %s object."
+  overwrites:
+    ip_inspect_admin_st: "ip_inspection"
+    ra_guard_admin_st: "router_advertisement"
+    src_guard_admin_st: "source_guard"
+
+fhsRaGuardPol:
+  default_values:
+    maxHopLimit: "0"
+    minHopLimit: "0"
+  documentation:
+    managedConfigCheck: "Perform a managed configuration check for the %s object."
+    managedConfigFlag: "The managed configuration flag setting for the %s object."
+    otherConfigCheck: "Perform a other configuration check for the %s object."
+    otherConfigFlag: "The other configuration flag setting for the %s object."
+    maxHopLimit: "The maximum hop limit for the %s object."
+    minHopLimit: "The minimum hop limit for the %s object."
+    maxRouterPref: "The allowed maximum router preference for the %s object."
+  test_values:
+    all:
+      max_hop_limit: "10"
+      min_hop_limit: "1"
+    

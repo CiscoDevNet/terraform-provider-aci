@@ -87,6 +87,11 @@ func (d *FvAEPgDataSource) Schema(ctx context.Context, req datasource.SchemaRequ
 				Computed:           true,
 				DeprecationMessage: "Attribute 'shutdown' will be deprecated soon, please refer to 'admin_state' instead",
 			},
+			"relation_fv_rs_prov_def": schema.SetAttribute{
+				Computed:           true,
+				ElementType:        types.StringType,
+				DeprecationMessage: "Attribute `relation_fv_rs_prov_def` will be deprecated soon as it is not used by application_epg. The attribute will be removed in the next major version of the provider.",
+			},
 			"relation_fv_rs_aepg_mon_pol": schema.StringAttribute{
 				Computed:           true,
 				DeprecationMessage: "Attribute 'relation_fv_rs_aepg_mon_pol' will be deprecated soon, please refer to 'relation_to_application_epg_monitoring_policy.monitoring_policy_name' instead",

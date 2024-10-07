@@ -59,6 +59,15 @@ func (d *FvESgDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 				Computed:           true,
 				DeprecationMessage: "Attribute 'pref_gr_memb' will be deprecated soon, please refer to 'preferred_group_member' instead",
 			},
+			"relation_fv_rs_cust_qos_pol": schema.StringAttribute{
+				Computed:           true,
+				DeprecationMessage: "Attribute `relation_fv_rs_cust_qos_pol` will be deprecated soon as it is not used by endpoint_security_group. The attribute will be removed in the next major version of the provider.",
+			},
+			"relation_fv_rs_prot_by": schema.SetAttribute{
+				Computed:           true,
+				ElementType:        types.StringType,
+				DeprecationMessage: "Attribute `relation_fv_rs_prot_by` will be deprecated soon as it is not used by endpoint_security_group. The attribute will be removed in the next major version of the provider.",
+			},
 			"relation_fv_rs_sec_inherited": schema.SetAttribute{
 				Computed:           true,
 				ElementType:        types.StringType,

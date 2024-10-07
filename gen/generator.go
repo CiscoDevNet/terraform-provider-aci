@@ -133,6 +133,7 @@ var templateFuncs = template.FuncMap{
 	"hasKey":                            HasKey,
 	"definedInList":                     DefinedInList,
 	"keyExists":                         KeyExists,
+	"isNewNamedClassAttributeMatch":     IsNewNamedClassAttributeMatch,
 }
 
 func ContainsRequired(properties map[string]Property) bool {
@@ -190,6 +191,11 @@ func IsNewAttributeStringType(attributeName string) bool {
 
 func IsNewNamedClassAttribute(attributeName string) bool {
 	return strings.HasSuffix(attributeName, "_name")
+}
+
+func IsNewNamedClassAttributeMatch(attributeName, resourceName string) bool {
+	// Function to determine the correct named attribute when multiple named attributes are present but only 1 in legacy configuration
+	return strings.Contains(resourceName, attributeName[:len(attributeName)-5])
 }
 
 func GetConflictingAttributeName(attributeName string) string {
@@ -277,7 +283,14 @@ func IsResourceClass(className string) bool {
 func GetResourceNameAsDescription(s string, definitions Definitions) string {
 	resourceName := cases.Title(language.English).String(strings.ReplaceAll(s, "_", " "))
 	for k, v := range definitions.Properties["global"].(map[interface{}]interface{})["resource_name_doc_overwrite"].(map[interface{}]interface{}) {
-		resourceName = strings.ReplaceAll(resourceName, k.(string), v.(string))
+		matchList := strings.Split(resourceName, " ")
+		// Always replace when the key is containing of multiple words
+		// Replace only individual word on exact match of key, in order to prevent partial word replacement
+		if len(strings.Split(k.(string), " ")) > 1 {
+			resourceName = strings.ReplaceAll(resourceName, k.(string), v.(string))
+		} else if len(matchList) >= 1 && slices.Contains(matchList, k.(string)) {
+			resourceName = strings.ReplaceAll(resourceName, k.(string), v.(string))
+		}
 	}
 	return resourceName
 }
@@ -1670,6 +1683,10 @@ func (m *Model) SetClassProperties(classDetails interface{}) {
 						property.ValidValuesMap[validValueKey] = validValueName
 					}
 				}
+				addValidValuesList := GetValidValuesToAdd(m.PkgName, propertyName, m.Definitions)
+				for _, validValueName := range addValidValuesList {
+					property.ValidValues = append(property.ValidValues, validValueName.(string))
+				}
 				if len(property.ValidValues) > 0 {
 					m.HasValidValues = true
 				}
@@ -2857,6 +2874,25 @@ func GetValidValuesToRemove(classPkgName, propertyName string, definitions Defin
 		}
 	}
 	return removedValidValuesSlice
+}
+
+func GetValidValuesToAdd(classPkgName, propertyName string, definitions Definitions) []interface{} {
+	precedenceList := []string{classPkgName, "global"}
+	addValidValuesSlice := make([]interface{}, 0)
+	for _, precedence := range precedenceList {
+		if classDetails, ok := definitions.Properties[precedence]; ok {
+			for key, value := range classDetails.(map[interface{}]interface{}) {
+				if key.(string) == "add_valid_values" {
+					for k, v := range value.(map[interface{}]interface{}) {
+						if k.(string) == propertyName {
+							addValidValuesSlice = append(addValidValuesSlice, v.([]interface{})...)
+						}
+					}
+				}
+			}
+		}
+	}
+	return addValidValuesSlice
 }
 
 func IsRequiredInTestValue(classPkgName, propertyName string, definitions Definitions, testType string) bool {
