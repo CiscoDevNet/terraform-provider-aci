@@ -9,9 +9,6 @@ fvTenant:
   resource_name: "tenant"
   resource_identifier: "tn"
 
-fvBD:
-  resource_name: "bridge_domain"
-
 fvAEPg:
   resource_name: "application_epg"
   ui_locations:
@@ -311,6 +308,7 @@ fvFBRMember:
 fvFBRoute:
   resource_name: "vrf_fallback_route"
   max_one_class_allowed: true
+  include: true
   ui_locations:
     - "Tenants -> Networking -> VRFs -> Policy -> Fallback Route Group -> Fallback Routes"
   sub_category: "Networking"
@@ -672,3 +670,117 @@ pkiKeyRing:
       contained_by: "fvTenant"
       wrapper_class: "cloudCertStore"
       test_type: "cloud"
+
+fvBD:
+  resource_name: "bridge_domain"
+  ui_locations:
+    - "Tenants -> Networking -> Bridge Domains"
+  sub_category: "Networking"
+  children:
+    - "fvRogueExceptionMac"
+    - "fvAccP"
+  migration_version: 1
+  migration_blocks:
+    fvBD:
+      tenant_dn: parent_dn
+      arp_flood: arp_flooding
+      ep_clear: clear_remote_mac_entries
+      ep_move_detect_mode: endpoint_move_detection_mode
+      host_based_routing: advertise_host_routes
+      ipv6_mcast_allow: pim_ipv6
+      ll_addr: link_local_ipv6_address
+      mac: custom_mac_address
+      mcast_allow: pim
+      multi_dst_pkt_act: multi_destination_flooding
+      unicast_route: unicast_routing
+      unk_mac_ucast_act: l2_unknown_unicast_flooding
+      unk_mcast_act: l3_unknown_multicast_flooding
+      v6unk_mcast_act: ipv6_l3_unknown_multicast_flooding
+      vmac: virtual_mac_address
+    fvRsABDPolMonPol:
+      relation_fv_rs_abd_pol_mon_pol: relation_to_monitor_policy.monitoring_policy_name
+    fvRsBdToEpRet:
+      relation_fv_rs_bd_to_ep_ret: relation_to_end_point_retention_policy.end_point_retention_policy_name
+    fvRsBDToFhs:
+      relation_fv_rs_bd_to_fhs: relation_to_first_hop_security_policy.first_hop_security_policy_name
+    fvRsBDToNdP:
+      relation_fv_rs_bd_to_nd_p: relation_to_neighbor_discovery_interface_policy.neighbor_discovery_interface_policy_name
+    fvRsBDToNetflowMonitorPol:
+      relation_fv_rs_bd_to_netflow_monitor_pol: relation_to_netflow_monitor_policy
+      tn_netflow_monitor_pol_name: relation_to_netflow_monitor_policy.netflow_monitor_policy_name
+      flt_type: relation_to_netflow_monitor_policy.filter_type
+    fvRsBDToOut:
+      relation_fv_rs_bd_to_out: relation_to_l3_outsides.l3_outside_name
+    fvRsBDToProfile:
+      relation_fv_rs_bd_to_profile: relation_to_route_control_profile.route_control_profile_name
+    fvRsBDToRelayP:
+      relation_fv_rs_bd_to_relay_p: relation_to_relay_policy.dhcp_relay_policy_name
+    fvRsCtx:
+      relation_fv_rs_ctx: relation_to_vrf.vrf_name
+    fvRsIgmpsn:
+      relation_fv_rs_igmpsn: relation_to_igmp_snooping_policy.igmp_snooping_policy_name
+    fvRsMldsn:
+      relation_fv_rs_mldsn: relation_to_mld_snooping_policy.mld_snooping_policy_name
+
+fvRsABDPolMonPol:
+  resource_name: "relation_from_bridge_domain_to_monitoring_policy"
+
+fvRsBdToEpRet:
+  resource_name: "relation_from_bridge_domain_to_end_point_retention_policy"
+
+fvRsBDToFhs:
+  resource_name: "relation_from_bridge_domain_to_first_hop_security_policy"
+
+fvRsBDToNdP:
+  resource_name: "relation_from_bridge_domain_to_neighbor_discovery_interface_policy"
+
+fvRsBDToNetflowMonitorPol:
+  resource_name: "relation_from_bridge_domain_to_netflow_monitor_policy"
+
+fvRsBDToOut:
+  resource_name: "relation_from_bridge_domain_to_l3_outside"
+
+fvRsBDToProfile:
+  resource_name: "relation_from_bridge_domain_to_route_control_profile"
+
+fvRsBDToRelayP:
+  resource_name: "relation_from_bridge_domain_to_dhcp_relay_policy"
+
+fvRsCtx:
+  resource_name: "relation_to_vrf"
+
+fvRsIgmpsn:
+  resource_name: "relation_to_igmp_snooping_policy"
+
+fvRsMldsn:
+  resource_name: "relation_to_mld_snooping_policy"
+
+fvEpRetPol:
+  resource_name: "end_point_retention_policy"
+
+igmpSnoopPol:
+  resource_name: "igmp_snooping_policy"
+
+mldSnoopPol:
+  resource_name: "mld_snooping_policy"
+
+dhcpRelayP:
+  resource_name: "dhcp_relay_policy"
+
+ndIfPol:
+  resource_name: "neighbor_discovery_interface_policy"
+
+fhsBDPol:
+  resource_name: "first_hop_security_policy"
+
+vzFilter:
+  resource_name: "filter"
+
+fvAccP:
+  resource_name: "legacy_mode"
+
+fvRogueExceptionMac:
+  resource_name: "rogue_coop_exception"
+
+fhsRaGuardPol:
+  resource_name: "route_advertisement_guard_policy"
