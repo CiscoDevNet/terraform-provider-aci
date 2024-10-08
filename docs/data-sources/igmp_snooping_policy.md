@@ -62,7 +62,7 @@ data "aci_igmp_snooping_policy" "example_tenant" {
 * `response_interval` (rspIntvl) - (string) The response interval (seconds) of the IGMP Snooping Policy object.
 * `start_query_count` (startQueryCnt) - (string) The start query count of the IGMP Snooping Policy object.
 * `start_query_interval` (startQueryIntvl) - (string) The query interval (seconds) of the IGMP Snooping Policy object at start-up.
-* `querier_version` (ver) - (string) Version.
+* `querier_version` (ver) - (string) The version of the IGMP querier.
 
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
   * `key` (key) - (string) The key used to uniquely identify this configuration object.

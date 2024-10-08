@@ -104,7 +104,7 @@ func (d *IgmpSnoopPolDataSource) Schema(ctx context.Context, req datasource.Sche
 			},
 			"querier_version": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `Version.`,
+				MarkdownDescription: `The version of the IGMP querier.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,

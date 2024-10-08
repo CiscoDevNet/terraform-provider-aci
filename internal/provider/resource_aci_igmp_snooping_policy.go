@@ -319,7 +319,7 @@ func (r *IgmpSnoopPolResource) Schema(ctx context.Context, req resource.SchemaRe
 				Validators: []validator.String{
 					stringvalidator.OneOf("unspecified", "v1", "v2", "v3"),
 				},
-				MarkdownDescription: `Version.`,
+				MarkdownDescription: `The version of the IGMP querier.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,
