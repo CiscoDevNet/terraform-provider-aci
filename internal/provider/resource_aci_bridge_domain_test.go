@@ -372,12 +372,12 @@ func TestAccResourceFvBDWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitor_policy.monitoring_policy_name", "monitoring_policy_name_1"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.neighbor_discovery_interface_policy_name", "neighbor_discovery_interface_policy_name_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policy.0.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policy.0.filter_type", "ce"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policy.0.netflow_monitor_policy_name", "netflow_monitor_policy_name_0"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policy.1.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policy.1.filter_type", "ipv4"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policy.1.netflow_monitor_policy_name", "netflow_monitor_policy_name_1"),
+					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.filter_type", "ce"),
+					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.netflow_monitor_policy_name", "netflow_monitor_policy_name_0"),
+					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.1.filter_type", "ipv4"),
+					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.1.netflow_monitor_policy_name", "netflow_monitor_policy_name_1"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_route_control_profile.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_route_control_profile.l3_outside_name", "l3_outside_name_1"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_route_control_profile.route_control_profile_name", "route_control_profile_name_1"),
@@ -447,13 +447,13 @@ func TestAccResourceFvBDWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitor_policy.monitoring_policy_name", "monitoring_policy_name_1"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.neighbor_discovery_interface_policy_name", "neighbor_discovery_interface_policy_name_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policy.0.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policy.0.filter_type", "ce"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policy.0.netflow_monitor_policy_name", "netflow_monitor_policy_name_0"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policy.1.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policy.1.filter_type", "ipv4"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policy.1.netflow_monitor_policy_name", "netflow_monitor_policy_name_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policy.#", "2"),
+					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.filter_type", "ce"),
+					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.netflow_monitor_policy_name", "netflow_monitor_policy_name_0"),
+					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.1.filter_type", "ipv4"),
+					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.1.netflow_monitor_policy_name", "netflow_monitor_policy_name_1"),
+					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.#", "2"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_route_control_profile.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_route_control_profile.l3_outside_name", "l3_outside_name_1"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_route_control_profile.route_control_profile_name", "route_control_profile_name_1"),
@@ -497,10 +497,10 @@ func TestAccResourceFvBDWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_mld_snooping_policy.mld_snooping_policy_name", "mld_snooping_policy_name_1"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.neighbor_discovery_interface_policy_name", "neighbor_discovery_interface_policy_name_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policy.0.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policy.0.filter_type", "ipv4"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policy.0.netflow_monitor_policy_name", "netflow_monitor_policy_name_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policy.#", "1"),
+					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.filter_type", "ipv4"),
+					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.netflow_monitor_policy_name", "netflow_monitor_policy_name_1"),
+					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.#", "1"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_vrf.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_vrf.vrf_name", "vrf_name_1"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.annotation", "annotation_2"),
@@ -583,7 +583,7 @@ func TestAccResourceFvBDWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_mld_snooping_policy.mld_snooping_policy_name", "mld_snooping_policy_name_1"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.neighbor_discovery_interface_policy_name", "neighbor_discovery_interface_policy_name_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policy.#", "0"),
+					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.#", "0"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_vrf.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_vrf.vrf_name", "vrf_name_1"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.#", "0"),
@@ -794,7 +794,7 @@ resource "aci_bridge_domain" "test" {
     annotation = "annotation_1"
     neighbor_discovery_interface_policy_name = "neighbor_discovery_interface_policy_name_1"
   }
-  relation_to_netflow_monitor_policy = [
+  relation_to_netflow_monitor_policies = [
 	{
 	  annotation = "annotation_1"
 	  filter_type = "ce"
@@ -871,7 +871,7 @@ resource "aci_bridge_domain" "test" {
 	},
   ]
   relation_to_monitor_policy = {}
-  relation_to_netflow_monitor_policy = [ 
+  relation_to_netflow_monitor_policies = [ 
 	{
 	  annotation = "annotation_2"
 	  filter_type = "ipv4"
@@ -907,7 +907,7 @@ resource "aci_bridge_domain" "test" {
   relation_to_first_hop_security_policy = {}
   relation_to_l3_outsides = []
   relation_to_monitor_policy = {}
-  relation_to_netflow_monitor_policy = []
+  relation_to_netflow_monitor_policies = []
   relation_to_route_control_profile = {}
   rogue_coop_exceptions = []
   tags = []

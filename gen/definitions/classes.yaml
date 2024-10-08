@@ -736,9 +736,15 @@ fvRsBDToNdP:
 
 fvRsBDToNetflowMonitorPol:
   resource_name: "relation_from_bridge_domain_to_netflow_monitor_policy"
+  sub_category: "Networking"
+  ui_locations:
+    - "Tenants -> Networking -> Bridge Domains -> Policy -> Advanced/Troubleshooting -> NetFlow Monitor Policies"
 
 fvRsBDToOut:
   resource_name: "relation_from_bridge_domain_to_l3_outside"
+  sub_category: "Networking"
+  ui_locations:
+    - "Tenants -> Networking -> Bridge Domains -> Policy -> L3 Configurations -> Associated L3 Outs"
 
 fvRsBDToProfile:
   resource_name: "relation_from_bridge_domain_to_route_control_profile"
@@ -760,18 +766,30 @@ fvEpRetPol:
 
 igmpSnoopPol:
   resource_name: "igmp_snooping_policy"
+  sub_category: "Tenant Policies"
+  ui_locations:
+    - "Tenants -> Policies -> Protocol -> IGMP Snoop"
 
 mldSnoopPol:
   resource_name: "mld_snooping_policy"
+  sub_category: "Tenant Policies"
+  ui_locations:
+    - "Tenants -> Policies -> Protocol -> MLD Snoop"
 
 dhcpRelayP:
   resource_name: "dhcp_relay_policy"
 
 ndIfPol:
   resource_name: "neighbor_discovery_interface_policy"
+  sub_category: "Tenant Policies"
+  ui_locations:
+    - "Tenants -> Policies -> Protocol -> ND Interface"
 
 fhsBDPol:
   resource_name: "first_hop_security_policy"
+  sub_category: "Tenant Policies"
+  ui_locations:
+    - "Tenants -> Policies -> Protocol -> First Hop Security -> Feature Policies"
 
 vzFilter:
   resource_name: "filter"
@@ -781,6 +799,9 @@ fvAccP:
 
 fvRogueExceptionMac:
   resource_name: "rogue_coop_exception"
+  sub_category: "Networking"
+  ui_locations:
+    - "Tenants -> Networking -> Bridge Domains -> Policy -> Advanced/Troubleshooting -> Rogue/Coop Exception List"
 
 fhsRaGuardPol:
   resource_name: "route_advertisement_guard_policy"

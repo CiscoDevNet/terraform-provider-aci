@@ -18,7 +18,7 @@ default:
   start_query_interval: "31"
   version_mismatch:
     5.1(1h):
-      ver: "v2"
+      version: "v2"
 
 datasource_non_existing:
   name: "non_existing_name"
@@ -46,7 +46,7 @@ all:
   start_query_interval: "2"
   version_mismatch:
     5.1(1h):
-      ver: "unspecified"
+      version: "unspecified"
 
 children:
   annotations:

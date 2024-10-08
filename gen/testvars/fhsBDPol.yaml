@@ -39,7 +39,7 @@ children:
       managed_config_check: "no"
       managed_config_flag: "no"
       max_hop_limit: "10"
-      max_router_pref: "disabled"
+      max_router_preference: "disabled"
       min_hop_limit: "1"
       name: "name_1"
       name_alias: "name_alias_1"

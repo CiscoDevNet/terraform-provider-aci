@@ -50,29 +50,29 @@ data "aci_bridge_domain" "example_tenant" {
 * `id` - (string) The distinguished name (DN) of the Bridge Domain object.
 * `optimize_wan_bandwidth` (OptimizeWanBandwidth) - (string) Optimize WAN Bandwidth for the Bridge Domain object.
 * `annotation` (annotation) - (string) The annotation of the Bridge Domain object.
-* `arp_flooding` (arpFlood) - (string) Enable ARP flooding for the Bridge Domain object. If flooding is disabled, unicast routing will be performed on the target IP address.
+* `arp_flooding` (arpFlood) - (string) Enable ARP flooding for the Bridge Domain object. If flooding is disabled, ARP requests for unknown endpoints will be forwarded by the leaf switch to the spine proxy for resolution and might trigger an ARP glean if the endpoint is not present in the COOP database.
 * `description` (descr) - (string) The description of the Bridge Domain object.
 * `enable_rogue_exception_mac` (enableRogueExceptMac) - (string) Enable rogue exception based on MAC wildcard for the Bridge Domain object.
-* `clear_remote_mac_entries` (epClear) - (string) Clear all End-Points in leafs for the Bridge Domain object.
+* `clear_remote_mac_entries` (epClear) - (string) Clear all endpoints in leaf switches for the Bridge Domain object.
 * `endpoint_move_detection_mode` (epMoveDetectMode) - (string) The End Point move detection option uses the Gratuitous Address Resolution Protocol (GARP). A gratuitous ARP is an ARP broadcast-type of packet that is used to verify that no other device on the network has the same IP address as the sending device.
 * `advertise_host_routes` (hostBasedRouting) - (string) Advertise host routes (/32 prefixes) out of the L3Out(s) associated to the Bridge Domain object.
 * `intersite_bum_traffic_allow` (intersiteBumTrafficAllow) - (string) Enable intersite Broadcast, Unknown-Unicast and Multicast (BUM) traffic between sites for the Bridge Domain object.
 * `intersite_l2_stretch` (intersiteL2Stretch) - (string) Enable L2 stretch between sites for the Bridge Domain object.
 * `ip_learning` (ipLearning) - (string) The IP learning setting of the Bridge Domain object.
 * `pim_ipv6` (ipv6McastAllow) - (string) Enable IPv6 multicast traffic for the Bridge Domain object.
-* `limit_ip_learn_to_subnets` (limitIpLearnToSubnets) - (string) Limit IP address learning to subnets for the Bridge Domain object. Every %!s(MISSING) object can have multiple subnets associated with it.
+* `limit_ip_learn_to_subnets` (limitIpLearnToSubnets) - (string) Limit IP address learning to subnets for the Bridge Domain object. Every Bridge Domain object can have multiple subnets associated with it.
 * `link_local_ipv6_address` (llAddr) - (string) The override of the system generated IPv6 link-local address.
 * `custom_mac_address` (mac) - (string) The MAC address of the Bridge Domain object.
-* `drop_arp_with_multicast_smac` (mcastARPDrop) - (string) Drop roque multicast ARP packets for the Bridge Domain object.
+* `drop_arp_with_multicast_smac` (mcastARPDrop) - (string) Drop rogue multicast ARP packets for the Bridge Domain object.
 * `pim` (mcastAllow) - (string) Enable IPv4 multicast traffic for the Bridge Domain object.
 * `multi_destination_flooding` (multiDstPktAct) - (string) The multiple destination forwarding method for L2 Multicast, Broadcast, and Link Layer traffic types.
 * `name_alias` (nameAlias) - (string) The name alias of the Bridge Domain object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `bridge_domain_type` (type) - (string) domain type.
-* `unicast_routing` (unicastRoute) - (string) Enable the forwarding method based on predefined forwarding criteria (IP or MAC address).
+* `unicast_routing` (unicastRoute) - (string) Enables L3 routing and endpoint IP learning for the Bridge Domain object.
 * `l2_unknown_unicast_flooding` (unkMacUcastAct) - (string) The forwarding method for unknown layer 2 destinations.
-* `l3_unknown_multicast_flooding` (unkMcastAct) - (string) The forwarding method for unknown layer multicast destinations.
+* `l3_unknown_multicast_flooding` (unkMcastAct) - (string) The forwarding method for unknown layer 3 multicast destinations.
 * `ipv6_l3_unknown_multicast_flooding` (v6unkMcastAct) - (string) The forwarding method for unknown IPv6 multicast destinations.
 * `virtual_mac_address` (vmac) - (string) The virtual MAC address of the Bridge Domain object. This is used when the the BD/SVI is extended to multiple sites using a L2 Outside.
 
@@ -104,7 +104,7 @@ data "aci_bridge_domain" "example_tenant" {
   * `annotation` (annotation) - (string) The annotation of the Relation From Bridge Domain To Neighbor Discovery Interface Policy object.
   * `neighbor_discovery_interface_policy_name` (tnNdIfPolName) - (string) The name of the Neighbor Discovery Interface Policy object.
 
-* `relation_to_netflow_monitor_policy` - (list) A list of Relation From Bridge Domain To NetFlow Monitor Policys (ACI object [fvRsBDToNetflowMonitorPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsBDToNetflowMonitorPol/overview)) pointing to NetFlow Monitor Policy (ACI Object [netflowMonitorPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowMonitorPol/overview)). This attribute is supported in ACI versions: 2.2(1k) and later.
+* `relation_to_netflow_monitor_policies` - (list) A list of Relation From Bridge Domain To NetFlow Monitor Policys (ACI object [fvRsBDToNetflowMonitorPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsBDToNetflowMonitorPol/overview)) pointing to NetFlow Monitor Policy (ACI Object [netflowMonitorPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowMonitorPol/overview)). This attribute is supported in ACI versions: 2.2(1k) and later.
   * `annotation` (annotation) - (string) The annotation of the Relation From Bridge Domain To NetFlow Monitor Policy object.
   * `filter_type` (fltType) - (string) The filter type of the NetFlow Monitor Policy object.
   * `netflow_monitor_policy_name` (tnNetflowMonitorPolName) - (string) The name of the NetFlow Monitor Policy object.

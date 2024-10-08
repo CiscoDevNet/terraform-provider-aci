@@ -14,7 +14,7 @@ resource "aci_mld_snooping_policy" "full_example_tenant" {
   response_interval    = "11"
   start_query_count    = "9"
   start_query_interval = "2"
-  ver                  = "unspecified"
+  version              = "unspecified"
   annotations = [
     {
       key   = "key_0"

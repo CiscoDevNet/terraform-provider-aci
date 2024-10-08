@@ -81,7 +81,7 @@ type FvBDResourceModel struct {
 	FvRsABDPolMonPol                      types.Object `tfsdk:"relation_to_monitor_policy"`
 	FvRsBDToFhs                           types.Object `tfsdk:"relation_to_first_hop_security_policy"`
 	FvRsBDToNdP                           types.Object `tfsdk:"relation_to_neighbor_discovery_interface_policy"`
-	FvRsBDToNetflowMonitorPol             types.Set    `tfsdk:"relation_to_netflow_monitor_policy"`
+	FvRsBDToNetflowMonitorPol             types.Set    `tfsdk:"relation_to_netflow_monitor_policies"`
 	FvRsBDToOut                           types.Set    `tfsdk:"relation_to_l3_outsides"`
 	FvRsBDToProfile                       types.Object `tfsdk:"relation_to_route_control_profile"`
 	FvRsBDToRelayP                        types.Object `tfsdk:"relation_to_dhcp_relay_policy"`
@@ -1840,7 +1840,7 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 				Optional:           true,
 				Computed:           true,
 				ElementType:        types.StringType,
-				DeprecationMessage: "Remove `relation_fv_rs_bd_flood_to` configuration as it is not used by bridge_domain configuration. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "Attribute `relation_fv_rs_bd_flood_to` is deprecated. The attribute will be removed in the next major version of the provider.",
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
 				},
@@ -2000,7 +2000,7 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 				Validators: []validator.String{
 					stringvalidator.OneOf("no", "yes"),
 				},
-				MarkdownDescription: `Enable ARP flooding for the Bridge Domain object. If flooding is disabled, unicast routing will be performed on the target IP address.`,
+				MarkdownDescription: `Enable ARP flooding for the Bridge Domain object. If flooding is disabled, ARP requests for unknown endpoints will be forwarded by the leaf switch to the spine proxy for resolution and might trigger an ARP glean if the endpoint is not present in the COOP database.`,
 			},
 			"description": schema.StringAttribute{
 				Optional: true,
@@ -2033,7 +2033,7 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 				Validators: []validator.String{
 					stringvalidator.OneOf("no", "yes"),
 				},
-				MarkdownDescription: `Clear all End-Points in leafs for the Bridge Domain object.`,
+				MarkdownDescription: `Clear all endpoints in leaf switches for the Bridge Domain object.`,
 			},
 			"endpoint_move_detection_mode": schema.StringAttribute{
 				Optional: true,
@@ -2117,7 +2117,7 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 				Validators: []validator.String{
 					stringvalidator.OneOf("no", "yes"),
 				},
-				MarkdownDescription: `Limit IP address learning to subnets for the Bridge Domain object. Every %!s(MISSING) object can have multiple subnets associated with it.`,
+				MarkdownDescription: `Limit IP address learning to subnets for the Bridge Domain object. Every Bridge Domain object can have multiple subnets associated with it.`,
 			},
 			"link_local_ipv6_address": schema.StringAttribute{
 				Optional: true,
@@ -2149,7 +2149,7 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 				Validators: []validator.String{
 					stringvalidator.OneOf("no", "yes"),
 				},
-				MarkdownDescription: `Drop roque multicast ARP packets for the Bridge Domain object.`,
+				MarkdownDescription: `Drop rogue multicast ARP packets for the Bridge Domain object.`,
 			},
 			"pim": schema.StringAttribute{
 				Optional: true,
@@ -2233,7 +2233,7 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 				Validators: []validator.String{
 					stringvalidator.OneOf("no", "yes"),
 				},
-				MarkdownDescription: `Enable the forwarding method based on predefined forwarding criteria (IP or MAC address).`,
+				MarkdownDescription: `Enables L3 routing and endpoint IP learning for the Bridge Domain object.`,
 			},
 			"l2_unknown_unicast_flooding": schema.StringAttribute{
 				Optional: true,
@@ -2257,7 +2257,7 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 				Validators: []validator.String{
 					stringvalidator.OneOf("flood", "opt-flood"),
 				},
-				MarkdownDescription: `The forwarding method for unknown layer multicast destinations.`,
+				MarkdownDescription: `The forwarding method for unknown layer 3 multicast destinations.`,
 			},
 			"ipv6_l3_unknown_multicast_flooding": schema.StringAttribute{
 				Optional: true,
@@ -2479,7 +2479,7 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 					},
 				},
 			},
-			"relation_to_netflow_monitor_policy": schema.SetNestedAttribute{
+			"relation_to_netflow_monitor_policies": schema.SetNestedAttribute{
 				MarkdownDescription: `Relation to Netflow Monitor policy`,
 				Optional:            true,
 				Computed:            true,

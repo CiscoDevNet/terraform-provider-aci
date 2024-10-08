@@ -59,7 +59,7 @@ resource "aci_bridge_domain" "full_example_tenant" {
     annotation                               = "annotation_1"
     neighbor_discovery_interface_policy_name = aci_neighbor_discovery_interface_policy.example.name
   }
-  relation_to_netflow_monitor_policy = [
+  relation_to_netflow_monitor_policies = [
     {
       annotation                  = "annotation_1"
       filter_type                 = "ce"

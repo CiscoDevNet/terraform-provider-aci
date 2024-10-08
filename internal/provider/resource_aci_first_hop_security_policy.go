@@ -75,19 +75,19 @@ func getEmptyFhsBDPolResourceModel() *FhsBDPolResourceModel {
 		RaGuardAdminSt:   basetypes.NewStringNull(),
 		SrcGuardAdminSt:  basetypes.NewStringNull(),
 		FhsRaGuardPol: types.ObjectNull(map[string]attr.Type{
-			"annotation":           types.StringType,
-			"description":          types.StringType,
-			"managed_config_check": types.StringType,
-			"managed_config_flag":  types.StringType,
-			"max_hop_limit":        types.StringType,
-			"max_router_pref":      types.StringType,
-			"min_hop_limit":        types.StringType,
-			"name":                 types.StringType,
-			"name_alias":           types.StringType,
-			"other_config_check":   types.StringType,
-			"other_config_flag":    types.StringType,
-			"owner_key":            types.StringType,
-			"owner_tag":            types.StringType,
+			"annotation":            types.StringType,
+			"description":           types.StringType,
+			"managed_config_check":  types.StringType,
+			"managed_config_flag":   types.StringType,
+			"max_hop_limit":         types.StringType,
+			"max_router_preference": types.StringType,
+			"min_hop_limit":         types.StringType,
+			"name":                  types.StringType,
+			"name_alias":            types.StringType,
+			"other_config_check":    types.StringType,
+			"other_config_flag":     types.StringType,
+			"owner_key":             types.StringType,
+			"owner_tag":             types.StringType,
 		}),
 		TagAnnotation: types.SetNull(types.ObjectType{
 			AttrTypes: map[string]attr.Type{
@@ -111,7 +111,7 @@ type FhsRaGuardPolFhsBDPolResourceModel struct {
 	ManagedConfigCheck types.String `tfsdk:"managed_config_check"`
 	ManagedConfigFlag  types.String `tfsdk:"managed_config_flag"`
 	MaxHopLimit        types.String `tfsdk:"max_hop_limit"`
-	MaxRouterPref      types.String `tfsdk:"max_router_pref"`
+	MaxRouterPref      types.String `tfsdk:"max_router_preference"`
 	MinHopLimit        types.String `tfsdk:"min_hop_limit"`
 	Name               types.String `tfsdk:"name"`
 	NameAlias          types.String `tfsdk:"name_alias"`
@@ -140,19 +140,19 @@ func getEmptyFhsRaGuardPolFhsBDPolResourceModel() FhsRaGuardPolFhsBDPolResourceM
 }
 
 var FhsRaGuardPolFhsBDPolType = map[string]attr.Type{
-	"annotation":           types.StringType,
-	"description":          types.StringType,
-	"managed_config_check": types.StringType,
-	"managed_config_flag":  types.StringType,
-	"max_hop_limit":        types.StringType,
-	"max_router_pref":      types.StringType,
-	"min_hop_limit":        types.StringType,
-	"name":                 types.StringType,
-	"name_alias":           types.StringType,
-	"other_config_check":   types.StringType,
-	"other_config_flag":    types.StringType,
-	"owner_key":            types.StringType,
-	"owner_tag":            types.StringType,
+	"annotation":            types.StringType,
+	"description":           types.StringType,
+	"managed_config_check":  types.StringType,
+	"managed_config_flag":   types.StringType,
+	"max_hop_limit":         types.StringType,
+	"max_router_preference": types.StringType,
+	"min_hop_limit":         types.StringType,
+	"name":                  types.StringType,
+	"name_alias":            types.StringType,
+	"other_config_check":    types.StringType,
+	"other_config_flag":     types.StringType,
+	"owner_key":             types.StringType,
+	"owner_tag":             types.StringType,
 }
 
 // TagAnnotationFhsBDPolResourceModel describes the resource data model for the children without relation ships.
@@ -274,7 +274,7 @@ func (r *FhsBDPolResource) Schema(ctx context.Context, req resource.SchemaReques
 				Validators: []validator.String{
 					stringvalidator.OneOf("disabled", "enabled-both", "enabled-ipv4", "enabled-ipv6"),
 				},
-				MarkdownDescription: `The IP Inspection Status of the First Hop Security Policy object.`,
+				MarkdownDescription: `The Inspection Status for IPv4 and IPv6 traffic of the First Hop Security Policy object.`,
 			},
 			"name": schema.StringAttribute{
 				Required: true,
@@ -334,7 +334,7 @@ func (r *FhsBDPolResource) Schema(ctx context.Context, req resource.SchemaReques
 				Validators: []validator.String{
 					stringvalidator.OneOf("disabled", "enabled-both", "enabled-ipv4", "enabled-ipv6"),
 				},
-				MarkdownDescription: `The Source Guard Status of the First Hop Security Policy object.`,
+				MarkdownDescription: `The Source Guard Status for IPv4 and IPv6 traffic of the First Hop Security Policy object.`,
 			},
 			"route_advertisement_guard_policy": schema.SingleNestedAttribute{
 				MarkdownDescription: ``,
@@ -390,7 +390,7 @@ func (r *FhsBDPolResource) Schema(ctx context.Context, req resource.SchemaReques
 						},
 						MarkdownDescription: `The maximum hop limit for the Route Advertisement Guard Policy object.`,
 					},
-					"max_router_pref": schema.StringAttribute{
+					"max_router_preference": schema.StringAttribute{
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
@@ -434,7 +434,7 @@ func (r *FhsBDPolResource) Schema(ctx context.Context, req resource.SchemaReques
 						Validators: []validator.String{
 							stringvalidator.OneOf("no", "yes"),
 						},
-						MarkdownDescription: `Perform a other configuration check for the Route Advertisement Guard Policy object.`,
+						MarkdownDescription: `Perform other configuration checks for the Route Advertisement Guard Policy object.`,
 					},
 					"other_config_flag": schema.StringAttribute{
 						Optional: true,
