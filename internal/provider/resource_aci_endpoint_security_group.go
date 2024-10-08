@@ -1132,7 +1132,7 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 			"relation_fv_rs_cust_qos_pol": schema.StringAttribute{
 				Optional:           true,
 				Computed:           true,
-				DeprecationMessage: "Remove `relation_fv_rs_cust_qos_pol` configuration as it is not used by endpoint_security_group configuration. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "Attribute `relation_fv_rs_cust_qos_pol` is deprecated. The attribute will be removed in the next major version of the provider.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
@@ -1141,7 +1141,7 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Optional:           true,
 				Computed:           true,
 				ElementType:        types.StringType,
-				DeprecationMessage: "Remove `relation_fv_rs_prot_by` configuration as it is not used by endpoint_security_group configuration. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "Attribute `relation_fv_rs_prot_by` is deprecated. The attribute will be removed in the next major version of the provider.",
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
 				},

@@ -102,9 +102,9 @@ func (d *MldSnoopPolDataSource) Schema(ctx context.Context, req datasource.Schem
 				Computed:            true,
 				MarkdownDescription: `The query interval (seconds) of the MLD Snooping Policy object at start-up.`,
 			},
-			"ver": schema.StringAttribute{
+			"version": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `Version.`,
+				MarkdownDescription: `The MLD version.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,

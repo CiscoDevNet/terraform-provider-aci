@@ -49,8 +49,8 @@ func TestAccResourceMldSnoopPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_mld_snooping_policy.allow_test", "start_query_interval", "31"),
 					resource.TestCheckResourceAttr("aci_mld_snooping_policy.allow_test_2", "start_query_interval", "31"),
 					composeAggregateTestCheckFuncWithVersion(t, "5.1(1h)", ">",
-						resource.TestCheckResourceAttr("aci_mld_snooping_policy.allow_test", "ver", "v2"),
-						resource.TestCheckResourceAttr("aci_mld_snooping_policy.allow_test_2", "ver", "v2")),
+						resource.TestCheckResourceAttr("aci_mld_snooping_policy.allow_test", "version", "v2"),
+						resource.TestCheckResourceAttr("aci_mld_snooping_policy.allow_test_2", "version", "v2")),
 				),
 			},
 		},
@@ -106,8 +106,8 @@ func TestAccResourceMldSnoopPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_mld_snooping_policy.allow_test", "start_query_interval", "31"),
 					resource.TestCheckResourceAttr("aci_mld_snooping_policy.allow_test_2", "start_query_interval", "31"),
 					composeAggregateTestCheckFuncWithVersion(t, "5.1(1h)", ">",
-						resource.TestCheckResourceAttr("aci_mld_snooping_policy.allow_test", "ver", "v2"),
-						resource.TestCheckResourceAttr("aci_mld_snooping_policy.allow_test_2", "ver", "v2")),
+						resource.TestCheckResourceAttr("aci_mld_snooping_policy.allow_test", "version", "v2"),
+						resource.TestCheckResourceAttr("aci_mld_snooping_policy.allow_test_2", "version", "v2")),
 				),
 			},
 		},
@@ -136,7 +136,7 @@ func TestAccResourceMldSnoopPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "start_query_count", "2"),
 					resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "start_query_interval", "31"),
 					composeAggregateTestCheckFuncWithVersion(t, "5.1(1h)", ">",
-						resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "ver", "v2")),
+						resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "version", "v2")),
 				),
 			},
 			// Update with all config and verify default APIC values
@@ -160,7 +160,7 @@ func TestAccResourceMldSnoopPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "start_query_count", "9"),
 					resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "start_query_interval", "2"),
 					composeAggregateTestCheckFuncWithVersion(t, "5.1(1h)", ">",
-						resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "ver", "unspecified")),
+						resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "version", "unspecified")),
 				),
 			},
 			// Update with minimum config and verify config is unchanged
@@ -190,7 +190,7 @@ func TestAccResourceMldSnoopPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "start_query_count", "2"),
 					resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "start_query_interval", "31"),
 					composeAggregateTestCheckFuncWithVersion(t, "5.1(1h)", ">",
-						resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "ver", "v2")),
+						resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "version", "v2")),
 				),
 			},
 			// Import testing
@@ -218,7 +218,7 @@ func TestAccResourceMldSnoopPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "start_query_count", "2"),
 					resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "start_query_interval", "31"),
 					composeAggregateTestCheckFuncWithVersion(t, "5.1(1h)", ">",
-						resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "ver", "v2")),
+						resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "version", "v2")),
 					resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "annotations.1.key", "key_1"),
@@ -319,7 +319,7 @@ resource "aci_mld_snooping_policy" "test" {
   response_interval = "11"
   start_query_count = "9"
   start_query_interval = "2"
-  ver = provider::aci::compare_versions(data.aci_system.version.version,">=","5.1(1h)") ? "unspecified" : null
+  version = provider::aci::compare_versions(data.aci_system.version.version,">=","5.1(1h)") ? "unspecified" : null
 }
 `
 
@@ -339,7 +339,7 @@ resource "aci_mld_snooping_policy" "test" {
   response_interval = "10"
   start_query_count = "2"
   start_query_interval = "31"
-  ver = provider::aci::compare_versions(data.aci_system.version.version,">=","5.1(1h)") ? "v2" : null
+  version = provider::aci::compare_versions(data.aci_system.version.version,">=","5.1(1h)") ? "v2" : null
 }
 `
 const testConfigMldSnoopPolChildrenDependencyWithFvTenant = testConfigFvTenantMin + `

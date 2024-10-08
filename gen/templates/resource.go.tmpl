@@ -1209,7 +1209,7 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 			"{{.AttributeName}}": schema.StringAttribute{
 				Optional: true,
 				Computed: true,
-				DeprecationMessage: "Remove `{{.AttributeName}}` configuration as it is not used by {{$ResourceName}} configuration. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "Attribute `{{.AttributeName}}` is deprecated. The attribute will be removed in the next major version of the provider.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
@@ -1220,7 +1220,7 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 				Optional: true,
 				Computed: true,
 				ElementType: types.StringType,
-				DeprecationMessage: "Remove `{{.AttributeName}}` configuration as it is not used by {{$ResourceName}} configuration. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "Attribute `{{.AttributeName}}` is deprecated. The attribute will be removed in the next major version of the provider.",
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
 				},
@@ -1231,7 +1231,7 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 				Optional: true,
 				Computed: true,
 				ElementType: types.StringType,
-				DeprecationMessage: "Remove `{{.AttributeName}}` configuration as it is not used by {{$ResourceName}} configuration. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "Attribute `{{.AttributeName}}` is deprecated. The attribute will be removed in the next major version of the provider.",
 				PlanModifiers: []planmodifier.List{
 					listplanmodifier.UseStateForUnknown(),
 				},

@@ -2450,7 +2450,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Optional:           true,
 				Computed:           true,
 				ElementType:        types.StringType,
-				DeprecationMessage: "Remove `relation_fv_rs_prov_def` configuration as it is not used by application_epg configuration. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "Attribute `relation_fv_rs_prov_def` is deprecated. The attribute will be removed in the next major version of the provider.",
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
 				},

@@ -58,7 +58,7 @@ func (d *FhsBDPolDataSource) Schema(ctx context.Context, req datasource.SchemaRe
 			},
 			"ip_inspection": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The IP Inspection Status of the First Hop Security Policy object.`,
+				MarkdownDescription: `The Inspection Status for IPv4 and IPv6 traffic of the First Hop Security Policy object.`,
 			},
 			"name": schema.StringAttribute{
 				Required:            true,
@@ -82,7 +82,7 @@ func (d *FhsBDPolDataSource) Schema(ctx context.Context, req datasource.SchemaRe
 			},
 			"source_guard": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The Source Guard Status of the First Hop Security Policy object.`,
+				MarkdownDescription: `The Source Guard Status for IPv4 and IPv6 traffic of the First Hop Security Policy object.`,
 			},
 			"route_advertisement_guard_policy": schema.SingleNestedAttribute{
 				MarkdownDescription: ``,
@@ -108,7 +108,7 @@ func (d *FhsBDPolDataSource) Schema(ctx context.Context, req datasource.SchemaRe
 						Computed:            true,
 						MarkdownDescription: `The maximum hop limit for the Route Advertisement Guard Policy object.`,
 					},
-					"max_router_pref": schema.StringAttribute{
+					"max_router_preference": schema.StringAttribute{
 						Computed:            true,
 						MarkdownDescription: `The allowed maximum router preference for the Route Advertisement Guard Policy object.`,
 					},
@@ -126,7 +126,7 @@ func (d *FhsBDPolDataSource) Schema(ctx context.Context, req datasource.SchemaRe
 					},
 					"other_config_check": schema.StringAttribute{
 						Computed:            true,
-						MarkdownDescription: `Perform a other configuration check for the Route Advertisement Guard Policy object.`,
+						MarkdownDescription: `Perform other configuration checks for the Route Advertisement Guard Policy object.`,
 					},
 					"other_config_flag": schema.StringAttribute{
 						Computed:            true,

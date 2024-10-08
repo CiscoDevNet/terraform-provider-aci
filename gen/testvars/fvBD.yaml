@@ -114,7 +114,7 @@ children:
       neighbor_discovery_interface_policy_name: "neighbor_discovery_interface_policy_name_1"
       deletable_child: false
       
-  relation_to_netflow_monitor_policy:
+  relation_to_netflow_monitor_policies:
     - annotation: "annotation_1"
       filter_type: "ce"
       netflow_monitor_policy_name: "netflow_monitor_policy_name_0"

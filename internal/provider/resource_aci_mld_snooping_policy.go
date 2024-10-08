@@ -60,7 +60,7 @@ type MldSnoopPolResourceModel struct {
 	RspIntvl        types.String `tfsdk:"response_interval"`
 	StartQueryCnt   types.String `tfsdk:"start_query_count"`
 	StartQueryIntvl types.String `tfsdk:"start_query_interval"`
-	Ver             types.String `tfsdk:"ver"`
+	Ver             types.String `tfsdk:"version"`
 	TagAnnotation   types.Set    `tfsdk:"annotations"`
 	TagTag          types.Set    `tfsdk:"tags"`
 }
@@ -309,7 +309,7 @@ func (r *MldSnoopPolResource) Schema(ctx context.Context, req resource.SchemaReq
 				},
 				MarkdownDescription: `The query interval (seconds) of the MLD Snooping Policy object at start-up.`,
 			},
-			"ver": schema.StringAttribute{
+			"version": schema.StringAttribute{
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
@@ -319,7 +319,7 @@ func (r *MldSnoopPolResource) Schema(ctx context.Context, req resource.SchemaReq
 				Validators: []validator.String{
 					stringvalidator.OneOf("unspecified", "v1", "v2"),
 				},
-				MarkdownDescription: `Version.`,
+				MarkdownDescription: `The MLD version.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,

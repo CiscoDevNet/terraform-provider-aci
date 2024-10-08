@@ -45,112 +45,112 @@ func (d *FvAEPgDataSource) Schema(ctx context.Context, req datasource.SchemaRequ
 			// Deprecated attributes
 			"exception_tag": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'exception_tag' will be deprecated soon, please refer to 'contract_exception_tag' instead",
+				DeprecationMessage: "Attribute 'exception_tag' will be deprecated soon, please refer to 'contract_exception_tag' instead.",
 			},
 			"flood_on_encap": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'flood_on_encap' will be deprecated soon, please refer to 'flood_in_encapsulation' instead",
+				DeprecationMessage: "Attribute 'flood_on_encap' will be deprecated soon, please refer to 'flood_in_encapsulation' instead.",
 			},
 			"fwd_ctrl": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'fwd_ctrl' will be deprecated soon, please refer to 'forwarding_control' instead",
+				DeprecationMessage: "Attribute 'fwd_ctrl' will be deprecated soon, please refer to 'forwarding_control' instead.",
 			},
 			"has_mcast_source": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'has_mcast_source' will be deprecated soon, please refer to 'has_multicast_source' instead",
+				DeprecationMessage: "Attribute 'has_mcast_source' will be deprecated soon, please refer to 'has_multicast_source' instead.",
 			},
 			"is_attr_based_epg": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'is_attr_based_epg' will be deprecated soon, please refer to 'useg_epg' instead",
+				DeprecationMessage: "Attribute 'is_attr_based_epg' will be deprecated soon, please refer to 'useg_epg' instead.",
 			},
 			"match_t": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'match_t' will be deprecated soon, please refer to 'match_criteria' instead",
+				DeprecationMessage: "Attribute 'match_t' will be deprecated soon, please refer to 'match_criteria' instead.",
 			},
 			"application_profile_dn": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'application_profile_dn' will be deprecated soon, please refer to 'parent_dn' instead",
+				DeprecationMessage: "Attribute 'application_profile_dn' will be deprecated soon, please refer to 'parent_dn' instead.",
 			},
 			"pc_enf_pref": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'pc_enf_pref' will be deprecated soon, please refer to 'intra_epg_isolation' instead",
+				DeprecationMessage: "Attribute 'pc_enf_pref' will be deprecated soon, please refer to 'intra_epg_isolation' instead.",
 			},
 			"pref_gr_memb": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'pref_gr_memb' will be deprecated soon, please refer to 'preferred_group_member' instead",
+				DeprecationMessage: "Attribute 'pref_gr_memb' will be deprecated soon, please refer to 'preferred_group_member' instead.",
 			},
 			"prio": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'prio' will be deprecated soon, please refer to 'priority' instead",
+				DeprecationMessage: "Attribute 'prio' will be deprecated soon, please refer to 'priority' instead.",
 			},
 			"shutdown": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'shutdown' will be deprecated soon, please refer to 'admin_state' instead",
+				DeprecationMessage: "Attribute 'shutdown' will be deprecated soon, please refer to 'admin_state' instead.",
 			},
 			"relation_fv_rs_prov_def": schema.SetAttribute{
 				Computed:           true,
 				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute `relation_fv_rs_prov_def` will be deprecated soon as it is not used by application_epg. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "Attribute `relation_fv_rs_prov_def` is deprecated. The attribute will be removed in the next major version of the provider.",
 			},
 			"relation_fv_rs_aepg_mon_pol": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'relation_fv_rs_aepg_mon_pol' will be deprecated soon, please refer to 'relation_to_application_epg_monitoring_policy.monitoring_policy_name' instead",
+				DeprecationMessage: "Attribute 'relation_fv_rs_aepg_mon_pol' will be deprecated soon, please refer to 'relation_to_application_epg_monitoring_policy.monitoring_policy_name' instead.",
 			},
 			"relation_fv_rs_bd": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'relation_fv_rs_bd' will be deprecated soon, please refer to 'relation_to_bridge_domain.bridge_domain_name' instead",
+				DeprecationMessage: "Attribute 'relation_fv_rs_bd' will be deprecated soon, please refer to 'relation_to_bridge_domain.bridge_domain_name' instead.",
 			},
 			"relation_fv_rs_cons": schema.SetAttribute{
 				Computed:           true,
 				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute 'relation_fv_rs_cons' will be deprecated soon, please refer to 'relation_to_consumed_contracts.contract_name' instead",
+				DeprecationMessage: "Attribute 'relation_fv_rs_cons' will be deprecated soon, please refer to 'relation_to_consumed_contracts.contract_name' instead.",
 			},
 			"relation_fv_rs_sec_inherited": schema.SetAttribute{
 				Computed:           true,
 				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute 'relation_fv_rs_sec_inherited' will be deprecated soon, please refer to 'relation_to_contract_masters.target_dn' instead",
+				DeprecationMessage: "Attribute 'relation_fv_rs_sec_inherited' will be deprecated soon, please refer to 'relation_to_contract_masters.target_dn' instead.",
 			},
 			"relation_fv_rs_cust_qos_pol": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'relation_fv_rs_cust_qos_pol' will be deprecated soon, please refer to 'relation_to_custom_qos_policy.custom_qos_policy_name' instead",
+				DeprecationMessage: "Attribute 'relation_fv_rs_cust_qos_pol' will be deprecated soon, please refer to 'relation_to_custom_qos_policy.custom_qos_policy_name' instead.",
 			},
 			"relation_fv_rs_dpp_pol": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'relation_fv_rs_dpp_pol' will be deprecated soon, please refer to 'relation_to_data_plane_policing_policy.data_plane_policing_policy_name' instead",
+				DeprecationMessage: "Attribute 'relation_fv_rs_dpp_pol' will be deprecated soon, please refer to 'relation_to_data_plane_policing_policy.data_plane_policing_policy_name' instead.",
 			},
 			"relation_fv_rs_fc_path_att": schema.SetAttribute{
 				Computed:           true,
 				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute 'relation_fv_rs_fc_path_att' will be deprecated soon, please refer to 'relation_to_fibre_channel_paths.fibre_channel_path_name' instead",
+				DeprecationMessage: "Attribute 'relation_fv_rs_fc_path_att' will be deprecated soon, please refer to 'relation_to_fibre_channel_paths.fibre_channel_path_name' instead.",
 			},
 			"relation_fv_rs_cons_if": schema.SetAttribute{
 				Computed:           true,
 				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute 'relation_fv_rs_cons_if' will be deprecated soon, please refer to 'relation_to_imported_contracts.imported_contract_name' instead",
+				DeprecationMessage: "Attribute 'relation_fv_rs_cons_if' will be deprecated soon, please refer to 'relation_to_imported_contracts.imported_contract_name' instead.",
 			},
 			"relation_fv_rs_intra_epg": schema.SetAttribute{
 				Computed:           true,
 				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute 'relation_fv_rs_intra_epg' will be deprecated soon, please refer to 'relation_to_intra_epg_contracts.contract_name' instead",
+				DeprecationMessage: "Attribute 'relation_fv_rs_intra_epg' will be deprecated soon, please refer to 'relation_to_intra_epg_contracts.contract_name' instead.",
 			},
 			"relation_fv_rs_prov": schema.SetAttribute{
 				Computed:           true,
 				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute 'relation_fv_rs_prov' will be deprecated soon, please refer to 'relation_to_provided_contracts.contract_name' instead",
+				DeprecationMessage: "Attribute 'relation_fv_rs_prov' will be deprecated soon, please refer to 'relation_to_provided_contracts.contract_name' instead.",
 			},
 			"relation_fv_rs_path_att": schema.SetAttribute{
 				Computed:           true,
 				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute 'relation_fv_rs_path_att' will be deprecated soon, please refer to 'relation_to_static_paths.target_dn' instead",
+				DeprecationMessage: "Attribute 'relation_fv_rs_path_att' will be deprecated soon, please refer to 'relation_to_static_paths.target_dn' instead.",
 			},
 			"relation_fv_rs_prot_by": schema.SetAttribute{
 				Computed:           true,
 				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute 'relation_fv_rs_prot_by' will be deprecated soon, please refer to 'relation_to_taboo_contracts.taboo_contract_name' instead",
+				DeprecationMessage: "Attribute 'relation_fv_rs_prot_by' will be deprecated soon, please refer to 'relation_to_taboo_contracts.taboo_contract_name' instead.",
 			},
 			"relation_fv_rs_trust_ctrl": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'relation_fv_rs_trust_ctrl' will be deprecated soon, please refer to 'relation_to_trust_control_policy.trust_control_policy_name' instead",
+				DeprecationMessage: "Attribute 'relation_fv_rs_trust_ctrl' will be deprecated soon, please refer to 'relation_to_trust_control_policy.trust_control_policy_name' instead.",
 			},
 			// End of deprecated attributes
 			"id": schema.StringAttribute{
