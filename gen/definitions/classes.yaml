@@ -472,8 +472,8 @@ fvRsConsIf:
   dn_formats:
     - "uni/tn-{name}/ap-{name}/epg-{name}/rsconsIf-{tnVzCPIfName}"
     - "uni/tn-{name}/ap-{name}/esg-{name}/rsconsIf-{tnVzCPIfName}"
-    - "uni/tn-{name}/out-{name}/instP-{name}/rsprov-{tnVzBrCPName}"
-    - "uni/tn-{name}/l2out-{name}/instP-{name}/rsprov-{tnVzBrCPName}"
+    - "uni/tn-{name}/out-{name}/instP-{name}/rsconsIf-{tnVzBrCPName}"
+    - "uni/tn-{name}/l2out-{name}/instP-{name}/rsconsIf-{tnVzBrCPName}"
     - "Too many DN formats to display, see model documentation for all possible parents of [fvRsConsIf](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsConsIf/overview)."
   ui_locations:
     - "Tenants -> Application Profiles -> Application EPGs -> Contracts"
@@ -488,8 +488,8 @@ fvRsProtBy:
     - "fvAEPg"
   dn_formats:
     - "uni/tn-{name}/ap-{name}/epg-{name}/rsprotBy-{tnVzTabooName}"
-    - "uni/tn-{name}/out-{name}/instP-{name}/rsprov-{tnVzBrCPName}"
-    - "uni/tn-{name}/l2out-{name}/instP-{name}/rsprov-{tnVzBrCPName}"
+    - "uni/tn-{name}/out-{name}/instP-{name}/rsprotBy-{tnVzBrCPName}"
+    - "uni/tn-{name}/l2out-{name}/instP-{name}/rsprotBy-{tnVzBrCPName}"
     - "Too many DN formats to display, see model documentation for all possible parents of [fvRsProtBy](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsProtBy/overview)."
   ui_locations:
     - "Tenants -> Application Profiles -> Application EPGs -> Contracts"
@@ -505,7 +505,7 @@ fvRsIntraEpg:
   dn_formats:
     - "uni/tn-{name}/ap-{name}/epg-{name}/rsintraEpg-{tnVzBrCPName}"
     - "uni/tn-{name}/ap-{name}/esg-{name}/rsintraEpg-{tnVzBrCPName}"
-    - "uni/tn-{name}/out-{name}/instP-{name}/rsprov-{tnVzBrCPName}"
+    - "uni/tn-{name}/out-{name}/instP-{name}/rsintraEpg-{tnVzBrCPName}"
     - "Too many DN formats to display, see model documentation for all possible parents of [fvRsIntraEpg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsIntraEpg/overview)."
   ui_locations:
     - "Tenants -> Application Profiles -> Application EPGs -> Contracts"
