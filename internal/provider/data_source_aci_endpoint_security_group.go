@@ -45,19 +45,19 @@ func (d *FvESgDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 			// Deprecated attributes
 			"match_t": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'match_t' will be deprecated soon, please refer to 'match_criteria' instead.",
+				DeprecationMessage: "Attribute 'match_t' is deprecated, please refer to 'match_criteria' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			"application_profile_dn": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'application_profile_dn' will be deprecated soon, please refer to 'parent_dn' instead.",
+				DeprecationMessage: "Attribute 'application_profile_dn' is deprecated, please refer to 'parent_dn' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			"pc_enf_pref": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'pc_enf_pref' will be deprecated soon, please refer to 'intra_esg_isolation' instead.",
+				DeprecationMessage: "Attribute 'pc_enf_pref' is deprecated, please refer to 'intra_esg_isolation' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			"pref_gr_memb": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'pref_gr_memb' will be deprecated soon, please refer to 'preferred_group_member' instead.",
+				DeprecationMessage: "Attribute 'pref_gr_memb' is deprecated, please refer to 'preferred_group_member' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			"relation_fv_rs_cust_qos_pol": schema.StringAttribute{
 				Computed:           true,
@@ -71,16 +71,16 @@ func (d *FvESgDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 			"relation_fv_rs_sec_inherited": schema.SetAttribute{
 				Computed:           true,
 				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute 'relation_fv_rs_sec_inherited' will be deprecated soon, please refer to 'relation_to_contract_masters.target_dn' instead.",
+				DeprecationMessage: "Attribute 'relation_fv_rs_sec_inherited' is deprecated, please refer to 'relation_to_contract_masters.target_dn' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			"relation_fv_rs_intra_epg": schema.SetAttribute{
 				Computed:           true,
 				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute 'relation_fv_rs_intra_epg' will be deprecated soon, please refer to 'relation_to_intra_epg_contracts.contract_name' instead.",
+				DeprecationMessage: "Attribute 'relation_fv_rs_intra_epg' is deprecated, please refer to 'relation_to_intra_epg_contracts.contract_name' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			"relation_fv_rs_scope": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'relation_fv_rs_scope' will be deprecated soon, please refer to 'relation_to_vrf.vrf_name' instead.",
+				DeprecationMessage: "Attribute 'relation_fv_rs_scope' is deprecated, please refer to 'relation_to_vrf.vrf_name' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			// End of deprecated attributes
 			"id": schema.StringAttribute{
