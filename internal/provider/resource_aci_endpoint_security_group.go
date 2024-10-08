@@ -1092,7 +1092,7 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 			"match_t": schema.StringAttribute{
 				Optional:           true,
 				Computed:           true,
-				DeprecationMessage: "Attribute 'match_t' will be deprecated soon, please use 'match_criteria' instead",
+				DeprecationMessage: "Attribute 'match_t' is deprecated, please refer to 'match_criteria' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.String{
 					stringvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("match_criteria"),
@@ -1102,7 +1102,7 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 			"application_profile_dn": schema.StringAttribute{
 				Optional:           true,
 				Computed:           true,
-				DeprecationMessage: "Attribute 'application_profile_dn' will be deprecated soon, please use 'parent_dn' instead",
+				DeprecationMessage: "Attribute 'application_profile_dn' is deprecated, please refer to 'parent_dn' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.String{
 					stringvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("parent_dn"),
@@ -1112,7 +1112,7 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 			"pc_enf_pref": schema.StringAttribute{
 				Optional:           true,
 				Computed:           true,
-				DeprecationMessage: "Attribute 'pc_enf_pref' will be deprecated soon, please use 'intra_esg_isolation' instead",
+				DeprecationMessage: "Attribute 'pc_enf_pref' is deprecated, please refer to 'intra_esg_isolation' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.String{
 					stringvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("intra_esg_isolation"),
@@ -1122,7 +1122,7 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 			"pref_gr_memb": schema.StringAttribute{
 				Optional:           true,
 				Computed:           true,
-				DeprecationMessage: "Attribute 'pref_gr_memb' will be deprecated soon, please use 'preferred_group_member' instead",
+				DeprecationMessage: "Attribute 'pref_gr_memb' is deprecated, please refer to 'preferred_group_member' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.String{
 					stringvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("preferred_group_member"),
@@ -1150,7 +1150,7 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Optional:           true,
 				Computed:           true,
 				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute 'relation_fv_rs_sec_inherited' will be deprecated soon, please use 'relation_to_contract_masters.target_dn' instead",
+				DeprecationMessage: "Attribute 'relation_fv_rs_sec_inherited' is deprecated, please refer to 'relation_to_contract_masters.target_dn' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.Set{
 					setvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("relation_to_contract_masters"),
@@ -1161,7 +1161,7 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Optional:           true,
 				Computed:           true,
 				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute 'relation_fv_rs_intra_epg' will be deprecated soon, please use 'relation_to_intra_epg_contracts.contract_name' instead",
+				DeprecationMessage: "Attribute 'relation_fv_rs_intra_epg' is deprecated, please refer to 'relation_to_intra_epg_contracts.contract_name' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.Set{
 					setvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("relation_to_intra_epg_contracts"),
@@ -1171,7 +1171,7 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 			"relation_fv_rs_scope": schema.StringAttribute{
 				Optional:           true,
 				Computed:           true,
-				DeprecationMessage: "Attribute 'relation_fv_rs_scope' will be deprecated soon, please use 'relation_to_vrf.vrf_name' instead",
+				DeprecationMessage: "Attribute 'relation_fv_rs_scope' is deprecated, please refer to 'relation_to_vrf.vrf_name' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.String{
 					stringvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("relation_to_vrf"),

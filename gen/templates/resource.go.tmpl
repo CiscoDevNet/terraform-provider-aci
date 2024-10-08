@@ -1170,7 +1170,7 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 			"{{.AttributeName}}": schema.StringAttribute{
 				Optional: true,
 				Computed: true,
-				DeprecationMessage: "Attribute '{{.AttributeName}}' will be deprecated soon, please use '{{.ReplacedBy.AttributeName}}' instead",
+				DeprecationMessage: "Attribute '{{.AttributeName}}' is deprecated, please refer to '{{.ReplacedBy.AttributeName}}' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.String{
 					stringvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("{{getConflictingAttributeName .ReplacedBy.AttributeName}}"),
@@ -1183,7 +1183,7 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 				Optional: true,
 				Computed: true,
 				ElementType: types.StringType,
-				DeprecationMessage: "Attribute '{{.AttributeName}}' will be deprecated soon, please use '{{.ReplacedBy.AttributeName}}' instead",
+				DeprecationMessage: "Attribute '{{.AttributeName}}' is deprecated, please refer to '{{.ReplacedBy.AttributeName}}' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.Set{
 					setvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("{{getConflictingAttributeName .ReplacedBy.AttributeName}}"),
@@ -1196,7 +1196,7 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 				Optional: true,
 				Computed: true,
 				ElementType: types.StringType,
-				DeprecationMessage: "Attribute '{{.AttributeName}}' will be deprecated soon, please use '{{.ReplacedBy.AttributeName}}' instead",
+				DeprecationMessage: "Attribute '{{.AttributeName}}' is deprecated, please refer to '{{.ReplacedBy.AttributeName}}' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.List{
 					listvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("{{getConflictingAttributeName .ReplacedBy.AttributeName}}"),

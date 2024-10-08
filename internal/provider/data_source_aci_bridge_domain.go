@@ -44,63 +44,63 @@ func (d *FvBDDataSource) Schema(ctx context.Context, req datasource.SchemaReques
 			// Deprecated attributes
 			"arp_flood": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'arp_flood' will be deprecated soon, please refer to 'arp_flooding' instead.",
+				DeprecationMessage: "Attribute 'arp_flood' is deprecated, please refer to 'arp_flooding' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			"ep_clear": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'ep_clear' will be deprecated soon, please refer to 'clear_remote_mac_entries' instead.",
+				DeprecationMessage: "Attribute 'ep_clear' is deprecated, please refer to 'clear_remote_mac_entries' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			"ep_move_detect_mode": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'ep_move_detect_mode' will be deprecated soon, please refer to 'endpoint_move_detection_mode' instead.",
+				DeprecationMessage: "Attribute 'ep_move_detect_mode' is deprecated, please refer to 'endpoint_move_detection_mode' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			"host_based_routing": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'host_based_routing' will be deprecated soon, please refer to 'advertise_host_routes' instead.",
+				DeprecationMessage: "Attribute 'host_based_routing' is deprecated, please refer to 'advertise_host_routes' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			"ipv6_mcast_allow": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'ipv6_mcast_allow' will be deprecated soon, please refer to 'pim_ipv6' instead.",
+				DeprecationMessage: "Attribute 'ipv6_mcast_allow' is deprecated, please refer to 'pim_ipv6' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			"ll_addr": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'll_addr' will be deprecated soon, please refer to 'link_local_ipv6_address' instead.",
+				DeprecationMessage: "Attribute 'll_addr' is deprecated, please refer to 'link_local_ipv6_address' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			"mac": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'mac' will be deprecated soon, please refer to 'custom_mac_address' instead.",
+				DeprecationMessage: "Attribute 'mac' is deprecated, please refer to 'custom_mac_address' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			"mcast_allow": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'mcast_allow' will be deprecated soon, please refer to 'pim' instead.",
+				DeprecationMessage: "Attribute 'mcast_allow' is deprecated, please refer to 'pim' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			"multi_dst_pkt_act": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'multi_dst_pkt_act' will be deprecated soon, please refer to 'multi_destination_flooding' instead.",
+				DeprecationMessage: "Attribute 'multi_dst_pkt_act' is deprecated, please refer to 'multi_destination_flooding' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			"tenant_dn": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'tenant_dn' will be deprecated soon, please refer to 'parent_dn' instead.",
+				DeprecationMessage: "Attribute 'tenant_dn' is deprecated, please refer to 'parent_dn' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			"unicast_route": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'unicast_route' will be deprecated soon, please refer to 'unicast_routing' instead.",
+				DeprecationMessage: "Attribute 'unicast_route' is deprecated, please refer to 'unicast_routing' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			"unk_mac_ucast_act": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'unk_mac_ucast_act' will be deprecated soon, please refer to 'l2_unknown_unicast_flooding' instead.",
+				DeprecationMessage: "Attribute 'unk_mac_ucast_act' is deprecated, please refer to 'l2_unknown_unicast_flooding' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			"unk_mcast_act": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'unk_mcast_act' will be deprecated soon, please refer to 'l3_unknown_multicast_flooding' instead.",
+				DeprecationMessage: "Attribute 'unk_mcast_act' is deprecated, please refer to 'l3_unknown_multicast_flooding' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			"v6unk_mcast_act": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'v6unk_mcast_act' will be deprecated soon, please refer to 'ipv6_l3_unknown_multicast_flooding' instead.",
+				DeprecationMessage: "Attribute 'v6unk_mcast_act' is deprecated, please refer to 'ipv6_l3_unknown_multicast_flooding' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			"vmac": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'vmac' will be deprecated soon, please refer to 'virtual_mac_address' instead.",
+				DeprecationMessage: "Attribute 'vmac' is deprecated, please refer to 'virtual_mac_address' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			"relation_fv_rs_bd_flood_to": schema.SetAttribute{
 				Computed:           true,
@@ -109,44 +109,44 @@ func (d *FvBDDataSource) Schema(ctx context.Context, req datasource.SchemaReques
 			},
 			"relation_fv_rs_bd_to_ep_ret": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'relation_fv_rs_bd_to_ep_ret' will be deprecated soon, please refer to 'relation_to_end_point_retention_policy.end_point_retention_policy_name' instead.",
+				DeprecationMessage: "Attribute 'relation_fv_rs_bd_to_ep_ret' is deprecated, please refer to 'relation_to_end_point_retention_policy.end_point_retention_policy_name' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			"relation_fv_rs_bd_to_fhs": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'relation_fv_rs_bd_to_fhs' will be deprecated soon, please refer to 'relation_to_first_hop_security_policy.first_hop_security_policy_name' instead.",
+				DeprecationMessage: "Attribute 'relation_fv_rs_bd_to_fhs' is deprecated, please refer to 'relation_to_first_hop_security_policy.first_hop_security_policy_name' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			"relation_fv_rs_igmpsn": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'relation_fv_rs_igmpsn' will be deprecated soon, please refer to 'relation_to_igmp_snooping_policy.igmp_snooping_policy_name' instead.",
+				DeprecationMessage: "Attribute 'relation_fv_rs_igmpsn' is deprecated, please refer to 'relation_to_igmp_snooping_policy.igmp_snooping_policy_name' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			"relation_fv_rs_bd_to_out": schema.SetAttribute{
 				Computed:           true,
 				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute 'relation_fv_rs_bd_to_out' will be deprecated soon, please refer to 'relation_to_l3_outsides.l3_outside_name' instead.",
+				DeprecationMessage: "Attribute 'relation_fv_rs_bd_to_out' is deprecated, please refer to 'relation_to_l3_outsides.l3_outside_name' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			"relation_fv_rs_mldsn": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'relation_fv_rs_mldsn' will be deprecated soon, please refer to 'relation_to_mld_snooping_policy.mld_snooping_policy_name' instead.",
+				DeprecationMessage: "Attribute 'relation_fv_rs_mldsn' is deprecated, please refer to 'relation_to_mld_snooping_policy.mld_snooping_policy_name' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			"relation_fv_rs_abd_pol_mon_pol": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'relation_fv_rs_abd_pol_mon_pol' will be deprecated soon, please refer to 'relation_to_monitor_policy.monitoring_policy_name' instead.",
+				DeprecationMessage: "Attribute 'relation_fv_rs_abd_pol_mon_pol' is deprecated, please refer to 'relation_to_monitor_policy.monitoring_policy_name' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			"relation_fv_rs_bd_to_nd_p": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'relation_fv_rs_bd_to_nd_p' will be deprecated soon, please refer to 'relation_to_neighbor_discovery_interface_policy.neighbor_discovery_interface_policy_name' instead.",
+				DeprecationMessage: "Attribute 'relation_fv_rs_bd_to_nd_p' is deprecated, please refer to 'relation_to_neighbor_discovery_interface_policy.neighbor_discovery_interface_policy_name' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			"relation_fv_rs_bd_to_relay_p": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'relation_fv_rs_bd_to_relay_p' will be deprecated soon, please refer to 'relation_to_relay_policy.dhcp_relay_policy_name' instead.",
+				DeprecationMessage: "Attribute 'relation_fv_rs_bd_to_relay_p' is deprecated, please refer to 'relation_to_relay_policy.dhcp_relay_policy_name' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			"relation_fv_rs_bd_to_profile": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'relation_fv_rs_bd_to_profile' will be deprecated soon, please refer to 'relation_to_route_control_profile.route_control_profile_name' instead.",
+				DeprecationMessage: "Attribute 'relation_fv_rs_bd_to_profile' is deprecated, please refer to 'relation_to_route_control_profile.route_control_profile_name' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			"relation_fv_rs_ctx": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'relation_fv_rs_ctx' will be deprecated soon, please refer to 'relation_to_vrf.vrf_name' instead.",
+				DeprecationMessage: "Attribute 'relation_fv_rs_ctx' is deprecated, please refer to 'relation_to_vrf.vrf_name' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			// End of deprecated attributes
 			"id": schema.StringAttribute{
