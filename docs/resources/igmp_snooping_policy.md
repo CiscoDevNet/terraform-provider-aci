@@ -117,7 +117,7 @@ All examples for the IGMP Snooping Policy resource can be found in the [examples
   - Default: `2`
 * `start_query_interval` (startQueryIntvl) - (string) The query interval (seconds) of the IGMP Snooping Policy object at start-up.
   - Default: `31`
-* `querier_version` (ver) - (string) Version.
+* `querier_version` (ver) - (string) The version of the IGMP querier.
   - Default: `v3`
   - Valid Values: `unspecified`, `v1`, `v2`, `v3`.
 

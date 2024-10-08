@@ -1497,6 +1497,8 @@ igmpSnoopPol:
     start_query_cnt: "start_query_count"
     start_query_intvl: "start_query_interval"
     ver: "querier_version"
+  documentation:
+    ver: "The version of the IGMP querier."
   default_values:
     queryIntvl: "125"
     rspIntvl: "10"
