@@ -56,7 +56,7 @@ type FvBDResourceModel struct {
 	EpClear                               types.String `tfsdk:"clear_remote_mac_entries"`
 	EpMoveDetectMode                      types.String `tfsdk:"endpoint_move_detection_mode"`
 	HostBasedRouting                      types.String `tfsdk:"advertise_host_routes"`
-	IntersiteBumTrafficAllow              types.String `tfsdk:"intersite_bum_traffic_allow"`
+	IntersiteBumTrafficAllow              types.String `tfsdk:"enable_intersite_bum_traffic"`
 	IntersiteL2Stretch                    types.String `tfsdk:"intersite_l2_stretch"`
 	IpLearning                            types.String `tfsdk:"ip_learning"`
 	Ipv6McastAllow                        types.String `tfsdk:"pim_ipv6"`
@@ -95,6 +95,7 @@ type FvBDResourceModel struct {
 	DeprecatedEpClear                     types.String `tfsdk:"ep_clear"`
 	DeprecatedEpMoveDetectMode            types.String `tfsdk:"ep_move_detect_mode"`
 	DeprecatedHostBasedRouting            types.String `tfsdk:"host_based_routing"`
+	DeprecatedIntersiteBumTrafficAllow    types.String `tfsdk:"intersite_bum_traffic_allow"`
 	DeprecatedIpv6McastAllow              types.String `tfsdk:"ipv6_mcast_allow"`
 	DeprecatedLlAddr                      types.String `tfsdk:"ll_addr"`
 	DeprecatedMac                         types.String `tfsdk:"mac"`
@@ -237,6 +238,7 @@ func getEmptyFvBDResourceModel() *FvBDResourceModel {
 		DeprecatedEpClear:                     types.String{},
 		DeprecatedEpMoveDetectMode:            types.String{},
 		DeprecatedHostBasedRouting:            types.String{},
+		DeprecatedIntersiteBumTrafficAllow:    types.String{},
 		DeprecatedIpv6McastAllow:              types.String{},
 		DeprecatedLlAddr:                      types.String{},
 		DeprecatedMac:                         types.String{},
@@ -850,6 +852,7 @@ func (r *FvBDResource) UpgradeState(ctx context.Context) map[int64]resource.Stat
 					DeprecatedEpClear:                     priorStateData.EpClear,
 					DeprecatedEpMoveDetectMode:            priorStateData.EpMoveDetectMode,
 					DeprecatedHostBasedRouting:            priorStateData.HostBasedRouting,
+					DeprecatedIntersiteBumTrafficAllow:    priorStateData.IntersiteBumTrafficAllow,
 					DeprecatedIpv6McastAllow:              priorStateData.Ipv6McastAllow,
 					DeprecatedLlAddr:                      priorStateData.LlAddr,
 					DeprecatedMac:                         priorStateData.Mac,
@@ -1047,6 +1050,9 @@ func setFvBDLegacyAttributes(ctx context.Context, diags *diag.Diagnostics, data,
 		}
 		if attributeName == "hostBasedRouting" {
 			data.DeprecatedHostBasedRouting = basetypes.NewStringValue(attributeValue.(string))
+		}
+		if attributeName == "intersiteBumTrafficAllow" {
+			data.DeprecatedIntersiteBumTrafficAllow = basetypes.NewStringValue(attributeValue.(string))
 		}
 		if attributeName == "ipv6McastAllow" {
 			data.DeprecatedIpv6McastAllow = basetypes.NewStringValue(attributeValue.(string))
@@ -1286,6 +1292,14 @@ func (r *FvBDResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRe
 			planData.HostBasedRouting = configData.DeprecatedHostBasedRouting
 		} else if stateData != nil { // used to replace use state for unknown
 			planData.DeprecatedHostBasedRouting = stateData.DeprecatedHostBasedRouting
+		}
+
+		if !configData.IntersiteBumTrafficAllow.IsNull() {
+			planData.DeprecatedIntersiteBumTrafficAllow = configData.IntersiteBumTrafficAllow
+		} else if !configData.DeprecatedIntersiteBumTrafficAllow.IsNull() {
+			planData.IntersiteBumTrafficAllow = configData.DeprecatedIntersiteBumTrafficAllow
+		} else if stateData != nil { // used to replace use state for unknown
+			planData.DeprecatedIntersiteBumTrafficAllow = stateData.DeprecatedIntersiteBumTrafficAllow
 		}
 
 		if !configData.Ipv6McastAllow.IsNull() {
@@ -1726,6 +1740,16 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 					}...),
 				},
 			},
+			"intersite_bum_traffic_allow": schema.StringAttribute{
+				Optional:           true,
+				Computed:           true,
+				DeprecationMessage: "Attribute 'intersite_bum_traffic_allow' is deprecated, please refer to 'enable_intersite_bum_traffic' instead. The attribute will be removed in the next major version of the provider.",
+				Validators: []validator.String{
+					stringvalidator.ConflictsWith(path.Expressions{
+						path.MatchRoot("enable_intersite_bum_traffic"),
+					}...),
+				},
+			},
 			"ipv6_mcast_allow": schema.StringAttribute{
 				Optional:           true,
 				Computed:           true,
@@ -2059,7 +2083,7 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 				},
 				MarkdownDescription: `Advertise host routes (/32 prefixes) out of the L3Out(s) associated to the Bridge Domain object.`,
 			},
-			"intersite_bum_traffic_allow": schema.StringAttribute{
+			"enable_intersite_bum_traffic": schema.StringAttribute{
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
@@ -2105,7 +2129,7 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 				Validators: []validator.String{
 					stringvalidator.OneOf("no", "yes"),
 				},
-				MarkdownDescription: `Enable IPv6 multicast traffic for the Bridge Domain object.`,
+				MarkdownDescription: `Enable IPv6 Protocol Independent Multicast (PIM) traffic for the Bridge Domain object.`,
 			},
 			"limit_ip_learn_to_subnets": schema.StringAttribute{
 				Optional: true,
@@ -2161,7 +2185,7 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 				Validators: []validator.String{
 					stringvalidator.OneOf("no", "yes"),
 				},
-				MarkdownDescription: `Enable IPv4 multicast traffic for the Bridge Domain object.`,
+				MarkdownDescription: `Enable IPv4 Protocol Independent Multicast (PIM) traffic for the Bridge Domain object.`,
 			},
 			"multi_destination_flooding": schema.StringAttribute{
 				Optional: true,

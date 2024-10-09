@@ -56,15 +56,15 @@ data "aci_bridge_domain" "example_tenant" {
 * `clear_remote_mac_entries` (epClear) - (string) Clear all endpoints in leaf switches for the Bridge Domain object.
 * `endpoint_move_detection_mode` (epMoveDetectMode) - (string) The End Point move detection option uses the Gratuitous Address Resolution Protocol (GARP). A gratuitous ARP is an ARP broadcast-type of packet that is used to verify that no other device on the network has the same IP address as the sending device.
 * `advertise_host_routes` (hostBasedRouting) - (string) Advertise host routes (/32 prefixes) out of the L3Out(s) associated to the Bridge Domain object.
-* `intersite_bum_traffic_allow` (intersiteBumTrafficAllow) - (string) Enable intersite Broadcast, Unknown-Unicast and Multicast (BUM) traffic between sites for the Bridge Domain object.
+* `enable_intersite_bum_traffic` (intersiteBumTrafficAllow) - (string) Enable intersite Broadcast, Unknown-Unicast and Multicast (BUM) traffic between sites for the Bridge Domain object.
 * `intersite_l2_stretch` (intersiteL2Stretch) - (string) Enable L2 stretch between sites for the Bridge Domain object.
 * `ip_learning` (ipLearning) - (string) The IP learning setting of the Bridge Domain object.
-* `pim_ipv6` (ipv6McastAllow) - (string) Enable IPv6 multicast traffic for the Bridge Domain object.
+* `pim_ipv6` (ipv6McastAllow) - (string) Enable IPv6 Protocol Independent Multicast (PIM) traffic for the Bridge Domain object.
 * `limit_ip_learn_to_subnets` (limitIpLearnToSubnets) - (string) Limit IP address learning to subnets for the Bridge Domain object. Every Bridge Domain object can have multiple subnets associated with it.
 * `link_local_ipv6_address` (llAddr) - (string) The override of the system generated IPv6 link-local address.
 * `custom_mac_address` (mac) - (string) The MAC address of the Bridge Domain object.
 * `drop_arp_with_multicast_smac` (mcastARPDrop) - (string) Drop rogue multicast ARP packets for the Bridge Domain object.
-* `pim` (mcastAllow) - (string) Enable IPv4 multicast traffic for the Bridge Domain object.
+* `pim` (mcastAllow) - (string) Enable IPv4 Protocol Independent Multicast (PIM) traffic for the Bridge Domain object.
 * `multi_destination_flooding` (multiDstPktAct) - (string) The multiple destination forwarding method for L2 Multicast, Broadcast, and Link Layer traffic types.
 * `name_alias` (nameAlias) - (string) The name alias of the Bridge Domain object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.

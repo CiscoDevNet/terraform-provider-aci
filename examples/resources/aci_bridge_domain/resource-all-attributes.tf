@@ -9,7 +9,7 @@ resource "aci_bridge_domain" "full_example_tenant" {
   clear_remote_mac_entries           = "no"
   endpoint_move_detection_mode       = "garp"
   advertise_host_routes              = "no"
-  intersite_bum_traffic_allow        = "no"
+  enable_intersite_bum_traffic       = "no"
   intersite_l2_stretch               = "no"
   ip_learning                        = "no"
   pim_ipv6                           = "no"

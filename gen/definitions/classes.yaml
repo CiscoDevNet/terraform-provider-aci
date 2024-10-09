@@ -697,6 +697,7 @@ fvBD:
       unk_mcast_act: l3_unknown_multicast_flooding
       v6unk_mcast_act: ipv6_l3_unknown_multicast_flooding
       vmac: virtual_mac_address
+      intersite_bum_traffic_allow: enable_intersite_bum_traffic
     fvRsABDPolMonPol:
       relation_fv_rs_abd_pol_mon_pol: relation_to_monitor_policy.monitoring_policy_name
     fvRsBdToEpRet:
