@@ -24,7 +24,7 @@ Data source for ACI Relation To Intra EPG Contract
   - Too many DN formats to display, see model documentation for all possible parents of [fvRsIntraEpg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsIntraEpg/overview).
   - `uni/tn-{name}/ap-{name}/epg-{name}/rsintraEpg-{tnVzBrCPName}`
   - `uni/tn-{name}/ap-{name}/esg-{name}/rsintraEpg-{tnVzBrCPName}`
-  - `uni/tn-{name}/out-{name}/instP-{name}/rsprov-{tnVzBrCPName}`
+  - `uni/tn-{name}/out-{name}/instP-{name}/rsintraEpg-{tnVzBrCPName}`
 
 ## GUI Information ##
 

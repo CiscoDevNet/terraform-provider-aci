@@ -24,8 +24,8 @@ Data source for ACI Relation To Imported Contract
   - Too many DN formats to display, see model documentation for all possible parents of [fvRsConsIf](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsConsIf/overview).
   - `uni/tn-{name}/ap-{name}/epg-{name}/rsconsIf-{tnVzCPIfName}`
   - `uni/tn-{name}/ap-{name}/esg-{name}/rsconsIf-{tnVzCPIfName}`
-  - `uni/tn-{name}/l2out-{name}/instP-{name}/rsprov-{tnVzBrCPName}`
-  - `uni/tn-{name}/out-{name}/instP-{name}/rsprov-{tnVzBrCPName}`
+  - `uni/tn-{name}/l2out-{name}/instP-{name}/rsconsIf-{tnVzBrCPName}`
+  - `uni/tn-{name}/out-{name}/instP-{name}/rsconsIf-{tnVzBrCPName}`
 
 ## GUI Information ##
 

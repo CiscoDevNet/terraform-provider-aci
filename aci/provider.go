@@ -79,7 +79,6 @@ func Provider() *schema.Provider {
 		ResourcesMap: map[string]*schema.Resource{
 			"aci_tenant":                                   resourceAciTenant(),
 			"aci_application_profile":                      resourceAciApplicationProfile(),
-			"aci_bridge_domain":                            resourceAciBridgeDomain(),
 			"aci_contract":                                 resourceAciContract(),
 			"aci_contract_subject":                         resourceAciContractSubject(),
 			"aci_contract_subject_filter":                  resourceAciSubjectFilter(),
@@ -323,7 +322,6 @@ func Provider() *schema.Provider {
 		DataSourcesMap: map[string]*schema.Resource{
 			"aci_tenant":                                   dataSourceAciTenant(),
 			"aci_application_profile":                      dataSourceAciApplicationProfile(),
-			"aci_bridge_domain":                            dataSourceAciBridgeDomain(),
 			"aci_contract":                                 dataSourceAciContract(),
 			"aci_contract_subject":                         dataSourceAciContractSubject(),
 			"aci_contract_subject_filter":                  dataSourceAciSubjectFilter(),

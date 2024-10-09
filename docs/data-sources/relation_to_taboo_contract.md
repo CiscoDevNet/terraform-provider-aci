@@ -23,8 +23,8 @@ Data source for ACI Relation To Taboo Contract
 * Distinguished Name Formats:
   - Too many DN formats to display, see model documentation for all possible parents of [fvRsProtBy](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsProtBy/overview).
   - `uni/tn-{name}/ap-{name}/epg-{name}/rsprotBy-{tnVzTabooName}`
-  - `uni/tn-{name}/l2out-{name}/instP-{name}/rsprov-{tnVzBrCPName}`
-  - `uni/tn-{name}/out-{name}/instP-{name}/rsprov-{tnVzBrCPName}`
+  - `uni/tn-{name}/l2out-{name}/instP-{name}/rsprotBy-{tnVzBrCPName}`
+  - `uni/tn-{name}/out-{name}/instP-{name}/rsprotBy-{tnVzBrCPName}`
 
 ## GUI Information ##
 

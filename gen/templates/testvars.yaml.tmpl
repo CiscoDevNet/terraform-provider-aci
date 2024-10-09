@@ -197,11 +197,11 @@ all:
   {{- end}}
 {{ if .Children}}
 children:
-  {{- range $key, $value := .Children}}{{$name := .ResourceName}}{{$child_deletable := .AllowDelete}}
+  {{- range $key, $value := .Children}}{{$name := .ResourceName}}{{$child_deletable := .AllowDelete}}{{$childVersionMismatched := .VersionMismatched}}
   {{overwriteProperty .PkgName .ResourceName $.Definitions}}:
   {{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
   {{- $versionMismatchExists = false}}
-    - {{ range .Properties}}{{- if keyExists $versionMismatch .RawVersion}}{{$versionMismatchExists = true}}{{- end}}{{$overwritePropertyName := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}{{- if and (not (keyExists $versionMismatch .RawVersion)) (not .IgnoreInTest) (not .ReadOnly)}}{{$overwritePropertyName}}: {{$length := len .ValidValues}}{{if ne $length 0}}"{{ index .ValidValues 0 }}"{{else if not .IsNaming}}"{{overwritePropertyValue .PkgName $overwritePropertyName $overwritePropertyName "all" 0 $.Definitions }}"{{- else}}"{{lookupChildTestValue .PkgName $.ResourceName .SnakeCaseName $.TestVars 0 $.Definitions}}"{{- end}}
+    - {{ range .Properties}}{{- if keyExists $childVersionMismatched .RawVersion}}{{$versionMismatchExists = true}}{{- end}}{{$overwritePropertyName := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}{{- if and (not (keyExists $childVersionMismatched .RawVersion)) (not .IgnoreInTest) (not .ReadOnly)}}{{$overwritePropertyName}}: {{$length := len .ValidValues}}{{if ne $length 0}}"{{ index .ValidValues 0 }}"{{else if not .IsNaming}}"{{overwritePropertyValue .PkgName $overwritePropertyName $overwritePropertyName "all" 0 $.Definitions }}"{{- else}}"{{lookupChildTestValue .PkgName $.ResourceName .SnakeCaseName $.TestVars 0 $.Definitions}}"{{- end}}
       {{ end}}{{ end}}
       {{- if $child_deletable -}}
       deletable_child: true

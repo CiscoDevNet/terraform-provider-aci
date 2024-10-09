@@ -49,28 +49,49 @@ func (d *{{.ResourceClassName}}DataSource) Schema(ctx context.Context, req datas
 		MarkdownDescription: "The {{.ResourceName}} datasource for the '{{.PkgName}}' class",
 
 		Attributes: map[string]schema.Attribute{
-			{{- if .LegacyAttributes}}
+			{{- if .LegacyAttributes}}{{$ResourceName := .ResourceName}}
 			// Deprecated attributes
 				{{- range .LegacyAttributes}}
 					{{- if ne .ReplacedBy.AttributeName "" }}
 						{{- if eq (getMigrationType .ValueType) "String"}}
 			"{{.AttributeName}}": schema.StringAttribute{
 				Computed: true,
-				DeprecationMessage: "Attribute '{{.AttributeName}}' will be deprecated soon, please refer to '{{.ReplacedBy.AttributeName}}' instead",
+				DeprecationMessage: "Attribute '{{.AttributeName}}' is deprecated, please refer to '{{.ReplacedBy.AttributeName}}' instead. The attribute will be removed in the next major version of the provider.",
 			},
 						{{- end}}
 						{{- if eq (getMigrationType .ValueType) "Set"}}
 			"{{.AttributeName}}": schema.SetAttribute{
 				Computed: true,
 				ElementType: types.StringType,
-				DeprecationMessage: "Attribute '{{.AttributeName}}' will be deprecated soon, please refer to '{{.ReplacedBy.AttributeName}}' instead",
+				DeprecationMessage: "Attribute '{{.AttributeName}}' is deprecated, please refer to '{{.ReplacedBy.AttributeName}}' instead. The attribute will be removed in the next major version of the provider.",
 			},
 						{{- end}}
 						{{- if eq (getMigrationType .ValueType) "List"}}
 			"{{.AttributeName}}": schema.ListAttribute{
 				Computed: true,
 				ElementType: types.StringType,
-				DeprecationMessage: "Attribute '{{.AttributeName}}' will be deprecated soon, please refer to '{{.ReplacedBy.AttributeName}}' instead",
+				DeprecationMessage: "Attribute '{{.AttributeName}}' is deprecated, please refer to '{{.ReplacedBy.AttributeName}}' instead. The attribute will be removed in the next major version of the provider.",
+			},
+						{{- end}}
+					{{- else if containsString .Name .AttributeName}}
+						{{- if eq (getMigrationType .ValueType) "String"}}
+			"{{.AttributeName}}": schema.StringAttribute{
+				Computed: true,
+				DeprecationMessage: "Attribute `{{.AttributeName}}` is deprecated. The attribute will be removed in the next major version of the provider.",
+			},
+						{{- end}}
+						{{- if eq (getMigrationType .ValueType) "Set"}}
+			"{{.AttributeName}}": schema.SetAttribute{
+				Computed: true,
+				ElementType: types.StringType,
+				DeprecationMessage: "Attribute `{{.AttributeName}}` is deprecated. The attribute will be removed in the next major version of the provider.",
+			},
+						{{- end}}
+						{{- if eq (getMigrationType .ValueType) "List"}}
+			"{{.AttributeName}}": schema.ListAttribute{
+				Computed: true,
+				ElementType: types.StringType,
+				DeprecationMessage: "Attribute `{{.AttributeName}}` is deprecated. The attribute will be removed in the next major version of the provider.",
 			},
 						{{- end}}
 					{{- end}}
