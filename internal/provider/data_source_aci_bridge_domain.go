@@ -58,6 +58,10 @@ func (d *FvBDDataSource) Schema(ctx context.Context, req datasource.SchemaReques
 				Computed:           true,
 				DeprecationMessage: "Attribute 'host_based_routing' is deprecated, please refer to 'advertise_host_routes' instead. The attribute will be removed in the next major version of the provider.",
 			},
+			"intersite_bum_traffic_allow": schema.StringAttribute{
+				Computed:           true,
+				DeprecationMessage: "Attribute 'intersite_bum_traffic_allow' is deprecated, please refer to 'enable_intersite_bum_traffic' instead. The attribute will be removed in the next major version of the provider.",
+			},
 			"ipv6_mcast_allow": schema.StringAttribute{
 				Computed:           true,
 				DeprecationMessage: "Attribute 'ipv6_mcast_allow' is deprecated, please refer to 'pim_ipv6' instead. The attribute will be removed in the next major version of the provider.",
@@ -189,7 +193,7 @@ func (d *FvBDDataSource) Schema(ctx context.Context, req datasource.SchemaReques
 				Computed:            true,
 				MarkdownDescription: `Advertise host routes (/32 prefixes) out of the L3Out(s) associated to the Bridge Domain object.`,
 			},
-			"intersite_bum_traffic_allow": schema.StringAttribute{
+			"enable_intersite_bum_traffic": schema.StringAttribute{
 				Computed:            true,
 				MarkdownDescription: `Enable intersite Broadcast, Unknown-Unicast and Multicast (BUM) traffic between sites for the Bridge Domain object.`,
 			},
@@ -203,7 +207,7 @@ func (d *FvBDDataSource) Schema(ctx context.Context, req datasource.SchemaReques
 			},
 			"pim_ipv6": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `Enable IPv6 multicast traffic for the Bridge Domain object.`,
+				MarkdownDescription: `Enable IPv6 Protocol Independent Multicast (PIM) traffic for the Bridge Domain object.`,
 			},
 			"limit_ip_learn_to_subnets": schema.StringAttribute{
 				Computed:            true,
@@ -223,7 +227,7 @@ func (d *FvBDDataSource) Schema(ctx context.Context, req datasource.SchemaReques
 			},
 			"pim": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `Enable IPv4 multicast traffic for the Bridge Domain object.`,
+				MarkdownDescription: `Enable IPv4 Protocol Independent Multicast (PIM) traffic for the Bridge Domain object.`,
 			},
 			"multi_destination_flooding": schema.StringAttribute{
 				Computed:            true,

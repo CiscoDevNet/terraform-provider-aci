@@ -56,7 +56,7 @@ resource "aci_bridge_domain" "full_example_tenant" {
   clear_remote_mac_entries           = "no"
   endpoint_move_detection_mode       = "garp"
   advertise_host_routes              = "no"
-  intersite_bum_traffic_allow        = "no"
+  enable_intersite_bum_traffic       = "no"
   intersite_l2_stretch               = "no"
   ip_learning                        = "no"
   pim_ipv6                           = "no"
@@ -197,7 +197,7 @@ All examples for the Bridge Domain resource can be found in the [examples](https
 * `advertise_host_routes` (hostBasedRouting) - (string) Advertise host routes (/32 prefixes) out of the L3Out(s) associated to the Bridge Domain object.
   - Default: `no`
   - Valid Values: `no`, `yes`.
-* `intersite_bum_traffic_allow` (intersiteBumTrafficAllow) - (string) Enable intersite Broadcast, Unknown-Unicast and Multicast (BUM) traffic between sites for the Bridge Domain object.
+* `enable_intersite_bum_traffic` (intersiteBumTrafficAllow) - (string) Enable intersite Broadcast, Unknown-Unicast and Multicast (BUM) traffic between sites for the Bridge Domain object.
   - Default: `no`
   - Valid Values: `no`, `yes`.
 * `intersite_l2_stretch` (intersiteL2Stretch) - (string) Enable L2 stretch between sites for the Bridge Domain object.
@@ -206,7 +206,7 @@ All examples for the Bridge Domain resource can be found in the [examples](https
 * `ip_learning` (ipLearning) - (string) The IP learning setting of the Bridge Domain object.
   - Default: `yes`
   - Valid Values: `no`, `yes`.
-* `pim_ipv6` (ipv6McastAllow) - (string) Enable IPv6 multicast traffic for the Bridge Domain object.
+* `pim_ipv6` (ipv6McastAllow) - (string) Enable IPv6 Protocol Independent Multicast (PIM) traffic for the Bridge Domain object.
   - Default: `no`
   - Valid Values: `no`, `yes`.
 * `limit_ip_learn_to_subnets` (limitIpLearnToSubnets) - (string) Limit IP address learning to subnets for the Bridge Domain object. Every Bridge Domain object can have multiple subnets associated with it.
@@ -218,7 +218,7 @@ All examples for the Bridge Domain resource can be found in the [examples](https
 * `drop_arp_with_multicast_smac` (mcastARPDrop) - (string) Drop rogue multicast ARP packets for the Bridge Domain object.
   - Default: `yes`
   - Valid Values: `no`, `yes`.
-* `pim` (mcastAllow) - (string) Enable IPv4 multicast traffic for the Bridge Domain object.
+* `pim` (mcastAllow) - (string) Enable IPv4 Protocol Independent Multicast (PIM) traffic for the Bridge Domain object.
   - Default: `no`
   - Valid Values: `no`, `yes`.
 * `multi_destination_flooding` (multiDstPktAct) - (string) The multiple destination forwarding method for L2 Multicast, Broadcast, and Link Layer traffic types.

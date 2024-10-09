@@ -39,10 +39,10 @@ func TestAccResourceFvBDWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_bridge_domain.allow_test_2", "custom_mac_address", "00:22:BD:F8:19:FF"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.allow_test", "description", ""),
 					resource.TestCheckResourceAttr("aci_bridge_domain.allow_test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_bridge_domain.allow_test", "enable_intersite_bum_traffic", "no"),
+					resource.TestCheckResourceAttr("aci_bridge_domain.allow_test_2", "enable_intersite_bum_traffic", "no"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.allow_test", "endpoint_move_detection_mode", ""),
 					resource.TestCheckResourceAttr("aci_bridge_domain.allow_test_2", "endpoint_move_detection_mode", ""),
-					resource.TestCheckResourceAttr("aci_bridge_domain.allow_test", "intersite_bum_traffic_allow", "no"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.allow_test_2", "intersite_bum_traffic_allow", "no"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.allow_test", "intersite_l2_stretch", "no"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.allow_test_2", "intersite_l2_stretch", "no"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.allow_test", "ip_learning", "yes"),
@@ -125,10 +125,10 @@ func TestAccResourceFvBDWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_bridge_domain.allow_test_2", "custom_mac_address", "00:22:BD:F8:19:FF"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.allow_test", "description", ""),
 					resource.TestCheckResourceAttr("aci_bridge_domain.allow_test_2", "description", ""),
+					resource.TestCheckResourceAttr("aci_bridge_domain.allow_test", "enable_intersite_bum_traffic", "no"),
+					resource.TestCheckResourceAttr("aci_bridge_domain.allow_test_2", "enable_intersite_bum_traffic", "no"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.allow_test", "endpoint_move_detection_mode", ""),
 					resource.TestCheckResourceAttr("aci_bridge_domain.allow_test_2", "endpoint_move_detection_mode", ""),
-					resource.TestCheckResourceAttr("aci_bridge_domain.allow_test", "intersite_bum_traffic_allow", "no"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.allow_test_2", "intersite_bum_traffic_allow", "no"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.allow_test", "intersite_l2_stretch", "no"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.allow_test_2", "intersite_l2_stretch", "no"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.allow_test", "ip_learning", "yes"),
@@ -190,8 +190,8 @@ func TestAccResourceFvBDWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "clear_remote_mac_entries", "no"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "custom_mac_address", "00:22:BD:F8:19:FF"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_bridge_domain.test", "enable_intersite_bum_traffic", "no"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "endpoint_move_detection_mode", ""),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "intersite_bum_traffic_allow", "no"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "intersite_l2_stretch", "no"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "ip_learning", "yes"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "l2_unknown_unicast_flooding", "proxy"),
@@ -228,8 +228,8 @@ func TestAccResourceFvBDWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "clear_remote_mac_entries", "no"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "custom_mac_address", "00:22:BD:F8:19:FE"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "description", "description_1"),
+					resource.TestCheckResourceAttr("aci_bridge_domain.test", "enable_intersite_bum_traffic", "no"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "endpoint_move_detection_mode", "garp"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "intersite_bum_traffic_allow", "no"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "intersite_l2_stretch", "no"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "ip_learning", "no"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "l2_unknown_unicast_flooding", "proxy"),
@@ -274,8 +274,8 @@ func TestAccResourceFvBDWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "clear_remote_mac_entries", "no"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "custom_mac_address", "00:22:BD:F8:19:FF"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_bridge_domain.test", "enable_intersite_bum_traffic", "no"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "endpoint_move_detection_mode", ""),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "intersite_bum_traffic_allow", "no"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "intersite_l2_stretch", "no"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "ip_learning", "yes"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "l2_unknown_unicast_flooding", "proxy"),
@@ -318,8 +318,8 @@ func TestAccResourceFvBDWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "clear_remote_mac_entries", "no"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "custom_mac_address", "00:22:BD:F8:19:FF"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_bridge_domain.test", "enable_intersite_bum_traffic", "no"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "endpoint_move_detection_mode", ""),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "intersite_bum_traffic_allow", "no"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "intersite_l2_stretch", "no"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "ip_learning", "yes"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "l2_unknown_unicast_flooding", "proxy"),
@@ -677,8 +677,8 @@ resource "aci_bridge_domain" "test" {
   clear_remote_mac_entries = "no"
   custom_mac_address = "00:22:BD:F8:19:FE"
   description = "description_1"
+  enable_intersite_bum_traffic = "no"
   endpoint_move_detection_mode = "garp"
-  intersite_bum_traffic_allow = "no"
   intersite_l2_stretch = "no"
   ip_learning = "no"
   l2_unknown_unicast_flooding = "proxy"
@@ -710,8 +710,8 @@ resource "aci_bridge_domain" "test" {
   clear_remote_mac_entries = "no"
   custom_mac_address = "00:22:BD:F8:19:FF"
   description = ""
+  enable_intersite_bum_traffic = "no"
   endpoint_move_detection_mode = ""
-  intersite_bum_traffic_allow = "no"
   intersite_l2_stretch = "no"
   ip_learning = "yes"
   l2_unknown_unicast_flooding = "proxy"
