@@ -227,7 +227,7 @@ All examples for the Bridge Domain resource can be found in the [examples](https
 * `name_alias` (nameAlias) - (string) The name alias of the Bridge Domain object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
-* `bridge_domain_type` (type) - (string) domain type.
+* `bridge_domain_type` (type) - (string) The domain type of the Bridge Domain object.
   - Default: `regular`
   - Valid Values: `fc`, `regular`.
 * `unicast_routing` (unicastRoute) - (string) Enables L3 routing and endpoint IP learning for the Bridge Domain object.

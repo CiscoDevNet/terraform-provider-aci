@@ -251,7 +251,7 @@ func (d *FvBDDataSource) Schema(ctx context.Context, req datasource.SchemaReques
 			},
 			"bridge_domain_type": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `domain type.`,
+				MarkdownDescription: `The domain type of the Bridge Domain object.`,
 			},
 			"unicast_routing": schema.StringAttribute{
 				Computed:            true,
