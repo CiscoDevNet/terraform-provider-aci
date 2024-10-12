@@ -1353,7 +1353,7 @@ fvBD:
     limitIpLearnToSubnets: "Limit IP address learning to subnets for the %s object. Every Bridge Domain object can have multiple subnets associated with it"
     mcastARPDrop: "Drop rogue multicast ARP packets for the %s object."
     mcastAllow: "Enable IPv4 Protocol Independent Multicast (PIM) traffic for the %s object."
-    bridge_domain_type: "The domain type of the %s object."
+    type: "The domain type of the %s object."
     unicastRoute: "Enables L3 routing and endpoint IP learning for the %s object."
     unkMcastAct: "The forwarding method for unknown layer 3 multicast destinations."
     v6unkMcastAct: "The forwarding method for unknown IPv6 multicast destinations."

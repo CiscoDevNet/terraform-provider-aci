@@ -2245,7 +2245,7 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 				Validators: []validator.String{
 					stringvalidator.OneOf("fc", "regular"),
 				},
-				MarkdownDescription: `domain type.`,
+				MarkdownDescription: `The domain type of the Bridge Domain object.`,
 			},
 			"unicast_routing": schema.StringAttribute{
 				Optional: true,
