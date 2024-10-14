@@ -179,13 +179,13 @@ func resourceAciPCVPCInterfacePolicyGroup() *schema.Resource {
 				Optional: true,
 			},
 			"relation_infra_rs_att_ent_p": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
+				Computed: true,
 				Optional: true,
 			},
 			"relation_infra_rs_l2_inst_pol": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
+				Computed: true,
 				Optional: true,
 			},
 		}),
