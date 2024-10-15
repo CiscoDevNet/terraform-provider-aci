@@ -48,66 +48,67 @@ type FvAEPgResource struct {
 
 // FvAEPgResourceModel describes the resource data model.
 type FvAEPgResourceModel struct {
-	Id                         types.String                      `tfsdk:"id"`
-	ParentDn                   types.String                      `tfsdk:"parent_dn"`
-	Annotation                 types.String                      `tfsdk:"annotation"`
-	Descr                      types.String                      `tfsdk:"description"`
-	ExceptionTag               types.String                      `tfsdk:"contract_exception_tag"`
-	FloodOnEncap               types.String                      `tfsdk:"flood_in_encapsulation"`
-	FwdCtrl                    types.String                      `tfsdk:"forwarding_control"`
-	HasMcastSource             types.String                      `tfsdk:"has_multicast_source"`
-	IsAttrBasedEPg             types.String                      `tfsdk:"useg_epg"`
-	MatchT                     types.String                      `tfsdk:"match_criteria"`
-	Name                       types.String                      `tfsdk:"name"`
-	NameAlias                  types.String                      `tfsdk:"name_alias"`
-	PcEnfPref                  types.String                      `tfsdk:"intra_epg_isolation"`
-	PcTag                      types.String                      `tfsdk:"pc_tag"`
-	PrefGrMemb                 types.String                      `tfsdk:"preferred_group_member"`
-	Prio                       customTypes.FvAEPgPrioStringValue `tfsdk:"priority"`
-	Shutdown                   types.String                      `tfsdk:"admin_state"`
-	FvCrtrn                    types.Object                      `tfsdk:"epg_useg_block_statement"`
-	FvRsAEPgMonPol             types.Object                      `tfsdk:"relation_to_application_epg_monitoring_policy"`
-	FvRsBd                     types.Object                      `tfsdk:"relation_to_bridge_domain"`
-	FvRsCons                   types.Set                         `tfsdk:"relation_to_consumed_contracts"`
-	FvRsConsIf                 types.Set                         `tfsdk:"relation_to_imported_contracts"`
-	FvRsCustQosPol             types.Object                      `tfsdk:"relation_to_custom_qos_policy"`
-	FvRsDomAtt                 types.Set                         `tfsdk:"relation_to_domains"`
-	FvRsDppPol                 types.Object                      `tfsdk:"relation_to_data_plane_policing_policy"`
-	FvRsFcPathAtt              types.Set                         `tfsdk:"relation_to_fibre_channel_paths"`
-	FvRsIntraEpg               types.Set                         `tfsdk:"relation_to_intra_epg_contracts"`
-	FvRsNodeAtt                types.Set                         `tfsdk:"relation_to_static_leafs"`
-	FvRsPathAtt                types.Set                         `tfsdk:"relation_to_static_paths"`
-	FvRsProtBy                 types.Set                         `tfsdk:"relation_to_taboo_contracts"`
-	FvRsProv                   types.Set                         `tfsdk:"relation_to_provided_contracts"`
-	FvRsSecInherited           types.Set                         `tfsdk:"relation_to_contract_masters"`
-	FvRsTrustCtrl              types.Object                      `tfsdk:"relation_to_trust_control_policy"`
-	TagAnnotation              types.Set                         `tfsdk:"annotations"`
-	TagTag                     types.Set                         `tfsdk:"tags"`
-	DeprecatedExceptionTag     types.String                      `tfsdk:"exception_tag"`
-	DeprecatedFloodOnEncap     types.String                      `tfsdk:"flood_on_encap"`
-	DeprecatedFwdCtrl          types.String                      `tfsdk:"fwd_ctrl"`
-	DeprecatedHasMcastSource   types.String                      `tfsdk:"has_mcast_source"`
-	DeprecatedIsAttrBasedEPg   types.String                      `tfsdk:"is_attr_based_epg"`
-	DeprecatedMatchT           types.String                      `tfsdk:"match_t"`
-	DeprecatedParentDn         types.String                      `tfsdk:"application_profile_dn"`
-	DeprecatedPcEnfPref        types.String                      `tfsdk:"pc_enf_pref"`
-	DeprecatedPrefGrMemb       types.String                      `tfsdk:"pref_gr_memb"`
-	DeprecatedPrio             types.String                      `tfsdk:"prio"`
-	DeprecatedShutdown         types.String                      `tfsdk:"shutdown"`
-	DeprecatedFvRsAEPgMonPol   types.String                      `tfsdk:"relation_fv_rs_aepg_mon_pol"`
-	DeprecatedFvRsBd           types.String                      `tfsdk:"relation_fv_rs_bd"`
-	DeprecatedFvRsCons         types.Set                         `tfsdk:"relation_fv_rs_cons"`
-	DeprecatedFvRsSecInherited types.Set                         `tfsdk:"relation_fv_rs_sec_inherited"`
-	DeprecatedFvRsCustQosPol   types.String                      `tfsdk:"relation_fv_rs_cust_qos_pol"`
-	DeprecatedFvRsDppPol       types.String                      `tfsdk:"relation_fv_rs_dpp_pol"`
-	DeprecatedFvRsFcPathAtt    types.Set                         `tfsdk:"relation_fv_rs_fc_path_att"`
-	DeprecatedFvRsConsIf       types.Set                         `tfsdk:"relation_fv_rs_cons_if"`
-	DeprecatedFvRsIntraEpg     types.Set                         `tfsdk:"relation_fv_rs_intra_epg"`
-	DeprecatedFvRsProv         types.Set                         `tfsdk:"relation_fv_rs_prov"`
-	DeprecatedFvRsPathAtt      types.Set                         `tfsdk:"relation_fv_rs_path_att"`
-	DeprecatedFvRsProtBy       types.Set                         `tfsdk:"relation_fv_rs_prot_by"`
-	DeprecatedFvRsTrustCtrl    types.String                      `tfsdk:"relation_fv_rs_trust_ctrl"`
-	DeprecatedFvRsNodeAtt      types.Set                         `tfsdk:"relation_fv_rs_node_att"`
+	Id                                 types.String                      `tfsdk:"id"`
+	ParentDn                           types.String                      `tfsdk:"parent_dn"`
+	Annotation                         types.String                      `tfsdk:"annotation"`
+	Descr                              types.String                      `tfsdk:"description"`
+	ExceptionTag                       types.String                      `tfsdk:"contract_exception_tag"`
+	FloodOnEncap                       types.String                      `tfsdk:"flood_in_encapsulation"`
+	FwdCtrl                            types.String                      `tfsdk:"forwarding_control"`
+	HasMcastSource                     types.String                      `tfsdk:"has_multicast_source"`
+	IsAttrBasedEPg                     types.String                      `tfsdk:"useg_epg"`
+	MatchT                             types.String                      `tfsdk:"match_criteria"`
+	Name                               types.String                      `tfsdk:"name"`
+	NameAlias                          types.String                      `tfsdk:"name_alias"`
+	PcEnfPref                          types.String                      `tfsdk:"intra_epg_isolation"`
+	PcTag                              types.String                      `tfsdk:"pc_tag"`
+	PrefGrMemb                         types.String                      `tfsdk:"preferred_group_member"`
+	Prio                               customTypes.FvAEPgPrioStringValue `tfsdk:"priority"`
+	Shutdown                           types.String                      `tfsdk:"admin_state"`
+	FvCrtrn                            types.Object                      `tfsdk:"epg_useg_block_statement"`
+	FvRsAEPgMonPol                     types.Object                      `tfsdk:"relation_to_application_epg_monitoring_policy"`
+	FvRsBd                             types.Object                      `tfsdk:"relation_to_bridge_domain"`
+	FvRsCons                           types.Set                         `tfsdk:"relation_to_consumed_contracts"`
+	FvRsConsIf                         types.Set                         `tfsdk:"relation_to_imported_contracts"`
+	FvRsCustQosPol                     types.Object                      `tfsdk:"relation_to_custom_qos_policy"`
+	FvRsDomAtt                         types.Set                         `tfsdk:"relation_to_domains"`
+	FvRsDppPol                         types.Object                      `tfsdk:"relation_to_data_plane_policing_policy"`
+	FvRsFcPathAtt                      types.Set                         `tfsdk:"relation_to_fibre_channel_paths"`
+	FvRsIntraEpg                       types.Set                         `tfsdk:"relation_to_intra_epg_contracts"`
+	FvRsNodeAtt                        types.Set                         `tfsdk:"relation_to_static_leafs"`
+	FvRsPathAtt                        types.Set                         `tfsdk:"relation_to_static_paths"`
+	FvRsProtBy                         types.Set                         `tfsdk:"relation_to_taboo_contracts"`
+	FvRsProv                           types.Set                         `tfsdk:"relation_to_provided_contracts"`
+	FvRsSecInherited                   types.Set                         `tfsdk:"relation_to_contract_masters"`
+	FvRsTrustCtrl                      types.Object                      `tfsdk:"relation_to_trust_control_policy"`
+	TagAnnotation                      types.Set                         `tfsdk:"annotations"`
+	TagTag                             types.Set                         `tfsdk:"tags"`
+	DeprecatedExceptionTag             types.String                      `tfsdk:"exception_tag"`
+	DeprecatedFloodOnEncap             types.String                      `tfsdk:"flood_on_encap"`
+	DeprecatedFwdCtrl                  types.String                      `tfsdk:"fwd_ctrl"`
+	DeprecatedHasMcastSource           types.String                      `tfsdk:"has_mcast_source"`
+	DeprecatedIsAttrBasedEPg           types.String                      `tfsdk:"is_attr_based_epg"`
+	DeprecatedMatchT                   types.String                      `tfsdk:"match_t"`
+	DeprecatedParentDn                 types.String                      `tfsdk:"application_profile_dn"`
+	DeprecatedPcEnfPref                types.String                      `tfsdk:"pc_enf_pref"`
+	DeprecatedPrefGrMemb               types.String                      `tfsdk:"pref_gr_memb"`
+	DeprecatedPrio                     types.String                      `tfsdk:"prio"`
+	DeprecatedShutdown                 types.String                      `tfsdk:"shutdown"`
+	Deprecated_relation_fv_rs_prov_def types.Set                         `tfsdk:"relation_fv_rs_prov_def"`
+	DeprecatedFvRsAEPgMonPol           types.String                      `tfsdk:"relation_fv_rs_aepg_mon_pol"`
+	DeprecatedFvRsBd                   types.String                      `tfsdk:"relation_fv_rs_bd"`
+	DeprecatedFvRsCons                 types.Set                         `tfsdk:"relation_fv_rs_cons"`
+	DeprecatedFvRsSecInherited         types.Set                         `tfsdk:"relation_fv_rs_sec_inherited"`
+	DeprecatedFvRsCustQosPol           types.String                      `tfsdk:"relation_fv_rs_cust_qos_pol"`
+	DeprecatedFvRsDppPol               types.String                      `tfsdk:"relation_fv_rs_dpp_pol"`
+	DeprecatedFvRsFcPathAtt            types.Set                         `tfsdk:"relation_fv_rs_fc_path_att"`
+	DeprecatedFvRsConsIf               types.Set                         `tfsdk:"relation_fv_rs_cons_if"`
+	DeprecatedFvRsIntraEpg             types.Set                         `tfsdk:"relation_fv_rs_intra_epg"`
+	DeprecatedFvRsProv                 types.Set                         `tfsdk:"relation_fv_rs_prov"`
+	DeprecatedFvRsPathAtt              types.Set                         `tfsdk:"relation_fv_rs_path_att"`
+	DeprecatedFvRsProtBy               types.Set                         `tfsdk:"relation_fv_rs_prot_by"`
+	DeprecatedFvRsTrustCtrl            types.String                      `tfsdk:"relation_fv_rs_trust_ctrl"`
+	DeprecatedFvRsNodeAtt              types.Set                         `tfsdk:"relation_fv_rs_node_att"`
 }
 
 func getEmptyFvAEPgResourceModel() *FvAEPgResourceModel {
@@ -271,31 +272,32 @@ func getEmptyFvAEPgResourceModel() *FvAEPgResourceModel {
 				"value": types.StringType,
 			},
 		}),
-		DeprecatedExceptionTag:     types.String{},
-		DeprecatedFloodOnEncap:     types.String{},
-		DeprecatedFwdCtrl:          types.String{},
-		DeprecatedHasMcastSource:   types.String{},
-		DeprecatedIsAttrBasedEPg:   types.String{},
-		DeprecatedMatchT:           types.String{},
-		DeprecatedParentDn:         types.String{},
-		DeprecatedPcEnfPref:        types.String{},
-		DeprecatedPrefGrMemb:       types.String{},
-		DeprecatedPrio:             types.String{},
-		DeprecatedShutdown:         types.String{},
-		DeprecatedFvRsAEPgMonPol:   types.String{},
-		DeprecatedFvRsBd:           types.String{},
-		DeprecatedFvRsCons:         types.SetNull(types.StringType),
-		DeprecatedFvRsSecInherited: types.SetNull(types.StringType),
-		DeprecatedFvRsCustQosPol:   types.String{},
-		DeprecatedFvRsDppPol:       types.String{},
-		DeprecatedFvRsFcPathAtt:    types.SetNull(types.StringType),
-		DeprecatedFvRsConsIf:       types.SetNull(types.StringType),
-		DeprecatedFvRsIntraEpg:     types.SetNull(types.StringType),
-		DeprecatedFvRsProv:         types.SetNull(types.StringType),
-		DeprecatedFvRsPathAtt:      types.SetNull(types.StringType),
-		DeprecatedFvRsProtBy:       types.SetNull(types.StringType),
-		DeprecatedFvRsTrustCtrl:    types.String{},
-		DeprecatedFvRsNodeAtt:      types.SetNull(deprecatedFvRsNodeAttType),
+		DeprecatedExceptionTag:             types.String{},
+		DeprecatedFloodOnEncap:             types.String{},
+		DeprecatedFwdCtrl:                  types.String{},
+		DeprecatedHasMcastSource:           types.String{},
+		DeprecatedIsAttrBasedEPg:           types.String{},
+		DeprecatedMatchT:                   types.String{},
+		DeprecatedParentDn:                 types.String{},
+		DeprecatedPcEnfPref:                types.String{},
+		DeprecatedPrefGrMemb:               types.String{},
+		DeprecatedPrio:                     types.String{},
+		DeprecatedShutdown:                 types.String{},
+		Deprecated_relation_fv_rs_prov_def: types.SetNull(types.StringType),
+		DeprecatedFvRsAEPgMonPol:           types.String{},
+		DeprecatedFvRsBd:                   types.String{},
+		DeprecatedFvRsCons:                 types.SetNull(types.StringType),
+		DeprecatedFvRsSecInherited:         types.SetNull(types.StringType),
+		DeprecatedFvRsCustQosPol:           types.String{},
+		DeprecatedFvRsDppPol:               types.String{},
+		DeprecatedFvRsFcPathAtt:            types.SetNull(types.StringType),
+		DeprecatedFvRsConsIf:               types.SetNull(types.StringType),
+		DeprecatedFvRsIntraEpg:             types.SetNull(types.StringType),
+		DeprecatedFvRsProv:                 types.SetNull(types.StringType),
+		DeprecatedFvRsPathAtt:              types.SetNull(types.StringType),
+		DeprecatedFvRsProtBy:               types.SetNull(types.StringType),
+		DeprecatedFvRsTrustCtrl:            types.String{},
+		DeprecatedFvRsNodeAtt:              types.SetNull(deprecatedFvRsNodeAttType),
 	}
 }
 
@@ -927,42 +929,42 @@ func (r *FvAEPgResource) UpgradeState(ctx context.Context) map[int64]resource.St
 				}
 
 				upgradedStateData := FvAEPgResourceModel{
-					Id:                       priorStateData.Id,
-					ParentDn:                 priorStateData.ParentDn,
-					Annotation:               priorStateData.Annotation,
-					Descr:                    priorStateData.Descr,
-					ExceptionTag:             priorStateData.ExceptionTag,
-					FloodOnEncap:             priorStateData.FloodOnEncap,
-					FwdCtrl:                  priorStateData.FwdCtrl,
-					HasMcastSource:           priorStateData.HasMcastSource,
-					IsAttrBasedEPg:           priorStateData.IsAttrBasedEPg,
-					MatchT:                   priorStateData.MatchT,
-					Name:                     priorStateData.Name,
-					NameAlias:                priorStateData.NameAlias,
-					PcEnfPref:                priorStateData.PcEnfPref,
-					PcTag:                    basetypes.NewStringNull(),
-					PrefGrMemb:               priorStateData.PrefGrMemb,
-					Prio:                     customTypes.FvAEPgPrioStringValue{StringValue: priorStateData.Prio},
-					Shutdown:                 priorStateData.Shutdown,
-					DeprecatedExceptionTag:   priorStateData.ExceptionTag,
-					DeprecatedFloodOnEncap:   priorStateData.FloodOnEncap,
-					DeprecatedFwdCtrl:        priorStateData.FwdCtrl,
-					DeprecatedHasMcastSource: priorStateData.HasMcastSource,
-					DeprecatedIsAttrBasedEPg: priorStateData.IsAttrBasedEPg,
-					DeprecatedMatchT:         priorStateData.MatchT,
-					DeprecatedParentDn:       priorStateData.ParentDn,
-					DeprecatedPcEnfPref:      priorStateData.PcEnfPref,
-					DeprecatedPrefGrMemb:     priorStateData.PrefGrMemb,
-					DeprecatedPrio:           priorStateData.Prio,
-					DeprecatedShutdown:       priorStateData.Shutdown,
-					DeprecatedFvRsAEPgMonPol: priorStateData.FvRsAEPgMonPol,
-					DeprecatedFvRsBd:         priorStateData.FvRsBd,
-					DeprecatedFvRsCustQosPol: priorStateData.FvRsCustQosPol,
-					DeprecatedFvRsDppPol:     priorStateData.FvRsDppPol,
-					DeprecatedFvRsTrustCtrl:  priorStateData.FvRsTrustCtrl,
+					Id:                                 priorStateData.Id,
+					ParentDn:                           priorStateData.ParentDn,
+					Annotation:                         priorStateData.Annotation,
+					Descr:                              priorStateData.Descr,
+					ExceptionTag:                       priorStateData.ExceptionTag,
+					FloodOnEncap:                       priorStateData.FloodOnEncap,
+					FwdCtrl:                            priorStateData.FwdCtrl,
+					HasMcastSource:                     priorStateData.HasMcastSource,
+					IsAttrBasedEPg:                     priorStateData.IsAttrBasedEPg,
+					MatchT:                             priorStateData.MatchT,
+					Name:                               priorStateData.Name,
+					NameAlias:                          priorStateData.NameAlias,
+					PcEnfPref:                          priorStateData.PcEnfPref,
+					PcTag:                              basetypes.NewStringNull(),
+					PrefGrMemb:                         priorStateData.PrefGrMemb,
+					Prio:                               customTypes.FvAEPgPrioStringValue{StringValue: priorStateData.Prio},
+					Shutdown:                           priorStateData.Shutdown,
+					DeprecatedExceptionTag:             priorStateData.ExceptionTag,
+					DeprecatedFloodOnEncap:             priorStateData.FloodOnEncap,
+					DeprecatedFwdCtrl:                  priorStateData.FwdCtrl,
+					DeprecatedHasMcastSource:           priorStateData.HasMcastSource,
+					DeprecatedIsAttrBasedEPg:           priorStateData.IsAttrBasedEPg,
+					DeprecatedMatchT:                   priorStateData.MatchT,
+					DeprecatedParentDn:                 priorStateData.ParentDn,
+					DeprecatedPcEnfPref:                priorStateData.PcEnfPref,
+					DeprecatedPrefGrMemb:               priorStateData.PrefGrMemb,
+					DeprecatedPrio:                     priorStateData.Prio,
+					DeprecatedShutdown:                 priorStateData.Shutdown,
+					Deprecated_relation_fv_rs_prov_def: priorStateData.Deprecated_relation_fv_rs_prov_def,
+					DeprecatedFvRsAEPgMonPol:           priorStateData.FvRsAEPgMonPol,
+					DeprecatedFvRsBd:                   priorStateData.FvRsBd,
+					DeprecatedFvRsCustQosPol:           priorStateData.FvRsCustQosPol,
+					DeprecatedFvRsDppPol:               priorStateData.FvRsDppPol,
+					DeprecatedFvRsTrustCtrl:            priorStateData.FvRsTrustCtrl,
 				}
 
-				// FvCrtrn is a child of FvAEPg.
 				upgradedStateData.FvCrtrn = types.ObjectNull(FvCrtrnFvAEPgType)
 
 				FvRsAEPgMonPolObject := FvRsAEPgMonPolFvAEPgResourceModel{
@@ -1299,8 +1301,14 @@ func (r *FvAEPgResource) UpgradeState(ctx context.Context) map[int64]resource.St
 	}
 }
 
-func setFvAEPgLegacyAttributes(ctx context.Context, diags *diag.Diagnostics, data *FvAEPgResourceModel, classReadInfo []interface{}) {
+func setFvAEPgLegacyAttributes(ctx context.Context, diags *diag.Diagnostics, data, staticData *FvAEPgResourceModel, classReadInfo []interface{}) {
 	data.DeprecatedParentDn = data.ParentDn
+	if !staticData.Deprecated_relation_fv_rs_prov_def.IsUnknown() && !staticData.Deprecated_relation_fv_rs_prov_def.IsNull() {
+		data.Deprecated_relation_fv_rs_prov_def = staticData.Deprecated_relation_fv_rs_prov_def
+	} else {
+		Deprecated_relation_fv_rs_prov_defSet, _ := types.SetValueFrom(ctx, types.StringType, []string{})
+		data.Deprecated_relation_fv_rs_prov_def = Deprecated_relation_fv_rs_prov_defSet
+	}
 	attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
 	for attributeName, attributeValue := range attributes {
 		if attributeName == "exceptionTag" {
@@ -1372,14 +1380,14 @@ func setFvAEPgLegacyAttributes(ctx context.Context, diags *diag.Diagnostics, dat
 				}
 				if childClassName == "fvRsCons" {
 					for childAttributeName, childAttributeValue := range childAttributes {
-						if childAttributeName == "tDn" && childAttributeValue != "" {
+						if childAttributeName == "tDn" && childAttributeValue != "" && !ContainsString(DeprecatedFvRsConsFvAEPgList, childAttributeValue.(string)) {
 							DeprecatedFvRsConsFvAEPgList = append(DeprecatedFvRsConsFvAEPgList, childAttributeValue.(string))
 						}
 					}
 				}
 				if childClassName == "fvRsConsIf" {
 					for childAttributeName, childAttributeValue := range childAttributes {
-						if childAttributeName == "tDn" && childAttributeValue != "" {
+						if childAttributeName == "tDn" && childAttributeValue != "" && !ContainsString(DeprecatedFvRsConsIfFvAEPgList, childAttributeValue.(string)) {
 							DeprecatedFvRsConsIfFvAEPgList = append(DeprecatedFvRsConsIfFvAEPgList, childAttributeValue.(string))
 						}
 					}
@@ -1400,42 +1408,42 @@ func setFvAEPgLegacyAttributes(ctx context.Context, diags *diag.Diagnostics, dat
 				}
 				if childClassName == "fvRsFcPathAtt" {
 					for childAttributeName, childAttributeValue := range childAttributes {
-						if childAttributeName == "tDn" && childAttributeValue != "" {
+						if childAttributeName == "tDn" && childAttributeValue != "" && !ContainsString(DeprecatedFvRsFcPathAttFvAEPgList, childAttributeValue.(string)) {
 							DeprecatedFvRsFcPathAttFvAEPgList = append(DeprecatedFvRsFcPathAttFvAEPgList, childAttributeValue.(string))
 						}
 					}
 				}
 				if childClassName == "fvRsIntraEpg" {
 					for childAttributeName, childAttributeValue := range childAttributes {
-						if childAttributeName == "tDn" && childAttributeValue != "" {
+						if childAttributeName == "tDn" && childAttributeValue != "" && !ContainsString(DeprecatedFvRsIntraEpgFvAEPgList, childAttributeValue.(string)) {
 							DeprecatedFvRsIntraEpgFvAEPgList = append(DeprecatedFvRsIntraEpgFvAEPgList, childAttributeValue.(string))
 						}
 					}
 				}
 				if childClassName == "fvRsPathAtt" {
 					for childAttributeName, childAttributeValue := range childAttributes {
-						if childAttributeName == "tDn" && childAttributeValue != "" {
+						if childAttributeName == "tDn" && childAttributeValue != "" && !ContainsString(DeprecatedFvRsPathAttFvAEPgList, childAttributeValue.(string)) {
 							DeprecatedFvRsPathAttFvAEPgList = append(DeprecatedFvRsPathAttFvAEPgList, childAttributeValue.(string))
 						}
 					}
 				}
 				if childClassName == "fvRsProtBy" {
 					for childAttributeName, childAttributeValue := range childAttributes {
-						if childAttributeName == "tDn" && childAttributeValue != "" {
+						if childAttributeName == "tDn" && childAttributeValue != "" && !ContainsString(DeprecatedFvRsProtByFvAEPgList, childAttributeValue.(string)) {
 							DeprecatedFvRsProtByFvAEPgList = append(DeprecatedFvRsProtByFvAEPgList, childAttributeValue.(string))
 						}
 					}
 				}
 				if childClassName == "fvRsProv" {
 					for childAttributeName, childAttributeValue := range childAttributes {
-						if childAttributeName == "tDn" && childAttributeValue != "" {
+						if childAttributeName == "tDn" && childAttributeValue != "" && !ContainsString(DeprecatedFvRsProvFvAEPgList, childAttributeValue.(string)) {
 							DeprecatedFvRsProvFvAEPgList = append(DeprecatedFvRsProvFvAEPgList, childAttributeValue.(string))
 						}
 					}
 				}
 				if childClassName == "fvRsSecInherited" {
 					for childAttributeName, childAttributeValue := range childAttributes {
-						if childAttributeName == "tDn" && childAttributeValue != "" {
+						if childAttributeName == "tDn" && childAttributeValue != "" && !ContainsString(DeprecatedFvRsSecInheritedFvAEPgList, childAttributeValue.(string)) {
 							DeprecatedFvRsSecInheritedFvAEPgList = append(DeprecatedFvRsSecInheritedFvAEPgList, childAttributeValue.(string))
 						}
 					}
@@ -2331,7 +2339,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 			"exception_tag": schema.StringAttribute{
 				Optional:           true,
 				Computed:           true,
-				DeprecationMessage: "Attribute 'exception_tag' will be deprecated soon, please use 'contract_exception_tag' instead",
+				DeprecationMessage: "Attribute 'exception_tag' is deprecated, please refer to 'contract_exception_tag' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.String{
 					stringvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("contract_exception_tag"),
@@ -2341,7 +2349,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 			"flood_on_encap": schema.StringAttribute{
 				Optional:           true,
 				Computed:           true,
-				DeprecationMessage: "Attribute 'flood_on_encap' will be deprecated soon, please use 'flood_in_encapsulation' instead",
+				DeprecationMessage: "Attribute 'flood_on_encap' is deprecated, please refer to 'flood_in_encapsulation' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.String{
 					stringvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("flood_in_encapsulation"),
@@ -2351,7 +2359,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 			"fwd_ctrl": schema.StringAttribute{
 				Optional:           true,
 				Computed:           true,
-				DeprecationMessage: "Attribute 'fwd_ctrl' will be deprecated soon, please use 'forwarding_control' instead",
+				DeprecationMessage: "Attribute 'fwd_ctrl' is deprecated, please refer to 'forwarding_control' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.String{
 					stringvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("forwarding_control"),
@@ -2361,7 +2369,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 			"has_mcast_source": schema.StringAttribute{
 				Optional:           true,
 				Computed:           true,
-				DeprecationMessage: "Attribute 'has_mcast_source' will be deprecated soon, please use 'has_multicast_source' instead",
+				DeprecationMessage: "Attribute 'has_mcast_source' is deprecated, please refer to 'has_multicast_source' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.String{
 					stringvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("has_multicast_source"),
@@ -2371,7 +2379,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 			"is_attr_based_epg": schema.StringAttribute{
 				Optional:           true,
 				Computed:           true,
-				DeprecationMessage: "Attribute 'is_attr_based_epg' will be deprecated soon, please use 'useg_epg' instead",
+				DeprecationMessage: "Attribute 'is_attr_based_epg' is deprecated, please refer to 'useg_epg' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.String{
 					stringvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("useg_epg"),
@@ -2381,7 +2389,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 			"match_t": schema.StringAttribute{
 				Optional:           true,
 				Computed:           true,
-				DeprecationMessage: "Attribute 'match_t' will be deprecated soon, please use 'match_criteria' instead",
+				DeprecationMessage: "Attribute 'match_t' is deprecated, please refer to 'match_criteria' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.String{
 					stringvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("match_criteria"),
@@ -2391,7 +2399,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 			"application_profile_dn": schema.StringAttribute{
 				Optional:           true,
 				Computed:           true,
-				DeprecationMessage: "Attribute 'application_profile_dn' will be deprecated soon, please use 'parent_dn' instead",
+				DeprecationMessage: "Attribute 'application_profile_dn' is deprecated, please refer to 'parent_dn' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.String{
 					stringvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("parent_dn"),
@@ -2401,7 +2409,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 			"pc_enf_pref": schema.StringAttribute{
 				Optional:           true,
 				Computed:           true,
-				DeprecationMessage: "Attribute 'pc_enf_pref' will be deprecated soon, please use 'intra_epg_isolation' instead",
+				DeprecationMessage: "Attribute 'pc_enf_pref' is deprecated, please refer to 'intra_epg_isolation' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.String{
 					stringvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("intra_epg_isolation"),
@@ -2411,7 +2419,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 			"pref_gr_memb": schema.StringAttribute{
 				Optional:           true,
 				Computed:           true,
-				DeprecationMessage: "Attribute 'pref_gr_memb' will be deprecated soon, please use 'preferred_group_member' instead",
+				DeprecationMessage: "Attribute 'pref_gr_memb' is deprecated, please refer to 'preferred_group_member' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.String{
 					stringvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("preferred_group_member"),
@@ -2421,7 +2429,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 			"prio": schema.StringAttribute{
 				Optional:           true,
 				Computed:           true,
-				DeprecationMessage: "Attribute 'prio' will be deprecated soon, please use 'priority' instead",
+				DeprecationMessage: "Attribute 'prio' is deprecated, please refer to 'priority' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.String{
 					stringvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("priority"),
@@ -2431,17 +2439,26 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 			"shutdown": schema.StringAttribute{
 				Optional:           true,
 				Computed:           true,
-				DeprecationMessage: "Attribute 'shutdown' will be deprecated soon, please use 'admin_state' instead",
+				DeprecationMessage: "Attribute 'shutdown' is deprecated, please refer to 'admin_state' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.String{
 					stringvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("admin_state"),
 					}...),
 				},
 			},
+			"relation_fv_rs_prov_def": schema.SetAttribute{
+				Optional:           true,
+				Computed:           true,
+				ElementType:        types.StringType,
+				DeprecationMessage: "Attribute `relation_fv_rs_prov_def` is deprecated. The attribute will be removed in the next major version of the provider.",
+				PlanModifiers: []planmodifier.Set{
+					setplanmodifier.UseStateForUnknown(),
+				},
+			},
 			"relation_fv_rs_aepg_mon_pol": schema.StringAttribute{
 				Optional:           true,
 				Computed:           true,
-				DeprecationMessage: "Attribute 'relation_fv_rs_aepg_mon_pol' will be deprecated soon, please use 'relation_to_application_epg_monitoring_policy.monitoring_policy_name' instead",
+				DeprecationMessage: "Attribute 'relation_fv_rs_aepg_mon_pol' is deprecated, please refer to 'relation_to_application_epg_monitoring_policy.monitoring_policy_name' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.String{
 					stringvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("relation_to_application_epg_monitoring_policy"),
@@ -2451,7 +2468,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 			"relation_fv_rs_bd": schema.StringAttribute{
 				Optional:           true,
 				Computed:           true,
-				DeprecationMessage: "Attribute 'relation_fv_rs_bd' will be deprecated soon, please use 'relation_to_bridge_domain.bridge_domain_name' instead",
+				DeprecationMessage: "Attribute 'relation_fv_rs_bd' is deprecated, please refer to 'relation_to_bridge_domain.bridge_domain_name' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.String{
 					stringvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("relation_to_bridge_domain"),
@@ -2462,7 +2479,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Optional:           true,
 				Computed:           true,
 				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute 'relation_fv_rs_cons' will be deprecated soon, please use 'relation_to_consumed_contracts.contract_name' instead",
+				DeprecationMessage: "Attribute 'relation_fv_rs_cons' is deprecated, please refer to 'relation_to_consumed_contracts.contract_name' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.Set{
 					setvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("relation_to_consumed_contracts"),
@@ -2473,7 +2490,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Optional:           true,
 				Computed:           true,
 				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute 'relation_fv_rs_sec_inherited' will be deprecated soon, please use 'relation_to_contract_masters.target_dn' instead",
+				DeprecationMessage: "Attribute 'relation_fv_rs_sec_inherited' is deprecated, please refer to 'relation_to_contract_masters.target_dn' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.Set{
 					setvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("relation_to_contract_masters"),
@@ -2483,7 +2500,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 			"relation_fv_rs_cust_qos_pol": schema.StringAttribute{
 				Optional:           true,
 				Computed:           true,
-				DeprecationMessage: "Attribute 'relation_fv_rs_cust_qos_pol' will be deprecated soon, please use 'relation_to_custom_qos_policy.custom_qos_policy_name' instead",
+				DeprecationMessage: "Attribute 'relation_fv_rs_cust_qos_pol' is deprecated, please refer to 'relation_to_custom_qos_policy.custom_qos_policy_name' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.String{
 					stringvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("relation_to_custom_qos_policy"),
@@ -2493,7 +2510,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 			"relation_fv_rs_dpp_pol": schema.StringAttribute{
 				Optional:           true,
 				Computed:           true,
-				DeprecationMessage: "Attribute 'relation_fv_rs_dpp_pol' will be deprecated soon, please use 'relation_to_data_plane_policing_policy.data_plane_policing_policy_name' instead",
+				DeprecationMessage: "Attribute 'relation_fv_rs_dpp_pol' is deprecated, please refer to 'relation_to_data_plane_policing_policy.data_plane_policing_policy_name' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.String{
 					stringvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("relation_to_data_plane_policing_policy"),
@@ -2504,7 +2521,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Optional:           true,
 				Computed:           true,
 				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute 'relation_fv_rs_fc_path_att' will be deprecated soon, please use 'relation_to_fibre_channel_paths.fibre_channel_path_name' instead",
+				DeprecationMessage: "Attribute 'relation_fv_rs_fc_path_att' is deprecated, please refer to 'relation_to_fibre_channel_paths.fibre_channel_path_name' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.Set{
 					setvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("relation_to_fibre_channel_paths"),
@@ -2515,7 +2532,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Optional:           true,
 				Computed:           true,
 				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute 'relation_fv_rs_cons_if' will be deprecated soon, please use 'relation_to_imported_contracts.imported_contract_name' instead",
+				DeprecationMessage: "Attribute 'relation_fv_rs_cons_if' is deprecated, please refer to 'relation_to_imported_contracts.imported_contract_name' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.Set{
 					setvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("relation_to_imported_contracts"),
@@ -2526,7 +2543,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Optional:           true,
 				Computed:           true,
 				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute 'relation_fv_rs_intra_epg' will be deprecated soon, please use 'relation_to_intra_epg_contracts.contract_name' instead",
+				DeprecationMessage: "Attribute 'relation_fv_rs_intra_epg' is deprecated, please refer to 'relation_to_intra_epg_contracts.contract_name' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.Set{
 					setvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("relation_to_intra_epg_contracts"),
@@ -2537,7 +2554,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Optional:           true,
 				Computed:           true,
 				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute 'relation_fv_rs_prov' will be deprecated soon, please use 'relation_to_provided_contracts.contract_name' instead",
+				DeprecationMessage: "Attribute 'relation_fv_rs_prov' is deprecated, please refer to 'relation_to_provided_contracts.contract_name' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.Set{
 					setvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("relation_to_provided_contracts"),
@@ -2548,7 +2565,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Optional:           true,
 				Computed:           true,
 				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute 'relation_fv_rs_path_att' will be deprecated soon, please use 'relation_to_static_paths.target_dn' instead",
+				DeprecationMessage: "Attribute 'relation_fv_rs_path_att' is deprecated, please refer to 'relation_to_static_paths.target_dn' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.Set{
 					setvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("relation_to_static_paths"),
@@ -2559,7 +2576,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Optional:           true,
 				Computed:           true,
 				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute 'relation_fv_rs_prot_by' will be deprecated soon, please use 'relation_to_taboo_contracts.taboo_contract_name' instead",
+				DeprecationMessage: "Attribute 'relation_fv_rs_prot_by' is deprecated, please refer to 'relation_to_taboo_contracts.taboo_contract_name' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.Set{
 					setvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("relation_to_taboo_contracts"),
@@ -2569,7 +2586,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 			"relation_fv_rs_trust_ctrl": schema.StringAttribute{
 				Optional:           true,
 				Computed:           true,
-				DeprecationMessage: "Attribute 'relation_fv_rs_trust_ctrl' will be deprecated soon, please use 'relation_to_trust_control_policy.trust_control_policy_name' instead",
+				DeprecationMessage: "Attribute 'relation_fv_rs_trust_ctrl' is deprecated, please refer to 'relation_to_trust_control_policy.trust_control_policy_name' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.String{
 					stringvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("relation_to_trust_control_policy"),
@@ -4670,7 +4687,7 @@ func getAndSetFvAEPgAttributes(ctx context.Context, diags *diag.Diagnostics, cli
 			readData.TagAnnotation = tagAnnotationSet
 			tagTagSet, _ := types.SetValueFrom(ctx, readData.TagTag.ElementType(ctx), TagTagFvAEPgList)
 			readData.TagTag = tagTagSet
-			setFvAEPgLegacyAttributes(ctx, diags, readData, classReadInfo)
+			setFvAEPgLegacyAttributes(ctx, diags, readData, data, classReadInfo)
 		} else {
 			diags.AddError(
 				"too many results in response",
