@@ -12,13 +12,13 @@ resource "aci_route_control_profile" "full_example_tenant" {
   annotations = [
     {
       key   = "key_0"
-      value = "value_1"
+      value = "value_0"
     }
   ]
   tags = [
     {
       key   = "key_0"
-      value = "value_1"
+      value = "value_0"
     }
   ]
 }
@@ -36,13 +36,17 @@ resource "aci_route_control_profile" "full_example_l3_outside" {
   annotations = [
     {
       key   = "key_0"
-      value = "value_1"
+      value = "value_0"
     }
   ]
   tags = [
     {
       key   = "key_0"
-      value = "value_1"
+      value = "value_0"
     }
   ]
 }
+
+
+
+

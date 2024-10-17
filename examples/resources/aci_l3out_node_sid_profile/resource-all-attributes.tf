@@ -10,13 +10,17 @@ resource "aci_l3out_node_sid_profile" "full_example_l3out_loopback_interface_pro
   annotations = [
     {
       key   = "key_0"
-      value = "value_1"
+      value = "value_0"
     }
   ]
   tags = [
     {
       key   = "key_0"
-      value = "value_1"
+      value = "value_0"
     }
   ]
 }
+
+
+
+

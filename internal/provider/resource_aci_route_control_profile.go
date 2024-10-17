@@ -98,6 +98,13 @@ func getEmptyTagAnnotationRtctrlProfileResourceModel() TagAnnotationRtctrlProfil
 	}
 }
 
+var TagAnnotationRtctrlProfileType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
+}
+
 // TagTagRtctrlProfileResourceModel describes the resource data model for the children without relation ships.
 type TagTagRtctrlProfileResourceModel struct {
 	Key   types.String `tfsdk:"key"`
@@ -109,6 +116,13 @@ func getEmptyTagTagRtctrlProfileResourceModel() TagTagRtctrlProfileResourceModel
 		Key:   basetypes.NewStringNull(),
 		Value: basetypes.NewStringNull(),
 	}
+}
+
+var TagTagRtctrlProfileType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
 }
 
 type RtctrlProfileIdentifier struct {
@@ -485,7 +499,7 @@ func (r *RtctrlProfileResource) ImportState(ctx context.Context, req resource.Im
 }
 
 func getAndSetRtctrlProfileAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *RtctrlProfileResourceModel) {
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "rtctrlProfile,tagAnnotation,tagTag"), "GET", nil)
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "rtctrlProfile,tagAnnotation,tagTag"), "GET", nil)
 
 	readData := getEmptyRtctrlProfileResourceModel()
 
@@ -526,7 +540,9 @@ func getAndSetRtctrlProfileAttributes(ctx context.Context, diags *diag.Diagnosti
 					readData.Type = basetypes.NewStringValue(attributeValue.(string))
 				}
 			}
+			TagAnnotationRtctrlProfile := getEmptyTagAnnotationRtctrlProfileResourceModel()
 			TagAnnotationRtctrlProfileList := make([]TagAnnotationRtctrlProfileResourceModel, 0)
+			TagTagRtctrlProfile := getEmptyTagTagRtctrlProfileResourceModel()
 			TagTagRtctrlProfileList := make([]TagTagRtctrlProfileResourceModel, 0)
 			_, ok := classReadInfo[0].(map[string]interface{})["children"]
 			if ok {
@@ -535,7 +551,6 @@ func getAndSetRtctrlProfileAttributes(ctx context.Context, diags *diag.Diagnosti
 					for childClassName, childClassDetails := range child.(map[string]interface{}) {
 						childAttributes := childClassDetails.(map[string]interface{})["attributes"].(map[string]interface{})
 						if childClassName == "tagAnnotation" {
-							TagAnnotationRtctrlProfile := getEmptyTagAnnotationRtctrlProfileResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "key" {
 									TagAnnotationRtctrlProfile.Key = basetypes.NewStringValue(childAttributeValue.(string))
@@ -543,11 +558,11 @@ func getAndSetRtctrlProfileAttributes(ctx context.Context, diags *diag.Diagnosti
 								if childAttributeName == "value" {
 									TagAnnotationRtctrlProfile.Value = basetypes.NewStringValue(childAttributeValue.(string))
 								}
+
 							}
 							TagAnnotationRtctrlProfileList = append(TagAnnotationRtctrlProfileList, TagAnnotationRtctrlProfile)
 						}
 						if childClassName == "tagTag" {
-							TagTagRtctrlProfile := getEmptyTagTagRtctrlProfileResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "key" {
 									TagTagRtctrlProfile.Key = basetypes.NewStringValue(childAttributeValue.(string))
@@ -555,6 +570,7 @@ func getAndSetRtctrlProfileAttributes(ctx context.Context, diags *diag.Diagnosti
 								if childAttributeName == "value" {
 									TagTagRtctrlProfile.Value = basetypes.NewStringValue(childAttributeValue.(string))
 								}
+
 							}
 							TagTagRtctrlProfileList = append(TagTagRtctrlProfileList, TagTagRtctrlProfile)
 						}
@@ -608,25 +624,24 @@ func setRtctrlProfileId(ctx context.Context, data *RtctrlProfileResourceModel) {
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
 
-func getRtctrlProfileTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *RtctrlProfileResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationRtctrlProfileResourceModel) []map[string]interface{} {
-
+func getRtctrlProfileTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *RtctrlProfileResourceModel, tagAnnotationRtctrlProfilePlan, tagAnnotationRtctrlProfileState []TagAnnotationRtctrlProfileResourceModel) []map[string]interface{} {
 	childPayloads := []map[string]interface{}{}
-	if !data.TagAnnotation.IsUnknown() {
+	if !data.TagAnnotation.IsNull() && !data.TagAnnotation.IsUnknown() {
 		tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
-		for _, tagAnnotation := range tagAnnotationPlan {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagAnnotation.Key.IsUnknown() && !tagAnnotation.Key.IsNull() {
-				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
+		for _, tagAnnotationRtctrlProfile := range tagAnnotationRtctrlProfilePlan {
+			childMap := NewAciObject()
+			if !tagAnnotationRtctrlProfile.Key.IsNull() && !tagAnnotationRtctrlProfile.Key.IsUnknown() {
+				childMap.Attributes["key"] = tagAnnotationRtctrlProfile.Key.ValueString()
 			}
-			if !tagAnnotation.Value.IsUnknown() && !tagAnnotation.Value.IsNull() {
-				childMap["attributes"]["value"] = tagAnnotation.Value.ValueString()
+			if !tagAnnotationRtctrlProfile.Value.IsNull() && !tagAnnotationRtctrlProfile.Value.IsUnknown() {
+				childMap.Attributes["value"] = tagAnnotationRtctrlProfile.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
 			tagAnnotationIdentifier := TagAnnotationIdentifier{}
-			tagAnnotationIdentifier.Key = tagAnnotation.Key
+			tagAnnotationIdentifier.Key = tagAnnotationRtctrlProfile.Key
 			tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
 		}
-		for _, tagAnnotation := range tagAnnotationState {
+		for _, tagAnnotation := range tagAnnotationRtctrlProfileState {
 			delete := true
 			for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
 				if tagAnnotationIdentifier.Key == tagAnnotation.Key {
@@ -635,10 +650,10 @@ func getRtctrlProfileTagAnnotationChildPayloads(ctx context.Context, diags *diag
 				}
 			}
 			if delete {
-				childMap := map[string]map[string]interface{}{"attributes": {}}
-				childMap["attributes"]["status"] = "deleted"
-				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
+				tagAnnotationChildMapForDelete := NewAciObject()
+				tagAnnotationChildMapForDelete.Attributes["status"] = "deleted"
+				tagAnnotationChildMapForDelete.Attributes["key"] = tagAnnotation.Key.ValueString()
+				childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": tagAnnotationChildMapForDelete})
 			}
 		}
 	} else {
@@ -647,25 +662,25 @@ func getRtctrlProfileTagAnnotationChildPayloads(ctx context.Context, diags *diag
 
 	return childPayloads
 }
-func getRtctrlProfileTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *RtctrlProfileResourceModel, tagTagPlan, tagTagState []TagTagRtctrlProfileResourceModel) []map[string]interface{} {
 
+func getRtctrlProfileTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *RtctrlProfileResourceModel, tagTagRtctrlProfilePlan, tagTagRtctrlProfileState []TagTagRtctrlProfileResourceModel) []map[string]interface{} {
 	childPayloads := []map[string]interface{}{}
-	if !data.TagTag.IsUnknown() {
+	if !data.TagTag.IsNull() && !data.TagTag.IsUnknown() {
 		tagTagIdentifiers := []TagTagIdentifier{}
-		for _, tagTag := range tagTagPlan {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagTag.Key.IsUnknown() && !tagTag.Key.IsNull() {
-				childMap["attributes"]["key"] = tagTag.Key.ValueString()
+		for _, tagTagRtctrlProfile := range tagTagRtctrlProfilePlan {
+			childMap := NewAciObject()
+			if !tagTagRtctrlProfile.Key.IsNull() && !tagTagRtctrlProfile.Key.IsUnknown() {
+				childMap.Attributes["key"] = tagTagRtctrlProfile.Key.ValueString()
 			}
-			if !tagTag.Value.IsUnknown() && !tagTag.Value.IsNull() {
-				childMap["attributes"]["value"] = tagTag.Value.ValueString()
+			if !tagTagRtctrlProfile.Value.IsNull() && !tagTagRtctrlProfile.Value.IsUnknown() {
+				childMap.Attributes["value"] = tagTagRtctrlProfile.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})
 			tagTagIdentifier := TagTagIdentifier{}
-			tagTagIdentifier.Key = tagTag.Key
+			tagTagIdentifier.Key = tagTagRtctrlProfile.Key
 			tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
 		}
-		for _, tagTag := range tagTagState {
+		for _, tagTag := range tagTagRtctrlProfileState {
 			delete := true
 			for _, tagTagIdentifier := range tagTagIdentifiers {
 				if tagTagIdentifier.Key == tagTag.Key {
@@ -674,10 +689,10 @@ func getRtctrlProfileTagTagChildPayloads(ctx context.Context, diags *diag.Diagno
 				}
 			}
 			if delete {
-				childMap := map[string]map[string]interface{}{"attributes": {}}
-				childMap["attributes"]["status"] = "deleted"
-				childMap["attributes"]["key"] = tagTag.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})
+				tagTagChildMapForDelete := NewAciObject()
+				tagTagChildMapForDelete.Attributes["status"] = "deleted"
+				tagTagChildMapForDelete.Attributes["key"] = tagTag.Key.ValueString()
+				childPayloads = append(childPayloads, map[string]interface{}{"tagTag": tagTagChildMapForDelete})
 			}
 		}
 	} else {

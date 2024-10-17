@@ -206,8 +206,10 @@ func TestAccResourceNetflowExporterPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "annotations.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_epg.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_epg.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_epg.target_dn", "uni/tn-test_tenant/ap-test_ap/epg-test_epg"),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_vrf.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_vrf.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_vrf.target_dn", "uni/tn-test_tenant/ctx-test_vrf"),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "tags.0.value", "value_1"),
@@ -237,8 +239,10 @@ func TestAccResourceNetflowExporterPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "annotations.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "annotations.#", "2"),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_epg.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_epg.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_epg.target_dn", "uni/tn-test_tenant/ap-test_ap/epg-test_epg"),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_vrf.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_vrf.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_vrf.target_dn", "uni/tn-test_tenant/ctx-test_vrf"),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "tags.0.value", "value_1"),
@@ -265,6 +269,7 @@ func TestAccResourceNetflowExporterPolWithFvTenant(t *testing.T) {
 						knownvalue.MapExact(
 							map[string]knownvalue.Check{
 								"annotation": knownvalue.Null(),
+								"children":   knownvalue.Null(),
 								"target_dn":  knownvalue.Null(),
 							},
 						),
@@ -274,6 +279,7 @@ func TestAccResourceNetflowExporterPolWithFvTenant(t *testing.T) {
 						knownvalue.MapExact(
 							map[string]knownvalue.Check{
 								"annotation": knownvalue.Null(),
+								"children":   knownvalue.Null(),
 								"target_dn":  knownvalue.Null(),
 							},
 						),
@@ -294,6 +300,7 @@ func TestAccResourceNetflowExporterPolWithFvTenant(t *testing.T) {
 						knownvalue.MapExact(
 							map[string]knownvalue.Check{
 								"annotation": knownvalue.Null(),
+								"children":   knownvalue.Null(),
 								"target_dn":  knownvalue.Null(),
 							},
 						),
@@ -303,6 +310,7 @@ func TestAccResourceNetflowExporterPolWithFvTenant(t *testing.T) {
 						knownvalue.MapExact(
 							map[string]knownvalue.Check{
 								"annotation": knownvalue.Null(),
+								"children":   knownvalue.Null(),
 								"target_dn":  knownvalue.Null(),
 							},
 						),
@@ -410,11 +418,51 @@ resource "aci_netflow_exporter_policy" "test" {
 	},
   ]
   relation_to_epg = {
-    annotation = "annotation_1"
+    annotation = "annotation_1"}}
+      annotations = [
+	    {
+	      key = "key_0"
+	      value = "value_1"
+	    },
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]}}
+      tags = [
+	    {
+	      key = "key_0"
+	      value = "value_1"
+	    },
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]
     target_dn = "uni/tn-test_tenant/ap-test_ap/epg-test_epg"
   }
   relation_to_vrf = {
-    annotation = "annotation_1"
+    annotation = "annotation_1"}}
+      annotations = [
+	    {
+	      key = "key_0"
+	      value = "value_1"
+	    },
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]}}
+      tags = [
+	    {
+	      key = "key_0"
+	      value = "value_1"
+	    },
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]
     target_dn = "uni/tn-test_tenant/ctx-test_vrf"
   }
   tags = [

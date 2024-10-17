@@ -1,10 +1,10 @@
 
-data "aci_key_ring" "example" {
+resource "aci_pki_key_ring" "example" {
   name = "test_name"
 }
 
 // This example is only applicable to Cisco Cloud Network Controller
-data "aci_key_ring" "example_tenant" {
+resource "aci_pki_key_ring" "example_tenant" {
   parent_dn = aci_tenant.example.id
   name      = "test_name"
 }

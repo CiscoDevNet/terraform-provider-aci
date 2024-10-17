@@ -59,55 +59,118 @@ resource "aci_endpoint_security_group" "full_example_application_profile" {
   admin_state            = "no"
   relation_to_consumed_contracts = [
     {
-      annotation    = "annotation_1"
-      priority      = "level1"
+      annotation    = "annotation_0"
+      priority      = "priority_0"
       contract_name = aci_contract.example.name
+      annotations = [
+        {
+          key   = "key_0"
+          value = "value_0"
+        }
+      ]
+      tags = [
+        {
+          key   = "key_0"
+          value = "value_0"
+        }
+      ]
     }
   ]
   relation_to_imported_contracts = [
     {
-      annotation             = "annotation_1"
-      priority               = "level1"
+      annotation             = "annotation_0"
+      priority               = "priority_0"
       imported_contract_name = aci_imported_contract.example.name
+      annotations = [
+        {
+          key   = "key_0"
+          value = "value_0"
+        }
+      ]
+      tags = [
+        {
+          key   = "key_0"
+          value = "value_0"
+        }
+      ]
     }
   ]
   relation_to_intra_epg_contracts = [
     {
-      annotation    = "annotation_1"
+      annotation    = "annotation_0"
       contract_name = aci_contract.example.name
+      annotations = [
+        {
+          key   = "key_0"
+          value = "value_0"
+        }
+      ]
+      tags = [
+        {
+          key   = "key_0"
+          value = "value_0"
+        }
+      ]
     }
   ]
   relation_to_provided_contracts = [
     {
-      annotation     = "annotation_1"
-      match_criteria = "All"
-      priority       = "level1"
+      annotation     = "annotation_0"
+      match_criteria = "match_criteria_0"
+      priority       = "priority_0"
       contract_name  = aci_contract.example.name
+      annotations = [
+        {
+          key   = "key_0"
+          value = "value_0"
+        }
+      ]
+      tags = [
+        {
+          key   = "key_0"
+          value = "value_0"
+        }
+      ]
     }
   ]
   relation_to_vrf = {
-    annotation = "annotation_1"
+    annotation = "annotation_0"
     vrf_name   = aci_vrf.example.name
   }
   relation_to_contract_masters = [
     {
-      annotation = "annotation_1"
-      target_dn  = aci_endpoint_security_group.test_endpoint_security_group_0.id
+      annotation = "annotation_0"
+      annotations = [
+        {
+          key   = "key_0"
+          value = "value_0"
+        }
+      ]
+      tags = [
+        {
+          key   = "key_0"
+          value = "value_0"
+        }
+      ]
     }
   ]
   annotations = [
     {
       key   = "key_0"
-      value = "value_1"
+      value = "value_0"
     }
   ]
   tags = [
     {
       key   = "key_0"
-      value = "value_1"
+      value = "value_0"
     }
   ]
 }
+
+
+
+
 
 ```
 
@@ -146,12 +209,12 @@ All examples for the Endpoint Security Group resource can be found in the [examp
   - Default: `no`
   - Valid Values: `no`, `yes`.
 
-* `relation_to_consumed_contracts` - (list) A list of Relation To Consumed Contracts (ACI object [fvRsCons](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsCons/overview)) pointing to Contract (ACI Object [vzBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzBrCP/overview)) which can be configured using the [aci_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/contract) resource. This attribute is supported in ACI versions: 1.0(1e) and later.
+* `relation_to_consumed_contracts` - (list) A list of Relation To Consumed Contracts (ACI object [fvRsCons](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsCons/overview)) pointing to Contract (ACI Object [vzBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzBrCP/overview)) which can be configured using the [aci_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/contract) resource.
+   
   
   #### Required ####
   
   * `contract_name` (tnVzBrCPName) - (string) The consumer contract name. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/contract) with `aci_contract.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/contract) with `data.aci_contract.example.name`.
-
   #### Optional ####
     
   * `annotation` (annotation) - (string) The annotation of the Relation To Consumed Contract object.
@@ -160,12 +223,28 @@ All examples for the Endpoint Security Group resource can be found in the [examp
       - Default: `unspecified`
       - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
 
-* `relation_to_imported_contracts` - (list) A list of Relation To Imported Contracts (ACI object [fvRsConsIf](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsConsIf/overview)) pointing to Imported Contract (ACI Object [vzCPIf](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzCPIf/overview)) which can be configured using the [aci_imported_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/imported_contract) resource. This attribute is supported in ACI versions: 1.0(1e) and later.
+  * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
+   
+  
+    #### Required ####
+  
+    * `key` (key) - (string) The key used to uniquely identify this configuration object.
+    * `value` (value) - (string) The value of the property.
+
+  * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.
+   
+  
+    #### Required ####
+  
+    * `key` (key) - (string) The key used to uniquely identify this configuration object.
+    * `value` (value) - (string) The value of the property.
+
+* `relation_to_imported_contracts` - (list) A list of Relation To Imported Contracts (ACI object [fvRsConsIf](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsConsIf/overview)) pointing to Imported Contract (ACI Object [vzCPIf](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzCPIf/overview)) which can be configured using the [aci_imported_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/imported_contract) resource.
+   
   
   #### Required ####
   
   * `imported_contract_name` (tnVzCPIfName) - (string) The contract interface name. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/imported_contract) with `aci_imported_contract.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/imported_contract) with `data.aci_imported_contract.example.name`.
-
   #### Optional ####
     
   * `annotation` (annotation) - (string) The annotation of the Relation To Imported Contract object.
@@ -174,23 +253,55 @@ All examples for the Endpoint Security Group resource can be found in the [examp
       - Default: `unspecified`
       - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
 
-* `relation_to_intra_epg_contracts` - (list) A list of Relation To Intra EPG Contracts (ACI object [fvRsIntraEpg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsIntraEpg/overview)) pointing to Contract (ACI Object [vzBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzBrCP/overview)) which can be configured using the [aci_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/contract) resource. This attribute is supported in ACI versions: 3.0(1k) and later.
+  * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
+   
+  
+    #### Required ####
+  
+    * `key` (key) - (string) The key used to uniquely identify this configuration object.
+    * `value` (value) - (string) The value of the property.
+
+  * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.
+   
+  
+    #### Required ####
+  
+    * `key` (key) - (string) The key used to uniquely identify this configuration object.
+    * `value` (value) - (string) The value of the property.
+
+* `relation_to_intra_epg_contracts` - (list) A list of Relation To Intra EPG Contracts (ACI object [fvRsIntraEpg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsIntraEpg/overview)) pointing to Contract (ACI Object [vzBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzBrCP/overview)) which can be configured using the [aci_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/contract) resource.
+   
   
   #### Required ####
   
   * `contract_name` (tnVzBrCPName) - (string) The contract name. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/contract) with `aci_contract.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/contract) with `data.aci_contract.example.name`.
-
   #### Optional ####
     
   * `annotation` (annotation) - (string) The annotation of the Relation To Intra EPG Contract object.
       - Default: `orchestrator:terraform`
 
-* `relation_to_provided_contracts` - (list) A list of Relation To Provided Contracts (ACI object [fvRsProv](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsProv/overview)) pointing to Contract (ACI Object [vzBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzBrCP/overview)) which can be configured using the [aci_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/contract) resource. This attribute is supported in ACI versions: 1.0(1e) and later.
+  * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
+   
+  
+    #### Required ####
+  
+    * `key` (key) - (string) The key used to uniquely identify this configuration object.
+    * `value` (value) - (string) The value of the property.
+
+  * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.
+   
+  
+    #### Required ####
+  
+    * `key` (key) - (string) The key used to uniquely identify this configuration object.
+    * `value` (value) - (string) The value of the property.
+
+* `relation_to_provided_contracts` - (list) A list of Relation To Provided Contracts (ACI object [fvRsProv](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsProv/overview)) pointing to Contract (ACI Object [vzBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzBrCP/overview)) which can be configured using the [aci_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/contract) resource.
+   
   
   #### Required ####
   
   * `contract_name` (tnVzBrCPName) - (string) The provider contract name. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/contract) with `aci_contract.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/contract) with `data.aci_contract.example.name`.
-
   #### Optional ####
     
   * `annotation` (annotation) - (string) The annotation of the Relation To Provided Contract object.
@@ -202,34 +313,82 @@ All examples for the Endpoint Security Group resource can be found in the [examp
       - Default: `unspecified`
       - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
 
-* `relation_to_vrf` - (map) A map of Relation To VRF (ACI object [fvRsScope](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsScope/overview)) pointing to VRF (ACI Object [fvCtx](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvCtx/overview)) which can be configured using the [aci_vrf](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vrf) resource.
+  * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
+   
   
+    #### Required ####
+  
+    * `key` (key) - (string) The key used to uniquely identify this configuration object.
+    * `value` (value) - (string) The value of the property.
 
+  * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.
+   
+  
+    #### Required ####
+  
+    * `key` (key) - (string) The key used to uniquely identify this configuration object.
+    * `value` (value) - (string) The value of the property.
+
+* `relation_to_vrf` - (map) A map of Relation To VRF (ACI object [fvRsScope](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsScope/overview)) pointing to VRF (ACI Object [fvCtx](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvCtx/overview)) which can be configured using the [aci_vrf](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vrf) resource.
   #### Optional ####
     
   * `annotation` (annotation) - (string) The annotation of the Relation To VRF object.
       - Default: `orchestrator:terraform`
   * `vrf_name` (tnFvCtxName) - (string) The name of the VRF object.
 
-* `relation_to_contract_masters` - (list) A list of Relation To Contract Masters (ACI object [fvRsSecInherited](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsSecInherited/overview)) pointing to Endpoint Security Group (ACI Object [fvESg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvESg/overview)) which can be configured using the [aci_endpoint_security_group](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/endpoint_security_group) resource. This attribute is supported in ACI versions: 2.3(1e) and later.
+  * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
+   
+  
+    #### Required ####
+  
+    * `key` (key) - (string) The key used to uniquely identify this configuration object.
+    * `value` (value) - (string) The value of the property.
+
+  * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.
+   
+  
+    #### Required ####
+  
+    * `key` (key) - (string) The key used to uniquely identify this configuration object.
+    * `value` (value) - (string) The value of the property.
+
+* `relation_to_contract_masters` - (list) A list of Relation To Contract Masters (ACI object [fvRsSecInherited](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsSecInherited/overview)) pointing to .
+   
   
   #### Required ####
   
   * `target_dn` (tDn) - (string) The distinguished name of the target.
-
   #### Optional ####
     
   * `annotation` (annotation) - (string) The annotation of the Relation To Contract Master object.
       - Default: `orchestrator:terraform`
 
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+  * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
+   
+  
+    #### Required ####
+  
+    * `key` (key) - (string) The key used to uniquely identify this configuration object.
+    * `value` (value) - (string) The value of the property.
+
+  * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.
+   
+  
+    #### Required ####
+  
+    * `key` (key) - (string) The key used to uniquely identify this configuration object.
+    * `value` (value) - (string) The value of the property.
+
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
+   
   
   #### Required ####
   
   * `key` (key) - (string) The key used to uniquely identify this configuration object.
   * `value` (value) - (string) The value of the property.
 
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.
+   
   
   #### Required ####
   
@@ -253,3 +412,5 @@ import {
   to = aci_endpoint_security_group.example_application_profile
 }
 ```
+
+

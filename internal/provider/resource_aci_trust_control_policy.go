@@ -106,6 +106,13 @@ func getEmptyTagAnnotationFhsTrustCtrlPolResourceModel() TagAnnotationFhsTrustCt
 	}
 }
 
+var TagAnnotationFhsTrustCtrlPolType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
+}
+
 // TagTagFhsTrustCtrlPolResourceModel describes the resource data model for the children without relation ships.
 type TagTagFhsTrustCtrlPolResourceModel struct {
 	Key   types.String `tfsdk:"key"`
@@ -117,6 +124,13 @@ func getEmptyTagTagFhsTrustCtrlPolResourceModel() TagTagFhsTrustCtrlPolResourceM
 		Key:   basetypes.NewStringNull(),
 		Value: basetypes.NewStringNull(),
 	}
+}
+
+var TagTagFhsTrustCtrlPolType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
 }
 
 type FhsTrustCtrlPolIdentifier struct {
@@ -540,7 +554,7 @@ func (r *FhsTrustCtrlPolResource) ImportState(ctx context.Context, req resource.
 }
 
 func getAndSetFhsTrustCtrlPolAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FhsTrustCtrlPolResourceModel) {
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "fhsTrustCtrlPol,tagAnnotation,tagTag"), "GET", nil)
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "fhsTrustCtrlPol,tagAnnotation,tagTag"), "GET", nil)
 
 	readData := getEmptyFhsTrustCtrlPolResourceModel()
 
@@ -593,7 +607,9 @@ func getAndSetFhsTrustCtrlPolAttributes(ctx context.Context, diags *diag.Diagnos
 					readData.TrustRa = basetypes.NewStringValue(attributeValue.(string))
 				}
 			}
+			TagAnnotationFhsTrustCtrlPol := getEmptyTagAnnotationFhsTrustCtrlPolResourceModel()
 			TagAnnotationFhsTrustCtrlPolList := make([]TagAnnotationFhsTrustCtrlPolResourceModel, 0)
+			TagTagFhsTrustCtrlPol := getEmptyTagTagFhsTrustCtrlPolResourceModel()
 			TagTagFhsTrustCtrlPolList := make([]TagTagFhsTrustCtrlPolResourceModel, 0)
 			_, ok := classReadInfo[0].(map[string]interface{})["children"]
 			if ok {
@@ -602,7 +618,6 @@ func getAndSetFhsTrustCtrlPolAttributes(ctx context.Context, diags *diag.Diagnos
 					for childClassName, childClassDetails := range child.(map[string]interface{}) {
 						childAttributes := childClassDetails.(map[string]interface{})["attributes"].(map[string]interface{})
 						if childClassName == "tagAnnotation" {
-							TagAnnotationFhsTrustCtrlPol := getEmptyTagAnnotationFhsTrustCtrlPolResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "key" {
 									TagAnnotationFhsTrustCtrlPol.Key = basetypes.NewStringValue(childAttributeValue.(string))
@@ -610,11 +625,11 @@ func getAndSetFhsTrustCtrlPolAttributes(ctx context.Context, diags *diag.Diagnos
 								if childAttributeName == "value" {
 									TagAnnotationFhsTrustCtrlPol.Value = basetypes.NewStringValue(childAttributeValue.(string))
 								}
+
 							}
 							TagAnnotationFhsTrustCtrlPolList = append(TagAnnotationFhsTrustCtrlPolList, TagAnnotationFhsTrustCtrlPol)
 						}
 						if childClassName == "tagTag" {
-							TagTagFhsTrustCtrlPol := getEmptyTagTagFhsTrustCtrlPolResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "key" {
 									TagTagFhsTrustCtrlPol.Key = basetypes.NewStringValue(childAttributeValue.(string))
@@ -622,6 +637,7 @@ func getAndSetFhsTrustCtrlPolAttributes(ctx context.Context, diags *diag.Diagnos
 								if childAttributeName == "value" {
 									TagTagFhsTrustCtrlPol.Value = basetypes.NewStringValue(childAttributeValue.(string))
 								}
+
 							}
 							TagTagFhsTrustCtrlPolList = append(TagTagFhsTrustCtrlPolList, TagTagFhsTrustCtrlPol)
 						}
@@ -675,25 +691,24 @@ func setFhsTrustCtrlPolId(ctx context.Context, data *FhsTrustCtrlPolResourceMode
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
 
-func getFhsTrustCtrlPolTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FhsTrustCtrlPolResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFhsTrustCtrlPolResourceModel) []map[string]interface{} {
-
+func getFhsTrustCtrlPolTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FhsTrustCtrlPolResourceModel, tagAnnotationFhsTrustCtrlPolPlan, tagAnnotationFhsTrustCtrlPolState []TagAnnotationFhsTrustCtrlPolResourceModel) []map[string]interface{} {
 	childPayloads := []map[string]interface{}{}
-	if !data.TagAnnotation.IsUnknown() {
+	if !data.TagAnnotation.IsNull() && !data.TagAnnotation.IsUnknown() {
 		tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
-		for _, tagAnnotation := range tagAnnotationPlan {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagAnnotation.Key.IsUnknown() && !tagAnnotation.Key.IsNull() {
-				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
+		for _, tagAnnotationFhsTrustCtrlPol := range tagAnnotationFhsTrustCtrlPolPlan {
+			childMap := NewAciObject()
+			if !tagAnnotationFhsTrustCtrlPol.Key.IsNull() && !tagAnnotationFhsTrustCtrlPol.Key.IsUnknown() {
+				childMap.Attributes["key"] = tagAnnotationFhsTrustCtrlPol.Key.ValueString()
 			}
-			if !tagAnnotation.Value.IsUnknown() && !tagAnnotation.Value.IsNull() {
-				childMap["attributes"]["value"] = tagAnnotation.Value.ValueString()
+			if !tagAnnotationFhsTrustCtrlPol.Value.IsNull() && !tagAnnotationFhsTrustCtrlPol.Value.IsUnknown() {
+				childMap.Attributes["value"] = tagAnnotationFhsTrustCtrlPol.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
 			tagAnnotationIdentifier := TagAnnotationIdentifier{}
-			tagAnnotationIdentifier.Key = tagAnnotation.Key
+			tagAnnotationIdentifier.Key = tagAnnotationFhsTrustCtrlPol.Key
 			tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
 		}
-		for _, tagAnnotation := range tagAnnotationState {
+		for _, tagAnnotation := range tagAnnotationFhsTrustCtrlPolState {
 			delete := true
 			for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
 				if tagAnnotationIdentifier.Key == tagAnnotation.Key {
@@ -702,10 +717,10 @@ func getFhsTrustCtrlPolTagAnnotationChildPayloads(ctx context.Context, diags *di
 				}
 			}
 			if delete {
-				childMap := map[string]map[string]interface{}{"attributes": {}}
-				childMap["attributes"]["status"] = "deleted"
-				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
+				tagAnnotationChildMapForDelete := NewAciObject()
+				tagAnnotationChildMapForDelete.Attributes["status"] = "deleted"
+				tagAnnotationChildMapForDelete.Attributes["key"] = tagAnnotation.Key.ValueString()
+				childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": tagAnnotationChildMapForDelete})
 			}
 		}
 	} else {
@@ -714,25 +729,25 @@ func getFhsTrustCtrlPolTagAnnotationChildPayloads(ctx context.Context, diags *di
 
 	return childPayloads
 }
-func getFhsTrustCtrlPolTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FhsTrustCtrlPolResourceModel, tagTagPlan, tagTagState []TagTagFhsTrustCtrlPolResourceModel) []map[string]interface{} {
 
+func getFhsTrustCtrlPolTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FhsTrustCtrlPolResourceModel, tagTagFhsTrustCtrlPolPlan, tagTagFhsTrustCtrlPolState []TagTagFhsTrustCtrlPolResourceModel) []map[string]interface{} {
 	childPayloads := []map[string]interface{}{}
-	if !data.TagTag.IsUnknown() {
+	if !data.TagTag.IsNull() && !data.TagTag.IsUnknown() {
 		tagTagIdentifiers := []TagTagIdentifier{}
-		for _, tagTag := range tagTagPlan {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagTag.Key.IsUnknown() && !tagTag.Key.IsNull() {
-				childMap["attributes"]["key"] = tagTag.Key.ValueString()
+		for _, tagTagFhsTrustCtrlPol := range tagTagFhsTrustCtrlPolPlan {
+			childMap := NewAciObject()
+			if !tagTagFhsTrustCtrlPol.Key.IsNull() && !tagTagFhsTrustCtrlPol.Key.IsUnknown() {
+				childMap.Attributes["key"] = tagTagFhsTrustCtrlPol.Key.ValueString()
 			}
-			if !tagTag.Value.IsUnknown() && !tagTag.Value.IsNull() {
-				childMap["attributes"]["value"] = tagTag.Value.ValueString()
+			if !tagTagFhsTrustCtrlPol.Value.IsNull() && !tagTagFhsTrustCtrlPol.Value.IsUnknown() {
+				childMap.Attributes["value"] = tagTagFhsTrustCtrlPol.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})
 			tagTagIdentifier := TagTagIdentifier{}
-			tagTagIdentifier.Key = tagTag.Key
+			tagTagIdentifier.Key = tagTagFhsTrustCtrlPol.Key
 			tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
 		}
-		for _, tagTag := range tagTagState {
+		for _, tagTag := range tagTagFhsTrustCtrlPolState {
 			delete := true
 			for _, tagTagIdentifier := range tagTagIdentifiers {
 				if tagTagIdentifier.Key == tagTag.Key {
@@ -741,10 +756,10 @@ func getFhsTrustCtrlPolTagTagChildPayloads(ctx context.Context, diags *diag.Diag
 				}
 			}
 			if delete {
-				childMap := map[string]map[string]interface{}{"attributes": {}}
-				childMap["attributes"]["status"] = "deleted"
-				childMap["attributes"]["key"] = tagTag.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})
+				tagTagChildMapForDelete := NewAciObject()
+				tagTagChildMapForDelete.Attributes["status"] = "deleted"
+				tagTagChildMapForDelete.Attributes["key"] = tagTag.Key.ValueString()
+				childPayloads = append(childPayloads, map[string]interface{}{"tagTag": tagTagChildMapForDelete})
 			}
 		}
 	} else {

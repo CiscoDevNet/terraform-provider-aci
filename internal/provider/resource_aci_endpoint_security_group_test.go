@@ -193,31 +193,37 @@ func TestAccResourceFvESgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contracts.0.contract_name", "contract_name_0"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contracts.0.priority", "level1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contracts.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contracts.1.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contracts.1.contract_name", "contract_name_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contracts.1.priority", "level2"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_contract_masters.0.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_contract_masters.0.target_dn", "uni/tn-test_tenant/ap-test_ap/esg-esg_0"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_contract_masters.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_contract_masters.1.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_contract_masters.1.target_dn", "uni/tn-test_tenant/ap-test_ap/esg-esg_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_imported_contracts.0.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_imported_contracts.0.imported_contract_name", "imported_contract_name_0"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_imported_contracts.0.priority", "level1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_imported_contracts.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_imported_contracts.1.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_imported_contracts.1.imported_contract_name", "imported_contract_name_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_imported_contracts.1.priority", "level2"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_intra_epg_contracts.0.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_intra_epg_contracts.0.contract_name", "contract_name_0"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_intra_epg_contracts.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_intra_epg_contracts.1.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_intra_epg_contracts.1.contract_name", "contract_name_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_provided_contracts.0.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_provided_contracts.0.contract_name", "contract_name_0"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_provided_contracts.0.match_criteria", "All"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_provided_contracts.0.priority", "level1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_provided_contracts.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_provided_contracts.1.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_provided_contracts.1.contract_name", "contract_name_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_provided_contracts.1.match_criteria", "AtleastOne"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_provided_contracts.1.priority", "level2"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_vrf.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_vrf.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_vrf.vrf_name", "vrf_name_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "tags.0.value", "value_1"),
@@ -251,24 +257,28 @@ func TestAccResourceFvESgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contracts.0.contract_name", "contract_name_0"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contracts.0.priority", "level1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contracts.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contracts.1.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contracts.1.contract_name", "contract_name_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contracts.1.priority", "level2"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contracts.#", "2"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_contract_masters.0.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_contract_masters.0.target_dn", "uni/tn-test_tenant/ap-test_ap/esg-esg_0"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_contract_masters.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_contract_masters.1.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_contract_masters.1.target_dn", "uni/tn-test_tenant/ap-test_ap/esg-esg_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_contract_masters.#", "2"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_imported_contracts.0.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_imported_contracts.0.imported_contract_name", "imported_contract_name_0"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_imported_contracts.0.priority", "level1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_imported_contracts.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_imported_contracts.1.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_imported_contracts.1.imported_contract_name", "imported_contract_name_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_imported_contracts.1.priority", "level2"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_imported_contracts.#", "2"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_intra_epg_contracts.0.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_intra_epg_contracts.0.contract_name", "contract_name_0"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_intra_epg_contracts.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_intra_epg_contracts.1.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_intra_epg_contracts.1.contract_name", "contract_name_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_intra_epg_contracts.#", "2"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_provided_contracts.0.annotation", "annotation_1"),
@@ -276,11 +286,13 @@ func TestAccResourceFvESgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_provided_contracts.0.match_criteria", "All"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_provided_contracts.0.priority", "level1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_provided_contracts.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_provided_contracts.1.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_provided_contracts.1.contract_name", "contract_name_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_provided_contracts.1.match_criteria", "AtleastOne"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_provided_contracts.1.priority", "level2"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_provided_contracts.#", "2"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_vrf.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_vrf.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_vrf.vrf_name", "vrf_name_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "tags.0.value", "value_1"),
@@ -299,25 +311,31 @@ func TestAccResourceFvESgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "annotations.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "annotations.#", "1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contracts.0.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contracts.0.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contracts.0.contract_name", "contract_name_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contracts.0.priority", "level2"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_consumed_contracts.#", "1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_contract_masters.0.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_contract_masters.0.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_contract_masters.0.target_dn", "uni/tn-test_tenant/ap-test_ap/esg-esg_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_contract_masters.#", "1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_imported_contracts.0.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_imported_contracts.0.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_imported_contracts.0.imported_contract_name", "imported_contract_name_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_imported_contracts.0.priority", "level2"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_imported_contracts.#", "1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_intra_epg_contracts.0.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_intra_epg_contracts.0.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_intra_epg_contracts.0.contract_name", "contract_name_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_intra_epg_contracts.#", "1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_provided_contracts.0.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_provided_contracts.0.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_provided_contracts.0.contract_name", "contract_name_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_provided_contracts.0.match_criteria", "AtleastOne"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_provided_contracts.0.priority", "level2"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_provided_contracts.#", "1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_vrf.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_vrf.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_vrf.vrf_name", "vrf_name_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "tags.0.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "tags.0.value", "test_value"),
@@ -337,6 +355,7 @@ func TestAccResourceFvESgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_intra_epg_contracts.#", "0"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_provided_contracts.#", "0"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_vrf.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_vrf.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "relation_to_vrf.vrf_name", "vrf_name_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "tags.#", "0"),
 				),
@@ -427,6 +446,7 @@ resource "aci_endpoint_security_group" "test" {
 	},
 	{
 	  annotation = "annotation_2"
+	  children = "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"
 	  contract_name = "contract_name_1"
 	  priority = "level2"
 	},
@@ -438,6 +458,7 @@ resource "aci_endpoint_security_group" "test" {
 	},
 	{
 	  annotation = "annotation_2"
+	  children = "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"
 	  target_dn = aci_endpoint_security_group.test_endpoint_security_group_1.id
 	},
   ]
@@ -449,6 +470,7 @@ resource "aci_endpoint_security_group" "test" {
 	},
 	{
 	  annotation = "annotation_2"
+	  children = "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"
 	  imported_contract_name = "imported_contract_name_1"
 	  priority = "level2"
 	},
@@ -460,6 +482,7 @@ resource "aci_endpoint_security_group" "test" {
 	},
 	{
 	  annotation = "annotation_2"
+	  children = "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"
 	  contract_name = "contract_name_1"
 	},
   ]
@@ -472,13 +495,34 @@ resource "aci_endpoint_security_group" "test" {
 	},
 	{
 	  annotation = "annotation_2"
+	  children = "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"
 	  contract_name = "contract_name_1"
 	  match_criteria = "AtleastOne"
 	  priority = "level2"
 	},
   ]
   relation_to_vrf = {
-    annotation = "annotation_1"
+    annotation = "annotation_1"}}
+      annotations = [
+	    {
+	      key = "key_0"
+	      value = "value_1"
+	    },
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]}}
+      tags = [
+	    {
+	      key = "key_0"
+	      value = "value_1"
+	    },
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]
     vrf_name = "vrf_name_1"
   }
   tags = [
@@ -514,6 +558,18 @@ resource "aci_endpoint_security_group" "test" {
   relation_to_consumed_contracts = [ 
 	{
 	  annotation = "annotation_2"
+      annotations = [ 
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]
+      tags = [ 
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]
 	  contract_name = "contract_name_1"
 	  priority = "level2"
 	},
@@ -521,12 +577,36 @@ resource "aci_endpoint_security_group" "test" {
   relation_to_contract_masters = [ 
 	{
 	  annotation = "annotation_2"
+      annotations = [ 
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]
+      tags = [ 
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]
 	  target_dn = aci_endpoint_security_group.test_endpoint_security_group_1.id
 	},
   ]
   relation_to_imported_contracts = [ 
 	{
 	  annotation = "annotation_2"
+      annotations = [ 
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]
+      tags = [ 
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]
 	  imported_contract_name = "imported_contract_name_1"
 	  priority = "level2"
 	},
@@ -534,12 +614,36 @@ resource "aci_endpoint_security_group" "test" {
   relation_to_intra_epg_contracts = [ 
 	{
 	  annotation = "annotation_2"
+      annotations = [ 
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]
+      tags = [ 
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]
 	  contract_name = "contract_name_1"
 	},
   ]
   relation_to_provided_contracts = [ 
 	{
 	  annotation = "annotation_2"
+      annotations = [ 
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]
+      tags = [ 
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]
 	  contract_name = "contract_name_1"
 	  match_criteria = "AtleastOne"
 	  priority = "level2"

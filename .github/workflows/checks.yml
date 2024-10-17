@@ -99,6 +99,7 @@ jobs:
           TF_ACC_STATE_LINEAGE: '1'
           ACI_VAL_REL_DN: false
           ACI_URL: ${{ matrix.apic_host.url }}
+          GOMAXPROCS: '1'
       - name: Upload coverage to Codecov
         # Upload Coverage on latest only
         if: ${{ matrix.apic_host.name == 'v6.0'}}

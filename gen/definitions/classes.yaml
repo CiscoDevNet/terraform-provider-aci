@@ -672,3 +672,21 @@ pkiKeyRing:
       contained_by: "fvTenant"
       wrapper_class: "cloudCertStore"
       test_type: "cloud"
+
+commPol:
+  contained_by:
+      - "polUni"
+  rn_prepend: "fabric"
+  # children:
+  #   - tagAnnotation
+  #   - tagTag
+
+# commHttps:
+#   children:
+#     - tagAnnotation
+    # - tagTag
+
+# commRsKeyRing:
+#   children:
+#     - tagAnnotation
+

@@ -11,13 +11,17 @@ resource "aci_epg_useg_dns_attribute" "full_example_epg_useg_block_statement" {
   annotations = [
     {
       key   = "key_0"
-      value = "value_1"
+      value = "value_0"
     }
   ]
   tags = [
     {
       key   = "key_0"
-      value = "value_1"
+      value = "value_0"
     }
   ]
 }
+
+
+
+

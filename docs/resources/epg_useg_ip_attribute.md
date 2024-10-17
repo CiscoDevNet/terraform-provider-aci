@@ -60,16 +60,20 @@ resource "aci_epg_useg_ip_attribute" "full_example_epg_useg_block_statement" {
   annotations = [
     {
       key   = "key_0"
-      value = "value_1"
+      value = "value_0"
     }
   ]
   tags = [
     {
       key   = "key_0"
-      value = "value_1"
+      value = "value_0"
     }
   ]
 }
+
+
+
+
 
 ```
 
@@ -100,14 +104,16 @@ All examples for the EPG uSeg IP Attribute resource can be found in the [example
   - Default: `no`
   - Valid Values: `no`, `yes`.
 
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
+   
   
   #### Required ####
   
   * `key` (key) - (string) The key used to uniquely identify this configuration object.
   * `value` (value) - (string) The value of the property.
 
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.
+   
   
   #### Required ####
   
@@ -131,3 +137,5 @@ import {
   to = aci_epg_useg_ip_attribute.example_epg_useg_block_statement
 }
 ```
+
+

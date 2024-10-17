@@ -92,6 +92,13 @@ func getEmptyTagAnnotationPimRouteMapPolResourceModel() TagAnnotationPimRouteMap
 	}
 }
 
+var TagAnnotationPimRouteMapPolType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
+}
+
 // TagTagPimRouteMapPolResourceModel describes the resource data model for the children without relation ships.
 type TagTagPimRouteMapPolResourceModel struct {
 	Key   types.String `tfsdk:"key"`
@@ -103,6 +110,13 @@ func getEmptyTagTagPimRouteMapPolResourceModel() TagTagPimRouteMapPolResourceMod
 		Key:   basetypes.NewStringNull(),
 		Value: basetypes.NewStringNull(),
 	}
+}
+
+var TagTagPimRouteMapPolType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
 }
 
 type PimRouteMapPolIdentifier struct {
@@ -454,7 +468,7 @@ func (r *PimRouteMapPolResource) ImportState(ctx context.Context, req resource.I
 }
 
 func getAndSetPimRouteMapPolAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *PimRouteMapPolResourceModel) {
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "pimRouteMapPol,tagAnnotation,tagTag"), "GET", nil)
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "pimRouteMapPol,tagAnnotation,tagTag"), "GET", nil)
 
 	readData := getEmptyPimRouteMapPolResourceModel()
 
@@ -489,7 +503,9 @@ func getAndSetPimRouteMapPolAttributes(ctx context.Context, diags *diag.Diagnost
 					readData.OwnerTag = basetypes.NewStringValue(attributeValue.(string))
 				}
 			}
+			TagAnnotationPimRouteMapPol := getEmptyTagAnnotationPimRouteMapPolResourceModel()
 			TagAnnotationPimRouteMapPolList := make([]TagAnnotationPimRouteMapPolResourceModel, 0)
+			TagTagPimRouteMapPol := getEmptyTagTagPimRouteMapPolResourceModel()
 			TagTagPimRouteMapPolList := make([]TagTagPimRouteMapPolResourceModel, 0)
 			_, ok := classReadInfo[0].(map[string]interface{})["children"]
 			if ok {
@@ -498,7 +514,6 @@ func getAndSetPimRouteMapPolAttributes(ctx context.Context, diags *diag.Diagnost
 					for childClassName, childClassDetails := range child.(map[string]interface{}) {
 						childAttributes := childClassDetails.(map[string]interface{})["attributes"].(map[string]interface{})
 						if childClassName == "tagAnnotation" {
-							TagAnnotationPimRouteMapPol := getEmptyTagAnnotationPimRouteMapPolResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "key" {
 									TagAnnotationPimRouteMapPol.Key = basetypes.NewStringValue(childAttributeValue.(string))
@@ -506,11 +521,11 @@ func getAndSetPimRouteMapPolAttributes(ctx context.Context, diags *diag.Diagnost
 								if childAttributeName == "value" {
 									TagAnnotationPimRouteMapPol.Value = basetypes.NewStringValue(childAttributeValue.(string))
 								}
+
 							}
 							TagAnnotationPimRouteMapPolList = append(TagAnnotationPimRouteMapPolList, TagAnnotationPimRouteMapPol)
 						}
 						if childClassName == "tagTag" {
-							TagTagPimRouteMapPol := getEmptyTagTagPimRouteMapPolResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "key" {
 									TagTagPimRouteMapPol.Key = basetypes.NewStringValue(childAttributeValue.(string))
@@ -518,6 +533,7 @@ func getAndSetPimRouteMapPolAttributes(ctx context.Context, diags *diag.Diagnost
 								if childAttributeName == "value" {
 									TagTagPimRouteMapPol.Value = basetypes.NewStringValue(childAttributeValue.(string))
 								}
+
 							}
 							TagTagPimRouteMapPolList = append(TagTagPimRouteMapPolList, TagTagPimRouteMapPol)
 						}
@@ -571,25 +587,24 @@ func setPimRouteMapPolId(ctx context.Context, data *PimRouteMapPolResourceModel)
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
 
-func getPimRouteMapPolTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *PimRouteMapPolResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationPimRouteMapPolResourceModel) []map[string]interface{} {
-
+func getPimRouteMapPolTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *PimRouteMapPolResourceModel, tagAnnotationPimRouteMapPolPlan, tagAnnotationPimRouteMapPolState []TagAnnotationPimRouteMapPolResourceModel) []map[string]interface{} {
 	childPayloads := []map[string]interface{}{}
-	if !data.TagAnnotation.IsUnknown() {
+	if !data.TagAnnotation.IsNull() && !data.TagAnnotation.IsUnknown() {
 		tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
-		for _, tagAnnotation := range tagAnnotationPlan {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagAnnotation.Key.IsUnknown() && !tagAnnotation.Key.IsNull() {
-				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
+		for _, tagAnnotationPimRouteMapPol := range tagAnnotationPimRouteMapPolPlan {
+			childMap := NewAciObject()
+			if !tagAnnotationPimRouteMapPol.Key.IsNull() && !tagAnnotationPimRouteMapPol.Key.IsUnknown() {
+				childMap.Attributes["key"] = tagAnnotationPimRouteMapPol.Key.ValueString()
 			}
-			if !tagAnnotation.Value.IsUnknown() && !tagAnnotation.Value.IsNull() {
-				childMap["attributes"]["value"] = tagAnnotation.Value.ValueString()
+			if !tagAnnotationPimRouteMapPol.Value.IsNull() && !tagAnnotationPimRouteMapPol.Value.IsUnknown() {
+				childMap.Attributes["value"] = tagAnnotationPimRouteMapPol.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
 			tagAnnotationIdentifier := TagAnnotationIdentifier{}
-			tagAnnotationIdentifier.Key = tagAnnotation.Key
+			tagAnnotationIdentifier.Key = tagAnnotationPimRouteMapPol.Key
 			tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
 		}
-		for _, tagAnnotation := range tagAnnotationState {
+		for _, tagAnnotation := range tagAnnotationPimRouteMapPolState {
 			delete := true
 			for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
 				if tagAnnotationIdentifier.Key == tagAnnotation.Key {
@@ -598,10 +613,10 @@ func getPimRouteMapPolTagAnnotationChildPayloads(ctx context.Context, diags *dia
 				}
 			}
 			if delete {
-				childMap := map[string]map[string]interface{}{"attributes": {}}
-				childMap["attributes"]["status"] = "deleted"
-				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
+				tagAnnotationChildMapForDelete := NewAciObject()
+				tagAnnotationChildMapForDelete.Attributes["status"] = "deleted"
+				tagAnnotationChildMapForDelete.Attributes["key"] = tagAnnotation.Key.ValueString()
+				childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": tagAnnotationChildMapForDelete})
 			}
 		}
 	} else {
@@ -610,25 +625,25 @@ func getPimRouteMapPolTagAnnotationChildPayloads(ctx context.Context, diags *dia
 
 	return childPayloads
 }
-func getPimRouteMapPolTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *PimRouteMapPolResourceModel, tagTagPlan, tagTagState []TagTagPimRouteMapPolResourceModel) []map[string]interface{} {
 
+func getPimRouteMapPolTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *PimRouteMapPolResourceModel, tagTagPimRouteMapPolPlan, tagTagPimRouteMapPolState []TagTagPimRouteMapPolResourceModel) []map[string]interface{} {
 	childPayloads := []map[string]interface{}{}
-	if !data.TagTag.IsUnknown() {
+	if !data.TagTag.IsNull() && !data.TagTag.IsUnknown() {
 		tagTagIdentifiers := []TagTagIdentifier{}
-		for _, tagTag := range tagTagPlan {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagTag.Key.IsUnknown() && !tagTag.Key.IsNull() {
-				childMap["attributes"]["key"] = tagTag.Key.ValueString()
+		for _, tagTagPimRouteMapPol := range tagTagPimRouteMapPolPlan {
+			childMap := NewAciObject()
+			if !tagTagPimRouteMapPol.Key.IsNull() && !tagTagPimRouteMapPol.Key.IsUnknown() {
+				childMap.Attributes["key"] = tagTagPimRouteMapPol.Key.ValueString()
 			}
-			if !tagTag.Value.IsUnknown() && !tagTag.Value.IsNull() {
-				childMap["attributes"]["value"] = tagTag.Value.ValueString()
+			if !tagTagPimRouteMapPol.Value.IsNull() && !tagTagPimRouteMapPol.Value.IsUnknown() {
+				childMap.Attributes["value"] = tagTagPimRouteMapPol.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})
 			tagTagIdentifier := TagTagIdentifier{}
-			tagTagIdentifier.Key = tagTag.Key
+			tagTagIdentifier.Key = tagTagPimRouteMapPol.Key
 			tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
 		}
-		for _, tagTag := range tagTagState {
+		for _, tagTag := range tagTagPimRouteMapPolState {
 			delete := true
 			for _, tagTagIdentifier := range tagTagIdentifiers {
 				if tagTagIdentifier.Key == tagTag.Key {
@@ -637,10 +652,10 @@ func getPimRouteMapPolTagTagChildPayloads(ctx context.Context, diags *diag.Diagn
 				}
 			}
 			if delete {
-				childMap := map[string]map[string]interface{}{"attributes": {}}
-				childMap["attributes"]["status"] = "deleted"
-				childMap["attributes"]["key"] = tagTag.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})
+				tagTagChildMapForDelete := NewAciObject()
+				tagTagChildMapForDelete.Attributes["status"] = "deleted"
+				tagTagChildMapForDelete.Attributes["key"] = tagTag.Key.ValueString()
+				childPayloads = append(childPayloads, map[string]interface{}{"tagTag": tagTagChildMapForDelete})
 			}
 		}
 	} else {

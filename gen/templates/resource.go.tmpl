@@ -2,6 +2,7 @@
 // In order to regenerate this file execute `go generate` from the repository root.
 // More details can be found in the [README](https://github.com/CiscoDevNet/terraform-provider-aci/blob/master/README.md).
 
+
 package provider
 
 import (
@@ -102,7 +103,7 @@ func getEmpty{{.ResourceClassName}}ResourceModel() *{{.ResourceClassName}}Resour
 		{{ .ResourceClassName }}: types.ObjectNull(map[string]attr.Type{
 			{{- range .Properties}}
 				{{- if eq .ValueType "bitmask"}}
-				"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": types.SetType(types.StringType),
+				"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": types.SetType{ElemType: types.StringType},
 				{{- else}}
 				"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": types.StringType,
 				{{- end}}
@@ -113,7 +114,7 @@ func getEmpty{{.ResourceClassName}}ResourceModel() *{{.ResourceClassName}}Resour
 			AttrTypes: map[string]attr.Type{
 			{{- range .Properties}}
 				{{- if eq .ValueType "bitmask"}}
-				"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": types.SetType(types.StringType),
+				"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": types.SetType{ElemType: types.StringType},
 				{{- else}}
 				"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": types.StringType,
 				{{- end}}
@@ -138,47 +139,7 @@ func getEmpty{{.ResourceClassName}}ResourceModel() *{{.ResourceClassName}}Resour
 }
 
 {{- range .Children}}
-// {{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel describes the resource data model for the children without relation ships.
-type {{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel struct {
-	{{- range .Properties}}
-		{{- if eq .ValueType "bitmask"}}
-	{{ .Name }} types.Set `tfsdk:"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}"`
-		{{- else if eq .Name "Id"}}
-	{{.ResourceClassName}}{{ .Name }} types.String `tfsdk:"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}"`
-		{{- else if .HasCustomType}}
-	{{ .Name }} customTypes.{{.ResourceClassName}}{{.Name}}StringValue `tfsdk:"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}"`
-		{{- else}}
-	{{ .Name }} types.String `tfsdk:"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}"`
-		{{- end}}
-	{{- end}}
-}
-
-func getEmpty{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel() {{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel {
-	return {{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel{
-		{{- range .Properties}}
-			{{- if eq .ValueType "bitmask"}}
-	{{ .Name }}: types.SetNull(types.StringType),
-			{{- else if eq .Name "Id"}}
-	{{.ResourceClassName}}{{ .Name }}: basetypes.NewStringNull(),
-			{{- else if .HasCustomType}}
-	{{ .Name }}: customTypes.New{{.ResourceClassName}}{{.Name}}StringNull(),
-			{{- else}}
-	{{ .Name }}: basetypes.NewStringNull(),
-			{{- end}}
-		{{- end}}
-	}
-}
-	{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
-var {{.ResourceClassName}}{{$.ResourceClassName}}Type = map[string]attr.Type{
-	{{- range .Properties}}
-		{{- if eq .ValueType "bitmask"}}
-		"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": types.SetType(types.StringType),
-		{{- else}}
-		"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": types.StringType,
-		{{- end}}
-	{{- end}}
-}
-	{{- end}}
+{{- template "childStructsAndAttributeTypes" . }}
 {{- end}}
 
 {{if .IdentifiedBy}}
@@ -1290,151 +1251,8 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 				{{- end}}
 			{{- end}}
 			{{- range .Children}}
-				{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
-			"{{overwriteProperty .PkgName .ResourceName $.Definitions}}": schema.SingleNestedAttribute{
-				MarkdownDescription: `{{.Comment}}`,
-				Optional:            true,
-				Computed:            true,
-				PlanModifiers: []planmodifier.Object{
-					objectplanmodifier.UseStateForUnknown(),
-				},
-				{{- if .RequiredPropertiesNames }}
-				Validators: []validator.Object{
-					MakeSingleNestedAttributeRequiredAttributesNotProvidedValidator("{{.ResourceName}}", []string{"{{listToString .RequiredPropertiesNames}}"}),
-				},
-				{{- end }}
-				Attributes: map[string]schema.Attribute{
-				{{- range .Properties}}
-					{{- if eq .ValueType "bitmask"}}
-					"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": schema.SetAttribute{
-						MarkdownDescription: `{{.Comment}}`,
-						{{- if not .ReadOnly }}
-						Optional:            true,
-						{{- end }}
-						Computed:            true,
-						{{- if not .ReadOnly }}
-						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseStateForUnknown(),
-						},
-						{{- end }}
-						{{- if .ValidValues}}
-						Validators: []validator.Set{
-							setvalidator.SizeAtMost({{ len .ValidValues }}),
-							setvalidator.ValueStringsAre(
-								stringvalidator.OneOf({{- validatorString .ValidValues}}),
-							),
-						},
-						{{- end}}
-						ElementType: types.StringType,
-					},
-					{{- else}}
-					"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": schema.StringAttribute{
-						Optional:            true,
-						Computed:            true,
-						{{- if not .ReadOnly }}
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
-						},
-						{{- end}}
-						{{- if or .ValidValues $.HasReadOnlyProperties}}
-						Validators: []validator.String{
-							{{- if .ValidValues}}
-							stringvalidator.OneOf({{- validatorString .ValidValues}}),
-							{{- end}}
-							{{- if or .IsNaming .IsRequired}}
-							MakeStringRequired(),
-							{{- end}}
-						},
-						{{- end}}
-						MarkdownDescription: `{{.Comment}}`,
-					},
-					{{- end}}
-					{{- end}}
-					},
-				},
-				{{- else }}
-			"{{overwriteProperty .PkgName .ResourceName $.Definitions}}": schema.SetNestedAttribute{
-				MarkdownDescription: `{{.Comment}}`,
-				Optional:            true,
-				Computed:            true,
-				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
-				},
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-					{{- range .Properties}}
-						{{- if eq .ValueType "bitmask"}}
-						"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": schema.SetAttribute{
-							MarkdownDescription: `{{.Comment}}`,
-							{{- if not .ReadOnly }}
-							Optional:            true,
-							{{- end }}
-							{{- if ne .ValueType "password"}}
-							Computed:            true,
-							{{- else}}
-							Sensitive:            true,
-							{{- end}}
-							{{- if not .ReadOnly }}
-							PlanModifiers: []planmodifier.Set{
-								setplanmodifier.UseStateForUnknown(),
-							},
-							{{- end }}
-							{{- if .ValidValues}}
-							Validators: []validator.Set{
-								setvalidator.SizeAtMost({{ len .ValidValues }}),
-								setvalidator.ValueStringsAre(
-									stringvalidator.OneOf({{- validatorString .ValidValues}}),
-								),
-							},
-							{{- end}}
-							ElementType: types.StringType,
-						},
-						{{- else}}
-						"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": schema.StringAttribute{
-							{{- if .HasCustomType}}
-							CustomType: customTypes.{{.ResourceClassName}}{{.Name}}StringType{},
-							{{- end}}
-							{{- if and (or .IsNaming .IsRequired) (not $.HasReadOnlyProperties)}}
-							Required:            true,
-							{{- else }}
-							Optional:            true,
-							{{- if ne .ValueType "password"}}
-							Computed:            true,
-							{{- else}}
-							Sensitive:            true,
-							{{- end}}
-							{{- end}}
-							{{- if not .ReadOnly }}
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
-							},
-							{{- end}}
-							{{- if .HasCustomType}}
-							Validators: []validator.String{
-								stringvalidator.Any(
-									stringvalidator.OneOf({{- validatorStringCustomType .ValidValues .ValidValuesMap}}),
-									validators.InBetweenFromString({{- index .Validators 0 "min"}}, {{- index .Validators 0 "max"}}),
-								),
-							},
-							{{- else if or .ValidValues $.HasReadOnlyProperties}}
-							Validators: []validator.String{
-								{{- if .ValidValues}}
-								stringvalidator.OneOf({{- validatorString .ValidValues}}),
-								{{- end}}
-								{{- if or .IsNaming .IsRequired}}
-								MakeStringRequired(),
-								{{- end}}
-							},
-							{{- end}}
-							MarkdownDescription: `{{.Comment}}`,
-						},
-						{{- end}}
-					{{- end}}
-					},
-				},
-			},
-			{{- end}}
-			{{- end}}
+				{{- template "childAttributes" . }}
+			{{- end}}	
 		},
 		{{- if .LegacyAttributes}}
 		Blocks: map[string]schema.Block{
@@ -1551,11 +1369,11 @@ func (r *{{.ResourceClassName}}Resource) Create(ctx context.Context, req resourc
 	{{ if .HasChild}}
 		{{- range .Children}}
 			{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
-	var {{.PkgName}}Plan, {{.PkgName}}State {{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel
+	var {{.PkgName}}Plan, {{.PkgName}}State {{.ResourceClassName}}{{.ParentHierarchy}}ResourceModel
 	data.{{ .ResourceClassName }}.As(ctx, &{{.PkgName}}Plan, basetypes.ObjectAsOptions{})
 	stateData.{{ .ResourceClassName }}.As(ctx, &{{.PkgName}}State, basetypes.ObjectAsOptions{})
 			{{- else}}
-	var {{.PkgName}}Plan, {{.PkgName}}State []{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel
+	var {{.PkgName}}Plan, {{.PkgName}}State []{{.ResourceClassName}}{{.ParentHierarchy}}ResourceModel
 	data.{{ .ResourceClassName }}.ElementsAs(ctx, &{{.PkgName}}Plan, false)
 	stateData.{{ .ResourceClassName }}.ElementsAs(ctx, &{{.PkgName}}State, false)
 			{{- end}}
@@ -1781,7 +1599,7 @@ func (r *{{.ResourceClassName}}Resource) ImportState(ctx context.Context, req re
 
 func getAndSet{{.ResourceClassName}}Attributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *{{.ResourceClassName}}ResourceModel) {
 	{{- if .HasChild}}
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "{{- .PkgName}},{{- listToString .ChildClasses}}"), "GET", nil)
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "{{- .PkgName}},{{ template "rspSubtreeClassFilter" . }}"), "GET", nil)
 	{{- else}}
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "GET", nil)
 	{{- end}}
@@ -1837,7 +1655,7 @@ func getAndSet{{.ResourceClassName}}Attributes(ctx context.Context, diags *diag.
 
 			{{- if .HasChild}}
 				{{- range .Children}}
-			{{ .ResourceClassName }}{{$.ResourceClassName}}List := make([]{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel, 0)
+					{{- template "declareChildListsInGetandSetAttributesFunction" . }}
 				{{- end}}
 			_, ok := classReadInfo[0].(map[string]interface{})["children"]
 			if ok {
@@ -1847,7 +1665,6 @@ func getAndSet{{.ResourceClassName}}Attributes(ctx context.Context, diags *diag.
 						childAttributes := childClassDetails.(map[string]interface{})["attributes"].(map[string]interface{})
 						{{- range .Children}}
 						if childClassName == "{{ .PkgName }}" {
-							{{.ResourceClassName}}{{$.ResourceClassName}} := getEmpty{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								{{- range .Properties}}
 									{{- if eq .ValueType "bitmask"}}
@@ -1857,14 +1674,19 @@ func getAndSet{{.ResourceClassName}}Attributes(ctx context.Context, diags *diag.
 									{{.ResourceClassName}}{{$.ResourceClassName}}.{{.Name}} = {{.PropertyName}}Set
 								} else if childAttributeName == "{{.PropertyName}}" {
 									{{.PropertyName}}List := strings.Split(childAttributeValue.(string), ",")
-									{{.PropertyName}}Set, _ := types.SetValueFrom(ctx, {{.ResourceClassName}}{{$.ResourceClassName}}.{{.Name}}.ElementType(ctx), {{.PropertyName}}List)
+									var data{{.ResourceClassName}}{{$.ResourceClassName}} []{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel
+									data.{{.ResourceClassName}}.ElementsAs(ctx,&data{{.ResourceClassName}}{{$.ResourceClassName}},false)
+									for _, {{.ResourceClassName | lowerFirstCharacter}} := range data{{.ResourceClassName}}{{$.ResourceClassName}} {
+									{{.PropertyName}}Set, _ := types.SetValueFrom(ctx, {{.ResourceClassName | lowerFirstCharacter}}.{{.Name}}.ElementType(ctx),{{.PropertyName}}List)
 									{{.ResourceClassName}}{{$.ResourceClassName}}.{{.Name}} = {{.PropertyName}}Set
+									}
 								}
 										{{- else}}
 								if childAttributeName == "{{.PropertyName}}" {
 									{{.PropertyName}}List := strings.Split(childAttributeValue.(string), ",")
-									{{.PropertyName}}Set, _ := types.SetValueFrom(ctx, {{.ResourceClassName}}{{$.ResourceClassName}}.{{.Name}}.ElementType(ctx), {{.PropertyName}}List)
+									{{.PropertyName}}Set, _ := types.SetValueFrom(ctx, basetypes.StringType{},{{.PropertyName}}List)
 									{{.ResourceClassName}}{{$.ResourceClassName}}.{{.Name}} = {{.PropertyName}}Set
+									
 								}
 										{{- end}}
 									{{- else}}
@@ -1885,11 +1707,44 @@ func getAndSet{{.ResourceClassName}}Attributes(ctx context.Context, diags *diag.
 										{{- end}}
 									{{- end}}
 								{{- end}}
-							}
+								{{/* $enteredGrandChildGetAndSetAttributesZone is used here because the presence of grand children is unknown while rendering the template unlike .HasChild used for the immediate children. It is also used because there can be more than one grandchild in the same level. */}}
+								{{- $enteredGrandChildGetAndSetAttributesZone := false }}
+								{{- range .Children}}
+									{{- if not $enteredGrandChildGetAndSetAttributesZone }}
+										{{- $enteredGrandChildGetAndSetAttributesZone = true }}
+										}
+										childrenOf{{.ParentHierarchy}}, childrenOf{{.ParentHierarchy}}Exist:= childClassDetails.(map[string]interface{})["children"]
+										if childrenOf{{.ParentHierarchy}}Exist {
+										for _, child{{.ParentHierarchy}} := range childrenOf{{.ParentHierarchy}}.([]interface{}) {
+											for childClassName{{.ParentHierarchy}}, childClassDetails{{.ParentHierarchy}} := range child{{.ParentHierarchy}}.(map[string]interface{}) {
+									{{- end}}
+								{{- template "getAndSetGrandChildren" . }}
+								{{- end }}
+								{{- if $enteredGrandChildGetAndSetAttributesZone }}
+										}
+									}
+								}
+								{{- range .Children}}
+									{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+								if len({{.ResourceClassName}}{{.ParentHierarchy}}List) == 1 {
+									{{.ResourceClassName}}{{.ParentHierarchy}}Object, _ := types.ObjectValueFrom(ctx, {{ .ResourceClassName }}{{.ParentHierarchy}}Type, {{ .ResourceClassName }}{{.ParentHierarchy}}List[0])
+									{{.ParentHierarchy}}.{{ .ResourceClassName }} = {{.ResourceClassName}}{{.ParentHierarchy}}Object
+								} else {
+									{{.ResourceClassName}}{{.ParentHierarchy}}Object, _ := types.ObjectValueFrom(ctx, {{ .ResourceClassName }}{{.ParentHierarchy}}Type, getEmpty{{ .ResourceClassName }}{{.ParentHierarchy}}ResourceModel())
+									{{.ParentHierarchy}}.{{ .ResourceClassName }} = {{.ResourceClassName}}{{.ParentHierarchy}}Object
+								}
+										{{- else}}
+								{{.ResourceClassName}}{{.ParentHierarchy}}Set,_ := types.SetValueFrom(ctx,{{.ResourceClassName}}{{.ParentHierarchy}}Type,{{.ResourceClassName}}{{.ParentHierarchy}}List)
+								{{.ParentHierarchy}}.{{.ResourceClassName}} = {{.ResourceClassName}}{{.ParentHierarchy}}Set
+										{{- end}}
+								{{- end}}
+								{{- else}}
+								}
+								{{- end}}
 							{{.ResourceClassName}}{{$.ResourceClassName}}List = append({{.ResourceClassName}}{{$.ResourceClassName}}List, {{.ResourceClassName}}{{$.ResourceClassName}})
-						}
+							}
 						{{- end}}
-					}
+						}
 				}
 			}
 				{{- range .Children}}
@@ -2004,72 +1859,107 @@ func set{{.ResourceClassName}}Id(ctx context.Context, data *{{.ResourceClassName
 	{{- end}}
 }
 
+
 {{ range .Children}}
-func get{{$.ResourceClassName}}{{ .ResourceClassName }}ChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *{{$.ResourceClassName}}ResourceModel, {{.PkgName}}Plan, {{.PkgName}}State {{if not ( or (not .IdentifiedBy) .MaxOneClassAllowed)}}[]{{end}}{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel) []map[string]interface{} {
-	
+{{- $child:= .}}
+func get{{$.ResourceClassName}}{{ .ResourceClassName }}ChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *{{$.ResourceClassName}}ResourceModel, {{.PkgName}}{{.ParentHierarchy}}Plan, {{.PkgName}}{{.ParentHierarchy}}State {{if not ( or (not .IdentifiedBy) .MaxOneClassAllowed)}}[]{{end}}{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel) []map[string]interface{} {
 	childPayloads := []map[string]interface{}{}
-	if !data.{{ .ResourceClassName }}.IsUnknown() {
-	{{- if and (and .IdentifiedBy (not (and .MaxOneClassAllowed (hasPrefix .RnFormat  "rs")))) (not (or (not .IdentifiedBy) .MaxOneClassAllowed))}}
-		{{ .PkgName }}Identifiers := []{{ .ResourceClassName }}Identifier{}
+	{{- $enteredGrandChildDeclarationZone := false }}
+	{{- range .Children}}	
+	{{- $enteredGrandChildDeclarationZone = true }}
+	{{- template "grandChildDeclarationInChildPayloadFunction" . }}
 	{{- end}}
-		{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
-		childMap := map[string]map[string]interface{}{"attributes": {}}
+	{{- range .Children}}
+		{{- if $enteredGrandChildDeclarationZone }}
+		{{- $enteredGrandChildDeclarationZone = false }}
+		{{.ParentHierarchy}}Children := make([]map[string]interface{}, 0)
+		{{- end}}
+	{{- end}}
+	if !data.{{.ResourceClassName}}.IsNull() && !data.{{.ResourceClassName}}.IsUnknown() {
+        {{- if and (and .IdentifiedBy (not (and .MaxOneClassAllowed (hasPrefix .RnFormat  "rs")))) (not (or (not .IdentifiedBy) .MaxOneClassAllowed))}}
+        {{ .PkgName }}Identifiers := []{{.ResourceClassName}}Identifier{}
+        {{- end}}
+        		{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+		childMap := NewAciObject()
 		if !IsEmptySingleNestedAttribute(data.{{ .ResourceClassName }}.Attributes()) {
 			{{- range .Properties}}
-				if !{{ .PkgName }}Plan.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}.IsUnknown() &&  !{{ .PkgName }}Plan.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}.IsNull(){
+				if !{{ .PkgName }}{{$child.ParentHierarchy}}Plan.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}.IsUnknown() &&  !{{ .PkgName }}{{$child.ParentHierarchy}}Plan.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}.IsNull(){
 				{{- if eq .ValueType "bitmask"}}
 					var tmp{{ .Name }} []string
-					{{ .PkgName }}.{{ .Name }}.ElementsAs(ctx, &tmp{{ .Name }}, false)
-					childMap["attributes"]["{{ .PropertyName }}"] = strings.Join(tmp{{ .Name }}, ",")				
+					{{ .PkgName }}{{$child.ParentHierarchy}}Plan.{{ .Name }}.ElementsAs(ctx, &tmp{{ .Name }}, false)
+					childMap.Attributes["{{ .PropertyName }}"] = strings.Join(tmp{{ .Name }}, ",")				
 				{{- else if eq .Name "Id"}}
-					childMap["attributes"]["{{ .PropertyName }}"] = {{ .PkgName }}Plan.{{.ResourceClassName}}{{ .Name }}.ValueString()
+					childMap.Attributes["{{ .PropertyName }}"] = {{ .PkgName }}{{$child.ParentHierarchy}}Plan.{{.ResourceClassName}}{{ .Name }}.ValueString()
 				{{- else}}
-					childMap["attributes"]["{{ .PropertyName }}"] = {{ .PkgName }}Plan.{{ .Name }}.ValueString()
+					childMap.Attributes["{{ .PropertyName }}"] = {{ .PkgName }}{{$child.ParentHierarchy}}Plan.{{ .Name }}.ValueString()
 				{{- end}}
 				} {{- if eq .Name "Annotation" }} else {
-					childMap["attributes"]["annotation"] = globalAnnotation
+					childMap.Attributes["annotation"] = globalAnnotation
 				} {{- end}}
 			{{- end}}
 		}{{- if .AllowDelete}} else {
 			{{- range .Properties}}
 				{{- if .IsNaming }}
-			childMap["attributes"]["{{.PropertyName}}"] = {{.PkgName}}State.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}.ValueString()
+			childMap.Attributes["{{.PropertyName}}"] = {{.PkgName}}{{$child.ParentHierarchy}}State.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}.ValueString()
 				{{- end}}
 			{{- end}}
-			childMap["attributes"]["status"] = "deleted"
+			childMap.Attributes["status"] = "deleted"
 		}{{- end}}
+		{{- $enteredGrandChildPayloadZone := false }}
+			{{- range .Children}}
+				{{- $enteredGrandChildPayloadZone = true }}
+                {{- template "grandChildPayload" . }}
+            {{- end}}
+		{{- range .Children}}
+		{{- if $enteredGrandChildPayloadZone }}
+		{{- $enteredGrandChildPayloadZone = false }}
+		childMap.Children = {{.ParentHierarchy}}Children
+		{{- end}}
+		{{- end}}
 		childPayloads = append(childPayloads, map[string]interface{}{"{{ .PkgName }}": childMap})
 		{{- else}}
-		for _, {{ .PkgName }} := range {{ .PkgName }}Plan {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
-			{{- range .Properties}}
-			if !{{ .PkgName }}.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}.IsUnknown() &&  !{{ .PkgName }}.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}.IsNull(){
-				{{- if eq .ValueType "bitmask"}}
-				var tmp{{ .Name }} []string
-				{{ .PkgName }}.{{ .Name }}.ElementsAs(ctx, &tmp{{ .Name }}, false)
-				childMap["attributes"]["{{ .PropertyName }}"] = strings.Join(tmp{{ .Name }}, ",")				
-				{{- else if eq .Name "Id"}}
-				childMap["attributes"]["{{ .PropertyName }}"] = {{ .PkgName }}.{{.ResourceClassName}}{{ .Name }}.ValueString()
-				{{- else}}
-				childMap["attributes"]["{{ .PropertyName }}"] = {{ .PkgName }}.{{ .Name }}.ValueString()
-				{{- end}}
-			} {{- if eq .Name "Annotation" }} else {
-				childMap["attributes"]["annotation"] = globalAnnotation
-			} {{- end}}
+	for _, {{ .PkgName }}{{.ParentHierarchy}} := range {{ .PkgName }}{{.ParentHierarchy}}Plan {
+			childMap := NewAciObject()
+            {{- range .Properties}}
+            if !{{ .PkgName }}{{$child.ParentHierarchy}}.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}.IsNull() && !{{ .PkgName }}{{$child.ParentHierarchy}}.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}.IsUnknown(){
+                {{- if eq .ValueType "bitmask"}}
+                var tmp{{ .Name }} []string
+                {{ .PkgName }}{{$child.ParentHierarchy}}.{{ .Name }}.ElementsAs(ctx, &tmp{{ .Name }}, false)
+                childMap.Attributes["{{ .PropertyName }}"] = strings.Join(tmp{{ .Name }}, ",")                
+                {{- else if eq .Name "Id"}}
+                childMap.Attributes["{{ .PropertyName }}"] = {{ .PkgName }}{{$child.ParentHierarchy}}.{{.ResourceClassName}}{{ .Name }}.ValueString()
+                {{- else}}
+                childMap.Attributes["{{ .PropertyName }}"] = {{ .PkgName }}{{$child.ParentHierarchy}}.{{ .Name }}.ValueString()
+                {{- end}}
+            } {{- if eq .Name "Annotation" }} else {
+                childMap.Attributes["annotation"] = globalAnnotation
+            } {{- end}}
 			{{- end}}
-			childPayloads = append(childPayloads, map[string]interface{}{"{{ .PkgName }}": childMap})
-			{{- if and .IdentifiedBy (not (and .MaxOneClassAllowed (hasPrefix .RnFormat  "rs")))}}
+			{{- $enteredGrandChildPayloadZone := false }}
+			{{- range .Children}}
+				{{- $enteredGrandChildPayloadZone = true }}
+				{{- $newCtx := addToTemplateProperties . "AlreadyInPlan" true -}}
+                {{- template "grandChildPayload" $newCtx }}
+            {{- end}}
+		{{- range .Children}}
+		{{- if $enteredGrandChildPayloadZone }}
+		{{- $enteredGrandChildPayloadZone = false }}
+		childMap.Children = {{.ParentHierarchy}}Children
+		{{- end}}
+		{{- end}}
+		childPayloads = append(childPayloads, map[string]interface{}{"{{ .PkgName }}": childMap})
+		{{- if and .IdentifiedBy (not (and .MaxOneClassAllowed (hasPrefix .RnFormat  "rs")))}}
 			{{ .PkgName }}Identifier := {{ .ResourceClassName }}Identifier{}
-					{{- range .Properties}}
-						{{- if .IsNaming}}
-			{{ .PkgName }}Identifier.{{.Name}} = {{ .PkgName }}.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}
-						{{- end}}
+				{{- range .Properties}}
+					{{- if .IsNaming}}
+			{{ .PkgName }}Identifier.{{.Name}} = {{ .PkgName }}{{$child.ParentHierarchy}}.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}
+                        {{- end}}
 					{{- end}}
 			{{ .PkgName }}Identifiers = append({{ .PkgName }}Identifiers, {{ .PkgName }}Identifier)
 			{{- end}}
 		}
 			{{- if and .IdentifiedBy (not (and .MaxOneClassAllowed (hasPrefix .RnFormat  "rs")))}}
-		for _, {{ .PkgName }} := range {{ .PkgName }}State {
+		for _, {{ .PkgName }} := range {{ .PkgName }}{{.ParentHierarchy}}State {
 			delete := true
 			for _, {{ .PkgName }}Identifier := range {{ .PkgName }}Identifiers { {{$i := 1}}{{$length := len .IdentifiedBy}}
 				if 
@@ -2083,31 +1973,31 @@ func get{{$.ResourceClassName}}{{ .ResourceClassName }}ChildPayloads(ctx context
 				}
 			}
 			if delete {
-				childMap := map[string]map[string]interface{}{"attributes": {}}
-				childMap["attributes"]["status"] = "deleted"
-				{{- range .Properties}}
-					{{- if .IsNaming }}
-				childMap["attributes"]["{{.PropertyName}}"] = {{ .PkgName }}.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}.ValueString()
-					{{- end}}
+				{{.PkgName}}{{$.ParentHierarchy}}ChildMapForDelete := NewAciObject()
+				{{.PkgName}}{{$.ParentHierarchy}}ChildMapForDelete.Attributes["status"] = "deleted"
+			{{- range .Properties}}
+				{{- if .IsNaming }}
+				{{.PkgName}}{{$.ParentHierarchy}}ChildMapForDelete.Attributes["{{.PropertyName}}"] = {{ .PkgName }}.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}.ValueString()
 				{{- end}}
-				childPayloads = append(childPayloads, map[string]interface{}{"{{ .PkgName }}": childMap})
+			{{- end}}
+				childPayloads = append(childPayloads, map[string]interface{}{"{{ .PkgName }}": {{.PkgName}}{{$.ParentHierarchy}}ChildMapForDelete})
 			}
 		}
-			{{- else}}
-				{{- if not (or (not .IdentifiedBy) .MaxOneClassAllowed)}}
-		if len({{ .PkgName }}Plan) == 0 && len({{ .PkgName }}State) == 1 {
-					{{- if .AllowDelete}}
-			childMap := map[string]map[string]interface{}{"attributes": {}}
-			childMap["attributes"]["status"] = "deleted"
+		{{- else}}
+			{{- if not (or (not .IdentifiedBy) .MaxOneClassAllowed)}}
+		if len({{ .PkgName }}{{.ParentHierarchy}}Plan) == 0 && len({{ .PkgName }}{{.ParentHierarchy}}State) == 1 {
+			{{- if .AllowDelete}}
+			{{.PkgName}}{{.ParentHierarchy}}ChildMapForDelete := NewAciObject()
+			{{.PkgName}}{{.ParentHierarchy}}ChildMapForDelete.Attributes["status"] = "deleted"
 						{{- if .IdentifiedBy}}
 							{{- range .Properties}}
 								{{- if .IsNaming }}
-			childMap["attributes"]["{{.PropertyName}}"] = {{ .PkgName }}State[0].{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}.ValueString()
+			{{.PkgName}}{{$.ParentHierarchy}}ChildMapForDelete.Attributes["{{.PropertyName}}"] = {{ .PkgName }}State[0].{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}.ValueString()
 								{{- end}}
 							{{- end}}
 						{{- end}}
-			childPayloads = append(childPayloads, map[string]interface{}{"{{ .PkgName }}": childMap})
-					{{- else}}
+			childPayloads = append(childPayloads, map[string]interface{}{"{{ .PkgName }}": {{.PkgName}}{{.ParentHierarchy}}ChildMapForDelete})
+			{{- else}}
 			diags.AddError(
 				"{{ .ResourceClassName }} object cannot be deleted",
 				"deletion of child is only possible upon deletion of the parent",
@@ -2129,7 +2019,7 @@ func get{{$.ResourceClassName}}{{ .ResourceClassName }}ChildPayloads(ctx context
 
 	return childPayloads
 }
-{{- end}}
+{{ end}}
 
 func get{{.ResourceClassName}}CreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *{{.ResourceClassName}}ResourceModel{{- range .Children}}, {{.PkgName}}Plan, {{.PkgName}}State {{if not ( or (not .IdentifiedBy) .MaxOneClassAllowed)}}[]{{end}}{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel{{- end}}) *container.Container {
 	payloadMap := map[string]interface{}{}
@@ -2211,3 +2101,556 @@ func get{{.ResourceClassName}}CreateJsonPayload(ctx context.Context, diags *diag
 	}
 	return jsonPayload
 }
+
+
+{{/* Sub Templates */}}
+
+{{/* A sub template for the child structs used in the structs definiton section. */}}
+{{- define "childStructsAndAttributeTypes" }}
+// {{.ResourceClassName}}{{.ParentHierarchy}}ResourceModel describes the resource data model for the children without relation ships.
+type {{.ResourceClassName}}{{.ParentHierarchy}}ResourceModel struct {
+	{{- range .Properties}}
+		{{- if eq .ValueType "bitmask"}}
+	{{ .Name }} types.Set `tfsdk:"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}"`
+		{{- else if eq .Name "Id"}}
+	{{.ResourceClassName}}{{ .Name }} types.String `tfsdk:"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}"`
+	{{- else if .HasCustomType}}
+	{{ .Name }} customTypes.{{.ResourceClassName}}{{.Name}}StringValue `tfsdk:"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}"`
+		{{- else}}
+	{{ .Name }} types.String `tfsdk:"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}"`
+		{{- end}}
+	{{- end}}
+	{{- range .Children}}
+		{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+	{{ .ResourceClassName }} types.Object `tfsdk:"{{overwriteProperty .PkgName .ResourceName $.Definitions}}"`
+		{{- else}}
+	{{ .ResourceClassName }} types.Set `tfsdk:"{{overwriteProperty .PkgName .ResourceName $.Definitions}}"`
+		{{- end}}
+	{{- end}}
+}
+
+func getEmpty{{.ResourceClassName}}{{.ParentHierarchy}}ResourceModel() {{.ResourceClassName}}{{.ParentHierarchy}}ResourceModel {
+	return {{.ResourceClassName}}{{.ParentHierarchy}}ResourceModel{
+		{{- range .Properties}}
+			{{- if eq .ValueType "bitmask"}}
+	{{ .Name }}: types.SetNull(types.StringType),
+			{{- else if eq .Name "Id"}}
+	{{.ResourceClassName}}{{ .Name }}: basetypes.NewStringNull(),
+			{{- else if .HasCustomType}}
+	{{ .Name }}: customTypes.New{{.ResourceClassName}}{{.Name}}StringNull(),
+			{{- else}}
+	{{ .Name }}: basetypes.NewStringNull(),
+		{{- end}}
+			{{- end}}
+	{{- range .Children}}
+			{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+		{{ .ResourceClassName }}: types.ObjectNull(map[string]attr.Type{
+			{{- range .Properties}}
+				{{- if eq .ValueType "bitmask"}}
+				"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": types.SetType{ElemType: types.StringType},
+				{{- else}}
+				"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": types.StringType,
+				{{- end}}
+			{{- end}}
+		}),
+			{{- else}}
+		{{ .ResourceClassName }}: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+			{{- range .Properties}}
+				{{- if eq .ValueType "bitmask"}}
+				"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": types.SetType{ElemType: types.StringType},
+				{{- else}}
+				"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": types.StringType,
+				{{- end}}
+			{{- end}}
+			},
+		}),
+			{{- end}}
+		{{- end}}
+    }
+}
+{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+var {{.ResourceClassName}}{{.ParentHierarchy}}Type = map[string]attr.Type{
+	{{- range .Properties}}
+		{{- if eq .ValueType "bitmask"}}
+		"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": types.SetType{ElemType: types.StringType},
+		{{- else}}
+		"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": types.StringType,
+		{{- end}}
+	{{- end}}
+	{{- range .Children}}
+	{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+	"{{ .ResourceName }}": types.ObjectType{AttrTypes: {{.ResourceClassName}}{{.ParentHierarchy}}Type},
+	{{- else}}
+	"{{ .ResourceName }}": types.SetType{ElemType: {{.ResourceClassName}}{{.ParentHierarchy}}Type},
+	{{- end}}
+	{{- end}}
+}
+{{- else}}
+var {{.ResourceClassName}}{{.ParentHierarchy}}Type = types.ObjectType{
+	AttrTypes:map[string]attr.Type{
+    {{- range .Properties}}
+		{{- if eq .ValueType "bitmask"}}
+	"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": types.SetType{ElemType: types.StringType},
+		{{- else if eq .Name "Id"}}
+	"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": types.StringType,
+		{{- else}}
+	"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": types.StringType,
+		{{- end}}
+	{{- end}}
+	{{- range .Children}}
+	{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+	"{{ .ResourceName }}": types.ObjectType{ElemType: {{.ResourceClassName}}{{.ParentHierarchy}}Type},
+	{{- else}}
+	"{{ .ResourceName }}": types.SetType{ElemType: {{.ResourceClassName}}{{.ParentHierarchy}}Type},
+	{{- end}}
+	{{- end}}
+	},
+}
+{{- end}}
+{{- range .Children}}
+{{- template "childStructsAndAttributeTypes" . }}
+{{- end}}
+{{- end}}
+
+
+{{/* A sub template for the child attributes used in the Attributes block. */}}
+{{- define "childAttributes" }}
+  {{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+    "{{overwriteProperty .PkgName .ResourceName $.Definitions}}": schema.SingleNestedAttribute{
+    MarkdownDescription: `{{.Comment}}`,
+    Optional:            true,
+    Computed:            true,
+    PlanModifiers: []planmodifier.Object{
+        objectplanmodifier.UseStateForUnknown(),
+    },
+    {{- if .RequiredPropertiesNames }}
+    Validators: []validator.Object{
+        MakeSingleNestedAttributeRequiredAttributesNotProvidedValidator("{{.ResourceName}}", []string{"{{listToString .RequiredPropertiesNames}}"}),
+    },
+    {{- end }}
+    Attributes: map[string]schema.Attribute{
+    {{- range .Properties}}
+        {{- if eq .ValueType "bitmask"}}
+        "{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": schema.SetAttribute{
+            MarkdownDescription: `{{.Comment}}`,
+            {{- if not .ReadOnly }}
+            Optional:            true,
+            {{- end }}
+            Computed:            true,
+            {{- if not .ReadOnly }}
+            PlanModifiers: []planmodifier.Set{
+                setplanmodifier.UseStateForUnknown(),
+            },
+            {{- end }}
+            {{- if .ValidValues}}
+            Validators: []validator.Set{
+                setvalidator.SizeAtMost({{ len .ValidValues }}),
+                setvalidator.ValueStringsAre(
+                    stringvalidator.OneOf({{- validatorString .ValidValues}}),
+                ),
+            },
+            {{- end}}
+            ElementType: types.StringType,
+        },
+        {{- else}}
+        "{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": schema.StringAttribute{
+            Optional:            true,
+            Computed:            true,
+            {{- if not .ReadOnly }}
+            PlanModifiers: []planmodifier.String{
+                stringplanmodifier.UseStateForUnknown(),
+            },
+            {{- end}}
+            {{- if or .ValidValues $.HasReadOnlyProperties}}
+            Validators: []validator.String{
+                {{- if .ValidValues}}
+                stringvalidator.OneOf({{- validatorString .ValidValues}}),
+                {{- end}}
+                {{- if or .IsNaming .IsRequired}}
+                MakeStringRequired(),
+                {{- end}}
+            },
+            {{- end}}
+            MarkdownDescription: `{{.Comment}}`,
+        },
+        {{- end}}
+        {{- end}}
+        },
+    },
+    {{- else }}
+    "{{overwriteProperty .PkgName .ResourceName $.Definitions}}": schema.SetNestedAttribute{
+    MarkdownDescription: `{{.Comment}}`,
+    Optional:            true,
+    Computed:            true,
+    PlanModifiers: []planmodifier.Set{
+        setplanmodifier.UseStateForUnknown(),
+    },
+    NestedObject: schema.NestedAttributeObject{
+        Attributes: map[string]schema.Attribute{
+        {{- range .Properties}}
+            {{- if eq .ValueType "bitmask"}}
+            "{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": schema.SetAttribute{
+                MarkdownDescription: `{{.Comment}}`,
+                {{- if not .ReadOnly }}
+                Optional:            true,
+                {{- end }}
+                {{- if ne .ValueType "password"}}
+                Computed:            true,
+                {{- else}}
+                Sensitive:            true,
+                {{- end}}
+                {{- if not .ReadOnly }}
+                PlanModifiers: []planmodifier.Set{
+                    setplanmodifier.UseStateForUnknown(),
+                },
+                {{- end }}
+                {{- if .ValidValues}}
+                Validators: []validator.Set{
+                    setvalidator.SizeAtMost({{ len .ValidValues }}),
+                    setvalidator.ValueStringsAre(
+                        stringvalidator.OneOf({{- validatorString .ValidValues}}),
+                    ),
+                },
+                {{- end}}
+                ElementType: types.StringType,
+            },
+            {{- else}}
+            "{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": schema.StringAttribute{
+                {{- if .HasCustomType}}
+                CustomType: customTypes.{{.ResourceClassName}}{{.Name}}StringType{},
+                {{- end}}
+                {{- if and (or .IsNaming .IsRequired) (not $.HasReadOnlyProperties)}}
+                Required:            true,
+                {{- else }}
+                Optional:            true,
+                {{- if ne .ValueType "password"}}
+                Computed:            true,
+                {{- else}}
+                Sensitive:            true,
+                {{- end}}
+                {{- end}}
+                {{- if not .ReadOnly }}
+                PlanModifiers: []planmodifier.String{
+                    stringplanmodifier.UseStateForUnknown(),
+                },
+                {{- end}}
+                {{- if .HasCustomType}}
+                Validators: []validator.String{
+                    stringvalidator.Any(
+                        stringvalidator.OneOf({{- validatorStringCustomType .ValidValues .ValidValuesMap}}),
+                        validators.InBetweenFromString({{- index .Validators 0 "min"}}, {{- index .Validators 0 "max"}}),
+                    ),
+                },
+                {{- else if or .ValidValues $.HasReadOnlyProperties}}
+                Validators: []validator.String{
+                    {{- if .ValidValues}}
+                    stringvalidator.OneOf({{- validatorString .ValidValues}}),
+                    {{- end}}
+                    {{- if or .IsNaming .IsRequired}}
+                    MakeStringRequired(),
+                    {{- end}}
+                },
+                {{- end}}
+                MarkdownDescription: `{{.Comment}}`,
+            },
+            {{- end}}
+        {{- end}}
+      {{- range .Children }}
+        {{- template "childAttributes" . }}
+  {{- end }}
+  	  },
+    },
+  },
+{{- end }}
+{{- end }}
+
+{{/* A sub template for the grand child attributes used in the Payload function. */}}
+{{- define "grandChildPayload" }}
+{{$grandChild:= .}}
+{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+var {{.PkgName}}{{.ParentHierarchy}}Plan, {{.PkgName}}{{.ParentHierarchy}}State {{.ResourceClassName}}{{.ParentHierarchy}}ResourceModel
+{{- else}}
+var {{.PkgName}}{{.ParentHierarchy}}Plan, {{.PkgName}}{{.ParentHierarchy}}State  []{{.ResourceClassName}}{{.ParentHierarchy}}ResourceModel
+{{- end}}
+{{- if .TemplateProperties.AlreadyInPlan }}
+{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+{{.ParentHierarchy | lowerFirstCharacter}}.{{.ResourceClassName}}.As(ctx, &{{.PkgName}}{{.ParentHierarchy}}Plan, basetypes.ObjectAsOptions{})
+{{.ParentHierarchy | lowerFirstCharacter}}State.{{.ResourceClassName}}.As(ctx, &{{.PkgName}}{{.ParentHierarchy}}State, basetypes.ObjectAsOptions{})
+{{- else}}
+{{.ParentHierarchy | lowerFirstCharacter}}.{{.ResourceClassName}}.ElementsAs(ctx, &{{.PkgName}}{{.ParentHierarchy}}Plan, false)
+for _, {{ .PkgName }}{{.ParentHierarchy}}state := range {{.ParentHierarchy | lowerFirstCharacter}}State {
+	{{ .PkgName }}{{.ParentHierarchy}}state.{{.ResourceClassName}}.ElementsAs(ctx, &{{.PkgName}}{{.ParentHierarchy}}State, false)
+}
+{{- end}}
+if !{{ .ParentHierarchy | lowerFirstCharacter}}.{{.ResourceClassName}}.IsNull() && !{{ .ParentHierarchy | lowerFirstCharacter}}.{{.ResourceClassName}}.IsUnknown(){
+{{- else}}
+{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+{{.ParentHierarchy | lowerFirstCharacter}}Plan.{{.ResourceClassName}}.As(ctx, &{{.PkgName}}{{.ParentHierarchy}}Plan, basetypes.ObjectAsOptions{})
+{{.ParentHierarchy | lowerFirstCharacter}}State.{{.ResourceClassName}}.As(ctx, &{{.PkgName}}{{.ParentHierarchy}}State, basetypes.ObjectAsOptions{})
+{{- else}}
+{{.ParentHierarchy | lowerFirstCharacter}}Plan.{{.ResourceClassName}}.ElementsAs(ctx, &{{.PkgName}}{{.ParentHierarchy}}Plan, false)
+{{.ParentHierarchy | lowerFirstCharacter}}State.{{.ResourceClassName}}.ElementsAs(ctx, &{{.PkgName}}{{.ParentHierarchy}}State, false)
+{{- end}}
+if !{{ .ParentHierarchy | lowerFirstCharacter}}Plan.{{.ResourceClassName}}.IsNull() && !{{ .ParentHierarchy | lowerFirstCharacter}}Plan.{{.ResourceClassName}}.IsUnknown(){
+{{- end}}
+	{{- if and (and .IdentifiedBy (not (and .MaxOneClassAllowed (hasPrefix .RnFormat  "rs")))) (not (or (not .IdentifiedBy) .MaxOneClassAllowed))}}
+        {{ .PkgName }}Identifiers := []{{.ResourceClassName}}Identifier{}
+	{{- end}}
+{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+		{{.PkgName}}{{.ParentHierarchy}}ChildMap := NewAciObject()
+		if !IsEmptySingleNestedAttribute({{ .ParentHierarchy | lowerFirstCharacter}}Plan.{{.ResourceClassName}}.Attributes()) {
+			{{- range .Properties}}
+				if !{{ .PkgName }}{{$.ParentHierarchy}}Plan.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}.IsUnknown() &&  !{{ .PkgName }}{{$.ParentHierarchy}}Plan.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}.IsNull(){
+				{{- if eq .ValueType "bitmask"}}
+					var tmp{{ .Name }} []string
+					{{ .PkgName }}{{$.ParentHierarchy}}Plan.{{ .Name }}.ElementsAs(ctx, &tmp{{ .Name }}, false)
+					{{.PkgName}}{{$.ParentHierarchy}}ChildMap.Attributes["{{ .PropertyName }}"] = strings.Join(tmp{{ .Name }}, ",")				
+				{{- else if eq .Name "Id"}}
+					{{.PkgName}}{{$.ParentHierarchy}}ChildMap.Attributes["{{ .PropertyName }}"] = {{ .PkgName }}{{$.ParentHierarchy}}Plan.{{.ResourceClassName}}{{ .Name }}.ValueString()
+				{{- else}}
+					{{.PkgName}}{{$.ParentHierarchy}}ChildMap.Attributes["{{ .PropertyName }}"] = {{ .PkgName }}{{$.ParentHierarchy}}Plan.{{ .Name }}.ValueString()
+				{{- end}}
+				} {{- if eq .Name "Annotation" }} else {
+					{{.PkgName}}{{$.ParentHierarchy}}ChildMap.Attributes["annotation"] = globalAnnotation
+				} {{- end}}
+			{{- end}}
+		}{{- if .AllowDelete}} else {
+			{{- range .Properties}}
+				{{- if .IsNaming }}
+				{{.PkgName}}{{$.ParentHierarchy}}childMap.Attributes["{{.PropertyName}}"] = {{.PkgName}}State.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}.ValueString()
+				{{- end}}
+			{{- end}}
+			{{.PkgName}}{{$.ParentHierarchy}}ChildMap.Attributes["status"] = "deleted"
+		}{{- end}}
+		{{- $enteredGreatGrandChildPayloadZoneOne := false }}
+	{{- range .Children}}
+	{{- $enteredGreatGrandChildPayloadZoneOne = true }}
+		{{- template "grandChildPayload" . }}
+	{{- end}}
+	{{- range .Children}}
+		{{- if $enteredGreatGrandChildPayloadZoneOne }}
+			{{- $enteredGreatGrandChildPayloadZoneOne = false }}
+	{{$.PkgName}}{{$.ParentHierarchy}}ChildMap.Children = {{.ParentHierarchy}}Children
+		{{- end}}
+	{{- end}}
+	{{ .ParentHierarchy }}Children = append({{ .ParentHierarchy }}Children, map[string]interface{}{"{{.PkgName}}": {{.PkgName}}{{$.ParentHierarchy}}ChildMap})
+		{{- else}}
+for _, {{ .PkgName }}{{.ParentHierarchy}} := range {{.PkgName}}{{.ParentHierarchy}}Plan {
+	{{.PkgName}}{{.ParentHierarchy}}ChildMap := NewAciObject()
+	{{- range .Properties}}
+	if !{{ .PkgName }}{{$.ParentHierarchy}}.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}.IsNull() && !{{ .PkgName }}{{$.ParentHierarchy}}.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}.IsUnknown(){
+		{{- if eq .ValueType "bitmask"}}
+		var tmp{{ .Name }} []string
+		{{ .PkgName }}{{$.ParentHierarchy}}.{{ .Name }}.ElementsAs(ctx, &tmp{{ .Name }}, false)
+		{{.PkgName}}{{$.ParentHierarchy}}ChildMap.Attributes["{{ .PropertyName }}"] = strings.Join(tmp{{ .Name }}, ",")                
+		{{- else if eq .Name "Id"}}
+		{{.PkgName}}{{$.ParentHierarchy}}ChildMap.Attributes["{{ .PropertyName }}"] = {{ .PkgName }}{{$.ParentHierarchy}}.{{.ResourceClassName}}{{ .Name }}.ValueString()
+		{{- else}}
+		{{.PkgName}}{{$.ParentHierarchy}}ChildMap.Attributes["{{ .PropertyName }}"] = {{ .PkgName }}{{$.ParentHierarchy}}.{{ .Name }}.ValueString()
+		{{- end}}
+	} {{- if eq .Name "Annotation" }} else {
+		{{.PkgName}}{{$.ParentHierarchy}}ChildMap.Attributes["annotation"] = globalAnnotation
+	} {{- end}}
+	{{- end}}
+	{{- $enteredGreatGrandChildPayloadZone := false }}
+	{{- range .Children}}
+	{{- $enteredGreatGrandChildPayloadZone = true }}
+		{{- $newCtx := addToTemplateProperties . "AlreadyInPlan" true -}}
+        {{- template "grandChildPayload" $newCtx }}
+	{{- end}}
+	{{- range .Children}}
+		{{- if $enteredGreatGrandChildPayloadZone }}
+			{{- $enteredGreatGrandChildPayloadZone = false }}
+	{{$.PkgName}}{{$.ParentHierarchy}}ChildMap.Children = {{.ParentHierarchy}}Children
+		{{- end}}
+	{{- end}}
+	{{ .ParentHierarchy }}Children = append({{ .ParentHierarchy }}Children, map[string]interface{}{"{{.PkgName}}": {{.PkgName}}{{$.ParentHierarchy}}ChildMap})
+	{{- if .IdentifiedBy}}
+	{{ .PkgName }}Identifier := {{ .ResourceClassName }}Identifier{}
+		{{- range .Properties}}
+			{{- if .IsNaming}}
+	{{ .PkgName }}Identifier.{{.Name}} = {{ .PkgName }}{{$grandChild.ParentHierarchy}}.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}
+			{{- end}}
+		{{- end}}
+	{{ .PkgName }}Identifiers = append({{ .PkgName }}Identifiers, {{ .PkgName }}Identifier)
+	{{- end}}
+	}
+	{{- end}}
+	{{- if .IdentifiedBy}}
+	for _, {{ .PkgName }}{{.ParentHierarchy}} := range {{ .PkgName }}{{.ParentHierarchy}}State {
+		delete := true
+	for _, {{ .PkgName }}Identifier := range {{ .PkgName }}Identifiers { {{$i := 1}}{{$length := len .IdentifiedBy}}
+		if 
+		{{- range .Properties}}
+			{{- if .IsNaming }}
+			{{ .PkgName }}Identifier.{{.Name}} == {{ .PkgName }}{{$grandChild.ParentHierarchy}}.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}{{- if ne $length $i}} {{$i = add $i 1}} && {{- end}}
+			{{- end}}
+		{{- end}} {
+			delete = false
+			break
+		}
+	}
+	if delete {
+		{{.PkgName}}{{$.ParentHierarchy}}ChildMapForDelete := NewAciObject()
+		{{.PkgName}}{{$.ParentHierarchy}}ChildMapForDelete.Attributes["status"] = "deleted"
+	{{- range .Properties}}
+		{{- if .IsNaming }}
+		{{.PkgName}}{{$.ParentHierarchy}}ChildMapForDelete.Attributes["{{.PropertyName}}"] = {{ .PkgName }}{{$grandChild.ParentHierarchy}}.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}.ValueString()
+		{{- end}}
+	{{- end}}
+		{{ .ParentHierarchy }}Children = append({{ .ParentHierarchy }}Children, map[string]interface{}{"{{ .PkgName }}": {{.PkgName}}{{$.ParentHierarchy}}ChildMapForDelete})
+			}
+		}
+	}
+	{{- else}}
+	{{- if not (or (not .IdentifiedBy) .MaxOneClassAllowed)}}
+		if len({{ .PkgName }}{{.ParentHierarchy}}Plan) == 0 && len({{.PkgName}}{{.ParentHierarchy}}State) == 1 {
+			{{- if .AllowDelete}}
+			{{.PkgName}}{{.ParentHierarchy}}ChildMapForDelete := NewAciObject()
+			{{.PkgName}}{{.ParentHierarchy}}ChildMapForDelete.Attributes["status"] = "deleted"
+			{{- if .IdentifiedBy}}
+							{{- range .Properties}}
+								{{- if .IsNaming }}
+			{{.PkgName}}{{$.ParentHierarchy}}ChildMapForDelete.Attributes["{{.PropertyName}}"] = {{ .PkgName }}State[0].{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}.ValueString()
+								{{- end}}
+							{{- end}}
+						{{- end}}
+			{{ .ParentHierarchy }}Children = append({{ .ParentHierarchy }}Children, map[string]interface{}{"{{.PkgName}}": {{.PkgName}}{{.ParentHierarchy}}ChildMapForDelete})
+			{{- else}}
+			diags.AddError(
+				"{{ .ResourceClassName }} object cannot be deleted",
+				"deletion of child is only possible upon deletion of the parent",
+			)
+			return nil
+			{{- end }}
+		  }
+		{{- end }}
+	}
+	{{- end}}
+{{- end }}
+
+
+{{/* A sub template to declare child lists in the get and set attributes function. */}}
+{{- define "declareChildListsInGetandSetAttributesFunction" }}
+{{.ResourceClassName}}{{.ParentHierarchy}} := getEmpty{{ .ResourceClassName}}{{.ParentHierarchy}}ResourceModel()
+{{- if .IdentifiedBy}}
+{{ .ResourceClassName }}{{.ParentHierarchy}}List := make([]{{.ResourceClassName}}{{.ParentHierarchy}}ResourceModel, 0)
+{{- else}}
+{{ .ResourceClassName }}{{.ParentHierarchy}}List := make([]{{.ResourceClassName}}{{.ParentHierarchy}}ResourceModel, 0)
+{{- end}}
+{{- range .Children}}
+{{- template "declareChildListsInGetandSetAttributesFunction" . }}
+{{- end}}
+{{- end}}
+
+
+{{/* A sub template for the grand child attributes used in the get and set attributes function. */}}
+{{- define "getAndSetGrandChildren" }}
+if childClassName{{.ParentHierarchy}} == "{{.PkgName}}"{
+{{.PkgName}}childAttributeValue:= childClassDetails{{.ParentHierarchy}}.(map[string]interface{})["attributes"].(map[string]interface{})
+for childAttributeName, childAttributeValue := range {{.PkgName}}childAttributeValue {
+	{{- range .Properties}}
+		{{- if eq .ValueType "bitmask"}}
+			{{- if containsNoneAttributeValue .ValidValues}}
+	if childAttributeName == "{{.PropertyName}}" && childAttributeValue.(string) == "" {
+		{{.PropertyName}}Set, _ := types.SetValueFrom(ctx, {{.ResourceClassName}}{{$.ParentHierarchy}}.{{.Name}}.ElementType(ctx), []string{"none"})
+		{{.ResourceClassName}}{{$.ParentHierarchy}}.{{.Name}} = {{.PropertyName}}Set
+	} else if childAttributeName == "{{.PropertyName}}" {
+		{{.PropertyName}}List := strings.Split(childAttributeValue.(string), ",")
+		var data{{.ParentHierarchy}} []{{.ParentHierarchy}}ResourceModel
+		data.{{.ParentHierarchy}}.ElementsAs(ctx,&data{{.ParentHierarchy}},false)
+		for _, {{.ParentHierarchy | lowerFirstCharacter}} := range data{{.ResourceClassName}}{{.ParentHierarchy}} {
+		{{.PropertyName}}Set, _ := types.SetValueFrom(ctx, {{.ParentHierarchy | lowerFirstCharacter}}.{{.ResourceClassName}}.ElementType(ctx),{{.PropertyName}}List)
+		{{.ResourceClassName}}{{$.ParentHierarchy}}.{{.Name}} = {{.PropertyName}}Set
+		}
+	}
+			{{- else}}
+	if childAttributeName == "{{.PropertyName}}" {
+		{{.PropertyName}}List := strings.Split(childAttributeValue.(string), ",")
+		var data{{.ParentHierarchy}} []{{.ParentHierarchy}}ResourceModel
+		data.{{.ParentHierarchy}}.ElementsAs(ctx,&data{{.ParentHierarchy}},false)
+		for _, {{.ParentHierarchy | lowerFirstCharacter}} := range data{{.ResourceClassName}}{{.ParentHierarchy}} {
+		{{.PropertyName}}Set, _ := types.SetValueFrom(ctx, {{.ParentHierarchy | lowerFirstCharacter}}.{{.ResourceClassName}}.ElementType(ctx),{{.PropertyName}}List)
+		{{.ResourceClassName}}{{$.ParentHierarchy}}.{{.Name}} = {{.PropertyName}}Set
+		}
+	}
+			{{- end}}
+		{{- else}}
+			{{- if containsNoneAttributeValue .ValidValues}}
+	if childAttributeName == "{{.PropertyName}}" && childAttributeValue.(string) == "" {
+		{{.ResourceClassName}}{{.ParentHierarchy}}.{{.Name}} = basetypes.NewStringValue("none")
+	} else if childAttributeName == "{{.PropertyName}}" {
+		{{.ResourceClassName}}{{$.ParentHierarchy}}.{{.Name}} = basetypes.NewStringValue(childAttributeValue.(string))
+	}
+			{{- else}}
+	if childAttributeName == "{{.PropertyName}}" {
+		{{.ResourceClassName}}{{$.ParentHierarchy}}.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}} = basetypes.NewStringValue(childAttributeValue.(string))
+	}
+			{{- end}}
+		{{- end}}
+	{{- end}}
+	{{- $enteredGrandChildGetAndSetAttributesZone := false }}
+	{{- range .Children}}
+		{{- if not $enteredGrandChildGetAndSetAttributesZone }}
+			{{- $enteredGrandChildGetAndSetAttributesZone = true }}
+			}
+			childrenOf{{.ParentHierarchy}}, childrenOf{{.ParentHierarchy}}Exist:= childClassDetails{{$.ParentHierarchy}}.(map[string]interface{})["children"]
+			if childrenOf{{.ParentHierarchy}}Exist {
+				for _, child{{.ParentHierarchy}} := range childrenOf{{.ParentHierarchy}}.([]interface{}) {
+					for childClassName{{.ParentHierarchy}}, childClassDetails{{.ParentHierarchy}} := range child{{.ParentHierarchy}}.(map[string]interface{}) {
+		{{- end}}
+	{{- template "getAndSetGrandChildren" . }}
+	{{- end }}
+	{{- if $enteredGrandChildGetAndSetAttributesZone }}
+			}
+		}
+	}
+	{{- range .Children}}
+	{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+	if len({{.ResourceClassName}}{{.ParentHierarchy}}List) == 1 {
+		{{.ResourceClassName}}{{.ParentHierarchy}}Object, _ := types.ObjectValueFrom(ctx, {{ .ResourceClassName }}{{.ParentHierarchy}}Type, {{ .ResourceClassName }}{{.ParentHierarchy}}List[0])
+		{{.ParentHierarchy}}.{{ .ResourceClassName }} = {{.ResourceClassName}}{{.ParentHierarchy}}Object
+	} else {
+		{{.ResourceClassName}}{{.ParentHierarchy}}Object, _ := types.ObjectValueFrom(ctx, {{ .ResourceClassName }}{{.ParentHierarchy}}Type, getEmpty{{ .ResourceClassName }}{{.ParentHierarchy}}ResourceModel())
+		{{.ParentHierarchy}}.{{ .ResourceClassName }} = {{.ResourceClassName}}{{.ParentHierarchy}}Object
+	}
+			{{- else}}
+	{{.ResourceClassName}}{{.ParentHierarchy}}Set,_ := types.SetValueFrom(ctx,{{.ResourceClassName}}{{.ParentHierarchy}}Type,{{.ResourceClassName}}{{.ParentHierarchy}}List)
+	{{.ParentHierarchy}}.{{.ResourceClassName}} = {{.ResourceClassName}}{{.ParentHierarchy}}Set
+			{{- end}}
+	{{- end}}
+	{{- else}}
+	}
+	{{- end}}
+	{{.ResourceClassName}}{{$.ParentHierarchy}}List = append({{.ResourceClassName}}{{$.ParentHierarchy}}List, {{.ResourceClassName}}{{$.ParentHierarchy}})
+}
+{{- end }}
+
+
+{{/* A sub template for grand child declaration in the child payload function. */}}
+{{- define "grandChildDeclarationInChildPayloadFunction" }}
+{{- $enteredGrandChildDeclarationZone := false }}
+{{- range .Children}}
+	{{- $enteredGrandChildDeclarationZone = true }}
+{{- template "grandChildDeclarationInChildPayloadFunction" . }}
+{{- end }}
+{{- range .Children}}
+	{{- if $enteredGrandChildDeclarationZone }}
+		{{- $enteredGrandChildDeclarationZone = false }}
+{{.ParentHierarchy}}Children := make([]map[string]interface{}, 0)
+	{{- end}}
+{{- end}}
+{{- end}}
+
+
+{{/* A sub template for joining all the class names as a single string. */}}
+{{- define "rspSubtreeClassFilter" -}}
+  {{- $currentClasses := listToString .ChildClasses -}}
+    {{- $currentClasses -}}
+    {{- range .Children -}}
+		{{- if not (isListEmpty .ChildClasses) -}}
+			,{{- template "rspSubtreeClassFilter" . -}}
+		{{- end -}}
+    {{- end -}}
+{{- end -}}

@@ -1112,7 +1112,10 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 			{{- if eq (len $value) 1}}
 				{{- range $child_index, $child := $value}}
 					{{- range $child_key, $child_value := $child}}
-						{{- if eq $child_key "version_mismatch" }}
+						{{- if eq $child_key "children"}}
+							{{- $newCtx := addToChild $child_value "ResourceName" (print "aci_" $.resourceName ".test") "InheritedKey" (print $key "." $child_index) -}}
+							{{- template "testSingleNestedChildren" $newCtx }}
+						{{- else if eq $child_key "version_mismatch" }}
 							{{- range $version, $attributes := $child_value }}
 						composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", ">",{{- range $attributeName, $attributeValue := $attributes}}
 						resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$attributeName}}", "{{$attributeValue}}"),						
@@ -1130,7 +1133,10 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 			{{- else}}
 				{{- range $child_index, $child := $value}}
 				{{- range $child_key, $child_value := $child}}
-						{{- if eq $child_key "version_mismatch" }}
+						{{- if eq $child_key "children"}}
+							{{- $newCtx := addToChild $child_value "ResourceName" (print "aci_" $.resourceName ".test") "InheritedKey" (print $key "." $child_index) -}}
+							{{- template "testMultipleNestedChildren" $newCtx }}
+						{{- else if eq $child_key "version_mismatch" }}
 							{{- range $version, $attributes := $child_value }}
 					composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", ">",{{- range $attributeName, $attributeValue := $attributes}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$child_index}}.{{$attributeName}}", "{{$attributeValue}}"),						
@@ -1653,7 +1659,10 @@ resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClas
 				{{- $child := index $value 0}}
   {{$key}} = {
 					{{- range $child_key, $child_value := $child}}
-						{{- if eq $child_key "version_mismatch" }}
+						{{- if eq $child_key "children"}}
+							{{- $newCtx := addToChild $child_value "Indent" "    " -}}
+  							{{- template "nestedChildren" $newCtx }}
+						{{- else if eq $child_key "version_mismatch" }}
         					{{- range $version, $attributes := $child_value }}
 								{{- range $attributeName, $attributeValue := $attributes}}
   	{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? "{{$attributeValue}}" : null
@@ -1732,7 +1741,10 @@ resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClas
   {{$key}} = [ {{$child := index $value 1 }}
 	{
 	  			{{- range $child_key, $child_value := $child}}
-					{{- if eq $child_key "version_mismatch" }}
+					{{- if eq $child_key "children"}}
+						{{- $newCtx := addToChild $child_value "Indent" "    " -}}
+  						{{- template "nestedChildrenRemoveOne" $newCtx }}
+					{{- else if eq $child_key "version_mismatch" }}
         					{{- range $version, $attributes := $child_value }}
 								{{- range $attributeName, $attributeValue := $attributes}}
   	  {{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? "{{$attributeValue}}" : null
@@ -1748,8 +1760,8 @@ resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClas
 				{{- end}}
 	},
   ]
-			{{- end}}
-		{{- end}}
+	{{- end}}
+{{- end}}
 }
 `
 
@@ -1774,7 +1786,7 @@ resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClas
 			{{- else}}
   {{$key}} = []
 			{{- end}}
-		{{- end}}
+        {{- end}}
 }
 `
 		{{- end}}
@@ -1907,7 +1919,10 @@ resource "aci_{{$.resourceName}}" "test" {
 				{{- $child := index $value 0}}
   {{$key}} = {
 				{{- range $child_key, $child_value := $child}}
-					{{- if eq $child_key "version_mismatch" }}
+					{{- if eq $child_key "children"}}
+						{{- $newCtx := addToChild $child_value "Indent" "    " -}}
+  						{{- template "nestedChildren" $newCtx }}
+					{{- else if eq $child_key "version_mismatch" }}
         					{{- range $version, $attributes := $child_value }}
 								{{- range $attributeName, $attributeValue := $attributes}}
   	  {{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? "{{$attributeValue}}" : null
@@ -1980,7 +1995,10 @@ resource "aci_{{$.resourceName}}" "test" {
   {{$key}} = [ {{$child := index $value 1 }}
 	{
 	  			{{- range $child_key, $child_value := $child}}
-					{{- if eq $child_key "version_mismatch" }}
+					{{- if eq $child_key "children"}}
+						{{- $newCtx := addToChild $child_value "Indent" "    " -}}
+  						{{- template "nestedChildrenRemoveOne" $newCtx }}
+					{{- else if eq $child_key "version_mismatch" }}
         					{{- range $version, $attributes := $child_value }}
 								{{- range $attributeName, $attributeValue := $attributes}}
   	  {{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? "{{$attributeValue}}" : null
@@ -2034,3 +2052,176 @@ resource "aci_{{$.resourceName}}" "test" {
 `
 	{{- end}}
 {{- end}}
+
+
+{{/* A sub template for including nested children in the test config. */}}
+{{- define "nestedChildren" -}}
+  {{- $indent := .TemplateProperties.Indent -}}
+  {{- range $key, $value := .childValue}}}}{{$index := 0}}
+  {{- if eq (len $value) 1}}
+				{{- $child := index $value 0}}
+  {{$indent}}{{$key}} = {
+				{{- range $child_key, $child_value := $child}}
+					{{- if eq $child_key "children"}}
+						{{- $newCtx := addToChild $child_value "Indent" (print $indent "    ") -}}
+  						{{- template "nestedChildren" $newCtx }}
+					{{- else if eq $child_key "version_mismatch" }}
+        					{{- range $version, $attributes := $child_value }}
+								{{- range $attributeName, $attributeValue := $attributes}}
+  	  {{$indent}}{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? "{{$attributeValue}}" : null
+        						{{- end }}
+							{{- end }}
+					{{- else }}
+					{{- if eq $child_key "target_dn"}}{{$attributeValue := getTestTargetDn $.child_targets $key $child_value true nil $index false}}
+    {{$indent}}{{$child_key}} = {{if containsString $attributeValue "."}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}		
+					{{- else if ne $child_key "deletable_child"}}
+    {{$indent}}{{$child_key}} = "{{$child_value}}"
+	  				{{- end}}
+				{{- end}}
+				{{- end}}{{ $index = add $index 1 }}
+  {{$indent}}}
+			{{- else}}
+  {{$indent}}{{$key}} = [
+				{{- range $child := $value}}
+	{{$indent}}{
+					{{- range $child_key, $child_value := $child}}
+						{{- if eq $child_key "version_mismatch" }}
+        					{{- range $version, $attributes := $child_value }}
+								{{- range $attributeName, $attributeValue := $attributes}}
+  	  {{$indent}}{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? "{{$attributeValue}}" : null
+        						{{- end }}
+							{{- end }}
+					{{- else }}
+						{{- if eq $child_key "target_dn"}}{{$attributeValue := getTestTargetDn $.child_targets $key $child_value true nil $index false}}
+	  {{$indent}}{{$child_key}} = {{if containsString $attributeValue "."}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}		
+						{{- else if ne $child_key "deletable_child"}}
+	  {{$indent}}{{$child_key}} = "{{$child_value}}"
+	  						{{- end}}
+						{{- end}}
+					{{- end}}{{ $index = add $index 1 }}
+	{{$indent}}},
+				{{- end}}
+  {{$indent}}]
+			{{- end}}
+
+{{- end}}
+{{- end}}
+
+{{/* A sub template for including nested children by removing only one child that is deletable in the test config. */}}
+{{- define "nestedChildrenRemoveOne" -}}
+  {{- $indent := .TemplateProperties.Indent -}}
+  {{- range $key, $value := .childValue}}
+  {{- if eq (len $value) 1}}
+				{{- $child := index $value 0}}
+				{{- if $child.deletable_child}}
+  {{$indent}}{{$key}} = {}
+				{{- end}}
+			{{- else}}
+  {{$indent}}{{$key}} = [ {{$child := index $value 1 }}
+	{{$indent}}{
+	  			{{- range $child_key, $child_value := $child}}
+					{{- if eq $child_key "children"}}
+						{{- $newCtx := addToChild $child_value "Indent" (print $indent "    ") -}}
+  						{{- template "nestedChildrenRemoveOne" $newCtx }}
+					{{- else if eq $child_key "version_mismatch" }}
+        					{{- range $version, $attributes := $child_value }}
+								{{- range $attributeName, $attributeValue := $attributes}}
+  	  {{$indent}}{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? "{{$attributeValue}}" : null
+        						{{- end }}
+							{{- end }}
+					{{- else }}
+						{{- if eq $child_key "target_dn"}}{{$attributeValue := getTestTargetDn $.child_targets $key $child_value true nil 1 false}}
+	  {{$indent}}{{$child_key}} = {{if containsString $attributeValue "."}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}
+	  					{{- else }}
+	  {{$indent}}{{$child_key}} = "{{$child_value}}"
+	  					{{- end}}
+					{{- end}}
+				{{- end}}
+	{{$indent}}},
+  {{$indent}}]
+			{{- end}}
+{{- end}}
+{{- end}}
+
+{{/* A sub template for including nested children by removing all deletable children in the test config. */}}
+{{- define "nestedChildrenRemoveAll" -}}
+  {{- $indent := .TemplateProperties.Indent -}}
+  {{- range $key, $value := .childValue}}
+  {{$indent}}{{$key}} = [
+				{{- range $index, $child := $value}}
+					{{- if not $child.deletable_child }}
+	{{$indent}}{
+					{{- range $child_key, $child_value := $child}}
+						{{- if eq $child_key "children"}}
+							{{- $newCtx := addToChild $child_value "Indent" (print $indent "    ") -}}
+  							{{- template "nestedChildrenRemoveAll" $newCtx }}
+						{{- else if ne $child_key "deletable_child"}}
+	  {{$indent}}{{$child_key}} = "{{$child_value}}"
+	  					{{- end}}
+					{{- end}}
+	{{$indent}}},
+					{{- end}}
+				{{- end}}
+  {{$indent}}]
+{{- end}}
+{{- end}}
+
+{{/* A sub template for testing nested children resource attributes */}}
+{{- define "testSingleNestedChildren" -}}
+  {{- $inheritedKey := .TemplateProperties.InheritedKey -}}
+  {{- $resourceName := .TemplateProperties.ResourceName -}}
+  {{- range $key, $value := .childValue}}
+  	{{- if eq (len $value) 1}}
+				{{- range $child_index, $child := $value}}
+					{{- range $child_key, $child_value := $child}}
+						{{- if eq $child_key "children"}}
+							{{- $newCtx := addToChild $child_value "ResourceName" $resourceName "InheritedKey" (print $inheritedKey "." $key "." $child_index) -}}
+							{{- template "testSingleNestedChildren" $newCtx }}
+						{{- else if eq $child_key "version_mismatch" }}
+							{{- range $version, $attributes := $child_value }}
+						composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", ">",{{- range $attributeName, $attributeValue := $attributes}}
+						resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$attributeName}}", "{{$attributeValue}}"),						
+									{{- end }}),
+								{{- end }}
+						{{- else }}
+						{{- if eq $child_key "target_dn"}}
+						resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$child_key}}", "{{getTestTargetDn $.child_targets $key $child_value false nil $child_index false}}"),		
+						{{- else if ne $child_key "deletable_child"}}
+						resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$child_key}}", "{{$child_value}}"),
+							{{- end}}
+						{{- end}}
+					{{- end}}
+				{{- end }}
+			{{- end }}
+		{{- end }}
+	{{- end }}
+
+
+{{/* A sub template for testing nested children resource attributes */}}
+{{- define "testMultipleNestedChildren" -}}
+  {{- $inheritedKey := .TemplateProperties.InheritedKey -}}
+  {{- $resourceName := .TemplateProperties.ResourceName -}}
+  {{- range $key, $value := .childValue}}
+  	{{- range $child_index, $child := $value}}
+				{{- range $child_key, $child_value := $child}}
+						{{- if eq $child_key "children"}}
+							{{- $newCtx := addToChild $child_value "ResourceName" $resourceName "InheritedKey" (print $inheritedKey "." $key "." $child_index) -}}
+							{{- template "testMultipleNestedChildren" $newCtx }}
+						{{- else if eq $child_key "version_mismatch" }}
+							{{- range $version, $attributes := $child_value }}
+					composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", ">",{{- range $attributeName, $attributeValue := $attributes}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$child_index}}.{{$attributeName}}", "{{$attributeValue}}"),						
+									{{- end }}),
+								{{- end }}
+						{{- else }}
+					{{- if eq $child_key "target_dn"}}
+	  				resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$child_index}}.{{$child_key}}", "{{getTestTargetDn $.child_targets $key $child_value false nil $child_index false}}"),		
+					{{- else if ne $child_key "deletable_child"}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$child_index}}.{{$child_key}}", "{{$child_value}}"),
+						{{- end}}
+					{{- end}}
+			{{- end}}
+		{{- end}}
+	{{- end}}
+{{- end}}
+

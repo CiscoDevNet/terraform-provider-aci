@@ -1,5 +1,5 @@
 
-resource "aci_key_ring" "full_example" {
+resource "aci_pki_key_ring" "full_example" {
   admin_state           = "completed"
   annotation            = "annotation"
   certificate           = <<EOT
@@ -50,18 +50,42 @@ EOT
     {
       key   = "key_0"
       value = "value_1"
+      annotations = [
+        {
+          key   = "key_0"
+          value = "value_0"
+        }
+      ]
+      tags = [
+        {
+          key   = "key_0"
+          value = "value_0"
+        }
+      ]
     }
   ]
   tags = [
     {
       key   = "key_0"
       value = "value_1"
+      annotations = [
+        {
+          key   = "key_0"
+          value = "value_0"
+        }
+      ]
+      tags = [
+        {
+          key   = "key_0"
+          value = "value_0"
+        }
+      ]
     }
   ]
 }
 
 // This example is only applicable to Cisco Cloud Network Controller
-resource "aci_key_ring" "full_example_tenant" {
+resource "aci_pki_key_ring" "full_example_tenant" {
   parent_dn             = aci_tenant.example.id
   admin_state           = "completed"
   annotation            = "annotation"
@@ -113,12 +137,40 @@ EOT
     {
       key   = "key_0"
       value = "value_1"
+      annotations = [
+        {
+          key   = "key_0"
+          value = "value_0"
+        }
+      ]
+      tags = [
+        {
+          key   = "key_0"
+          value = "value_0"
+        }
+      ]
     }
   ]
   tags = [
     {
       key   = "key_0"
       value = "value_1"
+      annotations = [
+        {
+          key   = "key_0"
+          value = "value_0"
+        }
+      ]
+      tags = [
+        {
+          key   = "key_0"
+          value = "value_0"
+        }
+      ]
     }
   ]
 }
+
+
+
+

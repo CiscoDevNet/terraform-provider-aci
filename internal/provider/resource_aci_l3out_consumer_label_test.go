@@ -170,11 +170,13 @@ func TestAccResourceL3extConsLblWithL3extOut(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_external_epgs.0.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_external_epgs.0.target_dn", "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile_1"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_external_epgs.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_external_epgs.1.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_external_epgs.1.target_dn", "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile_2"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_route_control_profiles.0.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_route_control_profiles.0.direction", "export"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_route_control_profiles.0.target_dn", "uni/tn-test_tenant/prof-rt_ctrl_profile_1"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_route_control_profiles.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_route_control_profiles.1.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_route_control_profiles.1.direction", "import"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_route_control_profiles.1.target_dn", "uni/tn-test_tenant/prof-rt_ctrl_profile_2"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "tags.0.key", "key_0"),
@@ -207,12 +209,14 @@ func TestAccResourceL3extConsLblWithL3extOut(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_external_epgs.0.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_external_epgs.0.target_dn", "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile_1"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_external_epgs.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_external_epgs.1.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_external_epgs.1.target_dn", "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile_2"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_external_epgs.#", "2"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_route_control_profiles.0.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_route_control_profiles.0.direction", "export"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_route_control_profiles.0.target_dn", "uni/tn-test_tenant/prof-rt_ctrl_profile_1"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_route_control_profiles.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_route_control_profiles.1.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_route_control_profiles.1.direction", "import"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_route_control_profiles.1.target_dn", "uni/tn-test_tenant/prof-rt_ctrl_profile_2"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_route_control_profiles.#", "2"),
@@ -232,9 +236,11 @@ func TestAccResourceL3extConsLblWithL3extOut(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.#", "1"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_external_epgs.0.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_external_epgs.0.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_external_epgs.0.target_dn", "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile_2"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_external_epgs.#", "1"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_route_control_profiles.0.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_route_control_profiles.0.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_route_control_profiles.0.direction", "import"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_route_control_profiles.0.target_dn", "uni/tn-test_tenant/prof-rt_ctrl_profile_2"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "relation_to_route_control_profiles.#", "1"),
@@ -329,6 +335,7 @@ resource "aci_l3out_consumer_label" "test" {
 	},
 	{
 	  annotation = "annotation_2"
+	  children = "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"
 	  target_dn = "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile_2"
 	},
   ]
@@ -340,6 +347,7 @@ resource "aci_l3out_consumer_label" "test" {
 	},
 	{
 	  annotation = "annotation_2"
+	  children = "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"
 	  direction = "import"
 	  target_dn = "uni/tn-test_tenant/prof-rt_ctrl_profile_2"
 	},
@@ -377,12 +385,36 @@ resource "aci_l3out_consumer_label" "test" {
   relation_to_external_epgs = [ 
 	{
 	  annotation = "annotation_2"
+      annotations = [ 
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]
+      tags = [ 
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]
 	  target_dn = "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile_2"
 	},
   ]
   relation_to_route_control_profiles = [ 
 	{
 	  annotation = "annotation_2"
+      annotations = [ 
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]
+      tags = [ 
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]
 	  direction = "import"
 	  target_dn = "uni/tn-test_tenant/prof-rt_ctrl_profile_2"
 	},

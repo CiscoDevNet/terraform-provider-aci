@@ -11,13 +11,17 @@ resource "aci_epg_useg_ad_group_attribute" "full_example_epg_useg_block_statemen
   annotations = [
     {
       key   = "key_0"
-      value = "value_1"
+      value = "value_0"
     }
   ]
   tags = [
     {
       key   = "key_0"
-      value = "value_1"
+      value = "value_0"
     }
   ]
 }
+
+
+
+

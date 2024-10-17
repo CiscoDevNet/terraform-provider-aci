@@ -92,6 +92,13 @@ func getEmptyTagAnnotationQosCustomPolResourceModel() TagAnnotationQosCustomPolR
 	}
 }
 
+var TagAnnotationQosCustomPolType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
+}
+
 // TagTagQosCustomPolResourceModel describes the resource data model for the children without relation ships.
 type TagTagQosCustomPolResourceModel struct {
 	Key   types.String `tfsdk:"key"`
@@ -103,6 +110,13 @@ func getEmptyTagTagQosCustomPolResourceModel() TagTagQosCustomPolResourceModel {
 		Key:   basetypes.NewStringNull(),
 		Value: basetypes.NewStringNull(),
 	}
+}
+
+var TagTagQosCustomPolType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
 }
 
 type QosCustomPolIdentifier struct {
@@ -454,7 +468,7 @@ func (r *QosCustomPolResource) ImportState(ctx context.Context, req resource.Imp
 }
 
 func getAndSetQosCustomPolAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *QosCustomPolResourceModel) {
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "qosCustomPol,tagAnnotation,tagTag"), "GET", nil)
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "qosCustomPol,tagAnnotation,tagTag"), "GET", nil)
 
 	readData := getEmptyQosCustomPolResourceModel()
 
@@ -489,7 +503,9 @@ func getAndSetQosCustomPolAttributes(ctx context.Context, diags *diag.Diagnostic
 					readData.OwnerTag = basetypes.NewStringValue(attributeValue.(string))
 				}
 			}
+			TagAnnotationQosCustomPol := getEmptyTagAnnotationQosCustomPolResourceModel()
 			TagAnnotationQosCustomPolList := make([]TagAnnotationQosCustomPolResourceModel, 0)
+			TagTagQosCustomPol := getEmptyTagTagQosCustomPolResourceModel()
 			TagTagQosCustomPolList := make([]TagTagQosCustomPolResourceModel, 0)
 			_, ok := classReadInfo[0].(map[string]interface{})["children"]
 			if ok {
@@ -498,7 +514,6 @@ func getAndSetQosCustomPolAttributes(ctx context.Context, diags *diag.Diagnostic
 					for childClassName, childClassDetails := range child.(map[string]interface{}) {
 						childAttributes := childClassDetails.(map[string]interface{})["attributes"].(map[string]interface{})
 						if childClassName == "tagAnnotation" {
-							TagAnnotationQosCustomPol := getEmptyTagAnnotationQosCustomPolResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "key" {
 									TagAnnotationQosCustomPol.Key = basetypes.NewStringValue(childAttributeValue.(string))
@@ -506,11 +521,11 @@ func getAndSetQosCustomPolAttributes(ctx context.Context, diags *diag.Diagnostic
 								if childAttributeName == "value" {
 									TagAnnotationQosCustomPol.Value = basetypes.NewStringValue(childAttributeValue.(string))
 								}
+
 							}
 							TagAnnotationQosCustomPolList = append(TagAnnotationQosCustomPolList, TagAnnotationQosCustomPol)
 						}
 						if childClassName == "tagTag" {
-							TagTagQosCustomPol := getEmptyTagTagQosCustomPolResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "key" {
 									TagTagQosCustomPol.Key = basetypes.NewStringValue(childAttributeValue.(string))
@@ -518,6 +533,7 @@ func getAndSetQosCustomPolAttributes(ctx context.Context, diags *diag.Diagnostic
 								if childAttributeName == "value" {
 									TagTagQosCustomPol.Value = basetypes.NewStringValue(childAttributeValue.(string))
 								}
+
 							}
 							TagTagQosCustomPolList = append(TagTagQosCustomPolList, TagTagQosCustomPol)
 						}
@@ -571,25 +587,24 @@ func setQosCustomPolId(ctx context.Context, data *QosCustomPolResourceModel) {
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
 
-func getQosCustomPolTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *QosCustomPolResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationQosCustomPolResourceModel) []map[string]interface{} {
-
+func getQosCustomPolTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *QosCustomPolResourceModel, tagAnnotationQosCustomPolPlan, tagAnnotationQosCustomPolState []TagAnnotationQosCustomPolResourceModel) []map[string]interface{} {
 	childPayloads := []map[string]interface{}{}
-	if !data.TagAnnotation.IsUnknown() {
+	if !data.TagAnnotation.IsNull() && !data.TagAnnotation.IsUnknown() {
 		tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
-		for _, tagAnnotation := range tagAnnotationPlan {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagAnnotation.Key.IsUnknown() && !tagAnnotation.Key.IsNull() {
-				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
+		for _, tagAnnotationQosCustomPol := range tagAnnotationQosCustomPolPlan {
+			childMap := NewAciObject()
+			if !tagAnnotationQosCustomPol.Key.IsNull() && !tagAnnotationQosCustomPol.Key.IsUnknown() {
+				childMap.Attributes["key"] = tagAnnotationQosCustomPol.Key.ValueString()
 			}
-			if !tagAnnotation.Value.IsUnknown() && !tagAnnotation.Value.IsNull() {
-				childMap["attributes"]["value"] = tagAnnotation.Value.ValueString()
+			if !tagAnnotationQosCustomPol.Value.IsNull() && !tagAnnotationQosCustomPol.Value.IsUnknown() {
+				childMap.Attributes["value"] = tagAnnotationQosCustomPol.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
 			tagAnnotationIdentifier := TagAnnotationIdentifier{}
-			tagAnnotationIdentifier.Key = tagAnnotation.Key
+			tagAnnotationIdentifier.Key = tagAnnotationQosCustomPol.Key
 			tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
 		}
-		for _, tagAnnotation := range tagAnnotationState {
+		for _, tagAnnotation := range tagAnnotationQosCustomPolState {
 			delete := true
 			for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
 				if tagAnnotationIdentifier.Key == tagAnnotation.Key {
@@ -598,10 +613,10 @@ func getQosCustomPolTagAnnotationChildPayloads(ctx context.Context, diags *diag.
 				}
 			}
 			if delete {
-				childMap := map[string]map[string]interface{}{"attributes": {}}
-				childMap["attributes"]["status"] = "deleted"
-				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
+				tagAnnotationChildMapForDelete := NewAciObject()
+				tagAnnotationChildMapForDelete.Attributes["status"] = "deleted"
+				tagAnnotationChildMapForDelete.Attributes["key"] = tagAnnotation.Key.ValueString()
+				childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": tagAnnotationChildMapForDelete})
 			}
 		}
 	} else {
@@ -610,25 +625,25 @@ func getQosCustomPolTagAnnotationChildPayloads(ctx context.Context, diags *diag.
 
 	return childPayloads
 }
-func getQosCustomPolTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *QosCustomPolResourceModel, tagTagPlan, tagTagState []TagTagQosCustomPolResourceModel) []map[string]interface{} {
 
+func getQosCustomPolTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *QosCustomPolResourceModel, tagTagQosCustomPolPlan, tagTagQosCustomPolState []TagTagQosCustomPolResourceModel) []map[string]interface{} {
 	childPayloads := []map[string]interface{}{}
-	if !data.TagTag.IsUnknown() {
+	if !data.TagTag.IsNull() && !data.TagTag.IsUnknown() {
 		tagTagIdentifiers := []TagTagIdentifier{}
-		for _, tagTag := range tagTagPlan {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagTag.Key.IsUnknown() && !tagTag.Key.IsNull() {
-				childMap["attributes"]["key"] = tagTag.Key.ValueString()
+		for _, tagTagQosCustomPol := range tagTagQosCustomPolPlan {
+			childMap := NewAciObject()
+			if !tagTagQosCustomPol.Key.IsNull() && !tagTagQosCustomPol.Key.IsUnknown() {
+				childMap.Attributes["key"] = tagTagQosCustomPol.Key.ValueString()
 			}
-			if !tagTag.Value.IsUnknown() && !tagTag.Value.IsNull() {
-				childMap["attributes"]["value"] = tagTag.Value.ValueString()
+			if !tagTagQosCustomPol.Value.IsNull() && !tagTagQosCustomPol.Value.IsUnknown() {
+				childMap.Attributes["value"] = tagTagQosCustomPol.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})
 			tagTagIdentifier := TagTagIdentifier{}
-			tagTagIdentifier.Key = tagTag.Key
+			tagTagIdentifier.Key = tagTagQosCustomPol.Key
 			tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
 		}
-		for _, tagTag := range tagTagState {
+		for _, tagTag := range tagTagQosCustomPolState {
 			delete := true
 			for _, tagTagIdentifier := range tagTagIdentifiers {
 				if tagTagIdentifier.Key == tagTag.Key {
@@ -637,10 +652,10 @@ func getQosCustomPolTagTagChildPayloads(ctx context.Context, diags *diag.Diagnos
 				}
 			}
 			if delete {
-				childMap := map[string]map[string]interface{}{"attributes": {}}
-				childMap["attributes"]["status"] = "deleted"
-				childMap["attributes"]["key"] = tagTag.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})
+				tagTagChildMapForDelete := NewAciObject()
+				tagTagChildMapForDelete.Attributes["status"] = "deleted"
+				tagTagChildMapForDelete.Attributes["key"] = tagTag.Key.ValueString()
+				childPayloads = append(childPayloads, map[string]interface{}{"tagTag": tagTagChildMapForDelete})
 			}
 		}
 	} else {

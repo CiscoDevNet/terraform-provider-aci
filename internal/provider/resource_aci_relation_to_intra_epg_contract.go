@@ -84,6 +84,13 @@ func getEmptyTagAnnotationFvRsIntraEpgResourceModel() TagAnnotationFvRsIntraEpgR
 	}
 }
 
+var TagAnnotationFvRsIntraEpgType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
+}
+
 // TagTagFvRsIntraEpgResourceModel describes the resource data model for the children without relation ships.
 type TagTagFvRsIntraEpgResourceModel struct {
 	Key   types.String `tfsdk:"key"`
@@ -95,6 +102,13 @@ func getEmptyTagTagFvRsIntraEpgResourceModel() TagTagFvRsIntraEpgResourceModel {
 		Key:   basetypes.NewStringNull(),
 		Value: basetypes.NewStringNull(),
 	}
+}
+
+var TagTagFvRsIntraEpgType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
 }
 
 type FvRsIntraEpgIdentifier struct {
@@ -410,7 +424,7 @@ func (r *FvRsIntraEpgResource) ImportState(ctx context.Context, req resource.Imp
 }
 
 func getAndSetFvRsIntraEpgAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvRsIntraEpgResourceModel) {
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "fvRsIntraEpg,tagAnnotation,tagTag"), "GET", nil)
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "fvRsIntraEpg,tagAnnotation,tagTag"), "GET", nil)
 
 	readData := getEmptyFvRsIntraEpgResourceModel()
 
@@ -433,7 +447,9 @@ func getAndSetFvRsIntraEpgAttributes(ctx context.Context, diags *diag.Diagnostic
 					readData.TnVzBrCPName = basetypes.NewStringValue(attributeValue.(string))
 				}
 			}
+			TagAnnotationFvRsIntraEpg := getEmptyTagAnnotationFvRsIntraEpgResourceModel()
 			TagAnnotationFvRsIntraEpgList := make([]TagAnnotationFvRsIntraEpgResourceModel, 0)
+			TagTagFvRsIntraEpg := getEmptyTagTagFvRsIntraEpgResourceModel()
 			TagTagFvRsIntraEpgList := make([]TagTagFvRsIntraEpgResourceModel, 0)
 			_, ok := classReadInfo[0].(map[string]interface{})["children"]
 			if ok {
@@ -442,7 +458,6 @@ func getAndSetFvRsIntraEpgAttributes(ctx context.Context, diags *diag.Diagnostic
 					for childClassName, childClassDetails := range child.(map[string]interface{}) {
 						childAttributes := childClassDetails.(map[string]interface{})["attributes"].(map[string]interface{})
 						if childClassName == "tagAnnotation" {
-							TagAnnotationFvRsIntraEpg := getEmptyTagAnnotationFvRsIntraEpgResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "key" {
 									TagAnnotationFvRsIntraEpg.Key = basetypes.NewStringValue(childAttributeValue.(string))
@@ -450,11 +465,11 @@ func getAndSetFvRsIntraEpgAttributes(ctx context.Context, diags *diag.Diagnostic
 								if childAttributeName == "value" {
 									TagAnnotationFvRsIntraEpg.Value = basetypes.NewStringValue(childAttributeValue.(string))
 								}
+
 							}
 							TagAnnotationFvRsIntraEpgList = append(TagAnnotationFvRsIntraEpgList, TagAnnotationFvRsIntraEpg)
 						}
 						if childClassName == "tagTag" {
-							TagTagFvRsIntraEpg := getEmptyTagTagFvRsIntraEpgResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "key" {
 									TagTagFvRsIntraEpg.Key = basetypes.NewStringValue(childAttributeValue.(string))
@@ -462,6 +477,7 @@ func getAndSetFvRsIntraEpgAttributes(ctx context.Context, diags *diag.Diagnostic
 								if childAttributeName == "value" {
 									TagTagFvRsIntraEpg.Value = basetypes.NewStringValue(childAttributeValue.(string))
 								}
+
 							}
 							TagTagFvRsIntraEpgList = append(TagTagFvRsIntraEpgList, TagTagFvRsIntraEpg)
 						}
@@ -515,25 +531,24 @@ func setFvRsIntraEpgId(ctx context.Context, data *FvRsIntraEpgResourceModel) {
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
 
-func getFvRsIntraEpgTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvRsIntraEpgResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvRsIntraEpgResourceModel) []map[string]interface{} {
-
+func getFvRsIntraEpgTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvRsIntraEpgResourceModel, tagAnnotationFvRsIntraEpgPlan, tagAnnotationFvRsIntraEpgState []TagAnnotationFvRsIntraEpgResourceModel) []map[string]interface{} {
 	childPayloads := []map[string]interface{}{}
-	if !data.TagAnnotation.IsUnknown() {
+	if !data.TagAnnotation.IsNull() && !data.TagAnnotation.IsUnknown() {
 		tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
-		for _, tagAnnotation := range tagAnnotationPlan {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagAnnotation.Key.IsUnknown() && !tagAnnotation.Key.IsNull() {
-				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
+		for _, tagAnnotationFvRsIntraEpg := range tagAnnotationFvRsIntraEpgPlan {
+			childMap := NewAciObject()
+			if !tagAnnotationFvRsIntraEpg.Key.IsNull() && !tagAnnotationFvRsIntraEpg.Key.IsUnknown() {
+				childMap.Attributes["key"] = tagAnnotationFvRsIntraEpg.Key.ValueString()
 			}
-			if !tagAnnotation.Value.IsUnknown() && !tagAnnotation.Value.IsNull() {
-				childMap["attributes"]["value"] = tagAnnotation.Value.ValueString()
+			if !tagAnnotationFvRsIntraEpg.Value.IsNull() && !tagAnnotationFvRsIntraEpg.Value.IsUnknown() {
+				childMap.Attributes["value"] = tagAnnotationFvRsIntraEpg.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
 			tagAnnotationIdentifier := TagAnnotationIdentifier{}
-			tagAnnotationIdentifier.Key = tagAnnotation.Key
+			tagAnnotationIdentifier.Key = tagAnnotationFvRsIntraEpg.Key
 			tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
 		}
-		for _, tagAnnotation := range tagAnnotationState {
+		for _, tagAnnotation := range tagAnnotationFvRsIntraEpgState {
 			delete := true
 			for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
 				if tagAnnotationIdentifier.Key == tagAnnotation.Key {
@@ -542,10 +557,10 @@ func getFvRsIntraEpgTagAnnotationChildPayloads(ctx context.Context, diags *diag.
 				}
 			}
 			if delete {
-				childMap := map[string]map[string]interface{}{"attributes": {}}
-				childMap["attributes"]["status"] = "deleted"
-				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
+				tagAnnotationChildMapForDelete := NewAciObject()
+				tagAnnotationChildMapForDelete.Attributes["status"] = "deleted"
+				tagAnnotationChildMapForDelete.Attributes["key"] = tagAnnotation.Key.ValueString()
+				childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": tagAnnotationChildMapForDelete})
 			}
 		}
 	} else {
@@ -554,25 +569,25 @@ func getFvRsIntraEpgTagAnnotationChildPayloads(ctx context.Context, diags *diag.
 
 	return childPayloads
 }
-func getFvRsIntraEpgTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvRsIntraEpgResourceModel, tagTagPlan, tagTagState []TagTagFvRsIntraEpgResourceModel) []map[string]interface{} {
 
+func getFvRsIntraEpgTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvRsIntraEpgResourceModel, tagTagFvRsIntraEpgPlan, tagTagFvRsIntraEpgState []TagTagFvRsIntraEpgResourceModel) []map[string]interface{} {
 	childPayloads := []map[string]interface{}{}
-	if !data.TagTag.IsUnknown() {
+	if !data.TagTag.IsNull() && !data.TagTag.IsUnknown() {
 		tagTagIdentifiers := []TagTagIdentifier{}
-		for _, tagTag := range tagTagPlan {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagTag.Key.IsUnknown() && !tagTag.Key.IsNull() {
-				childMap["attributes"]["key"] = tagTag.Key.ValueString()
+		for _, tagTagFvRsIntraEpg := range tagTagFvRsIntraEpgPlan {
+			childMap := NewAciObject()
+			if !tagTagFvRsIntraEpg.Key.IsNull() && !tagTagFvRsIntraEpg.Key.IsUnknown() {
+				childMap.Attributes["key"] = tagTagFvRsIntraEpg.Key.ValueString()
 			}
-			if !tagTag.Value.IsUnknown() && !tagTag.Value.IsNull() {
-				childMap["attributes"]["value"] = tagTag.Value.ValueString()
+			if !tagTagFvRsIntraEpg.Value.IsNull() && !tagTagFvRsIntraEpg.Value.IsUnknown() {
+				childMap.Attributes["value"] = tagTagFvRsIntraEpg.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})
 			tagTagIdentifier := TagTagIdentifier{}
-			tagTagIdentifier.Key = tagTag.Key
+			tagTagIdentifier.Key = tagTagFvRsIntraEpg.Key
 			tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
 		}
-		for _, tagTag := range tagTagState {
+		for _, tagTag := range tagTagFvRsIntraEpgState {
 			delete := true
 			for _, tagTagIdentifier := range tagTagIdentifiers {
 				if tagTagIdentifier.Key == tagTag.Key {
@@ -581,10 +596,10 @@ func getFvRsIntraEpgTagTagChildPayloads(ctx context.Context, diags *diag.Diagnos
 				}
 			}
 			if delete {
-				childMap := map[string]map[string]interface{}{"attributes": {}}
-				childMap["attributes"]["status"] = "deleted"
-				childMap["attributes"]["key"] = tagTag.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})
+				tagTagChildMapForDelete := NewAciObject()
+				tagTagChildMapForDelete.Attributes["status"] = "deleted"
+				tagTagChildMapForDelete.Attributes["key"] = tagTag.Key.ValueString()
+				childPayloads = append(childPayloads, map[string]interface{}{"tagTag": tagTagChildMapForDelete})
 			}
 		}
 	} else {

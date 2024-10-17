@@ -6,13 +6,17 @@ resource "aci_relation_from_l3out_consumer_label_to_external_epg" "full_example_
   annotations = [
     {
       key   = "key_0"
-      value = "value_1"
+      value = "value_0"
     }
   ]
   tags = [
     {
       key   = "key_0"
-      value = "value_1"
+      value = "value_0"
     }
   ]
 }
+
+
+
+

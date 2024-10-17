@@ -233,6 +233,7 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.description", "description_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.match", "all"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.name", "criterion"),
@@ -243,22 +244,28 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 						resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.precedence", "1"),
 						resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.scope", "scope-bd")),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_application_epg_monitoring_policy.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_application_epg_monitoring_policy.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_application_epg_monitoring_policy.monitoring_policy_name", "monitoring_policy_name_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_bridge_domain.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_bridge_domain.bridge_domain_name", "bridge_domain_name_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_bridge_domain.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_consumed_contracts.0.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_consumed_contracts.0.contract_name", "contract_name_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_consumed_contracts.0.priority", "level1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_consumed_contracts.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_consumed_contracts.1.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_consumed_contracts.1.contract_name", "contract_name_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_consumed_contracts.1.priority", "level2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_contract_masters.0.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_contract_masters.0.target_dn", "uni/tn-test_tenant/ap-test_ap/epg-epg_2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_contract_masters.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_contract_masters.1.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_contract_masters.1.target_dn", "uni/tn-test_tenant/ap-test_ap/epg-epg_3"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_custom_qos_policy.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_custom_qos_policy.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_custom_qos_policy.custom_qos_policy_name", "custom_qos_policy_name_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_data_plane_policing_policy.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_data_plane_policing_policy.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_data_plane_policing_policy.data_plane_policing_policy_name", "data_plane_policing_policy_name_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.class_preference", "encap"),
@@ -285,6 +292,7 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					composeAggregateTestCheckFuncWithVersion(t, "4.2(3j)", ">",
 						resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.custom_epg_name", "custom_epg_name_1")),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.class_preference", "useg"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.delimiter", ""),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.deployment_immediacy", "lazy"),
@@ -314,6 +322,7 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_fibre_channel_paths.0.vsan", "vsan-10"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_fibre_channel_paths.0.vsan_mode", "native"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_fibre_channel_paths.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_fibre_channel_paths.1.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_fibre_channel_paths.1.description", "description_2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_fibre_channel_paths.1.target_dn", "topology/pod-1/paths-101/pathep-[eth1/2]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_fibre_channel_paths.1.vsan", "unknown"),
@@ -322,17 +331,20 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_imported_contracts.0.imported_contract_name", "imported_contract_name_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_imported_contracts.0.priority", "level1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_imported_contracts.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_imported_contracts.1.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_imported_contracts.1.imported_contract_name", "imported_contract_name_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_imported_contracts.1.priority", "level2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_intra_epg_contracts.0.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_intra_epg_contracts.0.contract_name", "contract_name_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_intra_epg_contracts.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_intra_epg_contracts.1.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_intra_epg_contracts.1.contract_name", "contract_name_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.0.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.0.contract_name", "contract_name_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.0.match_criteria", "All"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.0.priority", "level1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.1.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.1.contract_name", "contract_name_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.1.match_criteria", "AtleastOne"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.1.priority", "level2"),
@@ -343,6 +355,7 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_leafs.0.mode", "native"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_leafs.0.target_dn", "topology/pod-1/node-101"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_leafs.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_leafs.1.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_leafs.1.deployment_immediacy", "lazy"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_leafs.1.description", "description_2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_leafs.1.encapsulation", "vlan-101"),
@@ -356,6 +369,7 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_paths.0.primary_encapsulation", "vlan-203"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_paths.0.target_dn", "topology/pod-1/paths-101/pathep-[eth1/1]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_paths.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_paths.1.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_paths.1.deployment_immediacy", "lazy"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_paths.1.description", "description_2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_paths.1.encapsulation", "vlan-201"),
@@ -365,8 +379,10 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_taboo_contracts.0.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_taboo_contracts.0.taboo_contract_name", "taboo_contract_name_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_taboo_contracts.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_taboo_contracts.1.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_taboo_contracts.1.taboo_contract_name", "taboo_contract_name_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_trust_control_policy.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_trust_control_policy.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_trust_control_policy.trust_control_policy_name", "trust_control_policy_name_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "tags.0.value", "value_1"),
@@ -397,6 +413,7 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.description", "description_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.match", "all"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.name", "criterion"),
@@ -407,24 +424,30 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 						resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.precedence", "1"),
 						resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.scope", "scope-bd")),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_application_epg_monitoring_policy.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_application_epg_monitoring_policy.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_application_epg_monitoring_policy.monitoring_policy_name", "monitoring_policy_name_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_bridge_domain.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_bridge_domain.bridge_domain_name", "bridge_domain_name_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_bridge_domain.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_consumed_contracts.0.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_consumed_contracts.0.contract_name", "contract_name_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_consumed_contracts.0.priority", "level1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_consumed_contracts.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_consumed_contracts.1.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_consumed_contracts.1.contract_name", "contract_name_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_consumed_contracts.1.priority", "level2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_consumed_contracts.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_contract_masters.0.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_contract_masters.0.target_dn", "uni/tn-test_tenant/ap-test_ap/epg-epg_2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_contract_masters.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_contract_masters.1.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_contract_masters.1.target_dn", "uni/tn-test_tenant/ap-test_ap/epg-epg_3"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_contract_masters.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_custom_qos_policy.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_custom_qos_policy.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_custom_qos_policy.custom_qos_policy_name", "custom_qos_policy_name_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_data_plane_policing_policy.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_data_plane_policing_policy.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_data_plane_policing_policy.data_plane_policing_policy_name", "data_plane_policing_policy_name_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.class_preference", "encap"),
@@ -451,6 +474,7 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					composeAggregateTestCheckFuncWithVersion(t, "4.2(3j)", ">",
 						resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.custom_epg_name", "custom_epg_name_1")),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.class_preference", "useg"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.delimiter", ""),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.deployment_immediacy", "lazy"),
@@ -481,6 +505,7 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_fibre_channel_paths.0.vsan", "vsan-10"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_fibre_channel_paths.0.vsan_mode", "native"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_fibre_channel_paths.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_fibre_channel_paths.1.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_fibre_channel_paths.1.description", "description_2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_fibre_channel_paths.1.target_dn", "topology/pod-1/paths-101/pathep-[eth1/2]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_fibre_channel_paths.1.vsan", "unknown"),
@@ -490,12 +515,14 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_imported_contracts.0.imported_contract_name", "imported_contract_name_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_imported_contracts.0.priority", "level1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_imported_contracts.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_imported_contracts.1.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_imported_contracts.1.imported_contract_name", "imported_contract_name_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_imported_contracts.1.priority", "level2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_imported_contracts.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_intra_epg_contracts.0.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_intra_epg_contracts.0.contract_name", "contract_name_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_intra_epg_contracts.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_intra_epg_contracts.1.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_intra_epg_contracts.1.contract_name", "contract_name_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_intra_epg_contracts.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.0.annotation", "annotation_1"),
@@ -503,6 +530,7 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.0.match_criteria", "All"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.0.priority", "level1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.1.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.1.contract_name", "contract_name_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.1.match_criteria", "AtleastOne"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.1.priority", "level2"),
@@ -514,6 +542,7 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_leafs.0.mode", "native"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_leafs.0.target_dn", "topology/pod-1/node-101"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_leafs.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_leafs.1.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_leafs.1.deployment_immediacy", "lazy"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_leafs.1.description", "description_2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_leafs.1.encapsulation", "vlan-101"),
@@ -528,6 +557,7 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_paths.0.primary_encapsulation", "vlan-203"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_paths.0.target_dn", "topology/pod-1/paths-101/pathep-[eth1/1]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_paths.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_paths.1.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_paths.1.deployment_immediacy", "lazy"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_paths.1.description", "description_2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_paths.1.encapsulation", "vlan-201"),
@@ -538,9 +568,11 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_taboo_contracts.0.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_taboo_contracts.0.taboo_contract_name", "taboo_contract_name_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_taboo_contracts.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_taboo_contracts.1.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_taboo_contracts.1.taboo_contract_name", "taboo_contract_name_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_taboo_contracts.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_trust_control_policy.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_trust_control_policy.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_trust_control_policy.trust_control_policy_name", "trust_control_policy_name_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "tags.0.value", "value_1"),
@@ -560,16 +592,21 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.#", "1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_bridge_domain.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_bridge_domain.bridge_domain_name", "bridge_domain_name_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_bridge_domain.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_consumed_contracts.0.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_consumed_contracts.0.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_consumed_contracts.0.contract_name", "contract_name_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_consumed_contracts.0.priority", "level2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_consumed_contracts.#", "1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_contract_masters.0.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_contract_masters.0.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_contract_masters.0.target_dn", "uni/tn-test_tenant/ap-test_ap/epg-epg_3"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_contract_masters.#", "1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_custom_qos_policy.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_custom_qos_policy.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_custom_qos_policy.custom_qos_policy_name", "custom_qos_policy_name_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.class_preference", "useg"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.delimiter", ""),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.deployment_immediacy", "lazy"),
@@ -595,24 +632,29 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 						resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.custom_epg_name", "custom_epg_name_2")),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.#", "1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_fibre_channel_paths.0.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_fibre_channel_paths.0.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_fibre_channel_paths.0.description", "description_2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_fibre_channel_paths.0.target_dn", "topology/pod-1/paths-101/pathep-[eth1/2]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_fibre_channel_paths.0.vsan", "unknown"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_fibre_channel_paths.0.vsan_mode", "regular"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_fibre_channel_paths.#", "1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_imported_contracts.0.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_imported_contracts.0.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_imported_contracts.0.imported_contract_name", "imported_contract_name_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_imported_contracts.0.priority", "level2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_imported_contracts.#", "1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_intra_epg_contracts.0.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_intra_epg_contracts.0.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_intra_epg_contracts.0.contract_name", "contract_name_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_intra_epg_contracts.#", "1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.0.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.0.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.0.contract_name", "contract_name_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.0.match_criteria", "AtleastOne"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.0.priority", "level2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.#", "1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_leafs.0.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_leafs.0.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_leafs.0.deployment_immediacy", "lazy"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_leafs.0.description", "description_2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_leafs.0.encapsulation", "vlan-101"),
@@ -620,6 +662,7 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_leafs.0.target_dn", "topology/pod-1/node-102"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_leafs.#", "1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_paths.0.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_paths.0.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_paths.0.deployment_immediacy", "lazy"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_paths.0.description", "description_2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_paths.0.encapsulation", "vlan-201"),
@@ -628,6 +671,7 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_paths.0.target_dn", "topology/pod-1/paths-101/pathep-[eth1/2]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_paths.#", "1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_taboo_contracts.0.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_taboo_contracts.0.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_taboo_contracts.0.taboo_contract_name", "taboo_contract_name_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_taboo_contracts.#", "1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "tags.0.key", "key_1"),
@@ -640,6 +684,7 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 						knownvalue.MapExact(
 							map[string]knownvalue.Check{
 								"annotation":  knownvalue.Null(),
+								"children":    knownvalue.Null(),
 								"description": knownvalue.Null(),
 								"match":       knownvalue.Null(),
 								"name":        knownvalue.Null(),
@@ -656,6 +701,7 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 						knownvalue.MapExact(
 							map[string]knownvalue.Check{
 								"annotation":             knownvalue.Null(),
+								"children":               knownvalue.Null(),
 								"monitoring_policy_name": knownvalue.Null(),
 							},
 						),
@@ -665,6 +711,7 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 						knownvalue.MapExact(
 							map[string]knownvalue.Check{
 								"annotation":                      knownvalue.Null(),
+								"children":                        knownvalue.Null(),
 								"data_plane_policing_policy_name": knownvalue.Null(),
 							},
 						),
@@ -674,6 +721,7 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 						knownvalue.MapExact(
 							map[string]knownvalue.Check{
 								"annotation":                knownvalue.Null(),
+								"children":                  knownvalue.Null(),
 								"trust_control_policy_name": knownvalue.Null(),
 							},
 						),
@@ -689,9 +737,11 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.#", "0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_bridge_domain.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_bridge_domain.bridge_domain_name", "bridge_domain_name_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_bridge_domain.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_consumed_contracts.#", "0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_contract_masters.#", "0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_custom_qos_policy.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_custom_qos_policy.children", "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_custom_qos_policy.custom_qos_policy_name", "custom_qos_policy_name_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.#", "0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_fibre_channel_paths.#", "0"),
@@ -709,6 +759,7 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 						knownvalue.MapExact(
 							map[string]knownvalue.Check{
 								"annotation":  knownvalue.Null(),
+								"children":    knownvalue.Null(),
 								"description": knownvalue.Null(),
 								"match":       knownvalue.Null(),
 								"name":        knownvalue.Null(),
@@ -725,6 +776,7 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 						knownvalue.MapExact(
 							map[string]knownvalue.Check{
 								"annotation":             knownvalue.Null(),
+								"children":               knownvalue.Null(),
 								"monitoring_policy_name": knownvalue.Null(),
 							},
 						),
@@ -734,6 +786,7 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 						knownvalue.MapExact(
 							map[string]knownvalue.Check{
 								"annotation":                      knownvalue.Null(),
+								"children":                        knownvalue.Null(),
 								"data_plane_policing_policy_name": knownvalue.Null(),
 							},
 						),
@@ -743,6 +796,7 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 						knownvalue.MapExact(
 							map[string]knownvalue.Check{
 								"annotation":                knownvalue.Null(),
+								"children":                  knownvalue.Null(),
 								"trust_control_policy_name": knownvalue.Null(),
 							},
 						),
@@ -847,7 +901,27 @@ resource "aci_application_epg" "test" {
 	},
   ]
   epg_useg_block_statement = {
-    annotation = "annotation_1"
+    annotation = "annotation_1"}}
+      annotations = [
+	    {
+	      key = "key_0"
+	      value = "value_1"
+	    },
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]}}
+      tags = [
+	    {
+	      key = "key_0"
+	      value = "value_1"
+	    },
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]
     description = "description_1"
     match = "all"
     name = "criterion"
@@ -858,12 +932,52 @@ resource "aci_application_epg" "test" {
   	scope = provider::aci::compare_versions(data.aci_system.version.version,">=","4.1(1i)") ? "scope-bd" : null
   }
   relation_to_application_epg_monitoring_policy = {
-    annotation = "annotation_1"
+    annotation = "annotation_1"}}
+      annotations = [
+	    {
+	      key = "key_0"
+	      value = "value_1"
+	    },
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]}}
+      tags = [
+	    {
+	      key = "key_0"
+	      value = "value_1"
+	    },
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]
     monitoring_policy_name = "monitoring_policy_name_1"
   }
   relation_to_bridge_domain = {
     annotation = "annotation_1"
-    bridge_domain_name = "bridge_domain_name_1"
+    bridge_domain_name = "bridge_domain_name_1"}}
+      annotations = [
+	    {
+	      key = "key_0"
+	      value = "value_1"
+	    },
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]}}
+      tags = [
+	    {
+	      key = "key_0"
+	      value = "value_1"
+	    },
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]
   }
   relation_to_consumed_contracts = [
 	{
@@ -873,6 +987,7 @@ resource "aci_application_epg" "test" {
 	},
 	{
 	  annotation = "annotation_2"
+	  children = "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"
 	  contract_name = "contract_name_1"
 	  priority = "level2"
 	},
@@ -884,15 +999,56 @@ resource "aci_application_epg" "test" {
 	},
 	{
 	  annotation = "annotation_2"
+	  children = "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"
 	  target_dn = aci_application_epg.test_application_epg_1.id
 	},
   ]
   relation_to_custom_qos_policy = {
-    annotation = "annotation_1"
+    annotation = "annotation_1"}}
+      annotations = [
+	    {
+	      key = "key_0"
+	      value = "value_1"
+	    },
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]}}
+      tags = [
+	    {
+	      key = "key_0"
+	      value = "value_1"
+	    },
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]
     custom_qos_policy_name = "custom_qos_policy_name_1"
   }
   relation_to_data_plane_policing_policy = {
-    annotation = "annotation_1"
+    annotation = "annotation_1"}}
+      annotations = [
+	    {
+	      key = "key_0"
+	      value = "value_1"
+	    },
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]}}
+      tags = [
+	    {
+	      key = "key_0"
+	      value = "value_1"
+	    },
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]
     data_plane_policing_policy_name = "data_plane_policing_policy_name_1"
   }
   relation_to_domains = [
@@ -922,6 +1078,7 @@ resource "aci_application_epg" "test" {
 	},
 	{
 	  annotation = "annotation_2"
+	  children = "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"
 	  class_preference = "useg"
 	  delimiter = ""
 	  deployment_immediacy = "lazy"
@@ -955,6 +1112,7 @@ resource "aci_application_epg" "test" {
 	},
 	{
 	  annotation = "annotation_2"
+	  children = "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"
 	  description = "description_2"
 	  target_dn = "topology/pod-1/paths-101/pathep-[eth1/2]"
 	  vsan = "unknown"
@@ -969,6 +1127,7 @@ resource "aci_application_epg" "test" {
 	},
 	{
 	  annotation = "annotation_2"
+	  children = "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"
 	  imported_contract_name = "imported_contract_name_1"
 	  priority = "level2"
 	},
@@ -980,6 +1139,7 @@ resource "aci_application_epg" "test" {
 	},
 	{
 	  annotation = "annotation_2"
+	  children = "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"
 	  contract_name = "contract_name_1"
 	},
   ]
@@ -992,6 +1152,7 @@ resource "aci_application_epg" "test" {
 	},
 	{
 	  annotation = "annotation_2"
+	  children = "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"
 	  contract_name = "contract_name_1"
 	  match_criteria = "AtleastOne"
 	  priority = "level2"
@@ -1008,6 +1169,7 @@ resource "aci_application_epg" "test" {
 	},
 	{
 	  annotation = "annotation_2"
+	  children = "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"
 	  deployment_immediacy = "lazy"
 	  description = "description_2"
 	  encapsulation = "vlan-101"
@@ -1027,6 +1189,7 @@ resource "aci_application_epg" "test" {
 	},
 	{
 	  annotation = "annotation_2"
+	  children = "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"
 	  deployment_immediacy = "lazy"
 	  description = "description_2"
 	  encapsulation = "vlan-201"
@@ -1042,11 +1205,32 @@ resource "aci_application_epg" "test" {
 	},
 	{
 	  annotation = "annotation_2"
+	  children = "map[annotations:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]] tags:[map[key:key_0 value:value_1] map[key:key_1 value:test_value]]]"
 	  taboo_contract_name = "taboo_contract_name_1"
 	},
   ]
   relation_to_trust_control_policy = {
-    annotation = "annotation_1"
+    annotation = "annotation_1"}}
+      annotations = [
+	    {
+	      key = "key_0"
+	      value = "value_1"
+	    },
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]}}
+      tags = [
+	    {
+	      key = "key_0"
+	      value = "value_1"
+	    },
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]
     trust_control_policy_name = "trust_control_policy_name_1"
   }
   tags = [
@@ -1084,6 +1268,18 @@ resource "aci_application_epg" "test" {
   relation_to_consumed_contracts = [ 
 	{
 	  annotation = "annotation_2"
+      annotations = [ 
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]
+      tags = [ 
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]
 	  contract_name = "contract_name_1"
 	  priority = "level2"
 	},
@@ -1091,6 +1287,18 @@ resource "aci_application_epg" "test" {
   relation_to_contract_masters = [ 
 	{
 	  annotation = "annotation_2"
+      annotations = [ 
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]
+      tags = [ 
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]
 	  target_dn = aci_application_epg.test_application_epg_1.id
 	},
   ]
@@ -1098,6 +1306,18 @@ resource "aci_application_epg" "test" {
   relation_to_domains = [ 
 	{
 	  annotation = "annotation_2"
+      annotations = [ 
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]
+      tags = [ 
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]
 	  class_preference = "useg"
 	  delimiter = ""
 	  deployment_immediacy = "lazy"
@@ -1124,6 +1344,18 @@ resource "aci_application_epg" "test" {
   relation_to_fibre_channel_paths = [ 
 	{
 	  annotation = "annotation_2"
+      annotations = [ 
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]
+      tags = [ 
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]
 	  description = "description_2"
 	  target_dn = "topology/pod-1/paths-101/pathep-[eth1/2]"
 	  vsan = "unknown"
@@ -1133,6 +1365,18 @@ resource "aci_application_epg" "test" {
   relation_to_imported_contracts = [ 
 	{
 	  annotation = "annotation_2"
+      annotations = [ 
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]
+      tags = [ 
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]
 	  imported_contract_name = "imported_contract_name_1"
 	  priority = "level2"
 	},
@@ -1140,12 +1384,36 @@ resource "aci_application_epg" "test" {
   relation_to_intra_epg_contracts = [ 
 	{
 	  annotation = "annotation_2"
+      annotations = [ 
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]
+      tags = [ 
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]
 	  contract_name = "contract_name_1"
 	},
   ]
   relation_to_provided_contracts = [ 
 	{
 	  annotation = "annotation_2"
+      annotations = [ 
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]
+      tags = [ 
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]
 	  contract_name = "contract_name_1"
 	  match_criteria = "AtleastOne"
 	  priority = "level2"
@@ -1154,6 +1422,18 @@ resource "aci_application_epg" "test" {
   relation_to_static_leafs = [ 
 	{
 	  annotation = "annotation_2"
+      annotations = [ 
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]
+      tags = [ 
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]
 	  deployment_immediacy = "lazy"
 	  description = "description_2"
 	  encapsulation = "vlan-101"
@@ -1164,6 +1444,18 @@ resource "aci_application_epg" "test" {
   relation_to_static_paths = [ 
 	{
 	  annotation = "annotation_2"
+      annotations = [ 
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]
+      tags = [ 
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]
 	  deployment_immediacy = "lazy"
 	  description = "description_2"
 	  encapsulation = "vlan-201"
@@ -1175,6 +1467,18 @@ resource "aci_application_epg" "test" {
   relation_to_taboo_contracts = [ 
 	{
 	  annotation = "annotation_2"
+      annotations = [ 
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]
+      tags = [ 
+	    {
+	      key = "key_1"
+	      value = "test_value"
+	    },
+      ]
 	  taboo_contract_name = "taboo_contract_name_1"
 	},
   ]

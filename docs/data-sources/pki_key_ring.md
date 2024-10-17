@@ -4,15 +4,15 @@
 # More details can be found in the [README](https://github.com/CiscoDevNet/terraform-provider-aci/blob/master/README.md).
 subcategory: "AAA"
 layout: "aci"
-page_title: "ACI: aci_key_ring"
-sidebar_current: "docs-aci-data-source-aci_key_ring"
+page_title: "ACI: aci_pki_key_ring"
+sidebar_current: "docs-aci-data-source-aci_pki_key_ring"
 description: |-
-  Data source for ACI Key Ring
+  Data source for ACI Pki Key Ring
 ---
 
-# aci_key_ring #
+# aci_pki_key_ring #
 
-Data source for ACI Key Ring
+Data source for ACI Pki Key Ring
 
 ## API Information ##
 
@@ -34,12 +34,12 @@ Data source for ACI Key Ring
 
 ```hcl
 
-data "aci_key_ring" "example" {
+data "aci_pki_key_ring" "example" {
   name = "test_name"
 }
 
 // This example is only applicable to Cisco Cloud Network Controller
-data "aci_key_ring" "example_tenant" {
+data "aci_pki_key_ring" "example_tenant" {
   parent_dn = aci_tenant.example.id
   name      = "test_name"
 }
@@ -50,7 +50,7 @@ data "aci_key_ring" "example_tenant" {
 
 ### Required ###
 
-* `name` (name) - (string) The name of the Key Ring object.
+* `name` (name) - (string) The name of the Pki Key Ring object.
 
 ### Optional ###
 
@@ -60,16 +60,16 @@ data "aci_key_ring" "example_tenant" {
 
 ### Read-Only ###
 
-* `id` - (string) The distinguished name (DN) of the Key Ring object.
+* `id` - (string) The distinguished name (DN) of the Pki Key Ring object.
 * `admin_state` (adminState) - (string) The current administrative state of the certificate request process.
-* `annotation` (annotation) - (string) The annotation of the Key Ring object.
+* `annotation` (annotation) - (string) The annotation of the Pki Key Ring object.
 * `certificate` (cert) - (string) A certificate contains a device's public key along with signed information verifying the identity of the device.
-* `description` (descr) - (string) The description of the Key Ring object.
+* `description` (descr) - (string) The description of the Pki Key Ring object.
 * `elliptic_curve` (eccCurve) - (string) The elliptic curve used by the provided key.
 * `key` (key) - (string) The private key of the certificate. This sensitive value is excluded from the resource's lifecycle configuration and is not tracked by Terraform.
 * `key_type` (keyType) - (string) The type used by the provided key.
 * `modulus` (modulus) - (string) The length of the encryption keys. A longer key length increases the difficulty of breaking the key.
-* `name_alias` (nameAlias) - (string) The name alias of the Key Ring object.
+* `name_alias` (nameAlias) - (string) The name alias of the Pki Key Ring object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `regenerate` (regen) - (string) Forces regeneration of the keypair. Each PKI device holds a pair of asymmetric Rivest-Shamir-Adleman (RSA) or Elliptic Curve Cryptography (ECC) encryption keys, one kept private and one made public, stored in an internal key ring.

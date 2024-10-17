@@ -4,15 +4,15 @@
 # More details can be found in the [README](https://github.com/CiscoDevNet/terraform-provider-aci/blob/master/README.md).
 subcategory: "AAA"
 layout: "aci"
-page_title: "ACI: aci_key_ring"
-sidebar_current: "docs-aci-resource-aci_key_ring"
+page_title: "ACI: aci_pki_key_ring"
+sidebar_current: "docs-aci-resource-aci_pki_key_ring"
 description: |-
-  Manages ACI Key Ring
+  Manages ACI Pki Key Ring
 ---
 
-# aci_key_ring #
+# aci_pki_key_ring #
 
-Manages ACI Key Ring
+Manages ACI Pki Key Ring
 
 
 
@@ -34,28 +34,28 @@ Manages ACI Key Ring
 
 ## Example Usage ##
 
-The configuration snippet below creates a Key Ring with only required attributes.
+The configuration snippet below creates a Pki Key Ring with only required attributes.
 
 ```hcl
 
-resource "aci_key_ring" "example" {
+resource "aci_pki_key_ring" "example" {
   name = "test_name"
 }
 
 // This example is only applicable to Cisco Cloud Network Controller
-resource "aci_key_ring" "example_tenant" {
+resource "aci_pki_key_ring" "example_tenant" {
   parent_dn = aci_tenant.example.id
   name      = "test_name"
 }
 
 ```
-The configuration snippet below shows all possible attributes of the Key Ring.
+The configuration snippet below shows all possible attributes of the Pki Key Ring.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
 ```hcl
 
-resource "aci_key_ring" "full_example" {
+resource "aci_pki_key_ring" "full_example" {
   admin_state           = "completed"
   annotation            = "annotation"
   certificate           = <<EOT
@@ -106,18 +106,42 @@ EOT
     {
       key   = "key_0"
       value = "value_1"
+      annotations = [
+        {
+          key   = "key_0"
+          value = "value_0"
+        }
+      ]
+      tags = [
+        {
+          key   = "key_0"
+          value = "value_0"
+        }
+      ]
     }
   ]
   tags = [
     {
       key   = "key_0"
       value = "value_1"
+      annotations = [
+        {
+          key   = "key_0"
+          value = "value_0"
+        }
+      ]
+      tags = [
+        {
+          key   = "key_0"
+          value = "value_0"
+        }
+      ]
     }
   ]
 }
 
 // This example is only applicable to Cisco Cloud Network Controller
-resource "aci_key_ring" "full_example_tenant" {
+resource "aci_pki_key_ring" "full_example_tenant" {
   parent_dn             = aci_tenant.example.id
   admin_state           = "completed"
   annotation            = "annotation"
@@ -169,29 +193,57 @@ EOT
     {
       key   = "key_0"
       value = "value_1"
+      annotations = [
+        {
+          key   = "key_0"
+          value = "value_0"
+        }
+      ]
+      tags = [
+        {
+          key   = "key_0"
+          value = "value_0"
+        }
+      ]
     }
   ]
   tags = [
     {
       key   = "key_0"
       value = "value_1"
+      annotations = [
+        {
+          key   = "key_0"
+          value = "value_0"
+        }
+      ]
+      tags = [
+        {
+          key   = "key_0"
+          value = "value_0"
+        }
+      ]
     }
   ]
 }
 
+
+
+
+
 ```
 
-All examples for the Key Ring resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/resources/aci_key_ring) folder.
+All examples for the Pki Key Ring resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/resources/aci_pki_key_ring) folder.
 
 ## Schema ##
 
 ### Required ###
 
-* `name` (name) - (string) The name of the Key Ring object.
+* `name` (name) - (string) The name of the Pki Key Ring object.
 
 ### Read-Only ###
 
-* `id` - (string) The distinguished name (DN) of the Key Ring object.
+* `id` - (string) The distinguished name (DN) of the Pki Key Ring object.
 
 ### Optional ###
 
@@ -201,10 +253,10 @@ All examples for the Key Ring resource can be found in the [examples](https://gi
 * `admin_state` (adminState) - (string) The current administrative state of the certificate request process.
   - Default: `started`
   - Valid Values: `completed`, `created`, `reqCreated`, `started`, `tpSet`.
-* `annotation` (annotation) - (string) The annotation of the Key Ring object.
+* `annotation` (annotation) - (string) The annotation of the Pki Key Ring object.
   - Default: `orchestrator:terraform`
 * `certificate` (cert) - (string) A certificate contains a device's public key along with signed information verifying the identity of the device.
-* `description` (descr) - (string) The description of the Key Ring object.
+* `description` (descr) - (string) The description of the Pki Key Ring object.
 * `elliptic_curve` (eccCurve) - (string) The elliptic curve used by the provided key.
   - Valid Values: `none`, `prime256v1`, `secp384r1`, `secp521r1`.
 * `key` (key) - (string) The private key of the certificate. This sensitive value is excluded from the resource's lifecycle configuration and is not tracked by Terraform.
@@ -214,7 +266,7 @@ All examples for the Key Ring resource can be found in the [examples](https://gi
 * `modulus` (modulus) - (string) The length of the encryption keys. A longer key length increases the difficulty of breaking the key.
   - Default: `mod2048`
   - Valid Values: `mod1024`, `mod1536`, `mod2048`, `mod3072`, `mod4096`, `mod512`, `none`.
-* `name_alias` (nameAlias) - (string) The name alias of the Key Ring object.
+* `name_alias` (nameAlias) - (string) The name alias of the Pki Key Ring object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `regenerate` (regen) - (string) Forces regeneration of the keypair. Each PKI device holds a pair of asymmetric Rivest-Shamir-Adleman (RSA) or Elliptic Curve Cryptography (ECC) encryption keys, one kept private and one made public, stored in an internal key ring.
@@ -222,14 +274,16 @@ All examples for the Key Ring resource can be found in the [examples](https://gi
   - Valid Values: `no`, `yes`.
 * `certificate_authority` (tp) - (string) The certificate of the Certificate Authority (CA) that issued the certificate provided in the 'certificate' attribute. The CA can be a root CA, an intermediate CA, or a trust anchor in a chain of trust leading to a root CA.
 
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
+   
   
   #### Required ####
   
   * `key` (key) - (string) The key used to uniquely identify this configuration object.
   * `value` (value) - (string) The value of the property.
 
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.
+   
   
   #### Required ####
   
@@ -238,18 +292,20 @@ All examples for the Key Ring resource can be found in the [examples](https://gi
 
 ## Importing
 
-An existing Key Ring can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
+An existing Pki Key Ring can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_key_ring.example uni/tn-{name}/certstore/keyring-{name}
+terraform import aci_pki_key_ring.example uni/tn-{name}/certstore/keyring-{name}
 ```
 
-Starting in Terraform version 1.5, an existing Key Ring can be imported
+Starting in Terraform version 1.5, an existing Pki Key Ring can be imported
 using [import blocks](https://developer.hashicorp.com/terraform/language/import) via the following configuration:
 
 ```
 import {
   id = "uni/tn-{name}/certstore/keyring-{name}"
-  to = aci_key_ring.example
+  to = aci_pki_key_ring.example
 }
 ```
+
+

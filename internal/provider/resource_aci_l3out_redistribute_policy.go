@@ -88,6 +88,13 @@ func getEmptyTagAnnotationL3extRsRedistributePolResourceModel() TagAnnotationL3e
 	}
 }
 
+var TagAnnotationL3extRsRedistributePolType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
+}
+
 // TagTagL3extRsRedistributePolResourceModel describes the resource data model for the children without relation ships.
 type TagTagL3extRsRedistributePolResourceModel struct {
 	Key   types.String `tfsdk:"key"`
@@ -99,6 +106,13 @@ func getEmptyTagTagL3extRsRedistributePolResourceModel() TagTagL3extRsRedistribu
 		Key:   basetypes.NewStringNull(),
 		Value: basetypes.NewStringNull(),
 	}
+}
+
+var TagTagL3extRsRedistributePolType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
 }
 
 type L3extRsRedistributePolIdentifier struct {
@@ -427,7 +441,7 @@ func (r *L3extRsRedistributePolResource) ImportState(ctx context.Context, req re
 }
 
 func getAndSetL3extRsRedistributePolAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *L3extRsRedistributePolResourceModel) {
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "l3extRsRedistributePol,tagAnnotation,tagTag"), "GET", nil)
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "l3extRsRedistributePol,tagAnnotation,tagTag"), "GET", nil)
 
 	readData := getEmptyL3extRsRedistributePolResourceModel()
 
@@ -453,7 +467,9 @@ func getAndSetL3extRsRedistributePolAttributes(ctx context.Context, diags *diag.
 					readData.TnRtctrlProfileName = basetypes.NewStringValue(attributeValue.(string))
 				}
 			}
+			TagAnnotationL3extRsRedistributePol := getEmptyTagAnnotationL3extRsRedistributePolResourceModel()
 			TagAnnotationL3extRsRedistributePolList := make([]TagAnnotationL3extRsRedistributePolResourceModel, 0)
+			TagTagL3extRsRedistributePol := getEmptyTagTagL3extRsRedistributePolResourceModel()
 			TagTagL3extRsRedistributePolList := make([]TagTagL3extRsRedistributePolResourceModel, 0)
 			_, ok := classReadInfo[0].(map[string]interface{})["children"]
 			if ok {
@@ -462,7 +478,6 @@ func getAndSetL3extRsRedistributePolAttributes(ctx context.Context, diags *diag.
 					for childClassName, childClassDetails := range child.(map[string]interface{}) {
 						childAttributes := childClassDetails.(map[string]interface{})["attributes"].(map[string]interface{})
 						if childClassName == "tagAnnotation" {
-							TagAnnotationL3extRsRedistributePol := getEmptyTagAnnotationL3extRsRedistributePolResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "key" {
 									TagAnnotationL3extRsRedistributePol.Key = basetypes.NewStringValue(childAttributeValue.(string))
@@ -470,11 +485,11 @@ func getAndSetL3extRsRedistributePolAttributes(ctx context.Context, diags *diag.
 								if childAttributeName == "value" {
 									TagAnnotationL3extRsRedistributePol.Value = basetypes.NewStringValue(childAttributeValue.(string))
 								}
+
 							}
 							TagAnnotationL3extRsRedistributePolList = append(TagAnnotationL3extRsRedistributePolList, TagAnnotationL3extRsRedistributePol)
 						}
 						if childClassName == "tagTag" {
-							TagTagL3extRsRedistributePol := getEmptyTagTagL3extRsRedistributePolResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "key" {
 									TagTagL3extRsRedistributePol.Key = basetypes.NewStringValue(childAttributeValue.(string))
@@ -482,6 +497,7 @@ func getAndSetL3extRsRedistributePolAttributes(ctx context.Context, diags *diag.
 								if childAttributeName == "value" {
 									TagTagL3extRsRedistributePol.Value = basetypes.NewStringValue(childAttributeValue.(string))
 								}
+
 							}
 							TagTagL3extRsRedistributePolList = append(TagTagL3extRsRedistributePolList, TagTagL3extRsRedistributePol)
 						}
@@ -535,25 +551,24 @@ func setL3extRsRedistributePolId(ctx context.Context, data *L3extRsRedistributeP
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
 
-func getL3extRsRedistributePolTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *L3extRsRedistributePolResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationL3extRsRedistributePolResourceModel) []map[string]interface{} {
-
+func getL3extRsRedistributePolTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *L3extRsRedistributePolResourceModel, tagAnnotationL3extRsRedistributePolPlan, tagAnnotationL3extRsRedistributePolState []TagAnnotationL3extRsRedistributePolResourceModel) []map[string]interface{} {
 	childPayloads := []map[string]interface{}{}
-	if !data.TagAnnotation.IsUnknown() {
+	if !data.TagAnnotation.IsNull() && !data.TagAnnotation.IsUnknown() {
 		tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
-		for _, tagAnnotation := range tagAnnotationPlan {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagAnnotation.Key.IsUnknown() && !tagAnnotation.Key.IsNull() {
-				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
+		for _, tagAnnotationL3extRsRedistributePol := range tagAnnotationL3extRsRedistributePolPlan {
+			childMap := NewAciObject()
+			if !tagAnnotationL3extRsRedistributePol.Key.IsNull() && !tagAnnotationL3extRsRedistributePol.Key.IsUnknown() {
+				childMap.Attributes["key"] = tagAnnotationL3extRsRedistributePol.Key.ValueString()
 			}
-			if !tagAnnotation.Value.IsUnknown() && !tagAnnotation.Value.IsNull() {
-				childMap["attributes"]["value"] = tagAnnotation.Value.ValueString()
+			if !tagAnnotationL3extRsRedistributePol.Value.IsNull() && !tagAnnotationL3extRsRedistributePol.Value.IsUnknown() {
+				childMap.Attributes["value"] = tagAnnotationL3extRsRedistributePol.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
 			tagAnnotationIdentifier := TagAnnotationIdentifier{}
-			tagAnnotationIdentifier.Key = tagAnnotation.Key
+			tagAnnotationIdentifier.Key = tagAnnotationL3extRsRedistributePol.Key
 			tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
 		}
-		for _, tagAnnotation := range tagAnnotationState {
+		for _, tagAnnotation := range tagAnnotationL3extRsRedistributePolState {
 			delete := true
 			for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
 				if tagAnnotationIdentifier.Key == tagAnnotation.Key {
@@ -562,10 +577,10 @@ func getL3extRsRedistributePolTagAnnotationChildPayloads(ctx context.Context, di
 				}
 			}
 			if delete {
-				childMap := map[string]map[string]interface{}{"attributes": {}}
-				childMap["attributes"]["status"] = "deleted"
-				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
+				tagAnnotationChildMapForDelete := NewAciObject()
+				tagAnnotationChildMapForDelete.Attributes["status"] = "deleted"
+				tagAnnotationChildMapForDelete.Attributes["key"] = tagAnnotation.Key.ValueString()
+				childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": tagAnnotationChildMapForDelete})
 			}
 		}
 	} else {
@@ -574,25 +589,25 @@ func getL3extRsRedistributePolTagAnnotationChildPayloads(ctx context.Context, di
 
 	return childPayloads
 }
-func getL3extRsRedistributePolTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *L3extRsRedistributePolResourceModel, tagTagPlan, tagTagState []TagTagL3extRsRedistributePolResourceModel) []map[string]interface{} {
 
+func getL3extRsRedistributePolTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *L3extRsRedistributePolResourceModel, tagTagL3extRsRedistributePolPlan, tagTagL3extRsRedistributePolState []TagTagL3extRsRedistributePolResourceModel) []map[string]interface{} {
 	childPayloads := []map[string]interface{}{}
-	if !data.TagTag.IsUnknown() {
+	if !data.TagTag.IsNull() && !data.TagTag.IsUnknown() {
 		tagTagIdentifiers := []TagTagIdentifier{}
-		for _, tagTag := range tagTagPlan {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagTag.Key.IsUnknown() && !tagTag.Key.IsNull() {
-				childMap["attributes"]["key"] = tagTag.Key.ValueString()
+		for _, tagTagL3extRsRedistributePol := range tagTagL3extRsRedistributePolPlan {
+			childMap := NewAciObject()
+			if !tagTagL3extRsRedistributePol.Key.IsNull() && !tagTagL3extRsRedistributePol.Key.IsUnknown() {
+				childMap.Attributes["key"] = tagTagL3extRsRedistributePol.Key.ValueString()
 			}
-			if !tagTag.Value.IsUnknown() && !tagTag.Value.IsNull() {
-				childMap["attributes"]["value"] = tagTag.Value.ValueString()
+			if !tagTagL3extRsRedistributePol.Value.IsNull() && !tagTagL3extRsRedistributePol.Value.IsUnknown() {
+				childMap.Attributes["value"] = tagTagL3extRsRedistributePol.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})
 			tagTagIdentifier := TagTagIdentifier{}
-			tagTagIdentifier.Key = tagTag.Key
+			tagTagIdentifier.Key = tagTagL3extRsRedistributePol.Key
 			tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
 		}
-		for _, tagTag := range tagTagState {
+		for _, tagTag := range tagTagL3extRsRedistributePolState {
 			delete := true
 			for _, tagTagIdentifier := range tagTagIdentifiers {
 				if tagTagIdentifier.Key == tagTag.Key {
@@ -601,10 +616,10 @@ func getL3extRsRedistributePolTagTagChildPayloads(ctx context.Context, diags *di
 				}
 			}
 			if delete {
-				childMap := map[string]map[string]interface{}{"attributes": {}}
-				childMap["attributes"]["status"] = "deleted"
-				childMap["attributes"]["key"] = tagTag.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})
+				tagTagChildMapForDelete := NewAciObject()
+				tagTagChildMapForDelete.Attributes["status"] = "deleted"
+				tagTagChildMapForDelete.Attributes["key"] = tagTag.Key.ValueString()
+				childPayloads = append(childPayloads, map[string]interface{}{"tagTag": tagTagChildMapForDelete})
 			}
 		}
 	} else {

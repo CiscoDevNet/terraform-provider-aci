@@ -110,6 +110,13 @@ func getEmptyTagAnnotationPkiKeyRingResourceModel() TagAnnotationPkiKeyRingResou
 	}
 }
 
+var TagAnnotationPkiKeyRingType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
+}
+
 // TagTagPkiKeyRingResourceModel describes the resource data model for the children without relation ships.
 type TagTagPkiKeyRingResourceModel struct {
 	Key   types.String `tfsdk:"key"`
@@ -121,6 +128,13 @@ func getEmptyTagTagPkiKeyRingResourceModel() TagTagPkiKeyRingResourceModel {
 		Key:   basetypes.NewStringNull(),
 		Value: basetypes.NewStringNull(),
 	}
+}
+
+var TagTagPkiKeyRingType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
 }
 
 type PkiKeyRingIdentifier struct {
@@ -153,21 +167,21 @@ func (r *PkiKeyRingResource) ModifyPlan(ctx context.Context, req resource.Modify
 }
 
 func (r *PkiKeyRingResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	tflog.Debug(ctx, "Start metadata of resource: aci_key_ring")
-	resp.TypeName = req.ProviderTypeName + "_key_ring"
-	tflog.Debug(ctx, "End metadata of resource: aci_key_ring")
+	tflog.Debug(ctx, "Start metadata of resource: aci_pki_key_ring")
+	resp.TypeName = req.ProviderTypeName + "_pki_key_ring"
+	tflog.Debug(ctx, "End metadata of resource: aci_pki_key_ring")
 }
 
 func (r *PkiKeyRingResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
-	tflog.Debug(ctx, "Start schema of resource: aci_key_ring")
+	tflog.Debug(ctx, "Start schema of resource: aci_pki_key_ring")
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "The key_ring resource for the 'pkiKeyRing' class",
+		MarkdownDescription: "The pki_key_ring resource for the 'pkiKeyRing' class",
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Key Ring object.",
+				MarkdownDescription: "The distinguished name (DN) of the Pki Key Ring object.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
@@ -202,7 +216,7 @@ func (r *PkiKeyRingResource) Schema(ctx context.Context, req resource.SchemaRequ
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
-				MarkdownDescription: `The annotation of the Key Ring object.`,
+				MarkdownDescription: `The annotation of the Pki Key Ring object.`,
 			},
 			"certificate": schema.StringAttribute{
 				Optional: true,
@@ -220,7 +234,7 @@ func (r *PkiKeyRingResource) Schema(ctx context.Context, req resource.SchemaRequ
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The description of the Key Ring object.`,
+				MarkdownDescription: `The description of the Pki Key Ring object.`,
 			},
 			"elliptic_curve": schema.StringAttribute{
 				Optional: true,
@@ -274,7 +288,7 @@ func (r *PkiKeyRingResource) Schema(ctx context.Context, req resource.SchemaRequ
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
-				MarkdownDescription: `The name of the Key Ring object.`,
+				MarkdownDescription: `The name of the Pki Key Ring object.`,
 			},
 			"name_alias": schema.StringAttribute{
 				Optional: true,
@@ -283,7 +297,7 @@ func (r *PkiKeyRingResource) Schema(ctx context.Context, req resource.SchemaRequ
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The name alias of the Key Ring object.`,
+				MarkdownDescription: `The name alias of the Pki Key Ring object.`,
 			},
 			"owner_key": schema.StringAttribute{
 				Optional: true,
@@ -378,11 +392,11 @@ func (r *PkiKeyRingResource) Schema(ctx context.Context, req resource.SchemaRequ
 			},
 		},
 	}
-	tflog.Debug(ctx, "End schema of resource: aci_key_ring")
+	tflog.Debug(ctx, "End schema of resource: aci_pki_key_ring")
 }
 
 func (r *PkiKeyRingResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	tflog.Debug(ctx, "Start configure of resource: aci_key_ring")
+	tflog.Debug(ctx, "Start configure of resource: aci_pki_key_ring")
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
 		return
@@ -400,11 +414,11 @@ func (r *PkiKeyRingResource) Configure(ctx context.Context, req resource.Configu
 	}
 
 	r.client = client
-	tflog.Debug(ctx, "End configure of resource: aci_key_ring")
+	tflog.Debug(ctx, "End configure of resource: aci_pki_key_ring")
 }
 
 func (r *PkiKeyRingResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	tflog.Debug(ctx, "Start create of resource: aci_key_ring")
+	tflog.Debug(ctx, "Start create of resource: aci_pki_key_ring")
 	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
 	var stateData *PkiKeyRingResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
@@ -433,7 +447,7 @@ func (r *PkiKeyRingResource) Create(ctx context.Context, req resource.CreateRequ
 		setPkiKeyRingId(ctx, data)
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_key_ring with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_pki_key_ring with id '%s'", data.Id.ValueString()))
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationPkiKeyRingResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
@@ -466,11 +480,11 @@ func (r *PkiKeyRingResource) Create(ctx context.Context, req resource.CreateRequ
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_key_ring with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_pki_key_ring with id '%s'", data.Id.ValueString()))
 }
 
 func (r *PkiKeyRingResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
-	tflog.Debug(ctx, "Start read of resource: aci_key_ring")
+	tflog.Debug(ctx, "Start read of resource: aci_pki_key_ring")
 	var data *PkiKeyRingResourceModel
 
 	// Read Terraform prior state data into the model
@@ -480,7 +494,7 @@ func (r *PkiKeyRingResource) Read(ctx context.Context, req resource.ReadRequest,
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Read of resource aci_key_ring with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Read of resource aci_pki_key_ring with id '%s'", data.Id.ValueString()))
 
 	getAndSetPkiKeyRingAttributes(ctx, &resp.Diagnostics, r.client, data)
 
@@ -492,11 +506,11 @@ func (r *PkiKeyRingResource) Read(ctx context.Context, req resource.ReadRequest,
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_key_ring with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_pki_key_ring with id '%s'", data.Id.ValueString()))
 }
 
 func (r *PkiKeyRingResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	tflog.Debug(ctx, "Start update of resource: aci_key_ring")
+	tflog.Debug(ctx, "Start update of resource: aci_pki_key_ring")
 	var data *PkiKeyRingResourceModel
 	var stateData *PkiKeyRingResourceModel
 
@@ -508,7 +522,7 @@ func (r *PkiKeyRingResource) Update(ctx context.Context, req resource.UpdateRequ
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_key_ring with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_pki_key_ring with id '%s'", data.Id.ValueString()))
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationPkiKeyRingResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
@@ -544,11 +558,11 @@ func (r *PkiKeyRingResource) Update(ctx context.Context, req resource.UpdateRequ
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_key_ring with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_pki_key_ring with id '%s'", data.Id.ValueString()))
 }
 
 func (r *PkiKeyRingResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	tflog.Debug(ctx, "Start delete of resource: aci_key_ring")
+	tflog.Debug(ctx, "Start delete of resource: aci_pki_key_ring")
 	var data *PkiKeyRingResourceModel
 
 	// Read Terraform prior state data into the model
@@ -558,7 +572,7 @@ func (r *PkiKeyRingResource) Delete(ctx context.Context, req resource.DeleteRequ
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Delete of resource aci_key_ring with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Delete of resource aci_pki_key_ring with id '%s'", data.Id.ValueString()))
 	jsonPayload := GetDeleteJsonPayload(ctx, &resp.Diagnostics, "pkiKeyRing", data.Id.ValueString())
 	if resp.Diagnostics.HasError() {
 		return
@@ -567,22 +581,22 @@ func (r *PkiKeyRingResource) Delete(ctx context.Context, req resource.DeleteRequ
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_key_ring with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_pki_key_ring with id '%s'", data.Id.ValueString()))
 }
 
 func (r *PkiKeyRingResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	tflog.Debug(ctx, "Start import state of resource: aci_key_ring")
+	tflog.Debug(ctx, "Start import state of resource: aci_pki_key_ring")
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 
 	var stateData *PkiKeyRingResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
-	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_key_ring with id '%s'", stateData.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_pki_key_ring with id '%s'", stateData.Id.ValueString()))
 
-	tflog.Debug(ctx, "End import of state resource: aci_key_ring")
+	tflog.Debug(ctx, "End import of state resource: aci_pki_key_ring")
 }
 
 func getAndSetPkiKeyRingAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *PkiKeyRingResourceModel) {
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "pkiKeyRing,tagAnnotation,tagTag"), "GET", nil)
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "pkiKeyRing,tagAnnotation,tagTag"), "GET", nil)
 
 	readData := getEmptyPkiKeyRingResourceModel()
 
@@ -644,7 +658,9 @@ func getAndSetPkiKeyRingAttributes(ctx context.Context, diags *diag.Diagnostics,
 					readData.Tp = basetypes.NewStringValue(attributeValue.(string))
 				}
 			}
+			TagAnnotationPkiKeyRing := getEmptyTagAnnotationPkiKeyRingResourceModel()
 			TagAnnotationPkiKeyRingList := make([]TagAnnotationPkiKeyRingResourceModel, 0)
+			TagTagPkiKeyRing := getEmptyTagTagPkiKeyRingResourceModel()
 			TagTagPkiKeyRingList := make([]TagTagPkiKeyRingResourceModel, 0)
 			_, ok := classReadInfo[0].(map[string]interface{})["children"]
 			if ok {
@@ -653,7 +669,6 @@ func getAndSetPkiKeyRingAttributes(ctx context.Context, diags *diag.Diagnostics,
 					for childClassName, childClassDetails := range child.(map[string]interface{}) {
 						childAttributes := childClassDetails.(map[string]interface{})["attributes"].(map[string]interface{})
 						if childClassName == "tagAnnotation" {
-							TagAnnotationPkiKeyRing := getEmptyTagAnnotationPkiKeyRingResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "key" {
 									TagAnnotationPkiKeyRing.Key = basetypes.NewStringValue(childAttributeValue.(string))
@@ -661,11 +676,11 @@ func getAndSetPkiKeyRingAttributes(ctx context.Context, diags *diag.Diagnostics,
 								if childAttributeName == "value" {
 									TagAnnotationPkiKeyRing.Value = basetypes.NewStringValue(childAttributeValue.(string))
 								}
+
 							}
 							TagAnnotationPkiKeyRingList = append(TagAnnotationPkiKeyRingList, TagAnnotationPkiKeyRing)
 						}
 						if childClassName == "tagTag" {
-							TagTagPkiKeyRing := getEmptyTagTagPkiKeyRingResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
 								if childAttributeName == "key" {
 									TagTagPkiKeyRing.Key = basetypes.NewStringValue(childAttributeValue.(string))
@@ -673,6 +688,7 @@ func getAndSetPkiKeyRingAttributes(ctx context.Context, diags *diag.Diagnostics,
 								if childAttributeName == "value" {
 									TagTagPkiKeyRing.Value = basetypes.NewStringValue(childAttributeValue.(string))
 								}
+
 							}
 							TagTagPkiKeyRingList = append(TagTagPkiKeyRingList, TagTagPkiKeyRing)
 						}
@@ -747,25 +763,24 @@ func setPkiKeyRingId(ctx context.Context, data *PkiKeyRingResourceModel) {
 	data.Id = types.StringValue(id)
 }
 
-func getPkiKeyRingTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *PkiKeyRingResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationPkiKeyRingResourceModel) []map[string]interface{} {
-
+func getPkiKeyRingTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *PkiKeyRingResourceModel, tagAnnotationPkiKeyRingPlan, tagAnnotationPkiKeyRingState []TagAnnotationPkiKeyRingResourceModel) []map[string]interface{} {
 	childPayloads := []map[string]interface{}{}
-	if !data.TagAnnotation.IsUnknown() {
+	if !data.TagAnnotation.IsNull() && !data.TagAnnotation.IsUnknown() {
 		tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
-		for _, tagAnnotation := range tagAnnotationPlan {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagAnnotation.Key.IsUnknown() && !tagAnnotation.Key.IsNull() {
-				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
+		for _, tagAnnotationPkiKeyRing := range tagAnnotationPkiKeyRingPlan {
+			childMap := NewAciObject()
+			if !tagAnnotationPkiKeyRing.Key.IsNull() && !tagAnnotationPkiKeyRing.Key.IsUnknown() {
+				childMap.Attributes["key"] = tagAnnotationPkiKeyRing.Key.ValueString()
 			}
-			if !tagAnnotation.Value.IsUnknown() && !tagAnnotation.Value.IsNull() {
-				childMap["attributes"]["value"] = tagAnnotation.Value.ValueString()
+			if !tagAnnotationPkiKeyRing.Value.IsNull() && !tagAnnotationPkiKeyRing.Value.IsUnknown() {
+				childMap.Attributes["value"] = tagAnnotationPkiKeyRing.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
 			tagAnnotationIdentifier := TagAnnotationIdentifier{}
-			tagAnnotationIdentifier.Key = tagAnnotation.Key
+			tagAnnotationIdentifier.Key = tagAnnotationPkiKeyRing.Key
 			tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
 		}
-		for _, tagAnnotation := range tagAnnotationState {
+		for _, tagAnnotation := range tagAnnotationPkiKeyRingState {
 			delete := true
 			for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
 				if tagAnnotationIdentifier.Key == tagAnnotation.Key {
@@ -774,10 +789,10 @@ func getPkiKeyRingTagAnnotationChildPayloads(ctx context.Context, diags *diag.Di
 				}
 			}
 			if delete {
-				childMap := map[string]map[string]interface{}{"attributes": {}}
-				childMap["attributes"]["status"] = "deleted"
-				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
+				tagAnnotationChildMapForDelete := NewAciObject()
+				tagAnnotationChildMapForDelete.Attributes["status"] = "deleted"
+				tagAnnotationChildMapForDelete.Attributes["key"] = tagAnnotation.Key.ValueString()
+				childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": tagAnnotationChildMapForDelete})
 			}
 		}
 	} else {
@@ -786,25 +801,25 @@ func getPkiKeyRingTagAnnotationChildPayloads(ctx context.Context, diags *diag.Di
 
 	return childPayloads
 }
-func getPkiKeyRingTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *PkiKeyRingResourceModel, tagTagPlan, tagTagState []TagTagPkiKeyRingResourceModel) []map[string]interface{} {
 
+func getPkiKeyRingTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *PkiKeyRingResourceModel, tagTagPkiKeyRingPlan, tagTagPkiKeyRingState []TagTagPkiKeyRingResourceModel) []map[string]interface{} {
 	childPayloads := []map[string]interface{}{}
-	if !data.TagTag.IsUnknown() {
+	if !data.TagTag.IsNull() && !data.TagTag.IsUnknown() {
 		tagTagIdentifiers := []TagTagIdentifier{}
-		for _, tagTag := range tagTagPlan {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagTag.Key.IsUnknown() && !tagTag.Key.IsNull() {
-				childMap["attributes"]["key"] = tagTag.Key.ValueString()
+		for _, tagTagPkiKeyRing := range tagTagPkiKeyRingPlan {
+			childMap := NewAciObject()
+			if !tagTagPkiKeyRing.Key.IsNull() && !tagTagPkiKeyRing.Key.IsUnknown() {
+				childMap.Attributes["key"] = tagTagPkiKeyRing.Key.ValueString()
 			}
-			if !tagTag.Value.IsUnknown() && !tagTag.Value.IsNull() {
-				childMap["attributes"]["value"] = tagTag.Value.ValueString()
+			if !tagTagPkiKeyRing.Value.IsNull() && !tagTagPkiKeyRing.Value.IsUnknown() {
+				childMap.Attributes["value"] = tagTagPkiKeyRing.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})
 			tagTagIdentifier := TagTagIdentifier{}
-			tagTagIdentifier.Key = tagTag.Key
+			tagTagIdentifier.Key = tagTagPkiKeyRing.Key
 			tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
 		}
-		for _, tagTag := range tagTagState {
+		for _, tagTag := range tagTagPkiKeyRingState {
 			delete := true
 			for _, tagTagIdentifier := range tagTagIdentifiers {
 				if tagTagIdentifier.Key == tagTag.Key {
@@ -813,10 +828,10 @@ func getPkiKeyRingTagTagChildPayloads(ctx context.Context, diags *diag.Diagnosti
 				}
 			}
 			if delete {
-				childMap := map[string]map[string]interface{}{"attributes": {}}
-				childMap["attributes"]["status"] = "deleted"
-				childMap["attributes"]["key"] = tagTag.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})
+				tagTagChildMapForDelete := NewAciObject()
+				tagTagChildMapForDelete.Attributes["status"] = "deleted"
+				tagTagChildMapForDelete.Attributes["key"] = tagTag.Key.ValueString()
+				childPayloads = append(childPayloads, map[string]interface{}{"tagTag": tagTagChildMapForDelete})
 			}
 		}
 	} else {
