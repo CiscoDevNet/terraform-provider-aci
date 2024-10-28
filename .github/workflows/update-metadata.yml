@@ -1,0 +1,65 @@
+name: Update ACI Metadata
+
+on:
+  schedule:
+    - cron: '0 9 * * MON' # Every Monday at 9AM UTC
+  workflow_dispatch:
+
+jobs:
+  update-metadata:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Unshallow
+        run: git fetch --prune --unshallow
+
+      # Get latest metadata
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
+      - name: Get latest metadata and generate provider code
+        run: go generate
+        env:
+          RE_GEN_CLASSES: '1'
+          GEN_ANNOTATION_UNSUPPORTED: '1'
+      
+      - name: List out any updated metadata files
+        run: git diff --name-only | grep -E '^gen/meta/.*.json$'
+
+      - name: Check for any provider code diffs ignoring metadata updates
+        id: code
+        run: |
+          if [[ $(git diff --name-only | grep -Ev '^gen/meta/.*.json$') ]]; then
+              echo "Generated code difference detected"
+              echo "diff="1"" >> $GITHUB_OUTPUT
+          else
+              echo "No generated code difference detected"
+              echo "diff="0"" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build
+        if: steps.code.outputs.diff == '1'
+        run: go build -v
+
+        # Commit changes to update_metadata branch
+      - name: Set git config
+        if: steps.code.outputs.diff == '1'
+        run: git config user.email "dcn-ecosystem@cisco.com" && git config user.name "dcn-ecosystem"
+      - name: Commit
+        if: steps.code.outputs.diff == '1'
+        run: git add -u && git status && git commit -m "[minor_change] Regenerated provider code with latest ACI metadata"
+      - name: Branch & Push
+        if: steps.code.outputs.diff == '1'
+        run: git checkout -b update_metadata && git push --set-upstream origin update_metadata --force && git clean -f -d
+
+      # Create PR
+      - run: |
+          echo -e "These changes are the result of ACI meta-data updates.\nPlease review and adjust the version bump commit prefix if necessary." \
+            | gh pr create --base master --head update_metadata --title "ACI Metadata Update PR" --body-file -
+        if: steps.code.outputs.diff == '1'
+        id: pr
+        continue-on-error: true # PR already exists so it will get updated with the latest changes instead
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
