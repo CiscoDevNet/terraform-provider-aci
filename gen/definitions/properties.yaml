@@ -199,6 +199,8 @@ pkiTP:
     parent_dn: "uni/userext/pkiext"
   overwrites:
     cert_chain: "certificate_chain"
+  ignores:
+    - "certUsage"
   resource_required:
     - "certChain"
   test_values:

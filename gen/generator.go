@@ -690,6 +690,19 @@ func getDefinitions() Definitions {
 
 // Remove all files in a directory except when the files that do not match the ignore list
 func cleanDirectory(dir string, ignores []string) {
+	names := getFileNames(dir)
+	for _, name := range names {
+		if !slices.Contains(ignores, name) {
+			err := os.RemoveAll(filepath.Join(dir, name))
+			if err != nil {
+				panic(err)
+			}
+		}
+	}
+}
+
+// Returns all the files names in a directory
+func getFileNames(dir string) []string {
 	d, err := os.Open(dir)
 	if err != nil {
 		panic(err)
@@ -699,14 +712,7 @@ func cleanDirectory(dir string, ignores []string) {
 	if err != nil {
 		panic(err)
 	}
-	for _, name := range names {
-		if !slices.Contains(ignores, name) {
-			err = os.RemoveAll(filepath.Join(dir, name))
-			if err != nil {
-				panic(err)
-			}
-		}
-	}
+	return names
 }
 
 // One time function used to migrate the legacy documentation to the new documentation structure
@@ -719,15 +725,7 @@ func migrateLegacyDocumentation() {
 		if dirPath == "./legacy-docs/docs/r" {
 			newDirPath = resourcesDocsPath
 		}
-		d, err := os.Open(dirPath)
-		if err != nil {
-			panic(err)
-		}
-		defer d.Close()
-		names, err := d.Readdirnames(-1)
-		if err != nil {
-			panic(err)
-		}
+		names := getFileNames(dirPath)
 		for _, name := range names {
 			newName := strings.Replace(name, ".html.markdown", ".md", 1)
 			source, err := os.Open(filepath.Join(dirPath, name))
@@ -777,16 +775,30 @@ func getExampleCode(filePath string) []byte {
 	return content
 }
 
-// When GEN_CLASSES environment variable is set, the class metadata is retrieved from the APIC or devnet docs and stored in the meta directory.
-func getClassMetadata() {
+// When RE_GEN_CLASSES environment variable is set, the existing class metadata is retrieved from APIC or the latest devnet docs and stored in the meta directory.
+func reGenClassMetadata() {
+	_, re_gen_classes := os.LookupEnv("RE_GEN_CLASSES")
+	if re_gen_classes {
+		names := getFileNames(metaPath)
+		classNames := strings.Join(names, ",")
+		getClassMetadata(classNames)
+	}
+}
 
-	classNames := os.Getenv("GEN_CLASSES")
+// When GEN_CLASSES environment variable is set, the class metadata is retrieved from the APIC or the latest devnet docs and stored in the meta directory.
+func getClassMetadata(classNames string) {
+
+	if classNames == "" {
+		classNames = os.Getenv("GEN_CLASSES")
+	}
 
 	if classNames != "" {
 		var name, nameSpace, url string
 		classNameList := strings.Split(classNames, ",")
 		for _, className := range classNameList {
-
+			if strings.HasSuffix(className, ".json") {
+				className = strings.Replace(className, ".json", "", 1)
+			}
 			for index, character := range className {
 				if unicode.IsUpper(character) {
 					nameSpace = className[:index]
@@ -862,7 +874,8 @@ func genAnnotationUnsupported() []string {
 }
 
 func main() {
-	getClassMetadata()
+	reGenClassMetadata()
+	getClassMetadata("")
 	cleanDirectories()
 
 	definitions := getDefinitions()
