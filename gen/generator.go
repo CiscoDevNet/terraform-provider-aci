@@ -764,8 +764,11 @@ func getExampleCode(filePath string) []byte {
 
 // When RE_GEN_CLASSES environment variable is set, the existing class metadata is retrieved from APIC or the latest devnet docs and stored in the meta directory.
 func reGenClassMetadata() {
-	_, re_gen_classes := os.LookupEnv("RE_GEN_CLASSES")
-	if re_gen_classes {
+	reGenClasses, err := strconv.ParseBool(os.Getenv("RE_GEN_CLASSES"))
+	if err != nil {
+		return
+	}
+	if reGenClasses {
 		names := getFileNames(metaPath)
 		classNames := strings.Join(names, ",")
 		getClassMetadata(classNames)
@@ -774,10 +777,6 @@ func reGenClassMetadata() {
 
 // When GEN_CLASSES environment variable is set, the class metadata is retrieved from the APIC or the latest devnet docs and stored in the meta directory.
 func getClassMetadata(classNames string) {
-
-	if classNames == "" {
-		classNames = os.Getenv("GEN_CLASSES")
-	}
 
 	if classNames != "" {
 		var name, nameSpace, url string
@@ -824,8 +823,11 @@ func getClassMetadata(classNames string) {
 // When GEN_ANNOTATION_UNSUPPORTED environment variable is set, the list of classes that don't support annotation are retrieved and annotation_unsupported.go is generated.
 func genAnnotationUnsupported() []string {
 	classes := []string{}
-	_, gen_annotation_unsupported := os.LookupEnv("GEN_ANNOTATION_UNSUPPORTED")
-	if gen_annotation_unsupported {
+	genAnnotationUnsupported, err := strconv.ParseBool(os.Getenv("GEN_ANNOTATION_UNSUPPORTED"))
+	if err != nil {
+		return classes
+	}
+	if genAnnotationUnsupported {
 		var url string
 		host := os.Getenv("GEN_HOST")
 		if host == "" {
@@ -862,7 +864,7 @@ func genAnnotationUnsupported() []string {
 
 func main() {
 	reGenClassMetadata()
-	getClassMetadata("")
+	getClassMetadata(os.Getenv("GEN_CLASSES"))
 	cleanDirectories()
 
 	definitions := getDefinitions()
