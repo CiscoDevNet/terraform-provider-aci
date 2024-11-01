@@ -776,7 +776,7 @@ func getExampleCode(filePath string) []byte {
 }
 
 // When RE_GEN_CLASSES environment variable is set, the existing class metadata is retrieved from APIC or the latest devnet docs and stored in the meta directory.
-func reGenClassMetadata() {
+func reGenerateClassMetadata() {
 	reGenClasses, err := strconv.ParseBool(os.Getenv("RE_GEN_CLASSES"))
 	if err != nil {
 		return
@@ -790,7 +790,6 @@ func reGenClassMetadata() {
 
 // When GEN_CLASSES environment variable is set, the class metadata is retrieved from the APIC or the latest devnet docs and stored in the meta directory.
 func getClassMetadata(classNames string) {
-
 	if classNames != "" {
 		var name, nameSpace, url string
 		classNameList := strings.Split(classNames, ",")
@@ -834,7 +833,7 @@ func getClassMetadata(classNames string) {
 }
 
 // When GEN_ANNOTATION_UNSUPPORTED environment variable is set, the list of classes that don't support annotation are retrieved and annotation_unsupported.go is generated.
-func genAnnotationUnsupported() []string {
+func generateAnnotationUnsupported() []string {
 	classes := []string{}
 	genAnnotationUnsupported, err := strconv.ParseBool(os.Getenv("GEN_ANNOTATION_UNSUPPORTED"))
 	if err != nil {
@@ -876,13 +875,13 @@ func genAnnotationUnsupported() []string {
 }
 
 func main() {
-	reGenClassMetadata()
+	reGenerateClassMetadata()
 	getClassMetadata(os.Getenv("GEN_CLASSES"))
 	cleanDirectories()
 
 	definitions := getDefinitions()
 	classModels := getClassModels(definitions)
-	annotationUnsupported := genAnnotationUnsupported()
+	annotationUnsupported := generateAnnotationUnsupported()
 
 	renderTemplate("provider.go.tmpl", "provider.go", providerPath, classModels)
 	renderTemplate("index.md.tmpl", "index.md", docsPath, ProviderModel{Example: string(getExampleCode(providerExamplePath))})
