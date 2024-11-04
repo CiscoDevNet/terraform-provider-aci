@@ -12,6 +12,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
@@ -56,6 +57,11 @@ func (d *PkiTPDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 			"certificate_chain": schema.StringAttribute{
 				Computed:            true,
 				MarkdownDescription: `The PEM-encoded chain of trust from the trustpoint to a trusted root authority.`,
+			},
+			"certificate_usage": schema.SetAttribute{
+				Computed:            true,
+				MarkdownDescription: `The certificate usage of the Certificate Authority object.`,
+				ElementType:         types.StringType,
 			},
 			"description": schema.StringAttribute{
 				Computed:            true,

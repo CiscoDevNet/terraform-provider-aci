@@ -63,6 +63,7 @@ data "aci_certificate_authority" "example_tenant" {
 * `id` - (string) The distinguished name (DN) of the Certificate Authority object.
 * `annotation` (annotation) - (string) The annotation of the Certificate Authority object.
 * `certificate_chain` (certChain) - (string) The PEM-encoded chain of trust from the trustpoint to a trusted root authority.
+* `certificate_usage` (certUsage) - (list) The certificate usage of the Certificate Authority object.
 * `description` (descr) - (string) The description of the Certificate Authority object.
 * `name_alias` (nameAlias) - (string) The name alias of the Certificate Authority object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
