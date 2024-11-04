@@ -105,6 +105,7 @@ hvcNAQELBQADgYEAOmvre+5tgZ0+F3DgsfxNQqLTrGiBgGCIymPkP/cBXXkNuJyl
 KU0Td2OpVyo0eLqjoX5u2G90IBWzhyjFbo+CcKMrSVKj1YOdG0E3OuiJf00=
 -----END CERTIFICATE-----
 EOT
+  certificate_usage = test_value
   description       = "description_1"
   name              = "test_name"
   name_alias        = "name_alias_1"
@@ -144,6 +145,7 @@ hvcNAQELBQADgYEAOmvre+5tgZ0+F3DgsfxNQqLTrGiBgGCIymPkP/cBXXkNuJyl
 KU0Td2OpVyo0eLqjoX5u2G90IBWzhyjFbo+CcKMrSVKj1YOdG0E3OuiJf00=
 -----END CERTIFICATE-----
 EOT
+  certificate_usage = test_value
   description       = "description_1"
   name              = "test_name"
   name_alias        = "name_alias_1"
@@ -185,6 +187,9 @@ All examples for the Certificate Authority resource can be found in the [example
   - Default: `uni/userext/pkiext`
 * `annotation` (annotation) - (string) The annotation of the Certificate Authority object.
   - Default: `orchestrator:terraform`
+* `certificate_usage` (certUsage) - (list) The certificate usage of the Certificate Authority object.
+  - Default: `WebSvcOrAuth`.
+  - Valid Values: `WebSvcOrAuth`, `pxGrid`.
 * `description` (descr) - (string) The description of the Certificate Authority object.
 * `name_alias` (nameAlias) - (string) The name alias of the Certificate Authority object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.

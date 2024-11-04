@@ -12,6 +12,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
+	"github.com/hashicorp/terraform-plugin-framework-validators/setvalidator"
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -21,6 +23,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
@@ -45,6 +48,7 @@ type PkiTPResourceModel struct {
 	ParentDn      types.String `tfsdk:"parent_dn"`
 	Annotation    types.String `tfsdk:"annotation"`
 	CertChain     types.String `tfsdk:"certificate_chain"`
+	CertUsage     types.Set    `tfsdk:"certificate_usage"`
 	Descr         types.String `tfsdk:"description"`
 	Name          types.String `tfsdk:"name"`
 	NameAlias     types.String `tfsdk:"name_alias"`
@@ -60,6 +64,7 @@ func getEmptyPkiTPResourceModel() *PkiTPResourceModel {
 		ParentDn:   basetypes.NewStringNull(),
 		Annotation: basetypes.NewStringNull(),
 		CertChain:  basetypes.NewStringNull(),
+		CertUsage:  types.SetNull(types.StringType),
 		Descr:      basetypes.NewStringNull(),
 		Name:       basetypes.NewStringNull(),
 		NameAlias:  basetypes.NewStringNull(),
@@ -182,6 +187,22 @@ func (r *PkiTPResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The PEM-encoded chain of trust from the trustpoint to a trusted root authority.`,
+			},
+			"certificate_usage": schema.SetAttribute{
+				MarkdownDescription: `The certificate usage of the Certificate Authority object.`,
+				Optional:            true,
+				Computed:            true,
+				PlanModifiers: []planmodifier.Set{
+					setplanmodifier.UseStateForUnknown(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
+				},
+				Validators: []validator.Set{
+					setvalidator.SizeAtMost(2),
+					setvalidator.ValueStringsAre(
+						stringvalidator.OneOf("WebSvcOrAuth", "pxGrid"),
+					),
+				},
+				ElementType: types.StringType,
 			},
 			"description": schema.StringAttribute{
 				Optional: true,
@@ -508,6 +529,14 @@ func getAndSetPkiTPAttributes(ctx context.Context, diags *diag.Diagnostics, clie
 				if attributeName == "certChain" {
 					readData.CertChain = basetypes.NewStringValue(attributeValue.(string))
 				}
+				if attributeName == "certUsage" {
+					certUsageList := make([]string, 0)
+					if attributeValue.(string) != "" {
+						certUsageList = strings.Split(attributeValue.(string), ",")
+					}
+					certUsageSet, _ := types.SetValueFrom(ctx, readData.CertUsage.ElementType(ctx), certUsageList)
+					readData.CertUsage = certUsageSet
+				}
 				if attributeName == "descr" {
 					readData.Descr = basetypes.NewStringValue(attributeValue.(string))
 				}
@@ -727,6 +756,11 @@ func getPkiTPCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, cre
 	}
 	if !data.CertChain.IsNull() && !data.CertChain.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["certChain"] = data.CertChain.ValueString()
+	}
+	if !data.CertUsage.IsNull() && !data.CertUsage.IsUnknown() {
+		var tmpCertUsage []string
+		data.CertUsage.ElementsAs(ctx, &tmpCertUsage, false)
+		payloadMap["attributes"].(map[string]string)["certUsage"] = strings.Join(tmpCertUsage, ",")
 	}
 	if !data.Descr.IsNull() && !data.Descr.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["descr"] = data.Descr.ValueString()
