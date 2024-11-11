@@ -8,8 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"reflect"
-	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
@@ -853,13 +851,7 @@ func getAndSetFvRsDomAttAttributes(ctx context.Context, diags *diag.Diagnostics,
 }
 
 func getFvRsDomAttRn(ctx context.Context, data *FvRsDomAttResourceModel) string {
-	rn := "rsdomAtt-[{tDn}]"
-	for _, identifier := range []string{"tDn"} {
-		fieldName := fmt.Sprintf("%s%s", strings.ToUpper(identifier[:1]), identifier[1:])
-		fieldValue := reflect.ValueOf(data).Elem().FieldByName(fieldName).Interface().(basetypes.StringValue).ValueString()
-		rn = strings.ReplaceAll(rn, fmt.Sprintf("{%s}", identifier), fieldValue)
-	}
-	return rn
+	return fmt.Sprintf("rsdomAtt-[%s]", data.TDn.ValueString())
 }
 
 func setFvRsDomAttParentDn(ctx context.Context, dn string, data *FvRsDomAttResourceModel) {

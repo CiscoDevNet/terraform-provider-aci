@@ -115,6 +115,9 @@ func (d *{{.ResourceClassName}}DataSource) Schema(ctx context.Context, req datas
 			{{- range .Properties}}
 				{{- if .IsNaming}}
 			"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": schema.StringAttribute{
+					{{- if .HasCustomType}}
+				CustomType: customTypes.{{.ResourceClassName}}{{.Name}}StringType{},
+					{{- end}}
 				Required:            true,
 				MarkdownDescription: `{{.Comment}}`,
 			},{{else if eq .ValueType "bitmask"}}

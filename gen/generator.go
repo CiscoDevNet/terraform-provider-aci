@@ -134,6 +134,8 @@ var templateFuncs = template.FuncMap{
 	"definedInList":                     DefinedInList,
 	"keyExists":                         KeyExists,
 	"isNewNamedClassAttributeMatch":     IsNewNamedClassAttributeMatch,
+	"getRnFormat":                       GetRnFormat,
+	"identifierIsCustomType":            IdentifierIsCustomType,
 }
 
 func ContainsRequired(properties map[string]Property) bool {
@@ -209,6 +211,24 @@ func GetPropertyNameForLegacyAttribute(name string, legacyAttributes map[string]
 		}
 	}
 	return ""
+}
+
+func GetRnFormat(rnformat string, identifiers []interface{}) string {
+	if len(identifiers) > 0 {
+		for _, identifier := range identifiers {
+			rnformat = strings.ReplaceAll(rnformat, fmt.Sprintf("{%s}", identifier), "%s")
+		}
+	}
+	return rnformat
+}
+
+func IdentifierIsCustomType(identifier string, properties map[string]Property) bool {
+	for propertyName, property := range properties {
+		if propertyName == identifier {
+			return property.HasCustomType
+		}
+	}
+	return false
 }
 
 func GetLegacyChildAttribute(className, overwriteProperty string, property Property, legacyAttributes map[string]LegacyAttribute, legacyBlocks []LegacyBlock) string {

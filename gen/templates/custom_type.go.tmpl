@@ -112,6 +112,10 @@ func (v {{.ResourceClassName}}{{.Name}}StringValue) StringSemanticEquals(ctx con
 	return priorMappedValue.Equal(newMappedValue), diags
 }
 
+func (v {{.ResourceClassName}}{{.Name}}StringValue) NamedValueString() string {
+	return {{.ResourceClassName}}{{.Name}}ValueMap(basetypes.NewStringValue(v.ValueString())).ValueString()
+}
+
 func {{.ResourceClassName}}{{.Name}}ValueMap(value basetypes.StringValue) basetypes.StringValue {
 	matchMap := map[string]string{
 	{{- range $key, $value := .ValidValuesMap}}

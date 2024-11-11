@@ -8,8 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"reflect"
-	"strings"
 
 	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/validators"
@@ -930,13 +928,7 @@ func getAndSetQosDppPolAttributes(ctx context.Context, diags *diag.Diagnostics, 
 }
 
 func getQosDppPolRn(ctx context.Context, data *QosDppPolResourceModel) string {
-	rn := "qosdpppol-{name}"
-	for _, identifier := range []string{"name"} {
-		fieldName := fmt.Sprintf("%s%s", strings.ToUpper(identifier[:1]), identifier[1:])
-		fieldValue := reflect.ValueOf(data).Elem().FieldByName(fieldName).Interface().(basetypes.StringValue).ValueString()
-		rn = strings.ReplaceAll(rn, fmt.Sprintf("{%s}", identifier), fieldValue)
-	}
-	return rn
+	return fmt.Sprintf("qosdpppol-%s", data.Name.ValueString())
 }
 
 func setQosDppPolParentDn(ctx context.Context, dn string, data *QosDppPolResourceModel) {

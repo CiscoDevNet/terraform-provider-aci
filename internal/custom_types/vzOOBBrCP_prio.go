@@ -112,6 +112,10 @@ func (v VzOOBBrCPPrioStringValue) StringSemanticEquals(ctx context.Context, newV
 	return priorMappedValue.Equal(newMappedValue), diags
 }
 
+func (v VzOOBBrCPPrioStringValue) NamedValueString() string {
+	return VzOOBBrCPPrioValueMap(basetypes.NewStringValue(v.ValueString())).ValueString()
+}
+
 func VzOOBBrCPPrioValueMap(value basetypes.StringValue) basetypes.StringValue {
 	matchMap := map[string]string{
 		"0": "unspecified",

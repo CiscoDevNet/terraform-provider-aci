@@ -585,7 +585,7 @@ func getAndSetFvCrtrnAttributes(ctx context.Context, diags *diag.Diagnostics, cl
 }
 
 func getFvCrtrnRn(ctx context.Context, data *FvCrtrnResourceModel) string {
-	return "crtrn"
+	return fmt.Sprintf("crtrn")
 }
 
 func setFvCrtrnParentDn(ctx context.Context, dn string, data *FvCrtrnResourceModel) {

@@ -8,8 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"reflect"
-	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
@@ -505,13 +503,7 @@ func getAndSetL3extRsLblToProfileAttributes(ctx context.Context, diags *diag.Dia
 }
 
 func getL3extRsLblToProfileRn(ctx context.Context, data *L3extRsLblToProfileResourceModel) string {
-	rn := "rslblToProfile-[{tDn}]-{direction}"
-	for _, identifier := range []string{"tDn", "direction"} {
-		fieldName := fmt.Sprintf("%s%s", strings.ToUpper(identifier[:1]), identifier[1:])
-		fieldValue := reflect.ValueOf(data).Elem().FieldByName(fieldName).Interface().(basetypes.StringValue).ValueString()
-		rn = strings.ReplaceAll(rn, fmt.Sprintf("{%s}", identifier), fieldValue)
-	}
-	return rn
+	return fmt.Sprintf("rslblToProfile-[%s]-%s", data.TDn.ValueString(), data.Direction.ValueString())
 }
 
 func setL3extRsLblToProfileParentDn(ctx context.Context, dn string, data *L3extRsLblToProfileResourceModel) {

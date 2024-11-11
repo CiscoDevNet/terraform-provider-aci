@@ -8,8 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"reflect"
-	"strings"
 
 	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/validators"
@@ -510,13 +508,7 @@ func getAndSetMgmtRsOoBConsAttributes(ctx context.Context, diags *diag.Diagnosti
 }
 
 func getMgmtRsOoBConsRn(ctx context.Context, data *MgmtRsOoBConsResourceModel) string {
-	rn := "rsooBCons-{tnVzOOBBrCPName}"
-	for _, identifier := range []string{"tnVzOOBBrCPName"} {
-		fieldName := fmt.Sprintf("%s%s", strings.ToUpper(identifier[:1]), identifier[1:])
-		fieldValue := reflect.ValueOf(data).Elem().FieldByName(fieldName).Interface().(basetypes.StringValue).ValueString()
-		rn = strings.ReplaceAll(rn, fmt.Sprintf("{%s}", identifier), fieldValue)
-	}
-	return rn
+	return fmt.Sprintf("rsooBCons-%s", data.TnVzOOBBrCPName.ValueString())
 }
 
 func setMgmtRsOoBConsParentDn(ctx context.Context, dn string, data *MgmtRsOoBConsResourceModel) {

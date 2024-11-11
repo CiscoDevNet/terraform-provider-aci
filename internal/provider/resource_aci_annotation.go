@@ -8,8 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"reflect"
-	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
@@ -321,13 +319,7 @@ func getAndSetTagAnnotationAttributes(ctx context.Context, diags *diag.Diagnosti
 }
 
 func getTagAnnotationRn(ctx context.Context, data *TagAnnotationResourceModel) string {
-	rn := "annotationKey-[{key}]"
-	for _, identifier := range []string{"key"} {
-		fieldName := fmt.Sprintf("%s%s", strings.ToUpper(identifier[:1]), identifier[1:])
-		fieldValue := reflect.ValueOf(data).Elem().FieldByName(fieldName).Interface().(basetypes.StringValue).ValueString()
-		rn = strings.ReplaceAll(rn, fmt.Sprintf("{%s}", identifier), fieldValue)
-	}
-	return rn
+	return fmt.Sprintf("annotationKey-[%s]", data.Key.ValueString())
 }
 
 func setTagAnnotationParentDn(ctx context.Context, dn string, data *TagAnnotationResourceModel) {

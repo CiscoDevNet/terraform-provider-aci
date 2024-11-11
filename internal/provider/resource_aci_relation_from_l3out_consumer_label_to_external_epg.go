@@ -8,8 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"reflect"
-	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
@@ -485,13 +483,7 @@ func getAndSetL3extRsLblToInstPAttributes(ctx context.Context, diags *diag.Diagn
 }
 
 func getL3extRsLblToInstPRn(ctx context.Context, data *L3extRsLblToInstPResourceModel) string {
-	rn := "rslblToInstP-[{tDn}]"
-	for _, identifier := range []string{"tDn"} {
-		fieldName := fmt.Sprintf("%s%s", strings.ToUpper(identifier[:1]), identifier[1:])
-		fieldValue := reflect.ValueOf(data).Elem().FieldByName(fieldName).Interface().(basetypes.StringValue).ValueString()
-		rn = strings.ReplaceAll(rn, fmt.Sprintf("{%s}", identifier), fieldValue)
-	}
-	return rn
+	return fmt.Sprintf("rslblToInstP-[%s]", data.TDn.ValueString())
 }
 
 func setL3extRsLblToInstPParentDn(ctx context.Context, dn string, data *L3extRsLblToInstPResourceModel) {

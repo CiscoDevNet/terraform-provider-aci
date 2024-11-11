@@ -8,7 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"reflect"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
@@ -674,13 +673,7 @@ func getAndSetMldSnoopPolAttributes(ctx context.Context, diags *diag.Diagnostics
 }
 
 func getMldSnoopPolRn(ctx context.Context, data *MldSnoopPolResourceModel) string {
-	rn := "mldsnoopPol-{name}"
-	for _, identifier := range []string{"name"} {
-		fieldName := fmt.Sprintf("%s%s", strings.ToUpper(identifier[:1]), identifier[1:])
-		fieldValue := reflect.ValueOf(data).Elem().FieldByName(fieldName).Interface().(basetypes.StringValue).ValueString()
-		rn = strings.ReplaceAll(rn, fmt.Sprintf("{%s}", identifier), fieldValue)
-	}
-	return rn
+	return fmt.Sprintf("mldsnoopPol-%s", data.Name.ValueString())
 }
 
 func setMldSnoopPolParentDn(ctx context.Context, dn string, data *MldSnoopPolResourceModel) {

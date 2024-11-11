@@ -8,8 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"reflect"
-	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
@@ -541,13 +539,7 @@ func getAndSetQosCustomPolAttributes(ctx context.Context, diags *diag.Diagnostic
 }
 
 func getQosCustomPolRn(ctx context.Context, data *QosCustomPolResourceModel) string {
-	rn := "qoscustom-{name}"
-	for _, identifier := range []string{"name"} {
-		fieldName := fmt.Sprintf("%s%s", strings.ToUpper(identifier[:1]), identifier[1:])
-		fieldValue := reflect.ValueOf(data).Elem().FieldByName(fieldName).Interface().(basetypes.StringValue).ValueString()
-		rn = strings.ReplaceAll(rn, fmt.Sprintf("{%s}", identifier), fieldValue)
-	}
-	return rn
+	return fmt.Sprintf("qoscustom-%s", data.Name.ValueString())
 }
 
 func setQosCustomPolParentDn(ctx context.Context, dn string, data *QosCustomPolResourceModel) {

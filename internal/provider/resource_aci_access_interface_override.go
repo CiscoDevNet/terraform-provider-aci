@@ -8,8 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"reflect"
-	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
@@ -711,13 +709,7 @@ func getAndSetInfraHPathSAttributes(ctx context.Context, diags *diag.Diagnostics
 }
 
 func getInfraHPathSRn(ctx context.Context, data *InfraHPathSResourceModel) string {
-	rn := "hpaths-{name}"
-	for _, identifier := range []string{"name"} {
-		fieldName := fmt.Sprintf("%s%s", strings.ToUpper(identifier[:1]), identifier[1:])
-		fieldValue := reflect.ValueOf(data).Elem().FieldByName(fieldName).Interface().(basetypes.StringValue).ValueString()
-		rn = strings.ReplaceAll(rn, fmt.Sprintf("{%s}", identifier), fieldValue)
-	}
-	return rn
+	return fmt.Sprintf("hpaths-%s", data.Name.ValueString())
 }
 
 func setInfraHPathSParentDn(ctx context.Context, dn string, data *InfraHPathSResourceModel) {

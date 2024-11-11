@@ -8,7 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"reflect"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
@@ -674,13 +673,7 @@ func getAndSetIgmpSnoopPolAttributes(ctx context.Context, diags *diag.Diagnostic
 }
 
 func getIgmpSnoopPolRn(ctx context.Context, data *IgmpSnoopPolResourceModel) string {
-	rn := "snPol-{name}"
-	for _, identifier := range []string{"name"} {
-		fieldName := fmt.Sprintf("%s%s", strings.ToUpper(identifier[:1]), identifier[1:])
-		fieldValue := reflect.ValueOf(data).Elem().FieldByName(fieldName).Interface().(basetypes.StringValue).ValueString()
-		rn = strings.ReplaceAll(rn, fmt.Sprintf("{%s}", identifier), fieldValue)
-	}
-	return rn
+	return fmt.Sprintf("snPol-%s", data.Name.ValueString())
 }
 
 func setIgmpSnoopPolParentDn(ctx context.Context, dn string, data *IgmpSnoopPolResourceModel) {

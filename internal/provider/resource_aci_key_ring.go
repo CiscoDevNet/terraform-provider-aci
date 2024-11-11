@@ -8,7 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"reflect"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
@@ -696,13 +695,7 @@ func getAndSetPkiKeyRingAttributes(ctx context.Context, diags *diag.Diagnostics,
 }
 
 func getPkiKeyRingRn(ctx context.Context, data *PkiKeyRingResourceModel) string {
-	rn := "keyring-{name}"
-	for _, identifier := range []string{"name"} {
-		fieldName := fmt.Sprintf("%s%s", strings.ToUpper(identifier[:1]), identifier[1:])
-		fieldValue := reflect.ValueOf(data).Elem().FieldByName(fieldName).Interface().(basetypes.StringValue).ValueString()
-		rn = strings.ReplaceAll(rn, fmt.Sprintf("{%s}", identifier), fieldValue)
-	}
-	return rn
+	return fmt.Sprintf("keyring-%s", data.Name.ValueString())
 }
 
 func setPkiKeyRingParentDn(ctx context.Context, dn string, data *PkiKeyRingResourceModel) {

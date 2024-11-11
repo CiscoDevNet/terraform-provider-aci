@@ -8,7 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"reflect"
 	"strings"
 
 	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
@@ -616,13 +615,7 @@ func getAndSetMgmtInstPAttributes(ctx context.Context, diags *diag.Diagnostics, 
 }
 
 func getMgmtInstPRn(ctx context.Context, data *MgmtInstPResourceModel) string {
-	rn := "tn-mgmt/extmgmt-default/instp-{name}"
-	for _, identifier := range []string{"name"} {
-		fieldName := fmt.Sprintf("%s%s", strings.ToUpper(identifier[:1]), identifier[1:])
-		fieldValue := reflect.ValueOf(data).Elem().FieldByName(fieldName).Interface().(basetypes.StringValue).ValueString()
-		rn = strings.ReplaceAll(rn, fmt.Sprintf("{%s}", identifier), fieldValue)
-	}
-	return rn
+	return fmt.Sprintf("tn-mgmt/extmgmt-default/instp-%s", data.Name.ValueString())
 }
 
 func setMgmtInstPId(ctx context.Context, data *MgmtInstPResourceModel) {
