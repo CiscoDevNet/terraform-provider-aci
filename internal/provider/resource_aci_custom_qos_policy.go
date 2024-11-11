@@ -9,8 +9,11 @@ import (
 	"encoding/json"
 	"fmt"
 
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/validators"
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -20,6 +23,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
@@ -48,6 +52,8 @@ type QosCustomPolResourceModel struct {
 	NameAlias     types.String `tfsdk:"name_alias"`
 	OwnerKey      types.String `tfsdk:"owner_key"`
 	OwnerTag      types.String `tfsdk:"owner_tag"`
+	QosDot1PClass types.Set    `tfsdk:"dot1p_classifiers"`
+	QosDscpClass  types.Set    `tfsdk:"dscp_to_priority_maps"`
 	TagAnnotation types.Set    `tfsdk:"annotations"`
 	TagTag        types.Set    `tfsdk:"tags"`
 }
@@ -62,6 +68,32 @@ func getEmptyQosCustomPolResourceModel() *QosCustomPolResourceModel {
 		NameAlias:  basetypes.NewStringNull(),
 		OwnerKey:   basetypes.NewStringNull(),
 		OwnerTag:   basetypes.NewStringNull(),
+		QosDot1PClass: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"annotation":  types.StringType,
+				"description": types.StringType,
+				"from":        types.StringType,
+				"name":        types.StringType,
+				"name_alias":  types.StringType,
+				"priority":    types.StringType,
+				"target":      types.StringType,
+				"target_cos":  types.StringType,
+				"to":          types.StringType,
+			},
+		}),
+		QosDscpClass: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"annotation":  types.StringType,
+				"description": types.StringType,
+				"from":        types.StringType,
+				"name":        types.StringType,
+				"name_alias":  types.StringType,
+				"priority":    types.StringType,
+				"target":      types.StringType,
+				"target_cos":  types.StringType,
+				"to":          types.StringType,
+			},
+		}),
 		TagAnnotation: types.SetNull(types.ObjectType{
 			AttrTypes: map[string]attr.Type{
 				"key":   types.StringType,
@@ -74,6 +106,60 @@ func getEmptyQosCustomPolResourceModel() *QosCustomPolResourceModel {
 				"value": types.StringType,
 			},
 		}),
+	}
+}
+
+// QosDot1PClassQosCustomPolResourceModel describes the resource data model for the children without relation ships.
+type QosDot1PClassQosCustomPolResourceModel struct {
+	Annotation types.String                                  `tfsdk:"annotation"`
+	Descr      types.String                                  `tfsdk:"description"`
+	From       customTypes.QosDot1PClassFromStringValue      `tfsdk:"from"`
+	Name       types.String                                  `tfsdk:"name"`
+	NameAlias  types.String                                  `tfsdk:"name_alias"`
+	Prio       customTypes.QosDot1PClassPrioStringValue      `tfsdk:"priority"`
+	Target     customTypes.QosDot1PClassTargetStringValue    `tfsdk:"target"`
+	TargetCos  customTypes.QosDot1PClassTargetCosStringValue `tfsdk:"target_cos"`
+	To         customTypes.QosDot1PClassToStringValue        `tfsdk:"to"`
+}
+
+func getEmptyQosDot1PClassQosCustomPolResourceModel() QosDot1PClassQosCustomPolResourceModel {
+	return QosDot1PClassQosCustomPolResourceModel{
+		Annotation: basetypes.NewStringNull(),
+		Descr:      basetypes.NewStringNull(),
+		From:       customTypes.NewQosDot1PClassFromStringNull(),
+		Name:       basetypes.NewStringNull(),
+		NameAlias:  basetypes.NewStringNull(),
+		Prio:       customTypes.NewQosDot1PClassPrioStringNull(),
+		Target:     customTypes.NewQosDot1PClassTargetStringNull(),
+		TargetCos:  customTypes.NewQosDot1PClassTargetCosStringNull(),
+		To:         customTypes.NewQosDot1PClassToStringNull(),
+	}
+}
+
+// QosDscpClassQosCustomPolResourceModel describes the resource data model for the children without relation ships.
+type QosDscpClassQosCustomPolResourceModel struct {
+	Annotation types.String                                 `tfsdk:"annotation"`
+	Descr      types.String                                 `tfsdk:"description"`
+	From       customTypes.QosDscpClassFromStringValue      `tfsdk:"from"`
+	Name       types.String                                 `tfsdk:"name"`
+	NameAlias  types.String                                 `tfsdk:"name_alias"`
+	Prio       customTypes.QosDscpClassPrioStringValue      `tfsdk:"priority"`
+	Target     customTypes.QosDscpClassTargetStringValue    `tfsdk:"target"`
+	TargetCos  customTypes.QosDscpClassTargetCosStringValue `tfsdk:"target_cos"`
+	To         customTypes.QosDscpClassToStringValue        `tfsdk:"to"`
+}
+
+func getEmptyQosDscpClassQosCustomPolResourceModel() QosDscpClassQosCustomPolResourceModel {
+	return QosDscpClassQosCustomPolResourceModel{
+		Annotation: basetypes.NewStringNull(),
+		Descr:      basetypes.NewStringNull(),
+		From:       customTypes.NewQosDscpClassFromStringNull(),
+		Name:       basetypes.NewStringNull(),
+		NameAlias:  basetypes.NewStringNull(),
+		Prio:       customTypes.NewQosDscpClassPrioStringNull(),
+		Target:     customTypes.NewQosDscpClassTargetStringNull(),
+		TargetCos:  customTypes.NewQosDscpClassTargetCosStringNull(),
+		To:         customTypes.NewQosDscpClassToStringNull(),
 	}
 }
 
@@ -215,6 +301,240 @@ func (r *QosCustomPolResource) Schema(ctx context.Context, req resource.SchemaRe
 				},
 				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
 			},
+			"dot1p_classifiers": schema.SetNestedAttribute{
+				MarkdownDescription: `The class level for dot1P to prioritize the map.`,
+				Optional:            true,
+				Computed:            true,
+				PlanModifiers: []planmodifier.Set{
+					setplanmodifier.UseStateForUnknown(),
+				},
+				NestedObject: schema.NestedAttributeObject{
+					Attributes: map[string]schema.Attribute{
+						"annotation": schema.StringAttribute{
+							Optional: true,
+							Computed: true,
+							PlanModifiers: []planmodifier.String{
+								stringplanmodifier.UseStateForUnknown(),
+							},
+							MarkdownDescription: `The annotation of the Dot1p Classifier object.`,
+						},
+						"description": schema.StringAttribute{
+							Optional: true,
+							Computed: true,
+							PlanModifiers: []planmodifier.String{
+								stringplanmodifier.UseStateForUnknown(),
+							},
+							MarkdownDescription: `The description of the Dot1p Classifier object.`,
+						},
+						"from": schema.StringAttribute{
+							CustomType: customTypes.QosDot1PClassFromStringType{},
+							Required:   true,
+							PlanModifiers: []planmodifier.String{
+								stringplanmodifier.UseStateForUnknown(),
+							},
+							Validators: []validator.String{
+								stringvalidator.Any(
+									stringvalidator.OneOf("0", "1", "2", "3", "4", "5", "6", "7", "unspecified"),
+									validators.InBetweenFromString(0, 8),
+								),
+							},
+							MarkdownDescription: `The Dot1p priority range starting value.`,
+						},
+						"name": schema.StringAttribute{
+							Optional: true,
+							Computed: true,
+							PlanModifiers: []planmodifier.String{
+								stringplanmodifier.UseStateForUnknown(),
+							},
+							MarkdownDescription: `The name of the Dot1p Classifier object.`,
+						},
+						"name_alias": schema.StringAttribute{
+							Optional: true,
+							Computed: true,
+							PlanModifiers: []planmodifier.String{
+								stringplanmodifier.UseStateForUnknown(),
+							},
+							MarkdownDescription: `The name alias of the Dot1p Classifier object.`,
+						},
+						"priority": schema.StringAttribute{
+							CustomType: customTypes.QosDot1PClassPrioStringType{},
+							Optional:   true,
+							Computed:   true,
+							PlanModifiers: []planmodifier.String{
+								stringplanmodifier.UseStateForUnknown(),
+							},
+							Validators: []validator.String{
+								stringvalidator.Any(
+									stringvalidator.OneOf("level1", "level2", "level3", "level4", "level5", "level6", "unspecified"),
+									validators.InBetweenFromString(0, 9),
+								),
+							},
+							MarkdownDescription: `The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.`,
+						},
+						"target": schema.StringAttribute{
+							CustomType: customTypes.QosDot1PClassTargetStringType{},
+							Optional:   true,
+							Computed:   true,
+							PlanModifiers: []planmodifier.String{
+								stringplanmodifier.UseStateForUnknown(),
+							},
+							Validators: []validator.String{
+								stringvalidator.Any(
+									stringvalidator.OneOf("AF11", "AF12", "AF13", "AF21", "AF22", "AF23", "AF31", "AF32", "AF33", "AF41", "AF42", "AF43", "CS0", "CS1", "CS2", "CS3", "CS4", "CS5", "CS6", "CS7", "EF", "VA", "unspecified"),
+									validators.InBetweenFromString(0, 64),
+								),
+							},
+							MarkdownDescription: `Our Fabric only supports DSCP mutation. Dot1P mutation is not supported.`,
+						},
+						"target_cos": schema.StringAttribute{
+							CustomType: customTypes.QosDot1PClassTargetCosStringType{},
+							Optional:   true,
+							Computed:   true,
+							PlanModifiers: []planmodifier.String{
+								stringplanmodifier.UseStateForUnknown(),
+							},
+							Validators: []validator.String{
+								stringvalidator.Any(
+									stringvalidator.OneOf("0", "1", "2", "3", "4", "5", "6", "7", "unspecified"),
+									validators.InBetweenFromString(0, 8),
+								),
+							},
+							MarkdownDescription: `Target COS to be driven based on the range of input values of DSCP coming into the fabric.`,
+						},
+						"to": schema.StringAttribute{
+							CustomType: customTypes.QosDot1PClassToStringType{},
+							Required:   true,
+							PlanModifiers: []planmodifier.String{
+								stringplanmodifier.UseStateForUnknown(),
+							},
+							Validators: []validator.String{
+								stringvalidator.Any(
+									stringvalidator.OneOf("0", "1", "2", "3", "4", "5", "6", "7", "unspecified"),
+									validators.InBetweenFromString(0, 8),
+								),
+							},
+							MarkdownDescription: `The Dot1p priority range ending value.`,
+						},
+					},
+				},
+			},
+			"dscp_to_priority_maps": schema.SetNestedAttribute{
+				MarkdownDescription: `The class level for DSCP to prioritize the map.`,
+				Optional:            true,
+				Computed:            true,
+				PlanModifiers: []planmodifier.Set{
+					setplanmodifier.UseStateForUnknown(),
+				},
+				NestedObject: schema.NestedAttributeObject{
+					Attributes: map[string]schema.Attribute{
+						"annotation": schema.StringAttribute{
+							Optional: true,
+							Computed: true,
+							PlanModifiers: []planmodifier.String{
+								stringplanmodifier.UseStateForUnknown(),
+							},
+							MarkdownDescription: `The annotation of the Dscp To Priority Map object.`,
+						},
+						"description": schema.StringAttribute{
+							Optional: true,
+							Computed: true,
+							PlanModifiers: []planmodifier.String{
+								stringplanmodifier.UseStateForUnknown(),
+							},
+							MarkdownDescription: `The description of the Dscp To Priority Map object.`,
+						},
+						"from": schema.StringAttribute{
+							CustomType: customTypes.QosDscpClassFromStringType{},
+							Required:   true,
+							PlanModifiers: []planmodifier.String{
+								stringplanmodifier.UseStateForUnknown(),
+							},
+							Validators: []validator.String{
+								stringvalidator.Any(
+									stringvalidator.OneOf("AF11", "AF12", "AF13", "AF21", "AF22", "AF23", "AF31", "AF32", "AF33", "AF41", "AF42", "AF43", "CS0", "CS1", "CS2", "CS3", "CS4", "CS5", "CS6", "CS7", "EF", "VA"),
+									validators.InBetweenFromString(0, 63),
+								),
+							},
+							MarkdownDescription: `The DSCP range starting value.`,
+						},
+						"name": schema.StringAttribute{
+							Optional: true,
+							Computed: true,
+							PlanModifiers: []planmodifier.String{
+								stringplanmodifier.UseStateForUnknown(),
+							},
+							MarkdownDescription: `The name of the Dscp To Priority Map object.`,
+						},
+						"name_alias": schema.StringAttribute{
+							Optional: true,
+							Computed: true,
+							PlanModifiers: []planmodifier.String{
+								stringplanmodifier.UseStateForUnknown(),
+							},
+							MarkdownDescription: `The name alias of the Dscp To Priority Map object.`,
+						},
+						"priority": schema.StringAttribute{
+							CustomType: customTypes.QosDscpClassPrioStringType{},
+							Optional:   true,
+							Computed:   true,
+							PlanModifiers: []planmodifier.String{
+								stringplanmodifier.UseStateForUnknown(),
+							},
+							Validators: []validator.String{
+								stringvalidator.Any(
+									stringvalidator.OneOf("level1", "level2", "level3", "level4", "level5", "level6", "unspecified"),
+									validators.InBetweenFromString(0, 9),
+								),
+							},
+							MarkdownDescription: `The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.`,
+						},
+						"target": schema.StringAttribute{
+							CustomType: customTypes.QosDscpClassTargetStringType{},
+							Optional:   true,
+							Computed:   true,
+							PlanModifiers: []planmodifier.String{
+								stringplanmodifier.UseStateForUnknown(),
+							},
+							Validators: []validator.String{
+								stringvalidator.Any(
+									stringvalidator.OneOf("AF11", "AF12", "AF13", "AF21", "AF22", "AF23", "AF31", "AF32", "AF33", "AF41", "AF42", "AF43", "CS0", "CS1", "CS2", "CS3", "CS4", "CS5", "CS6", "CS7", "EF", "VA", "unspecified"),
+									validators.InBetweenFromString(0, 64),
+								),
+							},
+							MarkdownDescription: `Our Fabric only supports DSCP mutation. Dot1P mutation is not supported.`,
+						},
+						"target_cos": schema.StringAttribute{
+							CustomType: customTypes.QosDscpClassTargetCosStringType{},
+							Optional:   true,
+							Computed:   true,
+							PlanModifiers: []planmodifier.String{
+								stringplanmodifier.UseStateForUnknown(),
+							},
+							Validators: []validator.String{
+								stringvalidator.Any(
+									stringvalidator.OneOf("0", "1", "2", "3", "4", "5", "6", "7", "unspecified"),
+									validators.InBetweenFromString(0, 8),
+								),
+							},
+							MarkdownDescription: `Target COS to be driven based on the range of input values of DSCP coming into the fabric.`,
+						},
+						"to": schema.StringAttribute{
+							CustomType: customTypes.QosDscpClassToStringType{},
+							Required:   true,
+							PlanModifiers: []planmodifier.String{
+								stringplanmodifier.UseStateForUnknown(),
+							},
+							Validators: []validator.String{
+								stringvalidator.Any(
+									stringvalidator.OneOf("AF11", "AF12", "AF13", "AF21", "AF22", "AF23", "AF31", "AF32", "AF33", "AF41", "AF42", "AF43", "CS0", "CS1", "CS2", "CS3", "CS4", "CS5", "CS6", "CS7", "EF", "VA"),
+									validators.InBetweenFromString(0, 63),
+								),
+							},
+							MarkdownDescription: `The DSCP range ending value.`,
+						},
+					},
+				},
+			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,
 				Optional:            true,
@@ -326,13 +646,19 @@ func (r *QosCustomPolResource) Create(ctx context.Context, req resource.CreateRe
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_custom_qos_policy with id '%s'", data.Id.ValueString()))
 
+	var qosDot1PClassPlan, qosDot1PClassState []QosDot1PClassQosCustomPolResourceModel
+	data.QosDot1PClass.ElementsAs(ctx, &qosDot1PClassPlan, false)
+	stateData.QosDot1PClass.ElementsAs(ctx, &qosDot1PClassState, false)
+	var qosDscpClassPlan, qosDscpClassState []QosDscpClassQosCustomPolResourceModel
+	data.QosDscpClass.ElementsAs(ctx, &qosDscpClassPlan, false)
+	stateData.QosDscpClass.ElementsAs(ctx, &qosDscpClassState, false)
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationQosCustomPolResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
 	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
 	var tagTagPlan, tagTagState []TagTagQosCustomPolResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getQosCustomPolCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := getQosCustomPolCreateJsonPayload(ctx, &resp.Diagnostics, true, data, qosDot1PClassPlan, qosDot1PClassState, qosDscpClassPlan, qosDscpClassState, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -392,13 +718,19 @@ func (r *QosCustomPolResource) Update(ctx context.Context, req resource.UpdateRe
 
 	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_custom_qos_policy with id '%s'", data.Id.ValueString()))
 
+	var qosDot1PClassPlan, qosDot1PClassState []QosDot1PClassQosCustomPolResourceModel
+	data.QosDot1PClass.ElementsAs(ctx, &qosDot1PClassPlan, false)
+	stateData.QosDot1PClass.ElementsAs(ctx, &qosDot1PClassState, false)
+	var qosDscpClassPlan, qosDscpClassState []QosDscpClassQosCustomPolResourceModel
+	data.QosDscpClass.ElementsAs(ctx, &qosDscpClassPlan, false)
+	stateData.QosDscpClass.ElementsAs(ctx, &qosDscpClassState, false)
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationQosCustomPolResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
 	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
 	var tagTagPlan, tagTagState []TagTagQosCustomPolResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getQosCustomPolCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := getQosCustomPolCreateJsonPayload(ctx, &resp.Diagnostics, false, data, qosDot1PClassPlan, qosDot1PClassState, qosDscpClassPlan, qosDscpClassState, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -452,7 +784,7 @@ func (r *QosCustomPolResource) ImportState(ctx context.Context, req resource.Imp
 }
 
 func getAndSetQosCustomPolAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *QosCustomPolResourceModel) {
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "qosCustomPol,tagAnnotation,tagTag"), "GET", nil)
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "qosCustomPol,qosDot1PClass,qosDscpClass,tagAnnotation,tagTag"), "GET", nil)
 
 	readData := getEmptyQosCustomPolResourceModel()
 
@@ -487,6 +819,8 @@ func getAndSetQosCustomPolAttributes(ctx context.Context, diags *diag.Diagnostic
 					readData.OwnerTag = basetypes.NewStringValue(attributeValue.(string))
 				}
 			}
+			QosDot1PClassQosCustomPolList := make([]QosDot1PClassQosCustomPolResourceModel, 0)
+			QosDscpClassQosCustomPolList := make([]QosDscpClassQosCustomPolResourceModel, 0)
 			TagAnnotationQosCustomPolList := make([]TagAnnotationQosCustomPolResourceModel, 0)
 			TagTagQosCustomPolList := make([]TagTagQosCustomPolResourceModel, 0)
 			_, ok := classReadInfo[0].(map[string]interface{})["children"]
@@ -495,6 +829,72 @@ func getAndSetQosCustomPolAttributes(ctx context.Context, diags *diag.Diagnostic
 				for _, child := range children {
 					for childClassName, childClassDetails := range child.(map[string]interface{}) {
 						childAttributes := childClassDetails.(map[string]interface{})["attributes"].(map[string]interface{})
+						if childClassName == "qosDot1PClass" {
+							QosDot1PClassQosCustomPol := getEmptyQosDot1PClassQosCustomPolResourceModel()
+							for childAttributeName, childAttributeValue := range childAttributes {
+								if childAttributeName == "annotation" {
+									QosDot1PClassQosCustomPol.Annotation = basetypes.NewStringValue(childAttributeValue.(string))
+								}
+								if childAttributeName == "descr" {
+									QosDot1PClassQosCustomPol.Descr = basetypes.NewStringValue(childAttributeValue.(string))
+								}
+								if childAttributeName == "from" {
+									QosDot1PClassQosCustomPol.From = customTypes.NewQosDot1PClassFromStringValue(childAttributeValue.(string))
+								}
+								if childAttributeName == "name" {
+									QosDot1PClassQosCustomPol.Name = basetypes.NewStringValue(childAttributeValue.(string))
+								}
+								if childAttributeName == "nameAlias" {
+									QosDot1PClassQosCustomPol.NameAlias = basetypes.NewStringValue(childAttributeValue.(string))
+								}
+								if childAttributeName == "prio" {
+									QosDot1PClassQosCustomPol.Prio = customTypes.NewQosDot1PClassPrioStringValue(childAttributeValue.(string))
+								}
+								if childAttributeName == "target" {
+									QosDot1PClassQosCustomPol.Target = customTypes.NewQosDot1PClassTargetStringValue(childAttributeValue.(string))
+								}
+								if childAttributeName == "targetCos" {
+									QosDot1PClassQosCustomPol.TargetCos = customTypes.NewQosDot1PClassTargetCosStringValue(childAttributeValue.(string))
+								}
+								if childAttributeName == "to" {
+									QosDot1PClassQosCustomPol.To = customTypes.NewQosDot1PClassToStringValue(childAttributeValue.(string))
+								}
+							}
+							QosDot1PClassQosCustomPolList = append(QosDot1PClassQosCustomPolList, QosDot1PClassQosCustomPol)
+						}
+						if childClassName == "qosDscpClass" {
+							QosDscpClassQosCustomPol := getEmptyQosDscpClassQosCustomPolResourceModel()
+							for childAttributeName, childAttributeValue := range childAttributes {
+								if childAttributeName == "annotation" {
+									QosDscpClassQosCustomPol.Annotation = basetypes.NewStringValue(childAttributeValue.(string))
+								}
+								if childAttributeName == "descr" {
+									QosDscpClassQosCustomPol.Descr = basetypes.NewStringValue(childAttributeValue.(string))
+								}
+								if childAttributeName == "from" {
+									QosDscpClassQosCustomPol.From = customTypes.NewQosDscpClassFromStringValue(childAttributeValue.(string))
+								}
+								if childAttributeName == "name" {
+									QosDscpClassQosCustomPol.Name = basetypes.NewStringValue(childAttributeValue.(string))
+								}
+								if childAttributeName == "nameAlias" {
+									QosDscpClassQosCustomPol.NameAlias = basetypes.NewStringValue(childAttributeValue.(string))
+								}
+								if childAttributeName == "prio" {
+									QosDscpClassQosCustomPol.Prio = customTypes.NewQosDscpClassPrioStringValue(childAttributeValue.(string))
+								}
+								if childAttributeName == "target" {
+									QosDscpClassQosCustomPol.Target = customTypes.NewQosDscpClassTargetStringValue(childAttributeValue.(string))
+								}
+								if childAttributeName == "targetCos" {
+									QosDscpClassQosCustomPol.TargetCos = customTypes.NewQosDscpClassTargetCosStringValue(childAttributeValue.(string))
+								}
+								if childAttributeName == "to" {
+									QosDscpClassQosCustomPol.To = customTypes.NewQosDscpClassToStringValue(childAttributeValue.(string))
+								}
+							}
+							QosDscpClassQosCustomPolList = append(QosDscpClassQosCustomPolList, QosDscpClassQosCustomPol)
+						}
 						if childClassName == "tagAnnotation" {
 							TagAnnotationQosCustomPol := getEmptyTagAnnotationQosCustomPolResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
@@ -522,6 +922,10 @@ func getAndSetQosCustomPolAttributes(ctx context.Context, diags *diag.Diagnostic
 					}
 				}
 			}
+			qosDot1PClassSet, _ := types.SetValueFrom(ctx, readData.QosDot1PClass.ElementType(ctx), QosDot1PClassQosCustomPolList)
+			readData.QosDot1PClass = qosDot1PClassSet
+			qosDscpClassSet, _ := types.SetValueFrom(ctx, readData.QosDscpClass.ElementType(ctx), QosDscpClassQosCustomPolList)
+			readData.QosDscpClass = qosDscpClassSet
 			tagAnnotationSet, _ := types.SetValueFrom(ctx, readData.TagAnnotation.ElementType(ctx), TagAnnotationQosCustomPolList)
 			readData.TagAnnotation = tagAnnotationSet
 			tagTagSet, _ := types.SetValueFrom(ctx, readData.TagTag.ElementType(ctx), TagTagQosCustomPolList)
@@ -563,6 +967,136 @@ func setQosCustomPolId(ctx context.Context, data *QosCustomPolResourceModel) {
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
 
+func getQosCustomPolQosDot1PClassChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *QosCustomPolResourceModel, qosDot1PClassPlan, qosDot1PClassState []QosDot1PClassQosCustomPolResourceModel) []map[string]interface{} {
+
+	childPayloads := []map[string]interface{}{}
+	if !data.QosDot1PClass.IsUnknown() {
+		qosDot1PClassIdentifiers := []QosDot1PClassIdentifier{}
+		for _, qosDot1PClass := range qosDot1PClassPlan {
+			childMap := map[string]map[string]interface{}{"attributes": {}}
+			if !qosDot1PClass.Annotation.IsUnknown() && !qosDot1PClass.Annotation.IsNull() {
+				childMap["attributes"]["annotation"] = qosDot1PClass.Annotation.ValueString()
+			} else {
+				childMap["attributes"]["annotation"] = globalAnnotation
+			}
+			if !qosDot1PClass.Descr.IsUnknown() && !qosDot1PClass.Descr.IsNull() {
+				childMap["attributes"]["descr"] = qosDot1PClass.Descr.ValueString()
+			}
+			if !qosDot1PClass.From.IsUnknown() && !qosDot1PClass.From.IsNull() {
+				childMap["attributes"]["from"] = qosDot1PClass.From.ValueString()
+			}
+			if !qosDot1PClass.Name.IsUnknown() && !qosDot1PClass.Name.IsNull() {
+				childMap["attributes"]["name"] = qosDot1PClass.Name.ValueString()
+			}
+			if !qosDot1PClass.NameAlias.IsUnknown() && !qosDot1PClass.NameAlias.IsNull() {
+				childMap["attributes"]["nameAlias"] = qosDot1PClass.NameAlias.ValueString()
+			}
+			if !qosDot1PClass.Prio.IsUnknown() && !qosDot1PClass.Prio.IsNull() {
+				childMap["attributes"]["prio"] = qosDot1PClass.Prio.ValueString()
+			}
+			if !qosDot1PClass.Target.IsUnknown() && !qosDot1PClass.Target.IsNull() {
+				childMap["attributes"]["target"] = qosDot1PClass.Target.ValueString()
+			}
+			if !qosDot1PClass.TargetCos.IsUnknown() && !qosDot1PClass.TargetCos.IsNull() {
+				childMap["attributes"]["targetCos"] = qosDot1PClass.TargetCos.ValueString()
+			}
+			if !qosDot1PClass.To.IsUnknown() && !qosDot1PClass.To.IsNull() {
+				childMap["attributes"]["to"] = qosDot1PClass.To.ValueString()
+			}
+			childPayloads = append(childPayloads, map[string]interface{}{"qosDot1PClass": childMap})
+			qosDot1PClassIdentifier := QosDot1PClassIdentifier{}
+			qosDot1PClassIdentifier.From = basetypes.NewStringValue(qosDot1PClass.From.ValueString())
+			qosDot1PClassIdentifier.To = basetypes.NewStringValue(qosDot1PClass.To.ValueString())
+			qosDot1PClassIdentifiers = append(qosDot1PClassIdentifiers, qosDot1PClassIdentifier)
+		}
+		for _, qosDot1PClass := range qosDot1PClassState {
+			delete := true
+			for _, qosDot1PClassIdentifier := range qosDot1PClassIdentifiers {
+				if qosDot1PClassIdentifier.From == basetypes.NewStringValue(qosDot1PClass.From.ValueString()) &&
+					qosDot1PClassIdentifier.To == basetypes.NewStringValue(qosDot1PClass.To.ValueString()) {
+					delete = false
+					break
+				}
+			}
+			if delete {
+				childMap := map[string]map[string]interface{}{"attributes": {}}
+				childMap["attributes"]["status"] = "deleted"
+				childMap["attributes"]["from"] = qosDot1PClass.From.ValueString()
+				childMap["attributes"]["to"] = qosDot1PClass.To.ValueString()
+				childPayloads = append(childPayloads, map[string]interface{}{"qosDot1PClass": childMap})
+			}
+		}
+	} else {
+		data.QosDot1PClass = types.SetNull(data.QosDot1PClass.ElementType(ctx))
+	}
+
+	return childPayloads
+}
+func getQosCustomPolQosDscpClassChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *QosCustomPolResourceModel, qosDscpClassPlan, qosDscpClassState []QosDscpClassQosCustomPolResourceModel) []map[string]interface{} {
+
+	childPayloads := []map[string]interface{}{}
+	if !data.QosDscpClass.IsUnknown() {
+		qosDscpClassIdentifiers := []QosDscpClassIdentifier{}
+		for _, qosDscpClass := range qosDscpClassPlan {
+			childMap := map[string]map[string]interface{}{"attributes": {}}
+			if !qosDscpClass.Annotation.IsUnknown() && !qosDscpClass.Annotation.IsNull() {
+				childMap["attributes"]["annotation"] = qosDscpClass.Annotation.ValueString()
+			} else {
+				childMap["attributes"]["annotation"] = globalAnnotation
+			}
+			if !qosDscpClass.Descr.IsUnknown() && !qosDscpClass.Descr.IsNull() {
+				childMap["attributes"]["descr"] = qosDscpClass.Descr.ValueString()
+			}
+			if !qosDscpClass.From.IsUnknown() && !qosDscpClass.From.IsNull() {
+				childMap["attributes"]["from"] = qosDscpClass.From.ValueString()
+			}
+			if !qosDscpClass.Name.IsUnknown() && !qosDscpClass.Name.IsNull() {
+				childMap["attributes"]["name"] = qosDscpClass.Name.ValueString()
+			}
+			if !qosDscpClass.NameAlias.IsUnknown() && !qosDscpClass.NameAlias.IsNull() {
+				childMap["attributes"]["nameAlias"] = qosDscpClass.NameAlias.ValueString()
+			}
+			if !qosDscpClass.Prio.IsUnknown() && !qosDscpClass.Prio.IsNull() {
+				childMap["attributes"]["prio"] = qosDscpClass.Prio.ValueString()
+			}
+			if !qosDscpClass.Target.IsUnknown() && !qosDscpClass.Target.IsNull() {
+				childMap["attributes"]["target"] = qosDscpClass.Target.ValueString()
+			}
+			if !qosDscpClass.TargetCos.IsUnknown() && !qosDscpClass.TargetCos.IsNull() {
+				childMap["attributes"]["targetCos"] = qosDscpClass.TargetCos.ValueString()
+			}
+			if !qosDscpClass.To.IsUnknown() && !qosDscpClass.To.IsNull() {
+				childMap["attributes"]["to"] = qosDscpClass.To.ValueString()
+			}
+			childPayloads = append(childPayloads, map[string]interface{}{"qosDscpClass": childMap})
+			qosDscpClassIdentifier := QosDscpClassIdentifier{}
+			qosDscpClassIdentifier.From = basetypes.NewStringValue(qosDscpClass.From.ValueString())
+			qosDscpClassIdentifier.To = basetypes.NewStringValue(qosDscpClass.To.ValueString())
+			qosDscpClassIdentifiers = append(qosDscpClassIdentifiers, qosDscpClassIdentifier)
+		}
+		for _, qosDscpClass := range qosDscpClassState {
+			delete := true
+			for _, qosDscpClassIdentifier := range qosDscpClassIdentifiers {
+				if qosDscpClassIdentifier.From == basetypes.NewStringValue(qosDscpClass.From.ValueString()) &&
+					qosDscpClassIdentifier.To == basetypes.NewStringValue(qosDscpClass.To.ValueString()) {
+					delete = false
+					break
+				}
+			}
+			if delete {
+				childMap := map[string]map[string]interface{}{"attributes": {}}
+				childMap["attributes"]["status"] = "deleted"
+				childMap["attributes"]["from"] = qosDscpClass.From.ValueString()
+				childMap["attributes"]["to"] = qosDscpClass.To.ValueString()
+				childPayloads = append(childPayloads, map[string]interface{}{"qosDscpClass": childMap})
+			}
+		}
+	} else {
+		data.QosDscpClass = types.SetNull(data.QosDscpClass.ElementType(ctx))
+	}
+
+	return childPayloads
+}
 func getQosCustomPolTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *QosCustomPolResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationQosCustomPolResourceModel) []map[string]interface{} {
 
 	childPayloads := []map[string]interface{}{}
@@ -642,7 +1176,7 @@ func getQosCustomPolTagTagChildPayloads(ctx context.Context, diags *diag.Diagnos
 	return childPayloads
 }
 
-func getQosCustomPolCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *QosCustomPolResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationQosCustomPolResourceModel, tagTagPlan, tagTagState []TagTagQosCustomPolResourceModel) *container.Container {
+func getQosCustomPolCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *QosCustomPolResourceModel, qosDot1PClassPlan, qosDot1PClassState []QosDot1PClassQosCustomPolResourceModel, qosDscpClassPlan, qosDscpClassState []QosDscpClassQosCustomPolResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationQosCustomPolResourceModel, tagTagPlan, tagTagState []TagTagQosCustomPolResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 
@@ -650,6 +1184,18 @@ func getQosCustomPolCreateJsonPayload(ctx context.Context, diags *diag.Diagnosti
 		payloadMap["attributes"].(map[string]string)["status"] = "created"
 	}
 	childPayloads := []map[string]interface{}{}
+
+	QosDot1PClasschildPayloads := getQosCustomPolQosDot1PClassChildPayloads(ctx, diags, data, qosDot1PClassPlan, qosDot1PClassState)
+	if QosDot1PClasschildPayloads == nil {
+		return nil
+	}
+	childPayloads = append(childPayloads, QosDot1PClasschildPayloads...)
+
+	QosDscpClasschildPayloads := getQosCustomPolQosDscpClassChildPayloads(ctx, diags, data, qosDscpClassPlan, qosDscpClassState)
+	if QosDscpClasschildPayloads == nil {
+		return nil
+	}
+	childPayloads = append(childPayloads, QosDscpClasschildPayloads...)
 
 	TagAnnotationchildPayloads := getQosCustomPolTagAnnotationChildPayloads(ctx, diags, data, tagAnnotationPlan, tagAnnotationState)
 	if TagAnnotationchildPayloads == nil {

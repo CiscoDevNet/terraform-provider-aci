@@ -920,6 +920,50 @@ qosCustomPol:
     - class_name: "fvTenant"
       parent_dn: "aci_tenant.test.id"
 
+qosDscpClass:
+  parents:
+    - class_name: "qosCustomPol"
+      parent_dependency: "fvTenant"
+      parent_dn: "aci_custom_qos_policy.test.id"
+  test_values:
+    default:
+      from: "AF11"
+      to: "AF22"
+    all:
+      from: "CS1"
+      to: "CS5"
+    resource_required:
+      from: "AF11"
+      to: "AF22"
+    datasource_required:
+      from: "AF11"
+      to: "AF22"
+    datasource_non_existing:
+      from: "AF31"
+      to: "AF42"
+
+qosDot1PClass:
+  parents:
+    - class_name: "qosCustomPol"
+      parent_dependency: "fvTenant"
+      parent_dn: "aci_custom_qos_policy.test.id"
+  test_values:
+    default:
+      from: "1"
+      to: "2"
+    all:
+      from: "4"
+      to: "5"
+    resource_required:
+      from: "1"
+      to: "2"
+    datasource_required:
+      from: "1"
+      to: "2"
+    datasource_non_existing:
+      from: "6"
+      to: "7"
+
 fhsTrustCtrlPol:
   default_values:
     hasDhcpv4Server: "no"
