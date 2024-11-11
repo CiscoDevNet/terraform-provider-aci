@@ -8,8 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"reflect"
-	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
@@ -485,13 +483,7 @@ func getAndSetFvRsProtByAttributes(ctx context.Context, diags *diag.Diagnostics,
 }
 
 func getFvRsProtByRn(ctx context.Context, data *FvRsProtByResourceModel) string {
-	rn := "rsprotBy-{tnVzTabooName}"
-	for _, identifier := range []string{"tnVzTabooName"} {
-		fieldName := fmt.Sprintf("%s%s", strings.ToUpper(identifier[:1]), identifier[1:])
-		fieldValue := reflect.ValueOf(data).Elem().FieldByName(fieldName).Interface().(basetypes.StringValue).ValueString()
-		rn = strings.ReplaceAll(rn, fmt.Sprintf("{%s}", identifier), fieldValue)
-	}
-	return rn
+	return fmt.Sprintf("rsprotBy-%s", data.TnVzTabooName.ValueString())
 }
 
 func setFvRsProtByParentDn(ctx context.Context, dn string, data *FvRsProtByResourceModel) {

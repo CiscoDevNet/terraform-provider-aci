@@ -8,8 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"reflect"
-	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
@@ -485,13 +483,7 @@ func getAndSetNetflowRsMonitorToExporterAttributes(ctx context.Context, diags *d
 }
 
 func getNetflowRsMonitorToExporterRn(ctx context.Context, data *NetflowRsMonitorToExporterResourceModel) string {
-	rn := "rsmonitorToExporter-{tnNetflowExporterPolName}"
-	for _, identifier := range []string{"tnNetflowExporterPolName"} {
-		fieldName := fmt.Sprintf("%s%s", strings.ToUpper(identifier[:1]), identifier[1:])
-		fieldValue := reflect.ValueOf(data).Elem().FieldByName(fieldName).Interface().(basetypes.StringValue).ValueString()
-		rn = strings.ReplaceAll(rn, fmt.Sprintf("{%s}", identifier), fieldValue)
-	}
-	return rn
+	return fmt.Sprintf("rsmonitorToExporter-%s", data.TnNetflowExporterPolName.ValueString())
 }
 
 func setNetflowRsMonitorToExporterParentDn(ctx context.Context, dn string, data *NetflowRsMonitorToExporterResourceModel) {

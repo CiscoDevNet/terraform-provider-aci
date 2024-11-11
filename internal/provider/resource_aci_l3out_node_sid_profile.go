@@ -8,8 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"reflect"
-	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
@@ -541,13 +539,7 @@ func getAndSetMplsNodeSidPAttributes(ctx context.Context, diags *diag.Diagnostic
 }
 
 func getMplsNodeSidPRn(ctx context.Context, data *MplsNodeSidPResourceModel) string {
-	rn := "nodesidp-{sidoffset}"
-	for _, identifier := range []string{"sidoffset"} {
-		fieldName := fmt.Sprintf("%s%s", strings.ToUpper(identifier[:1]), identifier[1:])
-		fieldValue := reflect.ValueOf(data).Elem().FieldByName(fieldName).Interface().(basetypes.StringValue).ValueString()
-		rn = strings.ReplaceAll(rn, fmt.Sprintf("{%s}", identifier), fieldValue)
-	}
-	return rn
+	return fmt.Sprintf("nodesidp-%s", data.Sidoffset.ValueString())
 }
 
 func setMplsNodeSidPParentDn(ctx context.Context, dn string, data *MplsNodeSidPResourceModel) {

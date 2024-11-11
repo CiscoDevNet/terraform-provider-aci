@@ -112,6 +112,10 @@ func (v NetflowExporterPolDstPortStringValue) StringSemanticEquals(ctx context.C
 	return priorMappedValue.Equal(newMappedValue), diags
 }
 
+func (v NetflowExporterPolDstPortStringValue) NamedValueString() string {
+	return NetflowExporterPolDstPortValueMap(basetypes.NewStringValue(v.ValueString())).ValueString()
+}
+
 func NetflowExporterPolDstPortValueMap(value basetypes.StringValue) basetypes.StringValue {
 	matchMap := map[string]string{
 		"0":   "unspecified",

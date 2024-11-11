@@ -8,8 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"reflect"
-	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
@@ -578,13 +576,7 @@ func getAndSetRtctrlProfileAttributes(ctx context.Context, diags *diag.Diagnosti
 }
 
 func getRtctrlProfileRn(ctx context.Context, data *RtctrlProfileResourceModel) string {
-	rn := "prof-{name}"
-	for _, identifier := range []string{"name"} {
-		fieldName := fmt.Sprintf("%s%s", strings.ToUpper(identifier[:1]), identifier[1:])
-		fieldValue := reflect.ValueOf(data).Elem().FieldByName(fieldName).Interface().(basetypes.StringValue).ValueString()
-		rn = strings.ReplaceAll(rn, fmt.Sprintf("{%s}", identifier), fieldValue)
-	}
-	return rn
+	return fmt.Sprintf("prof-%s", data.Name.ValueString())
 }
 
 func setRtctrlProfileParentDn(ctx context.Context, dn string, data *RtctrlProfileResourceModel) {

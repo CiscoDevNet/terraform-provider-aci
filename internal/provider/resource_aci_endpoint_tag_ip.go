@@ -8,7 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"reflect"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
@@ -542,13 +541,7 @@ func getAndSetFvEpIpTagAttributes(ctx context.Context, diags *diag.Diagnostics, 
 }
 
 func getFvEpIpTagRn(ctx context.Context, data *FvEpIpTagResourceModel) string {
-	rn := "eptags/epiptag-[{ip}]-{ctxName}"
-	for _, identifier := range []string{"ip", "ctxName"} {
-		fieldName := fmt.Sprintf("%s%s", strings.ToUpper(identifier[:1]), identifier[1:])
-		fieldValue := reflect.ValueOf(data).Elem().FieldByName(fieldName).Interface().(basetypes.StringValue).ValueString()
-		rn = strings.ReplaceAll(rn, fmt.Sprintf("{%s}", identifier), fieldValue)
-	}
-	return rn
+	return fmt.Sprintf("eptags/epiptag-[%s]-%s", data.Ip.ValueString(), data.CtxName.ValueString())
 }
 
 func setFvEpIpTagParentDn(ctx context.Context, dn string, data *FvEpIpTagResourceModel) {

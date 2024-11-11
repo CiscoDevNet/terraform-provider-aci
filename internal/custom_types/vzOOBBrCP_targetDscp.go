@@ -112,6 +112,10 @@ func (v VzOOBBrCPTargetDscpStringValue) StringSemanticEquals(ctx context.Context
 	return priorMappedValue.Equal(newMappedValue), diags
 }
 
+func (v VzOOBBrCPTargetDscpStringValue) NamedValueString() string {
+	return VzOOBBrCPTargetDscpValueMap(basetypes.NewStringValue(v.ValueString())).ValueString()
+}
+
 func VzOOBBrCPTargetDscpValueMap(value basetypes.StringValue) basetypes.StringValue {
 	matchMap := map[string]string{
 		"0":  "CS0",

@@ -112,6 +112,10 @@ func (v FvRsConsIfPrioStringValue) StringSemanticEquals(ctx context.Context, new
 	return priorMappedValue.Equal(newMappedValue), diags
 }
 
+func (v FvRsConsIfPrioStringValue) NamedValueString() string {
+	return FvRsConsIfPrioValueMap(basetypes.NewStringValue(v.ValueString())).ValueString()
+}
+
 func FvRsConsIfPrioValueMap(value basetypes.StringValue) basetypes.StringValue {
 	matchMap := map[string]string{
 		"0": "unspecified",

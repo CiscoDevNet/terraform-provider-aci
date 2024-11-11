@@ -8,8 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"reflect"
-	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
@@ -645,13 +643,7 @@ func getAndSetFhsTrustCtrlPolAttributes(ctx context.Context, diags *diag.Diagnos
 }
 
 func getFhsTrustCtrlPolRn(ctx context.Context, data *FhsTrustCtrlPolResourceModel) string {
-	rn := "trustctrlpol-{name}"
-	for _, identifier := range []string{"name"} {
-		fieldName := fmt.Sprintf("%s%s", strings.ToUpper(identifier[:1]), identifier[1:])
-		fieldValue := reflect.ValueOf(data).Elem().FieldByName(fieldName).Interface().(basetypes.StringValue).ValueString()
-		rn = strings.ReplaceAll(rn, fmt.Sprintf("{%s}", identifier), fieldValue)
-	}
-	return rn
+	return fmt.Sprintf("trustctrlpol-%s", data.Name.ValueString())
 }
 
 func setFhsTrustCtrlPolParentDn(ctx context.Context, dn string, data *FhsTrustCtrlPolResourceModel) {

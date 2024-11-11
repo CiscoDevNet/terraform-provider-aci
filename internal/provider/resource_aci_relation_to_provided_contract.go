@@ -8,8 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"reflect"
-	"strings"
 
 	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/validators"
@@ -527,13 +525,7 @@ func getAndSetFvRsProvAttributes(ctx context.Context, diags *diag.Diagnostics, c
 }
 
 func getFvRsProvRn(ctx context.Context, data *FvRsProvResourceModel) string {
-	rn := "rsprov-{tnVzBrCPName}"
-	for _, identifier := range []string{"tnVzBrCPName"} {
-		fieldName := fmt.Sprintf("%s%s", strings.ToUpper(identifier[:1]), identifier[1:])
-		fieldValue := reflect.ValueOf(data).Elem().FieldByName(fieldName).Interface().(basetypes.StringValue).ValueString()
-		rn = strings.ReplaceAll(rn, fmt.Sprintf("{%s}", identifier), fieldValue)
-	}
-	return rn
+	return fmt.Sprintf("rsprov-%s", data.TnVzBrCPName.ValueString())
 }
 
 func setFvRsProvParentDn(ctx context.Context, dn string, data *FvRsProvResourceModel) {

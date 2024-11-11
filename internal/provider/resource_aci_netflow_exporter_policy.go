@@ -8,8 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"reflect"
-	"strings"
 
 	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/validators"
@@ -813,13 +811,7 @@ func getAndSetNetflowExporterPolAttributes(ctx context.Context, diags *diag.Diag
 }
 
 func getNetflowExporterPolRn(ctx context.Context, data *NetflowExporterPolResourceModel) string {
-	rn := "exporterpol-{name}"
-	for _, identifier := range []string{"name"} {
-		fieldName := fmt.Sprintf("%s%s", strings.ToUpper(identifier[:1]), identifier[1:])
-		fieldValue := reflect.ValueOf(data).Elem().FieldByName(fieldName).Interface().(basetypes.StringValue).ValueString()
-		rn = strings.ReplaceAll(rn, fmt.Sprintf("{%s}", identifier), fieldValue)
-	}
-	return rn
+	return fmt.Sprintf("exporterpol-%s", data.Name.ValueString())
 }
 
 func setNetflowExporterPolParentDn(ctx context.Context, dn string, data *NetflowExporterPolResourceModel) {

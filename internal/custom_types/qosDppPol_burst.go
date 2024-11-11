@@ -112,6 +112,10 @@ func (v QosDppPolBurstStringValue) StringSemanticEquals(ctx context.Context, new
 	return priorMappedValue.Equal(newMappedValue), diags
 }
 
+func (v QosDppPolBurstStringValue) NamedValueString() string {
+	return QosDppPolBurstValueMap(basetypes.NewStringValue(v.ValueString())).ValueString()
+}
+
 func QosDppPolBurstValueMap(value basetypes.StringValue) basetypes.StringValue {
 	matchMap := map[string]string{
 		"0xffffffffffffffff": "unspecified",

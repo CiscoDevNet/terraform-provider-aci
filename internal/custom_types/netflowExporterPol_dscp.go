@@ -112,6 +112,10 @@ func (v NetflowExporterPolDscpStringValue) StringSemanticEquals(ctx context.Cont
 	return priorMappedValue.Equal(newMappedValue), diags
 }
 
+func (v NetflowExporterPolDscpStringValue) NamedValueString() string {
+	return NetflowExporterPolDscpValueMap(basetypes.NewStringValue(v.ValueString())).ValueString()
+}
+
 func NetflowExporterPolDscpValueMap(value basetypes.StringValue) basetypes.StringValue {
 	matchMap := map[string]string{
 		"0":  "CS0",

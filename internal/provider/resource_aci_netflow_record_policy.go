@@ -8,7 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"reflect"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
@@ -598,13 +597,7 @@ func getAndSetNetflowRecordPolAttributes(ctx context.Context, diags *diag.Diagno
 }
 
 func getNetflowRecordPolRn(ctx context.Context, data *NetflowRecordPolResourceModel) string {
-	rn := "recordpol-{name}"
-	for _, identifier := range []string{"name"} {
-		fieldName := fmt.Sprintf("%s%s", strings.ToUpper(identifier[:1]), identifier[1:])
-		fieldValue := reflect.ValueOf(data).Elem().FieldByName(fieldName).Interface().(basetypes.StringValue).ValueString()
-		rn = strings.ReplaceAll(rn, fmt.Sprintf("{%s}", identifier), fieldValue)
-	}
-	return rn
+	return fmt.Sprintf("recordpol-%s", data.Name.ValueString())
 }
 
 func setNetflowRecordPolParentDn(ctx context.Context, dn string, data *NetflowRecordPolResourceModel) {

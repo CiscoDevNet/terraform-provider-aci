@@ -8,8 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"reflect"
-	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
@@ -485,13 +483,7 @@ func getAndSetL3extRsOutToFBRGroupAttributes(ctx context.Context, diags *diag.Di
 }
 
 func getL3extRsOutToFBRGroupRn(ctx context.Context, data *L3extRsOutToFBRGroupResourceModel) string {
-	rn := "rsoutToFBRGroup-[{tDn}]"
-	for _, identifier := range []string{"tDn"} {
-		fieldName := fmt.Sprintf("%s%s", strings.ToUpper(identifier[:1]), identifier[1:])
-		fieldValue := reflect.ValueOf(data).Elem().FieldByName(fieldName).Interface().(basetypes.StringValue).ValueString()
-		rn = strings.ReplaceAll(rn, fmt.Sprintf("{%s}", identifier), fieldValue)
-	}
-	return rn
+	return fmt.Sprintf("rsoutToFBRGroup-[%s]", data.TDn.ValueString())
 }
 
 func setL3extRsOutToFBRGroupParentDn(ctx context.Context, dn string, data *L3extRsOutToFBRGroupResourceModel) {

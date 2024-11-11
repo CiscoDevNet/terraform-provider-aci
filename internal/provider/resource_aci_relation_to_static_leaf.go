@@ -8,8 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"reflect"
-	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
@@ -548,13 +546,7 @@ func getAndSetFvRsNodeAttAttributes(ctx context.Context, diags *diag.Diagnostics
 }
 
 func getFvRsNodeAttRn(ctx context.Context, data *FvRsNodeAttResourceModel) string {
-	rn := "rsnodeAtt-[{tDn}]"
-	for _, identifier := range []string{"tDn"} {
-		fieldName := fmt.Sprintf("%s%s", strings.ToUpper(identifier[:1]), identifier[1:])
-		fieldValue := reflect.ValueOf(data).Elem().FieldByName(fieldName).Interface().(basetypes.StringValue).ValueString()
-		rn = strings.ReplaceAll(rn, fmt.Sprintf("{%s}", identifier), fieldValue)
-	}
-	return rn
+	return fmt.Sprintf("rsnodeAtt-[%s]", data.TDn.ValueString())
 }
 
 func setFvRsNodeAttParentDn(ctx context.Context, dn string, data *FvRsNodeAttResourceModel) {

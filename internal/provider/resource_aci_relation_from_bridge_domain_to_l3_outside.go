@@ -8,8 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"reflect"
-	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
@@ -485,13 +483,7 @@ func getAndSetFvRsBDToOutAttributes(ctx context.Context, diags *diag.Diagnostics
 }
 
 func getFvRsBDToOutRn(ctx context.Context, data *FvRsBDToOutResourceModel) string {
-	rn := "rsBDToOut-{tnL3extOutName}"
-	for _, identifier := range []string{"tnL3extOutName"} {
-		fieldName := fmt.Sprintf("%s%s", strings.ToUpper(identifier[:1]), identifier[1:])
-		fieldValue := reflect.ValueOf(data).Elem().FieldByName(fieldName).Interface().(basetypes.StringValue).ValueString()
-		rn = strings.ReplaceAll(rn, fmt.Sprintf("{%s}", identifier), fieldValue)
-	}
-	return rn
+	return fmt.Sprintf("rsBDToOut-%s", data.TnL3extOutName.ValueString())
 }
 
 func setFvRsBDToOutParentDn(ctx context.Context, dn string, data *FvRsBDToOutResourceModel) {

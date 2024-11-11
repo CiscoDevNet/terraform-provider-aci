@@ -8,8 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"reflect"
-	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
@@ -485,13 +483,7 @@ func getAndSetFvRsSecInheritedAttributes(ctx context.Context, diags *diag.Diagno
 }
 
 func getFvRsSecInheritedRn(ctx context.Context, data *FvRsSecInheritedResourceModel) string {
-	rn := "rssecInherited-[{tDn}]"
-	for _, identifier := range []string{"tDn"} {
-		fieldName := fmt.Sprintf("%s%s", strings.ToUpper(identifier[:1]), identifier[1:])
-		fieldValue := reflect.ValueOf(data).Elem().FieldByName(fieldName).Interface().(basetypes.StringValue).ValueString()
-		rn = strings.ReplaceAll(rn, fmt.Sprintf("{%s}", identifier), fieldValue)
-	}
-	return rn
+	return fmt.Sprintf("rssecInherited-[%s]", data.TDn.ValueString())
 }
 
 func setFvRsSecInheritedParentDn(ctx context.Context, dn string, data *FvRsSecInheritedResourceModel) {

@@ -112,6 +112,10 @@ func (v QosDppPolViolateMarkCosStringValue) StringSemanticEquals(ctx context.Con
 	return priorMappedValue.Equal(newMappedValue), diags
 }
 
+func (v QosDppPolViolateMarkCosStringValue) NamedValueString() string {
+	return QosDppPolViolateMarkCosValueMap(basetypes.NewStringValue(v.ValueString())).ValueString()
+}
+
 func QosDppPolViolateMarkCosValueMap(value basetypes.StringValue) basetypes.StringValue {
 	matchMap := map[string]string{
 		"0xffff": "unspecified",

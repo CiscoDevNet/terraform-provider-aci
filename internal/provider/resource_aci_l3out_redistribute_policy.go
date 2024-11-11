@@ -8,8 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"reflect"
-	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
@@ -505,13 +503,7 @@ func getAndSetL3extRsRedistributePolAttributes(ctx context.Context, diags *diag.
 }
 
 func getL3extRsRedistributePolRn(ctx context.Context, data *L3extRsRedistributePolResourceModel) string {
-	rn := "rsredistributePol-[{tnRtctrlProfileName}]-{src}"
-	for _, identifier := range []string{"tnRtctrlProfileName", "src"} {
-		fieldName := fmt.Sprintf("%s%s", strings.ToUpper(identifier[:1]), identifier[1:])
-		fieldValue := reflect.ValueOf(data).Elem().FieldByName(fieldName).Interface().(basetypes.StringValue).ValueString()
-		rn = strings.ReplaceAll(rn, fmt.Sprintf("{%s}", identifier), fieldValue)
-	}
-	return rn
+	return fmt.Sprintf("rsredistributePol-[%s]-%s", data.TnRtctrlProfileName.ValueString(), data.Src.ValueString())
 }
 
 func setL3extRsRedistributePolParentDn(ctx context.Context, dn string, data *L3extRsRedistributePolResourceModel) {
