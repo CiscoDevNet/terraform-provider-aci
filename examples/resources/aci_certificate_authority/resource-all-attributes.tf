@@ -17,7 +17,7 @@ hvcNAQELBQADgYEAOmvre+5tgZ0+F3DgsfxNQqLTrGiBgGCIymPkP/cBXXkNuJyl
 KU0Td2OpVyo0eLqjoX5u2G90IBWzhyjFbo+CcKMrSVKj1YOdG0E3OuiJf00=
 -----END CERTIFICATE-----
 EOT
-  certificate_usage = test_value
+  certificate_usage = ["WebSvcOrAuth"]
   description       = "description_1"
   name              = "test_name"
   name_alias        = "name_alias_1"
@@ -57,7 +57,7 @@ hvcNAQELBQADgYEAOmvre+5tgZ0+F3DgsfxNQqLTrGiBgGCIymPkP/cBXXkNuJyl
 KU0Td2OpVyo0eLqjoX5u2G90IBWzhyjFbo+CcKMrSVKj1YOdG0E3OuiJf00=
 -----END CERTIFICATE-----
 EOT
-  certificate_usage = test_value
+  certificate_usage = ["WebSvcOrAuth"]
   description       = "description_1"
   name              = "test_name"
   name_alias        = "name_alias_1"
