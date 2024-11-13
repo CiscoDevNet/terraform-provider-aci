@@ -450,7 +450,7 @@ func LookupTestValue(classPkgName, originalPropertyName string, testVars map[str
 					lookupValue = fmt.Sprintf(`"%s"`, val)
 				}
 			case []interface{}:
-				lookupValue = val
+				lookupValue = formatSlice(val)
 			}
 		}
 
@@ -468,7 +468,7 @@ func LookupTestValue(classPkgName, originalPropertyName string, testVars map[str
 								lookupValue = fmt.Sprintf(`"%s"`, val)
 							}
 						case []interface{}:
-							lookupValue = val
+							lookupValue = formatSlice(val)
 						}
 					}
 				}
@@ -1805,7 +1805,12 @@ func ignoreTestProperty(propertyName, classPkgName string, definitions Definitio
 				if key.(string) == "ignore_properties_in_test" {
 					for k, v := range value.(map[interface{}]interface{}) {
 						if k.(string) == propertyName {
-							return true, v.(string)
+							switch val := v.(type) {
+							case []interface{}:
+								return true, formatSlice(val)
+							default:
+								return true, fmt.Sprintf(`"%s"`, val)
+							}
 						}
 					}
 				}
@@ -1813,6 +1818,14 @@ func ignoreTestProperty(propertyName, classPkgName string, definitions Definitio
 		}
 	}
 	return false, ""
+}
+
+func formatSlice(slice []interface{}) string {
+	formattedSlice := make([]string, len(slice))
+	for i, v := range slice {
+		formattedSlice[i] = fmt.Sprintf("\"%v\"", v)
+	}
+	return fmt.Sprintf("[%v]", strings.Join(formattedSlice, ", "))
 }
 
 func updateVersionMismatched(model *Model, classVersion, propertyVersion, propertyName string) {
