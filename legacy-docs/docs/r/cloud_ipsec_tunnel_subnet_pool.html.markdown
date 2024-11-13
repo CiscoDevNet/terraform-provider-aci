@@ -1,7 +1,7 @@
 ---
 subcategory: "Cloud"
 layout: "aci"
-page_title: "ACI: aci_cloud_ipsec_tunnel_subnet_pool
+page_title: "ACI: aci_cloud_ipsec_tunnel_subnet_pool"
 sidebar_current: "docs-aci-resource-aci_cloud_ipsec_tunnel_subnet_pool"
 description: |-
   Manages Cloud Network Controller Cloud Subnet Pool for IPsec Tunnels
