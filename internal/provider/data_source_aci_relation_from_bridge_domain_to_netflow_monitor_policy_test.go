@@ -24,7 +24,6 @@ func TestAccDataSourceFvRsBDToNetflowMonitorPolWithFvBD(t *testing.T) {
 					resource.TestCheckResourceAttr("data.aci_relation_from_bridge_domain_to_netflow_monitor_policy.test", "filter_type", "ipv4"),
 					resource.TestCheckResourceAttr("data.aci_relation_from_bridge_domain_to_netflow_monitor_policy.test", "netflow_monitor_policy_name", "test_tn_netflow_monitor_pol_name"),
 					resource.TestCheckResourceAttr("data.aci_relation_from_bridge_domain_to_netflow_monitor_policy.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("data.aci_relation_from_bridge_domain_to_netflow_monitor_policy.test", "filter_type", "ipv4"),
 				),
 			},
 			{

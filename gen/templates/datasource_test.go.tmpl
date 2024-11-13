@@ -27,40 +27,42 @@ func TestAccDataSource{{$.resourceClassName}}{{if .class_name}}With{{capitalize 
 					{{- range $key, $value := $.datasource_required}}
 						{{- if eq $key "target_dn" }}
 					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}", "{{$key}}", "{{getTestTargetDn $.targets $.resourceName $value false $target_classes 0 false}}"),
-						{{- else }}
-					{{- if not (definedInList $.exclude_attributes $key) }}
+							{{- else }}
+						{{- if not (definedInList $.exclude_attributes $key) }}
 					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}", "{{$key}}", "{{$value}}"),
-						{{- end }}
-					{{- end}}
+							{{- end }}
+						{{- end}}
 					{{- end}}
 					{{- range $key, $value := $.default}}
-					{{- if eq $key "version_mismatch" }}
-        					{{- range $version, $attributes := $value }}
+						{{- if not (definedInMap $key $.datasource_required)}}
+							{{- if eq $key "version_mismatch" }}
+        						{{- range $version, $attributes := $value }}
 					composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", ">",{{- range $attributeName, $attributeValue := $attributes}}
-					{{- if not (definedInList $.exclude_attributes $attributeName) }}
-						{{- if (isInterfaceSlice $attributeValue)}}
+									{{- if not (definedInList $.exclude_attributes $attributeName) }}
+										{{- if (isInterfaceSlice $attributeValue)}}
 					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}", "{{$attributeName}}.#", "{{len $attributeValue}}"),
-							  {{- range $index, $subvalue := $attributeValue}}
+							  				{{- range $index, $subvalue := $attributeValue}}
 					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}", "{{$attributeName}}.{{$index}}", "{{$subvalue}}"),
-							  {{- end}}
-						  {{- else}}
+							  				{{- end}}
+						  				{{- else}}
 					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}", "{{$attributeName}}", "{{$attributeValue}}"),
-						  {{- end}}
-					    {{- end}}
-					  {{- end}}),
-					{{- end}}
-					{{- else}}
-					{{- if not (definedInList $.exclude_attributes $key) }}
-						{{- if (isInterfaceSlice $value)}}
+										{{- end}}
+									{{- end}}
+								{{- end}}),
+								{{- end}}
+							{{- else}}
+								{{- if not (definedInList $.exclude_attributes $key) }}
+									{{- if (isInterfaceSlice $value)}}
 					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}", "{{$key}}.#", "{{len $value}}"),
-							{{- range $index, $subvalue := $value}}
+										{{- range $index, $subvalue := $value}}
 					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}", "{{$key}}.{{$index}}", "{{$subvalue}}"),
-							{{- end}}
-						{{- else}}
+										{{- end}}
+									{{- else}}
 					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}", "{{$key}}", "{{$value}}"),
+									{{- end}}
+					  			{{- end}}
+							{{- end}}
 						{{- end}}
-					  {{- end}}
-					{{- end}}
 					{{- end}}
 					{{- range $index, $key := $.read_only}}
 					resource.TestCheckResourceAttrSet("data.aci_{{$.resourceName}}.test", "{{$key}}"),

@@ -24,7 +24,6 @@ func TestAccDataSourceL3extRsLblToProfileWithL3extConsLbl(t *testing.T) {
 					resource.TestCheckResourceAttr("data.aci_relation_from_l3out_consumer_label_to_route_control_profile.test", "direction", "import"),
 					resource.TestCheckResourceAttr("data.aci_relation_from_l3out_consumer_label_to_route_control_profile.test", "target_dn", "uni/tn-test_tenant/prof-rt_ctrl_profile_1"),
 					resource.TestCheckResourceAttr("data.aci_relation_from_l3out_consumer_label_to_route_control_profile.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("data.aci_relation_from_l3out_consumer_label_to_route_control_profile.test", "direction", "import"),
 				),
 			},
 			{
