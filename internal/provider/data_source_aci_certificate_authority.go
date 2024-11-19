@@ -60,7 +60,7 @@ func (d *PkiTPDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 			},
 			"certificate_usage": schema.SetAttribute{
 				Computed:            true,
-				MarkdownDescription: `The certificate usage of the Certificate Authority object.`,
+				MarkdownDescription: `The usage of the Certificate Authority object which can be Web Service/Authentication (WebSvcOrAuth), Platform Experience Grid (pxGrid), or both.`,
 				ElementType:         types.StringType,
 			},
 			"description": schema.StringAttribute{
