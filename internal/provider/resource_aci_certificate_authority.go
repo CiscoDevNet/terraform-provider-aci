@@ -189,7 +189,7 @@ func (r *PkiTPResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				MarkdownDescription: `The PEM-encoded chain of trust from the trustpoint to a trusted root authority.`,
 			},
 			"certificate_usage": schema.SetAttribute{
-				MarkdownDescription: `The certificate usage of the Certificate Authority object.`,
+				MarkdownDescription: `The usage of the Certificate Authority object which can be Web Service/Authentication (WebSvcOrAuth), Platform Experience Grid (pxGrid), or both.`,
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{

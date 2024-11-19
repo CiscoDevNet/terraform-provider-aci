@@ -187,7 +187,7 @@ All examples for the Certificate Authority resource can be found in the [example
   - Default: `uni/userext/pkiext`
 * `annotation` (annotation) - (string) The annotation of the Certificate Authority object.
   - Default: `orchestrator:terraform`
-* `certificate_usage` (certUsage) - (list) The certificate usage of the Certificate Authority object.
+* `certificate_usage` (certUsage) - (list) The usage of the Certificate Authority object which can be Web Service/Authentication (WebSvcOrAuth), Platform Experience Grid (pxGrid), or both.
   - Default: `WebSvcOrAuth`.
   - Valid Values: `WebSvcOrAuth`, `pxGrid`.
 * `description` (descr) - (string) The description of the Certificate Authority object.
