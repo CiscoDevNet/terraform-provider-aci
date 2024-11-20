@@ -107,7 +107,7 @@ All examples for the DSCP to Priority Map resource can be found in the [examples
   - Valid Values:
     * `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
     * Or a value in the range of `0` to `9`.
-* `target` (target) - (string) Our Fabric only supports DSCP mutation. Dot1P mutation is not supported.
+* `target` (target) - (string) The target of the DSCP to Priority Map object. This Fabric only supports DSCP mutation, Dot1P mutation is not supported.
   - Default: `unspecified`
   - Valid Values:
     * `AF11`, `AF12`, `AF13`, `AF21`, `AF22`, `AF23`, `AF31`, `AF32`, `AF33`, `AF41`, `AF42`, `AF43`, `CS0`, `CS1`, `CS2`, `CS3`, `CS4`, `CS5`, `CS6`, `CS7`, `EF`, `VA`, `unspecified`.

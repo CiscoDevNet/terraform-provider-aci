@@ -254,7 +254,7 @@ func (r *QosDscpClassResource) Schema(ctx context.Context, req resource.SchemaRe
 						validators.InBetweenFromString(0, 64),
 					),
 				},
-				MarkdownDescription: `Our Fabric only supports DSCP mutation. Dot1P mutation is not supported.`,
+				MarkdownDescription: `The target of the DSCP to Priority Map object. This Fabric only supports DSCP mutation, Dot1P mutation is not supported.`,
 			},
 			"target_cos": schema.StringAttribute{
 				CustomType: customTypes.QosDscpClassTargetCosStringType{},

@@ -57,7 +57,7 @@ data "aci_dscp_to_priority_map" "example_custom_qos_policy" {
 * `name` (name) - (string) The name of the DSCP to Priority Map object.
 * `name_alias` (nameAlias) - (string) The name alias of the DSCP to Priority Map object.
 * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
-* `target` (target) - (string) Our Fabric only supports DSCP mutation. Dot1P mutation is not supported.
+* `target` (target) - (string) The target of the DSCP to Priority Map object. This Fabric only supports DSCP mutation, Dot1P mutation is not supported.
 * `target_cos` (targetCos) - (string) Target COS to be driven based on the range of input values of DSCP coming into the fabric.
 
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.

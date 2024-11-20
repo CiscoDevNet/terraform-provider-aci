@@ -136,7 +136,7 @@ All examples for the Custom Qos Policy resource can be found in the [examples](h
   * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
       - Default: `unspecified`
       - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
-  * `target` (target) - (string) Our Fabric only supports DSCP mutation. Dot1P mutation is not supported.
+  * `target` (target) - (string) The target of the Dot1p Classifier object. This Fabric only supports DSCP mutation, Dot1P mutation is not supported.
       - Default: `unspecified`
       - Valid Values: `AF11`, `AF12`, `AF13`, `AF21`, `AF22`, `AF23`, `AF31`, `AF32`, `AF33`, `AF41`, `AF42`, `AF43`, `CS0`, `CS1`, `CS2`, `CS3`, `CS4`, `CS5`, `CS6`, `CS7`, `EF`, `VA`, `unspecified`.
   * `target_cos` (targetCos) - (string) Target COS to be driven based on the range of input values of DSCP coming into the fabric.
@@ -160,7 +160,7 @@ All examples for the Custom Qos Policy resource can be found in the [examples](h
   * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
       - Default: `unspecified`
       - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
-  * `target` (target) - (string) Our Fabric only supports DSCP mutation. Dot1P mutation is not supported.
+  * `target` (target) - (string) The target of the DSCP to Priority Map object. This Fabric only supports DSCP mutation, Dot1P mutation is not supported.
       - Default: `unspecified`
       - Valid Values: `AF11`, `AF12`, `AF13`, `AF21`, `AF22`, `AF23`, `AF31`, `AF32`, `AF33`, `AF41`, `AF42`, `AF43`, `CS0`, `CS1`, `CS2`, `CS3`, `CS4`, `CS5`, `CS6`, `CS7`, `EF`, `VA`, `unspecified`.
   * `target_cos` (targetCos) - (string) Target COS to be driven based on the range of input values of DSCP coming into the fabric.

@@ -107,7 +107,7 @@ func (d *QosCustomPolDataSource) Schema(ctx context.Context, req datasource.Sche
 						"target": schema.StringAttribute{
 							CustomType:          customTypes.QosDot1PClassTargetStringType{},
 							Computed:            true,
-							MarkdownDescription: `Our Fabric only supports DSCP mutation. Dot1P mutation is not supported.`,
+							MarkdownDescription: `The target of the Dot1p Classifier object. This Fabric only supports DSCP mutation, Dot1P mutation is not supported.`,
 						},
 						"target_cos": schema.StringAttribute{
 							CustomType:          customTypes.QosDot1PClassTargetCosStringType{},
@@ -156,7 +156,7 @@ func (d *QosCustomPolDataSource) Schema(ctx context.Context, req datasource.Sche
 						"target": schema.StringAttribute{
 							CustomType:          customTypes.QosDscpClassTargetStringType{},
 							Computed:            true,
-							MarkdownDescription: `Our Fabric only supports DSCP mutation. Dot1P mutation is not supported.`,
+							MarkdownDescription: `The target of the DSCP to Priority Map object. This Fabric only supports DSCP mutation, Dot1P mutation is not supported.`,
 						},
 						"target_cos": schema.StringAttribute{
 							CustomType:          customTypes.QosDscpClassTargetCosStringType{},

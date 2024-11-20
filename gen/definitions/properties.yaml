@@ -926,6 +926,8 @@ qosDscpClass:
     - class_name: "qosCustomPol"
       parent_dependency: "fvTenant"
       parent_dn: "aci_custom_qos_policy.test.id"
+  documentation:
+    target: "The target of the %s object. This Fabric only supports DSCP mutation, Dot1P mutation is not supported."
   test_values:
     default:
       from: "AF11"
@@ -948,6 +950,8 @@ qosDot1PClass:
     - class_name: "qosCustomPol"
       parent_dependency: "fvTenant"
       parent_dn: "aci_custom_qos_policy.test.id"
+  documentation:
+    target: "The target of the %s object. This Fabric only supports DSCP mutation, Dot1P mutation is not supported."
   test_values:
     default:
       from: "1"
