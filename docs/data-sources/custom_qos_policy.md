@@ -65,12 +65,12 @@ data "aci_custom_qos_policy" "example_tenant" {
   * `target_cos` (targetCos) - (string) Target COS to be driven based on the range of input values of DSCP coming into the fabric.
   * `to` (to) - (string) The Dot1p priority range ending value.
 
-* `dscp_to_priority_maps` - (list) A list of Dscp To Priority Maps (ACI object [qosDscpClass](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/qosDscpClass/overview)).
-  * `annotation` (annotation) - (string) The annotation of the Dscp To Priority Map object.
-  * `description` (descr) - (string) The description of the Dscp To Priority Map object.
+* `dscp_to_priority_maps` - (list) A list of DSCP to Priority Maps (ACI object [qosDscpClass](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/qosDscpClass/overview)).
+  * `annotation` (annotation) - (string) The annotation of the DSCP to Priority Map object.
+  * `description` (descr) - (string) The description of the DSCP to Priority Map object.
   * `from` (from) - (string) The DSCP range starting value.
-  * `name` (name) - (string) The name of the Dscp To Priority Map object.
-  * `name_alias` (nameAlias) - (string) The name alias of the Dscp To Priority Map object.
+  * `name` (name) - (string) The name of the DSCP to Priority Map object.
+  * `name_alias` (nameAlias) - (string) The name alias of the DSCP to Priority Map object.
   * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
   * `target` (target) - (string) Our Fabric only supports DSCP mutation. Dot1P mutation is not supported.
   * `target_cos` (targetCos) - (string) Target COS to be driven based on the range of input values of DSCP coming into the fabric.

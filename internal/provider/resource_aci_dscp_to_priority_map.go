@@ -158,7 +158,7 @@ func (r *QosDscpClassResource) Schema(ctx context.Context, req resource.SchemaRe
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Dscp To Priority Map object.",
+				MarkdownDescription: "The distinguished name (DN) of the DSCP to Priority Map object.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
@@ -179,7 +179,7 @@ func (r *QosDscpClassResource) Schema(ctx context.Context, req resource.SchemaRe
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
-				MarkdownDescription: `The annotation of the Dscp To Priority Map object.`,
+				MarkdownDescription: `The annotation of the DSCP to Priority Map object.`,
 			},
 			"description": schema.StringAttribute{
 				Optional: true,
@@ -188,7 +188,7 @@ func (r *QosDscpClassResource) Schema(ctx context.Context, req resource.SchemaRe
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The description of the Dscp To Priority Map object.`,
+				MarkdownDescription: `The description of the DSCP to Priority Map object.`,
 			},
 			"from": schema.StringAttribute{
 				CustomType: customTypes.QosDscpClassFromStringType{},
@@ -213,7 +213,7 @@ func (r *QosDscpClassResource) Schema(ctx context.Context, req resource.SchemaRe
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The name of the Dscp To Priority Map object.`,
+				MarkdownDescription: `The name of the DSCP to Priority Map object.`,
 			},
 			"name_alias": schema.StringAttribute{
 				Optional: true,
@@ -222,7 +222,7 @@ func (r *QosDscpClassResource) Schema(ctx context.Context, req resource.SchemaRe
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The name alias of the Dscp To Priority Map object.`,
+				MarkdownDescription: `The name alias of the DSCP to Priority Map object.`,
 			},
 			"priority": schema.StringAttribute{
 				CustomType: customTypes.QosDscpClassPrioStringType{},

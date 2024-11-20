@@ -433,7 +433,7 @@ func (r *QosCustomPolResource) Schema(ctx context.Context, req resource.SchemaRe
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
-							MarkdownDescription: `The annotation of the Dscp To Priority Map object.`,
+							MarkdownDescription: `The annotation of the DSCP to Priority Map object.`,
 						},
 						"description": schema.StringAttribute{
 							Optional: true,
@@ -441,7 +441,7 @@ func (r *QosCustomPolResource) Schema(ctx context.Context, req resource.SchemaRe
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
-							MarkdownDescription: `The description of the Dscp To Priority Map object.`,
+							MarkdownDescription: `The description of the DSCP to Priority Map object.`,
 						},
 						"from": schema.StringAttribute{
 							CustomType: customTypes.QosDscpClassFromStringType{},
@@ -463,7 +463,7 @@ func (r *QosCustomPolResource) Schema(ctx context.Context, req resource.SchemaRe
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
-							MarkdownDescription: `The name of the Dscp To Priority Map object.`,
+							MarkdownDescription: `The name of the DSCP to Priority Map object.`,
 						},
 						"name_alias": schema.StringAttribute{
 							Optional: true,
@@ -471,7 +471,7 @@ func (r *QosCustomPolResource) Schema(ctx context.Context, req resource.SchemaRe
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
-							MarkdownDescription: `The name alias of the Dscp To Priority Map object.`,
+							MarkdownDescription: `The name alias of the DSCP to Priority Map object.`,
 						},
 						"priority": schema.StringAttribute{
 							CustomType: customTypes.QosDscpClassPrioStringType{},

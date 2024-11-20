@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_dscp_to_priority_map"
 sidebar_current: "docs-aci-resource-aci_dscp_to_priority_map"
 description: |-
-  Manages ACI Dscp To Priority Map
+  Manages ACI DSCP to Priority Map
 ---
 
 # aci_dscp_to_priority_map #
 
-Manages ACI Dscp To Priority Map
+Manages ACI DSCP to Priority Map
 
 
 
@@ -30,7 +30,7 @@ Manages ACI Dscp To Priority Map
 
 ## Example Usage ##
 
-The configuration snippet below creates a Dscp To Priority Map with only required attributes.
+The configuration snippet below creates a DSCP to Priority Map with only required attributes.
 
 ```hcl
 
@@ -41,7 +41,7 @@ resource "aci_dscp_to_priority_map" "example_custom_qos_policy" {
 }
 
 ```
-The configuration snippet below shows all possible attributes of the Dscp To Priority Map.
+The configuration snippet below shows all possible attributes of the DSCP to Priority Map.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
@@ -74,7 +74,7 @@ resource "aci_dscp_to_priority_map" "full_example_custom_qos_policy" {
 
 ```
 
-All examples for the Dscp To Priority Map resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/resources/aci_dscp_to_priority_map) folder.
+All examples for the DSCP to Priority Map resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/resources/aci_dscp_to_priority_map) folder.
 
 ## Schema ##
 
@@ -93,15 +93,15 @@ All examples for the Dscp To Priority Map resource can be found in the [examples
 
 ### Read-Only ###
 
-* `id` - (string) The distinguished name (DN) of the Dscp To Priority Map object.
+* `id` - (string) The distinguished name (DN) of the DSCP to Priority Map object.
 
 ### Optional ###
 
-* `annotation` (annotation) - (string) The annotation of the Dscp To Priority Map object.
+* `annotation` (annotation) - (string) The annotation of the DSCP to Priority Map object.
   - Default: `orchestrator:terraform`
-* `description` (descr) - (string) The description of the Dscp To Priority Map object.
-* `name` (name) - (string) The name of the Dscp To Priority Map object.
-* `name_alias` (nameAlias) - (string) The name alias of the Dscp To Priority Map object.
+* `description` (descr) - (string) The description of the DSCP to Priority Map object.
+* `name` (name) - (string) The name of the DSCP to Priority Map object.
+* `name_alias` (nameAlias) - (string) The name alias of the DSCP to Priority Map object.
 * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
   - Default: `unspecified`
   - Valid Values:
@@ -134,13 +134,13 @@ All examples for the Dscp To Priority Map resource can be found in the [examples
 
 ## Importing
 
-An existing Dscp To Priority Map can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
+An existing DSCP to Priority Map can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
 terraform import aci_dscp_to_priority_map.example_custom_qos_policy uni/tn-{name}/qoscustom-{name}/dcsp-{from}-{to}
 ```
 
-Starting in Terraform version 1.5, an existing Dscp To Priority Map can be imported
+Starting in Terraform version 1.5, an existing DSCP to Priority Map can be imported
 using [import blocks](https://developer.hashicorp.com/terraform/language/import) via the following configuration:
 
 ```

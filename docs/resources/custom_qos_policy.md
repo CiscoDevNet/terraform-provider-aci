@@ -143,7 +143,7 @@ All examples for the Custom Qos Policy resource can be found in the [examples](h
       - Default: `unspecified`
       - Valid Values: `0`, `1`, `2`, `3`, `4`, `5`, `6`, `7`, `unspecified`.
 
-* `dscp_to_priority_maps` - (list) A list of Dscp To Priority Maps (ACI object [qosDscpClass](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/qosDscpClass/overview)). Dscp To Priority Maps can also be configured using a separate [aci_dscp_to_priority_map](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/dscp_to_priority_map) resource.
+* `dscp_to_priority_maps` - (list) A list of DSCP to Priority Maps (ACI object [qosDscpClass](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/qosDscpClass/overview)). DSCP to Priority Maps can also be configured using a separate [aci_dscp_to_priority_map](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/dscp_to_priority_map) resource.
   
   #### Required ####
   
@@ -152,11 +152,11 @@ All examples for the Custom Qos Policy resource can be found in the [examples](h
 
   #### Optional ####
     
-  * `annotation` (annotation) - (string) The annotation of the Dscp To Priority Map object.
+  * `annotation` (annotation) - (string) The annotation of the DSCP to Priority Map object.
       - Default: `orchestrator:terraform`
-  * `description` (descr) - (string) The description of the Dscp To Priority Map object.
-  * `name` (name) - (string) The name of the Dscp To Priority Map object.
-  * `name_alias` (nameAlias) - (string) The name alias of the Dscp To Priority Map object.
+  * `description` (descr) - (string) The description of the DSCP to Priority Map object.
+  * `name` (name) - (string) The name of the DSCP to Priority Map object.
+  * `name_alias` (nameAlias) - (string) The name alias of the DSCP to Priority Map object.
   * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
       - Default: `unspecified`
       - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.

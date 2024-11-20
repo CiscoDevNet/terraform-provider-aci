@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_dscp_to_priority_map"
 sidebar_current: "docs-aci-data-source-aci_dscp_to_priority_map"
 description: |-
-  Data source for ACI Dscp To Priority Map
+  Data source for ACI DSCP to Priority Map
 ---
 
 # aci_dscp_to_priority_map #
 
-Data source for ACI Dscp To Priority Map
+Data source for ACI DSCP to Priority Map
 
 ## API Information ##
 
@@ -51,11 +51,11 @@ data "aci_dscp_to_priority_map" "example_custom_qos_policy" {
 
 ### Read-Only ###
 
-* `id` - (string) The distinguished name (DN) of the Dscp To Priority Map object.
-* `annotation` (annotation) - (string) The annotation of the Dscp To Priority Map object.
-* `description` (descr) - (string) The description of the Dscp To Priority Map object.
-* `name` (name) - (string) The name of the Dscp To Priority Map object.
-* `name_alias` (nameAlias) - (string) The name alias of the Dscp To Priority Map object.
+* `id` - (string) The distinguished name (DN) of the DSCP to Priority Map object.
+* `annotation` (annotation) - (string) The annotation of the DSCP to Priority Map object.
+* `description` (descr) - (string) The description of the DSCP to Priority Map object.
+* `name` (name) - (string) The name of the DSCP to Priority Map object.
+* `name_alias` (nameAlias) - (string) The name alias of the DSCP to Priority Map object.
 * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
 * `target` (target) - (string) Our Fabric only supports DSCP mutation. Dot1P mutation is not supported.
 * `target_cos` (targetCos) - (string) Target COS to be driven based on the range of input values of DSCP coming into the fabric.

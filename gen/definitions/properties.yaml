@@ -63,6 +63,7 @@ global:
     Nd: "Neighbor Discovery (ND)"
     Mld: "MLD"
     Igmp: "IGMP"
+    Dscp To: "DSCP to"
   ignores:
     - "userdom"
 

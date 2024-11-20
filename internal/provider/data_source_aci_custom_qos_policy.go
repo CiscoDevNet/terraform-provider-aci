@@ -129,11 +129,11 @@ func (d *QosCustomPolDataSource) Schema(ctx context.Context, req datasource.Sche
 					Attributes: map[string]schema.Attribute{
 						"annotation": schema.StringAttribute{
 							Computed:            true,
-							MarkdownDescription: `The annotation of the Dscp To Priority Map object.`,
+							MarkdownDescription: `The annotation of the DSCP to Priority Map object.`,
 						},
 						"description": schema.StringAttribute{
 							Computed:            true,
-							MarkdownDescription: `The description of the Dscp To Priority Map object.`,
+							MarkdownDescription: `The description of the DSCP to Priority Map object.`,
 						},
 						"from": schema.StringAttribute{
 							CustomType:          customTypes.QosDscpClassFromStringType{},
@@ -142,11 +142,11 @@ func (d *QosCustomPolDataSource) Schema(ctx context.Context, req datasource.Sche
 						},
 						"name": schema.StringAttribute{
 							Computed:            true,
-							MarkdownDescription: `The name of the Dscp To Priority Map object.`,
+							MarkdownDescription: `The name of the DSCP to Priority Map object.`,
 						},
 						"name_alias": schema.StringAttribute{
 							Computed:            true,
-							MarkdownDescription: `The name alias of the Dscp To Priority Map object.`,
+							MarkdownDescription: `The name alias of the DSCP to Priority Map object.`,
 						},
 						"priority": schema.StringAttribute{
 							CustomType:          customTypes.QosDscpClassPrioStringType{},
