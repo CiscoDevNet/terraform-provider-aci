@@ -25,13 +25,11 @@ func TestAccDataSourceQosDot1PClassWithQosCustomPol(t *testing.T) {
 					resource.TestCheckResourceAttr("data.aci_dot1p_classifier.test", "to", "2"),
 					resource.TestCheckResourceAttr("data.aci_dot1p_classifier.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("data.aci_dot1p_classifier.test", "description", ""),
-					resource.TestCheckResourceAttr("data.aci_dot1p_classifier.test", "from", "1"),
 					resource.TestCheckResourceAttr("data.aci_dot1p_classifier.test", "name", ""),
 					resource.TestCheckResourceAttr("data.aci_dot1p_classifier.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("data.aci_dot1p_classifier.test", "priority", "unspecified"),
 					resource.TestCheckResourceAttr("data.aci_dot1p_classifier.test", "target", "unspecified"),
 					resource.TestCheckResourceAttr("data.aci_dot1p_classifier.test", "target_cos", "unspecified"),
-					resource.TestCheckResourceAttr("data.aci_dot1p_classifier.test", "to", "2"),
 				),
 			},
 			{
