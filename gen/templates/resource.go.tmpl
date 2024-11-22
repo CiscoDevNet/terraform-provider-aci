@@ -1412,14 +1412,9 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 							stringplanmodifier.UseStateForUnknown(),
 						},
 						{{- end}}
-						{{- if or .ValidValues $.HasReadOnlyProperties}}
+						{{- if or .ValidValues}}
 						Validators: []validator.String{
-							{{- if .ValidValues}}
 							stringvalidator.OneOf({{- validatorString .ValidValues}}),
-							{{- end}}
-							{{- if or .IsNaming .IsRequired}}
-							MakeStringRequired(),
-							{{- end}}
 						},
 						{{- end}}
 						MarkdownDescription: `{{.Comment}}`,

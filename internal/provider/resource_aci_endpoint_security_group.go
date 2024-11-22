@@ -57,6 +57,7 @@ type FvESgResourceModel struct {
 	PcEnfPref                              types.String `tfsdk:"intra_esg_isolation"`
 	PcTag                                  types.String `tfsdk:"pc_tag"`
 	PrefGrMemb                             types.String `tfsdk:"preferred_group_member"`
+	Scope                                  types.String `tfsdk:"scope"`
 	Shutdown                               types.String `tfsdk:"admin_state"`
 	FvRsCons                               types.Set    `tfsdk:"relation_to_consumed_contracts"`
 	FvRsConsIf                             types.Set    `tfsdk:"relation_to_imported_contracts"`
@@ -93,6 +94,7 @@ func getEmptyFvESgResourceModel() *FvESgResourceModel {
 		PcEnfPref:    basetypes.NewStringNull(),
 		PcTag:        basetypes.NewStringNull(),
 		PrefGrMemb:   basetypes.NewStringNull(),
+		Scope:        basetypes.NewStringNull(),
 		Shutdown:     basetypes.NewStringNull(),
 		FvRsCons: types.SetNull(types.ObjectType{
 			AttrTypes: map[string]attr.Type{
@@ -494,6 +496,7 @@ func (r *FvESgResource) UpgradeState(ctx context.Context) map[int64]resource.Sta
 					PcEnfPref:                              priorStateData.PcEnfPref,
 					PcTag:                                  basetypes.NewStringNull(),
 					PrefGrMemb:                             priorStateData.PrefGrMemb,
+					Scope:                                  basetypes.NewStringNull(),
 					Shutdown:                               basetypes.NewStringNull(),
 					DeprecatedMatchT:                       priorStateData.MatchT,
 					DeprecatedParentDn:                     priorStateData.ParentDn,
@@ -1284,6 +1287,10 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				},
 				MarkdownDescription: `Parameter used to determine whether the ESG is part of the preferred group. Members of this group are allowed to communicate without contracts.`,
 			},
+			"scope": schema.StringAttribute{
+				Computed:            true,
+				MarkdownDescription: `The L3 scope ID of the Endpoint Security Group object.`,
+			},
 			"admin_state": schema.StringAttribute{
 				Optional: true,
 				Computed: true,
@@ -1498,7 +1505,6 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						Validators:          []validator.String{},
 						MarkdownDescription: `The annotation of the Relation To VRF object.`,
 					},
 					"vrf_name": schema.StringAttribute{
@@ -1507,7 +1513,6 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						Validators:          []validator.String{},
 						MarkdownDescription: `The name of the VRF object.`,
 					},
 				},
@@ -1972,6 +1977,9 @@ func getAndSetFvESgAttributes(ctx context.Context, diags *diag.Diagnostics, clie
 				}
 				if attributeName == "prefGrMemb" {
 					readData.PrefGrMemb = basetypes.NewStringValue(attributeValue.(string))
+				}
+				if attributeName == "scope" {
+					readData.Scope = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "shutdown" {
 					readData.Shutdown = basetypes.NewStringValue(attributeValue.(string))
