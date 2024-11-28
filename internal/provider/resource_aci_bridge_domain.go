@@ -68,6 +68,7 @@ type FvBDResourceModel struct {
 	NameAlias                             types.String `tfsdk:"name_alias"`
 	OwnerKey                              types.String `tfsdk:"owner_key"`
 	OwnerTag                              types.String `tfsdk:"owner_tag"`
+	ServiceBdRoutingDisable               types.String `tfsdk:"service_bd_routing_disable"`
 	Type                                  types.String `tfsdk:"bridge_domain_type"`
 	UnicastRoute                          types.String `tfsdk:"unicast_routing"`
 	UnkMacUcastAct                        types.String `tfsdk:"l2_unknown_unicast_flooding"`
@@ -106,6 +107,7 @@ type FvBDResourceModel struct {
 	DeprecatedV6unkMcastAct               types.String `tfsdk:"v6unk_mcast_act"`
 	DeprecatedVmac                        types.String `tfsdk:"vmac"`
 	Deprecated_relation_fv_rs_bd_flood_to types.Set    `tfsdk:"relation_fv_rs_bd_flood_to"`
+	DeprecatedFvRsBDToRelayP              types.String `tfsdk:"relation_fv_rs_bd_to_relay_p"`
 	DeprecatedFvRsBdToEpRet               types.String `tfsdk:"relation_fv_rs_bd_to_ep_ret"`
 	DeprecatedFvRsBDToFhs                 types.String `tfsdk:"relation_fv_rs_bd_to_fhs"`
 	DeprecatedFvRsIgmpsn                  types.String `tfsdk:"relation_fv_rs_igmpsn"`
@@ -113,7 +115,6 @@ type FvBDResourceModel struct {
 	DeprecatedFvRsMldsn                   types.String `tfsdk:"relation_fv_rs_mldsn"`
 	DeprecatedFvRsABDPolMonPol            types.String `tfsdk:"relation_fv_rs_abd_pol_mon_pol"`
 	DeprecatedFvRsBDToNdP                 types.String `tfsdk:"relation_fv_rs_bd_to_nd_p"`
-	DeprecatedFvRsBDToRelayP              types.String `tfsdk:"relation_fv_rs_bd_to_relay_p"`
 	DeprecatedFvRsBDToProfile             types.String `tfsdk:"relation_fv_rs_bd_to_profile"`
 	DeprecatedFvRsCtx                     types.String `tfsdk:"relation_fv_rs_ctx"`
 	DeprecatedFvRsBDToNetflowMonitorPol   types.Set    `tfsdk:"relation_fv_rs_bd_to_netflow_monitor_pol"`
@@ -145,6 +146,7 @@ func getEmptyFvBDResourceModel() *FvBDResourceModel {
 		NameAlias:                basetypes.NewStringNull(),
 		OwnerKey:                 basetypes.NewStringNull(),
 		OwnerTag:                 basetypes.NewStringNull(),
+		ServiceBdRoutingDisable:  basetypes.NewStringNull(),
 		Type:                     basetypes.NewStringNull(),
 		UnicastRoute:             basetypes.NewStringNull(),
 		UnkMacUcastAct:           basetypes.NewStringNull(),
@@ -249,6 +251,7 @@ func getEmptyFvBDResourceModel() *FvBDResourceModel {
 		DeprecatedV6unkMcastAct:               types.String{},
 		DeprecatedVmac:                        types.String{},
 		Deprecated_relation_fv_rs_bd_flood_to: types.SetNull(types.StringType),
+		DeprecatedFvRsBDToRelayP:              types.String{},
 		DeprecatedFvRsBdToEpRet:               types.String{},
 		DeprecatedFvRsBDToFhs:                 types.String{},
 		DeprecatedFvRsIgmpsn:                  types.String{},
@@ -256,7 +259,6 @@ func getEmptyFvBDResourceModel() *FvBDResourceModel {
 		DeprecatedFvRsMldsn:                   types.String{},
 		DeprecatedFvRsABDPolMonPol:            types.String{},
 		DeprecatedFvRsBDToNdP:                 types.String{},
-		DeprecatedFvRsBDToRelayP:              types.String{},
 		DeprecatedFvRsBDToProfile:             types.String{},
 		DeprecatedFvRsCtx:                     types.String{},
 		DeprecatedFvRsBDToNetflowMonitorPol:   types.SetNull(deprecatedFvRsBDToNetflowMonitorPolType),
@@ -576,6 +578,7 @@ type FvBDResourceModelV1 struct {
 	V6unkMcastAct                         types.String `tfsdk:"v6unk_mcast_act"`
 	Vmac                                  types.String `tfsdk:"vmac"`
 	Deprecated_relation_fv_rs_bd_flood_to types.Set    `tfsdk:"relation_fv_rs_bd_flood_to"`
+	FvRsBDToRelayP                        types.String `tfsdk:"relation_fv_rs_bd_to_relay_p"`
 	FvRsBdToEpRet                         types.String `tfsdk:"relation_fv_rs_bd_to_ep_ret"`
 	FvRsBDToFhs                           types.String `tfsdk:"relation_fv_rs_bd_to_fhs"`
 	FvRsIgmpsn                            types.String `tfsdk:"relation_fv_rs_igmpsn"`
@@ -583,7 +586,6 @@ type FvBDResourceModelV1 struct {
 	FvRsMldsn                             types.String `tfsdk:"relation_fv_rs_mldsn"`
 	FvRsABDPolMonPol                      types.String `tfsdk:"relation_fv_rs_abd_pol_mon_pol"`
 	FvRsBDToNdP                           types.String `tfsdk:"relation_fv_rs_bd_to_nd_p"`
-	FvRsBDToRelayP                        types.String `tfsdk:"relation_fv_rs_bd_to_relay_p"`
 	FvRsBDToProfile                       types.String `tfsdk:"relation_fv_rs_bd_to_profile"`
 	FvRsCtx                               types.String `tfsdk:"relation_fv_rs_ctx"`
 	FvRsBDToNetflowMonitorPol             types.Set    `tfsdk:"relation_fv_rs_bd_to_netflow_monitor_pol"`
@@ -735,6 +737,11 @@ func (r *FvBDResource) UpgradeState(ctx context.Context) map[int64]resource.Stat
 						Computed:    false,
 						ElementType: types.StringType,
 					},
+					"relation_fv_rs_bd_to_relay_p": schema.StringAttribute{
+						Required: false,
+						Optional: true,
+						Computed: false,
+					},
 					"relation_fv_rs_bd_to_ep_ret": schema.StringAttribute{
 						Required: false,
 						Optional: true,
@@ -770,11 +777,6 @@ func (r *FvBDResource) UpgradeState(ctx context.Context) map[int64]resource.Stat
 						Required: false,
 						Optional: true,
 						Computed: true,
-					},
-					"relation_fv_rs_bd_to_relay_p": schema.StringAttribute{
-						Required: false,
-						Optional: true,
-						Computed: false,
 					},
 					"relation_fv_rs_bd_to_profile": schema.StringAttribute{
 						Required: false,
@@ -840,6 +842,7 @@ func (r *FvBDResource) UpgradeState(ctx context.Context) map[int64]resource.Stat
 					NameAlias:                             priorStateData.NameAlias,
 					OwnerKey:                              basetypes.NewStringNull(),
 					OwnerTag:                              basetypes.NewStringNull(),
+					ServiceBdRoutingDisable:               basetypes.NewStringNull(),
 					Type:                                  priorStateData.Type,
 					UnicastRoute:                          priorStateData.UnicastRoute,
 					UnkMacUcastAct:                        priorStateData.UnkMacUcastAct,
@@ -863,13 +866,13 @@ func (r *FvBDResource) UpgradeState(ctx context.Context) map[int64]resource.Stat
 					DeprecatedV6unkMcastAct:               priorStateData.V6unkMcastAct,
 					DeprecatedVmac:                        priorStateData.Vmac,
 					Deprecated_relation_fv_rs_bd_flood_to: priorStateData.Deprecated_relation_fv_rs_bd_flood_to,
+					DeprecatedFvRsBDToRelayP:              priorStateData.FvRsBDToRelayP,
 					DeprecatedFvRsBdToEpRet:               priorStateData.FvRsBdToEpRet,
 					DeprecatedFvRsBDToFhs:                 priorStateData.FvRsBDToFhs,
 					DeprecatedFvRsIgmpsn:                  priorStateData.FvRsIgmpsn,
 					DeprecatedFvRsMldsn:                   priorStateData.FvRsMldsn,
 					DeprecatedFvRsABDPolMonPol:            priorStateData.FvRsABDPolMonPol,
 					DeprecatedFvRsBDToNdP:                 priorStateData.FvRsBDToNdP,
-					DeprecatedFvRsBDToRelayP:              priorStateData.FvRsBDToRelayP,
 					DeprecatedFvRsBDToProfile:             priorStateData.FvRsBDToProfile,
 					DeprecatedFvRsCtx:                     priorStateData.FvRsCtx,
 				}
@@ -1388,6 +1391,28 @@ func (r *FvBDResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRe
 			planData.DeprecatedVmac = stateData.DeprecatedVmac
 		}
 
+		if !configData.FvRsBDToRelayP.IsNull() && stateData != nil {
+			if IsEmptySingleNestedAttribute(configData.FvRsBDToRelayP.Attributes()) {
+				planData.FvRsBDToRelayP = configData.FvRsBDToRelayP
+				planData.DeprecatedFvRsBDToRelayP = basetypes.NewStringNull()
+			} else {
+				var attributeValues FvRsBDToRelayPFvBDResourceModel
+				configData.FvRsBDToRelayP.As(ctx, &attributeValues, basetypes.ObjectAsOptions{})
+				if GetMOName(stateData.DeprecatedFvRsBDToRelayP.ValueString()) == attributeValues.TnDhcpRelayPName.ValueString() && !attributeValues.TnDhcpRelayPName.IsNull() {
+					planData.DeprecatedFvRsBDToRelayP = stateData.DeprecatedFvRsBDToRelayP
+				}
+			}
+		} else if !configData.DeprecatedFvRsBDToRelayP.IsNull() {
+			FvRsBDToRelayP := FvRsBDToRelayPFvBDResourceModel{
+				Annotation:       planData.Annotation,
+				TnDhcpRelayPName: basetypes.NewStringValue(GetMOName(configData.DeprecatedFvRsBDToRelayP.ValueString())),
+			}
+			FvRsBDToRelayPObject, _ := types.ObjectValueFrom(ctx, FvRsBDToRelayPFvBDType, FvRsBDToRelayP)
+			planData.FvRsBDToRelayP = FvRsBDToRelayPObject
+		} else if stateData != nil { // used to replace use state for unknown
+			planData.DeprecatedFvRsBDToRelayP = stateData.DeprecatedFvRsBDToRelayP
+		}
+
 		if !configData.FvRsBdToEpRet.IsNull() && stateData != nil {
 			if IsEmptySingleNestedAttribute(configData.FvRsBdToEpRet.Attributes()) {
 				planData.FvRsBdToEpRet = configData.FvRsBdToEpRet
@@ -1582,28 +1607,6 @@ func (r *FvBDResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRe
 			planData.FvRsBDToNdP = FvRsBDToNdPObject
 		} else if stateData != nil { // used to replace use state for unknown
 			planData.DeprecatedFvRsBDToNdP = stateData.DeprecatedFvRsBDToNdP
-		}
-
-		if !configData.FvRsBDToRelayP.IsNull() && stateData != nil {
-			if IsEmptySingleNestedAttribute(configData.FvRsBDToRelayP.Attributes()) {
-				planData.FvRsBDToRelayP = configData.FvRsBDToRelayP
-				planData.DeprecatedFvRsBDToRelayP = basetypes.NewStringNull()
-			} else {
-				var attributeValues FvRsBDToRelayPFvBDResourceModel
-				configData.FvRsBDToRelayP.As(ctx, &attributeValues, basetypes.ObjectAsOptions{})
-				if GetMOName(stateData.DeprecatedFvRsBDToRelayP.ValueString()) == attributeValues.TnDhcpRelayPName.ValueString() && !attributeValues.TnDhcpRelayPName.IsNull() {
-					planData.DeprecatedFvRsBDToRelayP = stateData.DeprecatedFvRsBDToRelayP
-				}
-			}
-		} else if !configData.DeprecatedFvRsBDToRelayP.IsNull() {
-			FvRsBDToRelayP := FvRsBDToRelayPFvBDResourceModel{
-				Annotation:       planData.Annotation,
-				TnDhcpRelayPName: basetypes.NewStringValue(GetMOName(configData.DeprecatedFvRsBDToRelayP.ValueString())),
-			}
-			FvRsBDToRelayPObject, _ := types.ObjectValueFrom(ctx, FvRsBDToRelayPFvBDType, FvRsBDToRelayP)
-			planData.FvRsBDToRelayP = FvRsBDToRelayPObject
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedFvRsBDToRelayP = stateData.DeprecatedFvRsBDToRelayP
 		}
 
 		if !configData.FvRsBDToProfile.IsNull() && stateData != nil {
@@ -1867,6 +1870,16 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 					setplanmodifier.UseStateForUnknown(),
 				},
 			},
+			"relation_fv_rs_bd_to_relay_p": schema.StringAttribute{
+				Optional:           true,
+				Computed:           true,
+				DeprecationMessage: "Attribute 'relation_fv_rs_bd_to_relay_p' is deprecated, please refer to 'relation_to_dhcp_relay_policy.dhcp_relay_policy_name' instead. The attribute will be removed in the next major version of the provider.",
+				Validators: []validator.String{
+					stringvalidator.ConflictsWith(path.Expressions{
+						path.MatchRoot("relation_to_dhcp_relay_policy"),
+					}...),
+				},
+			},
 			"relation_fv_rs_bd_to_ep_ret": schema.StringAttribute{
 				Optional:           true,
 				Computed:           true,
@@ -1935,16 +1948,6 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 				Validators: []validator.String{
 					stringvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("relation_to_neighbor_discovery_interface_policy"),
-					}...),
-				},
-			},
-			"relation_fv_rs_bd_to_relay_p": schema.StringAttribute{
-				Optional:           true,
-				Computed:           true,
-				DeprecationMessage: "Attribute 'relation_fv_rs_bd_to_relay_p' is deprecated, please refer to 'relation_to_relay_policy.dhcp_relay_policy_name' instead. The attribute will be removed in the next major version of the provider.",
-				Validators: []validator.String{
-					stringvalidator.ConflictsWith(path.Expressions{
-						path.MatchRoot("relation_to_relay_policy"),
 					}...),
 				},
 			},
@@ -2232,6 +2235,18 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
+			},
+			"service_bd_routing_disable": schema.StringAttribute{
+				Optional: true,
+				Computed: true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
+				},
+				Validators: []validator.String{
+					stringvalidator.OneOf("no", "yes"),
+				},
+				MarkdownDescription: `Disable Routing on service BD.`,
 			},
 			"bridge_domain_type": schema.StringAttribute{
 				Optional: true,
@@ -2801,20 +2816,20 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						"flt_type": schema.StringAttribute{
 							Optional:           true,
 							Computed:           true,
-							DeprecationMessage: "Attribute 'flt_type' will be deprecated soon, please use 'relation_to_netflow_monitor_policy.filter_type' instead",
+							DeprecationMessage: "Attribute 'flt_type' will be deprecated soon, please use 'relation_to_netflow_monitor_policies.filter_type' instead",
 							Validators: []validator.String{
 								stringvalidator.ConflictsWith(path.Expressions{
-									path.MatchRoot("relation_to_netflow_monitor_policy"),
+									path.MatchRoot("relation_to_netflow_monitor_policies"),
 								}...),
 							},
 						},
 						"tn_netflow_monitor_pol_name": schema.StringAttribute{
 							Optional:           true,
 							Computed:           true,
-							DeprecationMessage: "Attribute 'tn_netflow_monitor_pol_name' will be deprecated soon, please use 'relation_to_netflow_monitor_policy.netflow_monitor_policy_name' instead",
+							DeprecationMessage: "Attribute 'tn_netflow_monitor_pol_name' will be deprecated soon, please use 'relation_to_netflow_monitor_policies.netflow_monitor_policy_name' instead",
 							Validators: []validator.String{
 								stringvalidator.ConflictsWith(path.Expressions{
-									path.MatchRoot("relation_to_netflow_monitor_policy"),
+									path.MatchRoot("relation_to_netflow_monitor_policies"),
 								}...),
 							},
 						},
@@ -3200,6 +3215,9 @@ func getAndSetFvBDAttributes(ctx context.Context, diags *diag.Diagnostics, clien
 				}
 				if attributeName == "ownerTag" {
 					readData.OwnerTag = basetypes.NewStringValue(attributeValue.(string))
+				}
+				if attributeName == "serviceBdRoutingDisable" {
+					readData.ServiceBdRoutingDisable = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "type" {
 					readData.Type = basetypes.NewStringValue(attributeValue.(string))
@@ -4218,6 +4236,9 @@ func getFvBDCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, crea
 	}
 	if !data.OwnerTag.IsNull() && !data.OwnerTag.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["ownerTag"] = data.OwnerTag.ValueString()
+	}
+	if !data.ServiceBdRoutingDisable.IsNull() && !data.ServiceBdRoutingDisable.IsUnknown() {
+		payloadMap["attributes"].(map[string]string)["serviceBdRoutingDisable"] = data.ServiceBdRoutingDisable.ValueString()
 	}
 	if !data.Type.IsNull() && !data.Type.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["type"] = data.Type.ValueString()
