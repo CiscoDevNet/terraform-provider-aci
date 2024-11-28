@@ -119,7 +119,7 @@ qosCustomPol:
 qosDscpClass:
   resource_name: "dscp_to_priority_map"
   ui_locations:
-    - "Tenants -> Policies -> Protocol -> Custom QoS -> DSCP to priority ap"
+    - "Tenants -> Policies -> Protocol -> Custom QoS -> DSCP to priority map"
   sub_category: "Tenant Policies"
 
 qosDot1PClass:

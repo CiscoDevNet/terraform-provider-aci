@@ -24,7 +24,7 @@ Data source for ACI DSCP to Priority Map
 
 ## GUI Information ##
 
-* Location: `Tenants -> Policies -> Protocol -> Custom QoS -> DSCP to priority ap`
+* Location: `Tenants -> Policies -> Protocol -> Custom QoS -> DSCP to priority map`
 
 ## Example Usage ##
 
