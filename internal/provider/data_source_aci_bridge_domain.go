@@ -249,6 +249,10 @@ func (d *FvBDDataSource) Schema(ctx context.Context, req datasource.SchemaReques
 				Computed:            true,
 				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
 			},
+			"service_bd_routing_disable": schema.StringAttribute{
+				Computed:            true,
+				MarkdownDescription: `Disable Routing on service BD.`,
+			},
 			"bridge_domain_type": schema.StringAttribute{
 				Computed:            true,
 				MarkdownDescription: `The domain type of the Bridge Domain object.`,
