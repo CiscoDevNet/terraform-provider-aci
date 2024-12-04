@@ -111,6 +111,10 @@ func (d *FvBDDataSource) Schema(ctx context.Context, req datasource.SchemaReques
 				ElementType:        types.StringType,
 				DeprecationMessage: "Attribute `relation_fv_rs_bd_flood_to` is deprecated. The attribute will be removed in the next major version of the provider.",
 			},
+			"relation_fv_rs_bd_to_relay_p": schema.StringAttribute{
+				Computed:           true,
+				DeprecationMessage: "Attribute 'relation_fv_rs_bd_to_relay_p' is deprecated, please refer to 'relation_to_dhcp_relay_policy.dhcp_relay_policy_name' instead. The attribute will be removed in the next major version of the provider.",
+			},
 			"relation_fv_rs_bd_to_ep_ret": schema.StringAttribute{
 				Computed:           true,
 				DeprecationMessage: "Attribute 'relation_fv_rs_bd_to_ep_ret' is deprecated, please refer to 'relation_to_end_point_retention_policy.end_point_retention_policy_name' instead. The attribute will be removed in the next major version of the provider.",
@@ -139,10 +143,6 @@ func (d *FvBDDataSource) Schema(ctx context.Context, req datasource.SchemaReques
 			"relation_fv_rs_bd_to_nd_p": schema.StringAttribute{
 				Computed:           true,
 				DeprecationMessage: "Attribute 'relation_fv_rs_bd_to_nd_p' is deprecated, please refer to 'relation_to_neighbor_discovery_interface_policy.neighbor_discovery_interface_policy_name' instead. The attribute will be removed in the next major version of the provider.",
-			},
-			"relation_fv_rs_bd_to_relay_p": schema.StringAttribute{
-				Computed:           true,
-				DeprecationMessage: "Attribute 'relation_fv_rs_bd_to_relay_p' is deprecated, please refer to 'relation_to_relay_policy.dhcp_relay_policy_name' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			"relation_fv_rs_bd_to_profile": schema.StringAttribute{
 				Computed:           true,
@@ -248,6 +248,10 @@ func (d *FvBDDataSource) Schema(ctx context.Context, req datasource.SchemaReques
 			"owner_tag": schema.StringAttribute{
 				Computed:            true,
 				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
+			},
+			"service_bd_routing_disable": schema.StringAttribute{
+				Computed:            true,
+				MarkdownDescription: `Disable Routing on service BD.`,
 			},
 			"bridge_domain_type": schema.StringAttribute{
 				Computed:            true,
@@ -544,11 +548,11 @@ func (d *FvBDDataSource) Schema(ctx context.Context, req datasource.SchemaReques
 					Attributes: map[string]schema.Attribute{
 						"flt_type": schema.StringAttribute{
 							Computed:           true,
-							DeprecationMessage: "Attribute 'flt_type' will be deprecated soon, please refer to 'relation_to_netflow_monitor_policy.filter_type' instead",
+							DeprecationMessage: "Attribute 'flt_type' will be deprecated soon, please refer to 'relation_to_netflow_monitor_policies.filter_type' instead",
 						},
 						"tn_netflow_monitor_pol_name": schema.StringAttribute{
 							Computed:           true,
-							DeprecationMessage: "Attribute 'tn_netflow_monitor_pol_name' will be deprecated soon, please refer to 'relation_to_netflow_monitor_policy.netflow_monitor_policy_name' instead",
+							DeprecationMessage: "Attribute 'tn_netflow_monitor_pol_name' will be deprecated soon, please refer to 'relation_to_netflow_monitor_policies.netflow_monitor_policy_name' instead",
 						},
 					},
 				},
