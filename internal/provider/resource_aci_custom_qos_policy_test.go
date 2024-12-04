@@ -151,6 +151,42 @@ func TestAccResourceQosCustomPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "annotations.1.value", "test_value"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dot1p_classifiers.0.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dot1p_classifiers.0.description", "description_1"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dot1p_classifiers.0.from", "0"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dot1p_classifiers.0.name", "name_1"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dot1p_classifiers.0.name_alias", "name_alias_1"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dot1p_classifiers.0.priority", "level1"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dot1p_classifiers.0.target", "AF11"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dot1p_classifiers.0.target_cos", "0"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dot1p_classifiers.0.to", "0"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dot1p_classifiers.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dot1p_classifiers.1.description", "description_2"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dot1p_classifiers.1.from", "1"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dot1p_classifiers.1.name", "name_2"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dot1p_classifiers.1.name_alias", "name_alias_2"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dot1p_classifiers.1.priority", "level2"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dot1p_classifiers.1.target", "AF12"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dot1p_classifiers.1.target_cos", "1"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dot1p_classifiers.1.to", "1"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dscp_to_priority_maps.0.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dscp_to_priority_maps.0.description", "description_1"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dscp_to_priority_maps.0.from", "AF11"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dscp_to_priority_maps.0.name", "name_1"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dscp_to_priority_maps.0.name_alias", "name_alias_1"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dscp_to_priority_maps.0.priority", "level1"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dscp_to_priority_maps.0.target", "AF11"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dscp_to_priority_maps.0.target_cos", "0"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dscp_to_priority_maps.0.to", "AF11"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dscp_to_priority_maps.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dscp_to_priority_maps.1.description", "description_2"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dscp_to_priority_maps.1.from", "AF12"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dscp_to_priority_maps.1.name", "name_2"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dscp_to_priority_maps.1.name_alias", "name_alias_2"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dscp_to_priority_maps.1.priority", "level2"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dscp_to_priority_maps.1.target", "AF12"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dscp_to_priority_maps.1.target_cos", "1"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dscp_to_priority_maps.1.to", "AF12"),
 					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "tags.1.key", "key_1"),
@@ -178,6 +214,44 @@ func TestAccResourceQosCustomPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "annotations.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "annotations.#", "2"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dot1p_classifiers.0.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dot1p_classifiers.0.description", "description_1"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dot1p_classifiers.0.from", "0"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dot1p_classifiers.0.name", "name_1"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dot1p_classifiers.0.name_alias", "name_alias_1"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dot1p_classifiers.0.priority", "level1"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dot1p_classifiers.0.target", "AF11"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dot1p_classifiers.0.target_cos", "0"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dot1p_classifiers.0.to", "0"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dot1p_classifiers.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dot1p_classifiers.1.description", "description_2"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dot1p_classifiers.1.from", "1"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dot1p_classifiers.1.name", "name_2"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dot1p_classifiers.1.name_alias", "name_alias_2"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dot1p_classifiers.1.priority", "level2"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dot1p_classifiers.1.target", "AF12"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dot1p_classifiers.1.target_cos", "1"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dot1p_classifiers.1.to", "1"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dot1p_classifiers.#", "2"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dscp_to_priority_maps.0.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dscp_to_priority_maps.0.description", "description_1"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dscp_to_priority_maps.0.from", "AF11"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dscp_to_priority_maps.0.name", "name_1"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dscp_to_priority_maps.0.name_alias", "name_alias_1"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dscp_to_priority_maps.0.priority", "level1"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dscp_to_priority_maps.0.target", "AF11"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dscp_to_priority_maps.0.target_cos", "0"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dscp_to_priority_maps.0.to", "AF11"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dscp_to_priority_maps.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dscp_to_priority_maps.1.description", "description_2"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dscp_to_priority_maps.1.from", "AF12"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dscp_to_priority_maps.1.name", "name_2"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dscp_to_priority_maps.1.name_alias", "name_alias_2"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dscp_to_priority_maps.1.priority", "level2"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dscp_to_priority_maps.1.target", "AF12"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dscp_to_priority_maps.1.target_cos", "1"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dscp_to_priority_maps.1.to", "AF12"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dscp_to_priority_maps.#", "2"),
 					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "tags.1.key", "key_1"),
@@ -193,6 +267,26 @@ func TestAccResourceQosCustomPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "annotations.0.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "annotations.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "annotations.#", "1"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dot1p_classifiers.0.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dot1p_classifiers.0.description", "description_2"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dot1p_classifiers.0.from", "1"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dot1p_classifiers.0.name", "name_2"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dot1p_classifiers.0.name_alias", "name_alias_2"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dot1p_classifiers.0.priority", "level2"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dot1p_classifiers.0.target", "AF12"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dot1p_classifiers.0.target_cos", "1"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dot1p_classifiers.0.to", "1"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dot1p_classifiers.#", "1"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dscp_to_priority_maps.0.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dscp_to_priority_maps.0.description", "description_2"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dscp_to_priority_maps.0.from", "AF12"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dscp_to_priority_maps.0.name", "name_2"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dscp_to_priority_maps.0.name_alias", "name_alias_2"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dscp_to_priority_maps.0.priority", "level2"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dscp_to_priority_maps.0.target", "AF12"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dscp_to_priority_maps.0.target_cos", "1"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dscp_to_priority_maps.0.to", "AF12"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dscp_to_priority_maps.#", "1"),
 					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "tags.0.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "tags.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "tags.#", "1"),
@@ -204,6 +298,8 @@ func TestAccResourceQosCustomPolWithFvTenant(t *testing.T) {
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "annotations.#", "0"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dot1p_classifiers.#", "0"),
+					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "dscp_to_priority_maps.#", "0"),
 					resource.TestCheckResourceAttr("aci_custom_qos_policy.test", "tags.#", "0"),
 				),
 			},
@@ -268,6 +364,54 @@ resource "aci_custom_qos_policy" "test" {
 	  value = "test_value"
 	},
   ]
+  dot1p_classifiers = [
+	{
+	  annotation = "annotation_1"
+	  description = "description_1"
+	  from = "0"
+	  name = "name_1"
+	  name_alias = "name_alias_1"
+	  priority = "level1"
+	  target = "AF11"
+	  target_cos = "0"
+	  to = "0"
+	},
+	{
+	  annotation = "annotation_2"
+	  description = "description_2"
+	  from = "1"
+	  name = "name_2"
+	  name_alias = "name_alias_2"
+	  priority = "level2"
+	  target = "AF12"
+	  target_cos = "1"
+	  to = "1"
+	},
+  ]
+  dscp_to_priority_maps = [
+	{
+	  annotation = "annotation_1"
+	  description = "description_1"
+	  from = "AF11"
+	  name = "name_1"
+	  name_alias = "name_alias_1"
+	  priority = "level1"
+	  target = "AF11"
+	  target_cos = "0"
+	  to = "AF11"
+	},
+	{
+	  annotation = "annotation_2"
+	  description = "description_2"
+	  from = "AF12"
+	  name = "name_2"
+	  name_alias = "name_alias_2"
+	  priority = "level2"
+	  target = "AF12"
+	  target_cos = "1"
+	  to = "AF12"
+	},
+  ]
   tags = [
 	{
 	  key = "key_0"
@@ -298,6 +442,32 @@ resource "aci_custom_qos_policy" "test" {
 	  value = "test_value"
 	},
   ]
+  dot1p_classifiers = [ 
+	{
+	  annotation = "annotation_2"
+	  description = "description_2"
+	  from = "1"
+	  name = "name_2"
+	  name_alias = "name_alias_2"
+	  priority = "level2"
+	  target = "AF12"
+	  target_cos = "1"
+	  to = "1"
+	},
+  ]
+  dscp_to_priority_maps = [ 
+	{
+	  annotation = "annotation_2"
+	  description = "description_2"
+	  from = "AF12"
+	  name = "name_2"
+	  name_alias = "name_alias_2"
+	  priority = "level2"
+	  target = "AF12"
+	  target_cos = "1"
+	  to = "AF12"
+	},
+  ]
   tags = [ 
 	{
 	  key = "key_1"
@@ -312,6 +482,8 @@ resource "aci_custom_qos_policy" "test" {
   parent_dn = aci_tenant.test.id
   name = "test_name"
   annotations = []
+  dot1p_classifiers = []
+  dscp_to_priority_maps = []
   tags = []
 }
 `
