@@ -62,6 +62,7 @@ type FvAEPgResourceModel struct {
 	PcTag                              types.String                      `tfsdk:"pc_tag"`
 	PrefGrMemb                         types.String                      `tfsdk:"preferred_group_member"`
 	Prio                               customTypes.FvAEPgPrioStringValue `tfsdk:"priority"`
+	Scope                              types.String                      `tfsdk:"scope"`
 	Shutdown                           types.String                      `tfsdk:"admin_state"`
 	FvCrtrn                            types.Object                      `tfsdk:"epg_useg_block_statement"`
 	FvRsAEPgMonPol                     types.Object                      `tfsdk:"relation_to_application_epg_monitoring_policy"`
@@ -127,6 +128,7 @@ func getEmptyFvAEPgResourceModel() *FvAEPgResourceModel {
 		PcTag:          basetypes.NewStringNull(),
 		PrefGrMemb:     basetypes.NewStringNull(),
 		Prio:           customTypes.NewFvAEPgPrioStringNull(),
+		Scope:          basetypes.NewStringNull(),
 		Shutdown:       basetypes.NewStringNull(),
 		FvCrtrn: types.ObjectNull(map[string]attr.Type{
 			"annotation":  types.StringType,
@@ -943,6 +945,7 @@ func (r *FvAEPgResource) UpgradeState(ctx context.Context) map[int64]resource.St
 					PcTag:                              basetypes.NewStringNull(),
 					PrefGrMemb:                         priorStateData.PrefGrMemb,
 					Prio:                               customTypes.FvAEPgPrioStringValue{StringValue: priorStateData.Prio},
+					Scope:                              basetypes.NewStringNull(),
 					Shutdown:                           priorStateData.Shutdown,
 					DeprecatedExceptionTag:             priorStateData.ExceptionTag,
 					DeprecatedFloodOnEncap:             priorStateData.FloodOnEncap,
@@ -2764,6 +2767,10 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				},
 				MarkdownDescription: `The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.`,
 			},
+			"scope": schema.StringAttribute{
+				Computed:            true,
+				MarkdownDescription: `The L3 scope ID of the Application EPG object.`,
+			},
 			"admin_state": schema.StringAttribute{
 				Optional: true,
 				Computed: true,
@@ -2790,7 +2797,6 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						Validators:          []validator.String{},
 						MarkdownDescription: `The annotation of the EPG uSeg Block Statement object.`,
 					},
 					"description": schema.StringAttribute{
@@ -2799,7 +2805,6 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						Validators:          []validator.String{},
 						MarkdownDescription: `The description of the EPG uSeg Block Statement object.`,
 					},
 					"match": schema.StringAttribute{
@@ -2819,7 +2824,6 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						Validators:          []validator.String{},
 						MarkdownDescription: `The name of the EPG uSeg Block Statement object.`,
 					},
 					"name_alias": schema.StringAttribute{
@@ -2828,7 +2832,6 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						Validators:          []validator.String{},
 						MarkdownDescription: `The name alias of the EPG uSeg Block Statement object.`,
 					},
 					"owner_key": schema.StringAttribute{
@@ -2837,7 +2840,6 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						Validators:          []validator.String{},
 						MarkdownDescription: `The key for enabling clients to own their data for entity correlation.`,
 					},
 					"owner_tag": schema.StringAttribute{
@@ -2846,7 +2848,6 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						Validators:          []validator.String{},
 						MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
 					},
 					"precedence": schema.StringAttribute{
@@ -2855,7 +2856,6 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						Validators:          []validator.String{},
 						MarkdownDescription: `The precedence of the EPG uSeg Block Statement object.`,
 					},
 					"scope": schema.StringAttribute{
@@ -2885,7 +2885,6 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						Validators:          []validator.String{},
 						MarkdownDescription: `The annotation of the Relation To Application EPG Monitoring Policy object.`,
 					},
 					"monitoring_policy_name": schema.StringAttribute{
@@ -2894,7 +2893,6 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						Validators:          []validator.String{},
 						MarkdownDescription: `The name of the monitoring policy.`,
 					},
 				},
@@ -2913,7 +2911,6 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						Validators:          []validator.String{},
 						MarkdownDescription: `The annotation of the Relation To Bridge Domain object.`,
 					},
 					"bridge_domain_name": schema.StringAttribute{
@@ -2922,7 +2919,6 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						Validators:          []validator.String{},
 						MarkdownDescription: `The name of the bridge domain associated with this EPG.`,
 					},
 				},
@@ -3035,7 +3031,6 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						Validators:          []validator.String{},
 						MarkdownDescription: `The annotation of the Relation To Custom Qos Policy object.`,
 					},
 					"custom_qos_policy_name": schema.StringAttribute{
@@ -3044,7 +3039,6 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						Validators:          []validator.String{},
 						MarkdownDescription: `The Custom QoS traffic policy name.`,
 					},
 				},
@@ -3328,7 +3322,6 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						Validators:          []validator.String{},
 						MarkdownDescription: `The annotation of the Relation To Data Plane Policing Policy object.`,
 					},
 					"data_plane_policing_policy_name": schema.StringAttribute{
@@ -3337,7 +3330,6 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						Validators:          []validator.String{},
 						MarkdownDescription: `Name.`,
 					},
 				},
@@ -3735,7 +3727,6 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						Validators:          []validator.String{},
 						MarkdownDescription: `The annotation of the Relation To Trust Control Policy object.`,
 					},
 					"trust_control_policy_name": schema.StringAttribute{
@@ -3744,7 +3735,6 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						Validators:          []validator.String{},
 						MarkdownDescription: `Name.`,
 					},
 				},
@@ -4229,6 +4219,9 @@ func getAndSetFvAEPgAttributes(ctx context.Context, diags *diag.Diagnostics, cli
 				}
 				if attributeName == "prio" {
 					readData.Prio = customTypes.NewFvAEPgPrioStringValue(attributeValue.(string))
+				}
+				if attributeName == "scope" {
+					readData.Scope = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "shutdown" {
 					readData.Shutdown = basetypes.NewStringValue(attributeValue.(string))

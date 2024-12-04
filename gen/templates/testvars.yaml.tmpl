@@ -39,7 +39,7 @@ default:
         {{- $printedVersionMismatchNumberAll := false }}
         {{- range $propertyNames }}
           {{- $propertyInMismatch := .}}
-          {{- range $properties}}
+          {{- range $properties}}{{- if and (not .IgnoreInTest) (not .ReadOnly)}}
             {{- if eq .PropertyName $propertyInMismatch}}
               {{- if not $printedVersionMismatchNumberAll }}
               {{- $printedVersionMismatchNumberAll = true }}
@@ -71,7 +71,7 @@ default:
       {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName "" "default" 0 $.Definitions}}"
           {{- end}}
         {{- end}}
-      {{- end}}{{- end}}
+      {{- end}}{{- end}}{{- end}}
       {{- end}}
   {{- end}}
   {{- end}}
@@ -156,7 +156,7 @@ all:
         {{- $printedVersionMismatchNumberAll := false }}
         {{- range $propertyNames }}
           {{- $propertyInMismatch := .}}
-          {{- range $properties}}
+          {{- range $properties}}{{- if and (not .IgnoreInTest) (not .ReadOnly)}}
             {{- if eq .PropertyName $propertyInMismatch}}
               {{- if not $printedVersionMismatchNumberAll }}
               {{- $printedVersionMismatchNumberAll = true }}
@@ -188,8 +188,9 @@ all:
               {{- end}}
             {{- else}}
       {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName $overwritePropertyName "all" 0 $.Definitions}}"
-      {{- end}}
-    {{- end}}
+            {{- end}}
+          {{- end}}
+        {{- end}}
       {{- end}}
     {{- end}}
    {{- end}}

@@ -142,6 +142,8 @@ All examples for the Endpoint Security Group resource can be found in the [examp
 * `preferred_group_member` (prefGrMemb) - (string) Parameter used to determine whether the ESG is part of the preferred group. Members of this group are allowed to communicate without contracts.
   - Default: `exclude`
   - Valid Values: `exclude`, `include`.
+* `scope` (scope) - (string) The L3 scope ID of the Endpoint Security Group object.
+  - Default: `0`
 * `admin_state` (shutdown) - (string) Withdraw the ESG configuration from all nodes in the fabric.
   - Default: `no`
   - Valid Values: `no`, `yes`.
