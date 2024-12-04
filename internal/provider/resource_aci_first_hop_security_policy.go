@@ -86,6 +86,8 @@ func getEmptyFhsBDPolResourceModel() *FhsBDPolResourceModel {
 			"other_config_flag":     types.StringType,
 			"owner_key":             types.StringType,
 			"owner_tag":             types.StringType,
+			"annotations":           types.SetType{ElemType: TagAnnotationFhsRaGuardPolFhsBDPolType},
+			"tags":                  types.SetType{ElemType: TagTagFhsRaGuardPolFhsBDPolType},
 		}),
 		TagAnnotation: types.SetNull(types.ObjectType{
 			AttrTypes: map[string]attr.Type{
@@ -117,6 +119,8 @@ type FhsRaGuardPolFhsBDPolResourceModel struct {
 	OtherConfigFlag    types.String `tfsdk:"other_config_flag"`
 	OwnerKey           types.String `tfsdk:"owner_key"`
 	OwnerTag           types.String `tfsdk:"owner_tag"`
+	TagAnnotation      types.Set    `tfsdk:"annotations"`
+	TagTag             types.Set    `tfsdk:"tags"`
 }
 
 func getEmptyFhsRaGuardPolFhsBDPolResourceModel() FhsRaGuardPolFhsBDPolResourceModel {
@@ -134,6 +138,18 @@ func getEmptyFhsRaGuardPolFhsBDPolResourceModel() FhsRaGuardPolFhsBDPolResourceM
 		OtherConfigFlag:    basetypes.NewStringNull(),
 		OwnerKey:           basetypes.NewStringNull(),
 		OwnerTag:           basetypes.NewStringNull(),
+		TagAnnotation: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"key":   types.StringType,
+				"value": types.StringType,
+			},
+		}),
+		TagTag: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"key":   types.StringType,
+				"value": types.StringType,
+			},
+		}),
 	}
 }
 
@@ -151,6 +167,48 @@ var FhsRaGuardPolFhsBDPolType = map[string]attr.Type{
 	"other_config_flag":     types.StringType,
 	"owner_key":             types.StringType,
 	"owner_tag":             types.StringType,
+	"annotations":           types.SetType{ElemType: TagAnnotationFhsRaGuardPolFhsBDPolType},
+	"tags":                  types.SetType{ElemType: TagTagFhsRaGuardPolFhsBDPolType},
+}
+
+// TagAnnotationFhsRaGuardPolFhsBDPolResourceModel describes the resource data model for the children without relation ships.
+type TagAnnotationFhsRaGuardPolFhsBDPolResourceModel struct {
+	Key   types.String `tfsdk:"key"`
+	Value types.String `tfsdk:"value"`
+}
+
+func getEmptyTagAnnotationFhsRaGuardPolFhsBDPolResourceModel() TagAnnotationFhsRaGuardPolFhsBDPolResourceModel {
+	return TagAnnotationFhsRaGuardPolFhsBDPolResourceModel{
+		Key:   basetypes.NewStringNull(),
+		Value: basetypes.NewStringNull(),
+	}
+}
+
+var TagAnnotationFhsRaGuardPolFhsBDPolType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
+}
+
+// TagTagFhsRaGuardPolFhsBDPolResourceModel describes the resource data model for the children without relation ships.
+type TagTagFhsRaGuardPolFhsBDPolResourceModel struct {
+	Key   types.String `tfsdk:"key"`
+	Value types.String `tfsdk:"value"`
+}
+
+func getEmptyTagTagFhsRaGuardPolFhsBDPolResourceModel() TagTagFhsRaGuardPolFhsBDPolResourceModel {
+	return TagTagFhsRaGuardPolFhsBDPolResourceModel{
+		Key:   basetypes.NewStringNull(),
+		Value: basetypes.NewStringNull(),
+	}
+}
+
+var TagTagFhsRaGuardPolFhsBDPolType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
 }
 
 // TagAnnotationFhsBDPolResourceModel describes the resource data model for the children without relation ships.
@@ -166,6 +224,13 @@ func getEmptyTagAnnotationFhsBDPolResourceModel() TagAnnotationFhsBDPolResourceM
 	}
 }
 
+var TagAnnotationFhsBDPolType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
+}
+
 // TagTagFhsBDPolResourceModel describes the resource data model for the children without relation ships.
 type TagTagFhsBDPolResourceModel struct {
 	Key   types.String `tfsdk:"key"`
@@ -177,6 +242,13 @@ func getEmptyTagTagFhsBDPolResourceModel() TagTagFhsBDPolResourceModel {
 		Key:   basetypes.NewStringNull(),
 		Value: basetypes.NewStringNull(),
 	}
+}
+
+var TagTagFhsBDPolType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
 }
 
 type FhsBDPolIdentifier struct {
@@ -461,6 +533,58 @@ func (r *FhsBDPolResource) Schema(ctx context.Context, req resource.SchemaReques
 						},
 						MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
 					},
+					"annotations": schema.SetNestedAttribute{
+						MarkdownDescription: ``,
+						Optional:            true,
+						Computed:            true,
+						PlanModifiers: []planmodifier.Set{
+							setplanmodifier.UseStateForUnknown(),
+						},
+						NestedObject: schema.NestedAttributeObject{
+							Attributes: map[string]schema.Attribute{
+								"key": schema.StringAttribute{
+									Required: true,
+									PlanModifiers: []planmodifier.String{
+										stringplanmodifier.UseStateForUnknown(),
+									},
+									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+								},
+								"value": schema.StringAttribute{
+									Required: true,
+									PlanModifiers: []planmodifier.String{
+										stringplanmodifier.UseStateForUnknown(),
+									},
+									MarkdownDescription: `The value of the property.`,
+								},
+							},
+						},
+					},
+					"tags": schema.SetNestedAttribute{
+						MarkdownDescription: ``,
+						Optional:            true,
+						Computed:            true,
+						PlanModifiers: []planmodifier.Set{
+							setplanmodifier.UseStateForUnknown(),
+						},
+						NestedObject: schema.NestedAttributeObject{
+							Attributes: map[string]schema.Attribute{
+								"key": schema.StringAttribute{
+									Required: true,
+									PlanModifiers: []planmodifier.String{
+										stringplanmodifier.UseStateForUnknown(),
+									},
+									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+								},
+								"value": schema.StringAttribute{
+									Required: true,
+									PlanModifiers: []planmodifier.String{
+										stringplanmodifier.UseStateForUnknown(),
+									},
+									MarkdownDescription: `The value of the property.`,
+								},
+							},
+						},
+					},
 				},
 			},
 			"annotations": schema.SetNestedAttribute{
@@ -706,7 +830,7 @@ func (r *FhsBDPolResource) ImportState(ctx context.Context, req resource.ImportS
 }
 
 func getAndSetFhsBDPolAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FhsBDPolResourceModel) {
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "fhsBDPol,fhsRaGuardPol,tagAnnotation,tagTag"), "GET", nil)
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "fhsBDPol,fhsRaGuardPol,tagAnnotation,tagTag,tagAnnotation,tagTag"), "GET", nil)
 
 	readData := getEmptyFhsBDPolResourceModel()
 
@@ -801,7 +925,47 @@ func getAndSetFhsBDPolAttributes(ctx context.Context, diags *diag.Diagnostics, c
 								if childAttributeName == "ownerTag" {
 									FhsRaGuardPolFhsBDPol.OwnerTag = basetypes.NewStringValue(childAttributeValue.(string))
 								}
+
 							}
+							TagAnnotationFhsRaGuardPolFhsBDPolList := make([]TagAnnotationFhsRaGuardPolFhsBDPolResourceModel, 0)
+							TagTagFhsRaGuardPolFhsBDPolList := make([]TagTagFhsRaGuardPolFhsBDPolResourceModel, 0)
+							childrenOfFhsRaGuardPolFhsBDPol, childrenOfFhsRaGuardPolFhsBDPolExist := childClassDetails.(map[string]interface{})["children"]
+							if childrenOfFhsRaGuardPolFhsBDPolExist {
+								for _, childFhsRaGuardPolFhsBDPol := range childrenOfFhsRaGuardPolFhsBDPol.([]interface{}) {
+									for childClassNameFhsRaGuardPolFhsBDPol, childClassDetailsFhsRaGuardPolFhsBDPol := range childFhsRaGuardPolFhsBDPol.(map[string]interface{}) {
+										if childClassNameFhsRaGuardPolFhsBDPol == "tagAnnotation" {
+											TagAnnotationFhsRaGuardPolFhsBDPol := getEmptyTagAnnotationFhsRaGuardPolFhsBDPolResourceModel()
+											tagAnnotationchildAttributeValue := childClassDetailsFhsRaGuardPolFhsBDPol.(map[string]interface{})["attributes"].(map[string]interface{})
+											for childAttributeName, childAttributeValue := range tagAnnotationchildAttributeValue {
+												if childAttributeName == "key" {
+													TagAnnotationFhsRaGuardPolFhsBDPol.Key = basetypes.NewStringValue(childAttributeValue.(string))
+												}
+												if childAttributeName == "value" {
+													TagAnnotationFhsRaGuardPolFhsBDPol.Value = basetypes.NewStringValue(childAttributeValue.(string))
+												}
+											}
+											TagAnnotationFhsRaGuardPolFhsBDPolList = append(TagAnnotationFhsRaGuardPolFhsBDPolList, TagAnnotationFhsRaGuardPolFhsBDPol)
+										}
+										if childClassNameFhsRaGuardPolFhsBDPol == "tagTag" {
+											TagTagFhsRaGuardPolFhsBDPol := getEmptyTagTagFhsRaGuardPolFhsBDPolResourceModel()
+											tagTagchildAttributeValue := childClassDetailsFhsRaGuardPolFhsBDPol.(map[string]interface{})["attributes"].(map[string]interface{})
+											for childAttributeName, childAttributeValue := range tagTagchildAttributeValue {
+												if childAttributeName == "key" {
+													TagTagFhsRaGuardPolFhsBDPol.Key = basetypes.NewStringValue(childAttributeValue.(string))
+												}
+												if childAttributeName == "value" {
+													TagTagFhsRaGuardPolFhsBDPol.Value = basetypes.NewStringValue(childAttributeValue.(string))
+												}
+											}
+											TagTagFhsRaGuardPolFhsBDPolList = append(TagTagFhsRaGuardPolFhsBDPolList, TagTagFhsRaGuardPolFhsBDPol)
+										}
+									}
+								}
+							}
+							TagAnnotationFhsRaGuardPolFhsBDPolSet, _ := types.SetValueFrom(ctx, TagAnnotationFhsRaGuardPolFhsBDPolType, TagAnnotationFhsRaGuardPolFhsBDPolList)
+							FhsRaGuardPolFhsBDPol.TagAnnotation = TagAnnotationFhsRaGuardPolFhsBDPolSet
+							TagTagFhsRaGuardPolFhsBDPolSet, _ := types.SetValueFrom(ctx, TagTagFhsRaGuardPolFhsBDPolType, TagTagFhsRaGuardPolFhsBDPolList)
+							FhsRaGuardPolFhsBDPol.TagTag = TagTagFhsRaGuardPolFhsBDPolSet
 							FhsRaGuardPolFhsBDPolList = append(FhsRaGuardPolFhsBDPolList, FhsRaGuardPolFhsBDPol)
 						}
 						if childClassName == "tagAnnotation" {
@@ -813,6 +977,7 @@ func getAndSetFhsBDPolAttributes(ctx context.Context, diags *diag.Diagnostics, c
 								if childAttributeName == "value" {
 									TagAnnotationFhsBDPol.Value = basetypes.NewStringValue(childAttributeValue.(string))
 								}
+
 							}
 							TagAnnotationFhsBDPolList = append(TagAnnotationFhsBDPolList, TagAnnotationFhsBDPol)
 						}
@@ -825,6 +990,7 @@ func getAndSetFhsBDPolAttributes(ctx context.Context, diags *diag.Diagnostics, c
 								if childAttributeName == "value" {
 									TagTagFhsBDPol.Value = basetypes.NewStringValue(childAttributeValue.(string))
 								}
+
 							}
 							TagTagFhsBDPolList = append(TagTagFhsBDPolList, TagTagFhsBDPol)
 						}
@@ -879,56 +1045,131 @@ func setFhsBDPolId(ctx context.Context, data *FhsBDPolResourceModel) {
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
 
-func getFhsBDPolFhsRaGuardPolChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FhsBDPolResourceModel, fhsRaGuardPolPlan, fhsRaGuardPolState FhsRaGuardPolFhsBDPolResourceModel) []map[string]interface{} {
-
+func getFhsBDPolFhsRaGuardPolChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FhsBDPolResourceModel, fhsRaGuardPolFhsBDPolPlan, fhsRaGuardPolFhsBDPolState FhsRaGuardPolFhsBDPolResourceModel) []map[string]interface{} {
 	childPayloads := []map[string]interface{}{}
-	if !data.FhsRaGuardPol.IsUnknown() {
-		childMap := map[string]map[string]interface{}{"attributes": {}}
+	if !data.FhsRaGuardPol.IsNull() && !data.FhsRaGuardPol.IsUnknown() {
+		FhsRaGuardPolFhsBDPolChildren := make([]map[string]interface{}, 0)
+		childMap := NewAciObject()
 		if !IsEmptySingleNestedAttribute(data.FhsRaGuardPol.Attributes()) {
-			if !fhsRaGuardPolPlan.Annotation.IsUnknown() && !fhsRaGuardPolPlan.Annotation.IsNull() {
-				childMap["attributes"]["annotation"] = fhsRaGuardPolPlan.Annotation.ValueString()
+			if !fhsRaGuardPolFhsBDPolPlan.Annotation.IsUnknown() && !fhsRaGuardPolFhsBDPolPlan.Annotation.IsNull() {
+				childMap.Attributes["annotation"] = fhsRaGuardPolFhsBDPolPlan.Annotation.ValueString()
 			} else {
-				childMap["attributes"]["annotation"] = globalAnnotation
+				childMap.Attributes["annotation"] = globalAnnotation
 			}
-			if !fhsRaGuardPolPlan.Descr.IsUnknown() && !fhsRaGuardPolPlan.Descr.IsNull() {
-				childMap["attributes"]["descr"] = fhsRaGuardPolPlan.Descr.ValueString()
+			if !fhsRaGuardPolFhsBDPolPlan.Descr.IsUnknown() && !fhsRaGuardPolFhsBDPolPlan.Descr.IsNull() {
+				childMap.Attributes["descr"] = fhsRaGuardPolFhsBDPolPlan.Descr.ValueString()
 			}
-			if !fhsRaGuardPolPlan.ManagedConfigCheck.IsUnknown() && !fhsRaGuardPolPlan.ManagedConfigCheck.IsNull() {
-				childMap["attributes"]["managedConfigCheck"] = fhsRaGuardPolPlan.ManagedConfigCheck.ValueString()
+			if !fhsRaGuardPolFhsBDPolPlan.ManagedConfigCheck.IsUnknown() && !fhsRaGuardPolFhsBDPolPlan.ManagedConfigCheck.IsNull() {
+				childMap.Attributes["managedConfigCheck"] = fhsRaGuardPolFhsBDPolPlan.ManagedConfigCheck.ValueString()
 			}
-			if !fhsRaGuardPolPlan.ManagedConfigFlag.IsUnknown() && !fhsRaGuardPolPlan.ManagedConfigFlag.IsNull() {
-				childMap["attributes"]["managedConfigFlag"] = fhsRaGuardPolPlan.ManagedConfigFlag.ValueString()
+			if !fhsRaGuardPolFhsBDPolPlan.ManagedConfigFlag.IsUnknown() && !fhsRaGuardPolFhsBDPolPlan.ManagedConfigFlag.IsNull() {
+				childMap.Attributes["managedConfigFlag"] = fhsRaGuardPolFhsBDPolPlan.ManagedConfigFlag.ValueString()
 			}
-			if !fhsRaGuardPolPlan.MaxHopLimit.IsUnknown() && !fhsRaGuardPolPlan.MaxHopLimit.IsNull() {
-				childMap["attributes"]["maxHopLimit"] = fhsRaGuardPolPlan.MaxHopLimit.ValueString()
+			if !fhsRaGuardPolFhsBDPolPlan.MaxHopLimit.IsUnknown() && !fhsRaGuardPolFhsBDPolPlan.MaxHopLimit.IsNull() {
+				childMap.Attributes["maxHopLimit"] = fhsRaGuardPolFhsBDPolPlan.MaxHopLimit.ValueString()
 			}
-			if !fhsRaGuardPolPlan.MaxRouterPref.IsUnknown() && !fhsRaGuardPolPlan.MaxRouterPref.IsNull() {
-				childMap["attributes"]["maxRouterPref"] = fhsRaGuardPolPlan.MaxRouterPref.ValueString()
+			if !fhsRaGuardPolFhsBDPolPlan.MaxRouterPref.IsUnknown() && !fhsRaGuardPolFhsBDPolPlan.MaxRouterPref.IsNull() {
+				childMap.Attributes["maxRouterPref"] = fhsRaGuardPolFhsBDPolPlan.MaxRouterPref.ValueString()
 			}
-			if !fhsRaGuardPolPlan.MinHopLimit.IsUnknown() && !fhsRaGuardPolPlan.MinHopLimit.IsNull() {
-				childMap["attributes"]["minHopLimit"] = fhsRaGuardPolPlan.MinHopLimit.ValueString()
+			if !fhsRaGuardPolFhsBDPolPlan.MinHopLimit.IsUnknown() && !fhsRaGuardPolFhsBDPolPlan.MinHopLimit.IsNull() {
+				childMap.Attributes["minHopLimit"] = fhsRaGuardPolFhsBDPolPlan.MinHopLimit.ValueString()
 			}
-			if !fhsRaGuardPolPlan.Name.IsUnknown() && !fhsRaGuardPolPlan.Name.IsNull() {
-				childMap["attributes"]["name"] = fhsRaGuardPolPlan.Name.ValueString()
+			if !fhsRaGuardPolFhsBDPolPlan.Name.IsUnknown() && !fhsRaGuardPolFhsBDPolPlan.Name.IsNull() {
+				childMap.Attributes["name"] = fhsRaGuardPolFhsBDPolPlan.Name.ValueString()
 			}
-			if !fhsRaGuardPolPlan.NameAlias.IsUnknown() && !fhsRaGuardPolPlan.NameAlias.IsNull() {
-				childMap["attributes"]["nameAlias"] = fhsRaGuardPolPlan.NameAlias.ValueString()
+			if !fhsRaGuardPolFhsBDPolPlan.NameAlias.IsUnknown() && !fhsRaGuardPolFhsBDPolPlan.NameAlias.IsNull() {
+				childMap.Attributes["nameAlias"] = fhsRaGuardPolFhsBDPolPlan.NameAlias.ValueString()
 			}
-			if !fhsRaGuardPolPlan.OtherConfigCheck.IsUnknown() && !fhsRaGuardPolPlan.OtherConfigCheck.IsNull() {
-				childMap["attributes"]["otherConfigCheck"] = fhsRaGuardPolPlan.OtherConfigCheck.ValueString()
+			if !fhsRaGuardPolFhsBDPolPlan.OtherConfigCheck.IsUnknown() && !fhsRaGuardPolFhsBDPolPlan.OtherConfigCheck.IsNull() {
+				childMap.Attributes["otherConfigCheck"] = fhsRaGuardPolFhsBDPolPlan.OtherConfigCheck.ValueString()
 			}
-			if !fhsRaGuardPolPlan.OtherConfigFlag.IsUnknown() && !fhsRaGuardPolPlan.OtherConfigFlag.IsNull() {
-				childMap["attributes"]["otherConfigFlag"] = fhsRaGuardPolPlan.OtherConfigFlag.ValueString()
+			if !fhsRaGuardPolFhsBDPolPlan.OtherConfigFlag.IsUnknown() && !fhsRaGuardPolFhsBDPolPlan.OtherConfigFlag.IsNull() {
+				childMap.Attributes["otherConfigFlag"] = fhsRaGuardPolFhsBDPolPlan.OtherConfigFlag.ValueString()
 			}
-			if !fhsRaGuardPolPlan.OwnerKey.IsUnknown() && !fhsRaGuardPolPlan.OwnerKey.IsNull() {
-				childMap["attributes"]["ownerKey"] = fhsRaGuardPolPlan.OwnerKey.ValueString()
+			if !fhsRaGuardPolFhsBDPolPlan.OwnerKey.IsUnknown() && !fhsRaGuardPolFhsBDPolPlan.OwnerKey.IsNull() {
+				childMap.Attributes["ownerKey"] = fhsRaGuardPolFhsBDPolPlan.OwnerKey.ValueString()
 			}
-			if !fhsRaGuardPolPlan.OwnerTag.IsUnknown() && !fhsRaGuardPolPlan.OwnerTag.IsNull() {
-				childMap["attributes"]["ownerTag"] = fhsRaGuardPolPlan.OwnerTag.ValueString()
+			if !fhsRaGuardPolFhsBDPolPlan.OwnerTag.IsUnknown() && !fhsRaGuardPolFhsBDPolPlan.OwnerTag.IsNull() {
+				childMap.Attributes["ownerTag"] = fhsRaGuardPolFhsBDPolPlan.OwnerTag.ValueString()
 			}
 		} else {
-			childMap["attributes"]["status"] = "deleted"
+			childMap.Attributes["status"] = "deleted"
 		}
+
+		var tagAnnotationFhsRaGuardPolFhsBDPolPlan, tagAnnotationFhsRaGuardPolFhsBDPolState []TagAnnotationFhsRaGuardPolFhsBDPolResourceModel
+		fhsRaGuardPolFhsBDPolPlan.TagAnnotation.ElementsAs(ctx, &tagAnnotationFhsRaGuardPolFhsBDPolPlan, false)
+		if !fhsRaGuardPolFhsBDPolState.TagAnnotation.IsNull() {
+			fhsRaGuardPolFhsBDPolState.TagAnnotation.ElementsAs(ctx, &tagAnnotationFhsRaGuardPolFhsBDPolState, false)
+		}
+		if !fhsRaGuardPolFhsBDPolPlan.TagAnnotation.IsNull() && !fhsRaGuardPolFhsBDPolPlan.TagAnnotation.IsUnknown() {
+			tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
+			for _, tagAnnotationFhsRaGuardPolFhsBDPol := range tagAnnotationFhsRaGuardPolFhsBDPolPlan {
+				tagAnnotationFhsRaGuardPolFhsBDPolChildMap := NewAciObject()
+				if !tagAnnotationFhsRaGuardPolFhsBDPol.Key.IsNull() && !tagAnnotationFhsRaGuardPolFhsBDPol.Key.IsUnknown() {
+					tagAnnotationFhsRaGuardPolFhsBDPolChildMap.Attributes["key"] = tagAnnotationFhsRaGuardPolFhsBDPol.Key.ValueString()
+				}
+				if !tagAnnotationFhsRaGuardPolFhsBDPol.Value.IsNull() && !tagAnnotationFhsRaGuardPolFhsBDPol.Value.IsUnknown() {
+					tagAnnotationFhsRaGuardPolFhsBDPolChildMap.Attributes["value"] = tagAnnotationFhsRaGuardPolFhsBDPol.Value.ValueString()
+				}
+				FhsRaGuardPolFhsBDPolChildren = append(FhsRaGuardPolFhsBDPolChildren, map[string]interface{}{"tagAnnotation": tagAnnotationFhsRaGuardPolFhsBDPolChildMap})
+				tagAnnotationIdentifier := TagAnnotationIdentifier{}
+				tagAnnotationIdentifier.Key = tagAnnotationFhsRaGuardPolFhsBDPol.Key
+				tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
+			}
+			for _, tagAnnotationFhsRaGuardPolFhsBDPol := range tagAnnotationFhsRaGuardPolFhsBDPolState {
+				delete := true
+				for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
+					if tagAnnotationIdentifier.Key == tagAnnotationFhsRaGuardPolFhsBDPol.Key {
+						delete = false
+						break
+					}
+				}
+				if delete {
+					tagAnnotationFhsRaGuardPolFhsBDPolChildMapForDelete := NewAciObject()
+					tagAnnotationFhsRaGuardPolFhsBDPolChildMapForDelete.Attributes["status"] = "deleted"
+					tagAnnotationFhsRaGuardPolFhsBDPolChildMapForDelete.Attributes["key"] = tagAnnotationFhsRaGuardPolFhsBDPol.Key.ValueString()
+					FhsRaGuardPolFhsBDPolChildren = append(FhsRaGuardPolFhsBDPolChildren, map[string]interface{}{"tagAnnotation": tagAnnotationFhsRaGuardPolFhsBDPolChildMapForDelete})
+				}
+			}
+		}
+
+		var tagTagFhsRaGuardPolFhsBDPolPlan, tagTagFhsRaGuardPolFhsBDPolState []TagTagFhsRaGuardPolFhsBDPolResourceModel
+		fhsRaGuardPolFhsBDPolPlan.TagTag.ElementsAs(ctx, &tagTagFhsRaGuardPolFhsBDPolPlan, false)
+		if !fhsRaGuardPolFhsBDPolState.TagTag.IsNull() {
+			fhsRaGuardPolFhsBDPolState.TagTag.ElementsAs(ctx, &tagTagFhsRaGuardPolFhsBDPolState, false)
+		}
+		if !fhsRaGuardPolFhsBDPolPlan.TagTag.IsNull() && !fhsRaGuardPolFhsBDPolPlan.TagTag.IsUnknown() {
+			tagTagIdentifiers := []TagTagIdentifier{}
+			for _, tagTagFhsRaGuardPolFhsBDPol := range tagTagFhsRaGuardPolFhsBDPolPlan {
+				tagTagFhsRaGuardPolFhsBDPolChildMap := NewAciObject()
+				if !tagTagFhsRaGuardPolFhsBDPol.Key.IsNull() && !tagTagFhsRaGuardPolFhsBDPol.Key.IsUnknown() {
+					tagTagFhsRaGuardPolFhsBDPolChildMap.Attributes["key"] = tagTagFhsRaGuardPolFhsBDPol.Key.ValueString()
+				}
+				if !tagTagFhsRaGuardPolFhsBDPol.Value.IsNull() && !tagTagFhsRaGuardPolFhsBDPol.Value.IsUnknown() {
+					tagTagFhsRaGuardPolFhsBDPolChildMap.Attributes["value"] = tagTagFhsRaGuardPolFhsBDPol.Value.ValueString()
+				}
+				FhsRaGuardPolFhsBDPolChildren = append(FhsRaGuardPolFhsBDPolChildren, map[string]interface{}{"tagTag": tagTagFhsRaGuardPolFhsBDPolChildMap})
+				tagTagIdentifier := TagTagIdentifier{}
+				tagTagIdentifier.Key = tagTagFhsRaGuardPolFhsBDPol.Key
+				tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
+			}
+			for _, tagTagFhsRaGuardPolFhsBDPol := range tagTagFhsRaGuardPolFhsBDPolState {
+				delete := true
+				for _, tagTagIdentifier := range tagTagIdentifiers {
+					if tagTagIdentifier.Key == tagTagFhsRaGuardPolFhsBDPol.Key {
+						delete = false
+						break
+					}
+				}
+				if delete {
+					tagTagFhsRaGuardPolFhsBDPolChildMapForDelete := NewAciObject()
+					tagTagFhsRaGuardPolFhsBDPolChildMapForDelete.Attributes["status"] = "deleted"
+					tagTagFhsRaGuardPolFhsBDPolChildMapForDelete.Attributes["key"] = tagTagFhsRaGuardPolFhsBDPol.Key.ValueString()
+					FhsRaGuardPolFhsBDPolChildren = append(FhsRaGuardPolFhsBDPolChildren, map[string]interface{}{"tagTag": tagTagFhsRaGuardPolFhsBDPolChildMapForDelete})
+				}
+			}
+		}
+		childMap.Children = FhsRaGuardPolFhsBDPolChildren
 		childPayloads = append(childPayloads, map[string]interface{}{"fhsRaGuardPol": childMap})
 	} else {
 		FhsRaGuardPolObject, _ := types.ObjectValueFrom(ctx, FhsRaGuardPolFhsBDPolType, getEmptyFhsRaGuardPolFhsBDPolResourceModel())
@@ -937,25 +1178,25 @@ func getFhsBDPolFhsRaGuardPolChildPayloads(ctx context.Context, diags *diag.Diag
 
 	return childPayloads
 }
-func getFhsBDPolTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FhsBDPolResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFhsBDPolResourceModel) []map[string]interface{} {
 
+func getFhsBDPolTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FhsBDPolResourceModel, tagAnnotationFhsBDPolPlan, tagAnnotationFhsBDPolState []TagAnnotationFhsBDPolResourceModel) []map[string]interface{} {
 	childPayloads := []map[string]interface{}{}
-	if !data.TagAnnotation.IsUnknown() {
+	if !data.TagAnnotation.IsNull() && !data.TagAnnotation.IsUnknown() {
 		tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
-		for _, tagAnnotation := range tagAnnotationPlan {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagAnnotation.Key.IsUnknown() && !tagAnnotation.Key.IsNull() {
-				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
+		for _, tagAnnotationFhsBDPol := range tagAnnotationFhsBDPolPlan {
+			childMap := NewAciObject()
+			if !tagAnnotationFhsBDPol.Key.IsNull() && !tagAnnotationFhsBDPol.Key.IsUnknown() {
+				childMap.Attributes["key"] = tagAnnotationFhsBDPol.Key.ValueString()
 			}
-			if !tagAnnotation.Value.IsUnknown() && !tagAnnotation.Value.IsNull() {
-				childMap["attributes"]["value"] = tagAnnotation.Value.ValueString()
+			if !tagAnnotationFhsBDPol.Value.IsNull() && !tagAnnotationFhsBDPol.Value.IsUnknown() {
+				childMap.Attributes["value"] = tagAnnotationFhsBDPol.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
 			tagAnnotationIdentifier := TagAnnotationIdentifier{}
-			tagAnnotationIdentifier.Key = tagAnnotation.Key
+			tagAnnotationIdentifier.Key = tagAnnotationFhsBDPol.Key
 			tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
 		}
-		for _, tagAnnotation := range tagAnnotationState {
+		for _, tagAnnotation := range tagAnnotationFhsBDPolState {
 			delete := true
 			for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
 				if tagAnnotationIdentifier.Key == tagAnnotation.Key {
@@ -964,10 +1205,10 @@ func getFhsBDPolTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diag
 				}
 			}
 			if delete {
-				childMap := map[string]map[string]interface{}{"attributes": {}}
-				childMap["attributes"]["status"] = "deleted"
-				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
+				tagAnnotationChildMapForDelete := NewAciObject()
+				tagAnnotationChildMapForDelete.Attributes["status"] = "deleted"
+				tagAnnotationChildMapForDelete.Attributes["key"] = tagAnnotation.Key.ValueString()
+				childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": tagAnnotationChildMapForDelete})
 			}
 		}
 	} else {
@@ -976,25 +1217,25 @@ func getFhsBDPolTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diag
 
 	return childPayloads
 }
-func getFhsBDPolTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FhsBDPolResourceModel, tagTagPlan, tagTagState []TagTagFhsBDPolResourceModel) []map[string]interface{} {
 
+func getFhsBDPolTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FhsBDPolResourceModel, tagTagFhsBDPolPlan, tagTagFhsBDPolState []TagTagFhsBDPolResourceModel) []map[string]interface{} {
 	childPayloads := []map[string]interface{}{}
-	if !data.TagTag.IsUnknown() {
+	if !data.TagTag.IsNull() && !data.TagTag.IsUnknown() {
 		tagTagIdentifiers := []TagTagIdentifier{}
-		for _, tagTag := range tagTagPlan {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagTag.Key.IsUnknown() && !tagTag.Key.IsNull() {
-				childMap["attributes"]["key"] = tagTag.Key.ValueString()
+		for _, tagTagFhsBDPol := range tagTagFhsBDPolPlan {
+			childMap := NewAciObject()
+			if !tagTagFhsBDPol.Key.IsNull() && !tagTagFhsBDPol.Key.IsUnknown() {
+				childMap.Attributes["key"] = tagTagFhsBDPol.Key.ValueString()
 			}
-			if !tagTag.Value.IsUnknown() && !tagTag.Value.IsNull() {
-				childMap["attributes"]["value"] = tagTag.Value.ValueString()
+			if !tagTagFhsBDPol.Value.IsNull() && !tagTagFhsBDPol.Value.IsUnknown() {
+				childMap.Attributes["value"] = tagTagFhsBDPol.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})
 			tagTagIdentifier := TagTagIdentifier{}
-			tagTagIdentifier.Key = tagTag.Key
+			tagTagIdentifier.Key = tagTagFhsBDPol.Key
 			tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
 		}
-		for _, tagTag := range tagTagState {
+		for _, tagTag := range tagTagFhsBDPolState {
 			delete := true
 			for _, tagTagIdentifier := range tagTagIdentifiers {
 				if tagTagIdentifier.Key == tagTag.Key {
@@ -1003,10 +1244,10 @@ func getFhsBDPolTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics
 				}
 			}
 			if delete {
-				childMap := map[string]map[string]interface{}{"attributes": {}}
-				childMap["attributes"]["status"] = "deleted"
-				childMap["attributes"]["key"] = tagTag.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})
+				tagTagChildMapForDelete := NewAciObject()
+				tagTagChildMapForDelete.Attributes["status"] = "deleted"
+				tagTagChildMapForDelete.Attributes["key"] = tagTag.Key.ValueString()
+				childPayloads = append(childPayloads, map[string]interface{}{"tagTag": tagTagChildMapForDelete})
 			}
 		}
 	} else {

@@ -71,6 +71,18 @@ resource "aci_first_hop_security_policy" "full_example_tenant" {
     other_config_flag     = "no"
     owner_key             = "owner_key_1"
     owner_tag             = "owner_tag_1"
+    annotations = [
+      {
+        key   = "key_0"
+        value = "value_1"
+      }
+    ]
+    tags = [
+      {
+        key   = "key_0"
+        value = "value_1"
+      }
+    ]
   }
   annotations = [
     {
@@ -119,52 +131,55 @@ All examples for the First Hop Security Policy resource can be found in the [exa
 * `source_guard` (srcGuardAdminSt) - (string) The Source Guard Status for IPv4 and IPv6 traffic of the First Hop Security Policy object.
   - Default: `enabled-both`
   - Valid Values: `disabled`, `enabled-both`, `enabled-ipv4`, `enabled-ipv6`.
-
 * `route_advertisement_guard_policy` - (map) A map of Route Advertisement Guard Policy (ACI object [fhsRaGuardPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fhsRaGuardPol/overview)).
-  
-
   #### Optional ####
     
-  * `annotation` (annotation) - (string) The annotation of the Route Advertisement Guard Policy object.
+    * `annotation` (annotation) - (string) The annotation of the Route Advertisement Guard Policy object.
       - Default: `orchestrator:terraform`
-  * `description` (descr) - (string) The description of the Route Advertisement Guard Policy object.
-  * `managed_config_check` (managedConfigCheck) - (string) Perform a managed configuration check for the Route Advertisement Guard Policy object.
+    * `description` (descr) - (string) The description of the Route Advertisement Guard Policy object.
+    * `managed_config_check` (managedConfigCheck) - (string) Perform a managed configuration check for the Route Advertisement Guard Policy object.
       - Default: `no`
       - Valid Values: `no`, `yes`.
-  * `managed_config_flag` (managedConfigFlag) - (string) The managed configuration flag setting for the Route Advertisement Guard Policy object.
+    * `managed_config_flag` (managedConfigFlag) - (string) The managed configuration flag setting for the Route Advertisement Guard Policy object.
       - Default: `no`
       - Valid Values: `no`, `yes`.
-  * `max_hop_limit` (maxHopLimit) - (string) The maximum hop limit for the Route Advertisement Guard Policy object.
+    * `max_hop_limit` (maxHopLimit) - (string) The maximum hop limit for the Route Advertisement Guard Policy object.
       - Default: `0`
-  * `max_router_preference` (maxRouterPref) - (string) The allowed maximum router preference for the Route Advertisement Guard Policy object.
+    * `max_router_preference` (maxRouterPref) - (string) The allowed maximum router preference for the Route Advertisement Guard Policy object.
       - Default: `disabled`
       - Valid Values: `disabled`, `high`, `low`, `medium`.
-  * `min_hop_limit` (minHopLimit) - (string) The minimum hop limit for the Route Advertisement Guard Policy object.
+    * `min_hop_limit` (minHopLimit) - (string) The minimum hop limit for the Route Advertisement Guard Policy object.
       - Default: `0`
-  * `name` (name) - (string) The name of the Route Advertisement Guard Policy object.
-  * `name_alias` (nameAlias) - (string) The name alias of the Route Advertisement Guard Policy object.
-  * `other_config_check` (otherConfigCheck) - (string) Perform other configuration checks for the Route Advertisement Guard Policy object.
+    * `name` (name) - (string) The name of the Route Advertisement Guard Policy object.
+    * `name_alias` (nameAlias) - (string) The name alias of the Route Advertisement Guard Policy object.
+    * `other_config_check` (otherConfigCheck) - (string) Perform other configuration checks for the Route Advertisement Guard Policy object.
       - Default: `no`
       - Valid Values: `no`, `yes`.
-  * `other_config_flag` (otherConfigFlag) - (string) The other configuration flag setting for the Route Advertisement Guard Policy object.
+    * `other_config_flag` (otherConfigFlag) - (string) The other configuration flag setting for the Route Advertisement Guard Policy object.
       - Default: `no`
       - Valid Values: `no`, `yes`.
-  * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
-  * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
-
+    * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
+    * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+      #### Required ####
+  
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+      #### Required ####
+  
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
-  
   #### Required ####
   
-  * `key` (key) - (string) The key used to uniquely identify this configuration object.
-  * `value` (value) - (string) The value of the property.
-
+    * `key` (key) - (string) The key used to uniquely identify this configuration object.
+    * `value` (value) - (string) The value of the property.
 * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
-  
   #### Required ####
   
-  * `key` (key) - (string) The key used to uniquely identify this configuration object.
-  * `value` (value) - (string) The value of the property.
+    * `key` (key) - (string) The key used to uniquely identify this configuration object.
+    * `value` (value) - (string) The value of the property.
 
 ## Importing
 

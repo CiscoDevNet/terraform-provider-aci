@@ -88,6 +88,21 @@ children:
       owner_key: "owner_key_1"
       owner_tag: "owner_tag_1"
       deletable_child: true
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
   rogue_coop_exceptions:
     - annotation: "annotation_1"
       description: "description_1"
@@ -95,70 +110,295 @@ children:
       name: "name_1"
       name_alias: "name_alias_1"
       
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
     - annotation: "annotation_2"
       description: "description_2"
       mac: "00:00:00:00:00:01"
       name: "name_2"
       name_alias: "name_alias_2"
       
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
   relation_to_monitor_policy:
     - annotation: "annotation_1"
       monitoring_policy_name: "monitoring_policy_name_1"
       deletable_child: true
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
   relation_to_first_hop_security_policy:
     - annotation: "annotation_1"
       first_hop_security_policy_name: "first_hop_security_policy_name_1"
       deletable_child: true
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
   relation_to_neighbor_discovery_interface_policy:
     - annotation: "annotation_1"
       neighbor_discovery_interface_policy_name: "neighbor_discovery_interface_policy_name_1"
       deletable_child: false
+      
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
       
   relation_to_netflow_monitor_policies:
     - annotation: "annotation_1"
       filter_type: "ce"
       netflow_monitor_policy_name: "netflow_monitor_policy_name_0"
       
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
     - annotation: "annotation_2"
       filter_type: "ipv4"
       netflow_monitor_policy_name: "netflow_monitor_policy_name_1"
+      
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
       
   relation_to_l3_outsides:
     - annotation: "annotation_1"
       l3_outside_name: "l3_outside_name_0"
       
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
     - annotation: "annotation_2"
       l3_outside_name: "l3_outside_name_1"
+      
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
       
   relation_to_route_control_profile:
     - annotation: "annotation_1"
       l3_outside_name: "l3_outside_name_1"
       route_control_profile_name: "route_control_profile_name_1"
       deletable_child: true
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
   relation_to_dhcp_relay_policy:
     - annotation: "annotation_1"
       dhcp_relay_policy_name: "dhcp_relay_policy_name_1"
       deletable_child: true
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
   relation_to_end_point_retention_policy:
     - annotation: "annotation_1"
       resolve_action: "inherit"
       end_point_retention_policy_name: "end_point_retention_policy_name_1"
       deletable_child: false
       
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
   relation_to_vrf:
     - annotation: "annotation_1"
       vrf_name: "vrf_name_1"
       deletable_child: false
+      
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
       
   relation_to_igmp_snooping_policy:
     - annotation: "annotation_1"
       igmp_snooping_policy_name: "igmp_snooping_policy_name_1"
       deletable_child: false
       
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
   relation_to_mld_snooping_policy:
     - annotation: "annotation_1"
       mld_snooping_policy_name: "mld_snooping_policy_name_1"
       deletable_child: false
+      
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
       
   annotations:
     - key: "key_0"
@@ -181,5 +421,4 @@ parents:
     class_in_parent: false
     test_type: apic
 class_version: 1.0(1e)-
-
 version_mismatch: true
