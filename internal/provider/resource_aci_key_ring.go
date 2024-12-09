@@ -250,7 +250,7 @@ func (r *PkiKeyRingResource) Schema(ctx context.Context, req resource.SchemaRequ
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
-					stringvalidator.OneOf("ECC", "RSA", "indeterminate"),
+					stringvalidator.OneOf("ECC", "RSA"),
 				},
 				MarkdownDescription: `The type used by the provided key.`,
 			},
