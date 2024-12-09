@@ -110,6 +110,13 @@ func getEmptyTagAnnotationMldSnoopPolResourceModel() TagAnnotationMldSnoopPolRes
 	}
 }
 
+var TagAnnotationMldSnoopPolType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
+}
+
 // TagTagMldSnoopPolResourceModel describes the resource data model for the children without relation ships.
 type TagTagMldSnoopPolResourceModel struct {
 	Key   types.String `tfsdk:"key"`
@@ -121,6 +128,13 @@ func getEmptyTagTagMldSnoopPolResourceModel() TagTagMldSnoopPolResourceModel {
 		Key:   basetypes.NewStringNull(),
 		Value: basetypes.NewStringNull(),
 	}
+}
+
+var TagTagMldSnoopPolType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
 }
 
 type MldSnoopPolIdentifier struct {
@@ -557,7 +571,7 @@ func (r *MldSnoopPolResource) ImportState(ctx context.Context, req resource.Impo
 }
 
 func getAndSetMldSnoopPolAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *MldSnoopPolResourceModel) {
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "mldSnoopPol,tagAnnotation,tagTag"), "GET", nil)
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "mldSnoopPol,tagAnnotation,tagTag"), "GET", nil)
 
 	readData := getEmptyMldSnoopPolResourceModel()
 
@@ -638,6 +652,7 @@ func getAndSetMldSnoopPolAttributes(ctx context.Context, diags *diag.Diagnostics
 								if childAttributeName == "value" {
 									TagAnnotationMldSnoopPol.Value = basetypes.NewStringValue(childAttributeValue.(string))
 								}
+
 							}
 							TagAnnotationMldSnoopPolList = append(TagAnnotationMldSnoopPolList, TagAnnotationMldSnoopPol)
 						}
@@ -650,6 +665,7 @@ func getAndSetMldSnoopPolAttributes(ctx context.Context, diags *diag.Diagnostics
 								if childAttributeName == "value" {
 									TagTagMldSnoopPol.Value = basetypes.NewStringValue(childAttributeValue.(string))
 								}
+
 							}
 							TagTagMldSnoopPolList = append(TagTagMldSnoopPolList, TagTagMldSnoopPol)
 						}
@@ -697,25 +713,24 @@ func setMldSnoopPolId(ctx context.Context, data *MldSnoopPolResourceModel) {
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
 
-func getMldSnoopPolTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *MldSnoopPolResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationMldSnoopPolResourceModel) []map[string]interface{} {
-
+func getMldSnoopPolTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *MldSnoopPolResourceModel, tagAnnotationMldSnoopPolPlan, tagAnnotationMldSnoopPolState []TagAnnotationMldSnoopPolResourceModel) []map[string]interface{} {
 	childPayloads := []map[string]interface{}{}
-	if !data.TagAnnotation.IsUnknown() {
+	if !data.TagAnnotation.IsNull() && !data.TagAnnotation.IsUnknown() {
 		tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
-		for _, tagAnnotation := range tagAnnotationPlan {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagAnnotation.Key.IsUnknown() && !tagAnnotation.Key.IsNull() {
-				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
+		for _, tagAnnotationMldSnoopPol := range tagAnnotationMldSnoopPolPlan {
+			childMap := NewAciObject()
+			if !tagAnnotationMldSnoopPol.Key.IsNull() && !tagAnnotationMldSnoopPol.Key.IsUnknown() {
+				childMap.Attributes["key"] = tagAnnotationMldSnoopPol.Key.ValueString()
 			}
-			if !tagAnnotation.Value.IsUnknown() && !tagAnnotation.Value.IsNull() {
-				childMap["attributes"]["value"] = tagAnnotation.Value.ValueString()
+			if !tagAnnotationMldSnoopPol.Value.IsNull() && !tagAnnotationMldSnoopPol.Value.IsUnknown() {
+				childMap.Attributes["value"] = tagAnnotationMldSnoopPol.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
 			tagAnnotationIdentifier := TagAnnotationIdentifier{}
-			tagAnnotationIdentifier.Key = tagAnnotation.Key
+			tagAnnotationIdentifier.Key = tagAnnotationMldSnoopPol.Key
 			tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
 		}
-		for _, tagAnnotation := range tagAnnotationState {
+		for _, tagAnnotation := range tagAnnotationMldSnoopPolState {
 			delete := true
 			for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
 				if tagAnnotationIdentifier.Key == tagAnnotation.Key {
@@ -724,10 +739,10 @@ func getMldSnoopPolTagAnnotationChildPayloads(ctx context.Context, diags *diag.D
 				}
 			}
 			if delete {
-				childMap := map[string]map[string]interface{}{"attributes": {}}
-				childMap["attributes"]["status"] = "deleted"
-				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
+				tagAnnotationChildMapForDelete := NewAciObject()
+				tagAnnotationChildMapForDelete.Attributes["status"] = "deleted"
+				tagAnnotationChildMapForDelete.Attributes["key"] = tagAnnotation.Key.ValueString()
+				childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": tagAnnotationChildMapForDelete})
 			}
 		}
 	} else {
@@ -736,25 +751,25 @@ func getMldSnoopPolTagAnnotationChildPayloads(ctx context.Context, diags *diag.D
 
 	return childPayloads
 }
-func getMldSnoopPolTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *MldSnoopPolResourceModel, tagTagPlan, tagTagState []TagTagMldSnoopPolResourceModel) []map[string]interface{} {
 
+func getMldSnoopPolTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *MldSnoopPolResourceModel, tagTagMldSnoopPolPlan, tagTagMldSnoopPolState []TagTagMldSnoopPolResourceModel) []map[string]interface{} {
 	childPayloads := []map[string]interface{}{}
-	if !data.TagTag.IsUnknown() {
+	if !data.TagTag.IsNull() && !data.TagTag.IsUnknown() {
 		tagTagIdentifiers := []TagTagIdentifier{}
-		for _, tagTag := range tagTagPlan {
-			childMap := map[string]map[string]interface{}{"attributes": {}}
-			if !tagTag.Key.IsUnknown() && !tagTag.Key.IsNull() {
-				childMap["attributes"]["key"] = tagTag.Key.ValueString()
+		for _, tagTagMldSnoopPol := range tagTagMldSnoopPolPlan {
+			childMap := NewAciObject()
+			if !tagTagMldSnoopPol.Key.IsNull() && !tagTagMldSnoopPol.Key.IsUnknown() {
+				childMap.Attributes["key"] = tagTagMldSnoopPol.Key.ValueString()
 			}
-			if !tagTag.Value.IsUnknown() && !tagTag.Value.IsNull() {
-				childMap["attributes"]["value"] = tagTag.Value.ValueString()
+			if !tagTagMldSnoopPol.Value.IsNull() && !tagTagMldSnoopPol.Value.IsUnknown() {
+				childMap.Attributes["value"] = tagTagMldSnoopPol.Value.ValueString()
 			}
 			childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})
 			tagTagIdentifier := TagTagIdentifier{}
-			tagTagIdentifier.Key = tagTag.Key
+			tagTagIdentifier.Key = tagTagMldSnoopPol.Key
 			tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
 		}
-		for _, tagTag := range tagTagState {
+		for _, tagTag := range tagTagMldSnoopPolState {
 			delete := true
 			for _, tagTagIdentifier := range tagTagIdentifiers {
 				if tagTagIdentifier.Key == tagTag.Key {
@@ -763,10 +778,10 @@ func getMldSnoopPolTagTagChildPayloads(ctx context.Context, diags *diag.Diagnost
 				}
 			}
 			if delete {
-				childMap := map[string]map[string]interface{}{"attributes": {}}
-				childMap["attributes"]["status"] = "deleted"
-				childMap["attributes"]["key"] = tagTag.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})
+				tagTagChildMapForDelete := NewAciObject()
+				tagTagChildMapForDelete.Attributes["status"] = "deleted"
+				tagTagChildMapForDelete.Attributes["key"] = tagTag.Key.ValueString()
+				childPayloads = append(childPayloads, map[string]interface{}{"tagTag": tagTagChildMapForDelete})
 			}
 		}
 	} else {

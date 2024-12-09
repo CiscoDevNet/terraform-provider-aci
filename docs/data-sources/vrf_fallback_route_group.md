@@ -51,25 +51,33 @@ data "aci_vrf_fallback_route_group" "example_vrf" {
 * `annotation` (annotation) - (string) The annotation of the VRF Fallback Route Group object.
 * `description` (descr) - (string) The description of the VRF Fallback Route Group object.
 * `name_alias` (nameAlias) - (string) The name alias of the VRF Fallback Route Group object.
-
 * `vrf_fallback_route_group_members` - (list) A list of VRF Fallback Route Group Members (ACI object [fvFBRMember](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvFBRMember/overview)).
-  * `annotation` (annotation) - (string) The annotation of the VRF Fallback Route Group Member object.
-  * `description` (descr) - (string) The description of the VRF Fallback Route Group Member object.
-  * `name` (name) - (string) The name of the VRF Fallback Route Group Member object.
-  * `name_alias` (nameAlias) - (string) The name alias of the VRF Fallback Route Group Member object.
-  * `fallback_member` (rnhAddr) - (string) The address of the VRF Fallback Route Group Member object.
-
+    * `annotation` (annotation) - (string) The annotation of the VRF Fallback Route Group Member object.
+    * `description` (descr) - (string) The description of the VRF Fallback Route Group Member object.
+    * `name` (name) - (string) The name of the VRF Fallback Route Group Member object.
+    * `name_alias` (nameAlias) - (string) The name alias of the VRF Fallback Route Group Member object.
+    * `fallback_member` (rnhAddr) - (string) The address of the VRF Fallback Route Group Member object.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
 * `vrf_fallback_route` - (map) A map of VRF Fallback Route (ACI object [fvFBRoute](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvFBRoute/overview)).
-  * `annotation` (annotation) - (string) The annotation of the VRF Fallback Route object.
-  * `description` (descr) - (string) The description of the VRF Fallback Route object.
-  * `prefix_address` (fbrPrefix) - (string) The prefix address of the VRF Fallback Route object.
-  * `name` (name) - (string) The name of the VRF Fallback Route object.
-  * `name_alias` (nameAlias) - (string) The name alias of the VRF Fallback Route object.
-
+    * `annotation` (annotation) - (string) The annotation of the VRF Fallback Route object.
+    * `description` (descr) - (string) The description of the VRF Fallback Route object.
+    * `prefix_address` (fbrPrefix) - (string) The prefix address of the VRF Fallback Route object.
+    * `name` (name) - (string) The name of the VRF Fallback Route object.
+    * `name_alias` (nameAlias) - (string) The name alias of the VRF Fallback Route object.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
-  * `key` (key) - (string) The key used to uniquely identify this configuration object.
-  * `value` (value) - (string) The value of the property.
-
+    * `key` (key) - (string) The key used to uniquely identify this configuration object.
+    * `value` (value) - (string) The value of the property.
 * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
-  * `key` (key) - (string) The key used to uniquely identify this configuration object.
-  * `value` (value) - (string) The value of the property.
+    * `key` (key) - (string) The key used to uniquely identify this configuration object.
+    * `value` (value) - (string) The value of the property.

@@ -234,24 +234,24 @@ resource "aci_l3out_redistribute_policy" "test" {
   route_control_profile_name = "test_tn_rtctrl_profile_name"
   source = "direct"
   annotations = [
-	{
-	  key = "key_0"
-	  value = "value_1"
-	},
-	{
-	  key = "key_1"
-	  value = "test_value"
-	},
+    {
+      key = "key_0"
+      value = "value_1"
+    },
+    {
+      key = "key_1"
+      value = "test_value"
+    },
   ]
   tags = [
-	{
-	  key = "key_0"
-	  value = "value_1"
-	},
-	{
-	  key = "key_1"
-	  value = "test_value"
-	},
+    {
+      key = "key_0"
+      value = "value_1"
+    },
+    {
+      key = "key_1"
+      value = "test_value"
+    },
   ]
 }
 `

@@ -120,20 +120,16 @@ All examples for the IGMP Snooping Policy resource can be found in the [examples
 * `querier_version` (ver) - (string) The version of the IGMP querier.
   - Default: `v3`
   - Valid Values: `unspecified`, `v1`, `v2`, `v3`.
-
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
-  
   #### Required ####
   
-  * `key` (key) - (string) The key used to uniquely identify this configuration object.
-  * `value` (value) - (string) The value of the property.
-
+    * `key` (key) - (string) The key used to uniquely identify this configuration object.
+    * `value` (value) - (string) The value of the property.
 * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
-  
   #### Required ####
   
-  * `key` (key) - (string) The key used to uniquely identify this configuration object.
-  * `value` (value) - (string) The value of the property.
+    * `key` (key) - (string) The key used to uniquely identify this configuration object.
+    * `value` (value) - (string) The value of the property.
 
 ## Importing
 

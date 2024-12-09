@@ -115,12 +115,36 @@ EOT
     {
       key   = "key_0"
       value = "value_1"
+      annotations = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
+      tags = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
     }
   ]
   tags = [
     {
       key   = "key_0"
       value = "value_1"
+      annotations = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
+      tags = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
     }
   ]
 }
@@ -155,12 +179,36 @@ EOT
     {
       key   = "key_0"
       value = "value_1"
+      annotations = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
+      tags = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
     }
   ]
   tags = [
     {
       key   = "key_0"
       value = "value_1"
+      annotations = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
+      tags = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
     }
   ]
 }
@@ -194,20 +242,16 @@ All examples for the Certificate Authority resource can be found in the [example
 * `name_alias` (nameAlias) - (string) The name alias of the Certificate Authority object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
-
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
-  
   #### Required ####
   
-  * `key` (key) - (string) The key used to uniquely identify this configuration object.
-  * `value` (value) - (string) The value of the property.
-
+    * `key` (key) - (string) The key used to uniquely identify this configuration object.
+    * `value` (value) - (string) The value of the property.
 * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
-  
   #### Required ####
   
-  * `key` (key) - (string) The key used to uniquely identify this configuration object.
-  * `value` (value) - (string) The value of the property.
+    * `key` (key) - (string) The key used to uniquely identify this configuration object.
+    * `value` (value) - (string) The value of the property.
 
 ## Importing
 

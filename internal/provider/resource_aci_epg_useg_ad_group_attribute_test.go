@@ -269,24 +269,24 @@ resource "aci_epg_useg_ad_group_attribute" "test" {
   parent_dn = aci_epg_useg_block_statement.test.id
   selector = "adepg/authsvr-common-sg1-ISE_1/grpcont/dom-cisco.com/grp-Eng"
   annotations = [
-	{
-	  key = "key_0"
-	  value = "value_1"
-	},
-	{
-	  key = "key_1"
-	  value = "test_value"
-	},
+    {
+      key = "key_0"
+      value = "value_1"
+    },
+    {
+      key = "key_1"
+      value = "test_value"
+    },
   ]
   tags = [
-	{
-	  key = "key_0"
-	  value = "value_1"
-	},
-	{
-	  key = "key_1"
-	  value = "test_value"
-	},
+    {
+      key = "key_0"
+      value = "value_1"
+    },
+    {
+      key = "key_1"
+      value = "test_value"
+    },
   ]
 }
 `

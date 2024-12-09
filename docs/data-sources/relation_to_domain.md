@@ -72,11 +72,9 @@ data "aci_relation_to_domain" "example_application_epg" {
 * `secondary_encapsulation_inner` (secondaryEncapInner) - (string) The secondary inner encapsulation of the Relation To Domain object. This is used for the portgroup at the VMWare Distributed Virtual Switch (DVS). This VLAN is internal to the DVS and is used for communication between the other VMs and the AVE VM at a host. Traffic is not forwarded to the fabric over the VLAN. Only applicable for Cisco ACI Virtual Edge (AVE) domains.
 * `switching_mode` (switchingMode) - (string) The switching mode of the Relation To Domain object.
 * `untagged` (untagged) - (string) The untagged status of the Relation To Domain object.
-
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
-  * `key` (key) - (string) The key used to uniquely identify this configuration object.
-  * `value` (value) - (string) The value of the property.
-
+    * `key` (key) - (string) The key used to uniquely identify this configuration object.
+    * `value` (value) - (string) The value of the property.
 * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
-  * `key` (key) - (string) The key used to uniquely identify this configuration object.
-  * `value` (value) - (string) The value of the property.
+    * `key` (key) - (string) The key used to uniquely identify this configuration object.
+    * `value` (value) - (string) The value of the property.

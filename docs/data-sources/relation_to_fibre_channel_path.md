@@ -52,11 +52,9 @@ data "aci_relation_to_fibre_channel_path" "example_application_epg" {
 * `description` (descr) - (string) The description of the Relation To Fibre Channel Path object.
 * `vsan` (vsan) - (string) The virtual storage area network (VSAN) of the Relation To Fibre Channel Path object.
 * `vsan_mode` (vsanMode) - (string) The virtual storage area network (VSAN) mode of the Relation To Fibre Channel Path object.
-
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
-  * `key` (key) - (string) The key used to uniquely identify this configuration object.
-  * `value` (value) - (string) The value of the property.
-
+    * `key` (key) - (string) The key used to uniquely identify this configuration object.
+    * `value` (value) - (string) The value of the property.
 * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
-  * `key` (key) - (string) The key used to uniquely identify this configuration object.
-  * `value` (value) - (string) The value of the property.
+    * `key` (key) - (string) The key used to uniquely identify this configuration object.
+    * `value` (value) - (string) The value of the property.

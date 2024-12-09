@@ -31,13 +31,58 @@ children:
     - annotation: "annotation_1"
       netflow_exporter_policy_name: "netflow_exporter_policy_name_0"
       
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
     - annotation: "annotation_2"
       netflow_exporter_policy_name: "netflow_exporter_policy_name_1"
+      
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
       
   relation_to_netflow_record:
     - annotation: "annotation_1"
       netflow_record_policy_name: "netflow_record_policy_name_1"
       deletable_child: false
+      
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
       
   annotations:
     - key: "key_0"

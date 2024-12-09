@@ -36,7 +36,7 @@ func TestAccDataSourceNdIfPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("data.aci_neighbor_discovery_interface_policy.test", "retransmit_timer", "0"),
 					resource.TestCheckResourceAttr("data.aci_neighbor_discovery_interface_policy.test", "router_advertisement_interval", "600"),
 					resource.TestCheckResourceAttr("data.aci_neighbor_discovery_interface_policy.test", "router_advertisement_lifetime", "1800"),
-					composeAggregateTestCheckFuncWithVersion(t, "5.1(1h)", ">",
+					composeAggregateTestCheckFuncWithVersion(t, "5.1(1h)", ">=",
 						resource.TestCheckResourceAttr("data.aci_neighbor_discovery_interface_policy.test", "nud_retry_base", "1"),
 						resource.TestCheckResourceAttr("data.aci_neighbor_discovery_interface_policy.test", "nud_retry_interval", "1000"),
 						resource.TestCheckResourceAttr("data.aci_neighbor_discovery_interface_policy.test", "nud_retry_max_attempts", "3")),

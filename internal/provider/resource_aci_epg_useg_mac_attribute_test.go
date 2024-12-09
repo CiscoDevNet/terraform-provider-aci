@@ -274,24 +274,24 @@ resource "aci_epg_useg_mac_attribute" "test" {
   mac = "AA:BB:CC:DD:EE:FF"
   name = "mac_attr"
   annotations = [
-	{
-	  key = "key_0"
-	  value = "value_1"
-	},
-	{
-	  key = "key_1"
-	  value = "test_value"
-	},
+    {
+      key = "key_0"
+      value = "value_1"
+    },
+    {
+      key = "key_1"
+      value = "test_value"
+    },
   ]
   tags = [
-	{
-	  key = "key_0"
-	  value = "value_1"
-	},
-	{
-	  key = "key_1"
-	  value = "test_value"
-	},
+    {
+      key = "key_0"
+      value = "value_1"
+    },
+    {
+      key = "key_1"
+      value = "test_value"
+    },
   ]
 }
 `

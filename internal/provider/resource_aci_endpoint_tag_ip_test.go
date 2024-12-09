@@ -264,24 +264,24 @@ resource "aci_endpoint_tag_ip" "test" {
   ip = "10.0.0.2"
   vrf_name = "test_ctx_name"
   annotations = [
-	{
-	  key = "key_0"
-	  value = "value_1"
-	},
-	{
-	  key = "key_1"
-	  value = "test_value"
-	},
+    {
+      key = "key_0"
+      value = "value_1"
+    },
+    {
+      key = "key_1"
+      value = "test_value"
+    },
   ]
   tags = [
-	{
-	  key = "key_0"
-	  value = "value_1"
-	},
-	{
-	  key = "key_1"
-	  value = "test_value"
-	},
+    {
+      key = "key_0"
+      value = "value_1"
+    },
+    {
+      key = "key_1"
+      value = "test_value"
+    },
   ]
 }
 `

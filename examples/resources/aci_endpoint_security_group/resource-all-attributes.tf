@@ -15,6 +15,18 @@ resource "aci_endpoint_security_group" "full_example_application_profile" {
       annotation    = "annotation_1"
       priority      = "level1"
       contract_name = aci_contract.example.name
+      annotations = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
+      tags = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
     }
   ]
   relation_to_imported_contracts = [
@@ -22,12 +34,36 @@ resource "aci_endpoint_security_group" "full_example_application_profile" {
       annotation             = "annotation_1"
       priority               = "level1"
       imported_contract_name = aci_imported_contract.example.name
+      annotations = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
+      tags = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
     }
   ]
   relation_to_intra_epg_contracts = [
     {
       annotation    = "annotation_1"
       contract_name = aci_contract.example.name
+      annotations = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
+      tags = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
     }
   ]
   relation_to_provided_contracts = [
@@ -36,16 +72,52 @@ resource "aci_endpoint_security_group" "full_example_application_profile" {
       match_criteria = "All"
       priority       = "level1"
       contract_name  = aci_contract.example.name
+      annotations = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
+      tags = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
     }
   ]
   relation_to_vrf = {
     annotation = "annotation_1"
     vrf_name   = aci_vrf.example.name
+    annotations = [
+      {
+        key   = "key_0"
+        value = "value_1"
+      }
+    ]
+    tags = [
+      {
+        key   = "key_0"
+        value = "value_1"
+      }
+    ]
   }
   relation_to_contract_masters = [
     {
       annotation = "annotation_1"
       target_dn  = aci_endpoint_security_group.test_endpoint_security_group_0.id
+      annotations = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
+      tags = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
     }
   ]
   annotations = [
