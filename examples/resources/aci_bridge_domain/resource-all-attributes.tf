@@ -23,6 +23,7 @@ resource "aci_bridge_domain" "full_example_tenant" {
   name_alias                         = "name_alias_1"
   owner_key                          = "owner_key_1"
   owner_tag                          = "owner_tag_1"
+  service_bd_routing_disable         = "no"
   bridge_domain_type                 = "fc"
   unicast_routing                    = "no"
   l2_unknown_unicast_flooding        = "proxy"
