@@ -40,34 +40,36 @@ default:
   {{- range $versionMismatchNumber, $propertyNames := $versionMismatch }}{{- $printedVersionMismatchNumberAll := false }}
     {{- range $propertyNames }}{{- $propertyInMismatch := .}}
       {{- range $properties}}
-        {{- if eq .PropertyName $propertyInMismatch}}
-          {{- if not $printedVersionMismatchNumberAll }}{{- $printedVersionMismatchNumberAll = true }}
+        {{- if and (not .IgnoreInTest) (not .ReadOnly)}}
+          {{- if eq .PropertyName $propertyInMismatch}}
+            {{- if not $printedVersionMismatchNumberAll }}{{- $printedVersionMismatchNumberAll = true }}
     {{ $versionMismatchNumber }}:
-          {{- end }}
+            {{- end }}
         {{- $overwritePropertyName := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
-          {{- if .DefaultValue}}
-            {{- if eq .ValueType "bitmask"}}
-              {{- if lt 0 (len (overwritePropertyValue .PkgName $overwritePropertyName .DefaultValue "default" 0 $.Definitions))}}
+            {{- if .DefaultValue}}
+              {{- if eq .ValueType "bitmask"}}
+                {{- if lt 0 (len (overwritePropertyValue .PkgName $overwritePropertyName .DefaultValue "default" 0 $.Definitions))}}
       {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: {{range $index, $value := (overwritePropertyValue .PkgName $overwritePropertyName .DefaultValue "default" 0 $.Definitions)}}
         - "{{ $value}}"
+                  {{- end}}
+                {{- else}}
+      {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: []
                 {{- end}}
               {{- else}}
-      {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: []
-              {{- end}}
-            {{- else}}
       {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName .DefaultValue "default" 0 $.Definitions}}"
-            {{- end}}
-          {{- else if not .IsNaming}}
-            {{- if eq .ValueType "bitmask"}}
-              {{- if lt 0 (len (overwritePropertyValue .PkgName $overwritePropertyName "" "default" 0 $.Definitions))}}
+              {{- end}}
+            {{- else if not .IsNaming}}
+              {{- if eq .ValueType "bitmask"}}
+                {{- if lt 0 (len (overwritePropertyValue .PkgName $overwritePropertyName "" "default" 0 $.Definitions))}}
       {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: {{range $index, $value := (overwritePropertyValue .PkgName $overwritePropertyName "" "default" 0 $.Definitions)}}
         - "{{ $value}}"
+                  {{- end}}
+                {{- else}}
+      {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: []
                 {{- end}}
               {{- else}}
-      {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: []
-              {{- end}}
-            {{- else}}
       {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName "" "default" 0 $.Definitions}}"
+              {{- end}}
             {{- end}}
           {{- end}}
         {{- end}}
