@@ -32,6 +32,7 @@ func TestAccDataSourceFvESgWithFvAp(t *testing.T) {
 					composeAggregateTestCheckFuncWithVersion(t, "5.2(1g)", ">=",
 						resource.TestCheckResourceAttr("data.aci_endpoint_security_group.test", "admin_state", "no")),
 					resource.TestCheckResourceAttrSet("data.aci_endpoint_security_group.test", "pc_tag"),
+					resource.TestCheckResourceAttrSet("data.aci_endpoint_security_group.test", "scope"),
 				),
 			},
 			{

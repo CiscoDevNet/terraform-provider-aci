@@ -219,14 +219,23 @@ func (v MakeStringRequiredValidator) ValidateString(ctx context.Context, req val
 		return
 	}
 
-	setName := req.Path.String()[0:strings.Index(req.Path.String(), "[")]
-	attributeName := req.Path.String()[strings.Index(req.Path.String(), "]")+2:]
+	path := req.Path.String()
+	if strings.Contains(path, "[") {
+		setName := path[0:strings.Index(path, "[")]
+		attributeName := path[strings.Index(path, "]")+2:]
+		resp.Diagnostics.AddAttributeError(
+			req.Path,
+			"Incorrect attribute value type",
+			fmt.Sprintf("Inappropriate value for attribute \"%s\": attribute \"%s\" is required.", setName, attributeName),
+		)
+	} else {
+		resp.Diagnostics.AddAttributeError(
+			req.Path,
+			"Incorrect attribute value type",
+			fmt.Sprintf("Attribute is required for path: %s", path),
+		)
+	}
 
-	resp.Diagnostics.AddAttributeError(
-		req.Path,
-		"Incorrect attribute value type",
-		fmt.Sprintf("Inappropriate value for attribute \"%s\": attribute \"%s\" is required.", setName, attributeName),
-	)
 }
 
 // StringNotNull returns an validator which ensures that the string attribute is

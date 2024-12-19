@@ -127,6 +127,10 @@ func (d *FvESgDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 				Computed:            true,
 				MarkdownDescription: `Parameter used to determine whether the ESG is part of the preferred group. Members of this group are allowed to communicate without contracts.`,
 			},
+			"scope": schema.StringAttribute{
+				Computed:            true,
+				MarkdownDescription: `The scope ID (L3-VNI) of the Endpoint Security Group object.`,
+			},
 			"admin_state": schema.StringAttribute{
 				Computed:            true,
 				MarkdownDescription: `Withdraw the ESG configuration from all nodes in the fabric.`,

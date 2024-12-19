@@ -62,6 +62,7 @@ type FvAEPgResourceModel struct {
 	PcTag                              types.String                      `tfsdk:"pc_tag"`
 	PrefGrMemb                         types.String                      `tfsdk:"preferred_group_member"`
 	Prio                               customTypes.FvAEPgPrioStringValue `tfsdk:"priority"`
+	Scope                              types.String                      `tfsdk:"scope"`
 	Shutdown                           types.String                      `tfsdk:"admin_state"`
 	FvCrtrn                            types.Object                      `tfsdk:"epg_useg_block_statement"`
 	FvRsAEPgMonPol                     types.Object                      `tfsdk:"relation_to_application_epg_monitoring_policy"`
@@ -127,6 +128,7 @@ func getEmptyFvAEPgResourceModel() *FvAEPgResourceModel {
 		PcTag:          basetypes.NewStringNull(),
 		PrefGrMemb:     basetypes.NewStringNull(),
 		Prio:           customTypes.NewFvAEPgPrioStringNull(),
+		Scope:          basetypes.NewStringNull(),
 		Shutdown:       basetypes.NewStringNull(),
 		FvCrtrn: types.ObjectNull(map[string]attr.Type{
 			"annotation":  types.StringType,
@@ -1994,6 +1996,7 @@ func (r *FvAEPgResource) UpgradeState(ctx context.Context) map[int64]resource.St
 					PcTag:                              basetypes.NewStringNull(),
 					PrefGrMemb:                         priorStateData.PrefGrMemb,
 					Prio:                               customTypes.FvAEPgPrioStringValue{StringValue: priorStateData.Prio},
+					Scope:                              basetypes.NewStringNull(),
 					Shutdown:                           priorStateData.Shutdown,
 					DeprecatedExceptionTag:             priorStateData.ExceptionTag,
 					DeprecatedFloodOnEncap:             priorStateData.FloodOnEncap,
@@ -4001,6 +4004,10 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 					),
 				},
 				MarkdownDescription: `The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.`,
+			},
+			"scope": schema.StringAttribute{
+				Computed:            true,
+				MarkdownDescription: `The scope ID (L3-VNI) of the Application EPG object.`,
 			},
 			"admin_state": schema.StringAttribute{
 				Optional: true,
@@ -6555,6 +6562,9 @@ func getAndSetFvAEPgAttributes(ctx context.Context, diags *diag.Diagnostics, cli
 				}
 				if attributeName == "prio" {
 					readData.Prio = customTypes.NewFvAEPgPrioStringValue(attributeValue.(string))
+				}
+				if attributeName == "scope" {
+					readData.Scope = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "shutdown" {
 					readData.Shutdown = basetypes.NewStringValue(attributeValue.(string))
