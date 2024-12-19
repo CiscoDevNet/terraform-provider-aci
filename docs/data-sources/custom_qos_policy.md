@@ -53,6 +53,38 @@ data "aci_custom_qos_policy" "example_tenant" {
 * `name_alias` (nameAlias) - (string) The name alias of the Custom Qos Policy object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
+* `dot1p_classifiers` - (list) A list of Dot1p Classifiers (ACI object [qosDot1PClass](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/qosDot1PClass/overview)).
+    * `annotation` (annotation) - (string) The annotation of the Dot1p Classifier object.
+    * `description` (descr) - (string) The description of the Dot1p Classifier object.
+    * `from` (from) - (string) The Dot1p priority range starting value.
+    * `name` (name) - (string) The name of the Dot1p Classifier object.
+    * `name_alias` (nameAlias) - (string) The name alias of the Dot1p Classifier object.
+    * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
+    * `target` (target) - (string) The target of the Dot1p Classifier object. This Fabric only supports DSCP mutation, Dot1P mutation is not supported.
+    * `target_cos` (targetCos) - (string) Target COS to be driven based on the range of input values of DSCP coming into the fabric.
+    * `to` (to) - (string) The Dot1p priority range ending value.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
+* `dscp_to_priority_maps` - (list) A list of DSCP to Priority Maps (ACI object [qosDscpClass](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/qosDscpClass/overview)).
+    * `annotation` (annotation) - (string) The annotation of the DSCP to Priority Map object.
+    * `description` (descr) - (string) The description of the DSCP to Priority Map object.
+    * `from` (from) - (string) The DSCP range starting value.
+    * `name` (name) - (string) The name of the DSCP to Priority Map object.
+    * `name_alias` (nameAlias) - (string) The name alias of the DSCP to Priority Map object.
+    * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
+    * `target` (target) - (string) The target of the DSCP to Priority Map object. This Fabric only supports DSCP mutation, Dot1P mutation is not supported.
+    * `target_cos` (targetCos) - (string) Target COS to be driven based on the range of input values of DSCP coming into the fabric.
+    * `to` (to) - (string) The DSCP range ending value.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
