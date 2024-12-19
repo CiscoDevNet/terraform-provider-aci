@@ -26,6 +26,7 @@ resource_required:
 
 read_only:
   - "pc_tag"
+  - "scope"
 
 all:
   annotation: "annotation"

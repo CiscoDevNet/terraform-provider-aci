@@ -55,6 +55,7 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 						resource.TestCheckResourceAttr("aci_application_epg.allow_test", "has_multicast_source", "no"),
 						resource.TestCheckResourceAttr("aci_application_epg.allow_test_2", "has_multicast_source", "no")),
 					resource.TestCheckResourceAttrSet("aci_application_epg.allow_test", "pc_tag"),
+					resource.TestCheckResourceAttrSet("aci_application_epg.allow_test", "scope"),
 				),
 			},
 		},
@@ -114,6 +115,8 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 						resource.TestCheckResourceAttr("aci_application_epg.allow_test_2", "has_multicast_source", "no")),
 					resource.TestCheckResourceAttrSet("aci_application_epg.allow_test", "pc_tag"),
 					resource.TestCheckResourceAttrSet("aci_application_epg.allow_test_2", "pc_tag"),
+					resource.TestCheckResourceAttrSet("aci_application_epg.allow_test", "scope"),
+					resource.TestCheckResourceAttrSet("aci_application_epg.allow_test_2", "scope"),
 				),
 			},
 		},
@@ -144,6 +147,7 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 						resource.TestCheckResourceAttr("aci_application_epg.test", "admin_state", "no"),
 						resource.TestCheckResourceAttr("aci_application_epg.test", "has_multicast_source", "no")),
 					resource.TestCheckResourceAttrSet("aci_application_epg.test", "pc_tag"),
+					resource.TestCheckResourceAttrSet("aci_application_epg.test", "scope"),
 				),
 			},
 			// Update with all config and verify default APIC values
@@ -166,7 +170,10 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)", ">=",
 						resource.TestCheckResourceAttr("aci_application_epg.test", "admin_state", "no"),
 						resource.TestCheckResourceAttr("aci_application_epg.test", "has_multicast_source", "no")),
+					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)", ">=",
+						resource.TestCheckResourceAttr("aci_application_epg.test", "scope", "0")),
 					resource.TestCheckResourceAttrSet("aci_application_epg.test", "pc_tag"),
+					resource.TestCheckResourceAttrSet("aci_application_epg.test", "scope"),
 				),
 			},
 			// Update with minimum config and verify config is unchanged
@@ -176,6 +183,7 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_application_epg.test", "name", "test_name"),
 					resource.TestCheckResourceAttrSet("aci_application_epg.test", "pc_tag"),
+					resource.TestCheckResourceAttrSet("aci_application_epg.test", "scope"),
 				),
 			},
 			// Update with empty strings config or default value
@@ -199,6 +207,7 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 						resource.TestCheckResourceAttr("aci_application_epg.test", "admin_state", "no"),
 						resource.TestCheckResourceAttr("aci_application_epg.test", "has_multicast_source", "no")),
 					resource.TestCheckResourceAttrSet("aci_application_epg.test", "pc_tag"),
+					resource.TestCheckResourceAttrSet("aci_application_epg.test", "scope"),
 				),
 			},
 			// Import testing
@@ -228,6 +237,7 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 						resource.TestCheckResourceAttr("aci_application_epg.test", "admin_state", "no"),
 						resource.TestCheckResourceAttr("aci_application_epg.test", "has_multicast_source", "no")),
 					resource.TestCheckResourceAttrSet("aci_application_epg.test", "pc_tag"),
+					resource.TestCheckResourceAttrSet("aci_application_epg.test", "scope"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.1.key", "key_1"),
@@ -391,6 +401,7 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttrSet("aci_application_epg.test", "pc_tag"),
+					resource.TestCheckResourceAttrSet("aci_application_epg.test", "scope"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.1.key", "key_1"),
@@ -815,6 +826,7 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttrSet("aci_application_epg.test", "pc_tag"),
+					resource.TestCheckResourceAttrSet("aci_application_epg.test", "scope"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.0.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.#", "1"),
@@ -1026,6 +1038,7 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttrSet("aci_application_epg.test", "pc_tag"),
+					resource.TestCheckResourceAttrSet("aci_application_epg.test", "scope"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.#", "0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_bridge_domain.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_bridge_domain.bridge_domain_name", "bridge_domain_name_1"),
@@ -1162,6 +1175,7 @@ resource "aci_application_epg" "test" {
   useg_epg = "no"
   admin_state = provider::aci::compare_versions(data.aci_system.version.version,">=","4.0(1h)") ? "no" : null
   has_multicast_source = provider::aci::compare_versions(data.aci_system.version.version,">=","4.0(1h)") ? "no" : null
+  scope = provider::aci::compare_versions(data.aci_system.version.version,">=","4.1(1i)") ? "0" : null
 }
 `
 
