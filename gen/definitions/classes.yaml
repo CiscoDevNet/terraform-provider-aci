@@ -112,6 +112,22 @@ qosCustomPol:
   ui_locations:
     - "Tenants -> Policies -> Protocol -> Custom QoS"
   sub_category: "Tenant Policies"
+  children:
+    - "qosDscpClass"
+    - "qosDot1PClass"
+
+qosDscpClass:
+  resource_name: "dscp_to_priority_map"
+  ui_locations:
+    - "Tenants -> Policies -> Protocol -> Custom QoS -> DSCP to priority map"
+  sub_category: "Tenant Policies"
+
+qosDot1PClass:
+  resource_name: "dot1p_classifier"
+  ui_locations:
+    - "Tenants -> Policies -> Protocol -> Custom QoS -> Dot1p Classifiers"
+  sub_category: "Tenant Policies"
+
 
 fhsTrustCtrlPol:
   ui_locations:

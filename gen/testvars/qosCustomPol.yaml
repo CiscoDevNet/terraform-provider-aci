@@ -27,6 +27,108 @@ all:
   owner_tag: "owner_tag_1"
 
 children:
+  dot1p_classifiers:
+    - annotation: "annotation_1"
+      description: "description_1"
+      from: "0"
+      name: "name_1"
+      name_alias: "name_alias_1"
+      priority: "level1"
+      target: "AF11"
+      target_cos: "0"
+      to: "0"
+      
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+    - annotation: "annotation_2"
+      description: "description_2"
+      from: "1"
+      name: "name_2"
+      name_alias: "name_alias_2"
+      priority: "level2"
+      target: "AF12"
+      target_cos: "1"
+      to: "1"
+      
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+  dscp_to_priority_maps:
+    - annotation: "annotation_1"
+      description: "description_1"
+      from: "AF11"
+      name: "name_1"
+      name_alias: "name_alias_1"
+      priority: "level1"
+      target: "AF11"
+      target_cos: "0"
+      to: "AF11"
+      
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+    - annotation: "annotation_2"
+      description: "description_2"
+      from: "AF12"
+      name: "name_2"
+      name_alias: "name_alias_2"
+      priority: "level2"
+      target: "AF12"
+      target_cos: "1"
+      to: "AF12"
+      
+      children:
+        annotations:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
+        tags:
+          - key: "key_0"
+            value: "value_1"
+      
+          - key: "key_1"
+            value: "test_value"
+      
   annotations:
     - key: "key_0"
       value: "value_1"
