@@ -71,6 +71,7 @@ type FvBDResourceModel struct {
 	PcTag                                 types.String `tfsdk:"pc_tag"`
 	Scope                                 types.String `tfsdk:"scope"`
 	Seg                                   types.String `tfsdk:"segment"`
+	ServiceBdRoutingDisable               types.String `tfsdk:"service_bd_routing_disable"`
 	Type                                  types.String `tfsdk:"bridge_domain_type"`
 	UnicastRoute                          types.String `tfsdk:"unicast_routing"`
 	UnkMacUcastAct                        types.String `tfsdk:"l2_unknown_unicast_flooding"`
@@ -151,6 +152,7 @@ func getEmptyFvBDResourceModel() *FvBDResourceModel {
 		PcTag:                    basetypes.NewStringNull(),
 		Scope:                    basetypes.NewStringNull(),
 		Seg:                      basetypes.NewStringNull(),
+		ServiceBdRoutingDisable:  basetypes.NewStringNull(),
 		Type:                     basetypes.NewStringNull(),
 		UnicastRoute:             basetypes.NewStringNull(),
 		UnkMacUcastAct:           basetypes.NewStringNull(),
@@ -1642,6 +1644,7 @@ func (r *FvBDResource) UpgradeState(ctx context.Context) map[int64]resource.Stat
 					PcTag:                                 basetypes.NewStringNull(),
 					Scope:                                 basetypes.NewStringNull(),
 					Seg:                                   basetypes.NewStringNull(),
+					ServiceBdRoutingDisable:               basetypes.NewStringNull(),
 					Type:                                  priorStateData.Type,
 					UnicastRoute:                          priorStateData.UnicastRoute,
 					UnkMacUcastAct:                        priorStateData.UnkMacUcastAct,
@@ -3320,6 +3323,18 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 			"segment": schema.StringAttribute{
 				Computed:            true,
 				MarkdownDescription: `The segment ID (L2-VNI) of the Bridge Domain object.`,
+			},
+			"service_bd_routing_disable": schema.StringAttribute{
+				Optional: true,
+				Computed: true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
+				},
+				Validators: []validator.String{
+					stringvalidator.OneOf("no", "yes"),
+				},
+				MarkdownDescription: `Disable Routing on service BD.`,
 			},
 			"bridge_domain_type": schema.StringAttribute{
 				Optional: true,
@@ -5216,6 +5231,9 @@ func getAndSetFvBDAttributes(ctx context.Context, diags *diag.Diagnostics, clien
 				}
 				if attributeName == "seg" {
 					readData.Seg = basetypes.NewStringValue(attributeValue.(string))
+				}
+				if attributeName == "serviceBdRoutingDisable" {
+					readData.ServiceBdRoutingDisable = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "type" {
 					readData.Type = basetypes.NewStringValue(attributeValue.(string))
@@ -7743,6 +7761,9 @@ func getFvBDCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, crea
 	}
 	if !data.OwnerTag.IsNull() && !data.OwnerTag.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["ownerTag"] = data.OwnerTag.ValueString()
+	}
+	if !data.ServiceBdRoutingDisable.IsNull() && !data.ServiceBdRoutingDisable.IsUnknown() {
+		payloadMap["attributes"].(map[string]string)["serviceBdRoutingDisable"] = data.ServiceBdRoutingDisable.ValueString()
 	}
 	if !data.Type.IsNull() && !data.Type.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["type"] = data.Type.ValueString()

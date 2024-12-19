@@ -35,6 +35,8 @@ default:
       pim_ipv6: "no"
     5.2(5c):
       drop_arp_with_multicast_smac: "yes"
+    6.0(4c):
+      service_bd_routing_disable: "no"
 
 datasource_non_existing:
   name: "non_existing_name"
@@ -82,6 +84,8 @@ all:
       pim_ipv6: "no"
     5.2(5c):
       drop_arp_with_multicast_smac: "no"
+    6.0(4c):
+      service_bd_routing_disable: "no"
 
 children:
   legacy_mode:

@@ -70,6 +70,7 @@ resource "aci_bridge_domain" "full_example_tenant" {
   name_alias                         = "name_alias_1"
   owner_key                          = "owner_key_1"
   owner_tag                          = "owner_tag_1"
+  service_bd_routing_disable         = "no"
   bridge_domain_type                 = "fc"
   unicast_routing                    = "no"
   l2_unknown_unicast_flooding        = "proxy"
@@ -387,6 +388,9 @@ All examples for the Bridge Domain resource can be found in the [examples](https
 * `scope` (scope) - (string) The scope ID (L3-VNI) of the Bridge Domain object.
   - Default: `0`
 * `segment` (seg) - (string) The segment ID (L2-VNI) of the Bridge Domain object.
+* `service_bd_routing_disable` (serviceBdRoutingDisable) - (string) Disable Routing on service BD.
+  - Default: `no`
+  - Valid Values: `no`, `yes`.
 * `bridge_domain_type` (type) - (string) The domain type of the Bridge Domain object.
   - Default: `regular`
   - Valid Values: `fc`, `regular`.
