@@ -24,6 +24,8 @@ global:
     lastMbrIntvl: "The last member interval (seconds) of the %s object. The group state is removed when no host responds before the timeout"
     startQueryCnt: "The start query count of the %s object."
     startQueryIntvl: "The query interval (seconds) of the %s object at start-up."
+    seg: "The segment ID (L2-VNI) of the %s object."
+    pcTag: "The classification tag used for policy enforcement and zoning."
   overwrites:
     count: "apic_count" # count is a terraform reserved schema entry
     provider: "prov" # provider is a terraform reserved schema entry
@@ -44,6 +46,7 @@ global:
     netflow_pref: "enable_netflow"
     num_ports: "number_of_ports"
     class_pref: "class_preference"
+    seg: "segment"
   resource_name_doc_overwrite:
     Vrf: "VRF"
     Sid: "SR-MPLS Segment ID"
@@ -429,6 +432,7 @@ netflowRecordPol:
 fvESg:
   read_only_properties:
     - "pcTag"
+    - "scope"
   remove_valid_values:
     pcTag:
       - "any"
@@ -442,6 +446,7 @@ fvESg:
     prefGrMemb: "Parameter used to determine whether the ESG is part of the preferred group. Members of this group are allowed to communicate without contracts."
     pcEnfPref: "Parameter used to determine whether communication between endpoints within the ESG is blocked."
     shutdown: "Withdraw the ESG configuration from all nodes in the fabric."
+    scope: "The scope ID (L3-VNI) of the %s object."
   parents:
     - class_name: "fvAp"
       parent_dependency: "fvTenant"
@@ -717,6 +722,7 @@ fvIpAttr:
 fvAEPg:
   read_only_properties:
     - "pcTag"
+    - "scope"
   remove_valid_values:
     pcTag:
       - "any"
@@ -745,6 +751,7 @@ fvAEPg:
     isAttrBasedEPg: "The %s object is microsegmented (uSeg)."
     pcEnfPref: "Parameter used to determine whether communication between endpoints within the EPG is blocked."
     prefGrMemb: "Parameter used to determine whether the EPG is part of the preferred group. Members of this group are allowed to communicate without contracts."
+    scope: "The scope ID (L3-VNI) of the %s object."
   test_values:
     default:
       forwarding_control: "none"
@@ -1317,9 +1324,15 @@ pkiKeyRing:
       certificate_authority: "test_name"
 
 fvBD:
+  read_only_properties:
+    - "pcTag"
+    - "seg"
+    - "scope"
   remove_valid_values:
     vmac:
       - "not-applicable"
+    pcTag:
+      - "any"
   add_valid_values:
     epMoveDetectMode:
       - ""
@@ -1372,6 +1385,7 @@ fvBD:
     unkMcastAct: "The forwarding method for unknown layer 3 multicast destinations."
     v6unkMcastAct: "The forwarding method for unknown IPv6 multicast destinations."
     vmac: "The virtual MAC address of the %s object. This is used when the the BD/SVI is extended to multiple sites using a L2 Outside."
+    scope: "The scope ID (L3-VNI) of the %s object."
   type_overwrites:
     epMoveDetectMode: "string"
   test_values:
