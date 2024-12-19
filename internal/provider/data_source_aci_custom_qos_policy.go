@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
@@ -71,6 +72,168 @@ func (d *QosCustomPolDataSource) Schema(ctx context.Context, req datasource.Sche
 			"owner_tag": schema.StringAttribute{
 				Computed:            true,
 				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
+			},
+			"dot1p_classifiers": schema.SetNestedAttribute{
+				MarkdownDescription: `The class level for dot1P to prioritize the map.`,
+				Computed:            true,
+				NestedObject: schema.NestedAttributeObject{
+					Attributes: map[string]schema.Attribute{
+						"annotation": schema.StringAttribute{
+							Computed:            true,
+							MarkdownDescription: `The annotation of the Dot1p Classifier object.`,
+						},
+						"description": schema.StringAttribute{
+							Computed:            true,
+							MarkdownDescription: `The description of the Dot1p Classifier object.`,
+						},
+						"from": schema.StringAttribute{
+							CustomType:          customTypes.QosDot1PClassFromStringType{},
+							Computed:            true,
+							MarkdownDescription: `The Dot1p priority range starting value.`,
+						},
+						"name": schema.StringAttribute{
+							Computed:            true,
+							MarkdownDescription: `The name of the Dot1p Classifier object.`,
+						},
+						"name_alias": schema.StringAttribute{
+							Computed:            true,
+							MarkdownDescription: `The name alias of the Dot1p Classifier object.`,
+						},
+						"priority": schema.StringAttribute{
+							CustomType:          customTypes.QosDot1PClassPrioStringType{},
+							Computed:            true,
+							MarkdownDescription: `The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.`,
+						},
+						"target": schema.StringAttribute{
+							CustomType:          customTypes.QosDot1PClassTargetStringType{},
+							Computed:            true,
+							MarkdownDescription: `The target of the Dot1p Classifier object. This Fabric only supports DSCP mutation, Dot1P mutation is not supported.`,
+						},
+						"target_cos": schema.StringAttribute{
+							CustomType:          customTypes.QosDot1PClassTargetCosStringType{},
+							Computed:            true,
+							MarkdownDescription: `Target COS to be driven based on the range of input values of DSCP coming into the fabric.`,
+						},
+						"to": schema.StringAttribute{
+							CustomType:          customTypes.QosDot1PClassToStringType{},
+							Computed:            true,
+							MarkdownDescription: `The Dot1p priority range ending value.`,
+						},
+						"annotations": schema.SetNestedAttribute{
+							MarkdownDescription: ``,
+							Computed:            true,
+							NestedObject: schema.NestedAttributeObject{
+								Attributes: map[string]schema.Attribute{
+									"key": schema.StringAttribute{
+										Computed:            true,
+										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+									},
+									"value": schema.StringAttribute{
+										Computed:            true,
+										MarkdownDescription: `The value of the property.`,
+									},
+								},
+							},
+						},
+						"tags": schema.SetNestedAttribute{
+							MarkdownDescription: ``,
+							Computed:            true,
+							NestedObject: schema.NestedAttributeObject{
+								Attributes: map[string]schema.Attribute{
+									"key": schema.StringAttribute{
+										Computed:            true,
+										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+									},
+									"value": schema.StringAttribute{
+										Computed:            true,
+										MarkdownDescription: `The value of the property.`,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			"dscp_to_priority_maps": schema.SetNestedAttribute{
+				MarkdownDescription: `The class level for DSCP to prioritize the map.`,
+				Computed:            true,
+				NestedObject: schema.NestedAttributeObject{
+					Attributes: map[string]schema.Attribute{
+						"annotation": schema.StringAttribute{
+							Computed:            true,
+							MarkdownDescription: `The annotation of the DSCP to Priority Map object.`,
+						},
+						"description": schema.StringAttribute{
+							Computed:            true,
+							MarkdownDescription: `The description of the DSCP to Priority Map object.`,
+						},
+						"from": schema.StringAttribute{
+							CustomType:          customTypes.QosDscpClassFromStringType{},
+							Computed:            true,
+							MarkdownDescription: `The DSCP range starting value.`,
+						},
+						"name": schema.StringAttribute{
+							Computed:            true,
+							MarkdownDescription: `The name of the DSCP to Priority Map object.`,
+						},
+						"name_alias": schema.StringAttribute{
+							Computed:            true,
+							MarkdownDescription: `The name alias of the DSCP to Priority Map object.`,
+						},
+						"priority": schema.StringAttribute{
+							CustomType:          customTypes.QosDscpClassPrioStringType{},
+							Computed:            true,
+							MarkdownDescription: `The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.`,
+						},
+						"target": schema.StringAttribute{
+							CustomType:          customTypes.QosDscpClassTargetStringType{},
+							Computed:            true,
+							MarkdownDescription: `The target of the DSCP to Priority Map object. This Fabric only supports DSCP mutation, Dot1P mutation is not supported.`,
+						},
+						"target_cos": schema.StringAttribute{
+							CustomType:          customTypes.QosDscpClassTargetCosStringType{},
+							Computed:            true,
+							MarkdownDescription: `Target COS to be driven based on the range of input values of DSCP coming into the fabric.`,
+						},
+						"to": schema.StringAttribute{
+							CustomType:          customTypes.QosDscpClassToStringType{},
+							Computed:            true,
+							MarkdownDescription: `The DSCP range ending value.`,
+						},
+						"annotations": schema.SetNestedAttribute{
+							MarkdownDescription: ``,
+							Computed:            true,
+							NestedObject: schema.NestedAttributeObject{
+								Attributes: map[string]schema.Attribute{
+									"key": schema.StringAttribute{
+										Computed:            true,
+										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+									},
+									"value": schema.StringAttribute{
+										Computed:            true,
+										MarkdownDescription: `The value of the property.`,
+									},
+								},
+							},
+						},
+						"tags": schema.SetNestedAttribute{
+							MarkdownDescription: ``,
+							Computed:            true,
+							NestedObject: schema.NestedAttributeObject{
+								Attributes: map[string]schema.Attribute{
+									"key": schema.StringAttribute{
+										Computed:            true,
+										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+									},
+									"value": schema.StringAttribute{
+										Computed:            true,
+										MarkdownDescription: `The value of the property.`,
+									},
+								},
+							},
+						},
+					},
+				},
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,
