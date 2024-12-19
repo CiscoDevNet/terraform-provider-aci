@@ -261,6 +261,10 @@ func (d *FvBDDataSource) Schema(ctx context.Context, req datasource.SchemaReques
 				Computed:            true,
 				MarkdownDescription: `The segment ID (L2-VNI) of the Bridge Domain object.`,
 			},
+			"service_bd_routing_disable": schema.StringAttribute{
+				Computed:            true,
+				MarkdownDescription: `Disable Routing on service BD.`,
+			},
 			"bridge_domain_type": schema.StringAttribute{
 				Computed:            true,
 				MarkdownDescription: `The domain type of the Bridge Domain object.`,

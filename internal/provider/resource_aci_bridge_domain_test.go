@@ -81,6 +81,9 @@ func TestAccResourceFvBDWithFvTenant(t *testing.T) {
 					composeAggregateTestCheckFuncWithVersion(t, "5.2(5c)", ">=",
 						resource.TestCheckResourceAttr("aci_bridge_domain.allow_test", "drop_arp_with_multicast_smac", "yes"),
 						resource.TestCheckResourceAttr("aci_bridge_domain.allow_test_2", "drop_arp_with_multicast_smac", "yes")),
+					composeAggregateTestCheckFuncWithVersion(t, "6.0(4c)", ">=",
+						resource.TestCheckResourceAttr("aci_bridge_domain.allow_test", "service_bd_routing_disable", "no"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.allow_test_2", "service_bd_routing_disable", "no")),
 					resource.TestCheckResourceAttr("aci_bridge_domain.allow_test", "virtual_mac_address", "not-applicable"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.allow_test_2", "virtual_mac_address", "not-applicable"),
 					resource.TestCheckResourceAttrSet("aci_bridge_domain.allow_test", "pc_tag"),
@@ -170,6 +173,9 @@ func TestAccResourceFvBDWithFvTenant(t *testing.T) {
 					composeAggregateTestCheckFuncWithVersion(t, "5.2(5c)", ">=",
 						resource.TestCheckResourceAttr("aci_bridge_domain.allow_test", "drop_arp_with_multicast_smac", "yes"),
 						resource.TestCheckResourceAttr("aci_bridge_domain.allow_test_2", "drop_arp_with_multicast_smac", "yes")),
+					composeAggregateTestCheckFuncWithVersion(t, "6.0(4c)", ">=",
+						resource.TestCheckResourceAttr("aci_bridge_domain.allow_test", "service_bd_routing_disable", "no"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.allow_test_2", "service_bd_routing_disable", "no")),
 					resource.TestCheckResourceAttr("aci_bridge_domain.allow_test", "virtual_mac_address", "not-applicable"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.allow_test_2", "virtual_mac_address", "not-applicable"),
 					resource.TestCheckResourceAttrSet("aci_bridge_domain.allow_test", "pc_tag"),
@@ -222,6 +228,8 @@ func TestAccResourceFvBDWithFvTenant(t *testing.T) {
 						resource.TestCheckResourceAttr("aci_bridge_domain.test", "pim_ipv6", "no")),
 					composeAggregateTestCheckFuncWithVersion(t, "5.2(5c)", ">=",
 						resource.TestCheckResourceAttr("aci_bridge_domain.test", "drop_arp_with_multicast_smac", "yes")),
+					composeAggregateTestCheckFuncWithVersion(t, "6.0(4c)", ">=",
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "service_bd_routing_disable", "no")),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "virtual_mac_address", "not-applicable"),
 					resource.TestCheckResourceAttrSet("aci_bridge_domain.test", "pc_tag"),
 					resource.TestCheckResourceAttrSet("aci_bridge_domain.test", "scope"),
@@ -263,6 +271,8 @@ func TestAccResourceFvBDWithFvTenant(t *testing.T) {
 						resource.TestCheckResourceAttr("aci_bridge_domain.test", "pim_ipv6", "no")),
 					composeAggregateTestCheckFuncWithVersion(t, "5.2(5c)", ">=",
 						resource.TestCheckResourceAttr("aci_bridge_domain.test", "drop_arp_with_multicast_smac", "no")),
+					composeAggregateTestCheckFuncWithVersion(t, "6.0(4c)", ">=",
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "service_bd_routing_disable", "no")),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "virtual_mac_address", "00:22:BD:F8:19:FB"),
 					resource.TestCheckResourceAttrSet("aci_bridge_domain.test", "pc_tag"),
 					resource.TestCheckResourceAttrSet("aci_bridge_domain.test", "scope"),
@@ -315,6 +325,8 @@ func TestAccResourceFvBDWithFvTenant(t *testing.T) {
 						resource.TestCheckResourceAttr("aci_bridge_domain.test", "pim_ipv6", "no")),
 					composeAggregateTestCheckFuncWithVersion(t, "5.2(5c)", ">=",
 						resource.TestCheckResourceAttr("aci_bridge_domain.test", "drop_arp_with_multicast_smac", "yes")),
+					composeAggregateTestCheckFuncWithVersion(t, "6.0(4c)", ">=",
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "service_bd_routing_disable", "no")),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "virtual_mac_address", "not-applicable"),
 					resource.TestCheckResourceAttrSet("aci_bridge_domain.test", "pc_tag"),
 					resource.TestCheckResourceAttrSet("aci_bridge_domain.test", "scope"),
@@ -362,6 +374,8 @@ func TestAccResourceFvBDWithFvTenant(t *testing.T) {
 						resource.TestCheckResourceAttr("aci_bridge_domain.test", "pim_ipv6", "no")),
 					composeAggregateTestCheckFuncWithVersion(t, "5.2(5c)", ">=",
 						resource.TestCheckResourceAttr("aci_bridge_domain.test", "drop_arp_with_multicast_smac", "yes")),
+					composeAggregateTestCheckFuncWithVersion(t, "6.0(4c)", ">=",
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "service_bd_routing_disable", "no")),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "virtual_mac_address", "not-applicable"),
 					resource.TestCheckResourceAttrSet("aci_bridge_domain.test", "pc_tag"),
 					resource.TestCheckResourceAttrSet("aci_bridge_domain.test", "scope"),
@@ -967,6 +981,7 @@ resource "aci_bridge_domain" "test" {
   ipv6_l3_unknown_multicast_flooding = provider::aci::compare_versions(data.aci_system.version.version,">=","4.1(1i)") ? "flood" : null
   pim_ipv6 = provider::aci::compare_versions(data.aci_system.version.version,">=","4.2(1i)") ? "no" : null
   drop_arp_with_multicast_smac = provider::aci::compare_versions(data.aci_system.version.version,">=","5.2(5c)") ? "no" : null
+  service_bd_routing_disable = provider::aci::compare_versions(data.aci_system.version.version,">=","6.0(4c)") ? "no" : null
   virtual_mac_address = "00:22:BD:F8:19:FB"
 }
 `
@@ -1000,6 +1015,7 @@ resource "aci_bridge_domain" "test" {
   ipv6_l3_unknown_multicast_flooding = provider::aci::compare_versions(data.aci_system.version.version,">=","4.1(1i)") ? "flood" : null
   pim_ipv6 = provider::aci::compare_versions(data.aci_system.version.version,">=","4.2(1i)") ? "no" : null
   drop_arp_with_multicast_smac = provider::aci::compare_versions(data.aci_system.version.version,">=","5.2(5c)") ? "yes" : null
+  service_bd_routing_disable = provider::aci::compare_versions(data.aci_system.version.version,">=","6.0(4c)") ? "no" : null
   virtual_mac_address = "not-applicable"
 }
 `

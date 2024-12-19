@@ -51,6 +51,8 @@ func TestAccDataSourceFvBDWithFvTenant(t *testing.T) {
 						resource.TestCheckResourceAttr("data.aci_bridge_domain.test", "pim_ipv6", "no")),
 					composeAggregateTestCheckFuncWithVersion(t, "5.2(5c)", ">=",
 						resource.TestCheckResourceAttr("data.aci_bridge_domain.test", "drop_arp_with_multicast_smac", "yes")),
+					composeAggregateTestCheckFuncWithVersion(t, "6.0(4c)", ">=",
+						resource.TestCheckResourceAttr("data.aci_bridge_domain.test", "service_bd_routing_disable", "no")),
 					resource.TestCheckResourceAttr("data.aci_bridge_domain.test", "virtual_mac_address", "not-applicable"),
 					resource.TestCheckResourceAttrSet("data.aci_bridge_domain.test", "pc_tag"),
 					resource.TestCheckResourceAttrSet("data.aci_bridge_domain.test", "scope"),

@@ -72,6 +72,7 @@ data "aci_bridge_domain" "example_tenant" {
 * `pc_tag` (pcTag) - (string) The classification tag used for policy enforcement and zoning.
 * `scope` (scope) - (string) The scope ID (L3-VNI) of the Bridge Domain object.
 * `segment` (seg) - (string) The segment ID (L2-VNI) of the Bridge Domain object.
+* `service_bd_routing_disable` (serviceBdRoutingDisable) - (string) Disable Routing on service BD.
 * `bridge_domain_type` (type) - (string) The domain type of the Bridge Domain object.
 * `unicast_routing` (unicastRoute) - (string) Enables L3 routing and endpoint IP learning for the Bridge Domain object.
 * `l2_unknown_unicast_flooding` (unkMacUcastAct) - (string) The forwarding method for unknown layer 2 destinations.
