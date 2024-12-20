@@ -69,6 +69,9 @@ data "aci_bridge_domain" "example_tenant" {
 * `name_alias` (nameAlias) - (string) The name alias of the Bridge Domain object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
+* `pc_tag` (pcTag) - (string) The classification tag used for policy enforcement and zoning.
+* `scope` (scope) - (string) The scope ID (L3-VNI) of the Bridge Domain object.
+* `segment` (seg) - (string) The segment ID (L2-VNI) of the Bridge Domain object.
 * `bridge_domain_type` (type) - (string) The domain type of the Bridge Domain object.
 * `unicast_routing` (unicastRoute) - (string) Enables L3 routing and endpoint IP learning for the Bridge Domain object.
 * `l2_unknown_unicast_flooding` (unkMacUcastAct) - (string) The forwarding method for unknown layer 2 destinations.
