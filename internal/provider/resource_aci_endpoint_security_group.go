@@ -2256,7 +2256,6 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						Validators:          []validator.String{},
 						MarkdownDescription: `The annotation of the Relation To VRF object.`,
 					},
 					"vrf_name": schema.StringAttribute{
@@ -2265,7 +2264,6 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						Validators:          []validator.String{},
 						MarkdownDescription: `The name of the VRF object.`,
 					},
 					"annotations": schema.SetNestedAttribute{

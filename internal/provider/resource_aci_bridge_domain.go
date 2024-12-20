@@ -3408,7 +3408,6 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						Validators:          []validator.String{},
 						MarkdownDescription: `The annotation of the Legacy Mode object.`,
 					},
 					"description": schema.StringAttribute{
@@ -3417,7 +3416,6 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						Validators:          []validator.String{},
 						MarkdownDescription: `The description of the Legacy Mode object.`,
 					},
 					"encapsulation": schema.StringAttribute{
@@ -3425,9 +3423,6 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
-						},
-						Validators: []validator.String{
-							MakeStringRequired(),
 						},
 						MarkdownDescription: `The VLAN or VXLAN encapsulation of the Legacy Mode object.`,
 					},
@@ -3437,7 +3432,6 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						Validators:          []validator.String{},
 						MarkdownDescription: `The name of the Legacy Mode object.`,
 					},
 					"name_alias": schema.StringAttribute{
@@ -3446,7 +3440,6 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						Validators:          []validator.String{},
 						MarkdownDescription: `The name alias of the Legacy Mode object.`,
 					},
 					"owner_key": schema.StringAttribute{
@@ -3455,7 +3448,6 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						Validators:          []validator.String{},
 						MarkdownDescription: `The key for enabling clients to own their data for entity correlation.`,
 					},
 					"owner_tag": schema.StringAttribute{
@@ -3464,7 +3456,6 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						Validators:          []validator.String{},
 						MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
 					},
 					"annotations": schema.SetNestedAttribute{
@@ -3678,7 +3669,6 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						Validators:          []validator.String{},
 						MarkdownDescription: `The annotation of the Relation From Bridge Domain To Monitoring Policy object.`,
 					},
 					"monitoring_policy_name": schema.StringAttribute{
@@ -3687,7 +3677,6 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						Validators:          []validator.String{},
 						MarkdownDescription: `The name of the Monitoring Policy object.`,
 					},
 					"annotations": schema.SetNestedAttribute{
@@ -3774,7 +3763,6 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						Validators:          []validator.String{},
 						MarkdownDescription: `The annotation of the Relation From Bridge Domain To First Hop Security Policy object.`,
 					},
 					"first_hop_security_policy_name": schema.StringAttribute{
@@ -3783,7 +3771,6 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						Validators:          []validator.String{},
 						MarkdownDescription: `The name of the First Hop Security Policy object.`,
 					},
 					"annotations": schema.SetNestedAttribute{
@@ -3870,7 +3857,6 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						Validators:          []validator.String{},
 						MarkdownDescription: `The annotation of the Relation From Bridge Domain To Neighbor Discovery Interface Policy object.`,
 					},
 					"neighbor_discovery_interface_policy_name": schema.StringAttribute{
@@ -3879,7 +3865,6 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						Validators:          []validator.String{},
 						MarkdownDescription: `The name of the Neighbor Discovery Interface Policy object.`,
 					},
 					"annotations": schema.SetNestedAttribute{
@@ -4178,7 +4163,6 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						Validators:          []validator.String{},
 						MarkdownDescription: `The annotation of the Relation From Bridge Domain To Route Control Profile object.`,
 					},
 					"l3_outside_name": schema.StringAttribute{
@@ -4187,7 +4171,6 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						Validators:          []validator.String{},
 						MarkdownDescription: `The name of the L3 Outside object.`,
 					},
 					"route_control_profile_name": schema.StringAttribute{
@@ -4196,7 +4179,6 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						Validators:          []validator.String{},
 						MarkdownDescription: `The name of the Route Control Profile object.`,
 					},
 					"annotations": schema.SetNestedAttribute{
@@ -4283,7 +4265,6 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						Validators:          []validator.String{},
 						MarkdownDescription: `The annotation of the Relation From Bridge Domain To Dhcp Relay Policy object.`,
 					},
 					"dhcp_relay_policy_name": schema.StringAttribute{
@@ -4292,7 +4273,6 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						Validators:          []validator.String{},
 						MarkdownDescription: `The name of the DHCP Relay Policy object.`,
 					},
 					"annotations": schema.SetNestedAttribute{
@@ -4379,7 +4359,6 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						Validators:          []validator.String{},
 						MarkdownDescription: `The annotation of the Relation From Bridge Domain To End Point Retention Policy object.`,
 					},
 					"resolve_action": schema.StringAttribute{
@@ -4399,7 +4378,6 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						Validators:          []validator.String{},
 						MarkdownDescription: `The name of the Endpoint Retention Policy object.`,
 					},
 					"annotations": schema.SetNestedAttribute{
@@ -4486,7 +4464,6 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						Validators:          []validator.String{},
 						MarkdownDescription: `The annotation of the Relation To VRF object.`,
 					},
 					"vrf_name": schema.StringAttribute{
@@ -4495,7 +4472,6 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						Validators:          []validator.String{},
 						MarkdownDescription: `The name of the VRF object.`,
 					},
 					"annotations": schema.SetNestedAttribute{
@@ -4582,7 +4558,6 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						Validators:          []validator.String{},
 						MarkdownDescription: `The annotation of the Relation To IGMP Snooping Policy object.`,
 					},
 					"igmp_snooping_policy_name": schema.StringAttribute{
@@ -4591,7 +4566,6 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						Validators:          []validator.String{},
 						MarkdownDescription: `The name of the IGMP Snooping Policy object.`,
 					},
 					"annotations": schema.SetNestedAttribute{
@@ -4678,7 +4652,6 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						Validators:          []validator.String{},
 						MarkdownDescription: `The annotation of the Relation To MLD Snooping Policy object.`,
 					},
 					"mld_snooping_policy_name": schema.StringAttribute{
@@ -4687,7 +4660,6 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						Validators:          []validator.String{},
 						MarkdownDescription: `The name of the MLD Snooping Policy object.`,
 					},
 					"annotations": schema.SetNestedAttribute{
