@@ -61,6 +61,7 @@ data "aci_application_epg" "example_application_profile" {
 * `pc_tag` (pcTag) - (string) The classification tag used for policy enforcement and zoning.
 * `preferred_group_member` (prefGrMemb) - (string) Parameter used to determine whether the EPG is part of the preferred group. Members of this group are allowed to communicate without contracts.
 * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
+* `scope` (scope) - (string) The scope ID (L3-VNI) of the Application EPG object.
 * `admin_state` (shutdown) - (string) Withdraw AEPg Configuration from all Nodes in the Fabric.
 * `epg_useg_block_statement` - (map) A map of EPG uSeg Block Statement (ACI object [fvCrtrn](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvCrtrn/overview)). This attribute is supported in ACI versions: 1.1(1j) and later.
     * `annotation` (annotation) - (string) The annotation of the EPG uSeg Block Statement object.

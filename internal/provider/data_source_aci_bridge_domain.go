@@ -249,6 +249,18 @@ func (d *FvBDDataSource) Schema(ctx context.Context, req datasource.SchemaReques
 				Computed:            true,
 				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
 			},
+			"pc_tag": schema.StringAttribute{
+				Computed:            true,
+				MarkdownDescription: `The classification tag used for policy enforcement and zoning.`,
+			},
+			"scope": schema.StringAttribute{
+				Computed:            true,
+				MarkdownDescription: `The scope ID (L3-VNI) of the Bridge Domain object.`,
+			},
+			"segment": schema.StringAttribute{
+				Computed:            true,
+				MarkdownDescription: `The segment ID (L2-VNI) of the Bridge Domain object.`,
+			},
 			"bridge_domain_type": schema.StringAttribute{
 				Computed:            true,
 				MarkdownDescription: `The domain type of the Bridge Domain object.`,

@@ -4,8 +4,10 @@
 
 {{ $versionMismatch := .VersionMismatched}}
 default:
-  {{- $versionMismatchExists := false}}
-  {{- range .Properties}}{{- if keyExists $versionMismatch .RawVersion}}{{$versionMismatchExists = true}}{{- end}}{{- if and (not (keyExists $versionMismatch .RawVersion)) (not .IgnoreInTest) (not .ReadOnly)}}{{$overwritePropertyName := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
+{{- $versionMismatchExists := false}}
+{{- range .Properties}}
+  {{- if keyExists $versionMismatch .RawVersion}}{{$versionMismatchExists = true}}{{- end}}
+  {{- if and (not (keyExists $versionMismatch .RawVersion)) (not .IgnoreInTest) (not .ReadOnly)}}{{$overwritePropertyName := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
     {{- if .DefaultValue}}
       {{- if eq .ValueType "bitmask"}}
         {{- if lt 0 (len (overwritePropertyValue .PkgName $overwritePropertyName .DefaultValue "default" 0 $.Definitions))}}
@@ -31,57 +33,59 @@ default:
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName "" "default" 0 $.Definitions}}"
       {{- end}}
     {{- end}}
-  {{- end}}{{- end}}
-     {{- if $versionMismatchExists}}
-      {{- $properties := .Properties }}
+  {{- end}}
+{{- end}}
+{{- if $versionMismatchExists}}{{- $properties := .Properties }}
   version_mismatch:
-      {{- range $versionMismatchNumber, $propertyNames := $versionMismatch }}
-        {{- $printedVersionMismatchNumberAll := false }}
-        {{- range $propertyNames }}
-          {{- $propertyInMismatch := .}}
-          {{- range $properties}}
-            {{- if eq .PropertyName $propertyInMismatch}}
-              {{- if not $printedVersionMismatchNumberAll }}
-              {{- $printedVersionMismatchNumberAll = true }}
+  {{- range $versionMismatchNumber, $propertyNames := $versionMismatch }}{{- $printedVersionMismatchNumberAll := false }}
+    {{- range $propertyNames }}{{- $propertyInMismatch := .}}
+      {{- range $properties}}
+        {{- if and (not .IgnoreInTest) (not .ReadOnly)}}
+          {{- if eq .PropertyName $propertyInMismatch}}
+            {{- if not $printedVersionMismatchNumberAll }}{{- $printedVersionMismatchNumberAll = true }}
     {{ $versionMismatchNumber }}:
-              {{- end }}
+            {{- end }}
         {{- $overwritePropertyName := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
-        {{- if .DefaultValue}}
-      {{- if eq .ValueType "bitmask"}}
-        {{- if lt 0 (len (overwritePropertyValue .PkgName $overwritePropertyName .DefaultValue "default" 0 $.Definitions))}}
+            {{- if .DefaultValue}}
+              {{- if eq .ValueType "bitmask"}}
+                {{- if lt 0 (len (overwritePropertyValue .PkgName $overwritePropertyName .DefaultValue "default" 0 $.Definitions))}}
       {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: {{range $index, $value := (overwritePropertyValue .PkgName $overwritePropertyName .DefaultValue "default" 0 $.Definitions)}}
         - "{{ $value}}"
-              {{- end}}
-            {{- else}}
+                  {{- end}}
+                {{- else}}
       {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: []
-            {{- end}}
-          {{- else}}
+                {{- end}}
+              {{- else}}
       {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName .DefaultValue "default" 0 $.Definitions}}"
-          {{- end}}
-        {{- else if not .IsNaming}}
-          {{- if eq .ValueType "bitmask"}}
-            {{- if lt 0 (len (overwritePropertyValue .PkgName $overwritePropertyName "" "default" 0 $.Definitions))}}
+              {{- end}}
+            {{- else if not .IsNaming}}
+              {{- if eq .ValueType "bitmask"}}
+                {{- if lt 0 (len (overwritePropertyValue .PkgName $overwritePropertyName "" "default" 0 $.Definitions))}}
       {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: {{range $index, $value := (overwritePropertyValue .PkgName $overwritePropertyName "" "default" 0 $.Definitions)}}
         - "{{ $value}}"
-              {{- end}}
-            {{- else}}
+                  {{- end}}
+                {{- else}}
       {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: []
-            {{- end}}
-          {{- else}}
+                {{- end}}
+              {{- else}}
       {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName "" "default" 0 $.Definitions}}"
+              {{- end}}
+            {{- end}}
           {{- end}}
         {{- end}}
-      {{- end}}{{- end}}
       {{- end}}
-  {{- end}}
-  {{- end}}
+    {{- end}}
+  {{- end}}  
+{{- end}}
 {{ if .HasNaming }}
 datasource_non_existing:
-  {{- range .Properties}}{{- if and (not (keyExists $versionMismatch .RawVersion)) (not .IgnoreInTest) (not .ReadOnly)}}{{$testValue := createNonExistingValue .SnakeCaseName}}{{$overwritePropertyName := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
-    {{- if .IsNaming }}
+  {{- range .Properties}}
+    {{- if and (not (keyExists $versionMismatch .RawVersion)) (not .IgnoreInTest) (not .ReadOnly)}}{{$testValue := createNonExistingValue .SnakeCaseName}}{{$overwritePropertyName := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
+      {{- if .IsNaming }}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName $testValue "datasource_non_existing" 0 $.Definitions}}"
+      {{- end}}
     {{- end}}
-  {{- end}}{{- end}}
+  {{- end}}
 
 datasource_required:
   {{- range .Properties}}{{$testValue := createTestValue .SnakeCaseName}}{{$overwritePropertyName := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
@@ -101,7 +105,7 @@ resource_required:
 custom_type:
     {{- range .Properties}}{{$testValue := createTestValue .SnakeCaseName}}{{$overwritePropertyName := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
       {{- if .HasCustomType}}
-  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: {{$validValuesMap := .ValidValuesMap}}{{range $key, $value := $validValuesMap}}{{if or (ne $value "unspecified") (eq (len $validValuesMap) 1)}}"{{$key}}"{{break}}{{end}}{{end}}
+  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: {{$validValuesMap := .ValidValuesMap}}{{range $key, $value := $validValuesMap}}{{- if or (ne $value "unspecified") (eq (len $validValuesMap) 1)}}"{{$key}}"{{break}}{{end}}{{end}}
       {{- else if or .IsNaming (or .IsRequired (isRequiredInTestValue .PkgName $overwritePropertyName $.Definitions "resource_required"))}}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName $testValue "resource_required" 0 $.Definitions}}"
       {{- end}}
@@ -111,19 +115,23 @@ custom_type:
 {{- if .HasReadOnlyProperties}}
 
 read_only:
-  {{- range .Properties}}{{- if .ReadOnly}}
+  {{- range .Properties}}
+    {{- if .ReadOnly}}
   - "{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}"
-  {{- end}}{{- end}}
+    {{- end}}
+  {{- end}}
 {{- end}}
 
 all:
-  {{- $versionMismatchExists = false}}
-  {{- range .Properties}}{{- if keyExists $versionMismatch .RawVersion}}{{$versionMismatchExists = true}}{{- end}}{{- if and (not (keyExists $versionMismatch .RawVersion)) (not .IgnoreInTest) (not .ReadOnly)}}{{$overwritePropertyName := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
-    {{- if overwriteProperty .PkgName .SnakeCaseName $.Definitions | eq "annotation"}}
+{{- $versionMismatchExists = false}}
+{{- range .Properties}}
+  {{- if keyExists $versionMismatch .RawVersion}}{{$versionMismatchExists = true}}{{- end}}
+    {{- if and (not (keyExists $versionMismatch .RawVersion)) (not .IgnoreInTest) (not .ReadOnly)}}{{$overwritePropertyName := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
+      {{- if overwriteProperty .PkgName .SnakeCaseName $.Definitions | eq "annotation"}}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "annotation"
-    {{- else if .DefaultValue}}{{$length := len .ValidValues}}
-      {{- if eq .ValueType "bitmask"}}
-        {{- if lt 0 (len (overwritePropertyValue .PkgName $overwritePropertyName .DefaultValue "all" 0 $.Definitions))}}
+      {{- else if .DefaultValue}}{{$length := len .ValidValues}}
+        {{- if eq .ValueType "bitmask"}}
+          {{- if lt 0 (len (overwritePropertyValue .PkgName $overwritePropertyName .DefaultValue "all" 0 $.Definitions))}}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: {{range $index, $value := (overwritePropertyValue .PkgName $overwritePropertyName .DefaultValue "all" 0 $.Definitions)}}
     - "{{ $value}}"
           {{- end}}
@@ -148,62 +156,63 @@ all:
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName $overwritePropertyName "all" 0 $.Definitions}}"
       {{- end}}
     {{- end}}
-  {{- end}}{{- end}}
-   {{- if $versionMismatchExists}}
-      {{- $properties := .Properties }}
+  {{- end}}
+{{- end}}
+{{- if $versionMismatchExists}}{{- $properties := .Properties }}
   version_mismatch:
-      {{- range $versionMismatchNumber, $propertyNames := $versionMismatch }}
-        {{- $printedVersionMismatchNumberAll := false }}
-        {{- range $propertyNames }}
-          {{- $propertyInMismatch := .}}
-          {{- range $properties}}
-            {{- if eq .PropertyName $propertyInMismatch}}
-              {{- if not $printedVersionMismatchNumberAll }}
-              {{- $printedVersionMismatchNumberAll = true }}
+  {{- range $versionMismatchNumber, $propertyNames := $versionMismatch }}{{- $printedVersionMismatchNumberAll := false }}
+    {{- range $propertyNames }}{{- $propertyInMismatch := .}}
+      {{- range $properties}}
+        {{- if and (not .IgnoreInTest) (not .ReadOnly)}}
+          {{- if eq .PropertyName $propertyInMismatch}}
+            {{- if not $printedVersionMismatchNumberAll }}{{- $printedVersionMismatchNumberAll = true }}
     {{ $versionMismatchNumber }}:
-              {{- end }}
-        {{- $overwritePropertyName := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
-       {{- if .DefaultValue}}{{$length := len .ValidValues}}
-      {{- if eq .ValueType "bitmask"}}
-        {{- if lt 0 (len (overwritePropertyValue .PkgName $overwritePropertyName .DefaultValue "all" 0 $.Definitions))}}
+            {{- end }}
+          {{- $overwritePropertyName := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
+            {{- if .DefaultValue}}{{$length := len .ValidValues}}
+              {{- if eq .ValueType "bitmask"}}
+                {{- if lt 0 (len (overwritePropertyValue .PkgName $overwritePropertyName .DefaultValue "all" 0 $.Definitions))}}
       {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: {{range $index, $value := (overwritePropertyValue .PkgName $overwritePropertyName .DefaultValue "all" 0 $.Definitions)}}
           - "{{ $value}}"
-                {{- end}}
-              {{- else}}
+                  {{- end}}
+                {{- else}}
       {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: []
-              {{- end}}
-            {{- else if eq $length 0}}
+                {{- end}}
+              {{- else if eq $length 0}}
       {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName .DefaultValue "all" 0 $.Definitions}}"
-            {{- else }}{{$testValue := index .ValidValues 0 }}
+              {{- else }}{{$testValue := index .ValidValues 0 }}
       {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName $testValue "all" 0 $.Definitions}}"
-            {{- end}}
-          {{- else if not .IsNaming}}
-            {{- if eq .ValueType "bitmask"}}
-              {{- if lt 0 (len (overwritePropertyValue .PkgName $overwritePropertyName $overwritePropertyName "all" 0 $.Definitions))}}
+              {{- end}}
+            {{- else if not .IsNaming}}
+              {{- if eq .ValueType "bitmask"}}
+                {{- if lt 0 (len (overwritePropertyValue .PkgName $overwritePropertyName $overwritePropertyName "all" 0 $.Definitions))}}
       {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: {{range $index, $value := (overwritePropertyValue .PkgName $overwritePropertyName $overwritePropertyName "all" 0 $.Definitions)}}
           - "{{ $value}}"
+                  {{- end}}
+                {{- else}}
+      {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: []
                 {{- end}}
               {{- else}}
-      {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: []
-              {{- end}}
-            {{- else}}
       {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName $overwritePropertyName "all" 0 $.Definitions}}"
+              {{- end}}
+            {{- end}}
+          {{- end}}
+        {{- end}}
       {{- end}}
     {{- end}}
-      {{- end}}
-    {{- end}}
-   {{- end}}
   {{- end}}
-  {{- end}}
+{{- end}}
 {{ if .Children}}
 children:
   {{- range $key, $value := .Children}}
     {{- $newCtx := addToTemplateProperties . "Indent" "" -}}
     {{- template "nestedChildren" $newCtx }}
-  {{- end}}{{- end}}
+  {{- end}}
+{{- end}}
 {{- if and .ContainedBy (not .MultiParentFormats)}}
 parents:
-    {{- $index := 0}}{{- range $key := .DocumentationExamples}}{{$parentDependency := getParentTestDependencies $.PkgName $index $.Definitions}}{{$index = add $index 1}}
+    {{- $index := 0}}
+    {{- range $key := .DocumentationExamples}}{{$parentDependency := getParentTestDependencies $.PkgName $index $.Definitions}}{{$index = add $index 1}}
   - class_name: "{{ $key }}"
     parent_dependency: "{{$parentDependency.parent_dependency}}"
     parent_dn: "{{createParentDnValue $key "test" $.Definitions}}"
@@ -219,15 +228,15 @@ parents:
       {{- end }}
     test_type: {{$.TestType}}
     {{- end}}
-    {{- if .TestDependencies}}
+  {{- if .TestDependencies}}
 targets:
-        {{- range .TestDependencies }}
+    {{- range .TestDependencies }}
   - class_name: "{{ .ClassName }}"
     target_dn: "{{ .TargetDn }}"
     target_dn_ref: "{{ .TargetDnRef }}"
-          {{- if .TargetDnOverwriteDocs}}
+        {{- if .TargetDnOverwriteDocs}}
     target_dn_overwrite_docs: "{{ .TargetDnOverwriteDocs }}"
-          {{- end}}
+        {{- end}}
     parent_dependency: "{{ .ParentDependency}}"
     parent_dependency_dn_ref: "{{.ParentDependencyDnRef}}"
     target_resource_name: "{{ .TargetResourceName }}"
@@ -235,34 +244,34 @@ targets:
     parent_dn_key: "{{ .ParentDnKey }}"
     static: {{ .Static }}
     properties:
-            {{- range $key, $value := .Properties}}
+        {{- range $key, $value := .Properties}}
         {{ $key }}: "{{ $value }}"
-            {{- end }}
         {{- end }}
+      {{- end }}
     {{- end }}
-    {{- if .ChildTestDependencies}}
+  {{- if .ChildTestDependencies}}
 child_targets:
-        {{- range .ChildTestDependencies }}
+    {{- range .ChildTestDependencies }}
   - class_name: "{{ .ClassName }}"
     target_dn: "{{ .TargetDn }}"
-          {{- if .TargetDnOverwriteDocs}}
+      {{- if .TargetDnOverwriteDocs}}
     target_dn_overwrite_docs: "{{ .TargetDnOverwriteDocs }}"
-          {{- end}}
+      {{- end}}
     relation_resource_name: "{{ .RelationResourceName }}"
     static: {{ .Static }}
-    {{- if not .Static}}
+      {{- if not .Static}}
     target_dn_ref: "{{ .TargetDnRef }}"
     parent_dependency: "{{ .ParentDependency}}"
     parent_dependency_dn_ref: "{{.ParentDependencyDnRef}}"
     target_resource_name: "{{ .TargetResourceName }}"
     parent_dn_key: "{{ .ParentDnKey }}"
     properties:
-            {{- range $key, $value := .Properties}}
+        {{- range $key, $value := .Properties}}
         {{ $key }}: "{{ $value }}"
-            {{- end }}
         {{- end }}
+      {{- end }}
     {{- end }}
-    {{- end}}
+  {{- end}}
 {{- end}}
 
 {{- if .MultiParentFormats}}
@@ -283,9 +292,9 @@ parents:
     {{- else }}
     test_type: both
     {{- end }}
-{{- end }}
+  {{- end }}
 
-{{- if .TestDependencies}}
+  {{- if .TestDependencies}}
 targets:
     {{- range .TestDependencies }}
   - class_name: "{{ .ClassName }}"
@@ -297,37 +306,37 @@ targets:
     relation_resource_name: "{{ .RelationResourceName }}"
     parent_dn_key: "{{ .ParentDnKey }}"
     properties:
-            {{- range $key, $value := .Properties}}
+      {{- range $key, $value := .Properties}}
         {{ $key }}: "{{ $value }}"
-            {{- end }}
-        {{- end }}
-{{- end }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
 {{- end }}
 
 {{- if or (and (not .ContainedBy) (not .MultiParentFormats)) (and (.ContainedBy) (not .DocumentationExamples) (not .MultiParentFormats))  }}
-{{- if .ChildTestDependencies}}
+  {{- if .ChildTestDependencies}}
 child_targets:
-        {{- range .ChildTestDependencies }}
+    {{- range .ChildTestDependencies }}
   - class_name: "{{ .ClassName }}"
     target_dn: "{{ .TargetDn }}"
-          {{- if .TargetDnOverwriteDocs}}
+      {{- if .TargetDnOverwriteDocs}}
     target_dn_overwrite_docs: "{{ .TargetDnOverwriteDocs }}"
-          {{- end}}
+      {{- end}}
     relation_resource_name: "{{ .RelationResourceName }}"
     static: {{ .Static }}
-    {{- if not .Static}}
+      {{- if not .Static}}
     target_dn_ref: "{{ .TargetDnRef }}"
     parent_dependency: "{{ .ParentDependency}}"
     parent_dependency_dn_ref: "{{.ParentDependencyDnRef}}"
     target_resource_name: "{{ .TargetResourceName }}"
     parent_dn_key: "{{ .ParentDnKey }}"
     properties:
-            {{- range $key, $value := .Properties}}
+        {{- range $key, $value := .Properties}}
         {{ $key }}: "{{ $value }}"
-            {{- end }}
         {{- end }}
+      {{- end }}
     {{- end }}
-    {{- end}}
+  {{- end}}
 
 test_type: {{ .TestType }}
 {{- end }}

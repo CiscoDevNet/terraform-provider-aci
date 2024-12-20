@@ -2621,14 +2621,9 @@ var {{.ResourceClassName}}{{.ParentHierarchy}}Type = types.ObjectType{
                 stringplanmodifier.UseStateForUnknown(),
             },
 			{{- end}}
-            {{- if or .ValidValues $.TemplateProperties.HasReadOnlyProperties}}
+            {{- if or .ValidValues }}
             Validators: []validator.String{
-                {{- if .ValidValues}}
                 stringvalidator.OneOf({{- validatorString .ValidValues}}),
-                {{- end}}
-                {{- if or .IsNaming .IsRequired}}
-                MakeStringRequired(),
-                {{- end}}
             },
             {{- end}}
             MarkdownDescription: `{{.Comment}}`,

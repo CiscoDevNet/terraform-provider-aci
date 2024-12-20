@@ -68,6 +68,9 @@ type FvBDResourceModel struct {
 	NameAlias                             types.String `tfsdk:"name_alias"`
 	OwnerKey                              types.String `tfsdk:"owner_key"`
 	OwnerTag                              types.String `tfsdk:"owner_tag"`
+	PcTag                                 types.String `tfsdk:"pc_tag"`
+	Scope                                 types.String `tfsdk:"scope"`
+	Seg                                   types.String `tfsdk:"segment"`
 	Type                                  types.String `tfsdk:"bridge_domain_type"`
 	UnicastRoute                          types.String `tfsdk:"unicast_routing"`
 	UnkMacUcastAct                        types.String `tfsdk:"l2_unknown_unicast_flooding"`
@@ -145,6 +148,9 @@ func getEmptyFvBDResourceModel() *FvBDResourceModel {
 		NameAlias:                basetypes.NewStringNull(),
 		OwnerKey:                 basetypes.NewStringNull(),
 		OwnerTag:                 basetypes.NewStringNull(),
+		PcTag:                    basetypes.NewStringNull(),
+		Scope:                    basetypes.NewStringNull(),
+		Seg:                      basetypes.NewStringNull(),
 		Type:                     basetypes.NewStringNull(),
 		UnicastRoute:             basetypes.NewStringNull(),
 		UnkMacUcastAct:           basetypes.NewStringNull(),
@@ -1633,6 +1639,9 @@ func (r *FvBDResource) UpgradeState(ctx context.Context) map[int64]resource.Stat
 					NameAlias:                             priorStateData.NameAlias,
 					OwnerKey:                              basetypes.NewStringNull(),
 					OwnerTag:                              basetypes.NewStringNull(),
+					PcTag:                                 basetypes.NewStringNull(),
+					Scope:                                 basetypes.NewStringNull(),
+					Seg:                                   basetypes.NewStringNull(),
 					Type:                                  priorStateData.Type,
 					UnicastRoute:                          priorStateData.UnicastRoute,
 					UnkMacUcastAct:                        priorStateData.UnkMacUcastAct,
@@ -3300,6 +3309,18 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 				},
 				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
 			},
+			"pc_tag": schema.StringAttribute{
+				Computed:            true,
+				MarkdownDescription: `The classification tag used for policy enforcement and zoning.`,
+			},
+			"scope": schema.StringAttribute{
+				Computed:            true,
+				MarkdownDescription: `The scope ID (L3-VNI) of the Bridge Domain object.`,
+			},
+			"segment": schema.StringAttribute{
+				Computed:            true,
+				MarkdownDescription: `The segment ID (L2-VNI) of the Bridge Domain object.`,
+			},
 			"bridge_domain_type": schema.StringAttribute{
 				Optional: true,
 				Computed: true,
@@ -3447,16 +3468,24 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
 								"key": schema.StringAttribute{
-									Required: true,
+									Optional: true,
+									Computed: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.UseStateForUnknown(),
+									},
+									Validators: []validator.String{
+										MakeStringRequired(),
 									},
 									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 								},
 								"value": schema.StringAttribute{
-									Required: true,
+									Optional: true,
+									Computed: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.UseStateForUnknown(),
+									},
+									Validators: []validator.String{
+										MakeStringRequired(),
 									},
 									MarkdownDescription: `The value of the property.`,
 								},
@@ -3473,16 +3502,24 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
 								"key": schema.StringAttribute{
-									Required: true,
+									Optional: true,
+									Computed: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.UseStateForUnknown(),
+									},
+									Validators: []validator.String{
+										MakeStringRequired(),
 									},
 									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 								},
 								"value": schema.StringAttribute{
-									Required: true,
+									Optional: true,
+									Computed: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.UseStateForUnknown(),
+									},
+									Validators: []validator.String{
+										MakeStringRequired(),
 									},
 									MarkdownDescription: `The value of the property.`,
 								},
@@ -3506,6 +3543,7 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
+							Validators:          []validator.String{},
 							MarkdownDescription: `The annotation of the Rogue Coop Exception object.`,
 						},
 						"description": schema.StringAttribute{
@@ -3514,12 +3552,17 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
+							Validators:          []validator.String{},
 							MarkdownDescription: `The description of the Rogue Coop Exception object.`,
 						},
 						"mac": schema.StringAttribute{
-							Required: true,
+							Optional: true,
+							Computed: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+							},
+							Validators: []validator.String{
+								MakeStringRequired(),
 							},
 							MarkdownDescription: `The MAC address of the Rogue Coop Exception object.`,
 						},
@@ -3529,6 +3572,7 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
+							Validators:          []validator.String{},
 							MarkdownDescription: `The name of the Rogue Coop Exception object.`,
 						},
 						"name_alias": schema.StringAttribute{
@@ -3537,6 +3581,7 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
+							Validators:          []validator.String{},
 							MarkdownDescription: `The name alias of the Rogue Coop Exception object.`,
 						},
 						"annotations": schema.SetNestedAttribute{
@@ -3549,16 +3594,24 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
 									"key": schema.StringAttribute{
-										Required: true,
+										Optional: true,
+										Computed: true,
 										PlanModifiers: []planmodifier.String{
 											stringplanmodifier.UseStateForUnknown(),
+										},
+										Validators: []validator.String{
+											MakeStringRequired(),
 										},
 										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 									},
 									"value": schema.StringAttribute{
-										Required: true,
+										Optional: true,
+										Computed: true,
 										PlanModifiers: []planmodifier.String{
 											stringplanmodifier.UseStateForUnknown(),
+										},
+										Validators: []validator.String{
+											MakeStringRequired(),
 										},
 										MarkdownDescription: `The value of the property.`,
 									},
@@ -3575,16 +3628,24 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
 									"key": schema.StringAttribute{
-										Required: true,
+										Optional: true,
+										Computed: true,
 										PlanModifiers: []planmodifier.String{
 											stringplanmodifier.UseStateForUnknown(),
+										},
+										Validators: []validator.String{
+											MakeStringRequired(),
 										},
 										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 									},
 									"value": schema.StringAttribute{
-										Required: true,
+										Optional: true,
+										Computed: true,
 										PlanModifiers: []planmodifier.String{
 											stringplanmodifier.UseStateForUnknown(),
+										},
+										Validators: []validator.String{
+											MakeStringRequired(),
 										},
 										MarkdownDescription: `The value of the property.`,
 									},
@@ -3628,16 +3689,24 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
 								"key": schema.StringAttribute{
-									Required: true,
+									Optional: true,
+									Computed: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.UseStateForUnknown(),
+									},
+									Validators: []validator.String{
+										MakeStringRequired(),
 									},
 									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 								},
 								"value": schema.StringAttribute{
-									Required: true,
+									Optional: true,
+									Computed: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.UseStateForUnknown(),
+									},
+									Validators: []validator.String{
+										MakeStringRequired(),
 									},
 									MarkdownDescription: `The value of the property.`,
 								},
@@ -3654,16 +3723,24 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
 								"key": schema.StringAttribute{
-									Required: true,
+									Optional: true,
+									Computed: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.UseStateForUnknown(),
+									},
+									Validators: []validator.String{
+										MakeStringRequired(),
 									},
 									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 								},
 								"value": schema.StringAttribute{
-									Required: true,
+									Optional: true,
+									Computed: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.UseStateForUnknown(),
+									},
+									Validators: []validator.String{
+										MakeStringRequired(),
 									},
 									MarkdownDescription: `The value of the property.`,
 								},
@@ -3706,16 +3783,24 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
 								"key": schema.StringAttribute{
-									Required: true,
+									Optional: true,
+									Computed: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.UseStateForUnknown(),
+									},
+									Validators: []validator.String{
+										MakeStringRequired(),
 									},
 									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 								},
 								"value": schema.StringAttribute{
-									Required: true,
+									Optional: true,
+									Computed: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.UseStateForUnknown(),
+									},
+									Validators: []validator.String{
+										MakeStringRequired(),
 									},
 									MarkdownDescription: `The value of the property.`,
 								},
@@ -3732,16 +3817,24 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
 								"key": schema.StringAttribute{
-									Required: true,
+									Optional: true,
+									Computed: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.UseStateForUnknown(),
+									},
+									Validators: []validator.String{
+										MakeStringRequired(),
 									},
 									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 								},
 								"value": schema.StringAttribute{
-									Required: true,
+									Optional: true,
+									Computed: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.UseStateForUnknown(),
+									},
+									Validators: []validator.String{
+										MakeStringRequired(),
 									},
 									MarkdownDescription: `The value of the property.`,
 								},
@@ -3784,16 +3877,24 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
 								"key": schema.StringAttribute{
-									Required: true,
+									Optional: true,
+									Computed: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.UseStateForUnknown(),
+									},
+									Validators: []validator.String{
+										MakeStringRequired(),
 									},
 									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 								},
 								"value": schema.StringAttribute{
-									Required: true,
+									Optional: true,
+									Computed: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.UseStateForUnknown(),
+									},
+									Validators: []validator.String{
+										MakeStringRequired(),
 									},
 									MarkdownDescription: `The value of the property.`,
 								},
@@ -3810,16 +3911,24 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
 								"key": schema.StringAttribute{
-									Required: true,
+									Optional: true,
+									Computed: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.UseStateForUnknown(),
+									},
+									Validators: []validator.String{
+										MakeStringRequired(),
 									},
 									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 								},
 								"value": schema.StringAttribute{
-									Required: true,
+									Optional: true,
+									Computed: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.UseStateForUnknown(),
+									},
+									Validators: []validator.String{
+										MakeStringRequired(),
 									},
 									MarkdownDescription: `The value of the property.`,
 								},
@@ -3843,10 +3952,12 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
+							Validators:          []validator.String{},
 							MarkdownDescription: `The annotation of the Relation From Bridge Domain To NetFlow Monitor Policy object.`,
 						},
 						"filter_type": schema.StringAttribute{
-							Required: true,
+							Optional: true,
+							Computed: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
@@ -3857,9 +3968,13 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 							MarkdownDescription: `The filter type of the NetFlow Monitor Policy object.`,
 						},
 						"netflow_monitor_policy_name": schema.StringAttribute{
-							Required: true,
+							Optional: true,
+							Computed: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+							},
+							Validators: []validator.String{
+								MakeStringRequired(),
 							},
 							MarkdownDescription: `The name of the NetFlow Monitor Policy object.`,
 						},
@@ -3873,16 +3988,24 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
 									"key": schema.StringAttribute{
-										Required: true,
+										Optional: true,
+										Computed: true,
 										PlanModifiers: []planmodifier.String{
 											stringplanmodifier.UseStateForUnknown(),
+										},
+										Validators: []validator.String{
+											MakeStringRequired(),
 										},
 										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 									},
 									"value": schema.StringAttribute{
-										Required: true,
+										Optional: true,
+										Computed: true,
 										PlanModifiers: []planmodifier.String{
 											stringplanmodifier.UseStateForUnknown(),
+										},
+										Validators: []validator.String{
+											MakeStringRequired(),
 										},
 										MarkdownDescription: `The value of the property.`,
 									},
@@ -3899,16 +4022,24 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
 									"key": schema.StringAttribute{
-										Required: true,
+										Optional: true,
+										Computed: true,
 										PlanModifiers: []planmodifier.String{
 											stringplanmodifier.UseStateForUnknown(),
+										},
+										Validators: []validator.String{
+											MakeStringRequired(),
 										},
 										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 									},
 									"value": schema.StringAttribute{
-										Required: true,
+										Optional: true,
+										Computed: true,
 										PlanModifiers: []planmodifier.String{
 											stringplanmodifier.UseStateForUnknown(),
+										},
+										Validators: []validator.String{
+											MakeStringRequired(),
 										},
 										MarkdownDescription: `The value of the property.`,
 									},
@@ -3933,12 +4064,17 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
+							Validators:          []validator.String{},
 							MarkdownDescription: `The annotation of the Relation From Bridge Domain To L3 Outside object.`,
 						},
 						"l3_outside_name": schema.StringAttribute{
-							Required: true,
+							Optional: true,
+							Computed: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+							},
+							Validators: []validator.String{
+								MakeStringRequired(),
 							},
 							MarkdownDescription: `The name of the L3 Outside object.`,
 						},
@@ -3952,16 +4088,24 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
 									"key": schema.StringAttribute{
-										Required: true,
+										Optional: true,
+										Computed: true,
 										PlanModifiers: []planmodifier.String{
 											stringplanmodifier.UseStateForUnknown(),
+										},
+										Validators: []validator.String{
+											MakeStringRequired(),
 										},
 										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 									},
 									"value": schema.StringAttribute{
-										Required: true,
+										Optional: true,
+										Computed: true,
 										PlanModifiers: []planmodifier.String{
 											stringplanmodifier.UseStateForUnknown(),
+										},
+										Validators: []validator.String{
+											MakeStringRequired(),
 										},
 										MarkdownDescription: `The value of the property.`,
 									},
@@ -3978,16 +4122,24 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
 									"key": schema.StringAttribute{
-										Required: true,
+										Optional: true,
+										Computed: true,
 										PlanModifiers: []planmodifier.String{
 											stringplanmodifier.UseStateForUnknown(),
+										},
+										Validators: []validator.String{
+											MakeStringRequired(),
 										},
 										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 									},
 									"value": schema.StringAttribute{
-										Required: true,
+										Optional: true,
+										Computed: true,
 										PlanModifiers: []planmodifier.String{
 											stringplanmodifier.UseStateForUnknown(),
+										},
+										Validators: []validator.String{
+											MakeStringRequired(),
 										},
 										MarkdownDescription: `The value of the property.`,
 									},
@@ -4039,16 +4191,24 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
 								"key": schema.StringAttribute{
-									Required: true,
+									Optional: true,
+									Computed: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.UseStateForUnknown(),
+									},
+									Validators: []validator.String{
+										MakeStringRequired(),
 									},
 									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 								},
 								"value": schema.StringAttribute{
-									Required: true,
+									Optional: true,
+									Computed: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.UseStateForUnknown(),
+									},
+									Validators: []validator.String{
+										MakeStringRequired(),
 									},
 									MarkdownDescription: `The value of the property.`,
 								},
@@ -4065,16 +4225,24 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
 								"key": schema.StringAttribute{
-									Required: true,
+									Optional: true,
+									Computed: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.UseStateForUnknown(),
+									},
+									Validators: []validator.String{
+										MakeStringRequired(),
 									},
 									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 								},
 								"value": schema.StringAttribute{
-									Required: true,
+									Optional: true,
+									Computed: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.UseStateForUnknown(),
+									},
+									Validators: []validator.String{
+										MakeStringRequired(),
 									},
 									MarkdownDescription: `The value of the property.`,
 								},
@@ -4117,16 +4285,24 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
 								"key": schema.StringAttribute{
-									Required: true,
+									Optional: true,
+									Computed: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.UseStateForUnknown(),
+									},
+									Validators: []validator.String{
+										MakeStringRequired(),
 									},
 									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 								},
 								"value": schema.StringAttribute{
-									Required: true,
+									Optional: true,
+									Computed: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.UseStateForUnknown(),
+									},
+									Validators: []validator.String{
+										MakeStringRequired(),
 									},
 									MarkdownDescription: `The value of the property.`,
 								},
@@ -4143,16 +4319,24 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
 								"key": schema.StringAttribute{
-									Required: true,
+									Optional: true,
+									Computed: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.UseStateForUnknown(),
+									},
+									Validators: []validator.String{
+										MakeStringRequired(),
 									},
 									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 								},
 								"value": schema.StringAttribute{
-									Required: true,
+									Optional: true,
+									Computed: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.UseStateForUnknown(),
+									},
+									Validators: []validator.String{
+										MakeStringRequired(),
 									},
 									MarkdownDescription: `The value of the property.`,
 								},
@@ -4206,16 +4390,24 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
 								"key": schema.StringAttribute{
-									Required: true,
+									Optional: true,
+									Computed: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.UseStateForUnknown(),
+									},
+									Validators: []validator.String{
+										MakeStringRequired(),
 									},
 									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 								},
 								"value": schema.StringAttribute{
-									Required: true,
+									Optional: true,
+									Computed: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.UseStateForUnknown(),
+									},
+									Validators: []validator.String{
+										MakeStringRequired(),
 									},
 									MarkdownDescription: `The value of the property.`,
 								},
@@ -4232,16 +4424,24 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
 								"key": schema.StringAttribute{
-									Required: true,
+									Optional: true,
+									Computed: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.UseStateForUnknown(),
+									},
+									Validators: []validator.String{
+										MakeStringRequired(),
 									},
 									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 								},
 								"value": schema.StringAttribute{
-									Required: true,
+									Optional: true,
+									Computed: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.UseStateForUnknown(),
+									},
+									Validators: []validator.String{
+										MakeStringRequired(),
 									},
 									MarkdownDescription: `The value of the property.`,
 								},
@@ -4284,16 +4484,24 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
 								"key": schema.StringAttribute{
-									Required: true,
+									Optional: true,
+									Computed: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.UseStateForUnknown(),
+									},
+									Validators: []validator.String{
+										MakeStringRequired(),
 									},
 									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 								},
 								"value": schema.StringAttribute{
-									Required: true,
+									Optional: true,
+									Computed: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.UseStateForUnknown(),
+									},
+									Validators: []validator.String{
+										MakeStringRequired(),
 									},
 									MarkdownDescription: `The value of the property.`,
 								},
@@ -4310,16 +4518,24 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
 								"key": schema.StringAttribute{
-									Required: true,
+									Optional: true,
+									Computed: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.UseStateForUnknown(),
+									},
+									Validators: []validator.String{
+										MakeStringRequired(),
 									},
 									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 								},
 								"value": schema.StringAttribute{
-									Required: true,
+									Optional: true,
+									Computed: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.UseStateForUnknown(),
+									},
+									Validators: []validator.String{
+										MakeStringRequired(),
 									},
 									MarkdownDescription: `The value of the property.`,
 								},
@@ -4362,16 +4578,24 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
 								"key": schema.StringAttribute{
-									Required: true,
+									Optional: true,
+									Computed: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.UseStateForUnknown(),
+									},
+									Validators: []validator.String{
+										MakeStringRequired(),
 									},
 									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 								},
 								"value": schema.StringAttribute{
-									Required: true,
+									Optional: true,
+									Computed: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.UseStateForUnknown(),
+									},
+									Validators: []validator.String{
+										MakeStringRequired(),
 									},
 									MarkdownDescription: `The value of the property.`,
 								},
@@ -4388,16 +4612,24 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
 								"key": schema.StringAttribute{
-									Required: true,
+									Optional: true,
+									Computed: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.UseStateForUnknown(),
+									},
+									Validators: []validator.String{
+										MakeStringRequired(),
 									},
 									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 								},
 								"value": schema.StringAttribute{
-									Required: true,
+									Optional: true,
+									Computed: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.UseStateForUnknown(),
+									},
+									Validators: []validator.String{
+										MakeStringRequired(),
 									},
 									MarkdownDescription: `The value of the property.`,
 								},
@@ -4440,16 +4672,24 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
 								"key": schema.StringAttribute{
-									Required: true,
+									Optional: true,
+									Computed: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.UseStateForUnknown(),
+									},
+									Validators: []validator.String{
+										MakeStringRequired(),
 									},
 									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 								},
 								"value": schema.StringAttribute{
-									Required: true,
+									Optional: true,
+									Computed: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.UseStateForUnknown(),
+									},
+									Validators: []validator.String{
+										MakeStringRequired(),
 									},
 									MarkdownDescription: `The value of the property.`,
 								},
@@ -4466,16 +4706,24 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
 								"key": schema.StringAttribute{
-									Required: true,
+									Optional: true,
+									Computed: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.UseStateForUnknown(),
+									},
+									Validators: []validator.String{
+										MakeStringRequired(),
 									},
 									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 								},
 								"value": schema.StringAttribute{
-									Required: true,
+									Optional: true,
+									Computed: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.UseStateForUnknown(),
+									},
+									Validators: []validator.String{
+										MakeStringRequired(),
 									},
 									MarkdownDescription: `The value of the property.`,
 								},
@@ -4494,16 +4742,24 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"key": schema.StringAttribute{
-							Required: true,
+							Optional: true,
+							Computed: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+							},
+							Validators: []validator.String{
+								MakeStringRequired(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
 						"value": schema.StringAttribute{
-							Required: true,
+							Optional: true,
+							Computed: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+							},
+							Validators: []validator.String{
+								MakeStringRequired(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -4520,16 +4776,24 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"key": schema.StringAttribute{
-							Required: true,
+							Optional: true,
+							Computed: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+							},
+							Validators: []validator.String{
+								MakeStringRequired(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
 						"value": schema.StringAttribute{
-							Required: true,
+							Optional: true,
+							Computed: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+							},
+							Validators: []validator.String{
+								MakeStringRequired(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -4943,6 +5207,15 @@ func getAndSetFvBDAttributes(ctx context.Context, diags *diag.Diagnostics, clien
 				}
 				if attributeName == "ownerTag" {
 					readData.OwnerTag = basetypes.NewStringValue(attributeValue.(string))
+				}
+				if attributeName == "pcTag" {
+					readData.PcTag = basetypes.NewStringValue(attributeValue.(string))
+				}
+				if attributeName == "scope" {
+					readData.Scope = basetypes.NewStringValue(attributeValue.(string))
+				}
+				if attributeName == "seg" {
+					readData.Seg = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "type" {
 					readData.Type = basetypes.NewStringValue(attributeValue.(string))
