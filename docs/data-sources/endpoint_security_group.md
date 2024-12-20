@@ -56,6 +56,7 @@ data "aci_endpoint_security_group" "example_application_profile" {
 * `intra_esg_isolation` (pcEnfPref) - (string) Parameter used to determine whether communication between endpoints within the ESG is blocked.
 * `pc_tag` (pcTag) - (string) The classification tag used for policy enforcement and zoning.
 * `preferred_group_member` (prefGrMemb) - (string) Parameter used to determine whether the ESG is part of the preferred group. Members of this group are allowed to communicate without contracts.
+* `scope` (scope) - (string) The scope ID (L3-VNI) of the Endpoint Security Group object.
 * `admin_state` (shutdown) - (string) Withdraw the ESG configuration from all nodes in the fabric.
 * `relation_to_consumed_contracts` - (list) A list of Relation To Consumed Contracts (ACI object [fvRsCons](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsCons/overview)) pointing to Contract (ACI Object [vzBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzBrCP/overview)). This attribute is supported in ACI versions: 1.0(1e) and later.
     * `annotation` (annotation) - (string) The annotation of the Relation To Consumed Contract object.

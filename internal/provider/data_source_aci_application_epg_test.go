@@ -37,6 +37,7 @@ func TestAccDataSourceFvAEPgWithFvAp(t *testing.T) {
 						resource.TestCheckResourceAttr("data.aci_application_epg.test", "admin_state", "no"),
 						resource.TestCheckResourceAttr("data.aci_application_epg.test", "has_multicast_source", "no")),
 					resource.TestCheckResourceAttrSet("data.aci_application_epg.test", "pc_tag"),
+					resource.TestCheckResourceAttrSet("data.aci_application_epg.test", "scope"),
 				),
 			},
 			{
