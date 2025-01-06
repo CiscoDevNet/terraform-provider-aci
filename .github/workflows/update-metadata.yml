@@ -46,7 +46,7 @@ jobs:
         # Commit changes to update_metadata branch
       - name: Set git config
         if: steps.code.outputs.diff == '1'
-        run: git config user.email "dcn-ecosystem@cisco.com" && git config user.name "dcn-ecosystem"
+        run: git config user.email "193842815+dcne-automation@users.noreply.github.com" && git config user.name "dcne-automation"
       - name: Commit
         if: steps.code.outputs.diff == '1'
         run: git add -u && git status && git commit -m "[minor_change] Regenerated provider code with latest ACI metadata"
@@ -62,4 +62,4 @@ jobs:
         id: pr
         continue-on-error: true # PR already exists so it will get updated with the latest changes instead
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.DCNE_AUTO_TOKEN }}
