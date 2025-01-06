@@ -62,7 +62,7 @@ jobs:
 
       # Commit changes to release_pr branch
       - name: Set git config
-        run: git config user.email "dcn-ecosystem@cisco.com" && git config user.name "dcn-ecosystem"
+        run: git config user.email "193842815+dcne-automation@users.noreply.github.com" && git config user.name "dcne-automation"
       - name: Commit
         run: git add -u && git status && git commit -m "[ignore] Update Changelog and annotation_unsupported.go for new release (${{ steps.vars.outputs.version }})"
       - name: Branch & Push
@@ -73,8 +73,8 @@ jobs:
         id: pr
         continue-on-error: true
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.DCNE_AUTO_TOKEN }}
       - run: gh pr edit release_pr --title "Pre-Release PR (${{ steps.vars.outputs.version }})"
         if: steps.pr.outcome == 'failure'
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.DCNE_AUTO_TOKEN }}
