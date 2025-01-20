@@ -85,7 +85,7 @@ children:
       
   relation_to_application_epg_monitoring_policy:
     - annotation: "annotation_1"
-      monitoring_policy_name: "monitoring_policy_name_1"
+      monitoring_policy_name: "default"
       deletable_child: true
       children:
         annotations:
@@ -104,7 +104,7 @@ children:
       
   relation_to_bridge_domain:
     - annotation: "annotation_1"
-      bridge_domain_name: "bridge_domain_name_1"
+      bridge_domain_name: "default"
       deletable_child: false
       
       children:
@@ -202,7 +202,7 @@ children:
       
   relation_to_custom_qos_policy:
     - annotation: "annotation_1"
-      custom_qos_policy_name: "custom_qos_policy_name_1"
+      custom_qos_policy_name: "default"
       deletable_child: false
       
       children:
@@ -305,7 +305,7 @@ children:
       
   relation_to_data_plane_policing_policy:
     - annotation: "annotation_1"
-      data_plane_policing_policy_name: "data_plane_policing_policy_name_1"
+      data_plane_policing_policy_name: "default"
       deletable_child: true
       children:
         annotations:
@@ -611,7 +611,7 @@ children:
       
   relation_to_trust_control_policy:
     - annotation: "annotation_1"
-      trust_control_policy_name: "trust_control_policy_name_1"
+      trust_control_policy_name: "default"
       deletable_child: true
       children:
         annotations:
@@ -649,6 +649,50 @@ parents:
     class_in_parent: false
     test_type: apic
 child_targets:
+  - class_name: "vzBrCP"
+    target_dn: "uni/tn-test_tenant/brc-contract_name_0"
+    relation_resource_name: "contract"
+    static: false
+    target_dn_ref: "aci_contract.test_contract_0.id"
+    parent_dependency: "fvTenant"
+    parent_dependency_dn_ref: "aci_tenant.test.id"
+    target_resource_name: "contract"
+    parent_dn_key: "tenant_dn"
+    properties:
+        name: "contract_name_0"
+  - class_name: "vzBrCP"
+    target_dn: "uni/tn-test_tenant/brc-contract_name_1"
+    relation_resource_name: "contract"
+    static: false
+    target_dn_ref: "aci_contract.test_contract_1.id"
+    parent_dependency: "fvTenant"
+    parent_dependency_dn_ref: "aci_tenant.test.id"
+    target_resource_name: "contract"
+    parent_dn_key: "tenant_dn"
+    properties:
+        name: "contract_name_1"
+  - class_name: "vzCPIf"
+    target_dn: "uni/tn-test_tenant/cif-imported_contract_name_0"
+    relation_resource_name: "imported_contract"
+    static: false
+    target_dn_ref: "aci_imported_contract.test_imported_contract_0.id"
+    parent_dependency: "fvTenant"
+    parent_dependency_dn_ref: "aci_tenant.test.id"
+    target_resource_name: "imported_contract"
+    parent_dn_key: "tenant_dn"
+    properties:
+        name: "imported_contract_name_0"
+  - class_name: "vzCPIf"
+    target_dn: "uni/tn-test_tenant/cif-imported_contract_name_1"
+    relation_resource_name: "imported_contract"
+    static: false
+    target_dn_ref: "aci_imported_contract.test_imported_contract_1.id"
+    parent_dependency: "fvTenant"
+    parent_dependency_dn_ref: "aci_tenant.test.id"
+    target_resource_name: "imported_contract"
+    parent_dn_key: "tenant_dn"
+    properties:
+        name: "imported_contract_name_1"
   - class_name: "vmmDomP"
     target_dn: "uni/vmmp-VMware/dom-domain_1"
     relation_resource_name: "domain"
@@ -681,6 +725,28 @@ child_targets:
     target_dn: "topology/pod-1/paths-101/pathep-[eth1/2]"
     relation_resource_name: "static_path"
     static: true
+  - class_name: "vzTaboo"
+    target_dn: "uni/tn-test_tenant/taboo-taboo_contract_name_0"
+    relation_resource_name: "taboo_contract"
+    static: false
+    target_dn_ref: "aci_taboo_contract.test_taboo_contract_0.id"
+    parent_dependency: "fvTenant"
+    parent_dependency_dn_ref: "aci_tenant.test.id"
+    target_resource_name: "taboo_contract"
+    parent_dn_key: "tenant_dn"
+    properties:
+        name: "taboo_contract_name_0"
+  - class_name: "vzTaboo"
+    target_dn: "uni/tn-test_tenant/taboo-taboo_contract_name_1"
+    relation_resource_name: "taboo_contract"
+    static: false
+    target_dn_ref: "aci_taboo_contract.test_taboo_contract_1.id"
+    parent_dependency: "fvTenant"
+    parent_dependency_dn_ref: "aci_tenant.test.id"
+    target_resource_name: "taboo_contract"
+    parent_dn_key: "tenant_dn"
+    properties:
+        name: "taboo_contract_name_1"
   - class_name: "fvAEPg"
     target_dn: "uni/tn-test_tenant/ap-test_ap/epg-epg_2"
     relation_resource_name: "contract_master"

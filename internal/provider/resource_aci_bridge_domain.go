@@ -1395,6 +1395,13 @@ type FvRsBDToNetflowMonitorPolFvBDResourceModelV1 struct {
 	TnNetflowMonitorPolName types.String `tfsdk:"tn_netflow_monitor_pol_name"`
 }
 
+func getEmptyFvRsBDToNetflowMonitorPolFvBDResourceModelV1() FvRsBDToNetflowMonitorPolFvBDResourceModelV1 {
+	return FvRsBDToNetflowMonitorPolFvBDResourceModelV1{
+		FltType:                 basetypes.NewStringNull(),
+		TnNetflowMonitorPolName: basetypes.NewStringNull(),
+	}
+}
+
 func (r *FvBDResource) UpgradeState(ctx context.Context) map[int64]resource.StateUpgrader {
 	return map[int64]resource.StateUpgrader{
 		1: {
@@ -2012,6 +2019,7 @@ func setFvBDLegacyAttributes(ctx context.Context, diags *diag.Diagnostics, data,
 	data.DeprecatedFvRsABDPolMonPol = basetypes.NewStringNull()
 	data.DeprecatedFvRsBDToFhs = basetypes.NewStringNull()
 	data.DeprecatedFvRsBDToNdP = basetypes.NewStringNull()
+	DeprecatedFvRsBDToNetflowMonitorPolFvBDList := make([]FvRsBDToNetflowMonitorPolFvBDResourceModelV1, 0)
 	DeprecatedFvRsBDToOutFvBDList := make([]string, 0)
 	data.DeprecatedFvRsBDToProfile = basetypes.NewStringNull()
 	data.DeprecatedFvRsBDToRelayP = basetypes.NewStringNull()
@@ -2046,6 +2054,18 @@ func setFvBDLegacyAttributes(ctx context.Context, diags *diag.Diagnostics, data,
 							data.DeprecatedFvRsBDToNdP = basetypes.NewStringValue(childAttributeValue.(string))
 						}
 					}
+				}
+				if childClassName == "fvRsBDToNetflowMonitorPol" {
+					DeprecatedFvRsBDToNetflowMonitorPolFvBD := getEmptyFvRsBDToNetflowMonitorPolFvBDResourceModelV1()
+					for childAttributeName, childAttributeValue := range childAttributes {
+						if childAttributeName == "fltType" {
+							DeprecatedFvRsBDToNetflowMonitorPolFvBD.FltType = basetypes.NewStringValue(childAttributeValue.(string))
+						}
+						if childAttributeName == "tnNetflowMonitorPolName" {
+							DeprecatedFvRsBDToNetflowMonitorPolFvBD.TnNetflowMonitorPolName = basetypes.NewStringValue(childAttributeValue.(string))
+						}
+					}
+					DeprecatedFvRsBDToNetflowMonitorPolFvBDList = append(DeprecatedFvRsBDToNetflowMonitorPolFvBDList, DeprecatedFvRsBDToNetflowMonitorPolFvBD)
 				}
 				if childClassName == "fvRsBDToOut" {
 					for childAttributeName, childAttributeValue := range childAttributes {
@@ -2098,7 +2118,8 @@ func setFvBDLegacyAttributes(ctx context.Context, diags *diag.Diagnostics, data,
 				}
 			}
 		}
-		data.DeprecatedFvRsBDToNetflowMonitorPol = types.SetNull(deprecatedFvRsBDToNetflowMonitorPolType)
+		fvRsBDToNetflowMonitorPolSet, _ := types.SetValueFrom(ctx, data.DeprecatedFvRsBDToNetflowMonitorPol.ElementType(ctx), DeprecatedFvRsBDToNetflowMonitorPolFvBDList)
+		data.DeprecatedFvRsBDToNetflowMonitorPol = fvRsBDToNetflowMonitorPolSet
 		fvRsBDToOutSet, _ := types.SetValueFrom(ctx, data.DeprecatedFvRsBDToOut.ElementType(ctx), DeprecatedFvRsBDToOutFvBDList)
 		data.DeprecatedFvRsBDToOut = fvRsBDToOutSet
 	}
@@ -2723,27 +2744,33 @@ func (r *FvBDResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRe
 			planData.DeprecatedFvRsCtx = stateData.DeprecatedFvRsCtx
 		}
 
-		planData.DeprecatedFvRsBDToNetflowMonitorPol = types.SetNull(deprecatedFvRsBDToNetflowMonitorPolType)
-		if !configData.DeprecatedFvRsBDToNetflowMonitorPol.IsNull() {
+		if !configData.FvRsBDToNetflowMonitorPol.IsNull() {
+			FvRsBDToNetflowMonitorPolList := make([]FvRsBDToNetflowMonitorPolFvBDResourceModelV1, 0)
+			var attributeValues []FvRsBDToNetflowMonitorPolFvBDResourceModel
+			planData.FvRsBDToNetflowMonitorPol.ElementsAs(ctx, &attributeValues, false)
+			if len(attributeValues) > 0 {
+				for _, attributeValue := range attributeValues {
+					FvRsBDToNetflowMonitorPol := FvRsBDToNetflowMonitorPolFvBDResourceModelV1{
+						FltType:                 attributeValue.FltType,
+						TnNetflowMonitorPolName: attributeValue.TnNetflowMonitorPolName,
+					}
+					FvRsBDToNetflowMonitorPolList = append(FvRsBDToNetflowMonitorPolList, FvRsBDToNetflowMonitorPol)
+				}
+
+				DeprecatedFvRsBDToNetflowMonitorPolSet, _ := types.SetValueFrom(ctx, deprecatedFvRsBDToNetflowMonitorPolType, FvRsBDToNetflowMonitorPolList)
+				planData.DeprecatedFvRsBDToNetflowMonitorPol = DeprecatedFvRsBDToNetflowMonitorPolSet
+			}
+		} else if !configData.DeprecatedFvRsBDToNetflowMonitorPol.IsNull() {
 			FvRsBDToNetflowMonitorPolList := make([]FvRsBDToNetflowMonitorPolFvBDResourceModel, 0)
 			var attributeValues []FvRsBDToNetflowMonitorPolFvBDResourceModelV1
-			var newAttributeValues []FvRsBDToNetflowMonitorPolFvBDResourceModel
-			configData.DeprecatedFvRsBDToNetflowMonitorPol.ElementsAs(ctx, &attributeValues, false)
-			annotationValue := planData.Annotation
-			if stateData != nil {
-				stateData.FvRsBDToNetflowMonitorPol.ElementsAs(ctx, &newAttributeValues, false)
-				for _, newAttributeValue := range newAttributeValues {
-					annotationValue = newAttributeValue.Annotation
-				}
-			}
+			planData.DeprecatedFvRsBDToNetflowMonitorPol.ElementsAs(ctx, &attributeValues, false)
 			for _, attributeValue := range attributeValues {
 				tnNetflowMonitorPolNameValue := basetypes.NewStringUnknown()
 				if !attributeValue.TnNetflowMonitorPolName.IsUnknown() {
 					tnNetflowMonitorPolNameValue = basetypes.NewStringValue(GetMOName(attributeValue.TnNetflowMonitorPolName.ValueString()))
 				}
-
 				FvRsBDToNetflowMonitorPol := FvRsBDToNetflowMonitorPolFvBDResourceModel{
-					Annotation:              annotationValue,
+					Annotation:              planData.Annotation,
 					FltType:                 attributeValue.FltType,
 					TnNetflowMonitorPolName: tnNetflowMonitorPolNameValue,
 				}
@@ -2753,9 +2780,10 @@ func (r *FvBDResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRe
 				FvRsBDToNetflowMonitorPol.TagTag = tagTagFvRsBDToNetflowMonitorPolFvBDValue
 				FvRsBDToNetflowMonitorPolList = append(FvRsBDToNetflowMonitorPolList, FvRsBDToNetflowMonitorPol)
 			}
-
 			FvRsBDToNetflowMonitorPolSet, _ := types.SetValueFrom(ctx, FvRsBDToNetflowMonitorPolFvBDType, FvRsBDToNetflowMonitorPolList)
 			planData.FvRsBDToNetflowMonitorPol = FvRsBDToNetflowMonitorPolSet
+		} else if stateData != nil { // used to replace use state for unknown
+			planData.DeprecatedFvRsBDToNetflowMonitorPol = stateData.DeprecatedFvRsBDToNetflowMonitorPol
 		}
 
 		resp.Diagnostics.Append(resp.Plan.Set(ctx, &planData)...)
@@ -4828,6 +4856,7 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 								stringvalidator.ConflictsWith(path.Expressions{
 									path.MatchRoot("relation_to_netflow_monitor_policies"),
 								}...),
+								MakeStringRequired(),
 							},
 						},
 						"tn_netflow_monitor_pol_name": schema.StringAttribute{
@@ -4838,6 +4867,7 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 								stringvalidator.ConflictsWith(path.Expressions{
 									path.MatchRoot("relation_to_netflow_monitor_policies"),
 								}...),
+								MakeStringRequired(),
 							},
 						},
 					},

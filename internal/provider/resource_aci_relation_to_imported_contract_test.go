@@ -382,7 +382,18 @@ func TestAccResourceFvRsConsIfWithFvESg(t *testing.T) {
 	})
 }
 
-const testConfigFvRsConsIfMinDependencyWithFvAEPgAllowExisting = testConfigFvAEPgMinDependencyWithFvAp + `
+const testDependencyConfigFvRsConsIf = `
+resource "aci_imported_contract" "test_imported_contract_0" {
+  tenant_dn = aci_tenant.test.id
+  name = "imported_contract_name_0"
+}
+resource "aci_imported_contract" "test_imported_contract_1" {
+  tenant_dn = aci_tenant.test.id
+  name = "imported_contract_name_1"
+}
+`
+
+const testConfigFvRsConsIfMinDependencyWithFvAEPgAllowExisting = testDependencyConfigFvRsConsIf + testConfigFvAEPgMinDependencyWithFvAp + `
 resource "aci_relation_to_imported_contract" "allow_test" {
   parent_dn = aci_application_epg.test.id
   imported_contract_name = "test_tn_vz_cp_if_name"
@@ -394,14 +405,14 @@ resource "aci_relation_to_imported_contract" "allow_test_2" {
 }
 `
 
-const testConfigFvRsConsIfMinDependencyWithFvAEPg = testConfigFvAEPgMinDependencyWithFvAp + `
+const testConfigFvRsConsIfMinDependencyWithFvAEPg = testDependencyConfigFvRsConsIf + testConfigFvAEPgMinDependencyWithFvAp + `
 resource "aci_relation_to_imported_contract" "test" {
   parent_dn = aci_application_epg.test.id
   imported_contract_name = "test_tn_vz_cp_if_name"
 }
 `
 
-const testConfigFvRsConsIfAllDependencyWithFvAEPg = testConfigFvAEPgMinDependencyWithFvAp + `
+const testConfigFvRsConsIfAllDependencyWithFvAEPg = testDependencyConfigFvRsConsIf + testConfigFvAEPgMinDependencyWithFvAp + `
 resource "aci_relation_to_imported_contract" "test" {
   parent_dn = aci_application_epg.test.id
   imported_contract_name = "test_tn_vz_cp_if_name"
@@ -410,7 +421,7 @@ resource "aci_relation_to_imported_contract" "test" {
 }
 `
 
-const testConfigFvRsConsIfResetDependencyWithFvAEPg = testConfigFvAEPgMinDependencyWithFvAp + `
+const testConfigFvRsConsIfResetDependencyWithFvAEPg = testDependencyConfigFvRsConsIf + testConfigFvAEPgMinDependencyWithFvAp + `
 resource "aci_relation_to_imported_contract" "test" {
   parent_dn = aci_application_epg.test.id
   imported_contract_name = "test_tn_vz_cp_if_name"
@@ -418,7 +429,7 @@ resource "aci_relation_to_imported_contract" "test" {
   priority = "unspecified"
 }
 `
-const testConfigFvRsConsIfChildrenDependencyWithFvAEPg = testConfigFvAEPgMinDependencyWithFvAp + `
+const testConfigFvRsConsIfChildrenDependencyWithFvAEPg = testDependencyConfigFvRsConsIf + testConfigFvAEPgMinDependencyWithFvAp + `
 resource "aci_relation_to_imported_contract" "test" {
   parent_dn = aci_application_epg.test.id
   imported_contract_name = "test_tn_vz_cp_if_name"
@@ -445,14 +456,14 @@ resource "aci_relation_to_imported_contract" "test" {
 }
 `
 
-const testConfigFvRsConsIfChildrenRemoveFromConfigDependencyWithFvAEPg = testConfigFvAEPgMinDependencyWithFvAp + `
+const testConfigFvRsConsIfChildrenRemoveFromConfigDependencyWithFvAEPg = testDependencyConfigFvRsConsIf + testConfigFvAEPgMinDependencyWithFvAp + `
 resource "aci_relation_to_imported_contract" "test" {
   parent_dn = aci_application_epg.test.id
   imported_contract_name = "test_tn_vz_cp_if_name"
 }
 `
 
-const testConfigFvRsConsIfChildrenRemoveOneDependencyWithFvAEPg = testConfigFvAEPgMinDependencyWithFvAp + `
+const testConfigFvRsConsIfChildrenRemoveOneDependencyWithFvAEPg = testDependencyConfigFvRsConsIf + testConfigFvAEPgMinDependencyWithFvAp + `
 resource "aci_relation_to_imported_contract" "test" {
   parent_dn = aci_application_epg.test.id
   imported_contract_name = "test_tn_vz_cp_if_name"
@@ -471,7 +482,7 @@ resource "aci_relation_to_imported_contract" "test" {
 }
 `
 
-const testConfigFvRsConsIfChildrenRemoveAllDependencyWithFvAEPg = testConfigFvAEPgMinDependencyWithFvAp + `
+const testConfigFvRsConsIfChildrenRemoveAllDependencyWithFvAEPg = testDependencyConfigFvRsConsIf + testConfigFvAEPgMinDependencyWithFvAp + `
 resource "aci_relation_to_imported_contract" "test" {
   parent_dn = aci_application_epg.test.id
   imported_contract_name = "test_tn_vz_cp_if_name"
@@ -480,7 +491,7 @@ resource "aci_relation_to_imported_contract" "test" {
 }
 `
 
-const testConfigFvRsConsIfCustomTypeDependencyWithFvAEPg = testConfigFvAEPgMinDependencyWithFvAp + `
+const testConfigFvRsConsIfCustomTypeDependencyWithFvAEPg = testDependencyConfigFvRsConsIf + testConfigFvAEPgMinDependencyWithFvAp + `
 resource "aci_relation_to_imported_contract" "test" {
   parent_dn = aci_application_epg.test.id
   imported_contract_name = "test_tn_vz_cp_if_name"
@@ -488,7 +499,7 @@ resource "aci_relation_to_imported_contract" "test" {
 }
 `
 
-const testConfigFvRsConsIfMinDependencyWithFvESgAllowExisting = testConfigFvESgMinDependencyWithFvAp + `
+const testConfigFvRsConsIfMinDependencyWithFvESgAllowExisting = testDependencyConfigFvRsConsIf + testConfigFvESgMinDependencyWithFvAp + `
 resource "aci_relation_to_imported_contract" "allow_test" {
   parent_dn = aci_endpoint_security_group.test.id
   imported_contract_name = "test_tn_vz_cp_if_name"
@@ -500,14 +511,14 @@ resource "aci_relation_to_imported_contract" "allow_test_2" {
 }
 `
 
-const testConfigFvRsConsIfMinDependencyWithFvESg = testConfigFvESgMinDependencyWithFvAp + `
+const testConfigFvRsConsIfMinDependencyWithFvESg = testDependencyConfigFvRsConsIf + testConfigFvESgMinDependencyWithFvAp + `
 resource "aci_relation_to_imported_contract" "test" {
   parent_dn = aci_endpoint_security_group.test.id
   imported_contract_name = "test_tn_vz_cp_if_name"
 }
 `
 
-const testConfigFvRsConsIfAllDependencyWithFvESg = testConfigFvESgMinDependencyWithFvAp + `
+const testConfigFvRsConsIfAllDependencyWithFvESg = testDependencyConfigFvRsConsIf + testConfigFvESgMinDependencyWithFvAp + `
 resource "aci_relation_to_imported_contract" "test" {
   parent_dn = aci_endpoint_security_group.test.id
   imported_contract_name = "test_tn_vz_cp_if_name"
@@ -516,7 +527,7 @@ resource "aci_relation_to_imported_contract" "test" {
 }
 `
 
-const testConfigFvRsConsIfResetDependencyWithFvESg = testConfigFvESgMinDependencyWithFvAp + `
+const testConfigFvRsConsIfResetDependencyWithFvESg = testDependencyConfigFvRsConsIf + testConfigFvESgMinDependencyWithFvAp + `
 resource "aci_relation_to_imported_contract" "test" {
   parent_dn = aci_endpoint_security_group.test.id
   imported_contract_name = "test_tn_vz_cp_if_name"
@@ -524,7 +535,7 @@ resource "aci_relation_to_imported_contract" "test" {
   priority = "unspecified"
 }
 `
-const testConfigFvRsConsIfChildrenDependencyWithFvESg = testConfigFvESgMinDependencyWithFvAp + `
+const testConfigFvRsConsIfChildrenDependencyWithFvESg = testDependencyConfigFvRsConsIf + testConfigFvESgMinDependencyWithFvAp + `
 resource "aci_relation_to_imported_contract" "test" {
   parent_dn = aci_endpoint_security_group.test.id
   imported_contract_name = "test_tn_vz_cp_if_name"
@@ -551,14 +562,14 @@ resource "aci_relation_to_imported_contract" "test" {
 }
 `
 
-const testConfigFvRsConsIfChildrenRemoveFromConfigDependencyWithFvESg = testConfigFvESgMinDependencyWithFvAp + `
+const testConfigFvRsConsIfChildrenRemoveFromConfigDependencyWithFvESg = testDependencyConfigFvRsConsIf + testConfigFvESgMinDependencyWithFvAp + `
 resource "aci_relation_to_imported_contract" "test" {
   parent_dn = aci_endpoint_security_group.test.id
   imported_contract_name = "test_tn_vz_cp_if_name"
 }
 `
 
-const testConfigFvRsConsIfChildrenRemoveOneDependencyWithFvESg = testConfigFvESgMinDependencyWithFvAp + `
+const testConfigFvRsConsIfChildrenRemoveOneDependencyWithFvESg = testDependencyConfigFvRsConsIf + testConfigFvESgMinDependencyWithFvAp + `
 resource "aci_relation_to_imported_contract" "test" {
   parent_dn = aci_endpoint_security_group.test.id
   imported_contract_name = "test_tn_vz_cp_if_name"
@@ -577,7 +588,7 @@ resource "aci_relation_to_imported_contract" "test" {
 }
 `
 
-const testConfigFvRsConsIfChildrenRemoveAllDependencyWithFvESg = testConfigFvESgMinDependencyWithFvAp + `
+const testConfigFvRsConsIfChildrenRemoveAllDependencyWithFvESg = testDependencyConfigFvRsConsIf + testConfigFvESgMinDependencyWithFvAp + `
 resource "aci_relation_to_imported_contract" "test" {
   parent_dn = aci_endpoint_security_group.test.id
   imported_contract_name = "test_tn_vz_cp_if_name"
@@ -586,7 +597,7 @@ resource "aci_relation_to_imported_contract" "test" {
 }
 `
 
-const testConfigFvRsConsIfCustomTypeDependencyWithFvESg = testConfigFvESgMinDependencyWithFvAp + `
+const testConfigFvRsConsIfCustomTypeDependencyWithFvESg = testDependencyConfigFvRsConsIf + testConfigFvESgMinDependencyWithFvAp + `
 resource "aci_relation_to_imported_contract" "test" {
   parent_dn = aci_endpoint_security_group.test.id
   imported_contract_name = "test_tn_vz_cp_if_name"

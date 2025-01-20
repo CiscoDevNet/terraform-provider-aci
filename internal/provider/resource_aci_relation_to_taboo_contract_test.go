@@ -180,7 +180,18 @@ func TestAccResourceFvRsProtByWithFvAEPg(t *testing.T) {
 	})
 }
 
-const testConfigFvRsProtByMinDependencyWithFvAEPgAllowExisting = testConfigFvAEPgMinDependencyWithFvAp + `
+const testDependencyConfigFvRsProtBy = `
+resource "aci_taboo_contract" "test_taboo_contract_0" {
+  tenant_dn = aci_tenant.test.id
+  name = "taboo_contract_name_0"
+}
+resource "aci_taboo_contract" "test_taboo_contract_1" {
+  tenant_dn = aci_tenant.test.id
+  name = "taboo_contract_name_1"
+}
+`
+
+const testConfigFvRsProtByMinDependencyWithFvAEPgAllowExisting = testDependencyConfigFvRsProtBy + testConfigFvAEPgMinDependencyWithFvAp + `
 resource "aci_relation_to_taboo_contract" "allow_test" {
   parent_dn = aci_application_epg.test.id
   taboo_contract_name = "test_tn_vz_taboo_name"
@@ -192,14 +203,14 @@ resource "aci_relation_to_taboo_contract" "allow_test_2" {
 }
 `
 
-const testConfigFvRsProtByMinDependencyWithFvAEPg = testConfigFvAEPgMinDependencyWithFvAp + `
+const testConfigFvRsProtByMinDependencyWithFvAEPg = testDependencyConfigFvRsProtBy + testConfigFvAEPgMinDependencyWithFvAp + `
 resource "aci_relation_to_taboo_contract" "test" {
   parent_dn = aci_application_epg.test.id
   taboo_contract_name = "test_tn_vz_taboo_name"
 }
 `
 
-const testConfigFvRsProtByAllDependencyWithFvAEPg = testConfigFvAEPgMinDependencyWithFvAp + `
+const testConfigFvRsProtByAllDependencyWithFvAEPg = testDependencyConfigFvRsProtBy + testConfigFvAEPgMinDependencyWithFvAp + `
 resource "aci_relation_to_taboo_contract" "test" {
   parent_dn = aci_application_epg.test.id
   taboo_contract_name = "test_tn_vz_taboo_name"
@@ -207,14 +218,14 @@ resource "aci_relation_to_taboo_contract" "test" {
 }
 `
 
-const testConfigFvRsProtByResetDependencyWithFvAEPg = testConfigFvAEPgMinDependencyWithFvAp + `
+const testConfigFvRsProtByResetDependencyWithFvAEPg = testDependencyConfigFvRsProtBy + testConfigFvAEPgMinDependencyWithFvAp + `
 resource "aci_relation_to_taboo_contract" "test" {
   parent_dn = aci_application_epg.test.id
   taboo_contract_name = "test_tn_vz_taboo_name"
   annotation = "orchestrator:terraform"
 }
 `
-const testConfigFvRsProtByChildrenDependencyWithFvAEPg = testConfigFvAEPgMinDependencyWithFvAp + `
+const testConfigFvRsProtByChildrenDependencyWithFvAEPg = testDependencyConfigFvRsProtBy + testConfigFvAEPgMinDependencyWithFvAp + `
 resource "aci_relation_to_taboo_contract" "test" {
   parent_dn = aci_application_epg.test.id
   taboo_contract_name = "test_tn_vz_taboo_name"
@@ -241,14 +252,14 @@ resource "aci_relation_to_taboo_contract" "test" {
 }
 `
 
-const testConfigFvRsProtByChildrenRemoveFromConfigDependencyWithFvAEPg = testConfigFvAEPgMinDependencyWithFvAp + `
+const testConfigFvRsProtByChildrenRemoveFromConfigDependencyWithFvAEPg = testDependencyConfigFvRsProtBy + testConfigFvAEPgMinDependencyWithFvAp + `
 resource "aci_relation_to_taboo_contract" "test" {
   parent_dn = aci_application_epg.test.id
   taboo_contract_name = "test_tn_vz_taboo_name"
 }
 `
 
-const testConfigFvRsProtByChildrenRemoveOneDependencyWithFvAEPg = testConfigFvAEPgMinDependencyWithFvAp + `
+const testConfigFvRsProtByChildrenRemoveOneDependencyWithFvAEPg = testDependencyConfigFvRsProtBy + testConfigFvAEPgMinDependencyWithFvAp + `
 resource "aci_relation_to_taboo_contract" "test" {
   parent_dn = aci_application_epg.test.id
   taboo_contract_name = "test_tn_vz_taboo_name"
@@ -267,7 +278,7 @@ resource "aci_relation_to_taboo_contract" "test" {
 }
 `
 
-const testConfigFvRsProtByChildrenRemoveAllDependencyWithFvAEPg = testConfigFvAEPgMinDependencyWithFvAp + `
+const testConfigFvRsProtByChildrenRemoveAllDependencyWithFvAEPg = testDependencyConfigFvRsProtBy + testConfigFvAEPgMinDependencyWithFvAp + `
 resource "aci_relation_to_taboo_contract" "test" {
   parent_dn = aci_application_epg.test.id
   taboo_contract_name = "test_tn_vz_taboo_name"

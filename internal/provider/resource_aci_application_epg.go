@@ -1771,6 +1771,16 @@ type FvRsNodeAttFvAEPgResourceModelV1 struct {
 	TDn         types.String `tfsdk:"node_dn"`
 }
 
+func getEmptyFvRsNodeAttFvAEPgResourceModelV1() FvRsNodeAttFvAEPgResourceModelV1 {
+	return FvRsNodeAttFvAEPgResourceModelV1{
+		InstrImedcy: basetypes.NewStringNull(),
+		Descr:       basetypes.NewStringNull(),
+		Encap:       basetypes.NewStringNull(),
+		Mode:        basetypes.NewStringNull(),
+		TDn:         basetypes.NewStringNull(),
+	}
+}
+
 func (r *FvAEPgResource) UpgradeState(ctx context.Context) map[int64]resource.StateUpgrader {
 	return map[int64]resource.StateUpgrader{
 		1: {
@@ -2504,6 +2514,7 @@ func setFvAEPgLegacyAttributes(ctx context.Context, diags *diag.Diagnostics, dat
 	data.DeprecatedFvRsDppPol = basetypes.NewStringNull()
 	DeprecatedFvRsFcPathAttFvAEPgList := make([]string, 0)
 	DeprecatedFvRsIntraEpgFvAEPgList := make([]string, 0)
+	DeprecatedFvRsNodeAttFvAEPgList := make([]FvRsNodeAttFvAEPgResourceModelV1, 0)
 	DeprecatedFvRsPathAttFvAEPgList := make([]string, 0)
 	DeprecatedFvRsProtByFvAEPgList := make([]string, 0)
 	DeprecatedFvRsProvFvAEPgList := make([]string, 0)
@@ -2572,6 +2583,27 @@ func setFvAEPgLegacyAttributes(ctx context.Context, diags *diag.Diagnostics, dat
 						}
 					}
 				}
+				if childClassName == "fvRsNodeAtt" {
+					DeprecatedFvRsNodeAttFvAEPg := getEmptyFvRsNodeAttFvAEPgResourceModelV1()
+					for childAttributeName, childAttributeValue := range childAttributes {
+						if childAttributeName == "descr" {
+							DeprecatedFvRsNodeAttFvAEPg.Descr = basetypes.NewStringValue(childAttributeValue.(string))
+						}
+						if childAttributeName == "encap" {
+							DeprecatedFvRsNodeAttFvAEPg.Encap = basetypes.NewStringValue(childAttributeValue.(string))
+						}
+						if childAttributeName == "instrImedcy" {
+							DeprecatedFvRsNodeAttFvAEPg.InstrImedcy = basetypes.NewStringValue(childAttributeValue.(string))
+						}
+						if childAttributeName == "mode" {
+							DeprecatedFvRsNodeAttFvAEPg.Mode = basetypes.NewStringValue(childAttributeValue.(string))
+						}
+						if childAttributeName == "tDn" {
+							DeprecatedFvRsNodeAttFvAEPg.TDn = basetypes.NewStringValue(childAttributeValue.(string))
+						}
+					}
+					DeprecatedFvRsNodeAttFvAEPgList = append(DeprecatedFvRsNodeAttFvAEPgList, DeprecatedFvRsNodeAttFvAEPg)
+				}
 				if childClassName == "fvRsPathAtt" {
 					for childAttributeName, childAttributeValue := range childAttributes {
 						if childAttributeName == "tDn" && childAttributeValue != "" && !ContainsString(DeprecatedFvRsPathAttFvAEPgList, childAttributeValue.(string)) {
@@ -2617,7 +2649,8 @@ func setFvAEPgLegacyAttributes(ctx context.Context, diags *diag.Diagnostics, dat
 		data.DeprecatedFvRsFcPathAtt = fvRsFcPathAttSet
 		fvRsIntraEpgSet, _ := types.SetValueFrom(ctx, data.DeprecatedFvRsIntraEpg.ElementType(ctx), DeprecatedFvRsIntraEpgFvAEPgList)
 		data.DeprecatedFvRsIntraEpg = fvRsIntraEpgSet
-		data.DeprecatedFvRsNodeAtt = types.SetNull(deprecatedFvRsNodeAttType)
+		fvRsNodeAttSet, _ := types.SetValueFrom(ctx, data.DeprecatedFvRsNodeAtt.ElementType(ctx), DeprecatedFvRsNodeAttFvAEPgList)
+		data.DeprecatedFvRsNodeAtt = fvRsNodeAttSet
 		fvRsPathAttSet, _ := types.SetValueFrom(ctx, data.DeprecatedFvRsPathAtt.ElementType(ctx), DeprecatedFvRsPathAttFvAEPgList)
 		data.DeprecatedFvRsPathAtt = fvRsPathAttSet
 		fvRsProtBySet, _ := types.SetValueFrom(ctx, data.DeprecatedFvRsProtBy.ElementType(ctx), DeprecatedFvRsProtByFvAEPgList)
@@ -2943,7 +2976,7 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 			if len(newAttributeValues) == len(stateAttributeValues) {
 				allMatchState := true
 				for _, stateAttributeValue := range stateAttributeValues {
-					if !ContainsString(newAttributeValues, GetMOName(stateAttributeValue)) {
+					if !ContainsString(newAttributeValues, stateAttributeValue) {
 						allMatchState = false
 						break
 					}
@@ -3084,7 +3117,7 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 			if len(newAttributeValues) == len(stateAttributeValues) {
 				allMatchState := true
 				for _, stateAttributeValue := range stateAttributeValues {
-					if !ContainsString(newAttributeValues, GetMOName(stateAttributeValue)) {
+					if !ContainsString(newAttributeValues, stateAttributeValue) {
 						allMatchState = false
 						break
 					}
@@ -3355,7 +3388,7 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 			if len(newAttributeValues) == len(stateAttributeValues) {
 				allMatchState := true
 				for _, stateAttributeValue := range stateAttributeValues {
-					if !ContainsString(newAttributeValues, GetMOName(stateAttributeValue)) {
+					if !ContainsString(newAttributeValues, stateAttributeValue) {
 						allMatchState = false
 						break
 					}
@@ -3518,32 +3551,53 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 			planData.DeprecatedFvRsTrustCtrl = stateData.DeprecatedFvRsTrustCtrl
 		}
 
-		planData.DeprecatedFvRsNodeAtt = types.SetNull(deprecatedFvRsNodeAttType)
-		if !configData.DeprecatedFvRsNodeAtt.IsNull() {
+		if !configData.FvRsNodeAtt.IsNull() {
+			FvRsNodeAttList := make([]FvRsNodeAttFvAEPgResourceModelV1, 0)
+			var attributeValues []FvRsNodeAttFvAEPgResourceModel
+			planData.FvRsNodeAtt.ElementsAs(ctx, &attributeValues, false)
+			if len(attributeValues) > 0 {
+				for _, attributeValue := range attributeValues {
+					FvRsNodeAtt := FvRsNodeAttFvAEPgResourceModelV1{
+						Descr:       attributeValue.Descr,
+						Encap:       attributeValue.Encap,
+						InstrImedcy: attributeValue.InstrImedcy,
+						Mode:        attributeValue.Mode,
+						TDn:         attributeValue.TDn,
+					}
+					FvRsNodeAttList = append(FvRsNodeAttList, FvRsNodeAtt)
+				}
+
+				DeprecatedFvRsNodeAttSet, _ := types.SetValueFrom(ctx, deprecatedFvRsNodeAttType, FvRsNodeAttList)
+				planData.DeprecatedFvRsNodeAtt = DeprecatedFvRsNodeAttSet
+			}
+		} else if !configData.DeprecatedFvRsNodeAtt.IsNull() {
 			FvRsNodeAttList := make([]FvRsNodeAttFvAEPgResourceModel, 0)
 			var attributeValues []FvRsNodeAttFvAEPgResourceModelV1
-			var newAttributeValues []FvRsNodeAttFvAEPgResourceModel
-			configData.DeprecatedFvRsNodeAtt.ElementsAs(ctx, &attributeValues, false)
-			annotationValue := planData.Annotation
-			if stateData != nil {
-				stateData.FvRsNodeAtt.ElementsAs(ctx, &newAttributeValues, false)
-				for _, newAttributeValue := range newAttributeValues {
-					annotationValue = newAttributeValue.Annotation
-				}
-			}
+			planData.DeprecatedFvRsNodeAtt.ElementsAs(ctx, &attributeValues, false)
 			for _, attributeValue := range attributeValues {
 				tDnValue := basetypes.NewStringUnknown()
 				if !attributeValue.TDn.IsUnknown() {
 					tDnValue = basetypes.NewStringValue(attributeValue.TDn.ValueString())
 				}
-
 				FvRsNodeAtt := FvRsNodeAttFvAEPgResourceModel{
-					Annotation:  annotationValue,
-					Descr:       attributeValue.Descr,
-					Encap:       attributeValue.Encap,
-					InstrImedcy: attributeValue.InstrImedcy,
-					Mode:        attributeValue.Mode,
-					TDn:         tDnValue,
+					Annotation: planData.Annotation,
+					Encap:      attributeValue.Encap,
+					TDn:        tDnValue,
+				}
+				if !attributeValue.Descr.IsNull() {
+					FvRsNodeAtt.Descr = attributeValue.Descr
+				} else {
+					FvRsNodeAtt.Descr = basetypes.NewStringUnknown()
+				}
+				if !attributeValue.InstrImedcy.IsNull() {
+					FvRsNodeAtt.InstrImedcy = attributeValue.InstrImedcy
+				} else {
+					FvRsNodeAtt.InstrImedcy = basetypes.NewStringUnknown()
+				}
+				if !attributeValue.Mode.IsNull() {
+					FvRsNodeAtt.Mode = attributeValue.Mode
+				} else {
+					FvRsNodeAtt.Mode = basetypes.NewStringUnknown()
 				}
 				tagAnnotationFvRsNodeAttFvAEPgValue, _ := types.SetValueFrom(ctx, TagAnnotationFvRsNodeAttFvAEPgType, make([]TagAnnotationFvRsNodeAttFvAEPgResourceModel, 0))
 				FvRsNodeAtt.TagAnnotation = tagAnnotationFvRsNodeAttFvAEPgValue
@@ -3551,12 +3605,27 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 				FvRsNodeAtt.TagTag = tagTagFvRsNodeAttFvAEPgValue
 				FvRsNodeAttList = append(FvRsNodeAttList, FvRsNodeAtt)
 			}
-
 			FvRsNodeAttSet, _ := types.SetValueFrom(ctx, FvRsNodeAttFvAEPgType, FvRsNodeAttList)
 			planData.FvRsNodeAtt = FvRsNodeAttSet
+		} else if stateData != nil { // used to replace use state for unknown
+			planData.DeprecatedFvRsNodeAtt = stateData.DeprecatedFvRsNodeAtt
+		}
+
+		// Workaround to compare the state with plan with readonly set from state to avoid plan changes
+		if stateData != nil {
+			setFvAEPgReadOnlyInPlan(planData, stateData)
 		}
 
 		resp.Diagnostics.Append(resp.Plan.Set(ctx, &planData)...)
+	}
+}
+func setFvAEPgReadOnlyInPlan(planData *FvAEPgResourceModel, stateData *FvAEPgResourceModel) {
+	// Set read-only fields in planData from stateData
+	planData.PcTag = stateData.PcTag
+
+	// Compare the string representation of the planData and stateData because structs cannot be compated directly
+	if fmt.Sprintf("%s", planData) != fmt.Sprintf("%s", stateData) {
+		planData.PcTag = basetypes.NewStringUnknown()
 	}
 }
 
@@ -3944,11 +4013,15 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				MarkdownDescription: `The provider label match criteria.`,
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Optional: true,
+				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
+				},
+				Validators: []validator.String{
+					MakeStringRequired(),
 				},
 				MarkdownDescription: `The name of the Application EPG object.`,
 			},
@@ -6166,6 +6239,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 								stringvalidator.ConflictsWith(path.Expressions{
 									path.MatchRoot("relation_to_static_leafs"),
 								}...),
+								MakeStringRequired(),
 							},
 						},
 						"mode": schema.StringAttribute{
@@ -6186,6 +6260,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 								stringvalidator.ConflictsWith(path.Expressions{
 									path.MatchRoot("relation_to_static_leafs"),
 								}...),
+								MakeStringRequired(),
 							},
 						},
 					},
