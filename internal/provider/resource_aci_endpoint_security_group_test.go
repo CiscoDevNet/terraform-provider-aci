@@ -506,6 +506,22 @@ func TestAccResourceFvESgWithFvAp(t *testing.T) {
 }
 
 const testChildDependencyConfigFvESg = `
+resource "aci_contract" "test_contract_0"{
+  tenant_dn = aci_tenant.test.id
+  name = "contract_name_0"
+}
+resource "aci_contract" "test_contract_1"{
+  tenant_dn = aci_tenant.test.id
+  name = "contract_name_1"
+}
+resource "aci_imported_contract" "test_imported_contract_0"{
+  tenant_dn = aci_tenant.test.id
+  name = "imported_contract_name_0"
+}
+resource "aci_imported_contract" "test_imported_contract_1"{
+  tenant_dn = aci_tenant.test.id
+  name = "imported_contract_name_1"
+}
 resource "aci_endpoint_security_group" "test_endpoint_security_group_0"{
   application_profile_dn = aci_application_profile.test.id
   name = "esg_0"

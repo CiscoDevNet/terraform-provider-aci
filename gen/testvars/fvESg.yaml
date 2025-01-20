@@ -275,6 +275,50 @@ parents:
     class_in_parent: false
     test_type: apic
 child_targets:
+  - class_name: "vzBrCP"
+    target_dn: "uni/tn-test_tenant/brc-contract_name_0"
+    relation_resource_name: "contract"
+    static: false
+    target_dn_ref: "aci_contract.test_contract_0.id"
+    parent_dependency: "fvTenant"
+    parent_dependency_dn_ref: "aci_tenant.test.id"
+    target_resource_name: "contract"
+    parent_dn_key: "tenant_dn"
+    properties:
+        name: "contract_name_0"
+  - class_name: "vzBrCP"
+    target_dn: "uni/tn-test_tenant/brc-contract_name_1"
+    relation_resource_name: "contract"
+    static: false
+    target_dn_ref: "aci_contract.test_contract_1.id"
+    parent_dependency: "fvTenant"
+    parent_dependency_dn_ref: "aci_tenant.test.id"
+    target_resource_name: "contract"
+    parent_dn_key: "tenant_dn"
+    properties:
+        name: "contract_name_1"
+  - class_name: "vzCPIf"
+    target_dn: "uni/tn-test_tenant/cif-imported_contract_name_0"
+    relation_resource_name: "imported_contract"
+    static: false
+    target_dn_ref: "aci_imported_contract.test_imported_contract_0.id"
+    parent_dependency: "fvTenant"
+    parent_dependency_dn_ref: "aci_tenant.test.id"
+    target_resource_name: "imported_contract"
+    parent_dn_key: "tenant_dn"
+    properties:
+        name: "imported_contract_name_0"
+  - class_name: "vzCPIf"
+    target_dn: "uni/tn-test_tenant/cif-imported_contract_name_1"
+    relation_resource_name: "imported_contract"
+    static: false
+    target_dn_ref: "aci_imported_contract.test_imported_contract_1.id"
+    parent_dependency: "fvTenant"
+    parent_dependency_dn_ref: "aci_tenant.test.id"
+    target_resource_name: "imported_contract"
+    parent_dn_key: "tenant_dn"
+    properties:
+        name: "imported_contract_name_1"
   - class_name: "fvESg"
     target_dn: "uni/tn-test_tenant/ap-test_ap/esg-esg_0"
     relation_resource_name: "contract_master"

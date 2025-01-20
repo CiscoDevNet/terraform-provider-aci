@@ -476,6 +476,21 @@ fvRsCons:
       parent_dependency: "fvAp"
     - class_name: "fvAEPg"
       parent_dependency: "fvAp"
+  targets:
+    - class_name: "vzBrCP"
+      parent_dependency: "fvTenant"
+      overwrite_parent_dn_key: "tenant_dn"
+      target_dn: "uni/tn-test_tenant/brc-contract_name_0"
+      relation_resource_name: "contract"
+      properties:
+        name: "contract_name_0"
+    - class_name: "vzBrCP"
+      parent_dependency: "fvTenant"
+      overwrite_parent_dn_key: "tenant_dn"
+      target_dn: "uni/tn-test_tenant/brc-contract_name_1"
+      relation_resource_name: "contract"
+      properties:
+        name: "contract_name_1"
 
 fvRsProv:
   ignores:
@@ -496,6 +511,21 @@ fvRsConsIf:
       parent_dependency: "fvAp"
     - class_name: "fvAEPg"
       parent_dependency: "fvAp"
+  targets:
+    - class_name: "vzCPIf"
+      parent_dependency: "fvTenant"
+      overwrite_parent_dn_key: "tenant_dn"
+      target_dn: "uni/tn-test_tenant/cif-imported_contract_name_0"
+      relation_resource_name: "imported_contract"
+      properties:
+        name: "imported_contract_name_0"
+    - class_name: "vzCPIf"
+      parent_dependency: "fvTenant"
+      overwrite_parent_dn_key: "tenant_dn"
+      target_dn: "uni/tn-test_tenant/cif-imported_contract_name_1"
+      relation_resource_name: "imported_contract"
+      properties:
+        name: "imported_contract_name_1"
 
 fvRsProtBy:
   parents:
@@ -503,6 +533,21 @@ fvRsProtBy:
       parent_dependency: "fvAp"
     - class_name: "fvAEPg"
       parent_dependency: "fvAp"
+  targets:
+    - class_name: "vzTaboo"
+      parent_dependency: "fvTenant"
+      overwrite_parent_dn_key: "tenant_dn"
+      target_dn: "uni/tn-test_tenant/taboo-taboo_contract_name_0"
+      relation_resource_name: "taboo_contract"
+      properties:
+        name: "taboo_contract_name_0"
+    - class_name: "vzTaboo"
+      parent_dependency: "fvTenant"
+      overwrite_parent_dn_key: "tenant_dn"
+      target_dn: "uni/tn-test_tenant/taboo-taboo_contract_name_1"
+      relation_resource_name: "taboo_contract"
+      properties:
+        name: "taboo_contract_name_1"
 
 fvRsIntraEpg:
   documentation:
@@ -767,6 +812,29 @@ fvAEPg:
 fvRsAEPgMonPol:
   documentation:
     tnMonEPGPolName: "The name of the monitoring policy."
+  test_values:
+    all:
+      monitoring_policy_name: "default"
+
+fvRsCustQosPol:
+  test_values:
+    all:
+      custom_qos_policy_name: "default"
+
+fvRsTrustCtrl:
+  test_values:
+    all:
+      trust_control_policy_name: "default"
+
+fvRsDppPol:
+  test_values:
+    all:
+      data_plane_policing_policy_name: "default"
+
+fvRsBd:
+  test_values:
+    all:
+      bridge_domain_name: "default"
 
 fvRsFcPathAtt:
   default_values:

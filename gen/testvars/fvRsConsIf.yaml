@@ -50,4 +50,27 @@ parents:
     parent_dn: "aci_endpoint_security_group.test.id"
     class_in_parent: false
     test_type: both
+targets:
+  - class_name: "vzCPIf"
+    target_dn: "uni/tn-test_tenant/cif-imported_contract_name_0"
+    target_dn_ref: "aci_imported_contract.test_imported_contract_0.id"
+    parent_dependency: "fvTenant"
+    parent_dependency_dn_ref: "aci_tenant.test.id"
+    target_resource_name: "imported_contract"
+    relation_resource_name: "imported_contract"
+    parent_dn_key: "tenant_dn"
+    static: false
+    properties:
+        name: "imported_contract_name_0"
+  - class_name: "vzCPIf"
+    target_dn: "uni/tn-test_tenant/cif-imported_contract_name_1"
+    target_dn_ref: "aci_imported_contract.test_imported_contract_1.id"
+    parent_dependency: "fvTenant"
+    parent_dependency_dn_ref: "aci_tenant.test.id"
+    target_resource_name: "imported_contract"
+    relation_resource_name: "imported_contract"
+    parent_dn_key: "tenant_dn"
+    static: false
+    properties:
+        name: "imported_contract_name_1"
 class_version: 1.0(1e)-
