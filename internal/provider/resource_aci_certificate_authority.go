@@ -208,7 +208,7 @@ func (r *PkiTPResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
-					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 				},
 				Validators: []validator.Set{
 					setvalidator.SizeAtMost(2),
@@ -269,6 +269,7 @@ func (r *PkiTPResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
@@ -295,6 +296,7 @@ func (r *PkiTPResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{

@@ -142,6 +142,18 @@ var templateFuncs = template.FuncMap{
 	"addToChild":                            AddToChildInTestTemplate,
 	"checkDeletableChild":                   CheckDeletableChild,
 	"emptyChild":                            EmptyChild,
+	"excludeForNullInSetCheck":              ExcludeForNullInSetCheck,
+}
+
+func ExcludeForNullInSetCheck(resourceClassName string) bool {
+	// Function to exclude TagTag and TagAnnotation from the null check in the Set function
+	// Done to reduce the amount of functions created which are not needed for these classes
+	// During refactor to struct per class which is reused in children this is not needed anymore
+	var childClasses []string
+	for _, child := range alwaysIncludeChildren {
+		childClasses = append(childClasses, Capitalize(strings.ReplaceAll(child, ":", "")))
+	}
+	return !slices.Contains(childClasses, resourceClassName)
 }
 
 func ContainsRequired(properties map[string]Property) bool {

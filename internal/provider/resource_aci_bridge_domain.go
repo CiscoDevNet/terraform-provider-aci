@@ -431,6 +431,46 @@ var FvRogueExceptionMacFvBDType = types.ObjectType{
 	},
 }
 
+func FvRogueExceptionMacFvBDSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(ctx context.Context, planValue, stateValue types.Set) basetypes.SetValue {
+	var planSetValues, stateSetValues []FvRogueExceptionMacFvBDResourceModel
+	stateValue.ElementsAs(ctx, &stateSetValues, false)
+	planValue.ElementsAs(ctx, &planSetValues, false)
+
+	// If the length of the state and plan values are different a change is already detected thus reflection can be skipped
+	if len(stateSetValues) == len(planSetValues) {
+		for index, stateValue := range stateSetValues {
+			nullInStateFound := false
+			if stateValue.Annotation.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Annotation = basetypes.NewStringNull()
+			}
+			if stateValue.Descr.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Descr = basetypes.NewStringNull()
+			}
+			if stateValue.Mac.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Mac = basetypes.NewStringNull()
+			}
+			if stateValue.Name.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Name = basetypes.NewStringNull()
+			}
+			if stateValue.NameAlias.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].NameAlias = basetypes.NewStringNull()
+			}
+			if !nullInStateFound {
+				// when there are no null fields we can conclude the version supports all attributes in set
+				break
+			}
+		}
+	}
+	planSet, _ := types.SetValueFrom(ctx, FvRogueExceptionMacFvBDType, planSetValues)
+	return planSet
+
+}
+
 // TagAnnotationFvRogueExceptionMacFvBDResourceModel describes the resource data model for the children without relation ships.
 type TagAnnotationFvRogueExceptionMacFvBDResourceModel struct {
 	Key   types.String `tfsdk:"key"`
@@ -732,6 +772,38 @@ var FvRsBDToNetflowMonitorPolFvBDType = types.ObjectType{
 	},
 }
 
+func FvRsBDToNetflowMonitorPolFvBDSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(ctx context.Context, planValue, stateValue types.Set) basetypes.SetValue {
+	var planSetValues, stateSetValues []FvRsBDToNetflowMonitorPolFvBDResourceModel
+	stateValue.ElementsAs(ctx, &stateSetValues, false)
+	planValue.ElementsAs(ctx, &planSetValues, false)
+
+	// If the length of the state and plan values are different a change is already detected thus reflection can be skipped
+	if len(stateSetValues) == len(planSetValues) {
+		for index, stateValue := range stateSetValues {
+			nullInStateFound := false
+			if stateValue.Annotation.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Annotation = basetypes.NewStringNull()
+			}
+			if stateValue.FltType.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].FltType = basetypes.NewStringNull()
+			}
+			if stateValue.TnNetflowMonitorPolName.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].TnNetflowMonitorPolName = basetypes.NewStringNull()
+			}
+			if !nullInStateFound {
+				// when there are no null fields we can conclude the version supports all attributes in set
+				break
+			}
+		}
+	}
+	planSet, _ := types.SetValueFrom(ctx, FvRsBDToNetflowMonitorPolFvBDType, planSetValues)
+	return planSet
+
+}
+
 // TagAnnotationFvRsBDToNetflowMonitorPolFvBDResourceModel describes the resource data model for the children without relation ships.
 type TagAnnotationFvRsBDToNetflowMonitorPolFvBDResourceModel struct {
 	Key   types.String `tfsdk:"key"`
@@ -806,6 +878,34 @@ var FvRsBDToOutFvBDType = types.ObjectType{
 		"annotations":     types.SetType{ElemType: TagAnnotationFvRsBDToOutFvBDType},
 		"tags":            types.SetType{ElemType: TagTagFvRsBDToOutFvBDType},
 	},
+}
+
+func FvRsBDToOutFvBDSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(ctx context.Context, planValue, stateValue types.Set) basetypes.SetValue {
+	var planSetValues, stateSetValues []FvRsBDToOutFvBDResourceModel
+	stateValue.ElementsAs(ctx, &stateSetValues, false)
+	planValue.ElementsAs(ctx, &planSetValues, false)
+
+	// If the length of the state and plan values are different a change is already detected thus reflection can be skipped
+	if len(stateSetValues) == len(planSetValues) {
+		for index, stateValue := range stateSetValues {
+			nullInStateFound := false
+			if stateValue.Annotation.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Annotation = basetypes.NewStringNull()
+			}
+			if stateValue.TnL3extOutName.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].TnL3extOutName = basetypes.NewStringNull()
+			}
+			if !nullInStateFound {
+				// when there are no null fields we can conclude the version supports all attributes in set
+				break
+			}
+		}
+	}
+	planSet, _ := types.SetValueFrom(ctx, FvRsBDToOutFvBDType, planSetValues)
+	return planSet
+
 }
 
 // TagAnnotationFvRsBDToOutFvBDResourceModel describes the resource data model for the children without relation ships.
@@ -3507,6 +3607,7 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
 							setplanmodifier.UseStateForUnknown(),
+							SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -3541,6 +3642,7 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
 							setplanmodifier.UseStateForUnknown(),
+							SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -3577,6 +3679,7 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(FvRogueExceptionMacFvBDSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
@@ -3633,6 +3736,7 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
 								setplanmodifier.UseStateForUnknown(),
+								SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -3667,6 +3771,7 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
 								setplanmodifier.UseStateForUnknown(),
+								SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -3728,6 +3833,7 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
 							setplanmodifier.UseStateForUnknown(),
+							SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -3762,6 +3868,7 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
 							setplanmodifier.UseStateForUnknown(),
+							SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -3822,6 +3929,7 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
 							setplanmodifier.UseStateForUnknown(),
+							SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -3856,6 +3964,7 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
 							setplanmodifier.UseStateForUnknown(),
+							SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -3916,6 +4025,7 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
 							setplanmodifier.UseStateForUnknown(),
+							SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -3950,6 +4060,7 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
 							setplanmodifier.UseStateForUnknown(),
+							SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -3986,6 +4097,7 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(FvRsBDToNetflowMonitorPolFvBDSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
@@ -4027,6 +4139,7 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
 								setplanmodifier.UseStateForUnknown(),
+								SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -4061,6 +4174,7 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
 								setplanmodifier.UseStateForUnknown(),
+								SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -4098,6 +4212,7 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(FvRsBDToOutFvBDSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
@@ -4127,6 +4242,7 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
 								setplanmodifier.UseStateForUnknown(),
+								SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -4161,6 +4277,7 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
 								setplanmodifier.UseStateForUnknown(),
+								SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -4230,6 +4347,7 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
 							setplanmodifier.UseStateForUnknown(),
+							SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -4264,6 +4382,7 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
 							setplanmodifier.UseStateForUnknown(),
+							SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -4324,6 +4443,7 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
 							setplanmodifier.UseStateForUnknown(),
+							SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -4358,6 +4478,7 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
 							setplanmodifier.UseStateForUnknown(),
+							SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -4429,6 +4550,7 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
 							setplanmodifier.UseStateForUnknown(),
+							SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -4463,6 +4585,7 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
 							setplanmodifier.UseStateForUnknown(),
+							SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -4523,6 +4646,7 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
 							setplanmodifier.UseStateForUnknown(),
+							SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -4557,6 +4681,7 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
 							setplanmodifier.UseStateForUnknown(),
+							SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -4617,6 +4742,7 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
 							setplanmodifier.UseStateForUnknown(),
+							SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -4651,6 +4777,7 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
 							setplanmodifier.UseStateForUnknown(),
+							SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -4711,6 +4838,7 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
 							setplanmodifier.UseStateForUnknown(),
+							SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -4745,6 +4873,7 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
 							setplanmodifier.UseStateForUnknown(),
+							SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -4781,6 +4910,7 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
@@ -4815,6 +4945,7 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{

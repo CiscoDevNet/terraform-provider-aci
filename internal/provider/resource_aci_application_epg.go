@@ -615,6 +615,38 @@ var FvRsConsFvAEPgType = types.ObjectType{
 	},
 }
 
+func FvRsConsFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(ctx context.Context, planValue, stateValue types.Set) basetypes.SetValue {
+	var planSetValues, stateSetValues []FvRsConsFvAEPgResourceModel
+	stateValue.ElementsAs(ctx, &stateSetValues, false)
+	planValue.ElementsAs(ctx, &planSetValues, false)
+
+	// If the length of the state and plan values are different a change is already detected thus reflection can be skipped
+	if len(stateSetValues) == len(planSetValues) {
+		for index, stateValue := range stateSetValues {
+			nullInStateFound := false
+			if stateValue.Annotation.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Annotation = basetypes.NewStringNull()
+			}
+			if stateValue.Prio.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Prio = customTypes.NewFvRsConsPrioStringNull()
+			}
+			if stateValue.TnVzBrCPName.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].TnVzBrCPName = basetypes.NewStringNull()
+			}
+			if !nullInStateFound {
+				// when there are no null fields we can conclude the version supports all attributes in set
+				break
+			}
+		}
+	}
+	planSet, _ := types.SetValueFrom(ctx, FvRsConsFvAEPgType, planSetValues)
+	return planSet
+
+}
+
 // TagAnnotationFvRsConsFvAEPgResourceModel describes the resource data model for the children without relation ships.
 type TagAnnotationFvRsConsFvAEPgResourceModel struct {
 	Key   types.String `tfsdk:"key"`
@@ -692,6 +724,38 @@ var FvRsConsIfFvAEPgType = types.ObjectType{
 		"annotations":            types.SetType{ElemType: TagAnnotationFvRsConsIfFvAEPgType},
 		"tags":                   types.SetType{ElemType: TagTagFvRsConsIfFvAEPgType},
 	},
+}
+
+func FvRsConsIfFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(ctx context.Context, planValue, stateValue types.Set) basetypes.SetValue {
+	var planSetValues, stateSetValues []FvRsConsIfFvAEPgResourceModel
+	stateValue.ElementsAs(ctx, &stateSetValues, false)
+	planValue.ElementsAs(ctx, &planSetValues, false)
+
+	// If the length of the state and plan values are different a change is already detected thus reflection can be skipped
+	if len(stateSetValues) == len(planSetValues) {
+		for index, stateValue := range stateSetValues {
+			nullInStateFound := false
+			if stateValue.Annotation.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Annotation = basetypes.NewStringNull()
+			}
+			if stateValue.Prio.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Prio = customTypes.NewFvRsConsIfPrioStringNull()
+			}
+			if stateValue.TnVzCPIfName.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].TnVzCPIfName = basetypes.NewStringNull()
+			}
+			if !nullInStateFound {
+				// when there are no null fields we can conclude the version supports all attributes in set
+				break
+			}
+		}
+	}
+	planSet, _ := types.SetValueFrom(ctx, FvRsConsIfFvAEPgType, planSetValues)
+	return planSet
+
 }
 
 // TagAnnotationFvRsConsIfFvAEPgResourceModel describes the resource data model for the children without relation ships.
@@ -913,6 +977,126 @@ var FvRsDomAttFvAEPgType = types.ObjectType{
 	},
 }
 
+func FvRsDomAttFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(ctx context.Context, planValue, stateValue types.Set) basetypes.SetValue {
+	var planSetValues, stateSetValues []FvRsDomAttFvAEPgResourceModel
+	stateValue.ElementsAs(ctx, &stateSetValues, false)
+	planValue.ElementsAs(ctx, &planSetValues, false)
+
+	// If the length of the state and plan values are different a change is already detected thus reflection can be skipped
+	if len(stateSetValues) == len(planSetValues) {
+		for index, stateValue := range stateSetValues {
+			nullInStateFound := false
+			if stateValue.Annotation.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Annotation = basetypes.NewStringNull()
+			}
+			if stateValue.BindingType.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].BindingType = basetypes.NewStringNull()
+			}
+			if stateValue.ClassPref.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].ClassPref = basetypes.NewStringNull()
+			}
+			if stateValue.CustomEpgName.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].CustomEpgName = basetypes.NewStringNull()
+			}
+			if stateValue.Delimiter.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Delimiter = basetypes.NewStringNull()
+			}
+			if stateValue.Encap.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Encap = basetypes.NewStringNull()
+			}
+			if stateValue.EncapMode.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].EncapMode = basetypes.NewStringNull()
+			}
+			if stateValue.EpgCos.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].EpgCos = basetypes.NewStringNull()
+			}
+			if stateValue.EpgCosPref.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].EpgCosPref = basetypes.NewStringNull()
+			}
+			if stateValue.InstrImedcy.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].InstrImedcy = basetypes.NewStringNull()
+			}
+			if stateValue.IpamDhcpOverride.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].IpamDhcpOverride = basetypes.NewStringNull()
+			}
+			if stateValue.IpamEnabled.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].IpamEnabled = basetypes.NewStringNull()
+			}
+			if stateValue.IpamGateway.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].IpamGateway = basetypes.NewStringNull()
+			}
+			if stateValue.LagPolicyName.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].LagPolicyName = basetypes.NewStringNull()
+			}
+			if stateValue.NetflowDir.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].NetflowDir = basetypes.NewStringNull()
+			}
+			if stateValue.NetflowPref.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].NetflowPref = basetypes.NewStringNull()
+			}
+			if stateValue.NumPorts.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].NumPorts = basetypes.NewStringNull()
+			}
+			if stateValue.PortAllocation.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].PortAllocation = basetypes.NewStringNull()
+			}
+			if stateValue.PrimaryEncap.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].PrimaryEncap = basetypes.NewStringNull()
+			}
+			if stateValue.PrimaryEncapInner.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].PrimaryEncapInner = basetypes.NewStringNull()
+			}
+			if stateValue.ResImedcy.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].ResImedcy = basetypes.NewStringNull()
+			}
+			if stateValue.SecondaryEncapInner.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].SecondaryEncapInner = basetypes.NewStringNull()
+			}
+			if stateValue.SwitchingMode.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].SwitchingMode = basetypes.NewStringNull()
+			}
+			if stateValue.TDn.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].TDn = basetypes.NewStringNull()
+			}
+			if stateValue.Untagged.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Untagged = basetypes.NewStringNull()
+			}
+			if !nullInStateFound {
+				// when there are no null fields we can conclude the version supports all attributes in set
+				break
+			}
+		}
+	}
+	planSet, _ := types.SetValueFrom(ctx, FvRsDomAttFvAEPgType, planSetValues)
+	return planSet
+
+}
+
 // TagAnnotationFvRsDomAttFvAEPgResourceModel describes the resource data model for the children without relation ships.
 type TagAnnotationFvRsDomAttFvAEPgResourceModel struct {
 	Key   types.String `tfsdk:"key"`
@@ -1072,6 +1256,46 @@ var FvRsFcPathAttFvAEPgType = types.ObjectType{
 	},
 }
 
+func FvRsFcPathAttFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(ctx context.Context, planValue, stateValue types.Set) basetypes.SetValue {
+	var planSetValues, stateSetValues []FvRsFcPathAttFvAEPgResourceModel
+	stateValue.ElementsAs(ctx, &stateSetValues, false)
+	planValue.ElementsAs(ctx, &planSetValues, false)
+
+	// If the length of the state and plan values are different a change is already detected thus reflection can be skipped
+	if len(stateSetValues) == len(planSetValues) {
+		for index, stateValue := range stateSetValues {
+			nullInStateFound := false
+			if stateValue.Annotation.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Annotation = basetypes.NewStringNull()
+			}
+			if stateValue.Descr.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Descr = basetypes.NewStringNull()
+			}
+			if stateValue.TDn.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].TDn = basetypes.NewStringNull()
+			}
+			if stateValue.Vsan.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Vsan = basetypes.NewStringNull()
+			}
+			if stateValue.VsanMode.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].VsanMode = basetypes.NewStringNull()
+			}
+			if !nullInStateFound {
+				// when there are no null fields we can conclude the version supports all attributes in set
+				break
+			}
+		}
+	}
+	planSet, _ := types.SetValueFrom(ctx, FvRsFcPathAttFvAEPgType, planSetValues)
+	return planSet
+
+}
+
 // TagAnnotationFvRsFcPathAttFvAEPgResourceModel describes the resource data model for the children without relation ships.
 type TagAnnotationFvRsFcPathAttFvAEPgResourceModel struct {
 	Key   types.String `tfsdk:"key"`
@@ -1146,6 +1370,34 @@ var FvRsIntraEpgFvAEPgType = types.ObjectType{
 		"annotations":   types.SetType{ElemType: TagAnnotationFvRsIntraEpgFvAEPgType},
 		"tags":          types.SetType{ElemType: TagTagFvRsIntraEpgFvAEPgType},
 	},
+}
+
+func FvRsIntraEpgFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(ctx context.Context, planValue, stateValue types.Set) basetypes.SetValue {
+	var planSetValues, stateSetValues []FvRsIntraEpgFvAEPgResourceModel
+	stateValue.ElementsAs(ctx, &stateSetValues, false)
+	planValue.ElementsAs(ctx, &planSetValues, false)
+
+	// If the length of the state and plan values are different a change is already detected thus reflection can be skipped
+	if len(stateSetValues) == len(planSetValues) {
+		for index, stateValue := range stateSetValues {
+			nullInStateFound := false
+			if stateValue.Annotation.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Annotation = basetypes.NewStringNull()
+			}
+			if stateValue.TnVzBrCPName.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].TnVzBrCPName = basetypes.NewStringNull()
+			}
+			if !nullInStateFound {
+				// when there are no null fields we can conclude the version supports all attributes in set
+				break
+			}
+		}
+	}
+	planSet, _ := types.SetValueFrom(ctx, FvRsIntraEpgFvAEPgType, planSetValues)
+	return planSet
+
 }
 
 // TagAnnotationFvRsIntraEpgFvAEPgResourceModel describes the resource data model for the children without relation ships.
@@ -1234,6 +1486,50 @@ var FvRsNodeAttFvAEPgType = types.ObjectType{
 		"annotations":          types.SetType{ElemType: TagAnnotationFvRsNodeAttFvAEPgType},
 		"tags":                 types.SetType{ElemType: TagTagFvRsNodeAttFvAEPgType},
 	},
+}
+
+func FvRsNodeAttFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(ctx context.Context, planValue, stateValue types.Set) basetypes.SetValue {
+	var planSetValues, stateSetValues []FvRsNodeAttFvAEPgResourceModel
+	stateValue.ElementsAs(ctx, &stateSetValues, false)
+	planValue.ElementsAs(ctx, &planSetValues, false)
+
+	// If the length of the state and plan values are different a change is already detected thus reflection can be skipped
+	if len(stateSetValues) == len(planSetValues) {
+		for index, stateValue := range stateSetValues {
+			nullInStateFound := false
+			if stateValue.Annotation.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Annotation = basetypes.NewStringNull()
+			}
+			if stateValue.Descr.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Descr = basetypes.NewStringNull()
+			}
+			if stateValue.Encap.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Encap = basetypes.NewStringNull()
+			}
+			if stateValue.InstrImedcy.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].InstrImedcy = basetypes.NewStringNull()
+			}
+			if stateValue.Mode.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Mode = basetypes.NewStringNull()
+			}
+			if stateValue.TDn.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].TDn = basetypes.NewStringNull()
+			}
+			if !nullInStateFound {
+				// when there are no null fields we can conclude the version supports all attributes in set
+				break
+			}
+		}
+	}
+	planSet, _ := types.SetValueFrom(ctx, FvRsNodeAttFvAEPgType, planSetValues)
+	return planSet
+
 }
 
 // TagAnnotationFvRsNodeAttFvAEPgResourceModel describes the resource data model for the children without relation ships.
@@ -1327,6 +1623,54 @@ var FvRsPathAttFvAEPgType = types.ObjectType{
 	},
 }
 
+func FvRsPathAttFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(ctx context.Context, planValue, stateValue types.Set) basetypes.SetValue {
+	var planSetValues, stateSetValues []FvRsPathAttFvAEPgResourceModel
+	stateValue.ElementsAs(ctx, &stateSetValues, false)
+	planValue.ElementsAs(ctx, &planSetValues, false)
+
+	// If the length of the state and plan values are different a change is already detected thus reflection can be skipped
+	if len(stateSetValues) == len(planSetValues) {
+		for index, stateValue := range stateSetValues {
+			nullInStateFound := false
+			if stateValue.Annotation.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Annotation = basetypes.NewStringNull()
+			}
+			if stateValue.Descr.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Descr = basetypes.NewStringNull()
+			}
+			if stateValue.Encap.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Encap = basetypes.NewStringNull()
+			}
+			if stateValue.InstrImedcy.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].InstrImedcy = basetypes.NewStringNull()
+			}
+			if stateValue.Mode.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Mode = basetypes.NewStringNull()
+			}
+			if stateValue.PrimaryEncap.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].PrimaryEncap = basetypes.NewStringNull()
+			}
+			if stateValue.TDn.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].TDn = basetypes.NewStringNull()
+			}
+			if !nullInStateFound {
+				// when there are no null fields we can conclude the version supports all attributes in set
+				break
+			}
+		}
+	}
+	planSet, _ := types.SetValueFrom(ctx, FvRsPathAttFvAEPgType, planSetValues)
+	return planSet
+
+}
+
 // TagAnnotationFvRsPathAttFvAEPgResourceModel describes the resource data model for the children without relation ships.
 type TagAnnotationFvRsPathAttFvAEPgResourceModel struct {
 	Key   types.String `tfsdk:"key"`
@@ -1401,6 +1745,34 @@ var FvRsProtByFvAEPgType = types.ObjectType{
 		"annotations":         types.SetType{ElemType: TagAnnotationFvRsProtByFvAEPgType},
 		"tags":                types.SetType{ElemType: TagTagFvRsProtByFvAEPgType},
 	},
+}
+
+func FvRsProtByFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(ctx context.Context, planValue, stateValue types.Set) basetypes.SetValue {
+	var planSetValues, stateSetValues []FvRsProtByFvAEPgResourceModel
+	stateValue.ElementsAs(ctx, &stateSetValues, false)
+	planValue.ElementsAs(ctx, &planSetValues, false)
+
+	// If the length of the state and plan values are different a change is already detected thus reflection can be skipped
+	if len(stateSetValues) == len(planSetValues) {
+		for index, stateValue := range stateSetValues {
+			nullInStateFound := false
+			if stateValue.Annotation.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Annotation = basetypes.NewStringNull()
+			}
+			if stateValue.TnVzTabooName.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].TnVzTabooName = basetypes.NewStringNull()
+			}
+			if !nullInStateFound {
+				// when there are no null fields we can conclude the version supports all attributes in set
+				break
+			}
+		}
+	}
+	planSet, _ := types.SetValueFrom(ctx, FvRsProtByFvAEPgType, planSetValues)
+	return planSet
+
 }
 
 // TagAnnotationFvRsProtByFvAEPgResourceModel describes the resource data model for the children without relation ships.
@@ -1485,6 +1857,42 @@ var FvRsProvFvAEPgType = types.ObjectType{
 	},
 }
 
+func FvRsProvFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(ctx context.Context, planValue, stateValue types.Set) basetypes.SetValue {
+	var planSetValues, stateSetValues []FvRsProvFvAEPgResourceModel
+	stateValue.ElementsAs(ctx, &stateSetValues, false)
+	planValue.ElementsAs(ctx, &planSetValues, false)
+
+	// If the length of the state and plan values are different a change is already detected thus reflection can be skipped
+	if len(stateSetValues) == len(planSetValues) {
+		for index, stateValue := range stateSetValues {
+			nullInStateFound := false
+			if stateValue.Annotation.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Annotation = basetypes.NewStringNull()
+			}
+			if stateValue.MatchT.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].MatchT = basetypes.NewStringNull()
+			}
+			if stateValue.Prio.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Prio = customTypes.NewFvRsProvPrioStringNull()
+			}
+			if stateValue.TnVzBrCPName.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].TnVzBrCPName = basetypes.NewStringNull()
+			}
+			if !nullInStateFound {
+				// when there are no null fields we can conclude the version supports all attributes in set
+				break
+			}
+		}
+	}
+	planSet, _ := types.SetValueFrom(ctx, FvRsProvFvAEPgType, planSetValues)
+	return planSet
+
+}
+
 // TagAnnotationFvRsProvFvAEPgResourceModel describes the resource data model for the children without relation ships.
 type TagAnnotationFvRsProvFvAEPgResourceModel struct {
 	Key   types.String `tfsdk:"key"`
@@ -1559,6 +1967,34 @@ var FvRsSecInheritedFvAEPgType = types.ObjectType{
 		"annotations": types.SetType{ElemType: TagAnnotationFvRsSecInheritedFvAEPgType},
 		"tags":        types.SetType{ElemType: TagTagFvRsSecInheritedFvAEPgType},
 	},
+}
+
+func FvRsSecInheritedFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(ctx context.Context, planValue, stateValue types.Set) basetypes.SetValue {
+	var planSetValues, stateSetValues []FvRsSecInheritedFvAEPgResourceModel
+	stateValue.ElementsAs(ctx, &stateSetValues, false)
+	planValue.ElementsAs(ctx, &planSetValues, false)
+
+	// If the length of the state and plan values are different a change is already detected thus reflection can be skipped
+	if len(stateSetValues) == len(planSetValues) {
+		for index, stateValue := range stateSetValues {
+			nullInStateFound := false
+			if stateValue.Annotation.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Annotation = basetypes.NewStringNull()
+			}
+			if stateValue.TDn.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].TDn = basetypes.NewStringNull()
+			}
+			if !nullInStateFound {
+				// when there are no null fields we can conclude the version supports all attributes in set
+				break
+			}
+		}
+	}
+	planSet, _ := types.SetValueFrom(ctx, FvRsSecInheritedFvAEPgType, planSetValues)
+	return planSet
+
 }
 
 // TagAnnotationFvRsSecInheritedFvAEPgResourceModel describes the resource data model for the children without relation ships.
@@ -4186,6 +4622,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
 							setplanmodifier.UseStateForUnknown(),
+							SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -4220,6 +4657,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
 							setplanmodifier.UseStateForUnknown(),
+							SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -4280,6 +4718,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
 							setplanmodifier.UseStateForUnknown(),
+							SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -4314,6 +4753,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
 							setplanmodifier.UseStateForUnknown(),
+							SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -4374,6 +4814,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
 							setplanmodifier.UseStateForUnknown(),
+							SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -4408,6 +4849,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
 							setplanmodifier.UseStateForUnknown(),
+							SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -4444,6 +4886,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(FvRsConsFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
@@ -4488,6 +4931,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
 								setplanmodifier.UseStateForUnknown(),
+								SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -4522,6 +4966,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
 								setplanmodifier.UseStateForUnknown(),
+								SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -4559,6 +5004,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(FvRsConsIfFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
@@ -4603,6 +5049,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
 								setplanmodifier.UseStateForUnknown(),
+								SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -4637,6 +5084,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
 								setplanmodifier.UseStateForUnknown(),
+								SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -4698,6 +5146,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
 							setplanmodifier.UseStateForUnknown(),
+							SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -4732,6 +5181,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
 							setplanmodifier.UseStateForUnknown(),
+							SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -4768,6 +5218,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(FvRsDomAttFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
@@ -5030,6 +5481,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
 								setplanmodifier.UseStateForUnknown(),
+								SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -5064,6 +5516,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
 								setplanmodifier.UseStateForUnknown(),
+								SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -5125,6 +5578,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
 							setplanmodifier.UseStateForUnknown(),
+							SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -5159,6 +5613,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
 							setplanmodifier.UseStateForUnknown(),
+							SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -5198,6 +5653,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Computed: true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(FvRsFcPathAttFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
@@ -5256,6 +5712,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
 								setplanmodifier.UseStateForUnknown(),
+								SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -5290,6 +5747,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
 								setplanmodifier.UseStateForUnknown(),
+								SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -5331,6 +5789,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Computed: true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(FvRsIntraEpgFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
@@ -5360,6 +5819,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
 								setplanmodifier.UseStateForUnknown(),
+								SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -5394,6 +5854,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
 								setplanmodifier.UseStateForUnknown(),
+								SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -5431,6 +5892,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(FvRsNodeAttFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
@@ -5502,6 +5964,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
 								setplanmodifier.UseStateForUnknown(),
+								SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -5536,6 +5999,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
 								setplanmodifier.UseStateForUnknown(),
+								SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -5573,6 +6037,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(FvRsPathAttFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
@@ -5653,6 +6118,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
 								setplanmodifier.UseStateForUnknown(),
+								SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -5687,6 +6153,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
 								setplanmodifier.UseStateForUnknown(),
+								SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -5724,6 +6191,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(FvRsProtByFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
@@ -5753,6 +6221,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
 								setplanmodifier.UseStateForUnknown(),
+								SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -5787,6 +6256,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
 								setplanmodifier.UseStateForUnknown(),
+								SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -5824,6 +6294,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(FvRsProvFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
@@ -5879,6 +6350,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
 								setplanmodifier.UseStateForUnknown(),
+								SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -5913,6 +6385,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
 								setplanmodifier.UseStateForUnknown(),
+								SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -5950,6 +6423,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(FvRsSecInheritedFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
@@ -5979,6 +6453,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
 								setplanmodifier.UseStateForUnknown(),
+								SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -6013,6 +6488,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
 								setplanmodifier.UseStateForUnknown(),
+								SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -6074,6 +6550,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
 							setplanmodifier.UseStateForUnknown(),
+							SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -6108,6 +6585,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
 							setplanmodifier.UseStateForUnknown(),
+							SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -6144,6 +6622,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
@@ -6178,6 +6657,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
