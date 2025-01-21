@@ -525,6 +525,7 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
 							setplanmodifier.UseStateForUnknown(),
+							SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -551,6 +552,7 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
 							setplanmodifier.UseStateForUnknown(),
+							SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -603,6 +605,7 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
 							setplanmodifier.UseStateForUnknown(),
+							SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -629,6 +632,7 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
 							setplanmodifier.UseStateForUnknown(),
+							SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -657,6 +661,7 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
@@ -683,6 +688,7 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{

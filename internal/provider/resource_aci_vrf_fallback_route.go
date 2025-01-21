@@ -224,6 +224,7 @@ func (r *FvFBRouteResource) Schema(ctx context.Context, req resource.SchemaReque
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
@@ -250,6 +251,7 @@ func (r *FvFBRouteResource) Schema(ctx context.Context, req resource.SchemaReque
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{

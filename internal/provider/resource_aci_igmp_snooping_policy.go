@@ -222,7 +222,7 @@ func (r *IgmpSnoopPolResource) Schema(ctx context.Context, req resource.SchemaRe
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
-					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 				},
 				Validators: []validator.Set{
 					setvalidator.SizeAtMost(4),
@@ -340,6 +340,7 @@ func (r *IgmpSnoopPolResource) Schema(ctx context.Context, req resource.SchemaRe
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
@@ -366,6 +367,7 @@ func (r *IgmpSnoopPolResource) Schema(ctx context.Context, req resource.SchemaRe
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{

@@ -127,6 +127,38 @@ var MgmtRsOoBConsMgmtInstPType = types.ObjectType{
 	},
 }
 
+func MgmtRsOoBConsMgmtInstPSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(ctx context.Context, planValue, stateValue types.Set) basetypes.SetValue {
+	var planSetValues, stateSetValues []MgmtRsOoBConsMgmtInstPResourceModel
+	stateValue.ElementsAs(ctx, &stateSetValues, false)
+	planValue.ElementsAs(ctx, &planSetValues, false)
+
+	// If the length of the state and plan values are different a change is already detected thus reflection can be skipped
+	if len(stateSetValues) == len(planSetValues) {
+		for index, stateValue := range stateSetValues {
+			nullInStateFound := false
+			if stateValue.Annotation.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Annotation = basetypes.NewStringNull()
+			}
+			if stateValue.Prio.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Prio = customTypes.NewMgmtRsOoBConsPrioStringNull()
+			}
+			if stateValue.TnVzOOBBrCPName.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].TnVzOOBBrCPName = basetypes.NewStringNull()
+			}
+			if !nullInStateFound {
+				// when there are no null fields we can conclude the version supports all attributes in set
+				break
+			}
+		}
+	}
+	planSet, _ := types.SetValueFrom(ctx, MgmtRsOoBConsMgmtInstPType, planSetValues)
+	return planSet
+
+}
+
 // TagAnnotationMgmtRsOoBConsMgmtInstPResourceModel describes the resource data model for the children without relation ships.
 type TagAnnotationMgmtRsOoBConsMgmtInstPResourceModel struct {
 	Key   types.String `tfsdk:"key"`
@@ -315,6 +347,7 @@ func (r *MgmtInstPResource) Schema(ctx context.Context, req resource.SchemaReque
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(MgmtRsOoBConsMgmtInstPSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
@@ -354,6 +387,7 @@ func (r *MgmtInstPResource) Schema(ctx context.Context, req resource.SchemaReque
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
 								setplanmodifier.UseStateForUnknown(),
+								SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -380,6 +414,7 @@ func (r *MgmtInstPResource) Schema(ctx context.Context, req resource.SchemaReque
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
 								setplanmodifier.UseStateForUnknown(),
+								SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -409,6 +444,7 @@ func (r *MgmtInstPResource) Schema(ctx context.Context, req resource.SchemaReque
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
@@ -435,6 +471,7 @@ func (r *MgmtInstPResource) Schema(ctx context.Context, req resource.SchemaReque
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
