@@ -18,7 +18,7 @@ require (
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.34.0
 	github.com/hashicorp/terraform-plugin-testing v1.10.0
 	golang.org/x/exp v0.0.0-20230809150735-7b3493d9a819
-	golang.org/x/text v0.17.0
+	golang.org/x/text v0.21.0
 	golang.org/x/tools v0.21.1-0.20240508182429-e35e4ccd0d2d
 	gopkg.in/yaml.v2 v2.4.0
 )
@@ -59,11 +59,11 @@ require (
 	github.com/vmihailenco/msgpack/v5 v5.4.1 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	github.com/zclconf/go-cty v1.15.0 // indirect
-	golang.org/x/crypto v0.26.0 // indirect
+	golang.org/x/crypto v0.31.0 // indirect
 	golang.org/x/mod v0.19.0 // indirect
-	golang.org/x/net v0.25.0 // indirect
-	golang.org/x/sync v0.8.0 // indirect
-	golang.org/x/sys v0.23.0 // indirect
+	golang.org/x/net v0.33.0 // indirect
+	golang.org/x/sync v0.10.0 // indirect
+	golang.org/x/sys v0.28.0 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240325203815-454cdb8f5daa // indirect
 	google.golang.org/grpc v1.63.2 // indirect
