@@ -19,6 +19,7 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version-file: 'go.mod'
+      - uses: hashicorp/setup-terraform@v3
       - name: Get latest metadata and generate provider code
         run: go generate
         env:

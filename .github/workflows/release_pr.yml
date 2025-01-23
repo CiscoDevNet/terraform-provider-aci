@@ -55,6 +55,7 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version-file: 'go.mod'
+      - uses: hashicorp/setup-terraform@v3
       - name: Generate annotation unsupported provider code
         run: go generate
         env:
