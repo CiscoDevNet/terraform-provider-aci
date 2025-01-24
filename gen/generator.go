@@ -143,6 +143,30 @@ var templateFuncs = template.FuncMap{
 	"checkDeletableChild":                   CheckDeletableChild,
 	"emptyChild":                            EmptyChild,
 	"excludeForNullInSetCheck":              ExcludeForNullInSetCheck,
+	"getTestTargetValue":                    GetTestTargetValue,
+	"isReference":                           IsReference,
+}
+
+func GetTestTargetValue(targets []interface{}, key, value string) string {
+
+	for index, target := range targets {
+
+		var resourceName string
+		if targetResourceName, ok := target.(map[interface{}]interface{})["target_resource_name"]; ok {
+			resourceName = targetResourceName.(string)
+		}
+
+		if properties, ok := target.(map[interface{}]interface{})["properties"]; ok {
+
+			if key == fmt.Sprintf("%s_name", resourceName) {
+				key = "name"
+			}
+			if result, ok := properties.(map[interface{}]interface{})[key]; ok && value == result {
+				return fmt.Sprintf(`aci_%s.test_%s_%d.%s`, resourceName, resourceName, index%2, key)
+			}
+		}
+	}
+	return value
 }
 
 func ExcludeForNullInSetCheck(resourceClassName string) bool {
@@ -419,6 +443,10 @@ func DefinedInList(list interface{}, item string) bool {
 
 func ContainsString(s, sub string) bool {
 	return strings.Contains(s, sub)
+}
+
+func IsReference(s string) bool {
+	return strings.HasPrefix(s, "aci_") || strings.HasPrefix(s, "data.aci_")
 }
 
 // Reused from https://github.com/buxizhizhoum/inflection/blob/master/inflection.go#L8 to avoid importing the whole package
@@ -2755,7 +2783,11 @@ func getTestDependency(className string, targetMap map[interface{}]interface{}, 
 
 	if parentDependency, ok := targetMap["parent_dependency"]; ok {
 		testDependency.ParentDependency = parentDependency.(string)
-		testDependency.ParentDependencyDnRef = fmt.Sprintf("%s_%s.test.id", providerName, GetResourceName(parentDependency.(string), definitions))
+		if parentDependencyDn, ok := targetMap["parent_dependency_dn_ref"]; ok {
+			testDependency.ParentDependencyDnRef = parentDependencyDn.(string)
+		} else {
+			testDependency.ParentDependencyDnRef = fmt.Sprintf("%s_%s.test.id", providerName, GetResourceName(parentDependency.(string), definitions))
+		}
 	}
 
 	if targetDn, ok := targetMap["target_dn"]; ok {

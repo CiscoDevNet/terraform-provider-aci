@@ -2445,6 +2445,17 @@ func (r *FvBDResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRe
 				if GetMOName(stateData.DeprecatedFvRsBDToRelayP.ValueString()) == attributeValues.TnDhcpRelayPName.ValueString() && !attributeValues.TnDhcpRelayPName.IsNull() {
 					planData.DeprecatedFvRsBDToRelayP = stateData.DeprecatedFvRsBDToRelayP
 				}
+				var stateAttributeValue, planAttributeValue FvRsBDToRelayPFvBDResourceModel
+				stateData.FvRsBDToRelayP.As(ctx, &stateAttributeValue, basetypes.ObjectAsOptions{})
+				planData.FvRsBDToRelayP.As(ctx, &planAttributeValue, basetypes.ObjectAsOptions{})
+				if stateAttributeValue.TagAnnotation.IsNull() && attributeValues.TagAnnotation.IsNull() {
+					planAttributeValue.TagAnnotation = basetypes.NewSetUnknown(TagAnnotationFvRsBDToRelayPFvBDType)
+				}
+				if stateAttributeValue.TagTag.IsNull() && attributeValues.TagTag.IsNull() {
+					planAttributeValue.TagTag = basetypes.NewSetUnknown(TagTagFvRsBDToRelayPFvBDType)
+				}
+				FvRsBDToRelayPObject, _ := types.ObjectValueFrom(ctx, FvRsBDToRelayPFvBDType, planAttributeValue)
+				planData.FvRsBDToRelayP = FvRsBDToRelayPObject
 			}
 		} else if !configData.DeprecatedFvRsBDToRelayP.IsNull() {
 			var newAttributeValues FvRsBDToRelayPFvBDResourceModel
@@ -2483,6 +2494,17 @@ func (r *FvBDResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRe
 				if GetMOName(stateData.DeprecatedFvRsBdToEpRet.ValueString()) == attributeValues.TnFvEpRetPolName.ValueString() && !attributeValues.TnFvEpRetPolName.IsNull() {
 					planData.DeprecatedFvRsBdToEpRet = stateData.DeprecatedFvRsBdToEpRet
 				}
+				var stateAttributeValue, planAttributeValue FvRsBdToEpRetFvBDResourceModel
+				stateData.FvRsBdToEpRet.As(ctx, &stateAttributeValue, basetypes.ObjectAsOptions{})
+				planData.FvRsBdToEpRet.As(ctx, &planAttributeValue, basetypes.ObjectAsOptions{})
+				if stateAttributeValue.TagAnnotation.IsNull() && attributeValues.TagAnnotation.IsNull() {
+					planAttributeValue.TagAnnotation = basetypes.NewSetUnknown(TagAnnotationFvRsBdToEpRetFvBDType)
+				}
+				if stateAttributeValue.TagTag.IsNull() && attributeValues.TagTag.IsNull() {
+					planAttributeValue.TagTag = basetypes.NewSetUnknown(TagTagFvRsBdToEpRetFvBDType)
+				}
+				FvRsBdToEpRetObject, _ := types.ObjectValueFrom(ctx, FvRsBdToEpRetFvBDType, planAttributeValue)
+				planData.FvRsBdToEpRet = FvRsBdToEpRetObject
 			}
 		} else if !configData.DeprecatedFvRsBdToEpRet.IsNull() {
 			var newAttributeValues FvRsBdToEpRetFvBDResourceModel
@@ -2522,6 +2544,17 @@ func (r *FvBDResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRe
 				if GetMOName(stateData.DeprecatedFvRsBDToFhs.ValueString()) == attributeValues.TnFhsBDPolName.ValueString() && !attributeValues.TnFhsBDPolName.IsNull() {
 					planData.DeprecatedFvRsBDToFhs = stateData.DeprecatedFvRsBDToFhs
 				}
+				var stateAttributeValue, planAttributeValue FvRsBDToFhsFvBDResourceModel
+				stateData.FvRsBDToFhs.As(ctx, &stateAttributeValue, basetypes.ObjectAsOptions{})
+				planData.FvRsBDToFhs.As(ctx, &planAttributeValue, basetypes.ObjectAsOptions{})
+				if stateAttributeValue.TagAnnotation.IsNull() && attributeValues.TagAnnotation.IsNull() {
+					planAttributeValue.TagAnnotation = basetypes.NewSetUnknown(TagAnnotationFvRsBDToFhsFvBDType)
+				}
+				if stateAttributeValue.TagTag.IsNull() && attributeValues.TagTag.IsNull() {
+					planAttributeValue.TagTag = basetypes.NewSetUnknown(TagTagFvRsBDToFhsFvBDType)
+				}
+				FvRsBDToFhsObject, _ := types.ObjectValueFrom(ctx, FvRsBDToFhsFvBDType, planAttributeValue)
+				planData.FvRsBDToFhs = FvRsBDToFhsObject
 			}
 		} else if !configData.DeprecatedFvRsBDToFhs.IsNull() {
 			var newAttributeValues FvRsBDToFhsFvBDResourceModel
@@ -2560,6 +2593,17 @@ func (r *FvBDResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRe
 				if GetMOName(stateData.DeprecatedFvRsIgmpsn.ValueString()) == attributeValues.TnIgmpSnoopPolName.ValueString() && !attributeValues.TnIgmpSnoopPolName.IsNull() {
 					planData.DeprecatedFvRsIgmpsn = stateData.DeprecatedFvRsIgmpsn
 				}
+				var stateAttributeValue, planAttributeValue FvRsIgmpsnFvBDResourceModel
+				stateData.FvRsIgmpsn.As(ctx, &stateAttributeValue, basetypes.ObjectAsOptions{})
+				planData.FvRsIgmpsn.As(ctx, &planAttributeValue, basetypes.ObjectAsOptions{})
+				if stateAttributeValue.TagAnnotation.IsNull() && attributeValues.TagAnnotation.IsNull() {
+					planAttributeValue.TagAnnotation = basetypes.NewSetUnknown(TagAnnotationFvRsIgmpsnFvBDType)
+				}
+				if stateAttributeValue.TagTag.IsNull() && attributeValues.TagTag.IsNull() {
+					planAttributeValue.TagTag = basetypes.NewSetUnknown(TagTagFvRsIgmpsnFvBDType)
+				}
+				FvRsIgmpsnObject, _ := types.ObjectValueFrom(ctx, FvRsIgmpsnFvBDType, planAttributeValue)
+				planData.FvRsIgmpsn = FvRsIgmpsnObject
 			}
 		} else if !configData.DeprecatedFvRsIgmpsn.IsNull() {
 			var newAttributeValues FvRsIgmpsnFvBDResourceModel
@@ -2663,6 +2707,17 @@ func (r *FvBDResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRe
 				if GetMOName(stateData.DeprecatedFvRsMldsn.ValueString()) == attributeValues.TnMldSnoopPolName.ValueString() && !attributeValues.TnMldSnoopPolName.IsNull() {
 					planData.DeprecatedFvRsMldsn = stateData.DeprecatedFvRsMldsn
 				}
+				var stateAttributeValue, planAttributeValue FvRsMldsnFvBDResourceModel
+				stateData.FvRsMldsn.As(ctx, &stateAttributeValue, basetypes.ObjectAsOptions{})
+				planData.FvRsMldsn.As(ctx, &planAttributeValue, basetypes.ObjectAsOptions{})
+				if stateAttributeValue.TagAnnotation.IsNull() && attributeValues.TagAnnotation.IsNull() {
+					planAttributeValue.TagAnnotation = basetypes.NewSetUnknown(TagAnnotationFvRsMldsnFvBDType)
+				}
+				if stateAttributeValue.TagTag.IsNull() && attributeValues.TagTag.IsNull() {
+					planAttributeValue.TagTag = basetypes.NewSetUnknown(TagTagFvRsMldsnFvBDType)
+				}
+				FvRsMldsnObject, _ := types.ObjectValueFrom(ctx, FvRsMldsnFvBDType, planAttributeValue)
+				planData.FvRsMldsn = FvRsMldsnObject
 			}
 		} else if !configData.DeprecatedFvRsMldsn.IsNull() {
 			var newAttributeValues FvRsMldsnFvBDResourceModel
@@ -2701,6 +2756,17 @@ func (r *FvBDResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRe
 				if GetMOName(stateData.DeprecatedFvRsABDPolMonPol.ValueString()) == attributeValues.TnMonEPGPolName.ValueString() && !attributeValues.TnMonEPGPolName.IsNull() {
 					planData.DeprecatedFvRsABDPolMonPol = stateData.DeprecatedFvRsABDPolMonPol
 				}
+				var stateAttributeValue, planAttributeValue FvRsABDPolMonPolFvBDResourceModel
+				stateData.FvRsABDPolMonPol.As(ctx, &stateAttributeValue, basetypes.ObjectAsOptions{})
+				planData.FvRsABDPolMonPol.As(ctx, &planAttributeValue, basetypes.ObjectAsOptions{})
+				if stateAttributeValue.TagAnnotation.IsNull() && attributeValues.TagAnnotation.IsNull() {
+					planAttributeValue.TagAnnotation = basetypes.NewSetUnknown(TagAnnotationFvRsABDPolMonPolFvBDType)
+				}
+				if stateAttributeValue.TagTag.IsNull() && attributeValues.TagTag.IsNull() {
+					planAttributeValue.TagTag = basetypes.NewSetUnknown(TagTagFvRsABDPolMonPolFvBDType)
+				}
+				FvRsABDPolMonPolObject, _ := types.ObjectValueFrom(ctx, FvRsABDPolMonPolFvBDType, planAttributeValue)
+				planData.FvRsABDPolMonPol = FvRsABDPolMonPolObject
 			}
 		} else if !configData.DeprecatedFvRsABDPolMonPol.IsNull() {
 			var newAttributeValues FvRsABDPolMonPolFvBDResourceModel
@@ -2739,6 +2805,17 @@ func (r *FvBDResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRe
 				if GetMOName(stateData.DeprecatedFvRsBDToNdP.ValueString()) == attributeValues.TnNdIfPolName.ValueString() && !attributeValues.TnNdIfPolName.IsNull() {
 					planData.DeprecatedFvRsBDToNdP = stateData.DeprecatedFvRsBDToNdP
 				}
+				var stateAttributeValue, planAttributeValue FvRsBDToNdPFvBDResourceModel
+				stateData.FvRsBDToNdP.As(ctx, &stateAttributeValue, basetypes.ObjectAsOptions{})
+				planData.FvRsBDToNdP.As(ctx, &planAttributeValue, basetypes.ObjectAsOptions{})
+				if stateAttributeValue.TagAnnotation.IsNull() && attributeValues.TagAnnotation.IsNull() {
+					planAttributeValue.TagAnnotation = basetypes.NewSetUnknown(TagAnnotationFvRsBDToNdPFvBDType)
+				}
+				if stateAttributeValue.TagTag.IsNull() && attributeValues.TagTag.IsNull() {
+					planAttributeValue.TagTag = basetypes.NewSetUnknown(TagTagFvRsBDToNdPFvBDType)
+				}
+				FvRsBDToNdPObject, _ := types.ObjectValueFrom(ctx, FvRsBDToNdPFvBDType, planAttributeValue)
+				planData.FvRsBDToNdP = FvRsBDToNdPObject
 			}
 		} else if !configData.DeprecatedFvRsBDToNdP.IsNull() {
 			var newAttributeValues FvRsBDToNdPFvBDResourceModel
@@ -2777,6 +2854,17 @@ func (r *FvBDResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRe
 				if GetMOName(stateData.DeprecatedFvRsBDToProfile.ValueString()) == attributeValues.TnRtctrlProfileName.ValueString() && !attributeValues.TnRtctrlProfileName.IsNull() {
 					planData.DeprecatedFvRsBDToProfile = stateData.DeprecatedFvRsBDToProfile
 				}
+				var stateAttributeValue, planAttributeValue FvRsBDToProfileFvBDResourceModel
+				stateData.FvRsBDToProfile.As(ctx, &stateAttributeValue, basetypes.ObjectAsOptions{})
+				planData.FvRsBDToProfile.As(ctx, &planAttributeValue, basetypes.ObjectAsOptions{})
+				if stateAttributeValue.TagAnnotation.IsNull() && attributeValues.TagAnnotation.IsNull() {
+					planAttributeValue.TagAnnotation = basetypes.NewSetUnknown(TagAnnotationFvRsBDToProfileFvBDType)
+				}
+				if stateAttributeValue.TagTag.IsNull() && attributeValues.TagTag.IsNull() {
+					planAttributeValue.TagTag = basetypes.NewSetUnknown(TagTagFvRsBDToProfileFvBDType)
+				}
+				FvRsBDToProfileObject, _ := types.ObjectValueFrom(ctx, FvRsBDToProfileFvBDType, planAttributeValue)
+				planData.FvRsBDToProfile = FvRsBDToProfileObject
 			}
 		} else if !configData.DeprecatedFvRsBDToProfile.IsNull() {
 			var newAttributeValues FvRsBDToProfileFvBDResourceModel
@@ -2816,6 +2904,17 @@ func (r *FvBDResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRe
 				if GetMOName(stateData.DeprecatedFvRsCtx.ValueString()) == attributeValues.TnFvCtxName.ValueString() && !attributeValues.TnFvCtxName.IsNull() {
 					planData.DeprecatedFvRsCtx = stateData.DeprecatedFvRsCtx
 				}
+				var stateAttributeValue, planAttributeValue FvRsCtxFvBDResourceModel
+				stateData.FvRsCtx.As(ctx, &stateAttributeValue, basetypes.ObjectAsOptions{})
+				planData.FvRsCtx.As(ctx, &planAttributeValue, basetypes.ObjectAsOptions{})
+				if stateAttributeValue.TagAnnotation.IsNull() && attributeValues.TagAnnotation.IsNull() {
+					planAttributeValue.TagAnnotation = basetypes.NewSetUnknown(TagAnnotationFvRsCtxFvBDType)
+				}
+				if stateAttributeValue.TagTag.IsNull() && attributeValues.TagTag.IsNull() {
+					planAttributeValue.TagTag = basetypes.NewSetUnknown(TagTagFvRsCtxFvBDType)
+				}
+				FvRsCtxObject, _ := types.ObjectValueFrom(ctx, FvRsCtxFvBDType, planAttributeValue)
+				planData.FvRsCtx = FvRsCtxObject
 			}
 		} else if !configData.DeprecatedFvRsCtx.IsNull() {
 			var newAttributeValues FvRsCtxFvBDResourceModel
@@ -2886,7 +2985,25 @@ func (r *FvBDResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRe
 			planData.DeprecatedFvRsBDToNetflowMonitorPol = stateData.DeprecatedFvRsBDToNetflowMonitorPol
 		}
 
+		// Workaround to compare the state with plan with readonly set from state to avoid plan changes
+		if stateData != nil {
+			setFvBDReadOnlyInPlan(planData, stateData)
+		}
+
 		resp.Diagnostics.Append(resp.Plan.Set(ctx, &planData)...)
+	}
+}
+func setFvBDReadOnlyInPlan(planData *FvBDResourceModel, stateData *FvBDResourceModel) {
+	// Set read-only fields in planData from stateData
+	planData.PcTag = stateData.PcTag
+	planData.Scope = stateData.Scope
+	planData.Seg = stateData.Seg
+
+	// Compare the string representation of the planData and stateData because structs cannot be compated directly
+	if fmt.Sprintf("%s", planData) != fmt.Sprintf("%s", stateData) {
+		planData.PcTag = basetypes.NewStringUnknown()
+		planData.Scope = basetypes.NewStringUnknown()
+		planData.Seg = basetypes.NewStringUnknown()
 	}
 }
 
@@ -3405,11 +3522,15 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 				MarkdownDescription: `The multiple destination forwarding method for L2 Multicast, Broadcast, and Link Layer traffic types.`,
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Optional: true,
+				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
+				},
+				Validators: []validator.String{
+					MakeStringRequired(),
 				},
 				MarkdownDescription: `The name of the Bridge Domain object.`,
 			},

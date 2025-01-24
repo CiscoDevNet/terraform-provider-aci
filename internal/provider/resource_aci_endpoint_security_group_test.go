@@ -522,6 +522,14 @@ resource "aci_imported_contract" "test_imported_contract_1"{
   tenant_dn = aci_tenant.test.id
   name = "imported_contract_name_1"
 }
+resource "aci_vrf" "test_vrf_0"{
+  tenant_dn = aci_tenant.test.id
+  name = "vrf_name_1"
+}
+resource "aci_vrf" "test_vrf_1"{
+  tenant_dn = aci_tenant.test.id
+  name = "vrf_name_0"
+}
 resource "aci_endpoint_security_group" "test_endpoint_security_group_0"{
   application_profile_dn = aci_application_profile.test.id
   name = "esg_0"
@@ -617,7 +625,7 @@ resource "aci_endpoint_security_group" "test" {
           value = "test_value"
 	    },
       ]
-      contract_name = "contract_name_0"
+      contract_name = aci_contract.test_contract_0.name
       priority = "level1"
     },
     {
@@ -642,7 +650,7 @@ resource "aci_endpoint_security_group" "test" {
           value = "test_value"
 	    },
       ]
-      contract_name = "contract_name_1"
+      contract_name = aci_contract.test_contract_1.name
       priority = "level2"
     },
   ]
@@ -719,7 +727,7 @@ resource "aci_endpoint_security_group" "test" {
           value = "test_value"
 	    },
       ]
-      imported_contract_name = "imported_contract_name_0"
+      imported_contract_name = aci_imported_contract.test_imported_contract_0.name
       priority = "level1"
     },
     {
@@ -744,7 +752,7 @@ resource "aci_endpoint_security_group" "test" {
           value = "test_value"
 	    },
       ]
-      imported_contract_name = "imported_contract_name_1"
+      imported_contract_name = aci_imported_contract.test_imported_contract_1.name
       priority = "level2"
     },
   ]
@@ -771,7 +779,7 @@ resource "aci_endpoint_security_group" "test" {
           value = "test_value"
 	    },
       ]
-      contract_name = "contract_name_0"
+      contract_name = aci_contract.test_contract_0.name
     },
     {
       annotation = "annotation_2"
@@ -795,7 +803,7 @@ resource "aci_endpoint_security_group" "test" {
           value = "test_value"
 	    },
       ]
-      contract_name = "contract_name_1"
+      contract_name = aci_contract.test_contract_1.name
     },
   ]
   relation_to_provided_contracts = [
@@ -821,7 +829,7 @@ resource "aci_endpoint_security_group" "test" {
           value = "test_value"
 	    },
       ]
-      contract_name = "contract_name_0"
+      contract_name = aci_contract.test_contract_0.name
       match_criteria = "All"
       priority = "level1"
     },
@@ -847,7 +855,7 @@ resource "aci_endpoint_security_group" "test" {
           value = "test_value"
 	    },
       ]
-      contract_name = "contract_name_1"
+      contract_name = aci_contract.test_contract_1.name
       match_criteria = "AtleastOne"
       priority = "level2"
     },
@@ -874,7 +882,7 @@ resource "aci_endpoint_security_group" "test" {
         value = "test_value"
 	  },
     ]
-    vrf_name = "vrf_name_1"
+    vrf_name = aci_vrf.test_vrf_0.name
   }
   tags = [
     {
@@ -921,7 +929,7 @@ resource "aci_endpoint_security_group" "test" {
           value = "test_value"
 	    },
       ]
-	  contract_name = "contract_name_1"
+	  contract_name = aci_contract.test_contract_1.name
 	  priority = "level2"
 	},
   ]
@@ -958,7 +966,7 @@ resource "aci_endpoint_security_group" "test" {
           value = "test_value"
 	    },
       ]
-	  imported_contract_name = "imported_contract_name_1"
+	  imported_contract_name = aci_imported_contract.test_imported_contract_1.name
 	  priority = "level2"
 	},
   ]
@@ -977,7 +985,7 @@ resource "aci_endpoint_security_group" "test" {
           value = "test_value"
 	    },
       ]
-	  contract_name = "contract_name_1"
+	  contract_name = aci_contract.test_contract_1.name
 	},
   ]
   relation_to_provided_contracts = [ 
@@ -995,7 +1003,7 @@ resource "aci_endpoint_security_group" "test" {
           value = "test_value"
 	    },
       ]
-	  contract_name = "contract_name_1"
+	  contract_name = aci_contract.test_contract_1.name
 	  match_criteria = "AtleastOne"
 	  priority = "level2"
 	},
@@ -1014,7 +1022,7 @@ resource "aci_endpoint_security_group" "test" {
         value = "test_value"
 	  },
     ]
-    vrf_name = "vrf_name_1"
+    vrf_name = aci_vrf.test_vrf_0.name
   }
   tags = [ 
 	{
@@ -1039,7 +1047,7 @@ resource "aci_endpoint_security_group" "test" {
     annotation = "annotation_1"
     annotations = []
     tags = []
-    vrf_name = "vrf_name_1"
+    vrf_name = aci_vrf.test_vrf_0.name
   }
   tags = []
 }

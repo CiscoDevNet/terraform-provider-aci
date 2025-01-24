@@ -429,5 +429,129 @@ parents:
     parent_dn: "aci_tenant.test.id"
     class_in_parent: false
     test_type: apic
+child_targets:
+  - class_name: "monEPGPol"
+    target_dn: "uni/tn-test_tenant/monepg-monitoring_policy_name_1"
+    relation_resource_name: "monitoring_policy"
+    static: false
+    target_dn_ref: "aci_monitoring_policy.test_monitoring_policy_0.id"
+    parent_dependency: "fvTenant"
+    parent_dependency_dn_ref: "aci_tenant.test.id"
+    target_resource_name: "monitoring_policy"
+    parent_dn_key: "tenant_dn"
+    properties:
+        name: "monitoring_policy_name_1"
+  - class_name: "fhsBDPol"
+    target_dn: "uni/tn-test_tenant/bdpol-first_hop_security_policy_name_1"
+    relation_resource_name: "first_hop_security_policy"
+    static: false
+    target_dn_ref: "aci_first_hop_security_policy.test_first_hop_security_policy_0.id"
+    parent_dependency: "fvTenant"
+    parent_dependency_dn_ref: "aci_tenant.test.id"
+    target_resource_name: "first_hop_security_policy"
+    parent_dn_key: "parent_dn"
+    properties:
+        name: "first_hop_security_policy_name_1"
+  - class_name: "ndIfPol"
+    target_dn: "uni/tn-test_tenant/ndifpol-neighbor_discovery_interface_policy_name_1"
+    relation_resource_name: "neighbor_discovery_interface_policy"
+    static: false
+    target_dn_ref: "aci_neighbor_discovery_interface_policy.test_neighbor_discovery_interface_policy_0.id"
+    parent_dependency: "fvTenant"
+    parent_dependency_dn_ref: "aci_tenant.test.id"
+    target_resource_name: "neighbor_discovery_interface_policy"
+    parent_dn_key: "parent_dn"
+    properties:
+        name: "neighbor_discovery_interface_policy_name_1"
+  - class_name: "fvCtx"
+    target_dn: "uni/tn-test_tenant/ctx-vrf_name_1"
+    relation_resource_name: "vrf"
+    static: false
+    target_dn_ref: "aci_vrf.test_vrf_0.id"
+    parent_dependency: "fvTenant"
+    parent_dependency_dn_ref: "aci_tenant.test.id"
+    target_resource_name: "vrf"
+    parent_dn_key: "tenant_dn"
+    properties:
+        name: "vrf_name_1"
+  - class_name: "l3extOut"
+    target_dn: "uni/tn-test_tenant/out-abr_l3_outside_name_1"
+    relation_resource_name: "l3_outside"
+    static: false
+    target_dn_ref: "aci_l3_outside.test_l3_outside_1.id"
+    parent_dependency: "fvTenant"
+    parent_dependency_dn_ref: "aci_tenant.test.id"
+    target_resource_name: "l3_outside"
+    parent_dn_key: "tenant_dn"
+    properties:
+        name: "l3_outside_name_1"
+        relation_l3ext_rs_ectx: "aci_vrf.test_vrf_1.id"
+  - class_name: "l3extOut"
+    target_dn: "uni/tn-test_tenant/out-abr_l3_outside_name_0"
+    relation_resource_name: "l3_outside"
+    static: false
+    target_dn_ref: "aci_l3_outside.test_l3_outside_0.id"
+    parent_dependency: "fvTenant"
+    parent_dependency_dn_ref: "aci_tenant.test.id"
+    target_resource_name: "l3_outside"
+    parent_dn_key: "tenant_dn"
+    properties:
+        name: "l3_outside_name_0"
+        relation_l3ext_rs_ectx: "aci_vrf.test_vrf_1.id"
+  - class_name: "rtctrlProfile"
+    target_dn: "uni/tn-test_tenant/out-abr_l3_outside_name_0/prof-route_control_profile_name_1"
+    relation_resource_name: "route_control_profile"
+    static: false
+    target_dn_ref: "aci_route_control_profile.test_route_control_profile_1.id"
+    parent_dependency: "l3extOut"
+    parent_dependency_dn_ref: "aci_l3_outside.test_l3_outside_0.id"
+    target_resource_name: "route_control_profile"
+    parent_dn_key: "parent_dn"
+    properties:
+        name: "route_control_profile_name_1"
+  - class_name: "dhcpRelayP"
+    target_dn: "uni/tn-test_tenant/relayp-dhcp_relay_policy_name_1"
+    relation_resource_name: "dhcp_relay_policy"
+    static: false
+    target_dn_ref: "aci_dhcp_relay_policy.test_dhcp_relay_policy_0.id"
+    parent_dependency: "fvTenant"
+    parent_dependency_dn_ref: "aci_tenant.test.id"
+    target_resource_name: "dhcp_relay_policy"
+    parent_dn_key: "tenant_dn"
+    properties:
+        name: "dhcp_relay_policy_name_1"
+  - class_name: "fvEpRetPol"
+    target_dn: "uni/tn-test_tenant/epRPol-end_point_retention_policy_name_1"
+    relation_resource_name: "end_point_retention_policy"
+    static: false
+    target_dn_ref: "aci_end_point_retention_policy.test_end_point_retention_policy_0.id"
+    parent_dependency: "fvTenant"
+    parent_dependency_dn_ref: "aci_tenant.test.id"
+    target_resource_name: "end_point_retention_policy"
+    parent_dn_key: "tenant_dn"
+    properties:
+        name: "end_point_retention_policy_name_1"
+  - class_name: "igmpSnoopPol"
+    target_dn: "uni/tn-test_tenant/snPol-igmp_snooping_policy_name_1"
+    relation_resource_name: "igmp_snooping_policy"
+    static: false
+    target_dn_ref: "aci_igmp_snooping_policy.test_igmp_snooping_policy_0.id"
+    parent_dependency: "fvTenant"
+    parent_dependency_dn_ref: "aci_tenant.test.id"
+    target_resource_name: "igmp_snooping_policy"
+    parent_dn_key: "parent_dn"
+    properties:
+        name: "igmp_snooping_policy_name_1"
+  - class_name: "mldSnoopPol"
+    target_dn: "uni/tn-test_tenant/mldsnoopPol-mld_snooping_policy_name_1"
+    relation_resource_name: "mld_snooping_policy"
+    static: false
+    target_dn_ref: "aci_mld_snooping_policy.test_mld_snooping_policy_0.id"
+    parent_dependency: "fvTenant"
+    parent_dependency_dn_ref: "aci_tenant.test.id"
+    target_resource_name: "mld_snooping_policy"
+    parent_dn_key: "parent_dn"
+    properties:
+        name: "mld_snooping_policy_name_1"
 class_version: 1.0(1e)-
 version_mismatch: true
