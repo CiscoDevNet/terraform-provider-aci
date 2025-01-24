@@ -1692,7 +1692,11 @@ resource "aci_{{$target.target_resource_name}}" "test_{{$target.target_resource_
   {{$target.parent_dn_key}} = {{$target.parent_dependency_dn_ref}}
   {{- end}}
   			{{- range $key, $value := $target.properties}}
+				{{- if contains $value "."}}
+  {{$key}} = {{$value}}
+				{{- else}}
   {{$key}} = "{{$value}}"
+				{{- end}}
   			{{- end}}
 }{{$testIndex = add $testIndex 1}}
 
@@ -1710,7 +1714,7 @@ resource "aci_{{$.resourceName}}" "allow_test" {
   {{- end}}
 		{{- range $key, $value := $.resource_required}}
   			{{- if eq $key "target_dn" }}{{$attributeValue := getTestTargetDn $.targets $.resourceName $value true $target_classes 0 false}}
-  {{$key}} = {{if containsString $attributeValue "."}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}
+  {{$key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}
   			{{- else }}
   {{$key}} = "{{$value}}"
   			{{- end }}
@@ -1722,7 +1726,7 @@ resource "aci_{{$.resourceName}}" "allow_test_2" {
   {{- end}}
   		{{- range $key, $value := $.resource_required}}
   			{{- if eq $key "target_dn" }}{{$attributeValue := getTestTargetDn $.targets $.resourceName $value true $target_classes 0 false}}
-  {{$key}} = {{if containsString $attributeValue "."}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}
+  {{$key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}
   			{{- else }}
   {{$key}} = "{{$value}}"
   			{{- end }}
@@ -1738,7 +1742,7 @@ resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClas
   {{- end}}
   		{{- range $key, $value := $.resource_required}}
   			{{- if eq $key "target_dn" }}{{$attributeValue := getTestTargetDn $.targets $.resourceName $value true $target_classes 0 false}}
-  {{$key}} = {{if containsString $attributeValue "."}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}
+  {{$key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}
   			{{- else }}
   {{$key}} = "{{$value}}"
   			{{- end }}
@@ -1754,7 +1758,7 @@ resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClas
 		{{- range $key, $value := $.resource_required}}{{$contains := definedInMap $key $.all}}
 			{{- if not $contains}}
   				{{- if eq $key "target_dn" }}{{$attributeValue := getTestTargetDn $.targets $.resourceName $value true $target_classes 0 false}}
-  {{$key}} = {{if containsString $attributeValue "."}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}
+  {{$key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}
   				{{- else }}
   {{$key}} = "{{$value}}"
   				{{- end }}
@@ -1798,7 +1802,7 @@ resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClas
 		{{- range $key, $value := $.resource_required}}{{$contains := definedInMap $key $.default}}
 			{{- if not $contains}}
   				{{- if eq $key "target_dn" }}{{$attributeValue := getTestTargetDn $.targets $.resourceName $value true $target_classes 0 false}}
-  {{$key}} = {{if containsString $attributeValue "."}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}
+  {{$key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}
   				{{- else }}
   {{$key}} = "{{$value}}"
   				{{- end }}
@@ -1842,7 +1846,7 @@ resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClas
   {{- end}}
   			{{- range $key, $value := $.resource_required}}
   				{{- if eq $key "target_dn" }}{{$attributeValue := getTestTargetDn $.targets $.resourceName $value true $target_classes 0 false}}
-  {{$key}} = {{if containsString $attributeValue "."}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}
+  {{$key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}
   				{{- else }}
   {{$key}} = "{{$value}}"
   				{{- end }}
@@ -1863,15 +1867,15 @@ resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClas
 							{{- end }}
 						{{- else }}
 						{{- if eq $child_key "target_dn"}}{{$attributeValue := getTestTargetDn $.child_targets $key $child_value true nil $index false}}
-    {{$child_key}} = {{if containsString $attributeValue "."}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}	
+    {{$child_key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}	
 						{{- else if (isInterfaceSlice $child_value)}}
 							{{- if lt 0 (len $child_value)}}
     {{$child_key}} = [{{range $index, $subvalue := $child_value}}{{if lt $index (subtract (len $child_value) 1)}}"{{$subvalue}}", {{else}}"{{$subvalue}}"{{end}}{{end}}]
 				{{- else}}
     {{$child_key}} = []
 				{{- end}}	
-						{{- else if ne $child_key "deletable_child"}}
-    {{$child_key}} = "{{$child_value}}"
+						{{- else if ne $child_key "deletable_child"}}{{$attributeValue := getTestTargetValue $.child_targets $child_key $child_value}}
+    {{$child_key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}
 	  					{{- end}}
 					{{- end}}
 					{{- end}}{{ $index = add $index 1 }}
@@ -1892,9 +1896,9 @@ resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClas
 								{{- end }}
 							{{- else }}
 								{{- if eq $child_key "target_dn"}}{{$attributeValue := getTestTargetDn $.child_targets $key $child_value true nil $index false}}
-      {{$child_key}} = {{if containsString $attributeValue "."}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}		
-								{{- else if ne $child_key "deletable_child"}}
-      {{$child_key}} = "{{$child_value}}"
+      {{$child_key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}		
+								{{- else if ne $child_key "deletable_child"}}{{$attributeValue := getTestTargetValue $.child_targets $child_key $child_value}}
+      {{$child_key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}
 	  							{{- end}}
 							{{- end}}
 						{{- end}}{{ $index = add $index 1 }}
@@ -1913,7 +1917,7 @@ resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClas
   {{- end}}
   		{{- range $key, $value := $.resource_required}}
   			{{- if eq $key "target_dn" }}{{$attributeValue := getTestTargetDn $.targets $.resourceName $value true $target_classes 0 false}}
-  {{$key}} = {{if containsString $attributeValue "."}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}
+  {{$key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}
   			{{- else }}
   {{$key}} = "{{$value}}"
   			{{- end }}
@@ -1928,7 +1932,7 @@ resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClas
 {{- end}}
     	{{- range $key, $value := $.resource_required}}
   			{{- if eq $key "target_dn" }}{{$attributeValue := getTestTargetDn $.targets $.resourceName $value true $target_classes 0 false}}
-  {{$key}} = {{if containsString $attributeValue "."}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}
+  {{$key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}
   			{{- else }}
   {{$key}} = "{{$value}}"
   			{{- end }}
@@ -1952,15 +1956,15 @@ resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClas
 							{{- end }}
 						{{- else }}
 						{{- if eq $child_key "target_dn"}}{{$attributeValue := getTestTargetDn $.child_targets $key $child_value true nil $index false}}
-    {{$child_key}} = {{if containsString $attributeValue "."}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}	
+    {{$child_key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}	
 						{{- else if (isInterfaceSlice $child_value)}}
 							{{- if lt 0 (len $child_value)}}
     {{$child_key}} = [{{range $index, $subvalue := $child_value}}{{if lt $index (subtract (len $child_value) 1)}}"{{$subvalue}}", {{else}}"{{$subvalue}}"{{end}}{{end}}]
 				{{- else}}
     {{$child_key}} = []
 				{{- end}}		
-						{{- else if ne $child_key "deletable_child"}}
-    {{$child_key}} = "{{$child_value}}"
+						{{- else if ne $child_key "deletable_child"}}{{$attributeValue := getTestTargetValue $.child_targets $child_key $child_value}}
+    {{$child_key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}
 	  					{{- end}}
 					{{- end}}
 					{{- end}}{{ $index = add $index 1 }}
@@ -1981,9 +1985,9 @@ resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClas
 							{{- end }}
 					{{- else }}
 						{{- if eq $child_key "target_dn"}}{{$attributeValue := getTestTargetDn $.child_targets $key $child_value true nil 1 false}}
-	  {{$child_key}} = {{if containsString $attributeValue "."}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}
-	  					{{- else }}
-	  {{$child_key}} = "{{$child_value}}"
+	  {{$child_key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}
+	  					{{- else }}{{$attributeValue := getTestTargetValue $.child_targets $child_key $child_value}}
+	  {{$child_key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}
 	  					{{- end}}
 					{{- end}}
 				{{- end}}
@@ -2001,7 +2005,7 @@ resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClas
   {{- end}}
     	{{- range $key, $value := $.resource_required}}
   			{{- if eq $key "target_dn" }}{{$attributeValue := getTestTargetDn $.targets $.resourceName $value true $target_classes 0 false}}
-  {{$key}} = {{if containsString $attributeValue "."}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}
+  {{$key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}
   			{{- else }}
   {{$key}} = "{{$value}}"
   			{{- end }}
@@ -2025,15 +2029,15 @@ resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClas
 							{{- end }}
 					{{- else }}
 					{{- if eq $child_key "target_dn"}}{{$attributeValue := getTestTargetDn $.child_targets $key $child_value true nil $index false}}
-    {{$child_key}} = {{if containsString $attributeValue "."}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}	
+    {{$child_key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}	
 					{{- else if (isInterfaceSlice $child_value)}}
 							{{- if lt 0 (len $child_value)}}
     {{$child_key}} = [{{range $index, $subvalue := $child_value}}{{if lt $index (subtract (len $child_value) 1)}}"{{$subvalue}}", {{else}}"{{$subvalue}}"{{end}}{{end}}]
 				{{- else}}
     {{$child_key}} = []
 				{{- end}}		
-					{{- else if ne $child_key "deletable_child"}}
-    {{$child_key}} = "{{$child_value}}"
+					{{- else if ne $child_key "deletable_child"}}{{$attributeValue := getTestTargetValue $.child_targets $child_key $child_value}}
+    {{$child_key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}
 	  				{{- end}}
 				{{- end}}
 				{{- end}}{{ $index = add $index 1 }}
@@ -2053,7 +2057,7 @@ resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClas
   parent_dn = {{.parent_dn}}
   		{{- range $key, $value := $.custom_type}}
   			{{- if eq $key "target_dn" }}{{$attributeValue := getTestTargetDn $.targets $.resourceName $value true $target_classes 0 false}}
-  {{$key}} = {{if containsString $attributeValue "."}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}
+  {{$key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}
   			{{- else }}
   {{$key}} = "{{$value}}"
   			{{- end }}
@@ -2165,7 +2169,7 @@ const testConfig{{.resourceClassName}}Children = {{- if $childDependencies }} te
 resource "aci_{{$.resourceName}}" "test" {
   		{{- range $key, $value := $.resource_required}}
   			{{- if eq $key "target_dn" }}{{$attributeValue := getTestTargetDn $.targets $.resourceName $value true nil 0 false}}
-  {{$key}} = {{if containsString $attributeValue "."}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}
+  {{$key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}
   			{{- else }}
   {{$key}} = "{{$value}}"
   			{{- end }}
@@ -2194,7 +2198,7 @@ resource "aci_{{$.resourceName}}" "test" {
 						{{- end }}
 					{{- else }}
 					{{- if eq $child_key "target_dn"}}{{$attributeValue := getTestTargetDn $.child_targets $key $child_value true nil $index false}}
-    {{$child_key}} = {{if containsString $attributeValue "."}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}	
+    {{$child_key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}	
 					{{- else if (isInterfaceSlice $child_value)}}
 							{{- if lt 0 (len $child_value)}}
     {{$child_key}} = [{{range $index, $subvalue := $child_value}}{{if lt $index (subtract (len $child_value) 1)}}"{{$subvalue}}", {{else}}"{{$subvalue}}"{{end}}{{end}}]
@@ -2223,7 +2227,7 @@ resource "aci_{{$.resourceName}}" "test" {
 							{{- end }}
 					{{- else }}
 						{{- if eq $child_key "target_dn"}}{{$attributeValue := getTestTargetDn $.child_targets $key $child_value true nil $index false}}
-	  {{$child_key}} = {{if containsString $attributeValue "."}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}		
+	  {{$child_key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}		
 						{{- else if ne $child_key "deletable_child"}}
 	  {{$child_key}} = "{{$child_value}}"
 	  						{{- end}}
@@ -2248,7 +2252,7 @@ const testConfig{{.resourceClassName}}ChildrenRemoveFromConfig = {{- if $childDe
 resource "aci_{{$.resourceName}}" "test" {
   		{{- range $key, $value := $.resource_required}}
   			{{- if eq $key "target_dn" }}{{$attributeValue := getTestTargetDn $.targets $.resourceName $value true nil 0 false}}
-  {{$key}} = {{if containsString $attributeValue "."}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}
+  {{$key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}
   			{{- else }}
   {{$key}} = "{{$value}}"
   			{{- end }}
@@ -2260,7 +2264,7 @@ const testConfig{{.resourceClassName}}ChildrenRemoveOne = {{- if $childDependenc
 resource "aci_{{$.resourceName}}" "test" {
     	{{- range $key, $value := $.resource_required}}
   			{{- if eq $key "target_dn" }}{{$attributeValue := getTestTargetDn $.targets $.resourceName $value true nil 0 false}}
-  {{$key}} = {{if containsString $attributeValue "."}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}
+  {{$key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}
   			{{- else }}
   {{$key}} = "{{$value}}"
   			{{- end }}
@@ -2292,7 +2296,7 @@ resource "aci_{{$.resourceName}}" "test" {
 						{{- end }}
 					{{- else }}
 					{{- if eq $child_key "target_dn"}}{{$attributeValue := getTestTargetDn $.child_targets $key $child_value true nil $index false}}
-    {{$child_key}} = {{if containsString $attributeValue "."}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}	
+    {{$child_key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}	
 					{{- else if (isInterfaceSlice $child_value)}}
 							{{- if lt 0 (len $child_value)}}
     {{$child_key}} = [{{range $index, $subvalue := $child_value}}{{if lt $index (subtract (len $child_value) 1)}}"{{$subvalue}}", {{else}}"{{$subvalue}}"{{end}}{{end}}]
@@ -2321,7 +2325,7 @@ resource "aci_{{$.resourceName}}" "test" {
 							{{- end }}
 					{{- else }}
 						{{- if eq $child_key "target_dn"}}{{$attributeValue := getTestTargetDn $.child_targets $key $child_value true nil 1 false}}
-	  {{$child_key}} = {{if containsString $attributeValue "."}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}
+	  {{$child_key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}
 	  					{{- else }}
 	  {{$child_key}} = "{{$child_value}}"
 	  					{{- end}}
@@ -2338,7 +2342,7 @@ const testConfig{{.resourceClassName}}ChildrenRemoveAll = {{- if $childDependenc
 resource "aci_{{$.resourceName}}" "test" {
     	{{- range $key, $value := $.resource_required}}
   			{{- if eq $key "target_dn" }}{{$attributeValue := getTestTargetDn $.targets $.resourceName $value true nil 0 false}}
-  {{$key}} = {{if containsString $attributeValue "."}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}
+  {{$key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}
   			{{- else }}
   {{$key}} = "{{$value}}"
   			{{- end }}
@@ -2370,7 +2374,7 @@ resource "aci_{{$.resourceName}}" "test" {
 						{{- end }}
 					{{- else }}
 					{{- if eq $child_key "target_dn"}}{{$attributeValue := getTestTargetDn $.child_targets $key $child_value true nil $index false}}
-    {{$child_key}} = {{if containsString $attributeValue "."}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}	
+    {{$child_key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}	
 					{{- else if (isInterfaceSlice $child_value)}}
 							{{- if lt 0 (len $child_value)}}
     {{$child_key}} = [{{range $index, $subvalue := $child_value}}{{if lt $index (subtract (len $child_value) 1)}}"{{$subvalue}}", {{else}}"{{$subvalue}}"{{end}}{{end}}]
@@ -2432,7 +2436,7 @@ resource "aci_{{$.resourceName}}" "test" {
 						{{- end }}
 					{{- else }}
 					{{- if eq $child_key "target_dn"}}{{$attributeValue := getTestTargetDn $.child_targets $key $child_value true nil $index false}}
-    {{$indent}}{{$child_key}} = {{if containsString $attributeValue "."}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}	
+    {{$indent}}{{$child_key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}	
 	 				{{- else if (isInterfaceSlice $child_value)}}
 							{{- if lt 0 (len $child_value)}}
     {{$indent}}{{$child_key}} = [{{range $index, $subvalue := $child_value}}{{if lt $index (subtract (len $child_value) 1)}}"{{$subvalue}}", {{else}}"{{$subvalue}}"{{end}}{{end}}]
@@ -2461,7 +2465,7 @@ resource "aci_{{$.resourceName}}" "test" {
 							{{- end }}
 					{{- else }}
 						{{- if eq $child_key "target_dn"}}{{$attributeValue := getTestTargetDn $.child_targets $key $child_value true nil $index false}}
-      {{$indent}}{{$child_key}} = {{if containsString $attributeValue "."}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}		
+      {{$indent}}{{$child_key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}		
 						{{- else if ne $child_key "deletable_child"}}
       {{$indent}}{{$child_key}} = "{{$child_value}}"
 	  						{{- end}}
@@ -2505,7 +2509,7 @@ resource "aci_{{$.resourceName}}" "test" {
 						{{- end }}
 					{{- else }}
 					{{- if eq $child_key "target_dn"}}{{$attributeValue := getTestTargetDn $.child_targets $key $child_value true nil $index false}}
-    {{$indent}}{{$child_key}} = {{if containsString $attributeValue "."}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}	
+    {{$indent}}{{$child_key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}	
 	 				{{- else if (isInterfaceSlice $child_value)}}
 							{{- if lt 0 (len $child_value)}}
     {{$indent}}{{$child_key}} = [{{range $index, $subvalue := $child_value}}{{if lt $index (subtract (len $child_value) 1)}}"{{$subvalue}}", {{else}}"{{$subvalue}}"{{end}}{{end}}]
@@ -2534,7 +2538,7 @@ resource "aci_{{$.resourceName}}" "test" {
 							{{- end }}
 					{{- else }}
 						{{- if eq $child_key "target_dn"}}{{$attributeValue := getTestTargetDn $.child_targets $key $child_value true nil 1 false}}
-      {{$indent}}{{$child_key}} = {{if containsString $attributeValue "."}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}
+      {{$indent}}{{$child_key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}
 	  					{{- else }}
       {{$indent}}{{$child_key}} = "{{$child_value}}"
 	  					{{- end}}
@@ -2576,15 +2580,15 @@ resource "aci_{{$.resourceName}}" "test" {
 						{{- end }}
 					{{- else }}
 					{{- if eq $child_key "target_dn"}}{{$attributeValue := getTestTargetDn $.child_targets $key $child_value true nil $index false}}
-    {{$indent}}{{$child_key}} = {{if containsString $attributeValue "."}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}	
+    {{$indent}}{{$child_key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}	
 	 				{{- else if (isInterfaceSlice $child_value)}}
 							{{- if lt 0 (len $child_value)}}
     {{$indent}}{{$child_key}} = [{{range $index, $subvalue := $child_value}}{{if lt $index (subtract (len $child_value) 1)}}"{{$subvalue}}", {{else}}"{{$subvalue}}"{{end}}{{end}}]
 				{{- else}}
     {{$indent}}{{$child_key}} = []
 				{{- end}}			
-					{{- else if ne $child_key "deletable_child"}}
-    {{$indent}}{{$child_key}} = "{{$child_value}}"
+					{{- else if ne $child_key "deletable_child"}}{{$attributeValue := getTestTargetValue $.child_targets $child_key $child_value}}
+    {{$indent}}{{$child_key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}
 	  				{{- end}}
 				{{- end}}
 				{{- end}}{{ $index = add $index 1 }}

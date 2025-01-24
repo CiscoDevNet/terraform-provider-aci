@@ -1594,6 +1594,17 @@ func (r *FvESgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanR
 				if GetMOName(stateData.DeprecatedFvRsScope.ValueString()) == attributeValues.TnFvCtxName.ValueString() && !attributeValues.TnFvCtxName.IsNull() {
 					planData.DeprecatedFvRsScope = stateData.DeprecatedFvRsScope
 				}
+				var stateAttributeValue, planAttributeValue FvRsScopeFvESgResourceModel
+				stateData.FvRsScope.As(ctx, &stateAttributeValue, basetypes.ObjectAsOptions{})
+				planData.FvRsScope.As(ctx, &planAttributeValue, basetypes.ObjectAsOptions{})
+				if stateAttributeValue.TagAnnotation.IsNull() && attributeValues.TagAnnotation.IsNull() {
+					planAttributeValue.TagAnnotation = basetypes.NewSetUnknown(TagAnnotationFvRsScopeFvESgType)
+				}
+				if stateAttributeValue.TagTag.IsNull() && attributeValues.TagTag.IsNull() {
+					planAttributeValue.TagTag = basetypes.NewSetUnknown(TagTagFvRsScopeFvESgType)
+				}
+				FvRsScopeObject, _ := types.ObjectValueFrom(ctx, FvRsScopeFvESgType, planAttributeValue)
+				planData.FvRsScope = FvRsScopeObject
 			}
 		} else if !configData.DeprecatedFvRsScope.IsNull() {
 			var newAttributeValues FvRsScopeFvESgResourceModel
@@ -1629,7 +1640,7 @@ func (r *FvESgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanR
 
 			var newAttributeValues []FvRsConsFvESgResourceModelV1
 			if stateData != nil {
-				stateData.FvRsCons.ElementsAs(ctx, &newAttributeValues, false)
+				stateData.DeprecatedFvRsCons.ElementsAs(ctx, &newAttributeValues, false)
 			}
 			if len(attributeValues) > 0 {
 				for _, attributeValue := range attributeValues {
@@ -1703,7 +1714,7 @@ func (r *FvESgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanR
 
 			var newAttributeValues []FvRsConsIfFvESgResourceModelV1
 			if stateData != nil {
-				stateData.FvRsConsIf.ElementsAs(ctx, &newAttributeValues, false)
+				stateData.DeprecatedFvRsConsIf.ElementsAs(ctx, &newAttributeValues, false)
 			}
 			if len(attributeValues) > 0 {
 				for _, attributeValue := range attributeValues {
@@ -1777,7 +1788,7 @@ func (r *FvESgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanR
 
 			var newAttributeValues []FvRsProvFvESgResourceModelV1
 			if stateData != nil {
-				stateData.FvRsProv.ElementsAs(ctx, &newAttributeValues, false)
+				stateData.DeprecatedFvRsProv.ElementsAs(ctx, &newAttributeValues, false)
 			}
 			if len(attributeValues) > 0 {
 				for _, attributeValue := range attributeValues {
@@ -1861,10 +1872,12 @@ func (r *FvESgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanR
 func setFvESgReadOnlyInPlan(planData *FvESgResourceModel, stateData *FvESgResourceModel) {
 	// Set read-only fields in planData from stateData
 	planData.PcTag = stateData.PcTag
+	planData.Scope = stateData.Scope
 
 	// Compare the string representation of the planData and stateData because structs cannot be compated directly
 	if fmt.Sprintf("%s", planData) != fmt.Sprintf("%s", stateData) {
 		planData.PcTag = basetypes.NewStringUnknown()
+		planData.Scope = basetypes.NewStringUnknown()
 	}
 }
 
@@ -1929,6 +1942,7 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				DeprecationMessage: "Attribute `relation_fv_rs_cust_qos_pol` is deprecated. The attribute will be removed in the next major version of the provider.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 			},
 			"relation_fv_rs_prot_by": schema.SetAttribute{

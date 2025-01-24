@@ -463,8 +463,21 @@ fvRsScope:
   parents:
     - class_name: "fvESg"
       parent_dependency: "fvAp"
-    - class_name: "fvAEPg"
-      parent_dependency: "fvAp"
+  targets:
+    - class_name: "fvCtx"
+      parent_dependency: "fvTenant"
+      overwrite_parent_dn_key: "tenant_dn"
+      target_dn: "uni/tn-test_tenant/ctx-vrf_name_1"
+      relation_resource_name: "vrf"
+      properties:
+        name: "vrf_name_1"
+    - class_name: "fvCtx"
+      parent_dependency: "fvTenant"
+      overwrite_parent_dn_key: "tenant_dn"
+      target_dn: "uni/tn-test_tenant/ctx-vrf_name_0"
+      relation_resource_name: "vrf"
+      properties:
+        name: "vrf_name_0"
 
 fvRsCons:
   ignores:
@@ -812,9 +825,14 @@ fvAEPg:
 fvRsAEPgMonPol:
   documentation:
     tnMonEPGPolName: "The name of the monitoring policy."
-  test_values:
-    all:
-      monitoring_policy_name: "default"
+  targets:
+    - class_name: "monEPGPol"
+      parent_dependency: "fvTenant"
+      overwrite_parent_dn_key: "tenant_dn"
+      target_dn: "uni/tn-test_tenant/monepg-monitoring_policy_name_1"
+      relation_resource_name: "monitoring_policy"
+      properties:
+        name: "monitoring_policy_name_1"
 
 fvRsCustQosPol:
   test_values:
@@ -822,14 +840,22 @@ fvRsCustQosPol:
       custom_qos_policy_name: "default"
 
 fvRsTrustCtrl:
-  test_values:
-    all:
-      trust_control_policy_name: "default"
+  targets:
+    - class_name: "fhsTrustCtrlPol"
+      parent_dependency: "fvTenant"
+      target_dn: "uni/tn-test_tenant/trustctrlpol-trust_control_policy_name_1"
+      relation_resource_name: "trust_control_policy"
+      properties:
+        name: "trust_control_policy_name_1"
 
 fvRsDppPol:
-  test_values:
-    all:
-      data_plane_policing_policy_name: "default"
+  targets:
+    - class_name: "qosDppPol"
+      parent_dependency: "fvTenant"
+      target_dn: "uni/tn-test_tenant/qosdpppol-data_plane_policing_policy_name_1"
+      relation_resource_name: "data_plane_policing_policy"
+      properties:
+        name: "data_plane_policing_policy_name_1"
 
 fvRsBd:
   test_values:
@@ -1526,6 +1552,14 @@ fvRsABDPolMonPol:
     relation_from_bridge_domain_to_monitoring_policy: "relation_to_monitor_policy"
   documentation:
     tnMonEPGPolName: "The name of the Monitoring Policy object."
+  targets:
+    - class_name: "monEPGPol"
+      parent_dependency: "fvTenant"
+      overwrite_parent_dn_key: "tenant_dn"
+      target_dn: "uni/tn-test_tenant/monepg-monitoring_policy_name_1"
+      relation_resource_name: "monitoring_policy"
+      properties:
+        name: "monitoring_policy_name_1"
 
 fvRsBdToEpRet:
   overwrites:
@@ -1534,18 +1568,40 @@ fvRsBdToEpRet:
   documentation:
     tnFvEpRetPolName: "The name of the Endpoint Retention Policy object."
     resolveAct: "The action to take for resolving the Endpoint Retention Policy object."
+  targets:
+    - class_name: "fvEpRetPol"
+      parent_dependency: "fvTenant"
+      overwrite_parent_dn_key: "tenant_dn"
+      target_dn: "uni/tn-test_tenant/epRPol-end_point_retention_policy_name_1"
+      relation_resource_name: "end_point_retention_policy"
+      properties:
+        name: "end_point_retention_policy_name_1"
 
 fvRsBDToFhs:
   overwrites:
     relation_from_bridge_domain_to_first_hop_security_policy: "relation_to_first_hop_security_policy"
   documentation:
     tnFhsBDPolName: "The name of the First Hop Security Policy object."
+  targets:
+    - class_name: "fhsBDPol"
+      parent_dependency: "fvTenant"
+      target_dn: "uni/tn-test_tenant/bdpol-first_hop_security_policy_name_1"
+      relation_resource_name: "first_hop_security_policy"
+      properties:
+        name: "first_hop_security_policy_name_1"
 
 fvRsBDToNdP:
   overwrites:
     relation_from_bridge_domain_to_neighbor_discovery_interface_policy: "relation_to_neighbor_discovery_interface_policy"
   documentation:
     tnNdIfPolName: "The name of the Neighbor Discovery Interface Policy object."
+  targets:
+    - class_name: "ndIfPol"
+      parent_dependency: "fvTenant"
+      target_dn: "uni/tn-test_tenant/ndifpol-neighbor_discovery_interface_policy_name_1"
+      relation_resource_name: "neighbor_discovery_interface_policy"
+      properties:
+        name: "neighbor_discovery_interface_policy_name_1"
 
 fvRsBDToNetflowMonitorPol:
   overwrites:
@@ -1581,12 +1637,51 @@ fvRsBDToOut:
 fvRsBDToProfile:
   overwrites:
     relation_from_bridge_domain_to_route_control_profile: "relation_to_route_control_profile"
+  targets:
+    - class_name: "fvCtx"
+      parent_dependency: "fvTenant"
+      overwrite_parent_dn_key: "tenant_dn"
+      target_dn: "uni/tn-test_tenant/ctx-vrf_name_1"
+      relation_resource_name: "vrf"
+      properties:
+        name: "vrf_name_1"
+    - class_name: "l3extOut"
+      parent_dependency: "fvTenant"
+      overwrite_parent_dn_key: "tenant_dn"
+      target_dn: "uni/tn-test_tenant/out-abr_l3_outside_name_1"
+      relation_resource_name: "l3_outside"
+      properties:
+        name: "l3_outside_name_1"
+        relation_l3ext_rs_ectx: aci_vrf.test_vrf_1.id
+    - class_name: "l3extOut"
+      parent_dependency: "fvTenant"
+      overwrite_parent_dn_key: "tenant_dn"
+      target_dn: "uni/tn-test_tenant/out-abr_l3_outside_name_0"
+      relation_resource_name: "l3_outside"
+      properties:
+        name: "l3_outside_name_0"
+        relation_l3ext_rs_ectx: aci_vrf.test_vrf_1.id
+    - class_name: "rtctrlProfile"
+      parent_dependency: "l3extOut"
+      target_dn: "uni/tn-test_tenant/out-abr_l3_outside_name_0/prof-route_control_profile_name_1"
+      parent_dependency_dn_ref: aci_l3_outside.test_l3_outside_0.id
+      relation_resource_name: "route_control_profile"
+      properties:
+        name: "route_control_profile_name_1"
 
 fvRsBDToRelayP:
   overwrites:
     relation_from_bridge_domain_to_dhcp_relay_policy: "relation_to_dhcp_relay_policy"
   documentation:
     tnDhcpRelayPName: "The name of the DHCP Relay Policy object."
+  targets:
+    - class_name: "dhcpRelayP"
+      parent_dependency: "fvTenant"
+      overwrite_parent_dn_key: "tenant_dn"
+      target_dn: "uni/tn-test_tenant/relayp-dhcp_relay_policy_name_1"
+      relation_resource_name: "dhcp_relay_policy"
+      properties:
+        name: "dhcp_relay_policy_name_1"
 
 fvRsCtx:
   documentation:
@@ -1595,10 +1690,24 @@ fvRsCtx:
 fvRsIgmpsn:
   documentation:
     tnIgmpSnoopPolName: "The name of the IGMP Snooping Policy object."
+  targets:
+    - class_name: "igmpSnoopPol"
+      parent_dependency: "fvTenant"
+      target_dn: "uni/tn-test_tenant/snPol-igmp_snooping_policy_name_1"
+      relation_resource_name: "igmp_snooping_policy"
+      properties:
+        name: "igmp_snooping_policy_name_1"
 
 fvRsMldsn:
   documentation:
     tnMldSnoopPolName: "The name of the MLD Snooping Policy object."
+  targets:
+    - class_name: "mldSnoopPol"
+      parent_dependency: "fvTenant"
+      target_dn: "uni/tn-test_tenant/mldsnoopPol-mld_snooping_policy_name_1"
+      relation_resource_name: "mld_snooping_policy"
+      properties:
+        name: "mld_snooping_policy_name_1"
 
 fvRogueExceptionMac:
   test_values:

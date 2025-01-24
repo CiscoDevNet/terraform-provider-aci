@@ -866,6 +866,16 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 				}
 									{{- end}}
 								{{- end}}
+				var stateAttributeValue, planAttributeValue {{$SetName}}{{$.ResourceClassName}}ResourceModel
+				stateData.{{$SetName}}.As(ctx, &stateAttributeValue, basetypes.ObjectAsOptions{})
+				planData.{{$SetName}}.As(ctx, &planAttributeValue, basetypes.ObjectAsOptions{})
+								{{- range .Children}}
+				if stateAttributeValue.{{ .ResourceClassName }}.IsNull() && attributeValues.{{ .ResourceClassName }}.IsNull() {
+					planAttributeValue.{{ .ResourceClassName }} = basetypes.NewSetUnknown({{ .ResourceClassName }}{{$SetName}}{{$.ResourceClassName}}Type)
+				}
+								{{- end}}
+				{{$SetName}}Object, _ := types.ObjectValueFrom(ctx, {{$SetName}}{{$.ResourceClassName}}Type, planAttributeValue)
+				planData.{{$SetName}} = {{$SetName}}Object
 			}
 		} else if !configData.Deprecated{{ $SetName }}.IsNull() {
 			var newAttributeValues {{ $SetName }}{{.ParentHierarchy}}ResourceModel
@@ -1113,7 +1123,7 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 					{{$HasNewNamedClassAttributeWithTargetDN = true}}
 			var newAttributeValues []{{ .ResourceClassName }}{{$.ResourceClassName}}ResourceModelV1
 			if stateData != nil {
-				stateData.{{.ResourceClassName}}.ElementsAs(ctx, &newAttributeValues, false)
+				stateData.Deprecated{{.ResourceClassName}}.ElementsAs(ctx, &newAttributeValues, false)
 			}
 				{{- end}}
 			{{- end}}
@@ -1543,6 +1553,7 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 				DeprecationMessage: "Attribute `{{.AttributeName}}` is deprecated. The attribute will be removed in the next major version of the provider.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 			},
 						{{- end}}

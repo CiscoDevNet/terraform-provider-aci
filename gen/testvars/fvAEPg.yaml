@@ -85,7 +85,7 @@ children:
       
   relation_to_application_epg_monitoring_policy:
     - annotation: "annotation_1"
-      monitoring_policy_name: "default"
+      monitoring_policy_name: "monitoring_policy_name_1"
       deletable_child: true
       children:
         annotations:
@@ -305,7 +305,7 @@ children:
       
   relation_to_data_plane_policing_policy:
     - annotation: "annotation_1"
-      data_plane_policing_policy_name: "default"
+      data_plane_policing_policy_name: "data_plane_policing_policy_name_1"
       deletable_child: true
       children:
         annotations:
@@ -611,7 +611,7 @@ children:
       
   relation_to_trust_control_policy:
     - annotation: "annotation_1"
-      trust_control_policy_name: "default"
+      trust_control_policy_name: "trust_control_policy_name_1"
       deletable_child: true
       children:
         annotations:
@@ -649,6 +649,17 @@ parents:
     class_in_parent: false
     test_type: apic
 child_targets:
+  - class_name: "monEPGPol"
+    target_dn: "uni/tn-test_tenant/monepg-monitoring_policy_name_1"
+    relation_resource_name: "monitoring_policy"
+    static: false
+    target_dn_ref: "aci_monitoring_policy.test_monitoring_policy_0.id"
+    parent_dependency: "fvTenant"
+    parent_dependency_dn_ref: "aci_tenant.test.id"
+    target_resource_name: "monitoring_policy"
+    parent_dn_key: "tenant_dn"
+    properties:
+        name: "monitoring_policy_name_1"
   - class_name: "vzBrCP"
     target_dn: "uni/tn-test_tenant/brc-contract_name_0"
     relation_resource_name: "contract"
@@ -701,6 +712,17 @@ child_targets:
     target_dn: "uni/vmmp-VMware/dom-domain_2"
     relation_resource_name: "domain"
     static: true
+  - class_name: "qosDppPol"
+    target_dn: "uni/tn-test_tenant/qosdpppol-data_plane_policing_policy_name_1"
+    relation_resource_name: "data_plane_policing_policy"
+    static: false
+    target_dn_ref: "aci_data_plane_policing_policy.test_data_plane_policing_policy_0.id"
+    parent_dependency: "fvTenant"
+    parent_dependency_dn_ref: "aci_tenant.test.id"
+    target_resource_name: "data_plane_policing_policy"
+    parent_dn_key: "parent_dn"
+    properties:
+        name: "data_plane_policing_policy_name_1"
   - class_name: "fabricPathEp"
     target_dn: "topology/pod-1/paths-101/pathep-[eth1/1]"
     relation_resource_name: "fibre_channel_path"
@@ -769,5 +791,16 @@ child_targets:
     parent_dn_key: "application_profile_dn"
     properties:
         name: "epg_3"
+  - class_name: "fhsTrustCtrlPol"
+    target_dn: "uni/tn-test_tenant/trustctrlpol-trust_control_policy_name_1"
+    relation_resource_name: "trust_control_policy"
+    static: false
+    target_dn_ref: "aci_trust_control_policy.test_trust_control_policy_0.id"
+    parent_dependency: "fvTenant"
+    parent_dependency_dn_ref: "aci_tenant.test.id"
+    target_resource_name: "trust_control_policy"
+    parent_dn_key: "parent_dn"
+    properties:
+        name: "trust_control_policy_name_1"
 class_version: 1.0(1e)-
 version_mismatch: true

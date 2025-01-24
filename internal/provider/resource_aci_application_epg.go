@@ -3267,6 +3267,17 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 				if GetMOName(stateData.DeprecatedFvRsAEPgMonPol.ValueString()) == attributeValues.TnMonEPGPolName.ValueString() && !attributeValues.TnMonEPGPolName.IsNull() {
 					planData.DeprecatedFvRsAEPgMonPol = stateData.DeprecatedFvRsAEPgMonPol
 				}
+				var stateAttributeValue, planAttributeValue FvRsAEPgMonPolFvAEPgResourceModel
+				stateData.FvRsAEPgMonPol.As(ctx, &stateAttributeValue, basetypes.ObjectAsOptions{})
+				planData.FvRsAEPgMonPol.As(ctx, &planAttributeValue, basetypes.ObjectAsOptions{})
+				if stateAttributeValue.TagAnnotation.IsNull() && attributeValues.TagAnnotation.IsNull() {
+					planAttributeValue.TagAnnotation = basetypes.NewSetUnknown(TagAnnotationFvRsAEPgMonPolFvAEPgType)
+				}
+				if stateAttributeValue.TagTag.IsNull() && attributeValues.TagTag.IsNull() {
+					planAttributeValue.TagTag = basetypes.NewSetUnknown(TagTagFvRsAEPgMonPolFvAEPgType)
+				}
+				FvRsAEPgMonPolObject, _ := types.ObjectValueFrom(ctx, FvRsAEPgMonPolFvAEPgType, planAttributeValue)
+				planData.FvRsAEPgMonPol = FvRsAEPgMonPolObject
 			}
 		} else if !configData.DeprecatedFvRsAEPgMonPol.IsNull() {
 			var newAttributeValues FvRsAEPgMonPolFvAEPgResourceModel
@@ -3305,6 +3316,17 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 				if GetMOName(stateData.DeprecatedFvRsBd.ValueString()) == attributeValues.TnFvBDName.ValueString() && !attributeValues.TnFvBDName.IsNull() {
 					planData.DeprecatedFvRsBd = stateData.DeprecatedFvRsBd
 				}
+				var stateAttributeValue, planAttributeValue FvRsBdFvAEPgResourceModel
+				stateData.FvRsBd.As(ctx, &stateAttributeValue, basetypes.ObjectAsOptions{})
+				planData.FvRsBd.As(ctx, &planAttributeValue, basetypes.ObjectAsOptions{})
+				if stateAttributeValue.TagAnnotation.IsNull() && attributeValues.TagAnnotation.IsNull() {
+					planAttributeValue.TagAnnotation = basetypes.NewSetUnknown(TagAnnotationFvRsBdFvAEPgType)
+				}
+				if stateAttributeValue.TagTag.IsNull() && attributeValues.TagTag.IsNull() {
+					planAttributeValue.TagTag = basetypes.NewSetUnknown(TagTagFvRsBdFvAEPgType)
+				}
+				FvRsBdObject, _ := types.ObjectValueFrom(ctx, FvRsBdFvAEPgType, planAttributeValue)
+				planData.FvRsBd = FvRsBdObject
 			}
 		} else if !configData.DeprecatedFvRsBd.IsNull() {
 			var newAttributeValues FvRsBdFvAEPgResourceModel
@@ -3475,6 +3497,17 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 				if GetMOName(stateData.DeprecatedFvRsCustQosPol.ValueString()) == attributeValues.TnQosCustomPolName.ValueString() && !attributeValues.TnQosCustomPolName.IsNull() {
 					planData.DeprecatedFvRsCustQosPol = stateData.DeprecatedFvRsCustQosPol
 				}
+				var stateAttributeValue, planAttributeValue FvRsCustQosPolFvAEPgResourceModel
+				stateData.FvRsCustQosPol.As(ctx, &stateAttributeValue, basetypes.ObjectAsOptions{})
+				planData.FvRsCustQosPol.As(ctx, &planAttributeValue, basetypes.ObjectAsOptions{})
+				if stateAttributeValue.TagAnnotation.IsNull() && attributeValues.TagAnnotation.IsNull() {
+					planAttributeValue.TagAnnotation = basetypes.NewSetUnknown(TagAnnotationFvRsCustQosPolFvAEPgType)
+				}
+				if stateAttributeValue.TagTag.IsNull() && attributeValues.TagTag.IsNull() {
+					planAttributeValue.TagTag = basetypes.NewSetUnknown(TagTagFvRsCustQosPolFvAEPgType)
+				}
+				FvRsCustQosPolObject, _ := types.ObjectValueFrom(ctx, FvRsCustQosPolFvAEPgType, planAttributeValue)
+				planData.FvRsCustQosPol = FvRsCustQosPolObject
 			}
 		} else if !configData.DeprecatedFvRsCustQosPol.IsNull() {
 			var newAttributeValues FvRsCustQosPolFvAEPgResourceModel
@@ -3513,6 +3546,17 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 				if GetMOName(stateData.DeprecatedFvRsDppPol.ValueString()) == attributeValues.TnQosDppPolName.ValueString() && !attributeValues.TnQosDppPolName.IsNull() {
 					planData.DeprecatedFvRsDppPol = stateData.DeprecatedFvRsDppPol
 				}
+				var stateAttributeValue, planAttributeValue FvRsDppPolFvAEPgResourceModel
+				stateData.FvRsDppPol.As(ctx, &stateAttributeValue, basetypes.ObjectAsOptions{})
+				planData.FvRsDppPol.As(ctx, &planAttributeValue, basetypes.ObjectAsOptions{})
+				if stateAttributeValue.TagAnnotation.IsNull() && attributeValues.TagAnnotation.IsNull() {
+					planAttributeValue.TagAnnotation = basetypes.NewSetUnknown(TagAnnotationFvRsDppPolFvAEPgType)
+				}
+				if stateAttributeValue.TagTag.IsNull() && attributeValues.TagTag.IsNull() {
+					planAttributeValue.TagTag = basetypes.NewSetUnknown(TagTagFvRsDppPolFvAEPgType)
+				}
+				FvRsDppPolObject, _ := types.ObjectValueFrom(ctx, FvRsDppPolFvAEPgType, planAttributeValue)
+				planData.FvRsDppPol = FvRsDppPolObject
 			}
 		} else if !configData.DeprecatedFvRsDppPol.IsNull() {
 			var newAttributeValues FvRsDppPolFvAEPgResourceModel
@@ -3959,6 +4003,17 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 				if GetMOName(stateData.DeprecatedFvRsTrustCtrl.ValueString()) == attributeValues.TnFhsTrustCtrlPolName.ValueString() && !attributeValues.TnFhsTrustCtrlPolName.IsNull() {
 					planData.DeprecatedFvRsTrustCtrl = stateData.DeprecatedFvRsTrustCtrl
 				}
+				var stateAttributeValue, planAttributeValue FvRsTrustCtrlFvAEPgResourceModel
+				stateData.FvRsTrustCtrl.As(ctx, &stateAttributeValue, basetypes.ObjectAsOptions{})
+				planData.FvRsTrustCtrl.As(ctx, &planAttributeValue, basetypes.ObjectAsOptions{})
+				if stateAttributeValue.TagAnnotation.IsNull() && attributeValues.TagAnnotation.IsNull() {
+					planAttributeValue.TagAnnotation = basetypes.NewSetUnknown(TagAnnotationFvRsTrustCtrlFvAEPgType)
+				}
+				if stateAttributeValue.TagTag.IsNull() && attributeValues.TagTag.IsNull() {
+					planAttributeValue.TagTag = basetypes.NewSetUnknown(TagTagFvRsTrustCtrlFvAEPgType)
+				}
+				FvRsTrustCtrlObject, _ := types.ObjectValueFrom(ctx, FvRsTrustCtrlFvAEPgType, planAttributeValue)
+				planData.FvRsTrustCtrl = FvRsTrustCtrlObject
 			}
 		} else if !configData.DeprecatedFvRsTrustCtrl.IsNull() {
 			var newAttributeValues FvRsTrustCtrlFvAEPgResourceModel
@@ -4058,10 +4113,12 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 func setFvAEPgReadOnlyInPlan(planData *FvAEPgResourceModel, stateData *FvAEPgResourceModel) {
 	// Set read-only fields in planData from stateData
 	planData.PcTag = stateData.PcTag
+	planData.Scope = stateData.Scope
 
 	// Compare the string representation of the planData and stateData because structs cannot be compated directly
 	if fmt.Sprintf("%s", planData) != fmt.Sprintf("%s", stateData) {
 		planData.PcTag = basetypes.NewStringUnknown()
+		planData.Scope = basetypes.NewStringUnknown()
 	}
 }
 
