@@ -2779,33 +2779,87 @@ func avoidFvBDPlanChangeForKnownAfterApplyOnly(ctx context.Context, planData, st
 		planData.PcTag = basetypes.NewStringUnknown()
 		planData.Scope = basetypes.NewStringUnknown()
 		planData.Seg = basetypes.NewStringUnknown()
-		planData.DeprecatedArpFlood = basetypes.NewStringUnknown()
-		planData.DeprecatedEpClear = basetypes.NewStringUnknown()
-		planData.DeprecatedEpMoveDetectMode = basetypes.NewStringUnknown()
-		planData.DeprecatedHostBasedRouting = basetypes.NewStringUnknown()
-		planData.DeprecatedIntersiteBumTrafficAllow = basetypes.NewStringUnknown()
-		planData.DeprecatedIpv6McastAllow = basetypes.NewStringUnknown()
-		planData.DeprecatedLlAddr = basetypes.NewStringUnknown()
-		planData.DeprecatedMac = basetypes.NewStringUnknown()
-		planData.DeprecatedMcastAllow = basetypes.NewStringUnknown()
-		planData.DeprecatedMultiDstPktAct = basetypes.NewStringUnknown()
-		planData.DeprecatedParentDn = basetypes.NewStringUnknown()
-		planData.DeprecatedUnicastRoute = basetypes.NewStringUnknown()
-		planData.DeprecatedUnkMacUcastAct = basetypes.NewStringUnknown()
-		planData.DeprecatedUnkMcastAct = basetypes.NewStringUnknown()
-		planData.DeprecatedV6unkMcastAct = basetypes.NewStringUnknown()
-		planData.DeprecatedVmac = basetypes.NewStringUnknown()
-		planData.DeprecatedFvRsBDToRelayP = basetypes.NewStringUnknown()
-		planData.DeprecatedFvRsBdToEpRet = basetypes.NewStringUnknown()
-		planData.DeprecatedFvRsBDToFhs = basetypes.NewStringUnknown()
-		planData.DeprecatedFvRsIgmpsn = basetypes.NewStringUnknown()
-		planData.DeprecatedFvRsBDToOut = basetypes.NewSetUnknown(basetypes.StringType{})
-		planData.DeprecatedFvRsMldsn = basetypes.NewStringUnknown()
-		planData.DeprecatedFvRsABDPolMonPol = basetypes.NewStringUnknown()
-		planData.DeprecatedFvRsBDToNdP = basetypes.NewStringUnknown()
-		planData.DeprecatedFvRsBDToProfile = basetypes.NewStringUnknown()
-		planData.DeprecatedFvRsCtx = basetypes.NewStringUnknown()
-		setUnknownDeprecatedFvRsBDToNetflowMonitorPolFvBDResourceModelToPlan(ctx, planData)
+		if configData.DeprecatedArpFlood.IsNull() {
+			planData.DeprecatedArpFlood = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedEpClear.IsNull() {
+			planData.DeprecatedEpClear = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedEpMoveDetectMode.IsNull() {
+			planData.DeprecatedEpMoveDetectMode = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedHostBasedRouting.IsNull() {
+			planData.DeprecatedHostBasedRouting = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedIntersiteBumTrafficAllow.IsNull() {
+			planData.DeprecatedIntersiteBumTrafficAllow = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedIpv6McastAllow.IsNull() {
+			planData.DeprecatedIpv6McastAllow = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedLlAddr.IsNull() {
+			planData.DeprecatedLlAddr = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedMac.IsNull() {
+			planData.DeprecatedMac = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedMcastAllow.IsNull() {
+			planData.DeprecatedMcastAllow = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedMultiDstPktAct.IsNull() {
+			planData.DeprecatedMultiDstPktAct = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedParentDn.IsNull() {
+			planData.DeprecatedParentDn = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedUnicastRoute.IsNull() {
+			planData.DeprecatedUnicastRoute = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedUnkMacUcastAct.IsNull() {
+			planData.DeprecatedUnkMacUcastAct = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedUnkMcastAct.IsNull() {
+			planData.DeprecatedUnkMcastAct = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedV6unkMcastAct.IsNull() {
+			planData.DeprecatedV6unkMcastAct = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedVmac.IsNull() {
+			planData.DeprecatedVmac = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedFvRsBDToRelayP.IsNull() {
+			planData.DeprecatedFvRsBDToRelayP = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedFvRsBdToEpRet.IsNull() {
+			planData.DeprecatedFvRsBdToEpRet = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedFvRsBDToFhs.IsNull() {
+			planData.DeprecatedFvRsBDToFhs = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedFvRsIgmpsn.IsNull() {
+			planData.DeprecatedFvRsIgmpsn = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedFvRsBDToOut.IsNull() {
+			planData.DeprecatedFvRsBDToOut = basetypes.NewSetUnknown(basetypes.StringType{})
+		}
+		if configData.DeprecatedFvRsMldsn.IsNull() {
+			planData.DeprecatedFvRsMldsn = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedFvRsABDPolMonPol.IsNull() {
+			planData.DeprecatedFvRsABDPolMonPol = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedFvRsBDToNdP.IsNull() {
+			planData.DeprecatedFvRsBDToNdP = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedFvRsBDToProfile.IsNull() {
+			planData.DeprecatedFvRsBDToProfile = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedFvRsCtx.IsNull() {
+			planData.DeprecatedFvRsCtx = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedFvRsBDToNetflowMonitorPol.IsNull() {
+			setUnknownDeprecatedFvRsBDToNetflowMonitorPolFvBDResourceModelToPlan(ctx, planData)
+		}
 	}
 }
 
