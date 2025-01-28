@@ -2307,157 +2307,71 @@ func (r *FvBDResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRe
 			}
 		}
 
-		if !configData.ArpFlood.IsNull() {
-			planData.DeprecatedArpFlood = configData.ArpFlood
-		} else if !configData.DeprecatedArpFlood.IsNull() {
+		if !configData.DeprecatedArpFlood.IsNull() {
 			planData.ArpFlood = configData.DeprecatedArpFlood
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedArpFlood = stateData.DeprecatedArpFlood
 		}
 
-		if !configData.EpClear.IsNull() {
-			planData.DeprecatedEpClear = configData.EpClear
-		} else if !configData.DeprecatedEpClear.IsNull() {
+		if !configData.DeprecatedEpClear.IsNull() {
 			planData.EpClear = configData.DeprecatedEpClear
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedEpClear = stateData.DeprecatedEpClear
 		}
 
-		if !configData.EpMoveDetectMode.IsNull() {
-			planData.DeprecatedEpMoveDetectMode = configData.EpMoveDetectMode
-		} else if !configData.DeprecatedEpMoveDetectMode.IsNull() {
+		if !configData.DeprecatedEpMoveDetectMode.IsNull() {
 			planData.EpMoveDetectMode = configData.DeprecatedEpMoveDetectMode
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedEpMoveDetectMode = stateData.DeprecatedEpMoveDetectMode
 		}
 
-		if !configData.HostBasedRouting.IsNull() {
-			planData.DeprecatedHostBasedRouting = configData.HostBasedRouting
-		} else if !configData.DeprecatedHostBasedRouting.IsNull() {
+		if !configData.DeprecatedHostBasedRouting.IsNull() {
 			planData.HostBasedRouting = configData.DeprecatedHostBasedRouting
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedHostBasedRouting = stateData.DeprecatedHostBasedRouting
 		}
 
-		if !configData.IntersiteBumTrafficAllow.IsNull() {
-			planData.DeprecatedIntersiteBumTrafficAllow = configData.IntersiteBumTrafficAllow
-		} else if !configData.DeprecatedIntersiteBumTrafficAllow.IsNull() {
+		if !configData.DeprecatedIntersiteBumTrafficAllow.IsNull() {
 			planData.IntersiteBumTrafficAllow = configData.DeprecatedIntersiteBumTrafficAllow
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedIntersiteBumTrafficAllow = stateData.DeprecatedIntersiteBumTrafficAllow
 		}
 
-		if !configData.Ipv6McastAllow.IsNull() {
-			planData.DeprecatedIpv6McastAllow = configData.Ipv6McastAllow
-		} else if !configData.DeprecatedIpv6McastAllow.IsNull() {
+		if !configData.DeprecatedIpv6McastAllow.IsNull() {
 			planData.Ipv6McastAllow = configData.DeprecatedIpv6McastAllow
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedIpv6McastAllow = stateData.DeprecatedIpv6McastAllow
 		}
 
-		if !configData.LlAddr.IsNull() {
-			planData.DeprecatedLlAddr = configData.LlAddr
-		} else if !configData.DeprecatedLlAddr.IsNull() {
+		if !configData.DeprecatedLlAddr.IsNull() {
 			planData.LlAddr = configData.DeprecatedLlAddr
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedLlAddr = stateData.DeprecatedLlAddr
 		}
 
-		if !configData.Mac.IsNull() {
-			planData.DeprecatedMac = configData.Mac
-		} else if !configData.DeprecatedMac.IsNull() {
+		if !configData.DeprecatedMac.IsNull() {
 			planData.Mac = configData.DeprecatedMac
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedMac = stateData.DeprecatedMac
 		}
 
-		if !configData.McastAllow.IsNull() {
-			planData.DeprecatedMcastAllow = configData.McastAllow
-		} else if !configData.DeprecatedMcastAllow.IsNull() {
+		if !configData.DeprecatedMcastAllow.IsNull() {
 			planData.McastAllow = configData.DeprecatedMcastAllow
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedMcastAllow = stateData.DeprecatedMcastAllow
 		}
 
-		if !configData.MultiDstPktAct.IsNull() {
-			planData.DeprecatedMultiDstPktAct = configData.MultiDstPktAct
-		} else if !configData.DeprecatedMultiDstPktAct.IsNull() {
+		if !configData.DeprecatedMultiDstPktAct.IsNull() {
 			planData.MultiDstPktAct = configData.DeprecatedMultiDstPktAct
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedMultiDstPktAct = stateData.DeprecatedMultiDstPktAct
 		}
 
-		if !configData.ParentDn.IsNull() {
-			planData.DeprecatedParentDn = configData.ParentDn
-		} else if !configData.DeprecatedParentDn.IsNull() {
+		if !configData.DeprecatedParentDn.IsNull() {
 			planData.ParentDn = configData.DeprecatedParentDn
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedParentDn = stateData.DeprecatedParentDn
 		}
 
-		if !configData.UnicastRoute.IsNull() {
-			planData.DeprecatedUnicastRoute = configData.UnicastRoute
-		} else if !configData.DeprecatedUnicastRoute.IsNull() {
+		if !configData.DeprecatedUnicastRoute.IsNull() {
 			planData.UnicastRoute = configData.DeprecatedUnicastRoute
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedUnicastRoute = stateData.DeprecatedUnicastRoute
 		}
 
-		if !configData.UnkMacUcastAct.IsNull() {
-			planData.DeprecatedUnkMacUcastAct = configData.UnkMacUcastAct
-		} else if !configData.DeprecatedUnkMacUcastAct.IsNull() {
+		if !configData.DeprecatedUnkMacUcastAct.IsNull() {
 			planData.UnkMacUcastAct = configData.DeprecatedUnkMacUcastAct
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedUnkMacUcastAct = stateData.DeprecatedUnkMacUcastAct
 		}
 
-		if !configData.UnkMcastAct.IsNull() {
-			planData.DeprecatedUnkMcastAct = configData.UnkMcastAct
-		} else if !configData.DeprecatedUnkMcastAct.IsNull() {
+		if !configData.DeprecatedUnkMcastAct.IsNull() {
 			planData.UnkMcastAct = configData.DeprecatedUnkMcastAct
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedUnkMcastAct = stateData.DeprecatedUnkMcastAct
 		}
 
-		if !configData.V6unkMcastAct.IsNull() {
-			planData.DeprecatedV6unkMcastAct = configData.V6unkMcastAct
-		} else if !configData.DeprecatedV6unkMcastAct.IsNull() {
+		if !configData.DeprecatedV6unkMcastAct.IsNull() {
 			planData.V6unkMcastAct = configData.DeprecatedV6unkMcastAct
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedV6unkMcastAct = stateData.DeprecatedV6unkMcastAct
 		}
 
-		if !configData.Vmac.IsNull() {
-			planData.DeprecatedVmac = configData.Vmac
-		} else if !configData.DeprecatedVmac.IsNull() {
+		if !configData.DeprecatedVmac.IsNull() {
 			planData.Vmac = configData.DeprecatedVmac
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedVmac = stateData.DeprecatedVmac
 		}
 
-		if !configData.FvRsBDToRelayP.IsNull() && stateData != nil {
-			if IsEmptySingleNestedAttribute(configData.FvRsBDToRelayP.Attributes()) {
-				planData.FvRsBDToRelayP = configData.FvRsBDToRelayP
-				planData.DeprecatedFvRsBDToRelayP = basetypes.NewStringNull()
-			} else {
-				var attributeValues FvRsBDToRelayPFvBDResourceModel
-				configData.FvRsBDToRelayP.As(ctx, &attributeValues, basetypes.ObjectAsOptions{})
-				if GetMOName(stateData.DeprecatedFvRsBDToRelayP.ValueString()) == attributeValues.TnDhcpRelayPName.ValueString() && !attributeValues.TnDhcpRelayPName.IsNull() {
-					planData.DeprecatedFvRsBDToRelayP = stateData.DeprecatedFvRsBDToRelayP
-				}
-				var stateAttributeValue, planAttributeValue FvRsBDToRelayPFvBDResourceModel
-				stateData.FvRsBDToRelayP.As(ctx, &stateAttributeValue, basetypes.ObjectAsOptions{})
-				planData.FvRsBDToRelayP.As(ctx, &planAttributeValue, basetypes.ObjectAsOptions{})
-				if stateAttributeValue.TagAnnotation.IsNull() && attributeValues.TagAnnotation.IsNull() {
-					planAttributeValue.TagAnnotation = basetypes.NewSetUnknown(TagAnnotationFvRsBDToRelayPFvBDType)
-				}
-				if stateAttributeValue.TagTag.IsNull() && attributeValues.TagTag.IsNull() {
-					planAttributeValue.TagTag = basetypes.NewSetUnknown(TagTagFvRsBDToRelayPFvBDType)
-				}
-				FvRsBDToRelayPObject, _ := types.ObjectValueFrom(ctx, FvRsBDToRelayPFvBDType, planAttributeValue)
-				planData.FvRsBDToRelayP = FvRsBDToRelayPObject
-			}
-		} else if !configData.DeprecatedFvRsBDToRelayP.IsNull() {
+		if !configData.DeprecatedFvRsBDToRelayP.IsNull() {
 			var newAttributeValues FvRsBDToRelayPFvBDResourceModel
 			tagAnnotationFvRsBDToRelayPFvBDValue, _ := types.SetValueFrom(ctx, TagAnnotationFvRsBDToRelayPFvBDType, make([]TagAnnotationFvRsBDToRelayPFvBDResourceModel, 0))
 			tagTagFvRsBDToRelayPFvBDValue, _ := types.SetValueFrom(ctx, TagTagFvRsBDToRelayPFvBDType, make([]TagTagFvRsBDToRelayPFvBDResourceModel, 0))
@@ -2480,33 +2394,9 @@ func (r *FvBDResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRe
 			}
 			FvRsBDToRelayPObject, _ := types.ObjectValueFrom(ctx, FvRsBDToRelayPFvBDType, FvRsBDToRelayP)
 			planData.FvRsBDToRelayP = FvRsBDToRelayPObject
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedFvRsBDToRelayP = stateData.DeprecatedFvRsBDToRelayP
 		}
 
-		if !configData.FvRsBdToEpRet.IsNull() && stateData != nil {
-			if IsEmptySingleNestedAttribute(configData.FvRsBdToEpRet.Attributes()) {
-				planData.FvRsBdToEpRet = configData.FvRsBdToEpRet
-				planData.DeprecatedFvRsBdToEpRet = basetypes.NewStringNull()
-			} else {
-				var attributeValues FvRsBdToEpRetFvBDResourceModel
-				configData.FvRsBdToEpRet.As(ctx, &attributeValues, basetypes.ObjectAsOptions{})
-				if GetMOName(stateData.DeprecatedFvRsBdToEpRet.ValueString()) == attributeValues.TnFvEpRetPolName.ValueString() && !attributeValues.TnFvEpRetPolName.IsNull() {
-					planData.DeprecatedFvRsBdToEpRet = stateData.DeprecatedFvRsBdToEpRet
-				}
-				var stateAttributeValue, planAttributeValue FvRsBdToEpRetFvBDResourceModel
-				stateData.FvRsBdToEpRet.As(ctx, &stateAttributeValue, basetypes.ObjectAsOptions{})
-				planData.FvRsBdToEpRet.As(ctx, &planAttributeValue, basetypes.ObjectAsOptions{})
-				if stateAttributeValue.TagAnnotation.IsNull() && attributeValues.TagAnnotation.IsNull() {
-					planAttributeValue.TagAnnotation = basetypes.NewSetUnknown(TagAnnotationFvRsBdToEpRetFvBDType)
-				}
-				if stateAttributeValue.TagTag.IsNull() && attributeValues.TagTag.IsNull() {
-					planAttributeValue.TagTag = basetypes.NewSetUnknown(TagTagFvRsBdToEpRetFvBDType)
-				}
-				FvRsBdToEpRetObject, _ := types.ObjectValueFrom(ctx, FvRsBdToEpRetFvBDType, planAttributeValue)
-				planData.FvRsBdToEpRet = FvRsBdToEpRetObject
-			}
-		} else if !configData.DeprecatedFvRsBdToEpRet.IsNull() {
+		if !configData.DeprecatedFvRsBdToEpRet.IsNull() {
 			var newAttributeValues FvRsBdToEpRetFvBDResourceModel
 			tagAnnotationFvRsBdToEpRetFvBDValue, _ := types.SetValueFrom(ctx, TagAnnotationFvRsBdToEpRetFvBDType, make([]TagAnnotationFvRsBdToEpRetFvBDResourceModel, 0))
 			tagTagFvRsBdToEpRetFvBDValue, _ := types.SetValueFrom(ctx, TagTagFvRsBdToEpRetFvBDType, make([]TagTagFvRsBdToEpRetFvBDResourceModel, 0))
@@ -2530,33 +2420,9 @@ func (r *FvBDResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRe
 			}
 			FvRsBdToEpRetObject, _ := types.ObjectValueFrom(ctx, FvRsBdToEpRetFvBDType, FvRsBdToEpRet)
 			planData.FvRsBdToEpRet = FvRsBdToEpRetObject
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedFvRsBdToEpRet = stateData.DeprecatedFvRsBdToEpRet
 		}
 
-		if !configData.FvRsBDToFhs.IsNull() && stateData != nil {
-			if IsEmptySingleNestedAttribute(configData.FvRsBDToFhs.Attributes()) {
-				planData.FvRsBDToFhs = configData.FvRsBDToFhs
-				planData.DeprecatedFvRsBDToFhs = basetypes.NewStringNull()
-			} else {
-				var attributeValues FvRsBDToFhsFvBDResourceModel
-				configData.FvRsBDToFhs.As(ctx, &attributeValues, basetypes.ObjectAsOptions{})
-				if GetMOName(stateData.DeprecatedFvRsBDToFhs.ValueString()) == attributeValues.TnFhsBDPolName.ValueString() && !attributeValues.TnFhsBDPolName.IsNull() {
-					planData.DeprecatedFvRsBDToFhs = stateData.DeprecatedFvRsBDToFhs
-				}
-				var stateAttributeValue, planAttributeValue FvRsBDToFhsFvBDResourceModel
-				stateData.FvRsBDToFhs.As(ctx, &stateAttributeValue, basetypes.ObjectAsOptions{})
-				planData.FvRsBDToFhs.As(ctx, &planAttributeValue, basetypes.ObjectAsOptions{})
-				if stateAttributeValue.TagAnnotation.IsNull() && attributeValues.TagAnnotation.IsNull() {
-					planAttributeValue.TagAnnotation = basetypes.NewSetUnknown(TagAnnotationFvRsBDToFhsFvBDType)
-				}
-				if stateAttributeValue.TagTag.IsNull() && attributeValues.TagTag.IsNull() {
-					planAttributeValue.TagTag = basetypes.NewSetUnknown(TagTagFvRsBDToFhsFvBDType)
-				}
-				FvRsBDToFhsObject, _ := types.ObjectValueFrom(ctx, FvRsBDToFhsFvBDType, planAttributeValue)
-				planData.FvRsBDToFhs = FvRsBDToFhsObject
-			}
-		} else if !configData.DeprecatedFvRsBDToFhs.IsNull() {
+		if !configData.DeprecatedFvRsBDToFhs.IsNull() {
 			var newAttributeValues FvRsBDToFhsFvBDResourceModel
 			tagAnnotationFvRsBDToFhsFvBDValue, _ := types.SetValueFrom(ctx, TagAnnotationFvRsBDToFhsFvBDType, make([]TagAnnotationFvRsBDToFhsFvBDResourceModel, 0))
 			tagTagFvRsBDToFhsFvBDValue, _ := types.SetValueFrom(ctx, TagTagFvRsBDToFhsFvBDType, make([]TagTagFvRsBDToFhsFvBDResourceModel, 0))
@@ -2579,33 +2445,9 @@ func (r *FvBDResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRe
 			}
 			FvRsBDToFhsObject, _ := types.ObjectValueFrom(ctx, FvRsBDToFhsFvBDType, FvRsBDToFhs)
 			planData.FvRsBDToFhs = FvRsBDToFhsObject
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedFvRsBDToFhs = stateData.DeprecatedFvRsBDToFhs
 		}
 
-		if !configData.FvRsIgmpsn.IsNull() && stateData != nil {
-			if IsEmptySingleNestedAttribute(configData.FvRsIgmpsn.Attributes()) {
-				planData.FvRsIgmpsn = configData.FvRsIgmpsn
-				planData.DeprecatedFvRsIgmpsn = basetypes.NewStringNull()
-			} else {
-				var attributeValues FvRsIgmpsnFvBDResourceModel
-				configData.FvRsIgmpsn.As(ctx, &attributeValues, basetypes.ObjectAsOptions{})
-				if GetMOName(stateData.DeprecatedFvRsIgmpsn.ValueString()) == attributeValues.TnIgmpSnoopPolName.ValueString() && !attributeValues.TnIgmpSnoopPolName.IsNull() {
-					planData.DeprecatedFvRsIgmpsn = stateData.DeprecatedFvRsIgmpsn
-				}
-				var stateAttributeValue, planAttributeValue FvRsIgmpsnFvBDResourceModel
-				stateData.FvRsIgmpsn.As(ctx, &stateAttributeValue, basetypes.ObjectAsOptions{})
-				planData.FvRsIgmpsn.As(ctx, &planAttributeValue, basetypes.ObjectAsOptions{})
-				if stateAttributeValue.TagAnnotation.IsNull() && attributeValues.TagAnnotation.IsNull() {
-					planAttributeValue.TagAnnotation = basetypes.NewSetUnknown(TagAnnotationFvRsIgmpsnFvBDType)
-				}
-				if stateAttributeValue.TagTag.IsNull() && attributeValues.TagTag.IsNull() {
-					planAttributeValue.TagTag = basetypes.NewSetUnknown(TagTagFvRsIgmpsnFvBDType)
-				}
-				FvRsIgmpsnObject, _ := types.ObjectValueFrom(ctx, FvRsIgmpsnFvBDType, planAttributeValue)
-				planData.FvRsIgmpsn = FvRsIgmpsnObject
-			}
-		} else if !configData.DeprecatedFvRsIgmpsn.IsNull() {
+		if !configData.DeprecatedFvRsIgmpsn.IsNull() {
 			var newAttributeValues FvRsIgmpsnFvBDResourceModel
 			tagAnnotationFvRsIgmpsnFvBDValue, _ := types.SetValueFrom(ctx, TagAnnotationFvRsIgmpsnFvBDType, make([]TagAnnotationFvRsIgmpsnFvBDResourceModel, 0))
 			tagTagFvRsIgmpsnFvBDValue, _ := types.SetValueFrom(ctx, TagTagFvRsIgmpsnFvBDType, make([]TagTagFvRsIgmpsnFvBDResourceModel, 0))
@@ -2628,33 +2470,9 @@ func (r *FvBDResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRe
 			}
 			FvRsIgmpsnObject, _ := types.ObjectValueFrom(ctx, FvRsIgmpsnFvBDType, FvRsIgmpsn)
 			planData.FvRsIgmpsn = FvRsIgmpsnObject
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedFvRsIgmpsn = stateData.DeprecatedFvRsIgmpsn
 		}
 
-		if !configData.FvRsBDToOut.IsNull() && stateData != nil {
-			var attributeValues []FvRsBDToOutFvBDResourceModel
-			var newAttributeValues, stateAttributeValues []string
-			configData.FvRsBDToOut.ElementsAs(ctx, &attributeValues, false)
-			stateData.DeprecatedFvRsBDToOut.ElementsAs(ctx, &stateAttributeValues, false)
-			for _, attributeValue := range attributeValues {
-				newAttributeValues = append(newAttributeValues, attributeValue.TnL3extOutName.ValueString())
-			}
-
-			if len(newAttributeValues) == len(stateAttributeValues) {
-				allMatchState := true
-				for _, stateAttributeValue := range stateAttributeValues {
-					if !ContainsString(newAttributeValues, GetMOName(stateAttributeValue)) {
-						allMatchState = false
-						break
-					}
-				}
-				if allMatchState {
-					FvRsBDToOutSet, _ := types.SetValueFrom(ctx, basetypes.StringType{}, stateAttributeValues)
-					planData.DeprecatedFvRsBDToOut = FvRsBDToOutSet
-				}
-			}
-		} else if !configData.DeprecatedFvRsBDToOut.IsNull() {
+		if !configData.DeprecatedFvRsBDToOut.IsNull() {
 			FvRsBDToOutList := make([]FvRsBDToOutFvBDResourceModel, 0)
 			var attributeValues []basetypes.StringValue
 			var newAttributeValues []FvRsBDToOutFvBDResourceModel
@@ -2693,33 +2511,9 @@ func (r *FvBDResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRe
 			}
 			FvRsBDToOutSet, _ := types.SetValueFrom(ctx, FvRsBDToOutFvBDType, FvRsBDToOutList)
 			planData.FvRsBDToOut = FvRsBDToOutSet
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedFvRsBDToOut = stateData.DeprecatedFvRsBDToOut
 		}
 
-		if !configData.FvRsMldsn.IsNull() && stateData != nil {
-			if IsEmptySingleNestedAttribute(configData.FvRsMldsn.Attributes()) {
-				planData.FvRsMldsn = configData.FvRsMldsn
-				planData.DeprecatedFvRsMldsn = basetypes.NewStringNull()
-			} else {
-				var attributeValues FvRsMldsnFvBDResourceModel
-				configData.FvRsMldsn.As(ctx, &attributeValues, basetypes.ObjectAsOptions{})
-				if GetMOName(stateData.DeprecatedFvRsMldsn.ValueString()) == attributeValues.TnMldSnoopPolName.ValueString() && !attributeValues.TnMldSnoopPolName.IsNull() {
-					planData.DeprecatedFvRsMldsn = stateData.DeprecatedFvRsMldsn
-				}
-				var stateAttributeValue, planAttributeValue FvRsMldsnFvBDResourceModel
-				stateData.FvRsMldsn.As(ctx, &stateAttributeValue, basetypes.ObjectAsOptions{})
-				planData.FvRsMldsn.As(ctx, &planAttributeValue, basetypes.ObjectAsOptions{})
-				if stateAttributeValue.TagAnnotation.IsNull() && attributeValues.TagAnnotation.IsNull() {
-					planAttributeValue.TagAnnotation = basetypes.NewSetUnknown(TagAnnotationFvRsMldsnFvBDType)
-				}
-				if stateAttributeValue.TagTag.IsNull() && attributeValues.TagTag.IsNull() {
-					planAttributeValue.TagTag = basetypes.NewSetUnknown(TagTagFvRsMldsnFvBDType)
-				}
-				FvRsMldsnObject, _ := types.ObjectValueFrom(ctx, FvRsMldsnFvBDType, planAttributeValue)
-				planData.FvRsMldsn = FvRsMldsnObject
-			}
-		} else if !configData.DeprecatedFvRsMldsn.IsNull() {
+		if !configData.DeprecatedFvRsMldsn.IsNull() {
 			var newAttributeValues FvRsMldsnFvBDResourceModel
 			tagAnnotationFvRsMldsnFvBDValue, _ := types.SetValueFrom(ctx, TagAnnotationFvRsMldsnFvBDType, make([]TagAnnotationFvRsMldsnFvBDResourceModel, 0))
 			tagTagFvRsMldsnFvBDValue, _ := types.SetValueFrom(ctx, TagTagFvRsMldsnFvBDType, make([]TagTagFvRsMldsnFvBDResourceModel, 0))
@@ -2742,33 +2536,9 @@ func (r *FvBDResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRe
 			}
 			FvRsMldsnObject, _ := types.ObjectValueFrom(ctx, FvRsMldsnFvBDType, FvRsMldsn)
 			planData.FvRsMldsn = FvRsMldsnObject
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedFvRsMldsn = stateData.DeprecatedFvRsMldsn
 		}
 
-		if !configData.FvRsABDPolMonPol.IsNull() && stateData != nil {
-			if IsEmptySingleNestedAttribute(configData.FvRsABDPolMonPol.Attributes()) {
-				planData.FvRsABDPolMonPol = configData.FvRsABDPolMonPol
-				planData.DeprecatedFvRsABDPolMonPol = basetypes.NewStringNull()
-			} else {
-				var attributeValues FvRsABDPolMonPolFvBDResourceModel
-				configData.FvRsABDPolMonPol.As(ctx, &attributeValues, basetypes.ObjectAsOptions{})
-				if GetMOName(stateData.DeprecatedFvRsABDPolMonPol.ValueString()) == attributeValues.TnMonEPGPolName.ValueString() && !attributeValues.TnMonEPGPolName.IsNull() {
-					planData.DeprecatedFvRsABDPolMonPol = stateData.DeprecatedFvRsABDPolMonPol
-				}
-				var stateAttributeValue, planAttributeValue FvRsABDPolMonPolFvBDResourceModel
-				stateData.FvRsABDPolMonPol.As(ctx, &stateAttributeValue, basetypes.ObjectAsOptions{})
-				planData.FvRsABDPolMonPol.As(ctx, &planAttributeValue, basetypes.ObjectAsOptions{})
-				if stateAttributeValue.TagAnnotation.IsNull() && attributeValues.TagAnnotation.IsNull() {
-					planAttributeValue.TagAnnotation = basetypes.NewSetUnknown(TagAnnotationFvRsABDPolMonPolFvBDType)
-				}
-				if stateAttributeValue.TagTag.IsNull() && attributeValues.TagTag.IsNull() {
-					planAttributeValue.TagTag = basetypes.NewSetUnknown(TagTagFvRsABDPolMonPolFvBDType)
-				}
-				FvRsABDPolMonPolObject, _ := types.ObjectValueFrom(ctx, FvRsABDPolMonPolFvBDType, planAttributeValue)
-				planData.FvRsABDPolMonPol = FvRsABDPolMonPolObject
-			}
-		} else if !configData.DeprecatedFvRsABDPolMonPol.IsNull() {
+		if !configData.DeprecatedFvRsABDPolMonPol.IsNull() {
 			var newAttributeValues FvRsABDPolMonPolFvBDResourceModel
 			tagAnnotationFvRsABDPolMonPolFvBDValue, _ := types.SetValueFrom(ctx, TagAnnotationFvRsABDPolMonPolFvBDType, make([]TagAnnotationFvRsABDPolMonPolFvBDResourceModel, 0))
 			tagTagFvRsABDPolMonPolFvBDValue, _ := types.SetValueFrom(ctx, TagTagFvRsABDPolMonPolFvBDType, make([]TagTagFvRsABDPolMonPolFvBDResourceModel, 0))
@@ -2791,33 +2561,9 @@ func (r *FvBDResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRe
 			}
 			FvRsABDPolMonPolObject, _ := types.ObjectValueFrom(ctx, FvRsABDPolMonPolFvBDType, FvRsABDPolMonPol)
 			planData.FvRsABDPolMonPol = FvRsABDPolMonPolObject
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedFvRsABDPolMonPol = stateData.DeprecatedFvRsABDPolMonPol
 		}
 
-		if !configData.FvRsBDToNdP.IsNull() && stateData != nil {
-			if IsEmptySingleNestedAttribute(configData.FvRsBDToNdP.Attributes()) {
-				planData.FvRsBDToNdP = configData.FvRsBDToNdP
-				planData.DeprecatedFvRsBDToNdP = basetypes.NewStringNull()
-			} else {
-				var attributeValues FvRsBDToNdPFvBDResourceModel
-				configData.FvRsBDToNdP.As(ctx, &attributeValues, basetypes.ObjectAsOptions{})
-				if GetMOName(stateData.DeprecatedFvRsBDToNdP.ValueString()) == attributeValues.TnNdIfPolName.ValueString() && !attributeValues.TnNdIfPolName.IsNull() {
-					planData.DeprecatedFvRsBDToNdP = stateData.DeprecatedFvRsBDToNdP
-				}
-				var stateAttributeValue, planAttributeValue FvRsBDToNdPFvBDResourceModel
-				stateData.FvRsBDToNdP.As(ctx, &stateAttributeValue, basetypes.ObjectAsOptions{})
-				planData.FvRsBDToNdP.As(ctx, &planAttributeValue, basetypes.ObjectAsOptions{})
-				if stateAttributeValue.TagAnnotation.IsNull() && attributeValues.TagAnnotation.IsNull() {
-					planAttributeValue.TagAnnotation = basetypes.NewSetUnknown(TagAnnotationFvRsBDToNdPFvBDType)
-				}
-				if stateAttributeValue.TagTag.IsNull() && attributeValues.TagTag.IsNull() {
-					planAttributeValue.TagTag = basetypes.NewSetUnknown(TagTagFvRsBDToNdPFvBDType)
-				}
-				FvRsBDToNdPObject, _ := types.ObjectValueFrom(ctx, FvRsBDToNdPFvBDType, planAttributeValue)
-				planData.FvRsBDToNdP = FvRsBDToNdPObject
-			}
-		} else if !configData.DeprecatedFvRsBDToNdP.IsNull() {
+		if !configData.DeprecatedFvRsBDToNdP.IsNull() {
 			var newAttributeValues FvRsBDToNdPFvBDResourceModel
 			tagAnnotationFvRsBDToNdPFvBDValue, _ := types.SetValueFrom(ctx, TagAnnotationFvRsBDToNdPFvBDType, make([]TagAnnotationFvRsBDToNdPFvBDResourceModel, 0))
 			tagTagFvRsBDToNdPFvBDValue, _ := types.SetValueFrom(ctx, TagTagFvRsBDToNdPFvBDType, make([]TagTagFvRsBDToNdPFvBDResourceModel, 0))
@@ -2840,33 +2586,9 @@ func (r *FvBDResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRe
 			}
 			FvRsBDToNdPObject, _ := types.ObjectValueFrom(ctx, FvRsBDToNdPFvBDType, FvRsBDToNdP)
 			planData.FvRsBDToNdP = FvRsBDToNdPObject
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedFvRsBDToNdP = stateData.DeprecatedFvRsBDToNdP
 		}
 
-		if !configData.FvRsBDToProfile.IsNull() && stateData != nil {
-			if IsEmptySingleNestedAttribute(configData.FvRsBDToProfile.Attributes()) {
-				planData.FvRsBDToProfile = configData.FvRsBDToProfile
-				planData.DeprecatedFvRsBDToProfile = basetypes.NewStringNull()
-			} else {
-				var attributeValues FvRsBDToProfileFvBDResourceModel
-				configData.FvRsBDToProfile.As(ctx, &attributeValues, basetypes.ObjectAsOptions{})
-				if GetMOName(stateData.DeprecatedFvRsBDToProfile.ValueString()) == attributeValues.TnRtctrlProfileName.ValueString() && !attributeValues.TnRtctrlProfileName.IsNull() {
-					planData.DeprecatedFvRsBDToProfile = stateData.DeprecatedFvRsBDToProfile
-				}
-				var stateAttributeValue, planAttributeValue FvRsBDToProfileFvBDResourceModel
-				stateData.FvRsBDToProfile.As(ctx, &stateAttributeValue, basetypes.ObjectAsOptions{})
-				planData.FvRsBDToProfile.As(ctx, &planAttributeValue, basetypes.ObjectAsOptions{})
-				if stateAttributeValue.TagAnnotation.IsNull() && attributeValues.TagAnnotation.IsNull() {
-					planAttributeValue.TagAnnotation = basetypes.NewSetUnknown(TagAnnotationFvRsBDToProfileFvBDType)
-				}
-				if stateAttributeValue.TagTag.IsNull() && attributeValues.TagTag.IsNull() {
-					planAttributeValue.TagTag = basetypes.NewSetUnknown(TagTagFvRsBDToProfileFvBDType)
-				}
-				FvRsBDToProfileObject, _ := types.ObjectValueFrom(ctx, FvRsBDToProfileFvBDType, planAttributeValue)
-				planData.FvRsBDToProfile = FvRsBDToProfileObject
-			}
-		} else if !configData.DeprecatedFvRsBDToProfile.IsNull() {
+		if !configData.DeprecatedFvRsBDToProfile.IsNull() {
 			var newAttributeValues FvRsBDToProfileFvBDResourceModel
 			tagAnnotationFvRsBDToProfileFvBDValue, _ := types.SetValueFrom(ctx, TagAnnotationFvRsBDToProfileFvBDType, make([]TagAnnotationFvRsBDToProfileFvBDResourceModel, 0))
 			tagTagFvRsBDToProfileFvBDValue, _ := types.SetValueFrom(ctx, TagTagFvRsBDToProfileFvBDType, make([]TagTagFvRsBDToProfileFvBDResourceModel, 0))
@@ -2890,33 +2612,9 @@ func (r *FvBDResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRe
 			}
 			FvRsBDToProfileObject, _ := types.ObjectValueFrom(ctx, FvRsBDToProfileFvBDType, FvRsBDToProfile)
 			planData.FvRsBDToProfile = FvRsBDToProfileObject
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedFvRsBDToProfile = stateData.DeprecatedFvRsBDToProfile
 		}
 
-		if !configData.FvRsCtx.IsNull() && stateData != nil {
-			if IsEmptySingleNestedAttribute(configData.FvRsCtx.Attributes()) {
-				planData.FvRsCtx = configData.FvRsCtx
-				planData.DeprecatedFvRsCtx = basetypes.NewStringNull()
-			} else {
-				var attributeValues FvRsCtxFvBDResourceModel
-				configData.FvRsCtx.As(ctx, &attributeValues, basetypes.ObjectAsOptions{})
-				if GetMOName(stateData.DeprecatedFvRsCtx.ValueString()) == attributeValues.TnFvCtxName.ValueString() && !attributeValues.TnFvCtxName.IsNull() {
-					planData.DeprecatedFvRsCtx = stateData.DeprecatedFvRsCtx
-				}
-				var stateAttributeValue, planAttributeValue FvRsCtxFvBDResourceModel
-				stateData.FvRsCtx.As(ctx, &stateAttributeValue, basetypes.ObjectAsOptions{})
-				planData.FvRsCtx.As(ctx, &planAttributeValue, basetypes.ObjectAsOptions{})
-				if stateAttributeValue.TagAnnotation.IsNull() && attributeValues.TagAnnotation.IsNull() {
-					planAttributeValue.TagAnnotation = basetypes.NewSetUnknown(TagAnnotationFvRsCtxFvBDType)
-				}
-				if stateAttributeValue.TagTag.IsNull() && attributeValues.TagTag.IsNull() {
-					planAttributeValue.TagTag = basetypes.NewSetUnknown(TagTagFvRsCtxFvBDType)
-				}
-				FvRsCtxObject, _ := types.ObjectValueFrom(ctx, FvRsCtxFvBDType, planAttributeValue)
-				planData.FvRsCtx = FvRsCtxObject
-			}
-		} else if !configData.DeprecatedFvRsCtx.IsNull() {
+		if !configData.DeprecatedFvRsCtx.IsNull() {
 			var newAttributeValues FvRsCtxFvBDResourceModel
 			tagAnnotationFvRsCtxFvBDValue, _ := types.SetValueFrom(ctx, TagAnnotationFvRsCtxFvBDType, make([]TagAnnotationFvRsCtxFvBDResourceModel, 0))
 			tagTagFvRsCtxFvBDValue, _ := types.SetValueFrom(ctx, TagTagFvRsCtxFvBDType, make([]TagTagFvRsCtxFvBDResourceModel, 0))
@@ -2939,27 +2637,9 @@ func (r *FvBDResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRe
 			}
 			FvRsCtxObject, _ := types.ObjectValueFrom(ctx, FvRsCtxFvBDType, FvRsCtx)
 			planData.FvRsCtx = FvRsCtxObject
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedFvRsCtx = stateData.DeprecatedFvRsCtx
 		}
 
-		if !configData.FvRsBDToNetflowMonitorPol.IsNull() {
-			FvRsBDToNetflowMonitorPolList := make([]FvRsBDToNetflowMonitorPolFvBDResourceModelV1, 0)
-			var attributeValues []FvRsBDToNetflowMonitorPolFvBDResourceModel
-			planData.FvRsBDToNetflowMonitorPol.ElementsAs(ctx, &attributeValues, false)
-			if len(attributeValues) > 0 {
-				for _, attributeValue := range attributeValues {
-					FvRsBDToNetflowMonitorPol := FvRsBDToNetflowMonitorPolFvBDResourceModelV1{
-						FltType:                 attributeValue.FltType,
-						TnNetflowMonitorPolName: attributeValue.TnNetflowMonitorPolName,
-					}
-					FvRsBDToNetflowMonitorPolList = append(FvRsBDToNetflowMonitorPolList, FvRsBDToNetflowMonitorPol)
-				}
-
-				DeprecatedFvRsBDToNetflowMonitorPolSet, _ := types.SetValueFrom(ctx, deprecatedFvRsBDToNetflowMonitorPolType, FvRsBDToNetflowMonitorPolList)
-				planData.DeprecatedFvRsBDToNetflowMonitorPol = DeprecatedFvRsBDToNetflowMonitorPolSet
-			}
-		} else if !configData.DeprecatedFvRsBDToNetflowMonitorPol.IsNull() {
+		if !configData.DeprecatedFvRsBDToNetflowMonitorPol.IsNull() {
 			FvRsBDToNetflowMonitorPolList := make([]FvRsBDToNetflowMonitorPolFvBDResourceModel, 0)
 			var attributeValues []FvRsBDToNetflowMonitorPolFvBDResourceModelV1
 			planData.DeprecatedFvRsBDToNetflowMonitorPol.ElementsAs(ctx, &attributeValues, false)
@@ -2981,29 +2661,151 @@ func (r *FvBDResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRe
 			}
 			FvRsBDToNetflowMonitorPolSet, _ := types.SetValueFrom(ctx, FvRsBDToNetflowMonitorPolFvBDType, FvRsBDToNetflowMonitorPolList)
 			planData.FvRsBDToNetflowMonitorPol = FvRsBDToNetflowMonitorPolSet
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedFvRsBDToNetflowMonitorPol = stateData.DeprecatedFvRsBDToNetflowMonitorPol
+		} else if !configData.FvRsBDToNetflowMonitorPol.IsNull() && stateData == nil {
+			setUnknownDeprecatedFvRsBDToNetflowMonitorPolFvBDResourceModelToPlan(ctx, planData)
 		}
 
-		// Workaround to compare the state with plan with readonly set from state to avoid plan changes
+		// Workaround to compare the state with plan to avoid plan changes with only known after apply
 		if stateData != nil {
-			setFvBDReadOnlyInPlan(planData, stateData)
+			avoidFvBDPlanChangeForKnownAfterApplyOnly(ctx, planData, stateData, configData)
 		}
 
 		resp.Diagnostics.Append(resp.Plan.Set(ctx, &planData)...)
 	}
 }
-func setFvBDReadOnlyInPlan(planData *FvBDResourceModel, stateData *FvBDResourceModel) {
-	// Set read-only fields in planData from stateData
+func setUnknownDeprecatedFvRsBDToNetflowMonitorPolFvBDResourceModelToPlan(ctx context.Context, planData *FvBDResourceModel) {
+	var attributeValues []FvRsBDToNetflowMonitorPolFvBDResourceModel
+	var legacyAttributeValues []FvRsBDToNetflowMonitorPolFvBDResourceModelV1
+	planData.FvRsBDToNetflowMonitorPol.ElementsAs(ctx, &attributeValues, false)
+	for i := 0; i < len(attributeValues); i++ {
+		legacyAttributeValues = append(legacyAttributeValues, FvRsBDToNetflowMonitorPolFvBDResourceModelV1{
+			FltType:                 basetypes.NewStringUnknown(),
+			TnNetflowMonitorPolName: basetypes.NewStringUnknown(),
+		})
+	}
+	DeprecatedFvRsBDToNetflowMonitorPolSet, _ := types.SetValueFrom(ctx, deprecatedFvRsBDToNetflowMonitorPolType, legacyAttributeValues)
+	planData.DeprecatedFvRsBDToNetflowMonitorPol = DeprecatedFvRsBDToNetflowMonitorPolSet
+}
+
+func avoidFvBDPlanChangeForKnownAfterApplyOnly(ctx context.Context, planData, stateData, configData *FvBDResourceModel) {
+	// Set read-only and deprecated attributes in planData from stateData
 	planData.PcTag = stateData.PcTag
 	planData.Scope = stateData.Scope
 	planData.Seg = stateData.Seg
+	if configData.DeprecatedArpFlood.IsNull() {
+		planData.DeprecatedArpFlood = stateData.DeprecatedArpFlood
+	}
+	if configData.DeprecatedEpClear.IsNull() {
+		planData.DeprecatedEpClear = stateData.DeprecatedEpClear
+	}
+	if configData.DeprecatedEpMoveDetectMode.IsNull() {
+		planData.DeprecatedEpMoveDetectMode = stateData.DeprecatedEpMoveDetectMode
+	}
+	if configData.DeprecatedHostBasedRouting.IsNull() {
+		planData.DeprecatedHostBasedRouting = stateData.DeprecatedHostBasedRouting
+	}
+	if configData.DeprecatedIntersiteBumTrafficAllow.IsNull() {
+		planData.DeprecatedIntersiteBumTrafficAllow = stateData.DeprecatedIntersiteBumTrafficAllow
+	}
+	if configData.DeprecatedIpv6McastAllow.IsNull() {
+		planData.DeprecatedIpv6McastAllow = stateData.DeprecatedIpv6McastAllow
+	}
+	if configData.DeprecatedLlAddr.IsNull() {
+		planData.DeprecatedLlAddr = stateData.DeprecatedLlAddr
+	}
+	if configData.DeprecatedMac.IsNull() {
+		planData.DeprecatedMac = stateData.DeprecatedMac
+	}
+	if configData.DeprecatedMcastAllow.IsNull() {
+		planData.DeprecatedMcastAllow = stateData.DeprecatedMcastAllow
+	}
+	if configData.DeprecatedMultiDstPktAct.IsNull() {
+		planData.DeprecatedMultiDstPktAct = stateData.DeprecatedMultiDstPktAct
+	}
+	if configData.DeprecatedParentDn.IsNull() {
+		planData.DeprecatedParentDn = stateData.DeprecatedParentDn
+	}
+	if configData.DeprecatedUnicastRoute.IsNull() {
+		planData.DeprecatedUnicastRoute = stateData.DeprecatedUnicastRoute
+	}
+	if configData.DeprecatedUnkMacUcastAct.IsNull() {
+		planData.DeprecatedUnkMacUcastAct = stateData.DeprecatedUnkMacUcastAct
+	}
+	if configData.DeprecatedUnkMcastAct.IsNull() {
+		planData.DeprecatedUnkMcastAct = stateData.DeprecatedUnkMcastAct
+	}
+	if configData.DeprecatedV6unkMcastAct.IsNull() {
+		planData.DeprecatedV6unkMcastAct = stateData.DeprecatedV6unkMcastAct
+	}
+	if configData.DeprecatedVmac.IsNull() {
+		planData.DeprecatedVmac = stateData.DeprecatedVmac
+	}
+	if configData.DeprecatedFvRsBDToRelayP.IsNull() {
+		planData.DeprecatedFvRsBDToRelayP = stateData.DeprecatedFvRsBDToRelayP
+	}
+	if configData.DeprecatedFvRsBdToEpRet.IsNull() {
+		planData.DeprecatedFvRsBdToEpRet = stateData.DeprecatedFvRsBdToEpRet
+	}
+	if configData.DeprecatedFvRsBDToFhs.IsNull() {
+		planData.DeprecatedFvRsBDToFhs = stateData.DeprecatedFvRsBDToFhs
+	}
+	if configData.DeprecatedFvRsIgmpsn.IsNull() {
+		planData.DeprecatedFvRsIgmpsn = stateData.DeprecatedFvRsIgmpsn
+	}
+	if configData.DeprecatedFvRsBDToOut.IsNull() {
+		planData.DeprecatedFvRsBDToOut = stateData.DeprecatedFvRsBDToOut
+	}
+	if configData.DeprecatedFvRsMldsn.IsNull() {
+		planData.DeprecatedFvRsMldsn = stateData.DeprecatedFvRsMldsn
+	}
+	if configData.DeprecatedFvRsABDPolMonPol.IsNull() {
+		planData.DeprecatedFvRsABDPolMonPol = stateData.DeprecatedFvRsABDPolMonPol
+	}
+	if configData.DeprecatedFvRsBDToNdP.IsNull() {
+		planData.DeprecatedFvRsBDToNdP = stateData.DeprecatedFvRsBDToNdP
+	}
+	if configData.DeprecatedFvRsBDToProfile.IsNull() {
+		planData.DeprecatedFvRsBDToProfile = stateData.DeprecatedFvRsBDToProfile
+	}
+	if configData.DeprecatedFvRsCtx.IsNull() {
+		planData.DeprecatedFvRsCtx = stateData.DeprecatedFvRsCtx
+	}
+	if configData.DeprecatedFvRsBDToNetflowMonitorPol.IsNull() {
+		planData.DeprecatedFvRsBDToNetflowMonitorPol = stateData.DeprecatedFvRsBDToNetflowMonitorPol
+	}
 
-	// Compare the string representation of the planData and stateData because structs cannot be compated directly
+	// Compare the string representation of the planData and stateData because structs cannot be compared directly
 	if fmt.Sprintf("%s", planData) != fmt.Sprintf("%s", stateData) {
 		planData.PcTag = basetypes.NewStringUnknown()
 		planData.Scope = basetypes.NewStringUnknown()
 		planData.Seg = basetypes.NewStringUnknown()
+		planData.DeprecatedArpFlood = basetypes.NewStringUnknown()
+		planData.DeprecatedEpClear = basetypes.NewStringUnknown()
+		planData.DeprecatedEpMoveDetectMode = basetypes.NewStringUnknown()
+		planData.DeprecatedHostBasedRouting = basetypes.NewStringUnknown()
+		planData.DeprecatedIntersiteBumTrafficAllow = basetypes.NewStringUnknown()
+		planData.DeprecatedIpv6McastAllow = basetypes.NewStringUnknown()
+		planData.DeprecatedLlAddr = basetypes.NewStringUnknown()
+		planData.DeprecatedMac = basetypes.NewStringUnknown()
+		planData.DeprecatedMcastAllow = basetypes.NewStringUnknown()
+		planData.DeprecatedMultiDstPktAct = basetypes.NewStringUnknown()
+		planData.DeprecatedParentDn = basetypes.NewStringUnknown()
+		planData.DeprecatedUnicastRoute = basetypes.NewStringUnknown()
+		planData.DeprecatedUnkMacUcastAct = basetypes.NewStringUnknown()
+		planData.DeprecatedUnkMcastAct = basetypes.NewStringUnknown()
+		planData.DeprecatedV6unkMcastAct = basetypes.NewStringUnknown()
+		planData.DeprecatedVmac = basetypes.NewStringUnknown()
+		planData.DeprecatedFvRsBDToRelayP = basetypes.NewStringUnknown()
+		planData.DeprecatedFvRsBdToEpRet = basetypes.NewStringUnknown()
+		planData.DeprecatedFvRsBDToFhs = basetypes.NewStringUnknown()
+		planData.DeprecatedFvRsIgmpsn = basetypes.NewStringUnknown()
+		planData.DeprecatedFvRsBDToOut = basetypes.NewSetUnknown(basetypes.StringType{})
+		planData.DeprecatedFvRsMldsn = basetypes.NewStringUnknown()
+		planData.DeprecatedFvRsABDPolMonPol = basetypes.NewStringUnknown()
+		planData.DeprecatedFvRsBDToNdP = basetypes.NewStringUnknown()
+		planData.DeprecatedFvRsBDToProfile = basetypes.NewStringUnknown()
+		planData.DeprecatedFvRsCtx = basetypes.NewStringUnknown()
+		setUnknownDeprecatedFvRsBDToNetflowMonitorPolFvBDResourceModelToPlan(ctx, planData)
 	}
 }
 
