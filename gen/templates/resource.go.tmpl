@@ -1185,15 +1185,21 @@ func avoid{{.ResourceClassName}}PlanChangeForKnownAfterApplyOnly(ctx context.Con
 	{{- range .LegacyAttributes}}
 		{{- if ne .ReplacedBy.AttributeName "" }}
 			{{- if eq (getMigrationType .ValueType) "String"}}
-		planData.Deprecated{{.Name}} = basetypes.NewStringUnknown()
+		if configData.Deprecated{{.Name}}.IsNull() {
+			planData.Deprecated{{.Name}} = basetypes.NewStringUnknown()
+		}
 			{{- else if eq (getMigrationType .ValueType) "Set"}}
-		planData.Deprecated{{.Name}} = basetypes.NewSetUnknown(basetypes.StringType{})
+		if configData.Deprecated{{.Name}}.IsNull() {
+			planData.Deprecated{{.Name}} = basetypes.NewSetUnknown(basetypes.StringType{})
+		}
 			{{- end}}
 		{{- end}}
 	{{- end }}
 	{{- if .LegacyBlocks}}
 		{{- range .LegacyBlocks}}
-		setUnknownDeprecated{{capitalize .ClassName}}{{$.ResourceClassName}}ResourceModelToPlan(ctx, planData)
+		if configData.Deprecated{{ capitalize .ClassName }}.IsNull() { 
+			setUnknownDeprecated{{capitalize .ClassName}}{{$.ResourceClassName}}ResourceModelToPlan(ctx, planData)
+		}
 		{{- end}}
 	{{- end}}
 	}

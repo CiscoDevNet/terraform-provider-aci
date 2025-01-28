@@ -1776,16 +1776,36 @@ func avoidFvESgPlanChangeForKnownAfterApplyOnly(ctx context.Context, planData, s
 	if fmt.Sprintf("%s", planData) != fmt.Sprintf("%s", stateData) {
 		planData.PcTag = basetypes.NewStringUnknown()
 		planData.Scope = basetypes.NewStringUnknown()
-		planData.DeprecatedMatchT = basetypes.NewStringUnknown()
-		planData.DeprecatedParentDn = basetypes.NewStringUnknown()
-		planData.DeprecatedPcEnfPref = basetypes.NewStringUnknown()
-		planData.DeprecatedPrefGrMemb = basetypes.NewStringUnknown()
-		planData.DeprecatedFvRsSecInherited = basetypes.NewSetUnknown(basetypes.StringType{})
-		planData.DeprecatedFvRsIntraEpg = basetypes.NewSetUnknown(basetypes.StringType{})
-		planData.DeprecatedFvRsScope = basetypes.NewStringUnknown()
-		setUnknownDeprecatedFvRsConsFvESgResourceModelToPlan(ctx, planData)
-		setUnknownDeprecatedFvRsConsIfFvESgResourceModelToPlan(ctx, planData)
-		setUnknownDeprecatedFvRsProvFvESgResourceModelToPlan(ctx, planData)
+		if configData.DeprecatedMatchT.IsNull() {
+			planData.DeprecatedMatchT = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedParentDn.IsNull() {
+			planData.DeprecatedParentDn = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedPcEnfPref.IsNull() {
+			planData.DeprecatedPcEnfPref = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedPrefGrMemb.IsNull() {
+			planData.DeprecatedPrefGrMemb = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedFvRsSecInherited.IsNull() {
+			planData.DeprecatedFvRsSecInherited = basetypes.NewSetUnknown(basetypes.StringType{})
+		}
+		if configData.DeprecatedFvRsIntraEpg.IsNull() {
+			planData.DeprecatedFvRsIntraEpg = basetypes.NewSetUnknown(basetypes.StringType{})
+		}
+		if configData.DeprecatedFvRsScope.IsNull() {
+			planData.DeprecatedFvRsScope = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedFvRsCons.IsNull() {
+			setUnknownDeprecatedFvRsConsFvESgResourceModelToPlan(ctx, planData)
+		}
+		if configData.DeprecatedFvRsConsIf.IsNull() {
+			setUnknownDeprecatedFvRsConsIfFvESgResourceModelToPlan(ctx, planData)
+		}
+		if configData.DeprecatedFvRsProv.IsNull() {
+			setUnknownDeprecatedFvRsProvFvESgResourceModelToPlan(ctx, planData)
+		}
 	}
 }
 

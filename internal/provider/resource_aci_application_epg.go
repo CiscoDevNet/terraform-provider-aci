@@ -3823,31 +3823,81 @@ func avoidFvAEPgPlanChangeForKnownAfterApplyOnly(ctx context.Context, planData, 
 	if fmt.Sprintf("%s", planData) != fmt.Sprintf("%s", stateData) {
 		planData.PcTag = basetypes.NewStringUnknown()
 		planData.Scope = basetypes.NewStringUnknown()
-		planData.DeprecatedExceptionTag = basetypes.NewStringUnknown()
-		planData.DeprecatedFloodOnEncap = basetypes.NewStringUnknown()
-		planData.DeprecatedFwdCtrl = basetypes.NewStringUnknown()
-		planData.DeprecatedHasMcastSource = basetypes.NewStringUnknown()
-		planData.DeprecatedIsAttrBasedEPg = basetypes.NewStringUnknown()
-		planData.DeprecatedMatchT = basetypes.NewStringUnknown()
-		planData.DeprecatedParentDn = basetypes.NewStringUnknown()
-		planData.DeprecatedPcEnfPref = basetypes.NewStringUnknown()
-		planData.DeprecatedPrefGrMemb = basetypes.NewStringUnknown()
-		planData.DeprecatedPrio = basetypes.NewStringUnknown()
-		planData.DeprecatedShutdown = basetypes.NewStringUnknown()
-		planData.DeprecatedFvRsAEPgMonPol = basetypes.NewStringUnknown()
-		planData.DeprecatedFvRsBd = basetypes.NewStringUnknown()
-		planData.DeprecatedFvRsCons = basetypes.NewSetUnknown(basetypes.StringType{})
-		planData.DeprecatedFvRsSecInherited = basetypes.NewSetUnknown(basetypes.StringType{})
-		planData.DeprecatedFvRsCustQosPol = basetypes.NewStringUnknown()
-		planData.DeprecatedFvRsDppPol = basetypes.NewStringUnknown()
-		planData.DeprecatedFvRsFcPathAtt = basetypes.NewSetUnknown(basetypes.StringType{})
-		planData.DeprecatedFvRsConsIf = basetypes.NewSetUnknown(basetypes.StringType{})
-		planData.DeprecatedFvRsIntraEpg = basetypes.NewSetUnknown(basetypes.StringType{})
-		planData.DeprecatedFvRsProv = basetypes.NewSetUnknown(basetypes.StringType{})
-		planData.DeprecatedFvRsPathAtt = basetypes.NewSetUnknown(basetypes.StringType{})
-		planData.DeprecatedFvRsProtBy = basetypes.NewSetUnknown(basetypes.StringType{})
-		planData.DeprecatedFvRsTrustCtrl = basetypes.NewStringUnknown()
-		setUnknownDeprecatedFvRsNodeAttFvAEPgResourceModelToPlan(ctx, planData)
+		if configData.DeprecatedExceptionTag.IsNull() {
+			planData.DeprecatedExceptionTag = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedFloodOnEncap.IsNull() {
+			planData.DeprecatedFloodOnEncap = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedFwdCtrl.IsNull() {
+			planData.DeprecatedFwdCtrl = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedHasMcastSource.IsNull() {
+			planData.DeprecatedHasMcastSource = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedIsAttrBasedEPg.IsNull() {
+			planData.DeprecatedIsAttrBasedEPg = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedMatchT.IsNull() {
+			planData.DeprecatedMatchT = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedParentDn.IsNull() {
+			planData.DeprecatedParentDn = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedPcEnfPref.IsNull() {
+			planData.DeprecatedPcEnfPref = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedPrefGrMemb.IsNull() {
+			planData.DeprecatedPrefGrMemb = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedPrio.IsNull() {
+			planData.DeprecatedPrio = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedShutdown.IsNull() {
+			planData.DeprecatedShutdown = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedFvRsAEPgMonPol.IsNull() {
+			planData.DeprecatedFvRsAEPgMonPol = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedFvRsBd.IsNull() {
+			planData.DeprecatedFvRsBd = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedFvRsCons.IsNull() {
+			planData.DeprecatedFvRsCons = basetypes.NewSetUnknown(basetypes.StringType{})
+		}
+		if configData.DeprecatedFvRsSecInherited.IsNull() {
+			planData.DeprecatedFvRsSecInherited = basetypes.NewSetUnknown(basetypes.StringType{})
+		}
+		if configData.DeprecatedFvRsCustQosPol.IsNull() {
+			planData.DeprecatedFvRsCustQosPol = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedFvRsDppPol.IsNull() {
+			planData.DeprecatedFvRsDppPol = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedFvRsFcPathAtt.IsNull() {
+			planData.DeprecatedFvRsFcPathAtt = basetypes.NewSetUnknown(basetypes.StringType{})
+		}
+		if configData.DeprecatedFvRsConsIf.IsNull() {
+			planData.DeprecatedFvRsConsIf = basetypes.NewSetUnknown(basetypes.StringType{})
+		}
+		if configData.DeprecatedFvRsIntraEpg.IsNull() {
+			planData.DeprecatedFvRsIntraEpg = basetypes.NewSetUnknown(basetypes.StringType{})
+		}
+		if configData.DeprecatedFvRsProv.IsNull() {
+			planData.DeprecatedFvRsProv = basetypes.NewSetUnknown(basetypes.StringType{})
+		}
+		if configData.DeprecatedFvRsPathAtt.IsNull() {
+			planData.DeprecatedFvRsPathAtt = basetypes.NewSetUnknown(basetypes.StringType{})
+		}
+		if configData.DeprecatedFvRsProtBy.IsNull() {
+			planData.DeprecatedFvRsProtBy = basetypes.NewSetUnknown(basetypes.StringType{})
+		}
+		if configData.DeprecatedFvRsTrustCtrl.IsNull() {
+			planData.DeprecatedFvRsTrustCtrl = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedFvRsNodeAtt.IsNull() {
+			setUnknownDeprecatedFvRsNodeAttFvAEPgResourceModelToPlan(ctx, planData)
+		}
 	}
 }
 
