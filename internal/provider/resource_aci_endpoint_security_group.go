@@ -1578,6 +1578,7 @@ func (r *FvESgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanR
 				}
 				if foundAttributeValue {
 					FvRsCons.TnVzBrCPName = plannedFvRsCons.TnVzBrCPName
+					FvRsCons.Annotation = plannedFvRsCons.Annotation
 				}
 				tagAnnotationFvRsConsFvESgValue, _ := types.SetValueFrom(ctx, TagAnnotationFvRsConsFvESgType, make([]TagAnnotationFvRsConsFvESgResourceModel, 0))
 				FvRsCons.TagAnnotation = tagAnnotationFvRsConsFvESgValue
@@ -1624,6 +1625,7 @@ func (r *FvESgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanR
 				}
 				if foundAttributeValue {
 					FvRsConsIf.TnVzCPIfName = plannedFvRsConsIf.TnVzCPIfName
+					FvRsConsIf.Annotation = plannedFvRsConsIf.Annotation
 				}
 				tagAnnotationFvRsConsIfFvESgValue, _ := types.SetValueFrom(ctx, TagAnnotationFvRsConsIfFvESgType, make([]TagAnnotationFvRsConsIfFvESgResourceModel, 0))
 				FvRsConsIf.TagAnnotation = tagAnnotationFvRsConsIfFvESgValue
@@ -1675,6 +1677,7 @@ func (r *FvESgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanR
 				}
 				if foundAttributeValue {
 					FvRsProv.TnVzBrCPName = plannedFvRsProv.TnVzBrCPName
+					FvRsProv.Annotation = plannedFvRsProv.Annotation
 				}
 				tagAnnotationFvRsProvFvESgValue, _ := types.SetValueFrom(ctx, TagAnnotationFvRsProvFvESgType, make([]TagAnnotationFvRsProvFvESgResourceModel, 0))
 				FvRsProv.TagAnnotation = tagAnnotationFvRsProvFvESgValue

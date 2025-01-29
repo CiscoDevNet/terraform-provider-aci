@@ -2642,8 +2642,21 @@ func (r *FvBDResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRe
 		if !configData.DeprecatedFvRsBDToNetflowMonitorPol.IsNull() {
 			FvRsBDToNetflowMonitorPolList := make([]FvRsBDToNetflowMonitorPolFvBDResourceModel, 0)
 			var attributeValues []FvRsBDToNetflowMonitorPolFvBDResourceModelV1
+			var newAttributeValues []FvRsBDToNetflowMonitorPolFvBDResourceModel
+			if stateData != nil {
+				stateData.DeprecatedFvRsBDToNetflowMonitorPol.ElementsAs(ctx, &newAttributeValues, false)
+			}
 			planData.DeprecatedFvRsBDToNetflowMonitorPol.ElementsAs(ctx, &attributeValues, false)
 			for _, attributeValue := range attributeValues {
+				plannedFvRsBDToNetflowMonitorPol := FvRsBDToNetflowMonitorPolFvBDResourceModel{}
+				foundAttributeValue := false
+				for _, newAttributeValue := range newAttributeValues {
+					if newAttributeValue.TnNetflowMonitorPolName.ValueString() == GetMOName(attributeValue.TnNetflowMonitorPolName.ValueString()) {
+						plannedFvRsBDToNetflowMonitorPol = newAttributeValue
+						foundAttributeValue = true
+						break
+					}
+				}
 				tnNetflowMonitorPolNameValue := basetypes.NewStringUnknown()
 				if !attributeValue.TnNetflowMonitorPolName.IsUnknown() {
 					tnNetflowMonitorPolNameValue = basetypes.NewStringValue(GetMOName(attributeValue.TnNetflowMonitorPolName.ValueString()))
@@ -2652,6 +2665,9 @@ func (r *FvBDResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRe
 					Annotation:              planData.Annotation,
 					FltType:                 attributeValue.FltType,
 					TnNetflowMonitorPolName: tnNetflowMonitorPolNameValue,
+				}
+				if foundAttributeValue {
+					FvRsBDToNetflowMonitorPol.Annotation = plannedFvRsBDToNetflowMonitorPol.Annotation
 				}
 				tagAnnotationFvRsBDToNetflowMonitorPolFvBDValue, _ := types.SetValueFrom(ctx, TagAnnotationFvRsBDToNetflowMonitorPolFvBDType, make([]TagAnnotationFvRsBDToNetflowMonitorPolFvBDResourceModel, 0))
 				FvRsBDToNetflowMonitorPol.TagAnnotation = tagAnnotationFvRsBDToNetflowMonitorPolFvBDValue

@@ -3676,8 +3676,21 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 		if !configData.DeprecatedFvRsNodeAtt.IsNull() {
 			FvRsNodeAttList := make([]FvRsNodeAttFvAEPgResourceModel, 0)
 			var attributeValues []FvRsNodeAttFvAEPgResourceModelV1
+			var newAttributeValues []FvRsNodeAttFvAEPgResourceModel
+			if stateData != nil {
+				stateData.DeprecatedFvRsNodeAtt.ElementsAs(ctx, &newAttributeValues, false)
+			}
 			planData.DeprecatedFvRsNodeAtt.ElementsAs(ctx, &attributeValues, false)
 			for _, attributeValue := range attributeValues {
+				plannedFvRsNodeAtt := FvRsNodeAttFvAEPgResourceModel{}
+				foundAttributeValue := false
+				for _, newAttributeValue := range newAttributeValues {
+					if newAttributeValue.TDn.ValueString() == attributeValue.TDn.ValueString() {
+						plannedFvRsNodeAtt = newAttributeValue
+						foundAttributeValue = true
+						break
+					}
+				}
 				tDnValue := basetypes.NewStringUnknown()
 				if !attributeValue.TDn.IsUnknown() {
 					tDnValue = basetypes.NewStringValue(attributeValue.TDn.ValueString())
@@ -3701,6 +3714,9 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 					FvRsNodeAtt.Mode = attributeValue.Mode
 				} else {
 					FvRsNodeAtt.Mode = basetypes.NewStringUnknown()
+				}
+				if foundAttributeValue {
+					FvRsNodeAtt.Annotation = plannedFvRsNodeAtt.Annotation
 				}
 				tagAnnotationFvRsNodeAttFvAEPgValue, _ := types.SetValueFrom(ctx, TagAnnotationFvRsNodeAttFvAEPgType, make([]TagAnnotationFvRsNodeAttFvAEPgResourceModel, 0))
 				FvRsNodeAtt.TagAnnotation = tagAnnotationFvRsNodeAttFvAEPgValue
