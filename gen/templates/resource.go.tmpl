@@ -2710,8 +2710,6 @@ func {{.ResourceClassName}}{{.ParentHierarchy}}SetToSetNullWhenStateIsNullPlanIs
         setplanmodifier.UseStateForUnknown(),
 		{{- if excludeForNullInSetCheck .ResourceClassName}}
 		SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate({{.ResourceClassName}}{{.ParentHierarchy}}SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
-		{{- else}}
-		SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 		{{- end}}
     },
     NestedObject: schema.NestedAttributeObject{
