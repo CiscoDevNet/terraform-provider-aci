@@ -3254,7 +3254,7 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 			FvRsConsList := make([]FvRsConsFvAEPgResourceModel, 0)
 			var attributeValues []basetypes.StringValue
 			var newAttributeValues []FvRsConsFvAEPgResourceModel
-			configData.DeprecatedFvRsCons.ElementsAs(ctx, &attributeValues, false)
+			planData.DeprecatedFvRsCons.ElementsAs(ctx, &attributeValues, false)
 			if stateData != nil {
 				stateData.FvRsCons.ElementsAs(ctx, &newAttributeValues, false)
 			}
@@ -3297,7 +3297,7 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 			FvRsSecInheritedList := make([]FvRsSecInheritedFvAEPgResourceModel, 0)
 			var attributeValues []basetypes.StringValue
 			var newAttributeValues []FvRsSecInheritedFvAEPgResourceModel
-			configData.DeprecatedFvRsSecInherited.ElementsAs(ctx, &attributeValues, false)
+			planData.DeprecatedFvRsSecInherited.ElementsAs(ctx, &attributeValues, false)
 			if stateData != nil {
 				stateData.FvRsSecInherited.ElementsAs(ctx, &newAttributeValues, false)
 			}
@@ -3388,7 +3388,7 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 			FvRsFcPathAttList := make([]FvRsFcPathAttFvAEPgResourceModel, 0)
 			var attributeValues []basetypes.StringValue
 			var newAttributeValues []FvRsFcPathAttFvAEPgResourceModel
-			configData.DeprecatedFvRsFcPathAtt.ElementsAs(ctx, &attributeValues, false)
+			planData.DeprecatedFvRsFcPathAtt.ElementsAs(ctx, &attributeValues, false)
 			if stateData != nil {
 				stateData.FvRsFcPathAtt.ElementsAs(ctx, &newAttributeValues, false)
 			}
@@ -3417,6 +3417,7 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 					FvRsFcPathAtt.VsanMode = FvRsFcPathAttValue.VsanMode
 				} else {
 					FvRsFcPathAtt.Annotation = planData.Annotation
+					FvRsFcPathAtt.Descr = basetypes.NewStringUnknown()
 					FvRsFcPathAtt.Vsan = basetypes.NewStringUnknown()
 					FvRsFcPathAtt.VsanMode = basetypes.NewStringUnknown()
 				}
@@ -3434,7 +3435,7 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 			FvRsConsIfList := make([]FvRsConsIfFvAEPgResourceModel, 0)
 			var attributeValues []basetypes.StringValue
 			var newAttributeValues []FvRsConsIfFvAEPgResourceModel
-			configData.DeprecatedFvRsConsIf.ElementsAs(ctx, &attributeValues, false)
+			planData.DeprecatedFvRsConsIf.ElementsAs(ctx, &attributeValues, false)
 			if stateData != nil {
 				stateData.FvRsConsIf.ElementsAs(ctx, &newAttributeValues, false)
 			}
@@ -3477,7 +3478,7 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 			FvRsIntraEpgList := make([]FvRsIntraEpgFvAEPgResourceModel, 0)
 			var attributeValues []basetypes.StringValue
 			var newAttributeValues []FvRsIntraEpgFvAEPgResourceModel
-			configData.DeprecatedFvRsIntraEpg.ElementsAs(ctx, &attributeValues, false)
+			planData.DeprecatedFvRsIntraEpg.ElementsAs(ctx, &attributeValues, false)
 			if stateData != nil {
 				stateData.FvRsIntraEpg.ElementsAs(ctx, &newAttributeValues, false)
 			}
@@ -3518,7 +3519,7 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 			FvRsProvList := make([]FvRsProvFvAEPgResourceModel, 0)
 			var attributeValues []basetypes.StringValue
 			var newAttributeValues []FvRsProvFvAEPgResourceModel
-			configData.DeprecatedFvRsProv.ElementsAs(ctx, &attributeValues, false)
+			planData.DeprecatedFvRsProv.ElementsAs(ctx, &attributeValues, false)
 			if stateData != nil {
 				stateData.FvRsProv.ElementsAs(ctx, &newAttributeValues, false)
 			}
@@ -3563,7 +3564,7 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 			FvRsPathAttList := make([]FvRsPathAttFvAEPgResourceModel, 0)
 			var attributeValues []basetypes.StringValue
 			var newAttributeValues []FvRsPathAttFvAEPgResourceModel
-			configData.DeprecatedFvRsPathAtt.ElementsAs(ctx, &attributeValues, false)
+			planData.DeprecatedFvRsPathAtt.ElementsAs(ctx, &attributeValues, false)
 			if stateData != nil {
 				stateData.FvRsPathAtt.ElementsAs(ctx, &newAttributeValues, false)
 			}
@@ -3594,8 +3595,11 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 					FvRsPathAtt.PrimaryEncap = FvRsPathAttValue.PrimaryEncap
 				} else {
 					FvRsPathAtt.Annotation = planData.Annotation
+					FvRsPathAtt.Descr = basetypes.NewStringUnknown()
+					FvRsPathAtt.Encap = basetypes.NewStringUnknown()
 					FvRsPathAtt.InstrImedcy = basetypes.NewStringUnknown()
 					FvRsPathAtt.Mode = basetypes.NewStringUnknown()
+					FvRsPathAtt.PrimaryEncap = basetypes.NewStringUnknown()
 				}
 				tagAnnotationFvRsPathAttFvAEPgValue, _ := types.SetValueFrom(ctx, TagAnnotationFvRsPathAttFvAEPgType, make([]TagAnnotationFvRsPathAttFvAEPgResourceModel, 0))
 				FvRsPathAtt.TagAnnotation = tagAnnotationFvRsPathAttFvAEPgValue
@@ -3611,7 +3615,7 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 			FvRsProtByList := make([]FvRsProtByFvAEPgResourceModel, 0)
 			var attributeValues []basetypes.StringValue
 			var newAttributeValues []FvRsProtByFvAEPgResourceModel
-			configData.DeprecatedFvRsProtBy.ElementsAs(ctx, &attributeValues, false)
+			planData.DeprecatedFvRsProtBy.ElementsAs(ctx, &attributeValues, false)
 			if stateData != nil {
 				stateData.FvRsProtBy.ElementsAs(ctx, &newAttributeValues, false)
 			}
@@ -3678,7 +3682,7 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 			var attributeValues []FvRsNodeAttFvAEPgResourceModelV1
 			var newAttributeValues []FvRsNodeAttFvAEPgResourceModel
 			if stateData != nil {
-				stateData.DeprecatedFvRsNodeAtt.ElementsAs(ctx, &newAttributeValues, false)
+				stateData.FvRsNodeAtt.ElementsAs(ctx, &newAttributeValues, false)
 			}
 			planData.DeprecatedFvRsNodeAtt.ElementsAs(ctx, &attributeValues, false)
 			for _, attributeValue := range attributeValues {
