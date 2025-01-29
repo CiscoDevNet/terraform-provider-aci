@@ -1017,15 +1017,12 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 			{{ .ResourceClassName }}List := make([]{{ .ResourceClassName }}{{$.ResourceClassName}}ResourceModel, 0)
 			var attributeValues []{{ .ResourceClassName }}{{$.ResourceClassName}}ResourceModelV1
 			{{- $NewProperties := getNewChildAttributes (getChildAttributesFromBlocks $ClassName $.LegacyBlocks) .Properties}}
-						{{- if ne (len $NewProperties) 0 }}
 			var newAttributeValues []{{ .ResourceClassName }}{{$.ResourceClassName}}ResourceModel
 			if stateData != nil {
 				stateData.Deprecated{{.ResourceClassName}}.ElementsAs(ctx, &newAttributeValues, false)
 			}
-						{{- end}}
 			planData.Deprecated{{.ResourceClassName}}.ElementsAs(ctx, &attributeValues, false)
 			for _, attributeValue := range attributeValues {
-						{{- if ne (len $NewProperties) 0 }}
 				planned{{ .ResourceClassName }} := {{ .ResourceClassName }}{{$.ResourceClassName}}ResourceModel{}
     			foundAttributeValue := false
 				for _, newAttributeValue := range newAttributeValues {
@@ -1035,14 +1032,11 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 							{{- if and (ne $AttributeName "") (.IsRequired) (or (eq .Name "TDn") (isNewNamedClassAttribute $Overwrite)) }}
 					if newAttributeValue.{{ .Name }}.ValueString() == {{- if isNewNamedClassAttribute $Overwrite }}GetMOName(attributeValue.{{ $AttributeName }}.ValueString()){{- else}}attributeValue.TDn.ValueString(){{- end}} {
 						planned{{ .ResourceClassName }} = newAttributeValue
-								{{- if ne (len $NewProperties) 0 }}
 						foundAttributeValue = true
-								{{- end}}
 						break
 					}
 				}
 							{{- end}}
-						{{- end}}
 					{{- end}}
 					{{- range .Properties}}
 				{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
@@ -1092,15 +1086,18 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 				}
 						{{- end}}
 					{{- end}}
-					{{- if ne (len $NewProperties) 0}}
 				if foundAttributeValue {
 						{{- range $NewProperties}}
 						{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
 						{{- $AttributeName := getLegacyChildAttribute .PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
 					{{ .ResourceClassName }}.{{ .Name }} = planned{{ .ResourceClassName }}.{{ .Name }}
 						{{- end}}
+						{{- range .Properties}}
+							{{- if eq .Name "Annotation"}}
+					{{ .ResourceClassName }}.{{ .Name }} = planned{{ .ResourceClassName }}.{{ .Name }}
+							{{- end}}
+						{{- end}}
 				}
-					{{- end}}
 
 					{{- $resourceClassName:= .ResourceClassName}}
 					{{- range .Children}}
