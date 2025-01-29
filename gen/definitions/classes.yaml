@@ -52,8 +52,6 @@ fvAEPg:
       relation_fv_rs_aepg_mon_pol: relation_to_application_epg_monitoring_policy.monitoring_policy_name
     fvRsIntraEpg:
       relation_fv_rs_intra_epg: relation_to_intra_epg_contracts.contract_name
-    fvRsPathAtt:
-      relation_fv_rs_path_att: relation_to_static_paths.target_dn
     fvRsNodeAtt:
       relation_fv_rs_node_att: relation_to_static_leafs
       node_dn: relation_to_static_leafs.target_dn

@@ -87,6 +87,11 @@ func (d *FvAEPgDataSource) Schema(ctx context.Context, req datasource.SchemaRequ
 				Computed:           true,
 				DeprecationMessage: "Attribute 'shutdown' is deprecated, please refer to 'admin_state' instead. The attribute will be removed in the next major version of the provider.",
 			},
+			"relation_fv_rs_path_att": schema.SetAttribute{
+				Computed:           true,
+				ElementType:        types.StringType,
+				DeprecationMessage: "Attribute `relation_fv_rs_path_att` is deprecated. The attribute will be removed in the next major version of the provider.",
+			},
 			"relation_fv_rs_prov_def": schema.SetAttribute{
 				Computed:           true,
 				ElementType:        types.StringType,
@@ -137,11 +142,6 @@ func (d *FvAEPgDataSource) Schema(ctx context.Context, req datasource.SchemaRequ
 				Computed:           true,
 				ElementType:        types.StringType,
 				DeprecationMessage: "Attribute 'relation_fv_rs_prov' is deprecated, please refer to 'relation_to_provided_contracts.contract_name' instead. The attribute will be removed in the next major version of the provider.",
-			},
-			"relation_fv_rs_path_att": schema.SetAttribute{
-				Computed:           true,
-				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute 'relation_fv_rs_path_att' is deprecated, please refer to 'relation_to_static_paths.target_dn' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			"relation_fv_rs_prot_by": schema.SetAttribute{
 				Computed:           true,

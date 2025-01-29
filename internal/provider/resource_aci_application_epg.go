@@ -93,6 +93,7 @@ type FvAEPgResourceModel struct {
 	DeprecatedPrefGrMemb               types.String                      `tfsdk:"pref_gr_memb"`
 	DeprecatedPrio                     types.String                      `tfsdk:"prio"`
 	DeprecatedShutdown                 types.String                      `tfsdk:"shutdown"`
+	Deprecated_relation_fv_rs_path_att types.Set                         `tfsdk:"relation_fv_rs_path_att"`
 	Deprecated_relation_fv_rs_prov_def types.Set                         `tfsdk:"relation_fv_rs_prov_def"`
 	DeprecatedFvRsAEPgMonPol           types.String                      `tfsdk:"relation_fv_rs_aepg_mon_pol"`
 	DeprecatedFvRsBd                   types.String                      `tfsdk:"relation_fv_rs_bd"`
@@ -104,7 +105,6 @@ type FvAEPgResourceModel struct {
 	DeprecatedFvRsConsIf               types.Set                         `tfsdk:"relation_fv_rs_cons_if"`
 	DeprecatedFvRsIntraEpg             types.Set                         `tfsdk:"relation_fv_rs_intra_epg"`
 	DeprecatedFvRsProv                 types.Set                         `tfsdk:"relation_fv_rs_prov"`
-	DeprecatedFvRsPathAtt              types.Set                         `tfsdk:"relation_fv_rs_path_att"`
 	DeprecatedFvRsProtBy               types.Set                         `tfsdk:"relation_fv_rs_prot_by"`
 	DeprecatedFvRsTrustCtrl            types.String                      `tfsdk:"relation_fv_rs_trust_ctrl"`
 	DeprecatedFvRsNodeAtt              types.Set                         `tfsdk:"relation_fv_rs_node_att"`
@@ -315,6 +315,7 @@ func getEmptyFvAEPgResourceModel() *FvAEPgResourceModel {
 		DeprecatedPrefGrMemb:               types.String{},
 		DeprecatedPrio:                     types.String{},
 		DeprecatedShutdown:                 types.String{},
+		Deprecated_relation_fv_rs_path_att: types.SetNull(types.StringType),
 		Deprecated_relation_fv_rs_prov_def: types.SetNull(types.StringType),
 		DeprecatedFvRsAEPgMonPol:           types.String{},
 		DeprecatedFvRsBd:                   types.String{},
@@ -326,7 +327,6 @@ func getEmptyFvAEPgResourceModel() *FvAEPgResourceModel {
 		DeprecatedFvRsConsIf:               types.SetNull(types.StringType),
 		DeprecatedFvRsIntraEpg:             types.SetNull(types.StringType),
 		DeprecatedFvRsProv:                 types.SetNull(types.StringType),
-		DeprecatedFvRsPathAtt:              types.SetNull(types.StringType),
 		DeprecatedFvRsProtBy:               types.SetNull(types.StringType),
 		DeprecatedFvRsTrustCtrl:            types.String{},
 		DeprecatedFvRsNodeAtt:              types.SetNull(deprecatedFvRsNodeAttType),
@@ -2182,6 +2182,7 @@ type FvAEPgResourceModelV1 struct {
 	PrefGrMemb                         types.String `tfsdk:"pref_gr_memb"`
 	Prio                               types.String `tfsdk:"prio"`
 	Shutdown                           types.String `tfsdk:"shutdown"`
+	Deprecated_relation_fv_rs_path_att types.Set    `tfsdk:"relation_fv_rs_path_att"`
 	Deprecated_relation_fv_rs_prov_def types.Set    `tfsdk:"relation_fv_rs_prov_def"`
 	FvRsAEPgMonPol                     types.String `tfsdk:"relation_fv_rs_aepg_mon_pol"`
 	FvRsBd                             types.String `tfsdk:"relation_fv_rs_bd"`
@@ -2193,7 +2194,6 @@ type FvAEPgResourceModelV1 struct {
 	FvRsConsIf                         types.Set    `tfsdk:"relation_fv_rs_cons_if"`
 	FvRsIntraEpg                       types.Set    `tfsdk:"relation_fv_rs_intra_epg"`
 	FvRsProv                           types.Set    `tfsdk:"relation_fv_rs_prov"`
-	FvRsPathAtt                        types.Set    `tfsdk:"relation_fv_rs_path_att"`
 	FvRsProtBy                         types.Set    `tfsdk:"relation_fv_rs_prot_by"`
 	FvRsTrustCtrl                      types.String `tfsdk:"relation_fv_rs_trust_ctrl"`
 	FvRsNodeAtt                        types.Set    `tfsdk:"relation_fv_rs_node_att"`
@@ -2302,6 +2302,12 @@ func (r *FvAEPgResource) UpgradeState(ctx context.Context) map[int64]resource.St
 						Optional: true,
 						Computed: true,
 					},
+					"relation_fv_rs_path_att": schema.SetAttribute{
+						Required:    false,
+						Optional:    true,
+						Computed:    false,
+						ElementType: types.StringType,
+					},
 					"relation_fv_rs_prov_def": schema.SetAttribute{
 						Required:    false,
 						Optional:    true,
@@ -2359,12 +2365,6 @@ func (r *FvAEPgResource) UpgradeState(ctx context.Context) map[int64]resource.St
 						ElementType: types.StringType,
 					},
 					"relation_fv_rs_prov": schema.SetAttribute{
-						Required:    false,
-						Optional:    true,
-						Computed:    false,
-						ElementType: types.StringType,
-					},
-					"relation_fv_rs_path_att": schema.SetAttribute{
 						Required:    false,
 						Optional:    true,
 						Computed:    false,
@@ -2455,6 +2455,7 @@ func (r *FvAEPgResource) UpgradeState(ctx context.Context) map[int64]resource.St
 					DeprecatedPrefGrMemb:               priorStateData.PrefGrMemb,
 					DeprecatedPrio:                     priorStateData.Prio,
 					DeprecatedShutdown:                 priorStateData.Shutdown,
+					Deprecated_relation_fv_rs_path_att: priorStateData.Deprecated_relation_fv_rs_path_att,
 					Deprecated_relation_fv_rs_prov_def: priorStateData.Deprecated_relation_fv_rs_prov_def,
 					DeprecatedFvRsAEPgMonPol:           priorStateData.FvRsAEPgMonPol,
 					DeprecatedFvRsBd:                   priorStateData.FvRsBd,
@@ -2707,34 +2708,21 @@ func (r *FvAEPgResource) UpgradeState(ctx context.Context) map[int64]resource.St
 				FvRsNodeAttSet, _ := types.SetValueFrom(ctx, FvRsNodeAttFvAEPgType, FvRsNodeAttList)
 				upgradedStateData.FvRsNodeAtt = FvRsNodeAttSet
 
-				FvRsPathAttList := make([]FvRsPathAttFvAEPgResourceModel, 0)
-				var priorStateDataFvRsPathAttList []string
-				priorStateData.FvRsPathAtt.ElementsAs(ctx, &priorStateDataFvRsPathAttList, false)
-				for _, priorStateDataFvRsPathAtt := range priorStateDataFvRsPathAttList {
-					FvRsPathAtt := FvRsPathAttFvAEPgResourceModel{
-						Annotation:   basetypes.NewStringNull(),
-						Descr:        basetypes.NewStringNull(),
-						InstrImedcy:  basetypes.NewStringNull(),
-						Mode:         basetypes.NewStringNull(),
-						PrimaryEncap: basetypes.NewStringNull(),
-						TDn:          basetypes.NewStringValue(priorStateDataFvRsPathAtt),
-						TagAnnotation: basetypes.NewSetNull(types.ObjectType{
-							AttrTypes: map[string]attr.Type{
-								"key":   types.StringType,
-								"value": types.StringType,
-							},
-						}),
-						TagTag: basetypes.NewSetNull(types.ObjectType{
-							AttrTypes: map[string]attr.Type{
-								"key":   types.StringType,
-								"value": types.StringType,
-							},
-						}),
-					}
-					FvRsPathAttList = append(FvRsPathAttList, FvRsPathAtt)
-				}
-				FvRsPathAttSet, _ := types.SetValueFrom(ctx, FvRsPathAttFvAEPgType, FvRsPathAttList)
-				upgradedStateData.FvRsPathAtt = FvRsPathAttSet
+				upgradedStateData.FvRsPathAtt = types.SetNull(
+					types.ObjectType{
+						AttrTypes: map[string]attr.Type{
+							"annotation":            basetypes.StringType{},
+							"description":           basetypes.StringType{},
+							"encapsulation":         basetypes.StringType{},
+							"deployment_immediacy":  basetypes.StringType{},
+							"mode":                  basetypes.StringType{},
+							"primary_encapsulation": basetypes.StringType{},
+							"target_dn":             basetypes.StringType{},
+							"annotations":           basetypes.SetType{ElemType: TagAnnotationFvRsPathAttFvAEPgType},
+							"tags":                  basetypes.SetType{ElemType: TagTagFvRsPathAttFvAEPgType},
+						},
+					},
+				)
 
 				FvRsProtByList := make([]FvRsProtByFvAEPgResourceModel, 0)
 				var priorStateDataFvRsProtByList []string
@@ -2878,11 +2866,6 @@ func (r *FvAEPgResource) UpgradeState(ctx context.Context) map[int64]resource.St
 				DeprecatedFvRsProvSet, _ := types.SetValueFrom(ctx, types.StringType, deprecatedFvRsProvList)
 				upgradedStateData.DeprecatedFvRsProv = DeprecatedFvRsProvSet
 
-				var deprecatedFvRsPathAttList []string
-				priorStateData.FvRsPathAtt.ElementsAs(ctx, &deprecatedFvRsPathAttList, false)
-				DeprecatedFvRsPathAttSet, _ := types.SetValueFrom(ctx, types.StringType, deprecatedFvRsPathAttList)
-				upgradedStateData.DeprecatedFvRsPathAtt = DeprecatedFvRsPathAttSet
-
 				var deprecatedFvRsProtByList []string
 				priorStateData.FvRsProtBy.ElementsAs(ctx, &deprecatedFvRsProtByList, false)
 				DeprecatedFvRsProtBySet, _ := types.SetValueFrom(ctx, types.StringType, deprecatedFvRsProtByList)
@@ -2901,6 +2884,12 @@ func (r *FvAEPgResource) UpgradeState(ctx context.Context) map[int64]resource.St
 
 func setFvAEPgLegacyAttributes(ctx context.Context, diags *diag.Diagnostics, data, staticData *FvAEPgResourceModel, classReadInfo []interface{}) {
 	data.DeprecatedParentDn = data.ParentDn
+	if !staticData.Deprecated_relation_fv_rs_path_att.IsUnknown() && !staticData.Deprecated_relation_fv_rs_path_att.IsNull() {
+		data.Deprecated_relation_fv_rs_path_att = staticData.Deprecated_relation_fv_rs_path_att
+	} else {
+		Deprecated_relation_fv_rs_path_attSet, _ := types.SetValueFrom(ctx, types.StringType, []string{})
+		data.Deprecated_relation_fv_rs_path_att = Deprecated_relation_fv_rs_path_attSet
+	}
 	if !staticData.Deprecated_relation_fv_rs_prov_def.IsUnknown() && !staticData.Deprecated_relation_fv_rs_prov_def.IsNull() {
 		data.Deprecated_relation_fv_rs_prov_def = staticData.Deprecated_relation_fv_rs_prov_def
 	} else {
@@ -2951,7 +2940,6 @@ func setFvAEPgLegacyAttributes(ctx context.Context, diags *diag.Diagnostics, dat
 	DeprecatedFvRsFcPathAttFvAEPgList := make([]string, 0)
 	DeprecatedFvRsIntraEpgFvAEPgList := make([]string, 0)
 	DeprecatedFvRsNodeAttFvAEPgList := make([]FvRsNodeAttFvAEPgResourceModelV1, 0)
-	DeprecatedFvRsPathAttFvAEPgList := make([]string, 0)
 	DeprecatedFvRsProtByFvAEPgList := make([]string, 0)
 	DeprecatedFvRsProvFvAEPgList := make([]string, 0)
 	DeprecatedFvRsSecInheritedFvAEPgList := make([]string, 0)
@@ -3040,13 +3028,6 @@ func setFvAEPgLegacyAttributes(ctx context.Context, diags *diag.Diagnostics, dat
 					}
 					DeprecatedFvRsNodeAttFvAEPgList = append(DeprecatedFvRsNodeAttFvAEPgList, DeprecatedFvRsNodeAttFvAEPg)
 				}
-				if childClassName == "fvRsPathAtt" {
-					for childAttributeName, childAttributeValue := range childAttributes {
-						if childAttributeName == "tDn" && childAttributeValue != "" && !ContainsString(DeprecatedFvRsPathAttFvAEPgList, childAttributeValue.(string)) {
-							DeprecatedFvRsPathAttFvAEPgList = append(DeprecatedFvRsPathAttFvAEPgList, childAttributeValue.(string))
-						}
-					}
-				}
 				if childClassName == "fvRsProtBy" {
 					for childAttributeName, childAttributeValue := range childAttributes {
 						if childAttributeName == "tDn" && childAttributeValue != "" && !ContainsString(DeprecatedFvRsProtByFvAEPgList, childAttributeValue.(string)) {
@@ -3087,8 +3068,6 @@ func setFvAEPgLegacyAttributes(ctx context.Context, diags *diag.Diagnostics, dat
 		data.DeprecatedFvRsIntraEpg = fvRsIntraEpgSet
 		fvRsNodeAttSet, _ := types.SetValueFrom(ctx, data.DeprecatedFvRsNodeAtt.ElementType(ctx), DeprecatedFvRsNodeAttFvAEPgList)
 		data.DeprecatedFvRsNodeAtt = fvRsNodeAttSet
-		fvRsPathAttSet, _ := types.SetValueFrom(ctx, data.DeprecatedFvRsPathAtt.ElementType(ctx), DeprecatedFvRsPathAttFvAEPgList)
-		data.DeprecatedFvRsPathAtt = fvRsPathAttSet
 		fvRsProtBySet, _ := types.SetValueFrom(ctx, data.DeprecatedFvRsProtBy.ElementType(ctx), DeprecatedFvRsProtByFvAEPgList)
 		data.DeprecatedFvRsProtBy = fvRsProtBySet
 		fvRsProvSet, _ := types.SetValueFrom(ctx, data.DeprecatedFvRsProv.ElementType(ctx), DeprecatedFvRsProvFvAEPgList)
@@ -3560,57 +3539,6 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 			planData.FvRsProv = FvRsProvSet
 		}
 
-		if !configData.DeprecatedFvRsPathAtt.IsNull() {
-			FvRsPathAttList := make([]FvRsPathAttFvAEPgResourceModel, 0)
-			var attributeValues []basetypes.StringValue
-			var newAttributeValues []FvRsPathAttFvAEPgResourceModel
-			planData.DeprecatedFvRsPathAtt.ElementsAs(ctx, &attributeValues, false)
-			if stateData != nil {
-				stateData.FvRsPathAtt.ElementsAs(ctx, &newAttributeValues, false)
-			}
-			for _, attributeValue := range attributeValues {
-				FvRsPathAttValue := FvRsPathAttFvAEPgResourceModel{}
-				foundAttributeValue := false
-				for _, newAttributeValue := range newAttributeValues {
-					if newAttributeValue.TDn.ValueString() == attributeValue.ValueString() {
-						FvRsPathAttValue = newAttributeValue
-						foundAttributeValue = true
-						break
-					}
-				}
-				tDnValue := basetypes.NewStringUnknown()
-				if !attributeValue.IsUnknown() {
-					tDnValue = basetypes.NewStringValue(attributeValue.ValueString())
-				}
-				FvRsPathAtt := FvRsPathAttFvAEPgResourceModel{
-					TDn: tDnValue,
-				}
-
-				if foundAttributeValue {
-					FvRsPathAtt.Annotation = FvRsPathAttValue.Annotation
-					FvRsPathAtt.Descr = FvRsPathAttValue.Descr
-					FvRsPathAtt.Encap = FvRsPathAttValue.Encap
-					FvRsPathAtt.InstrImedcy = FvRsPathAttValue.InstrImedcy
-					FvRsPathAtt.Mode = FvRsPathAttValue.Mode
-					FvRsPathAtt.PrimaryEncap = FvRsPathAttValue.PrimaryEncap
-				} else {
-					FvRsPathAtt.Annotation = planData.Annotation
-					FvRsPathAtt.Descr = basetypes.NewStringUnknown()
-					FvRsPathAtt.Encap = basetypes.NewStringUnknown()
-					FvRsPathAtt.InstrImedcy = basetypes.NewStringUnknown()
-					FvRsPathAtt.Mode = basetypes.NewStringUnknown()
-					FvRsPathAtt.PrimaryEncap = basetypes.NewStringUnknown()
-				}
-				tagAnnotationFvRsPathAttFvAEPgValue, _ := types.SetValueFrom(ctx, TagAnnotationFvRsPathAttFvAEPgType, make([]TagAnnotationFvRsPathAttFvAEPgResourceModel, 0))
-				FvRsPathAtt.TagAnnotation = tagAnnotationFvRsPathAttFvAEPgValue
-				tagTagFvRsPathAttFvAEPgValue, _ := types.SetValueFrom(ctx, TagTagFvRsPathAttFvAEPgType, make([]TagTagFvRsPathAttFvAEPgResourceModel, 0))
-				FvRsPathAtt.TagTag = tagTagFvRsPathAttFvAEPgValue
-				FvRsPathAttList = append(FvRsPathAttList, FvRsPathAtt)
-			}
-			FvRsPathAttSet, _ := types.SetValueFrom(ctx, FvRsPathAttFvAEPgType, FvRsPathAttList)
-			planData.FvRsPathAtt = FvRsPathAttSet
-		}
-
 		if !configData.DeprecatedFvRsProtBy.IsNull() {
 			FvRsProtByList := make([]FvRsProtByFvAEPgResourceModel, 0)
 			var attributeValues []basetypes.StringValue
@@ -3826,9 +3754,6 @@ func avoidFvAEPgPlanChangeForKnownAfterApplyOnly(ctx context.Context, planData, 
 	if configData.DeprecatedFvRsProv.IsNull() {
 		planData.DeprecatedFvRsProv = stateData.DeprecatedFvRsProv
 	}
-	if configData.DeprecatedFvRsPathAtt.IsNull() {
-		planData.DeprecatedFvRsPathAtt = stateData.DeprecatedFvRsPathAtt
-	}
 	if configData.DeprecatedFvRsProtBy.IsNull() {
 		planData.DeprecatedFvRsProtBy = stateData.DeprecatedFvRsProtBy
 	}
@@ -3905,9 +3830,6 @@ func avoidFvAEPgPlanChangeForKnownAfterApplyOnly(ctx context.Context, planData, 
 		}
 		if configData.DeprecatedFvRsProv.IsNull() {
 			planData.DeprecatedFvRsProv = basetypes.NewSetUnknown(basetypes.StringType{})
-		}
-		if configData.DeprecatedFvRsPathAtt.IsNull() {
-			planData.DeprecatedFvRsPathAtt = basetypes.NewSetUnknown(basetypes.StringType{})
 		}
 		if configData.DeprecatedFvRsProtBy.IsNull() {
 			planData.DeprecatedFvRsProtBy = basetypes.NewSetUnknown(basetypes.StringType{})
@@ -4046,6 +3968,15 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 					}...),
 				},
 			},
+			"relation_fv_rs_path_att": schema.SetAttribute{
+				Optional:           true,
+				Computed:           true,
+				ElementType:        types.StringType,
+				DeprecationMessage: "Attribute `relation_fv_rs_path_att` is deprecated. The attribute will be removed in the next major version of the provider.",
+				PlanModifiers: []planmodifier.Set{
+					setplanmodifier.UseStateForUnknown(),
+				},
+			},
 			"relation_fv_rs_prov_def": schema.SetAttribute{
 				Optional:           true,
 				Computed:           true,
@@ -4158,17 +4089,6 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Validators: []validator.Set{
 					setvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("relation_to_provided_contracts"),
-					}...),
-				},
-			},
-			"relation_fv_rs_path_att": schema.SetAttribute{
-				Optional:           true,
-				Computed:           true,
-				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute 'relation_fv_rs_path_att' is deprecated, please refer to 'relation_to_static_paths.target_dn' instead. The attribute will be removed in the next major version of the provider.",
-				Validators: []validator.Set{
-					setvalidator.ConflictsWith(path.Expressions{
-						path.MatchRoot("relation_to_static_paths"),
 					}...),
 				},
 			},
