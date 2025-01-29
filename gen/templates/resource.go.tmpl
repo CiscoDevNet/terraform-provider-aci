@@ -926,7 +926,7 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 			{{.ResourceClassName}}List := make([]{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel, 0)
 			var attributeValues []basetypes.StringValue
 			var newAttributeValues []{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel
-			configData.Deprecated{{.ResourceClassName}}.ElementsAs(ctx, &attributeValues, false)
+			planData.Deprecated{{.ResourceClassName}}.ElementsAs(ctx, &attributeValues, false)
 			if stateData != nil {
 				stateData.{{.ResourceClassName}}.ElementsAs(ctx, &newAttributeValues, false)
 			}
@@ -986,6 +986,8 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 										{{- else}}
 					{{ .ResourceClassName }}.{{ .Name }} = basetypes.NewStringUnknown()
 										{{- end}}
+									{{- else if and (ne .Name "TDn") (not (isNewNamedClassAttribute $Overwrite))}}
+					{{ .ResourceClassName }}.{{ .Name }} = basetypes.NewStringUnknown()
 									{{- end}}
 								{{- end}}
 				}
@@ -1019,7 +1021,7 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 			{{- $NewProperties := getNewChildAttributes (getChildAttributesFromBlocks $ClassName $.LegacyBlocks) .Properties}}
 			var newAttributeValues []{{ .ResourceClassName }}{{$.ResourceClassName}}ResourceModel
 			if stateData != nil {
-				stateData.Deprecated{{.ResourceClassName}}.ElementsAs(ctx, &newAttributeValues, false)
+				stateData.{{.ResourceClassName}}.ElementsAs(ctx, &newAttributeValues, false)
 			}
 			planData.Deprecated{{.ResourceClassName}}.ElementsAs(ctx, &attributeValues, false)
 			for _, attributeValue := range attributeValues {

@@ -2476,7 +2476,7 @@ func (r *FvBDResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRe
 			FvRsBDToOutList := make([]FvRsBDToOutFvBDResourceModel, 0)
 			var attributeValues []basetypes.StringValue
 			var newAttributeValues []FvRsBDToOutFvBDResourceModel
-			configData.DeprecatedFvRsBDToOut.ElementsAs(ctx, &attributeValues, false)
+			planData.DeprecatedFvRsBDToOut.ElementsAs(ctx, &attributeValues, false)
 			if stateData != nil {
 				stateData.FvRsBDToOut.ElementsAs(ctx, &newAttributeValues, false)
 			}
@@ -2644,7 +2644,7 @@ func (r *FvBDResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRe
 			var attributeValues []FvRsBDToNetflowMonitorPolFvBDResourceModelV1
 			var newAttributeValues []FvRsBDToNetflowMonitorPolFvBDResourceModel
 			if stateData != nil {
-				stateData.DeprecatedFvRsBDToNetflowMonitorPol.ElementsAs(ctx, &newAttributeValues, false)
+				stateData.FvRsBDToNetflowMonitorPol.ElementsAs(ctx, &newAttributeValues, false)
 			}
 			planData.DeprecatedFvRsBDToNetflowMonitorPol.ElementsAs(ctx, &attributeValues, false)
 			for _, attributeValue := range attributeValues {

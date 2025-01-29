@@ -1442,7 +1442,7 @@ func (r *FvESgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanR
 			FvRsSecInheritedList := make([]FvRsSecInheritedFvESgResourceModel, 0)
 			var attributeValues []basetypes.StringValue
 			var newAttributeValues []FvRsSecInheritedFvESgResourceModel
-			configData.DeprecatedFvRsSecInherited.ElementsAs(ctx, &attributeValues, false)
+			planData.DeprecatedFvRsSecInherited.ElementsAs(ctx, &attributeValues, false)
 			if stateData != nil {
 				stateData.FvRsSecInherited.ElementsAs(ctx, &newAttributeValues, false)
 			}
@@ -1483,7 +1483,7 @@ func (r *FvESgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanR
 			FvRsIntraEpgList := make([]FvRsIntraEpgFvESgResourceModel, 0)
 			var attributeValues []basetypes.StringValue
 			var newAttributeValues []FvRsIntraEpgFvESgResourceModel
-			configData.DeprecatedFvRsIntraEpg.ElementsAs(ctx, &attributeValues, false)
+			planData.DeprecatedFvRsIntraEpg.ElementsAs(ctx, &attributeValues, false)
 			if stateData != nil {
 				stateData.FvRsIntraEpg.ElementsAs(ctx, &newAttributeValues, false)
 			}
@@ -1550,7 +1550,7 @@ func (r *FvESgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanR
 			var attributeValues []FvRsConsFvESgResourceModelV1
 			var newAttributeValues []FvRsConsFvESgResourceModel
 			if stateData != nil {
-				stateData.DeprecatedFvRsCons.ElementsAs(ctx, &newAttributeValues, false)
+				stateData.FvRsCons.ElementsAs(ctx, &newAttributeValues, false)
 			}
 			planData.DeprecatedFvRsCons.ElementsAs(ctx, &attributeValues, false)
 			for _, attributeValue := range attributeValues {
@@ -1597,7 +1597,7 @@ func (r *FvESgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanR
 			var attributeValues []FvRsConsIfFvESgResourceModelV1
 			var newAttributeValues []FvRsConsIfFvESgResourceModel
 			if stateData != nil {
-				stateData.DeprecatedFvRsConsIf.ElementsAs(ctx, &newAttributeValues, false)
+				stateData.FvRsConsIf.ElementsAs(ctx, &newAttributeValues, false)
 			}
 			planData.DeprecatedFvRsConsIf.ElementsAs(ctx, &attributeValues, false)
 			for _, attributeValue := range attributeValues {
@@ -1644,7 +1644,7 @@ func (r *FvESgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanR
 			var attributeValues []FvRsProvFvESgResourceModelV1
 			var newAttributeValues []FvRsProvFvESgResourceModel
 			if stateData != nil {
-				stateData.DeprecatedFvRsProv.ElementsAs(ctx, &newAttributeValues, false)
+				stateData.FvRsProv.ElementsAs(ctx, &newAttributeValues, false)
 			}
 			planData.DeprecatedFvRsProv.ElementsAs(ctx, &attributeValues, false)
 			for _, attributeValue := range attributeValues {
