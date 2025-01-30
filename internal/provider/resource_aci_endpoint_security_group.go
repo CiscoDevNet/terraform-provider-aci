@@ -213,11 +213,12 @@ var FvRsConsFvESgType = types.ObjectType{
 }
 
 func FvRsConsFvESgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(ctx context.Context, planValue, stateValue types.Set) basetypes.SetValue {
+	//  Function is needed to handle the case that an attribute is not yet suppored in a version and gets set to null during read
 	var planSetValues, stateSetValues []FvRsConsFvESgResourceModel
 	stateValue.ElementsAs(ctx, &stateSetValues, false)
 	planValue.ElementsAs(ctx, &planSetValues, false)
 
-	// If the length of the state and plan values are different a change is already detected thus reflection can be skipped
+	// If the length of the state and plan values are different a change is already detected the loop can be skipped
 	if len(stateSetValues) == len(planSetValues) {
 		for index, stateValue := range stateSetValues {
 			nullInStateFound := false
@@ -324,11 +325,12 @@ var FvRsConsIfFvESgType = types.ObjectType{
 }
 
 func FvRsConsIfFvESgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(ctx context.Context, planValue, stateValue types.Set) basetypes.SetValue {
+	//  Function is needed to handle the case that an attribute is not yet suppored in a version and gets set to null during read
 	var planSetValues, stateSetValues []FvRsConsIfFvESgResourceModel
 	stateValue.ElementsAs(ctx, &stateSetValues, false)
 	planValue.ElementsAs(ctx, &planSetValues, false)
 
-	// If the length of the state and plan values are different a change is already detected thus reflection can be skipped
+	// If the length of the state and plan values are different a change is already detected the loop can be skipped
 	if len(stateSetValues) == len(planSetValues) {
 		for index, stateValue := range stateSetValues {
 			nullInStateFound := false
@@ -432,11 +434,12 @@ var FvRsIntraEpgFvESgType = types.ObjectType{
 }
 
 func FvRsIntraEpgFvESgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(ctx context.Context, planValue, stateValue types.Set) basetypes.SetValue {
+	//  Function is needed to handle the case that an attribute is not yet suppored in a version and gets set to null during read
 	var planSetValues, stateSetValues []FvRsIntraEpgFvESgResourceModel
 	stateValue.ElementsAs(ctx, &stateSetValues, false)
 	planValue.ElementsAs(ctx, &planSetValues, false)
 
-	// If the length of the state and plan values are different a change is already detected thus reflection can be skipped
+	// If the length of the state and plan values are different a change is already detected the loop can be skipped
 	if len(stateSetValues) == len(planSetValues) {
 		for index, stateValue := range stateSetValues {
 			nullInStateFound := false
@@ -542,11 +545,12 @@ var FvRsProvFvESgType = types.ObjectType{
 }
 
 func FvRsProvFvESgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(ctx context.Context, planValue, stateValue types.Set) basetypes.SetValue {
+	//  Function is needed to handle the case that an attribute is not yet suppored in a version and gets set to null during read
 	var planSetValues, stateSetValues []FvRsProvFvESgResourceModel
 	stateValue.ElementsAs(ctx, &stateSetValues, false)
 	planValue.ElementsAs(ctx, &planSetValues, false)
 
-	// If the length of the state and plan values are different a change is already detected thus reflection can be skipped
+	// If the length of the state and plan values are different a change is already detected the loop can be skipped
 	if len(stateSetValues) == len(planSetValues) {
 		for index, stateValue := range stateSetValues {
 			nullInStateFound := false
@@ -728,11 +732,12 @@ var FvRsSecInheritedFvESgType = types.ObjectType{
 }
 
 func FvRsSecInheritedFvESgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(ctx context.Context, planValue, stateValue types.Set) basetypes.SetValue {
+	//  Function is needed to handle the case that an attribute is not yet suppored in a version and gets set to null during read
 	var planSetValues, stateSetValues []FvRsSecInheritedFvESgResourceModel
 	stateValue.ElementsAs(ctx, &stateSetValues, false)
 	planValue.ElementsAs(ctx, &planSetValues, false)
 
-	// If the length of the state and plan values are different a change is already detected thus reflection can be skipped
+	// If the length of the state and plan values are different a change is already detected the loop can be skipped
 	if len(stateSetValues) == len(planSetValues) {
 		for index, stateValue := range stateSetValues {
 			nullInStateFound := false

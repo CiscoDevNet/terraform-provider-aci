@@ -143,11 +143,12 @@ var FvFBRMemberFvFBRGroupType = types.ObjectType{
 }
 
 func FvFBRMemberFvFBRGroupSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(ctx context.Context, planValue, stateValue types.Set) basetypes.SetValue {
+	//  Function is needed to handle the case that an attribute is not yet suppored in a version and gets set to null during read
 	var planSetValues, stateSetValues []FvFBRMemberFvFBRGroupResourceModel
 	stateValue.ElementsAs(ctx, &stateSetValues, false)
 	planValue.ElementsAs(ctx, &planSetValues, false)
 
-	// If the length of the state and plan values are different a change is already detected thus reflection can be skipped
+	// If the length of the state and plan values are different a change is already detected the loop can be skipped
 	if len(stateSetValues) == len(planSetValues) {
 		for index, stateValue := range stateSetValues {
 			nullInStateFound := false
