@@ -491,6 +491,8 @@ fvRsCons:
       parent_dependency: "fvAp"
   targets:
     - class_name: "vzBrCP"
+      shared_classes:
+        - "fvRsProv"
       parent_dependency: "fvTenant"
       overwrite_parent_dn_key: "tenant_dn"
       target_dn: "uni/tn-test_tenant/brc-contract_name_0"
@@ -515,6 +517,7 @@ fvRsProv:
       parent_dependency: "fvAp"
     - class_name: "fvAEPg"
       parent_dependency: "fvAp"
+    
 
 fvRsConsIf:
   ignore_custom_type_docs:
@@ -601,17 +604,17 @@ fvRsSecInherited:
     - class_name: "fvAEPg"
       parent_dependency: "fvAp"
       overwrite_parent_dn_key: "application_profile_dn"
-      target_dn: "uni/tn-test_tenant/ap-test_ap/epg-epg_2"
+      target_dn: "uni/tn-test_tenant/ap-test_ap/epg-epg_0"
       relation_resource_name: "contract_master"
       properties:
-        name: "epg_2"
+        name: "epg_0"
     - class_name: "fvAEPg"
       parent_dependency: "fvAp"
       overwrite_parent_dn_key: "application_profile_dn"
-      target_dn: "uni/tn-test_tenant/ap-test_ap/epg-epg_3"
+      target_dn: "uni/tn-test_tenant/ap-test_ap/epg-epg_1"
       relation_resource_name: "contract_master"
       properties:
-        name: "epg_3"
+        name: "epg_1"
 
 fvCrtrn:
   overwrites:
@@ -835,9 +838,13 @@ fvRsAEPgMonPol:
         name: "monitoring_policy_name_1"
 
 fvRsCustQosPol:
-  test_values:
-    all:
-      custom_qos_policy_name: "default"
+  targets:
+    - class_name: "qosCustomPol"
+      parent_dependency: "fvTenant"
+      target_dn: "uni/tn-test_tenant/qoscustom-custom_qos_policy_name_1"
+      relation_resource_name: "custom_qos_policy"
+      properties:
+        name: "custom_qos_policy_name_1"
 
 fvRsTrustCtrl:
   targets:
@@ -858,9 +865,13 @@ fvRsDppPol:
         name: "data_plane_policing_policy_name_1"
 
 fvRsBd:
-  test_values:
-    all:
-      bridge_domain_name: "default"
+  targets:
+    - class_name: "fvBD"
+      parent_dependency: "fvTenant"
+      target_dn: "uni/tn-test_tenant/BD-bridge_domain_name_1"
+      relation_resource_name: "bridge_domain_name"
+      properties:
+        name: "bridge_domain_name_1"
 
 fvRsFcPathAtt:
   default_values:
@@ -1625,6 +1636,13 @@ fvRsBDToNetflowMonitorPol:
     - class_name: "fvBD"
       parent_dependency: "fvTenant"
       parent_dn: "aci_bridge_domain.test.id"
+  targets:
+    - class_name: "netflowMonitorPol"
+      parent_dependency: "fvTenant"
+      target_dn: "uni/tn-test_tenant/monitorpol-netflow_monitor_policy_name_1"
+      relation_resource_name: "netflow_monitor_policy_name"
+      properties:
+        name: "netflow_monitor_policy_name_1"
 
 fvRsBDToOut:
   overwrites:
@@ -1652,7 +1670,7 @@ fvRsBDToProfile:
       relation_resource_name: "l3_outside"
       properties:
         name: "l3_outside_name_1"
-        relation_l3ext_rs_ectx: aci_vrf.test_vrf_1.id
+        relation_l3ext_rs_ectx: aci_vrf.test_vrf_0.id
     - class_name: "l3extOut"
       parent_dependency: "fvTenant"
       overwrite_parent_dn_key: "tenant_dn"
@@ -1660,7 +1678,7 @@ fvRsBDToProfile:
       relation_resource_name: "l3_outside"
       properties:
         name: "l3_outside_name_0"
-        relation_l3ext_rs_ectx: aci_vrf.test_vrf_1.id
+        relation_l3ext_rs_ectx: aci_vrf.test_vrf_0.id
     - class_name: "rtctrlProfile"
       parent_dependency: "l3extOut"
       target_dn: "uni/tn-test_tenant/out-abr_l3_outside_name_0/prof-route_control_profile_name_1"

@@ -72,7 +72,7 @@ targets:
     properties:
         name: "esg_1"
   - class_name: "fvAEPg"
-    target_dn: "uni/tn-test_tenant/ap-test_ap/epg-epg_2"
+    target_dn: "uni/tn-test_tenant/ap-test_ap/epg-epg_0"
     target_dn_ref: "aci_application_epg.test_application_epg_0.id"
     parent_dependency: "fvAp"
     parent_dependency_dn_ref: "aci_application_profile.test.id"
@@ -81,9 +81,9 @@ targets:
     parent_dn_key: "application_profile_dn"
     static: false
     properties:
-        name: "epg_2"
+        name: "epg_0"
   - class_name: "fvAEPg"
-    target_dn: "uni/tn-test_tenant/ap-test_ap/epg-epg_3"
+    target_dn: "uni/tn-test_tenant/ap-test_ap/epg-epg_1"
     target_dn_ref: "aci_application_epg.test_application_epg_1.id"
     parent_dependency: "fvAp"
     parent_dependency_dn_ref: "aci_application_profile.test.id"
@@ -92,5 +92,5 @@ targets:
     parent_dn_key: "application_profile_dn"
     static: false
     properties:
-        name: "epg_3"
+        name: "epg_1"
 class_version: 2.3(1e)-

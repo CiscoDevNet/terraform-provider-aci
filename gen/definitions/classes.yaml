@@ -126,7 +126,6 @@ qosDot1PClass:
     - "Tenants -> Policies -> Protocol -> Custom QoS -> Dot1p Classifiers"
   sub_category: "Tenant Policies"
 
-
 fhsTrustCtrlPol:
   ui_locations:
     - "Tenants -> Policies -> Protocol -> First Hop Security -> Trust Control Policies"

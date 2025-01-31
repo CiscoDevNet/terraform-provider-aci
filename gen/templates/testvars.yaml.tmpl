@@ -2,6 +2,34 @@
 # In order to regenerate this file execute `go generate` from the repository root.
 # More details can be found in the [README](https://github.com/CiscoDevNet/terraform-provider-aci/blob/master/README.md).
 
+{{- if .LegacyAttributes}}
+legacy_attributes:
+  {{- range .LegacyAttributes}}
+		{{- if ne .ReplacedBy.AttributeName "" }}
+			{{- if eq (getMigrationType .ValueType) "String"}}
+  {{.AttributeName}}: "{{getLegacyPropertyTestValue .Name $}}"
+			{{- else if eq (getMigrationType .ValueType) "Set"}}
+  {{.AttributeName}}: "{{getLegacyPropertyTestValue .Name $}}"
+			{{- end}}
+		{{- end}}
+	{{- end }}
+{{- end}}
+{{- if .LegacyBlocks}}
+legacy_blocks:
+  {{- range .LegacyBlocks}}{{$ClassName := .ClassName}}
+  {{.Name }}:
+    {{- range .Attributes}}
+      {{- if ne .ReplacedBy.AttributeName "" }}
+        {{- if eq (getMigrationType .ValueType) "String"}}
+    {{.AttributeName}}: "{{getLegacyBlockTestValue $ClassName .Name $}}"
+        {{- else if eq (getMigrationType .ValueType) "Set"}}
+    {{.AttributeName}}: "{{getLegacyBlockTestValue $ClassName .Name $}}"
+        {{- end}}
+      {{- end}}
+    {{- end }}
+  {{- end}}
+{{ end}}
+
 {{ $versionMismatch := .VersionMismatched}}
 default:
 {{- $versionMismatchExists := false}}

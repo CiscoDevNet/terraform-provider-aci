@@ -946,37 +946,41 @@ resource "aci_neighbor_discovery_interface_policy" "test_neighbor_discovery_inte
   parent_dn = aci_tenant.test.id
   name = "neighbor_discovery_interface_policy_name_1"
 }
-resource "aci_vrf" "test_vrf_1"{
+resource "aci_netflow_monitor_policy" "test_netflow_monitor_policy_1"{
+  parent_dn = aci_tenant.test.id
+  name = "netflow_monitor_policy_name_1"
+}
+resource "aci_vrf" "test_vrf_0"{
   tenant_dn = aci_tenant.test.id
   name = "vrf_name_1"
 }
-resource "aci_l3_outside" "test_l3_outside_0"{
-  tenant_dn = aci_tenant.test.id
-  name = "l3_outside_name_1"
-  relation_l3ext_rs_ectx = aci_vrf.test_vrf_1.id
-}
 resource "aci_l3_outside" "test_l3_outside_1"{
   tenant_dn = aci_tenant.test.id
-  name = "l3_outside_name_0"
-  relation_l3ext_rs_ectx = aci_vrf.test_vrf_1.id
+  name = "l3_outside_name_1"
+  relation_l3ext_rs_ectx = aci_vrf.test_vrf_0.id
 }
-resource "aci_route_control_profile" "test_route_control_profile_0"{
+resource "aci_l3_outside" "test_l3_outside_0"{
+  tenant_dn = aci_tenant.test.id
+  name = "l3_outside_name_0"
+  relation_l3ext_rs_ectx = aci_vrf.test_vrf_0.id
+}
+resource "aci_route_control_profile" "test_route_control_profile_1"{
   parent_dn = aci_l3_outside.test_l3_outside_0.id
   name = "route_control_profile_name_1"
 }
-resource "aci_dhcp_relay_policy" "test_dhcp_relay_policy_1"{
+resource "aci_dhcp_relay_policy" "test_dhcp_relay_policy_0"{
   tenant_dn = aci_tenant.test.id
   name = "dhcp_relay_policy_name_1"
 }
-resource "aci_end_point_retention_policy" "test_end_point_retention_policy_0"{
+resource "aci_end_point_retention_policy" "test_end_point_retention_policy_1"{
   tenant_dn = aci_tenant.test.id
   name = "end_point_retention_policy_name_1"
 }
-resource "aci_igmp_snooping_policy" "test_igmp_snooping_policy_1"{
+resource "aci_igmp_snooping_policy" "test_igmp_snooping_policy_0"{
   parent_dn = aci_tenant.test.id
   name = "igmp_snooping_policy_name_1"
 }
-resource "aci_mld_snooping_policy" "test_mld_snooping_policy_0"{
+resource "aci_mld_snooping_policy" "test_mld_snooping_policy_1"{
   parent_dn = aci_tenant.test.id
   name = "mld_snooping_policy_name_1"
 }
@@ -1133,7 +1137,7 @@ resource "aci_bridge_domain" "test" {
         value = "test_value"
 	  },
     ]
-    dhcp_relay_policy_name = aci_dhcp_relay_policy.test_dhcp_relay_policy_1.name
+    dhcp_relay_policy_name = aci_dhcp_relay_policy.test_dhcp_relay_policy_0.name
   }
   relation_to_end_point_retention_policy = {
     annotation = "annotation_1"
@@ -1157,7 +1161,7 @@ resource "aci_bridge_domain" "test" {
         value = "test_value"
 	  },
     ]
-    end_point_retention_policy_name = aci_end_point_retention_policy.test_end_point_retention_policy_0.name
+    end_point_retention_policy_name = aci_end_point_retention_policy.test_end_point_retention_policy_1.name
     resolve_action = "inherit"
   }
   relation_to_first_hop_security_policy = {
@@ -1206,7 +1210,7 @@ resource "aci_bridge_domain" "test" {
         value = "test_value"
 	  },
     ]
-    igmp_snooping_policy_name = aci_igmp_snooping_policy.test_igmp_snooping_policy_1.name
+    igmp_snooping_policy_name = aci_igmp_snooping_policy.test_igmp_snooping_policy_0.name
   }
   relation_to_l3_outsides = [
     {
@@ -1231,7 +1235,7 @@ resource "aci_bridge_domain" "test" {
           value = "test_value"
 	    },
       ]
-      l3_outside_name = aci_l3_outside.test_l3_outside_1.name
+      l3_outside_name = aci_l3_outside.test_l3_outside_0.name
     },
     {
       annotation = "annotation_2"
@@ -1255,7 +1259,7 @@ resource "aci_bridge_domain" "test" {
           value = "test_value"
 	    },
       ]
-      l3_outside_name = aci_l3_outside.test_l3_outside_0.name
+      l3_outside_name = aci_l3_outside.test_l3_outside_1.name
     },
   ]
   relation_to_mld_snooping_policy = {
@@ -1280,7 +1284,7 @@ resource "aci_bridge_domain" "test" {
         value = "test_value"
 	  },
     ]
-    mld_snooping_policy_name = aci_mld_snooping_policy.test_mld_snooping_policy_0.name
+    mld_snooping_policy_name = aci_mld_snooping_policy.test_mld_snooping_policy_1.name
   }
   relation_to_monitor_policy = {
     annotation = "annotation_1"
@@ -1379,7 +1383,7 @@ resource "aci_bridge_domain" "test" {
 	    },
       ]
       filter_type = "ipv4"
-      netflow_monitor_policy_name = "netflow_monitor_policy_name_1"
+      netflow_monitor_policy_name = aci_netflow_monitor_policy.test_netflow_monitor_policy_1.name
     },
   ]
   relation_to_route_control_profile = {
@@ -1404,8 +1408,8 @@ resource "aci_bridge_domain" "test" {
         value = "test_value"
 	  },
     ]
-    l3_outside_name = aci_l3_outside.test_l3_outside_0.name
-    route_control_profile_name = aci_route_control_profile.test_route_control_profile_0.name
+    l3_outside_name = aci_l3_outside.test_l3_outside_1.name
+    route_control_profile_name = aci_route_control_profile.test_route_control_profile_1.name
   }
   relation_to_vrf = {
     annotation = "annotation_1"
@@ -1429,7 +1433,7 @@ resource "aci_bridge_domain" "test" {
         value = "test_value"
 	  },
     ]
-    vrf_name = aci_vrf.test_vrf_1.name
+    vrf_name = aci_vrf.test_vrf_0.name
   }
   rogue_coop_exceptions = [
     {
@@ -1533,7 +1537,7 @@ resource "aci_bridge_domain" "test" {
         value = "test_value"
 	  },
     ]
-    end_point_retention_policy_name = aci_end_point_retention_policy.test_end_point_retention_policy_0.name
+    end_point_retention_policy_name = aci_end_point_retention_policy.test_end_point_retention_policy_1.name
     resolve_action = "inherit"
   }
   relation_to_first_hop_security_policy = {}
@@ -1551,7 +1555,7 @@ resource "aci_bridge_domain" "test" {
         value = "test_value"
 	  },
     ]
-    igmp_snooping_policy_name = aci_igmp_snooping_policy.test_igmp_snooping_policy_1.name
+    igmp_snooping_policy_name = aci_igmp_snooping_policy.test_igmp_snooping_policy_0.name
   }
   relation_to_l3_outsides = [ 
 	{
@@ -1568,7 +1572,7 @@ resource "aci_bridge_domain" "test" {
           value = "test_value"
 	    },
       ]
-	  l3_outside_name = aci_l3_outside.test_l3_outside_0.name
+	  l3_outside_name = aci_l3_outside.test_l3_outside_1.name
 	},
   ]
   relation_to_mld_snooping_policy = {
@@ -1585,7 +1589,7 @@ resource "aci_bridge_domain" "test" {
         value = "test_value"
 	  },
     ]
-    mld_snooping_policy_name = aci_mld_snooping_policy.test_mld_snooping_policy_0.name
+    mld_snooping_policy_name = aci_mld_snooping_policy.test_mld_snooping_policy_1.name
   }
   relation_to_monitor_policy = {}
   relation_to_neighbor_discovery_interface_policy = {
@@ -1620,7 +1624,7 @@ resource "aci_bridge_domain" "test" {
 	    },
       ]
 	  filter_type = "ipv4"
-	  netflow_monitor_policy_name = "netflow_monitor_policy_name_1"
+	  netflow_monitor_policy_name = aci_netflow_monitor_policy.test_netflow_monitor_policy_1.name
 	},
   ]
   relation_to_route_control_profile = {}
@@ -1638,7 +1642,7 @@ resource "aci_bridge_domain" "test" {
         value = "test_value"
 	  },
     ]
-    vrf_name = aci_vrf.test_vrf_1.name
+    vrf_name = aci_vrf.test_vrf_0.name
   }
   rogue_coop_exceptions = [ 
 	{
@@ -1681,7 +1685,7 @@ resource "aci_bridge_domain" "test" {
     annotation = "annotation_1"
     annotations = []
     tags = []
-    end_point_retention_policy_name = aci_end_point_retention_policy.test_end_point_retention_policy_0.name
+    end_point_retention_policy_name = aci_end_point_retention_policy.test_end_point_retention_policy_1.name
     resolve_action = "inherit"
   }
   relation_to_first_hop_security_policy = {}
@@ -1689,14 +1693,14 @@ resource "aci_bridge_domain" "test" {
     annotation = "annotation_1"
     annotations = []
     tags = []
-    igmp_snooping_policy_name = aci_igmp_snooping_policy.test_igmp_snooping_policy_1.name
+    igmp_snooping_policy_name = aci_igmp_snooping_policy.test_igmp_snooping_policy_0.name
   }
   relation_to_l3_outsides = []
   relation_to_mld_snooping_policy = {
     annotation = "annotation_1"
     annotations = []
     tags = []
-    mld_snooping_policy_name = aci_mld_snooping_policy.test_mld_snooping_policy_0.name
+    mld_snooping_policy_name = aci_mld_snooping_policy.test_mld_snooping_policy_1.name
   }
   relation_to_monitor_policy = {}
   relation_to_neighbor_discovery_interface_policy = {
@@ -1711,7 +1715,7 @@ resource "aci_bridge_domain" "test" {
     annotation = "annotation_1"
     annotations = []
     tags = []
-    vrf_name = aci_vrf.test_vrf_1.name
+    vrf_name = aci_vrf.test_vrf_0.name
   }
   rogue_coop_exceptions = []
   tags = []
