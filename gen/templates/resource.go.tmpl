@@ -837,15 +837,19 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 									{{- end}}	
 								{{- end}}
 								{{- range .Properties}}
+									{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
 									{{- if eq .Name "Annotation"}}
-				{{ .Name | decapitalize }}Value := planData.Annotation
+			{{ .Name | decapitalize }}Value := planData.{{ .Name }}
+									{{- else if not (isNewNamedClassAttribute $Overwrite) }}
+			{{ .Name | decapitalize }}Value := basetypes.NewStringUnknown()
 									{{- end}}
 								{{- end}}
-			if stateData != nil {
+			if stateData != nil && !IsEmptySingleNestedAttribute(stateData.{{ $SetName }}.Attributes()) {
 				stateData.{{ $SetName }}.As(ctx, &newAttributeValues, basetypes.ObjectAsOptions{})
 								{{- range .Properties}}
-									{{- if eq .Name "Annotation"}}
-				{{ .Name | decapitalize }}Value = newAttributeValues.Annotation
+									{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
+									{{- if not (isNewNamedClassAttribute $Overwrite) }}
+				{{ .Name | decapitalize }}Value = newAttributeValues.{{.Name}}
 									{{- end}}
 								{{- end}}
 								{{- range .Children}}
@@ -868,10 +872,8 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 								{{- range .Properties}}
 								{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
 								{{- $AttributeName := getLegacyChildAttribute .PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
-									{{- if eq .Name "Annotation"}}
+									{{- if or (eq .Name "Annotation") (eq $AttributeName "")}}
 				{{ .Name }}: {{ .Name | decapitalize }}Value,
-									{{- else if eq $AttributeName ""}}
-				{{ .Name }}: basetypes.NewStringNull(),
 									{{- else}}
 										{{- if isNewNamedClassAttribute $Overwrite }}
 											{{- if isNewNamedClassAttributeMatch $Overwrite $ResourceName}}
