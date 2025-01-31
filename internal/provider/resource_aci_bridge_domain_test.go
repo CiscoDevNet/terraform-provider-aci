@@ -928,6 +928,11 @@ func TestAccResourceFvBDWithFvTenant(t *testing.T) {
 					),
 				},
 			},
+			// Update with legacy attribute config
+			{
+				Config:             testConfigFvBDLegacyAttributesWithFvTenant + testConfigDataSourceSystem,
+				ExpectNonEmptyPlan: false,
+			},
 		},
 		CheckDestroy: testCheckResourceDestroy,
 	})
@@ -1731,8 +1736,8 @@ resource "aci_bridge_domain" "test" {
   host_based_routing = "no"
   intersite_bum_traffic_allow = "no"
   ipv6_mcast_allow = "no"
-  ll_addr = "test_ll_addr"
-  mac = "test_mac"
+  ll_addr = "fe80::1"
+  mac = "00:22:BD:F8:19:FE"
   mcast_allow = "no"
   multi_dst_pkt_act = "bd-flood"
   relation_fv_rs_abd_pol_mon_pol = aci_monitoring_policy.test_monitoring_policy_0.id
@@ -1746,11 +1751,11 @@ resource "aci_bridge_domain" "test" {
   relation_fv_rs_igmpsn = aci_igmp_snooping_policy.test_igmp_snooping_policy_0.id
   relation_fv_rs_mldsn = aci_mld_snooping_policy.test_mld_snooping_policy_1.id
   tenant_dn = aci_tenant.test.id
-  unicast_route = "no"
+  unicast_route = "yes"
   unk_mac_ucast_act = "flood"
   unk_mcast_act = "flood"
   v6unk_mcast_act = "flood"
-  vmac = "test_vmac"
+  vmac = "00:22:BD:F8:19:FB"
   relation_fv_rs_bd_to_netflow_monitor_pol {
     flt_type = "ce"
     tn_netflow_monitor_pol_name = aci_netflow_monitor_policy.test_netflow_monitor_policy_1.id

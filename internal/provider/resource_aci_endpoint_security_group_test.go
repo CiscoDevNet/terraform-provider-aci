@@ -500,6 +500,11 @@ func TestAccResourceFvESgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "tags.#", "0"),
 				),
 			},
+			// Update with legacy attribute config
+			{
+				Config:             testConfigFvESgLegacyAttributesWithFvAp + testConfigDataSourceSystem,
+				ExpectNonEmptyPlan: false,
+			},
 		},
 		CheckDestroy: testCheckResourceDestroy,
 	})

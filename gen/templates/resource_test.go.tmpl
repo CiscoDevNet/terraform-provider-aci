@@ -851,6 +851,13 @@ PreCheck: func() { testAccPreCheck(t, "{{.test_type}}", "{{$.class_version}}") }
 				),
 			},
 		{{- end}}
+		{{- if $.legacy_attributes}}
+			// Update with legacy attribute config
+			{
+				Config: testConfig{{$.resourceClassName}}LegacyAttributesWith{{capitalize .class_name}}{{if $.version_mismatch}} + testConfigDataSourceSystem{{end}},
+				ExpectNonEmptyPlan: {{.class_in_parent}},
+			},
+		{{- end}}
 		},
 		CheckDestroy: testCheckResourceDestroy,
 	})

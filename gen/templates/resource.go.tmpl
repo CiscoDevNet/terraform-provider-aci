@@ -726,6 +726,10 @@ func set{{ .ResourceClassName }}LegacyAttributes(ctx context.Context, diags *dia
 						if childAttributeName == "tDn" {
 							Deprecated{{.ResourceClassName}}{{$.ResourceClassName}}.TargetDn = basetypes.NewStringValue(childAttributeValue.(string))
 						}
+								{{- else if isNewNamedClassAttribute $Overwrite}}
+						if childAttributeName == "tDn" {
+							Deprecated{{.ResourceClassName}}{{$.ResourceClassName}}.{{.Name}} = basetypes.NewStringValue(childAttributeValue.(string))
+						}
 								{{- else if ne .Name "Annotation"}}
 						if childAttributeName == "{{.PropertyName}}" {
 							Deprecated{{.ResourceClassName}}{{$.ResourceClassName}}.{{.Name}} = basetypes.NewStringValue(childAttributeValue.(string))

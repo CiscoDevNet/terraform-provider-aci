@@ -1553,6 +1553,11 @@ fvBD:
       endpoint_move_detection_mode: "garp"
       l2_unknown_unicast_flooding: "proxy"
       limit_ip_learn_to_subnets: "yes"
+    legacy:
+      custom_mac_address: "00:22:BD:F8:19:FE"
+      virtual_mac_address: "00:22:BD:F8:19:FB"
+      link_local_ipv6_address: "fe80::1"
+      unicast_routing: "yes"
   parents:
     - class_name: "fvTenant"
       parent_dependency: ""
