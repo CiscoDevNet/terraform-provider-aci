@@ -1745,7 +1745,6 @@ resource "aci_bridge_domain" "test" {
   relation_fv_rs_bd_to_fhs = aci_first_hop_security_policy.test_first_hop_security_policy_1.id
   relation_fv_rs_bd_to_nd_p = aci_neighbor_discovery_interface_policy.test_neighbor_discovery_interface_policy_0.id
   relation_fv_rs_bd_to_out = [aci_l3_outside.test_l3_outside_1.id]
-  relation_fv_rs_bd_to_profile = aci_route_control_profile.test_route_control_profile_1.id
   relation_fv_rs_bd_to_relay_p = aci_dhcp_relay_policy.test_dhcp_relay_policy_0.id
   relation_fv_rs_ctx = aci_vrf.test_vrf_0.id
   relation_fv_rs_igmpsn = aci_igmp_snooping_policy.test_igmp_snooping_policy_0.id

@@ -726,8 +726,6 @@ fvBD:
       flt_type: relation_to_netflow_monitor_policies.filter_type
     fvRsBDToOut:
       relation_fv_rs_bd_to_out: relation_to_l3_outsides.l3_outside_name
-    fvRsBDToProfile:
-      relation_fv_rs_bd_to_profile: relation_to_route_control_profile.route_control_profile_name
     fvRsBDToRelayP:
       relation_fv_rs_bd_to_relay_p: relation_to_dhcp_relay_policy.dhcp_relay_policy_name
     fvRsCtx:
