@@ -1121,6 +1121,11 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "priority", "1"),
 				),
 			},
+			// Update with legacy attribute config
+			{
+				Config:             testConfigFvAEPgLegacyAttributesWithFvAp + testConfigDataSourceSystem,
+				ExpectNonEmptyPlan: false,
+			},
 		},
 		CheckDestroy: testCheckResourceDestroy,
 	})
@@ -2313,7 +2318,7 @@ const testConfigFvAEPgLegacyAttributesWithFvAp = testChildDependencyConfigFvAEPg
 resource "aci_application_epg" "test" {
   name = "test_name"
   application_profile_dn = aci_application_profile.test.id
-  exception_tag = "test_exception_tag"
+  exception_tag = "contract_exception_tag_1"
   flood_on_encap = "disabled"
   fwd_ctrl = "none"
   has_mcast_source = "no"

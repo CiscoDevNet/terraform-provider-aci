@@ -182,7 +182,8 @@ func GetBlockTestValue(className, attributeName string, model Model) string {
 			for _, property := range child.Properties {
 				if property.Name == attributeName {
 					if len(property.ValidValues) > 0 {
-						return property.ValidValues[0]
+						childKey := GetOverwriteAttributeName(model.PkgName, property.SnakeCaseName, model.Definitions)
+						return GetOverwriteAttributeValue(child.PkgName, childKey, property.ValidValues[0], "legacy", 0, model.Definitions).(string)
 					} else if property.PropertyName == "tDn" {
 						return getChildTarget(model, className, "target_dn_1", true)
 					}
@@ -200,10 +201,11 @@ func GetTestValue(name string, model Model) string {
 
 	for _, property := range model.Properties {
 		if property.Name == name {
+			childKey := GetOverwriteAttributeName(model.PkgName, property.SnakeCaseName, model.Definitions)
 			if len(property.ValidValues) > 0 {
-				return property.ValidValues[0]
+				return GetOverwriteAttributeValue(model.PkgName, childKey, property.ValidValues[0], "legacy", 0, model.Definitions).(string)
 			}
-			return fmt.Sprintf("test_%s", property.SnakeCaseName)
+			return GetOverwriteAttributeValue(model.PkgName, childKey, fmt.Sprintf("%s_1", childKey), "legacy", 0, model.Definitions).(string)
 		}
 	}
 

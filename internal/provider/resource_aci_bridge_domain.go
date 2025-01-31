@@ -2164,7 +2164,7 @@ func setFvBDLegacyAttributes(ctx context.Context, diags *diag.Diagnostics, data,
 						if childAttributeName == "fltType" {
 							DeprecatedFvRsBDToNetflowMonitorPolFvBD.FltType = basetypes.NewStringValue(childAttributeValue.(string))
 						}
-						if childAttributeName == "tnNetflowMonitorPolName" {
+						if childAttributeName == "tDn" {
 							DeprecatedFvRsBDToNetflowMonitorPolFvBD.TnNetflowMonitorPolName = basetypes.NewStringValue(childAttributeValue.(string))
 						}
 					}
