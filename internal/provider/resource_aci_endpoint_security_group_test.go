@@ -1052,3 +1052,29 @@ resource "aci_endpoint_security_group" "test" {
   tags = []
 }
 `
+
+const testConfigFvESgLegacyAttributesWithFvAp = testChildDependencyConfigFvESg + testConfigFvApMinDependencyWithFvTenant + `
+resource "aci_endpoint_security_group" "test" {
+  name = "test_name"
+  application_profile_dn = aci_application_profile.test.id
+  match_t = "All"
+  pc_enf_pref = "enforced"
+  pref_gr_memb = "exclude"
+  relation_fv_rs_intra_epg = [aci_contract.test_contract_1.id]
+  relation_fv_rs_scope = aci_vrf.test_vrf_0.id
+  relation_fv_rs_sec_inherited = [aci_endpoint_security_group.test_endpoint_security_group_0.id]
+  relation_fv_rs_cons {
+    prio = "level1"
+    target_dn = aci_contract.test_contract_0.id
+  }
+  relation_fv_rs_cons_if {
+    prio = "level1"
+    target_dn = aci_imported_contract.test_imported_contract_0.id
+  }
+  relation_fv_rs_prov {
+    match_t = "All"
+    prio = "level1"
+    target_dn = aci_contract.test_contract_0.id
+  }
+}
+`

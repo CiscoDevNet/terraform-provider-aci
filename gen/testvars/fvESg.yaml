@@ -6,8 +6,8 @@ legacy_attributes:
   application_profile_dn: "aci_application_profile.test.id"
   pc_enf_pref: "enforced"
   pref_gr_memb: "exclude"
-  relation_fv_rs_sec_inherited: "aci_endpoint_security_group.test_endpoint_security_group_0.id"
-  relation_fv_rs_intra_epg: "aci_contract.test_contract_1.id"
+  relation_fv_rs_sec_inherited: ["aci_endpoint_security_group.test_endpoint_security_group_0.id"]
+  relation_fv_rs_intra_epg: ["aci_contract.test_contract_1.id"]
   relation_fv_rs_scope: "aci_vrf.test_vrf_0.id"
 legacy_blocks:
   relation_fv_rs_cons:

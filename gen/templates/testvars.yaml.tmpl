@@ -9,7 +9,7 @@ legacy_attributes:
 			{{- if eq (getMigrationType .ValueType) "String"}}
   {{.AttributeName}}: "{{getLegacyPropertyTestValue .Name $}}"
 			{{- else if eq (getMigrationType .ValueType) "Set"}}
-  {{.AttributeName}}: "{{getLegacyPropertyTestValue .Name $}}"
+  {{.AttributeName}}: ["{{getLegacyPropertyTestValue .Name $}}"]
 			{{- end}}
 		{{- end}}
 	{{- end }}
@@ -23,7 +23,7 @@ legacy_blocks:
         {{- if eq (getMigrationType .ValueType) "String"}}
     {{.AttributeName}}: "{{getLegacyBlockTestValue $ClassName .Name $}}"
         {{- else if eq (getMigrationType .ValueType) "Set"}}
-    {{.AttributeName}}: "{{getLegacyBlockTestValue $ClassName .Name $}}"
+    {{.AttributeName}}: ["{{getLegacyBlockTestValue $ClassName .Name $}}"]
         {{- end}}
       {{- end}}
     {{- end }}

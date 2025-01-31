@@ -2052,16 +2052,39 @@ resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClas
 		{{- end}}
 
 		{{if $.custom_type}}
-const testConfig{{$.resourceClassName}}CustomTypeDependencyWith{{capitalize .class_name}} = {{- if $dependencies }} testDependencyConfig{{$.resourceClassName}} + {{- end }} testConfig{{capitalize .class_name}}Min{{- if ne .parent_dependency ""}}DependencyWith{{capitalize .parent_dependency}}{{if and (ne .parent_dependency_name nil) (ne .parent_dependency_name "")}}{{capitalize .parent_dependency_name }}{{- end }}{{- end}} + `
+const testConfig{{$.resourceClassName}}CustomTypeDependencyWith{{capitalize .class_name}} = {{- if $dependencies }} testDependencyConfig{{$.resourceClassName}} + {{- end }}{{- if $childDependencies }} testChildDependencyConfig{{$.resourceClassName}} + {{- end }} {{if .class_name}}testConfig{{capitalize .class_name}}Min{{- if ne .parent_dependency ""}}DependencyWith{{capitalize .parent_dependency}}{{if and (ne .parent_dependency_name nil) (ne .parent_dependency_name "")}}{{capitalize .parent_dependency_name }}{{- end }}{{- end}} + {{- end}} `
 resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}" {
   parent_dn = {{.parent_dn}}
-  		{{- range $key, $value := $.custom_type}}
-  			{{- if eq $key "target_dn" }}{{$attributeValue := getTestTargetDn $.targets $.resourceName $value true $target_classes 0 false}}
+  			{{- range $key, $value := $.custom_type}}
+  				{{- if eq $key "target_dn" }}{{$attributeValue := getTestTargetDn $.targets $.resourceName $value true $target_classes 0 false}}
   {{$key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}
-  			{{- else }}
+  				{{- else }}
   {{$key}} = "{{$value}}"
-  			{{- end }}
-  		{{- end}}
+  				{{- end }}
+  			{{- end}}
+}
+`
+		{{- end}}
+		{{- if $.legacy_attributes }}
+const testConfig{{$.resourceClassName}}LegacyAttributesWith{{capitalize .class_name}} = {{- if $dependencies }} testDependencyConfig{{$.resourceClassName}} + {{- end }}{{- if $childDependencies }} testChildDependencyConfig{{$.resourceClassName}} + {{- end }} {{if .class_name}}testConfig{{capitalize .class_name}}Min{{- if ne .parent_dependency ""}}DependencyWith{{capitalize .parent_dependency}}{{if and (ne .parent_dependency_name nil) (ne .parent_dependency_name "")}}{{capitalize .parent_dependency_name }}{{- end }}{{- end}} + {{- end}} `
+resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}" {
+			{{- range $key, $value := $.resource_required}}
+  {{$key}} = "{{$value}}"
+			{{- end}}
+			{{- range $key, $value := $.legacy_attributes}}
+				{{- if isInterfaceSlice $value}}{{$list_value := index $value 0}}
+  {{$key}} = {{if isReference $list_value}}{{$value}}{{else}}["{{$list_value}}"]{{end}}
+				{{- else}}
+  {{$key}} = {{if isReference $value}}{{$value}}{{else}}"{{$value}}"{{end}}
+				{{- end}}
+			{{- end}}
+			{{- range $key, $value := $.legacy_blocks}}
+  {{$key}} {
+				{{- range $block_key, $block_value := $value}}
+    {{$block_key}} = {{if isReference $block_value}}{{$block_value}}{{else}}"{{$block_value}}"{{end}}
+				{{- end}}
+  }
+			{{- end}}
 }
 `
 		{{- end}}
