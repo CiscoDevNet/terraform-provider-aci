@@ -1721,3 +1721,39 @@ resource "aci_bridge_domain" "test" {
   tags = []
 }
 `
+
+const testConfigFvBDLegacyAttributesWithFvTenant = testChildDependencyConfigFvBD + testConfigFvTenantMin + `
+resource "aci_bridge_domain" "test" {
+  name = "test_name"
+  arp_flood = "no"
+  ep_clear = "no"
+  ep_move_detect_mode = "garp"
+  host_based_routing = "no"
+  intersite_bum_traffic_allow = "no"
+  ipv6_mcast_allow = "no"
+  ll_addr = "test_ll_addr"
+  mac = "test_mac"
+  mcast_allow = "no"
+  multi_dst_pkt_act = "bd-flood"
+  relation_fv_rs_abd_pol_mon_pol = aci_monitoring_policy.test_monitoring_policy_0.id
+  relation_fv_rs_bd_to_ep_ret = aci_end_point_retention_policy.test_end_point_retention_policy_1.id
+  relation_fv_rs_bd_to_fhs = aci_first_hop_security_policy.test_first_hop_security_policy_1.id
+  relation_fv_rs_bd_to_nd_p = aci_neighbor_discovery_interface_policy.test_neighbor_discovery_interface_policy_0.id
+  relation_fv_rs_bd_to_out = [aci_l3_outside.test_l3_outside_1.id]
+  relation_fv_rs_bd_to_profile = aci_route_control_profile.test_route_control_profile_1.id
+  relation_fv_rs_bd_to_relay_p = aci_dhcp_relay_policy.test_dhcp_relay_policy_0.id
+  relation_fv_rs_ctx = aci_vrf.test_vrf_0.id
+  relation_fv_rs_igmpsn = aci_igmp_snooping_policy.test_igmp_snooping_policy_0.id
+  relation_fv_rs_mldsn = aci_mld_snooping_policy.test_mld_snooping_policy_1.id
+  tenant_dn = aci_tenant.test.id
+  unicast_route = "no"
+  unk_mac_ucast_act = "flood"
+  unk_mcast_act = "flood"
+  v6unk_mcast_act = "flood"
+  vmac = "test_vmac"
+  relation_fv_rs_bd_to_netflow_monitor_pol {
+    flt_type = "ce"
+    tn_netflow_monitor_pol_name = aci_netflow_monitor_policy.test_netflow_monitor_policy_1.id
+  }
+}
+`

@@ -2302,10 +2302,45 @@ resource "aci_application_epg" "test" {
 }
 `
 
-const testConfigFvAEPgCustomTypeDependencyWithFvAp = testConfigFvApMinDependencyWithFvTenant + `
+const testConfigFvAEPgCustomTypeDependencyWithFvAp = testChildDependencyConfigFvAEPg + testConfigFvApMinDependencyWithFvTenant + `
 resource "aci_application_epg" "test" {
   parent_dn = aci_application_profile.test.id
   name = "test_name"
   priority = "1"
+}
+`
+const testConfigFvAEPgLegacyAttributesWithFvAp = testChildDependencyConfigFvAEPg + testConfigFvApMinDependencyWithFvTenant + `
+resource "aci_application_epg" "test" {
+  name = "test_name"
+  application_profile_dn = aci_application_profile.test.id
+  exception_tag = "test_exception_tag"
+  flood_on_encap = "disabled"
+  fwd_ctrl = "none"
+  has_mcast_source = "no"
+  is_attr_based_epg = "no"
+  match_t = "All"
+  pc_enf_pref = "enforced"
+  pref_gr_memb = "exclude"
+  prio = "level1"
+  relation_fv_rs_aepg_mon_pol = aci_monitoring_policy.test_monitoring_policy_0.id
+  relation_fv_rs_bd = aci_bridge_domain.test_bridge_domain_1.id
+  relation_fv_rs_cons = [aci_contract.test_contract_1.id]
+  relation_fv_rs_cons_if = [aci_imported_contract.test_imported_contract_1.id]
+  relation_fv_rs_cust_qos_pol = aci_custom_qos_policy.test_custom_qos_policy_0.id
+  relation_fv_rs_dpp_pol = aci_data_plane_policing_policy.test_data_plane_policing_policy_1.id
+  relation_fv_rs_fc_path_att = ["topology/pod-1/paths-101/pathep-[eth1/1]"]
+  relation_fv_rs_intra_epg = [aci_contract.test_contract_1.id]
+  relation_fv_rs_prot_by = [aci_taboo_contract.test_taboo_contract_1.id]
+  relation_fv_rs_prov = [aci_contract.test_contract_1.id]
+  relation_fv_rs_sec_inherited = [aci_application_epg.test_application_epg_0.id]
+  relation_fv_rs_trust_ctrl = aci_trust_control_policy.test_trust_control_policy_0.id
+  shutdown = "no"
+  relation_fv_rs_node_att {
+    deployment_immediacy = "immediate"
+    description = "description_1"
+    encap = "vlan-101"
+    mode = "native"
+    node_dn = "topology/pod-1/node-101"
+  }
 }
 `
