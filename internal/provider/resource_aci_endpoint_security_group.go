@@ -1530,7 +1530,7 @@ func (r *FvESgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanR
 			tagAnnotationFvRsScopeFvESgValue, _ := types.SetValueFrom(ctx, TagAnnotationFvRsScopeFvESgType, make([]TagAnnotationFvRsScopeFvESgResourceModel, 0))
 			tagTagFvRsScopeFvESgValue, _ := types.SetValueFrom(ctx, TagTagFvRsScopeFvESgType, make([]TagTagFvRsScopeFvESgResourceModel, 0))
 			annotationValue := planData.Annotation
-			if stateData != nil {
+			if stateData != nil && !IsEmptySingleNestedAttribute(stateData.FvRsScope.Attributes()) {
 				stateData.FvRsScope.As(ctx, &newAttributeValues, basetypes.ObjectAsOptions{})
 				annotationValue = newAttributeValues.Annotation
 				tagAnnotationFvRsScopeFvESgValue = newAttributeValues.TagAnnotation

@@ -2379,7 +2379,7 @@ func (r *FvBDResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRe
 			tagAnnotationFvRsBDToRelayPFvBDValue, _ := types.SetValueFrom(ctx, TagAnnotationFvRsBDToRelayPFvBDType, make([]TagAnnotationFvRsBDToRelayPFvBDResourceModel, 0))
 			tagTagFvRsBDToRelayPFvBDValue, _ := types.SetValueFrom(ctx, TagTagFvRsBDToRelayPFvBDType, make([]TagTagFvRsBDToRelayPFvBDResourceModel, 0))
 			annotationValue := planData.Annotation
-			if stateData != nil {
+			if stateData != nil && !IsEmptySingleNestedAttribute(stateData.FvRsBDToRelayP.Attributes()) {
 				stateData.FvRsBDToRelayP.As(ctx, &newAttributeValues, basetypes.ObjectAsOptions{})
 				annotationValue = newAttributeValues.Annotation
 				tagAnnotationFvRsBDToRelayPFvBDValue = newAttributeValues.TagAnnotation
@@ -2404,9 +2404,11 @@ func (r *FvBDResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRe
 			tagAnnotationFvRsBdToEpRetFvBDValue, _ := types.SetValueFrom(ctx, TagAnnotationFvRsBdToEpRetFvBDType, make([]TagAnnotationFvRsBdToEpRetFvBDResourceModel, 0))
 			tagTagFvRsBdToEpRetFvBDValue, _ := types.SetValueFrom(ctx, TagTagFvRsBdToEpRetFvBDType, make([]TagTagFvRsBdToEpRetFvBDResourceModel, 0))
 			annotationValue := planData.Annotation
-			if stateData != nil {
+			resolveActValue := basetypes.NewStringUnknown()
+			if stateData != nil && !IsEmptySingleNestedAttribute(stateData.FvRsBdToEpRet.Attributes()) {
 				stateData.FvRsBdToEpRet.As(ctx, &newAttributeValues, basetypes.ObjectAsOptions{})
 				annotationValue = newAttributeValues.Annotation
+				resolveActValue = newAttributeValues.ResolveAct
 				tagAnnotationFvRsBdToEpRetFvBDValue = newAttributeValues.TagAnnotation
 				tagTagFvRsBdToEpRetFvBDValue = newAttributeValues.TagTag
 			}
@@ -2416,7 +2418,7 @@ func (r *FvBDResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRe
 			}
 			FvRsBdToEpRet := FvRsBdToEpRetFvBDResourceModel{
 				Annotation:       annotationValue,
-				ResolveAct:       basetypes.NewStringNull(),
+				ResolveAct:       resolveActValue,
 				TnFvEpRetPolName: tnFvEpRetPolNameValue,
 				TagAnnotation:    tagAnnotationFvRsBdToEpRetFvBDValue,
 				TagTag:           tagTagFvRsBdToEpRetFvBDValue,
@@ -2430,7 +2432,7 @@ func (r *FvBDResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRe
 			tagAnnotationFvRsBDToFhsFvBDValue, _ := types.SetValueFrom(ctx, TagAnnotationFvRsBDToFhsFvBDType, make([]TagAnnotationFvRsBDToFhsFvBDResourceModel, 0))
 			tagTagFvRsBDToFhsFvBDValue, _ := types.SetValueFrom(ctx, TagTagFvRsBDToFhsFvBDType, make([]TagTagFvRsBDToFhsFvBDResourceModel, 0))
 			annotationValue := planData.Annotation
-			if stateData != nil {
+			if stateData != nil && !IsEmptySingleNestedAttribute(stateData.FvRsBDToFhs.Attributes()) {
 				stateData.FvRsBDToFhs.As(ctx, &newAttributeValues, basetypes.ObjectAsOptions{})
 				annotationValue = newAttributeValues.Annotation
 				tagAnnotationFvRsBDToFhsFvBDValue = newAttributeValues.TagAnnotation
@@ -2455,7 +2457,7 @@ func (r *FvBDResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRe
 			tagAnnotationFvRsIgmpsnFvBDValue, _ := types.SetValueFrom(ctx, TagAnnotationFvRsIgmpsnFvBDType, make([]TagAnnotationFvRsIgmpsnFvBDResourceModel, 0))
 			tagTagFvRsIgmpsnFvBDValue, _ := types.SetValueFrom(ctx, TagTagFvRsIgmpsnFvBDType, make([]TagTagFvRsIgmpsnFvBDResourceModel, 0))
 			annotationValue := planData.Annotation
-			if stateData != nil {
+			if stateData != nil && !IsEmptySingleNestedAttribute(stateData.FvRsIgmpsn.Attributes()) {
 				stateData.FvRsIgmpsn.As(ctx, &newAttributeValues, basetypes.ObjectAsOptions{})
 				annotationValue = newAttributeValues.Annotation
 				tagAnnotationFvRsIgmpsnFvBDValue = newAttributeValues.TagAnnotation
@@ -2521,7 +2523,7 @@ func (r *FvBDResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRe
 			tagAnnotationFvRsMldsnFvBDValue, _ := types.SetValueFrom(ctx, TagAnnotationFvRsMldsnFvBDType, make([]TagAnnotationFvRsMldsnFvBDResourceModel, 0))
 			tagTagFvRsMldsnFvBDValue, _ := types.SetValueFrom(ctx, TagTagFvRsMldsnFvBDType, make([]TagTagFvRsMldsnFvBDResourceModel, 0))
 			annotationValue := planData.Annotation
-			if stateData != nil {
+			if stateData != nil && !IsEmptySingleNestedAttribute(stateData.FvRsMldsn.Attributes()) {
 				stateData.FvRsMldsn.As(ctx, &newAttributeValues, basetypes.ObjectAsOptions{})
 				annotationValue = newAttributeValues.Annotation
 				tagAnnotationFvRsMldsnFvBDValue = newAttributeValues.TagAnnotation
@@ -2546,7 +2548,7 @@ func (r *FvBDResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRe
 			tagAnnotationFvRsABDPolMonPolFvBDValue, _ := types.SetValueFrom(ctx, TagAnnotationFvRsABDPolMonPolFvBDType, make([]TagAnnotationFvRsABDPolMonPolFvBDResourceModel, 0))
 			tagTagFvRsABDPolMonPolFvBDValue, _ := types.SetValueFrom(ctx, TagTagFvRsABDPolMonPolFvBDType, make([]TagTagFvRsABDPolMonPolFvBDResourceModel, 0))
 			annotationValue := planData.Annotation
-			if stateData != nil {
+			if stateData != nil && !IsEmptySingleNestedAttribute(stateData.FvRsABDPolMonPol.Attributes()) {
 				stateData.FvRsABDPolMonPol.As(ctx, &newAttributeValues, basetypes.ObjectAsOptions{})
 				annotationValue = newAttributeValues.Annotation
 				tagAnnotationFvRsABDPolMonPolFvBDValue = newAttributeValues.TagAnnotation
@@ -2571,7 +2573,7 @@ func (r *FvBDResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRe
 			tagAnnotationFvRsBDToNdPFvBDValue, _ := types.SetValueFrom(ctx, TagAnnotationFvRsBDToNdPFvBDType, make([]TagAnnotationFvRsBDToNdPFvBDResourceModel, 0))
 			tagTagFvRsBDToNdPFvBDValue, _ := types.SetValueFrom(ctx, TagTagFvRsBDToNdPFvBDType, make([]TagTagFvRsBDToNdPFvBDResourceModel, 0))
 			annotationValue := planData.Annotation
-			if stateData != nil {
+			if stateData != nil && !IsEmptySingleNestedAttribute(stateData.FvRsBDToNdP.Attributes()) {
 				stateData.FvRsBDToNdP.As(ctx, &newAttributeValues, basetypes.ObjectAsOptions{})
 				annotationValue = newAttributeValues.Annotation
 				tagAnnotationFvRsBDToNdPFvBDValue = newAttributeValues.TagAnnotation
@@ -2596,7 +2598,7 @@ func (r *FvBDResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRe
 			tagAnnotationFvRsBDToProfileFvBDValue, _ := types.SetValueFrom(ctx, TagAnnotationFvRsBDToProfileFvBDType, make([]TagAnnotationFvRsBDToProfileFvBDResourceModel, 0))
 			tagTagFvRsBDToProfileFvBDValue, _ := types.SetValueFrom(ctx, TagTagFvRsBDToProfileFvBDType, make([]TagTagFvRsBDToProfileFvBDResourceModel, 0))
 			annotationValue := planData.Annotation
-			if stateData != nil {
+			if stateData != nil && !IsEmptySingleNestedAttribute(stateData.FvRsBDToProfile.Attributes()) {
 				stateData.FvRsBDToProfile.As(ctx, &newAttributeValues, basetypes.ObjectAsOptions{})
 				annotationValue = newAttributeValues.Annotation
 				tagAnnotationFvRsBDToProfileFvBDValue = newAttributeValues.TagAnnotation
@@ -2622,7 +2624,7 @@ func (r *FvBDResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRe
 			tagAnnotationFvRsCtxFvBDValue, _ := types.SetValueFrom(ctx, TagAnnotationFvRsCtxFvBDType, make([]TagAnnotationFvRsCtxFvBDResourceModel, 0))
 			tagTagFvRsCtxFvBDValue, _ := types.SetValueFrom(ctx, TagTagFvRsCtxFvBDType, make([]TagTagFvRsCtxFvBDResourceModel, 0))
 			annotationValue := planData.Annotation
-			if stateData != nil {
+			if stateData != nil && !IsEmptySingleNestedAttribute(stateData.FvRsCtx.Attributes()) {
 				stateData.FvRsCtx.As(ctx, &newAttributeValues, basetypes.ObjectAsOptions{})
 				annotationValue = newAttributeValues.Annotation
 				tagAnnotationFvRsCtxFvBDValue = newAttributeValues.TagAnnotation
