@@ -44,83 +44,83 @@ type FvBDResource struct {
 
 // FvBDResourceModel describes the resource data model.
 type FvBDResourceModel struct {
-	Id                                    types.String `tfsdk:"id"`
-	ParentDn                              types.String `tfsdk:"parent_dn"`
-	OptimizeWanBandwidth                  types.String `tfsdk:"optimize_wan_bandwidth"`
-	Annotation                            types.String `tfsdk:"annotation"`
-	ArpFlood                              types.String `tfsdk:"arp_flooding"`
-	Descr                                 types.String `tfsdk:"description"`
-	EnableRogueExceptMac                  types.String `tfsdk:"enable_rogue_exception_mac"`
-	EpClear                               types.String `tfsdk:"clear_remote_mac_entries"`
-	EpMoveDetectMode                      types.String `tfsdk:"endpoint_move_detection_mode"`
-	HostBasedRouting                      types.String `tfsdk:"advertise_host_routes"`
-	IntersiteBumTrafficAllow              types.String `tfsdk:"enable_intersite_bum_traffic"`
-	IntersiteL2Stretch                    types.String `tfsdk:"intersite_l2_stretch"`
-	IpLearning                            types.String `tfsdk:"ip_learning"`
-	Ipv6McastAllow                        types.String `tfsdk:"pim_ipv6"`
-	LimitIpLearnToSubnets                 types.String `tfsdk:"limit_ip_learn_to_subnets"`
-	LlAddr                                types.String `tfsdk:"link_local_ipv6_address"`
-	Mac                                   types.String `tfsdk:"custom_mac_address"`
-	McastARPDrop                          types.String `tfsdk:"drop_arp_with_multicast_smac"`
-	McastAllow                            types.String `tfsdk:"pim"`
-	MultiDstPktAct                        types.String `tfsdk:"multi_destination_flooding"`
-	Name                                  types.String `tfsdk:"name"`
-	NameAlias                             types.String `tfsdk:"name_alias"`
-	OwnerKey                              types.String `tfsdk:"owner_key"`
-	OwnerTag                              types.String `tfsdk:"owner_tag"`
-	PcTag                                 types.String `tfsdk:"pc_tag"`
-	Scope                                 types.String `tfsdk:"scope"`
-	Seg                                   types.String `tfsdk:"segment"`
-	ServiceBdRoutingDisable               types.String `tfsdk:"service_bd_routing_disable"`
-	Type                                  types.String `tfsdk:"bridge_domain_type"`
-	UnicastRoute                          types.String `tfsdk:"unicast_routing"`
-	UnkMacUcastAct                        types.String `tfsdk:"l2_unknown_unicast_flooding"`
-	UnkMcastAct                           types.String `tfsdk:"l3_unknown_multicast_flooding"`
-	V6unkMcastAct                         types.String `tfsdk:"ipv6_l3_unknown_multicast_flooding"`
-	Vmac                                  types.String `tfsdk:"virtual_mac_address"`
-	FvAccP                                types.Object `tfsdk:"legacy_mode"`
-	FvRogueExceptionMac                   types.Set    `tfsdk:"rogue_coop_exceptions"`
-	FvRsABDPolMonPol                      types.Object `tfsdk:"relation_to_monitor_policy"`
-	FvRsBDToFhs                           types.Object `tfsdk:"relation_to_first_hop_security_policy"`
-	FvRsBDToNdP                           types.Object `tfsdk:"relation_to_neighbor_discovery_interface_policy"`
-	FvRsBDToNetflowMonitorPol             types.Set    `tfsdk:"relation_to_netflow_monitor_policies"`
-	FvRsBDToOut                           types.Set    `tfsdk:"relation_to_l3_outsides"`
-	FvRsBDToProfile                       types.Object `tfsdk:"relation_to_route_control_profile"`
-	FvRsBDToRelayP                        types.Object `tfsdk:"relation_to_dhcp_relay_policy"`
-	FvRsBdToEpRet                         types.Object `tfsdk:"relation_to_end_point_retention_policy"`
-	FvRsCtx                               types.Object `tfsdk:"relation_to_vrf"`
-	FvRsIgmpsn                            types.Object `tfsdk:"relation_to_igmp_snooping_policy"`
-	FvRsMldsn                             types.Object `tfsdk:"relation_to_mld_snooping_policy"`
-	TagAnnotation                         types.Set    `tfsdk:"annotations"`
-	TagTag                                types.Set    `tfsdk:"tags"`
-	DeprecatedArpFlood                    types.String `tfsdk:"arp_flood"`
-	DeprecatedEpClear                     types.String `tfsdk:"ep_clear"`
-	DeprecatedEpMoveDetectMode            types.String `tfsdk:"ep_move_detect_mode"`
-	DeprecatedHostBasedRouting            types.String `tfsdk:"host_based_routing"`
-	DeprecatedIntersiteBumTrafficAllow    types.String `tfsdk:"intersite_bum_traffic_allow"`
-	DeprecatedIpv6McastAllow              types.String `tfsdk:"ipv6_mcast_allow"`
-	DeprecatedLlAddr                      types.String `tfsdk:"ll_addr"`
-	DeprecatedMac                         types.String `tfsdk:"mac"`
-	DeprecatedMcastAllow                  types.String `tfsdk:"mcast_allow"`
-	DeprecatedMultiDstPktAct              types.String `tfsdk:"multi_dst_pkt_act"`
-	DeprecatedParentDn                    types.String `tfsdk:"tenant_dn"`
-	DeprecatedUnicastRoute                types.String `tfsdk:"unicast_route"`
-	DeprecatedUnkMacUcastAct              types.String `tfsdk:"unk_mac_ucast_act"`
-	DeprecatedUnkMcastAct                 types.String `tfsdk:"unk_mcast_act"`
-	DeprecatedV6unkMcastAct               types.String `tfsdk:"v6unk_mcast_act"`
-	DeprecatedVmac                        types.String `tfsdk:"vmac"`
-	Deprecated_relation_fv_rs_bd_flood_to types.Set    `tfsdk:"relation_fv_rs_bd_flood_to"`
-	DeprecatedFvRsBDToRelayP              types.String `tfsdk:"relation_fv_rs_bd_to_relay_p"`
-	DeprecatedFvRsBdToEpRet               types.String `tfsdk:"relation_fv_rs_bd_to_ep_ret"`
-	DeprecatedFvRsBDToFhs                 types.String `tfsdk:"relation_fv_rs_bd_to_fhs"`
-	DeprecatedFvRsIgmpsn                  types.String `tfsdk:"relation_fv_rs_igmpsn"`
-	DeprecatedFvRsBDToOut                 types.Set    `tfsdk:"relation_fv_rs_bd_to_out"`
-	DeprecatedFvRsMldsn                   types.String `tfsdk:"relation_fv_rs_mldsn"`
-	DeprecatedFvRsABDPolMonPol            types.String `tfsdk:"relation_fv_rs_abd_pol_mon_pol"`
-	DeprecatedFvRsBDToNdP                 types.String `tfsdk:"relation_fv_rs_bd_to_nd_p"`
-	DeprecatedFvRsBDToProfile             types.String `tfsdk:"relation_fv_rs_bd_to_profile"`
-	DeprecatedFvRsCtx                     types.String `tfsdk:"relation_fv_rs_ctx"`
-	DeprecatedFvRsBDToNetflowMonitorPol   types.Set    `tfsdk:"relation_fv_rs_bd_to_netflow_monitor_pol"`
+	Id                                      types.String `tfsdk:"id"`
+	ParentDn                                types.String `tfsdk:"parent_dn"`
+	OptimizeWanBandwidth                    types.String `tfsdk:"optimize_wan_bandwidth"`
+	Annotation                              types.String `tfsdk:"annotation"`
+	ArpFlood                                types.String `tfsdk:"arp_flooding"`
+	Descr                                   types.String `tfsdk:"description"`
+	EnableRogueExceptMac                    types.String `tfsdk:"enable_rogue_exception_mac"`
+	EpClear                                 types.String `tfsdk:"clear_remote_mac_entries"`
+	EpMoveDetectMode                        types.String `tfsdk:"endpoint_move_detection_mode"`
+	HostBasedRouting                        types.String `tfsdk:"advertise_host_routes"`
+	IntersiteBumTrafficAllow                types.String `tfsdk:"enable_intersite_bum_traffic"`
+	IntersiteL2Stretch                      types.String `tfsdk:"intersite_l2_stretch"`
+	IpLearning                              types.String `tfsdk:"ip_learning"`
+	Ipv6McastAllow                          types.String `tfsdk:"pim_ipv6"`
+	LimitIpLearnToSubnets                   types.String `tfsdk:"limit_ip_learn_to_subnets"`
+	LlAddr                                  types.String `tfsdk:"link_local_ipv6_address"`
+	Mac                                     types.String `tfsdk:"custom_mac_address"`
+	McastARPDrop                            types.String `tfsdk:"drop_arp_with_multicast_smac"`
+	McastAllow                              types.String `tfsdk:"pim"`
+	MultiDstPktAct                          types.String `tfsdk:"multi_destination_flooding"`
+	Name                                    types.String `tfsdk:"name"`
+	NameAlias                               types.String `tfsdk:"name_alias"`
+	OwnerKey                                types.String `tfsdk:"owner_key"`
+	OwnerTag                                types.String `tfsdk:"owner_tag"`
+	PcTag                                   types.String `tfsdk:"pc_tag"`
+	Scope                                   types.String `tfsdk:"scope"`
+	Seg                                     types.String `tfsdk:"segment"`
+	ServiceBdRoutingDisable                 types.String `tfsdk:"service_bd_routing_disable"`
+	Type                                    types.String `tfsdk:"bridge_domain_type"`
+	UnicastRoute                            types.String `tfsdk:"unicast_routing"`
+	UnkMacUcastAct                          types.String `tfsdk:"l2_unknown_unicast_flooding"`
+	UnkMcastAct                             types.String `tfsdk:"l3_unknown_multicast_flooding"`
+	V6unkMcastAct                           types.String `tfsdk:"ipv6_l3_unknown_multicast_flooding"`
+	Vmac                                    types.String `tfsdk:"virtual_mac_address"`
+	FvAccP                                  types.Object `tfsdk:"legacy_mode"`
+	FvRogueExceptionMac                     types.Set    `tfsdk:"rogue_coop_exceptions"`
+	FvRsABDPolMonPol                        types.Object `tfsdk:"relation_to_monitor_policy"`
+	FvRsBDToFhs                             types.Object `tfsdk:"relation_to_first_hop_security_policy"`
+	FvRsBDToNdP                             types.Object `tfsdk:"relation_to_neighbor_discovery_interface_policy"`
+	FvRsBDToNetflowMonitorPol               types.Set    `tfsdk:"relation_to_netflow_monitor_policies"`
+	FvRsBDToOut                             types.Set    `tfsdk:"relation_to_l3_outsides"`
+	FvRsBDToProfile                         types.Object `tfsdk:"relation_to_route_control_profile"`
+	FvRsBDToRelayP                          types.Object `tfsdk:"relation_to_dhcp_relay_policy"`
+	FvRsBdToEpRet                           types.Object `tfsdk:"relation_to_end_point_retention_policy"`
+	FvRsCtx                                 types.Object `tfsdk:"relation_to_vrf"`
+	FvRsIgmpsn                              types.Object `tfsdk:"relation_to_igmp_snooping_policy"`
+	FvRsMldsn                               types.Object `tfsdk:"relation_to_mld_snooping_policy"`
+	TagAnnotation                           types.Set    `tfsdk:"annotations"`
+	TagTag                                  types.Set    `tfsdk:"tags"`
+	DeprecatedArpFlood                      types.String `tfsdk:"arp_flood"`
+	DeprecatedEpClear                       types.String `tfsdk:"ep_clear"`
+	DeprecatedEpMoveDetectMode              types.String `tfsdk:"ep_move_detect_mode"`
+	DeprecatedHostBasedRouting              types.String `tfsdk:"host_based_routing"`
+	DeprecatedIntersiteBumTrafficAllow      types.String `tfsdk:"intersite_bum_traffic_allow"`
+	DeprecatedIpv6McastAllow                types.String `tfsdk:"ipv6_mcast_allow"`
+	DeprecatedLlAddr                        types.String `tfsdk:"ll_addr"`
+	DeprecatedMac                           types.String `tfsdk:"mac"`
+	DeprecatedMcastAllow                    types.String `tfsdk:"mcast_allow"`
+	DeprecatedMultiDstPktAct                types.String `tfsdk:"multi_dst_pkt_act"`
+	DeprecatedParentDn                      types.String `tfsdk:"tenant_dn"`
+	DeprecatedUnicastRoute                  types.String `tfsdk:"unicast_route"`
+	DeprecatedUnkMacUcastAct                types.String `tfsdk:"unk_mac_ucast_act"`
+	DeprecatedUnkMcastAct                   types.String `tfsdk:"unk_mcast_act"`
+	DeprecatedV6unkMcastAct                 types.String `tfsdk:"v6unk_mcast_act"`
+	DeprecatedVmac                          types.String `tfsdk:"vmac"`
+	Deprecated_relation_fv_rs_bd_flood_to   types.Set    `tfsdk:"relation_fv_rs_bd_flood_to"`
+	Deprecated_relation_fv_rs_bd_to_profile types.String `tfsdk:"relation_fv_rs_bd_to_profile"`
+	DeprecatedFvRsBDToRelayP                types.String `tfsdk:"relation_fv_rs_bd_to_relay_p"`
+	DeprecatedFvRsBdToEpRet                 types.String `tfsdk:"relation_fv_rs_bd_to_ep_ret"`
+	DeprecatedFvRsBDToFhs                   types.String `tfsdk:"relation_fv_rs_bd_to_fhs"`
+	DeprecatedFvRsIgmpsn                    types.String `tfsdk:"relation_fv_rs_igmpsn"`
+	DeprecatedFvRsBDToOut                   types.Set    `tfsdk:"relation_fv_rs_bd_to_out"`
+	DeprecatedFvRsMldsn                     types.String `tfsdk:"relation_fv_rs_mldsn"`
+	DeprecatedFvRsABDPolMonPol              types.String `tfsdk:"relation_fv_rs_abd_pol_mon_pol"`
+	DeprecatedFvRsBDToNdP                   types.String `tfsdk:"relation_fv_rs_bd_to_nd_p"`
+	DeprecatedFvRsCtx                       types.String `tfsdk:"relation_fv_rs_ctx"`
+	DeprecatedFvRsBDToNetflowMonitorPol     types.Set    `tfsdk:"relation_fv_rs_bd_to_netflow_monitor_pol"`
 }
 
 func getEmptyFvBDResourceModel() *FvBDResourceModel {
@@ -266,34 +266,34 @@ func getEmptyFvBDResourceModel() *FvBDResourceModel {
 				"value": types.StringType,
 			},
 		}),
-		DeprecatedArpFlood:                    types.String{},
-		DeprecatedEpClear:                     types.String{},
-		DeprecatedEpMoveDetectMode:            types.String{},
-		DeprecatedHostBasedRouting:            types.String{},
-		DeprecatedIntersiteBumTrafficAllow:    types.String{},
-		DeprecatedIpv6McastAllow:              types.String{},
-		DeprecatedLlAddr:                      types.String{},
-		DeprecatedMac:                         types.String{},
-		DeprecatedMcastAllow:                  types.String{},
-		DeprecatedMultiDstPktAct:              types.String{},
-		DeprecatedParentDn:                    types.String{},
-		DeprecatedUnicastRoute:                types.String{},
-		DeprecatedUnkMacUcastAct:              types.String{},
-		DeprecatedUnkMcastAct:                 types.String{},
-		DeprecatedV6unkMcastAct:               types.String{},
-		DeprecatedVmac:                        types.String{},
-		Deprecated_relation_fv_rs_bd_flood_to: types.SetNull(types.StringType),
-		DeprecatedFvRsBDToRelayP:              types.String{},
-		DeprecatedFvRsBdToEpRet:               types.String{},
-		DeprecatedFvRsBDToFhs:                 types.String{},
-		DeprecatedFvRsIgmpsn:                  types.String{},
-		DeprecatedFvRsBDToOut:                 types.SetNull(types.StringType),
-		DeprecatedFvRsMldsn:                   types.String{},
-		DeprecatedFvRsABDPolMonPol:            types.String{},
-		DeprecatedFvRsBDToNdP:                 types.String{},
-		DeprecatedFvRsBDToProfile:             types.String{},
-		DeprecatedFvRsCtx:                     types.String{},
-		DeprecatedFvRsBDToNetflowMonitorPol:   types.SetNull(deprecatedFvRsBDToNetflowMonitorPolType),
+		DeprecatedArpFlood:                      types.String{},
+		DeprecatedEpClear:                       types.String{},
+		DeprecatedEpMoveDetectMode:              types.String{},
+		DeprecatedHostBasedRouting:              types.String{},
+		DeprecatedIntersiteBumTrafficAllow:      types.String{},
+		DeprecatedIpv6McastAllow:                types.String{},
+		DeprecatedLlAddr:                        types.String{},
+		DeprecatedMac:                           types.String{},
+		DeprecatedMcastAllow:                    types.String{},
+		DeprecatedMultiDstPktAct:                types.String{},
+		DeprecatedParentDn:                      types.String{},
+		DeprecatedUnicastRoute:                  types.String{},
+		DeprecatedUnkMacUcastAct:                types.String{},
+		DeprecatedUnkMcastAct:                   types.String{},
+		DeprecatedV6unkMcastAct:                 types.String{},
+		DeprecatedVmac:                          types.String{},
+		Deprecated_relation_fv_rs_bd_flood_to:   types.SetNull(types.StringType),
+		Deprecated_relation_fv_rs_bd_to_profile: types.String{},
+		DeprecatedFvRsBDToRelayP:                types.String{},
+		DeprecatedFvRsBdToEpRet:                 types.String{},
+		DeprecatedFvRsBDToFhs:                   types.String{},
+		DeprecatedFvRsIgmpsn:                    types.String{},
+		DeprecatedFvRsBDToOut:                   types.SetNull(types.StringType),
+		DeprecatedFvRsMldsn:                     types.String{},
+		DeprecatedFvRsABDPolMonPol:              types.String{},
+		DeprecatedFvRsBDToNdP:                   types.String{},
+		DeprecatedFvRsCtx:                       types.String{},
+		DeprecatedFvRsBDToNetflowMonitorPol:     types.SetNull(deprecatedFvRsBDToNetflowMonitorPolType),
 	}
 }
 
@@ -1453,44 +1453,44 @@ var deprecatedFvRsBDToNetflowMonitorPolType = types.ObjectType{
 }
 
 type FvBDResourceModelV1 struct {
-	Annotation                            types.String `tfsdk:"annotation"`
-	ArpFlood                              types.String `tfsdk:"arp_flood"`
-	Descr                                 types.String `tfsdk:"description"`
-	EpClear                               types.String `tfsdk:"ep_clear"`
-	EpMoveDetectMode                      types.String `tfsdk:"ep_move_detect_mode"`
-	HostBasedRouting                      types.String `tfsdk:"host_based_routing"`
-	Id                                    types.String `tfsdk:"id"`
-	IntersiteBumTrafficAllow              types.String `tfsdk:"intersite_bum_traffic_allow"`
-	IntersiteL2Stretch                    types.String `tfsdk:"intersite_l2_stretch"`
-	IpLearning                            types.String `tfsdk:"ip_learning"`
-	Ipv6McastAllow                        types.String `tfsdk:"ipv6_mcast_allow"`
-	LimitIpLearnToSubnets                 types.String `tfsdk:"limit_ip_learn_to_subnets"`
-	LlAddr                                types.String `tfsdk:"ll_addr"`
-	Mac                                   types.String `tfsdk:"mac"`
-	McastAllow                            types.String `tfsdk:"mcast_allow"`
-	MultiDstPktAct                        types.String `tfsdk:"multi_dst_pkt_act"`
-	Name                                  types.String `tfsdk:"name"`
-	NameAlias                             types.String `tfsdk:"name_alias"`
-	OptimizeWanBandwidth                  types.String `tfsdk:"optimize_wan_bandwidth"`
-	ParentDn                              types.String `tfsdk:"tenant_dn"`
-	Type                                  types.String `tfsdk:"bridge_domain_type"`
-	UnicastRoute                          types.String `tfsdk:"unicast_route"`
-	UnkMacUcastAct                        types.String `tfsdk:"unk_mac_ucast_act"`
-	UnkMcastAct                           types.String `tfsdk:"unk_mcast_act"`
-	V6unkMcastAct                         types.String `tfsdk:"v6unk_mcast_act"`
-	Vmac                                  types.String `tfsdk:"vmac"`
-	Deprecated_relation_fv_rs_bd_flood_to types.Set    `tfsdk:"relation_fv_rs_bd_flood_to"`
-	FvRsBDToRelayP                        types.String `tfsdk:"relation_fv_rs_bd_to_relay_p"`
-	FvRsBdToEpRet                         types.String `tfsdk:"relation_fv_rs_bd_to_ep_ret"`
-	FvRsBDToFhs                           types.String `tfsdk:"relation_fv_rs_bd_to_fhs"`
-	FvRsIgmpsn                            types.String `tfsdk:"relation_fv_rs_igmpsn"`
-	FvRsBDToOut                           types.Set    `tfsdk:"relation_fv_rs_bd_to_out"`
-	FvRsMldsn                             types.String `tfsdk:"relation_fv_rs_mldsn"`
-	FvRsABDPolMonPol                      types.String `tfsdk:"relation_fv_rs_abd_pol_mon_pol"`
-	FvRsBDToNdP                           types.String `tfsdk:"relation_fv_rs_bd_to_nd_p"`
-	FvRsBDToProfile                       types.String `tfsdk:"relation_fv_rs_bd_to_profile"`
-	FvRsCtx                               types.String `tfsdk:"relation_fv_rs_ctx"`
-	FvRsBDToNetflowMonitorPol             types.Set    `tfsdk:"relation_fv_rs_bd_to_netflow_monitor_pol"`
+	Annotation                              types.String `tfsdk:"annotation"`
+	ArpFlood                                types.String `tfsdk:"arp_flood"`
+	Descr                                   types.String `tfsdk:"description"`
+	EpClear                                 types.String `tfsdk:"ep_clear"`
+	EpMoveDetectMode                        types.String `tfsdk:"ep_move_detect_mode"`
+	HostBasedRouting                        types.String `tfsdk:"host_based_routing"`
+	Id                                      types.String `tfsdk:"id"`
+	IntersiteBumTrafficAllow                types.String `tfsdk:"intersite_bum_traffic_allow"`
+	IntersiteL2Stretch                      types.String `tfsdk:"intersite_l2_stretch"`
+	IpLearning                              types.String `tfsdk:"ip_learning"`
+	Ipv6McastAllow                          types.String `tfsdk:"ipv6_mcast_allow"`
+	LimitIpLearnToSubnets                   types.String `tfsdk:"limit_ip_learn_to_subnets"`
+	LlAddr                                  types.String `tfsdk:"ll_addr"`
+	Mac                                     types.String `tfsdk:"mac"`
+	McastAllow                              types.String `tfsdk:"mcast_allow"`
+	MultiDstPktAct                          types.String `tfsdk:"multi_dst_pkt_act"`
+	Name                                    types.String `tfsdk:"name"`
+	NameAlias                               types.String `tfsdk:"name_alias"`
+	OptimizeWanBandwidth                    types.String `tfsdk:"optimize_wan_bandwidth"`
+	ParentDn                                types.String `tfsdk:"tenant_dn"`
+	Type                                    types.String `tfsdk:"bridge_domain_type"`
+	UnicastRoute                            types.String `tfsdk:"unicast_route"`
+	UnkMacUcastAct                          types.String `tfsdk:"unk_mac_ucast_act"`
+	UnkMcastAct                             types.String `tfsdk:"unk_mcast_act"`
+	V6unkMcastAct                           types.String `tfsdk:"v6unk_mcast_act"`
+	Vmac                                    types.String `tfsdk:"vmac"`
+	Deprecated_relation_fv_rs_bd_flood_to   types.Set    `tfsdk:"relation_fv_rs_bd_flood_to"`
+	Deprecated_relation_fv_rs_bd_to_profile types.String `tfsdk:"relation_fv_rs_bd_to_profile"`
+	FvRsBDToRelayP                          types.String `tfsdk:"relation_fv_rs_bd_to_relay_p"`
+	FvRsBdToEpRet                           types.String `tfsdk:"relation_fv_rs_bd_to_ep_ret"`
+	FvRsBDToFhs                             types.String `tfsdk:"relation_fv_rs_bd_to_fhs"`
+	FvRsIgmpsn                              types.String `tfsdk:"relation_fv_rs_igmpsn"`
+	FvRsBDToOut                             types.Set    `tfsdk:"relation_fv_rs_bd_to_out"`
+	FvRsMldsn                               types.String `tfsdk:"relation_fv_rs_mldsn"`
+	FvRsABDPolMonPol                        types.String `tfsdk:"relation_fv_rs_abd_pol_mon_pol"`
+	FvRsBDToNdP                             types.String `tfsdk:"relation_fv_rs_bd_to_nd_p"`
+	FvRsCtx                                 types.String `tfsdk:"relation_fv_rs_ctx"`
+	FvRsBDToNetflowMonitorPol               types.Set    `tfsdk:"relation_fv_rs_bd_to_netflow_monitor_pol"`
 }
 
 type FvRsBDToNetflowMonitorPolFvBDResourceModelV1 struct {
@@ -1646,6 +1646,11 @@ func (r *FvBDResource) UpgradeState(ctx context.Context) map[int64]resource.Stat
 						Computed:    false,
 						ElementType: types.StringType,
 					},
+					"relation_fv_rs_bd_to_profile": schema.StringAttribute{
+						Required: false,
+						Optional: true,
+						Computed: false,
+					},
 					"relation_fv_rs_bd_to_relay_p": schema.StringAttribute{
 						Required: false,
 						Optional: true,
@@ -1687,11 +1692,6 @@ func (r *FvBDResource) UpgradeState(ctx context.Context) map[int64]resource.Stat
 						Optional: true,
 						Computed: true,
 					},
-					"relation_fv_rs_bd_to_profile": schema.StringAttribute{
-						Required: false,
-						Optional: true,
-						Computed: false,
-					},
 					"relation_fv_rs_ctx": schema.StringAttribute{
 						Required: false,
 						Optional: true,
@@ -1727,66 +1727,66 @@ func (r *FvBDResource) UpgradeState(ctx context.Context) map[int64]resource.Stat
 				}
 
 				upgradedStateData := FvBDResourceModel{
-					Id:                                    priorStateData.Id,
-					ParentDn:                              priorStateData.ParentDn,
-					OptimizeWanBandwidth:                  priorStateData.OptimizeWanBandwidth,
-					Annotation:                            priorStateData.Annotation,
-					ArpFlood:                              priorStateData.ArpFlood,
-					Descr:                                 priorStateData.Descr,
-					EnableRogueExceptMac:                  basetypes.NewStringNull(),
-					EpClear:                               priorStateData.EpClear,
-					EpMoveDetectMode:                      priorStateData.EpMoveDetectMode,
-					HostBasedRouting:                      priorStateData.HostBasedRouting,
-					IntersiteBumTrafficAllow:              priorStateData.IntersiteBumTrafficAllow,
-					IntersiteL2Stretch:                    priorStateData.IntersiteL2Stretch,
-					IpLearning:                            priorStateData.IpLearning,
-					Ipv6McastAllow:                        priorStateData.Ipv6McastAllow,
-					LimitIpLearnToSubnets:                 priorStateData.LimitIpLearnToSubnets,
-					LlAddr:                                priorStateData.LlAddr,
-					Mac:                                   priorStateData.Mac,
-					McastARPDrop:                          basetypes.NewStringNull(),
-					McastAllow:                            priorStateData.McastAllow,
-					MultiDstPktAct:                        priorStateData.MultiDstPktAct,
-					Name:                                  priorStateData.Name,
-					NameAlias:                             priorStateData.NameAlias,
-					OwnerKey:                              basetypes.NewStringNull(),
-					OwnerTag:                              basetypes.NewStringNull(),
-					PcTag:                                 basetypes.NewStringNull(),
-					Scope:                                 basetypes.NewStringNull(),
-					Seg:                                   basetypes.NewStringNull(),
-					ServiceBdRoutingDisable:               basetypes.NewStringNull(),
-					Type:                                  priorStateData.Type,
-					UnicastRoute:                          priorStateData.UnicastRoute,
-					UnkMacUcastAct:                        priorStateData.UnkMacUcastAct,
-					UnkMcastAct:                           priorStateData.UnkMcastAct,
-					V6unkMcastAct:                         priorStateData.V6unkMcastAct,
-					Vmac:                                  priorStateData.Vmac,
-					DeprecatedArpFlood:                    priorStateData.ArpFlood,
-					DeprecatedEpClear:                     priorStateData.EpClear,
-					DeprecatedEpMoveDetectMode:            priorStateData.EpMoveDetectMode,
-					DeprecatedHostBasedRouting:            priorStateData.HostBasedRouting,
-					DeprecatedIntersiteBumTrafficAllow:    priorStateData.IntersiteBumTrafficAllow,
-					DeprecatedIpv6McastAllow:              priorStateData.Ipv6McastAllow,
-					DeprecatedLlAddr:                      priorStateData.LlAddr,
-					DeprecatedMac:                         priorStateData.Mac,
-					DeprecatedMcastAllow:                  priorStateData.McastAllow,
-					DeprecatedMultiDstPktAct:              priorStateData.MultiDstPktAct,
-					DeprecatedParentDn:                    priorStateData.ParentDn,
-					DeprecatedUnicastRoute:                priorStateData.UnicastRoute,
-					DeprecatedUnkMacUcastAct:              priorStateData.UnkMacUcastAct,
-					DeprecatedUnkMcastAct:                 priorStateData.UnkMcastAct,
-					DeprecatedV6unkMcastAct:               priorStateData.V6unkMcastAct,
-					DeprecatedVmac:                        priorStateData.Vmac,
-					Deprecated_relation_fv_rs_bd_flood_to: priorStateData.Deprecated_relation_fv_rs_bd_flood_to,
-					DeprecatedFvRsBDToRelayP:              priorStateData.FvRsBDToRelayP,
-					DeprecatedFvRsBdToEpRet:               priorStateData.FvRsBdToEpRet,
-					DeprecatedFvRsBDToFhs:                 priorStateData.FvRsBDToFhs,
-					DeprecatedFvRsIgmpsn:                  priorStateData.FvRsIgmpsn,
-					DeprecatedFvRsMldsn:                   priorStateData.FvRsMldsn,
-					DeprecatedFvRsABDPolMonPol:            priorStateData.FvRsABDPolMonPol,
-					DeprecatedFvRsBDToNdP:                 priorStateData.FvRsBDToNdP,
-					DeprecatedFvRsBDToProfile:             priorStateData.FvRsBDToProfile,
-					DeprecatedFvRsCtx:                     priorStateData.FvRsCtx,
+					Id:                                      priorStateData.Id,
+					ParentDn:                                priorStateData.ParentDn,
+					OptimizeWanBandwidth:                    priorStateData.OptimizeWanBandwidth,
+					Annotation:                              priorStateData.Annotation,
+					ArpFlood:                                priorStateData.ArpFlood,
+					Descr:                                   priorStateData.Descr,
+					EnableRogueExceptMac:                    basetypes.NewStringNull(),
+					EpClear:                                 priorStateData.EpClear,
+					EpMoveDetectMode:                        priorStateData.EpMoveDetectMode,
+					HostBasedRouting:                        priorStateData.HostBasedRouting,
+					IntersiteBumTrafficAllow:                priorStateData.IntersiteBumTrafficAllow,
+					IntersiteL2Stretch:                      priorStateData.IntersiteL2Stretch,
+					IpLearning:                              priorStateData.IpLearning,
+					Ipv6McastAllow:                          priorStateData.Ipv6McastAllow,
+					LimitIpLearnToSubnets:                   priorStateData.LimitIpLearnToSubnets,
+					LlAddr:                                  priorStateData.LlAddr,
+					Mac:                                     priorStateData.Mac,
+					McastARPDrop:                            basetypes.NewStringNull(),
+					McastAllow:                              priorStateData.McastAllow,
+					MultiDstPktAct:                          priorStateData.MultiDstPktAct,
+					Name:                                    priorStateData.Name,
+					NameAlias:                               priorStateData.NameAlias,
+					OwnerKey:                                basetypes.NewStringNull(),
+					OwnerTag:                                basetypes.NewStringNull(),
+					PcTag:                                   basetypes.NewStringNull(),
+					Scope:                                   basetypes.NewStringNull(),
+					Seg:                                     basetypes.NewStringNull(),
+					ServiceBdRoutingDisable:                 basetypes.NewStringNull(),
+					Type:                                    priorStateData.Type,
+					UnicastRoute:                            priorStateData.UnicastRoute,
+					UnkMacUcastAct:                          priorStateData.UnkMacUcastAct,
+					UnkMcastAct:                             priorStateData.UnkMcastAct,
+					V6unkMcastAct:                           priorStateData.V6unkMcastAct,
+					Vmac:                                    priorStateData.Vmac,
+					DeprecatedArpFlood:                      priorStateData.ArpFlood,
+					DeprecatedEpClear:                       priorStateData.EpClear,
+					DeprecatedEpMoveDetectMode:              priorStateData.EpMoveDetectMode,
+					DeprecatedHostBasedRouting:              priorStateData.HostBasedRouting,
+					DeprecatedIntersiteBumTrafficAllow:      priorStateData.IntersiteBumTrafficAllow,
+					DeprecatedIpv6McastAllow:                priorStateData.Ipv6McastAllow,
+					DeprecatedLlAddr:                        priorStateData.LlAddr,
+					DeprecatedMac:                           priorStateData.Mac,
+					DeprecatedMcastAllow:                    priorStateData.McastAllow,
+					DeprecatedMultiDstPktAct:                priorStateData.MultiDstPktAct,
+					DeprecatedParentDn:                      priorStateData.ParentDn,
+					DeprecatedUnicastRoute:                  priorStateData.UnicastRoute,
+					DeprecatedUnkMacUcastAct:                priorStateData.UnkMacUcastAct,
+					DeprecatedUnkMcastAct:                   priorStateData.UnkMcastAct,
+					DeprecatedV6unkMcastAct:                 priorStateData.V6unkMcastAct,
+					DeprecatedVmac:                          priorStateData.Vmac,
+					Deprecated_relation_fv_rs_bd_flood_to:   priorStateData.Deprecated_relation_fv_rs_bd_flood_to,
+					Deprecated_relation_fv_rs_bd_to_profile: priorStateData.Deprecated_relation_fv_rs_bd_to_profile,
+					DeprecatedFvRsBDToRelayP:                priorStateData.FvRsBDToRelayP,
+					DeprecatedFvRsBdToEpRet:                 priorStateData.FvRsBdToEpRet,
+					DeprecatedFvRsBDToFhs:                   priorStateData.FvRsBDToFhs,
+					DeprecatedFvRsIgmpsn:                    priorStateData.FvRsIgmpsn,
+					DeprecatedFvRsMldsn:                     priorStateData.FvRsMldsn,
+					DeprecatedFvRsABDPolMonPol:              priorStateData.FvRsABDPolMonPol,
+					DeprecatedFvRsBDToNdP:                   priorStateData.FvRsBDToNdP,
+					DeprecatedFvRsCtx:                       priorStateData.FvRsCtx,
 				}
 
 				upgradedStateData.FvAccP = types.ObjectNull(FvAccPFvBDType)
@@ -1913,25 +1913,7 @@ func (r *FvBDResource) UpgradeState(ctx context.Context) map[int64]resource.Stat
 				FvRsBDToOutSet, _ := types.SetValueFrom(ctx, FvRsBDToOutFvBDType, FvRsBDToOutList)
 				upgradedStateData.FvRsBDToOut = FvRsBDToOutSet
 
-				FvRsBDToProfileObject := FvRsBDToProfileFvBDResourceModel{
-					Annotation:          basetypes.NewStringNull(),
-					TnL3extOutName:      basetypes.NewStringNull(),
-					TnRtctrlProfileName: basetypes.NewStringValue(GetMOName(priorStateData.FvRsBDToProfile.ValueString())),
-					TagAnnotation: basetypes.NewSetNull(types.ObjectType{
-						AttrTypes: map[string]attr.Type{
-							"key":   types.StringType,
-							"value": types.StringType,
-						},
-					}),
-					TagTag: basetypes.NewSetNull(types.ObjectType{
-						AttrTypes: map[string]attr.Type{
-							"key":   types.StringType,
-							"value": types.StringType,
-						},
-					}),
-				}
-				fvRsBDToProfileObject, _ := types.ObjectValueFrom(ctx, FvRsBDToProfileFvBDType, FvRsBDToProfileObject)
-				upgradedStateData.FvRsBDToProfile = fvRsBDToProfileObject
+				upgradedStateData.FvRsBDToProfile = types.ObjectNull(FvRsBDToProfileFvBDType)
 
 				FvRsBDToRelayPObject := FvRsBDToRelayPFvBDResourceModel{
 					Annotation:       basetypes.NewStringNull(),
@@ -2071,6 +2053,9 @@ func setFvBDLegacyAttributes(ctx context.Context, diags *diag.Diagnostics, data,
 		Deprecated_relation_fv_rs_bd_flood_toSet, _ := types.SetValueFrom(ctx, types.StringType, []string{})
 		data.Deprecated_relation_fv_rs_bd_flood_to = Deprecated_relation_fv_rs_bd_flood_toSet
 	}
+	if !staticData.Deprecated_relation_fv_rs_bd_to_profile.IsUnknown() {
+		data.Deprecated_relation_fv_rs_bd_to_profile = staticData.Deprecated_relation_fv_rs_bd_to_profile
+	}
 	attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
 	for attributeName, attributeValue := range attributes {
 		if attributeName == "arpFlood" {
@@ -2124,7 +2109,6 @@ func setFvBDLegacyAttributes(ctx context.Context, diags *diag.Diagnostics, data,
 	data.DeprecatedFvRsBDToNdP = basetypes.NewStringNull()
 	DeprecatedFvRsBDToNetflowMonitorPolFvBDList := make([]FvRsBDToNetflowMonitorPolFvBDResourceModelV1, 0)
 	DeprecatedFvRsBDToOutFvBDList := make([]string, 0)
-	data.DeprecatedFvRsBDToProfile = basetypes.NewStringNull()
 	data.DeprecatedFvRsBDToRelayP = basetypes.NewStringNull()
 	data.DeprecatedFvRsBdToEpRet = basetypes.NewStringNull()
 	data.DeprecatedFvRsCtx = basetypes.NewStringNull()
@@ -2174,13 +2158,6 @@ func setFvBDLegacyAttributes(ctx context.Context, diags *diag.Diagnostics, data,
 					for childAttributeName, childAttributeValue := range childAttributes {
 						if childAttributeName == "tDn" && childAttributeValue != "" && !ContainsString(DeprecatedFvRsBDToOutFvBDList, childAttributeValue.(string)) {
 							DeprecatedFvRsBDToOutFvBDList = append(DeprecatedFvRsBDToOutFvBDList, childAttributeValue.(string))
-						}
-					}
-				}
-				if childClassName == "fvRsBDToProfile" {
-					for childAttributeName, childAttributeValue := range childAttributes {
-						if childAttributeName == "tDn" {
-							data.DeprecatedFvRsBDToProfile = basetypes.NewStringValue(childAttributeValue.(string))
 						}
 					}
 				}
@@ -2593,32 +2570,6 @@ func (r *FvBDResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRe
 			planData.FvRsBDToNdP = FvRsBDToNdPObject
 		}
 
-		if !configData.DeprecatedFvRsBDToProfile.IsNull() {
-			var newAttributeValues FvRsBDToProfileFvBDResourceModel
-			tagAnnotationFvRsBDToProfileFvBDValue, _ := types.SetValueFrom(ctx, TagAnnotationFvRsBDToProfileFvBDType, make([]TagAnnotationFvRsBDToProfileFvBDResourceModel, 0))
-			tagTagFvRsBDToProfileFvBDValue, _ := types.SetValueFrom(ctx, TagTagFvRsBDToProfileFvBDType, make([]TagTagFvRsBDToProfileFvBDResourceModel, 0))
-			annotationValue := planData.Annotation
-			if stateData != nil && !IsEmptySingleNestedAttribute(stateData.FvRsBDToProfile.Attributes()) {
-				stateData.FvRsBDToProfile.As(ctx, &newAttributeValues, basetypes.ObjectAsOptions{})
-				annotationValue = newAttributeValues.Annotation
-				tagAnnotationFvRsBDToProfileFvBDValue = newAttributeValues.TagAnnotation
-				tagTagFvRsBDToProfileFvBDValue = newAttributeValues.TagTag
-			}
-			tnRtctrlProfileNameValue := basetypes.NewStringUnknown()
-			if !configData.DeprecatedFvRsBDToProfile.IsUnknown() {
-				tnRtctrlProfileNameValue = basetypes.NewStringValue(GetMOName(configData.DeprecatedFvRsBDToProfile.ValueString()))
-			}
-			FvRsBDToProfile := FvRsBDToProfileFvBDResourceModel{
-				Annotation:          annotationValue,
-				TnL3extOutName:      basetypes.NewStringValue(""),
-				TnRtctrlProfileName: tnRtctrlProfileNameValue,
-				TagAnnotation:       tagAnnotationFvRsBDToProfileFvBDValue,
-				TagTag:              tagTagFvRsBDToProfileFvBDValue,
-			}
-			FvRsBDToProfileObject, _ := types.ObjectValueFrom(ctx, FvRsBDToProfileFvBDType, FvRsBDToProfile)
-			planData.FvRsBDToProfile = FvRsBDToProfileObject
-		}
-
 		if !configData.DeprecatedFvRsCtx.IsNull() {
 			var newAttributeValues FvRsCtxFvBDResourceModel
 			tagAnnotationFvRsCtxFvBDValue, _ := types.SetValueFrom(ctx, TagAnnotationFvRsCtxFvBDType, make([]TagAnnotationFvRsCtxFvBDResourceModel, 0))
@@ -2785,9 +2736,6 @@ func avoidFvBDPlanChangeForKnownAfterApplyOnly(ctx context.Context, planData, st
 	if configData.DeprecatedFvRsBDToNdP.IsNull() {
 		planData.DeprecatedFvRsBDToNdP = stateData.DeprecatedFvRsBDToNdP
 	}
-	if configData.DeprecatedFvRsBDToProfile.IsNull() {
-		planData.DeprecatedFvRsBDToProfile = stateData.DeprecatedFvRsBDToProfile
-	}
 	if configData.DeprecatedFvRsCtx.IsNull() {
 		planData.DeprecatedFvRsCtx = stateData.DeprecatedFvRsCtx
 	}
@@ -2871,9 +2819,6 @@ func avoidFvBDPlanChangeForKnownAfterApplyOnly(ctx context.Context, planData, st
 		}
 		if configData.DeprecatedFvRsBDToNdP.IsNull() {
 			planData.DeprecatedFvRsBDToNdP = basetypes.NewStringUnknown()
-		}
-		if configData.DeprecatedFvRsBDToProfile.IsNull() {
-			planData.DeprecatedFvRsBDToProfile = basetypes.NewStringUnknown()
 		}
 		if configData.DeprecatedFvRsCtx.IsNull() {
 			planData.DeprecatedFvRsCtx = basetypes.NewStringUnknown()
@@ -3068,6 +3013,15 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 					setplanmodifier.UseStateForUnknown(),
 				},
 			},
+			"relation_fv_rs_bd_to_profile": schema.StringAttribute{
+				Optional:           true,
+				Computed:           true,
+				DeprecationMessage: "Attribute `relation_fv_rs_bd_to_profile` is deprecated. The attribute will be removed in the next major version of the provider.",
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
+				},
+			},
 			"relation_fv_rs_bd_to_relay_p": schema.StringAttribute{
 				Optional:           true,
 				Computed:           true,
@@ -3146,16 +3100,6 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 				Validators: []validator.String{
 					stringvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("relation_to_neighbor_discovery_interface_policy"),
-					}...),
-				},
-			},
-			"relation_fv_rs_bd_to_profile": schema.StringAttribute{
-				Optional:           true,
-				Computed:           true,
-				DeprecationMessage: "Attribute 'relation_fv_rs_bd_to_profile' is deprecated, please refer to 'relation_to_route_control_profile.route_control_profile_name' instead. The attribute will be removed in the next major version of the provider.",
-				Validators: []validator.String{
-					stringvalidator.ConflictsWith(path.Expressions{
-						path.MatchRoot("relation_to_route_control_profile"),
 					}...),
 				},
 			},
