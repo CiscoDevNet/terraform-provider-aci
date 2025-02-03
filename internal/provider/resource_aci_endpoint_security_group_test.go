@@ -508,6 +508,18 @@ func TestAccResourceFvESgWithFvAp(t *testing.T) {
 		},
 		CheckDestroy: testCheckResourceDestroy,
 	})
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t, "apic", "1.0(1e)-") },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with legacy attribute config
+			{
+				Config:             testConfigFvESgLegacyAttributesWithFvAp + testConfigDataSourceSystem,
+				ExpectNonEmptyPlan: false,
+			},
+		},
+		CheckDestroy: testCheckResourceDestroy,
+	})
 }
 
 const testChildDependencyConfigFvESg = `
