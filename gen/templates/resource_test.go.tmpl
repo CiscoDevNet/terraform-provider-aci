@@ -861,6 +861,20 @@ PreCheck: func() { testAccPreCheck(t, "{{.test_type}}", "{{$.class_version}}") }
 		},
 		CheckDestroy: testCheckResourceDestroy,
 	})
+		{{- if $.legacy_attributes}}
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t, "apic", "1.0(1e)-") },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with legacy attribute config
+			{
+				Config:      testConfig{{$.resourceClassName}}LegacyAttributesWith{{capitalize .class_name}}{{if $.version_mismatch}} + testConfigDataSourceSystem{{end}},
+				ExpectNonEmptyPlan: false,
+			},
+		},
+		CheckDestroy: testCheckResourceDestroy,
+	})
+		{{- end}}
 }	{{- end}}
 {{- else}}
 func TestAccResource{{.resourceClassName}}(t *testing.T) {
