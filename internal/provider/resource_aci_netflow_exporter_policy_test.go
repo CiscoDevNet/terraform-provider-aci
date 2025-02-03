@@ -546,7 +546,7 @@ resource "aci_netflow_exporter_policy" "test" {
 }
 `
 
-const testConfigNetflowExporterPolCustomTypeDependencyWithFvTenant = testConfigFvTenantMin + `
+const testConfigNetflowExporterPolCustomTypeDependencyWithFvTenant = testChildDependencyConfigNetflowExporterPol + testConfigFvTenantMin + `
 resource "aci_netflow_exporter_policy" "test" {
   parent_dn = aci_tenant.test.id
   destination_ip_address = "2.2.2.1"

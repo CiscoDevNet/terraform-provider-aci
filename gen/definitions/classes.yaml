@@ -52,8 +52,6 @@ fvAEPg:
       relation_fv_rs_aepg_mon_pol: relation_to_application_epg_monitoring_policy.monitoring_policy_name
     fvRsIntraEpg:
       relation_fv_rs_intra_epg: relation_to_intra_epg_contracts.contract_name
-    fvRsPathAtt:
-      relation_fv_rs_path_att: relation_to_static_paths.target_dn
     fvRsNodeAtt:
       relation_fv_rs_node_att: relation_to_static_leafs
       node_dn: relation_to_static_leafs.target_dn
@@ -127,7 +125,6 @@ qosDot1PClass:
   ui_locations:
     - "Tenants -> Policies -> Protocol -> Custom QoS -> Dot1p Classifiers"
   sub_category: "Tenant Policies"
-
 
 fhsTrustCtrlPol:
   ui_locations:
@@ -729,8 +726,6 @@ fvBD:
       flt_type: relation_to_netflow_monitor_policies.filter_type
     fvRsBDToOut:
       relation_fv_rs_bd_to_out: relation_to_l3_outsides.l3_outside_name
-    fvRsBDToProfile:
-      relation_fv_rs_bd_to_profile: relation_to_route_control_profile.route_control_profile_name
     fvRsBDToRelayP:
       relation_fv_rs_bd_to_relay_p: relation_to_dhcp_relay_policy.dhcp_relay_policy_name
     fvRsCtx:

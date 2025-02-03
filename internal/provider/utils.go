@@ -170,10 +170,14 @@ func (m setToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate) PlanModifyStrin
 	}
 }
 
-type setToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate struct{}
+type setToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate struct {
+	resourceFunction func(ctx context.Context, planValue types.Set, stateValue types.Set) types.Set
+}
 
-func SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate() planmodifier.Set {
-	return setToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate{}
+func SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(resourceFunction func(ctx context.Context, planValue types.Set, stateValue types.Set) types.Set) planmodifier.Set {
+	return setToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate{
+		resourceFunction: resourceFunction,
+	}
 }
 
 func (m setToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate) Description(_ context.Context) string {
@@ -189,6 +193,8 @@ func (m setToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate) PlanModifySet(ctx 
 	// Set the plan value to SetType null when state value is null and plan value is unknown during an Update
 	if !req.State.Raw.IsNull() && req.StateValue.IsNull() && req.PlanValue.IsUnknown() {
 		resp.PlanValue = types.SetNull(req.StateValue.ElementType(ctx))
+	} else if !req.State.Raw.IsNull() && !req.StateValue.IsNull() && !req.PlanValue.IsUnknown() && m.resourceFunction != nil {
+		resp.PlanValue = m.resourceFunction(ctx, req.PlanValue, req.StateValue)
 	}
 }
 

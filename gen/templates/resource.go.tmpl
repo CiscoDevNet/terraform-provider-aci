@@ -9,8 +9,6 @@ import (
 	"context"
 	"fmt"
 	"encoding/json"
-	"reflect"
-	"strings"
 	
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
@@ -206,6 +204,15 @@ type {{ capitalize .ClassName }}{{$.ResourceClassName}}ResourceModelV{{$.LegacyS
 	{{ .Name }} types.{{getMigrationType .ValueType}} `tfsdk:"{{.AttributeName}}"`
 		{{- end}}
 }
+
+func getEmpty{{ capitalize .ClassName }}{{$.ResourceClassName}}ResourceModelV{{$.LegacySchemaVersion}}() {{ capitalize .ClassName }}{{$.ResourceClassName}}ResourceModelV{{$.LegacySchemaVersion}} {
+	return {{ capitalize .ClassName }}{{$.ResourceClassName}}ResourceModelV{{$.LegacySchemaVersion}}{
+		{{- range .Attributes}}
+		{{ .Name }}: basetypes.NewStringNull(),
+		{{- end}}
+	}
+}
+
 	{{ end}}
 
 func (r *{{.ResourceClassName}}Resource) UpgradeState(ctx context.Context) map[int64]resource.StateUpgrader {
@@ -657,8 +664,11 @@ func set{{ .ResourceClassName }}LegacyAttributes(ctx context.Context, diags *dia
 	data.Deprecated{{.ResourceClassName}} = basetypes.NewStringNull()
 			{{- else if eq $childClassType "set,string" }}
 	Deprecated{{.ResourceClassName}}{{$.ResourceClassName}}List := make([]string, 0)
+			{{- else if eq $childClassType "block,set" }}
+	Deprecated{{.ResourceClassName}}{{$.ResourceClassName}}List := make([]{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModelV1, 0)
 			{{- end }}
-		{{- end }}{{- end }}
+		{{- end }}
+	{{- end }}
 
 	_, ok := classReadInfo[0].(map[string]interface{})["children"]
 	if ok {
@@ -666,55 +676,80 @@ func set{{ .ResourceClassName }}LegacyAttributes(ctx context.Context, diags *dia
 		for _, child := range children {
 			for childClassName, childClassDetails := range child.(map[string]interface{}) {
 				childAttributes := childClassDetails.(map[string]interface{})["attributes"].(map[string]interface{})
-				{{- range .Children}}{{- if isLegacyChild .PkgName $.LegacyChildren}}{{$ResourceName := .ResourceName}}
-				{{- $childClassType := getValueFromMap .PkgName $.MigrationClassTypes}}{{- if eq $childClassType "string" }}
+				{{- range .Children}}
+					{{- if isLegacyChild .PkgName $.LegacyChildren}}{{$ResourceName := .ResourceName}}
+				{{- $childClassType := getValueFromMap .PkgName $.MigrationClassTypes}}
+						{{- if eq $childClassType "string" }}
 				if childClassName == "{{ .PkgName }}" {
 					for childAttributeName, childAttributeValue := range childAttributes {
-						{{- range .Properties}}
-						{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
-						{{- $AttributeName := getLegacyChildAttribute .PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
-							{{- if and (eq $AttributeName (capitalize .PkgName)) (isNewNamedClassAttributeMatch $Overwrite $ResourceName)}}
+							{{- range .Properties}}
+							{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
+							{{- $AttributeName := getLegacyChildAttribute .PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
+								{{- if and (eq $AttributeName (capitalize .PkgName)) (isNewNamedClassAttributeMatch $Overwrite $ResourceName)}}
 						if childAttributeName == "tDn" {
 							data.Deprecated{{.ResourceClassName}} = basetypes.NewStringValue(childAttributeValue.(string))
 						}
-							{{- else if and (ne $AttributeName "") (isNewNamedClassAttributeMatch $Overwrite $ResourceName)}}
+								{{- else if and (ne $AttributeName "") (isNewNamedClassAttributeMatch $Overwrite $ResourceName)}}
 						if childAttributeName == "{{.PropertyName}}" {
 							data.Deprecated{{.ResourceClassName}} = basetypes.NewStringValue(childAttributeValue.(string))
 						}
+								{{- end}}
 							{{- end}}
-						{{- end}}
 					}
 				}
-				{{- else if eq $childClassType "set,string" }}
+						{{- else if eq $childClassType "set,string" }}
 				if childClassName == "{{ .PkgName }}" {
 					for childAttributeName, childAttributeValue := range childAttributes {
-						{{- range .Properties}}
-						{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
-						{{- $AttributeName := getLegacyChildAttribute .PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
-							{{- if eq $AttributeName (capitalize .PkgName)}}
+							{{- range .Properties}}
+							{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
+							{{- $AttributeName := getLegacyChildAttribute .PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
+								{{- if eq $AttributeName (capitalize .PkgName)}}
 						if childAttributeName == "tDn" && childAttributeValue != "" && !ContainsString(Deprecated{{.ResourceClassName}}{{$.ResourceClassName}}List, childAttributeValue.(string)) {
 							Deprecated{{.ResourceClassName}}{{$.ResourceClassName}}List = append(Deprecated{{.ResourceClassName}}{{$.ResourceClassName}}List, childAttributeValue.(string))
 						}{{break}}
-							{{- else if ne $AttributeName ""}}
+								{{- else if ne $AttributeName ""}}
 						if childAttributeName == "{{.PropertyName}}" {
 							Deprecated{{.ResourceClassName}}{{$.ResourceClassName}}List = append(Deprecated{{.ResourceClassName}}{{$.ResourceClassName}}List, childAttributeValue.(string))
 						} // {{$AttributeName}}
+								{{- end}}
 							{{- end}}
-						{{- end}}
 					}
 				}
+						{{- else if eq $childClassType "block,set" }}
+				if childClassName == "{{ .PkgName }}" {
+					Deprecated{{.ResourceClassName}}{{$.ResourceClassName}} := getEmpty{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModelV1()
+					for childAttributeName, childAttributeValue := range childAttributes {
+							{{- range .Properties}}
+							{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
+							{{- $AttributeName := getLegacyChildAttribute .PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
+								{{- if eq $AttributeName "TargetDn"}}
+						if childAttributeName == "tDn" {
+							Deprecated{{.ResourceClassName}}{{$.ResourceClassName}}.TargetDn = basetypes.NewStringValue(childAttributeValue.(string))
+						}
+								{{- else if isNewNamedClassAttribute $Overwrite}}
+						if childAttributeName == "tDn" {
+							Deprecated{{.ResourceClassName}}{{$.ResourceClassName}}.{{.Name}} = basetypes.NewStringValue(childAttributeValue.(string))
+						}
+								{{- else if ne .Name "Annotation"}}
+						if childAttributeName == "{{.PropertyName}}" {
+							Deprecated{{.ResourceClassName}}{{$.ResourceClassName}}.{{.Name}} = basetypes.NewStringValue(childAttributeValue.(string))
+						}
+								{{- end}}
+							{{- end}}
+					}
+					Deprecated{{.ResourceClassName}}{{$.ResourceClassName}}List = append(Deprecated{{.ResourceClassName}}{{$.ResourceClassName}}List, Deprecated{{.ResourceClassName}}{{$.ResourceClassName}})
+				}
+						{{- end }}
+					{{- end }}
 				{{- end }}
-				{{- end }}{{- end }}
 			}
 		}
 
 		{{- range .Children}}{{- if isLegacyChild .PkgName $.LegacyChildren}}
 		{{- $childClassType := getValueFromMap .PkgName $.MigrationClassTypes}}
-			{{- if eq $childClassType "set,string" }}
+			{{- if or (eq $childClassType "set,string") (eq $childClassType "block,set") }}
 		{{ .PkgName }}Set, _ := types.SetValueFrom(ctx, data.Deprecated{{ .ResourceClassName }}.ElementType(ctx), Deprecated{{.ResourceClassName}}{{$.ResourceClassName}}List)
 		data.Deprecated{{ .ResourceClassName }} = {{ .PkgName }}Set
-			{{- else if eq $childClassType "block,set" }}
-		data.Deprecated{{ .ResourceClassName }} = types.SetNull(deprecated{{ .ResourceClassName }}Type)
 			{{- end}}
 		{{- end}}{{- end}}
 	}
@@ -743,24 +778,24 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 				return
 			}
 		}
-			{{- range .Children}}
-				{{- if containsSingleNestedChildren .Children}}
-					{{- template "declareChildListsInGetandSetAttributesFunctionWithGetEmpty" . }}
-		{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+		{{- range .Children}}
+			{{- if containsSingleNestedChildren .Children}}
+				{{- template "declareChildListsInGetandSetAttributesFunctionWithGetEmpty" . }}
+				{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
 		var {{ .ResourceClassName }}ConfigData {{.ResourceClassName}}{{.ParentHierarchy}}ResourceModel
 		configData.{{ .ResourceClassName }}.As(ctx, &{{ .ResourceClassName }}ConfigData, basetypes.ObjectAsOptions{})
-		{{- else}}
+				{{- else}}
 		var {{ .ResourceClassName }}ConfigData []{{.ResourceClassName}}{{.ParentHierarchy}}ResourceModel
 		configData.{{ .ResourceClassName }}.ElementsAs(ctx, &{{ .ResourceClassName }}ConfigData, false)
+				{{- end}}
+				{{- $resource := . }}
+				{{- range .Children}}
+				{{- $newCtx := addToTemplateProperties . "configData" $resource -}}
+				{{- template "modifyPlanForSingleNestedChildren" $newCtx }}
+				{{- end}}
+			{{- end}}
 		{{- end}}
-		{{- $resource := . }}
 		{{- range .Children}}
-			{{- $newCtx := addToTemplateProperties . "configData" $resource -}}
-			{{- template "modifyPlanForSingleNestedChildren" $newCtx }}
-		{{- end}}
-			{{- end}}
-			{{- end}}
-			{{- range .Children}}
 			{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
 			if !configData.{{ .ResourceClassName }}.IsNull() && stateData != nil {
 				if IsEmptySingleNestedAttribute(configData.{{ .ResourceClassName }}.Attributes()) {
@@ -775,112 +810,74 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 					planData.{{.ResourceClassName}} = {{.ResourceClassName}}Object
 				} {{- end}}
 			}
-				{{- else}}
-			{{- if containsSingleNestedChildren .Children}}
+			{{- else}}
+				{{- if containsSingleNestedChildren .Children}}
 			{{.ResourceClassName}}Set, _ := types.SetValueFrom(ctx, {{ .ResourceClassName }}Type, {{ .ResourceClassName }}{{.ParentHierarchy}}List[0])
 			planData.{{.ResourceClassName}} = {{.ResourceClassName}}Set
-			{{- end}}
 				{{- end}}
+			{{- end}}
 		{{- end}}
 		{{ if .LegacyAttributes}}{{ $ResourceClassName := .ResourceClassName}}
-		{{ range .LegacyAttributes}}{{$SetName := .Name}}
-			{{- if and (ne .ReplacedBy.AttributeName "") (eq (getMigrationType .ValueType) "String") (isNewAttributeStringType .ReplacedBy.AttributeName) }}
-				{{- if .NeedsCustomType}}
-		if !configData.{{ .Name }}.IsNull() {
-					{{- range $.Properties}}
-						{{- if eq .Name $SetName}}
-			matchMap := map[string]string{
-							{{- range $key, $value := .ValidValuesMap}}
-				"{{$key}}": "{{$value}}",
-							{{- end}}
-			}
-						{{- end}}
-					{{- end}}
-			if configData{{ .Name }}, ok := matchMap[configData.{{ .Name }}.ValueString()]; ok {
-				planData.Deprecated{{ .Name }} = basetypes.NewStringValue(configData{{ .Name }})
-			} else {
-				planData.Deprecated{{ .Name }} = configData.{{ .Name }}.StringValue
-			}
-		} else if !configData.Deprecated{{ .Name }}.IsNull() { 
-			planData.{{ .Name }} =customTypes.{{$ResourceClassName}}{{.Name}}StringValue{ StringValue: configData.Deprecated{{ .Name }} }
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.Deprecated{{ .Name }} = stateData.Deprecated{{ .Name }}
-		}
-				{{- else}}
-		if !configData.{{ .Name }}.IsNull() {
-			planData.Deprecated{{ .Name }} = configData.{{ .Name }}
-		} else if !configData.Deprecated{{ .Name }}.IsNull() { 
+			{{ range .LegacyAttributes}}{{$SetName := .Name}}
+				{{- if and (ne .ReplacedBy.AttributeName "") (eq (getMigrationType .ValueType) "String") (isNewAttributeStringType .ReplacedBy.AttributeName) }}
+		if !configData.Deprecated{{ .Name }}.IsNull() {
+					{{- if .NeedsCustomType}}
+			planData.{{ .Name }} = customTypes.{{$ResourceClassName}}{{.Name}}StringValue{StringValue: configData.Deprecated{{ .Name }} }
+					{{- else}}
 			planData.{{ .Name }} = configData.Deprecated{{ .Name }}
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.Deprecated{{ .Name }} = stateData.Deprecated{{ .Name }}
+					{{- end}}
 		}
-			{{- end}}
-			{{- else if and (ne .ReplacedBy.AttributeName "") (eq (getMigrationType .ValueType) "String") }}
-				{{- range $.Children}}{{$ResourceName := .ResourceName}}
-					{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
-						{{- if eq $SetName (capitalize .PkgName)}}
-		if !configData.{{ $SetName }}.IsNull() && stateData != nil {
-			if IsEmptySingleNestedAttribute(configData.{{ $SetName }}.Attributes()) {
-				planData.{{ $SetName }} = configData.{{ $SetName }}
-				planData.Deprecated{{ $SetName }} = basetypes.NewStringNull()
-			} else {
-				var attributeValues {{$SetName}}{{$.ResourceClassName}}ResourceModel
-				configData.{{ $SetName }}.As(ctx, &attributeValues, basetypes.ObjectAsOptions{})
+				{{- else if and (ne .ReplacedBy.AttributeName "") (eq (getMigrationType .ValueType) "String") }}
+					{{- range $.Children}}{{$ResourceName := .ResourceName}}
+						{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+							{{- if eq $SetName (capitalize .PkgName)}}
+		if !configData.Deprecated{{ $SetName }}.IsNull() {
+			var newAttributeValues {{ $SetName }}{{.ParentHierarchy}}ResourceModel
+								{{- range .Children}}
+									{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+			{{ .ResourceClassName | decapitalize }}{{.ParentHierarchy}}Value, _ := types.ObjectValueFrom(ctx, {{ .ResourceClassName }}{{.ParentHierarchy}}Type, getEmpty{{ .ResourceClassName }}{{.ParentHierarchy}}ResourceModel())
+									{{- else}}
+			{{ .ResourceClassName | decapitalize }}{{.ParentHierarchy}}Value, _ := types.SetValueFrom(ctx, {{ .ResourceClassName }}{{.ParentHierarchy}}Type, make([]{{ .ResourceClassName }}{{.ParentHierarchy}}ResourceModel, 0))
+									{{- end}}	
+								{{- end}}
+								{{- range .Properties}}
+									{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
+									{{- if eq .Name "Annotation"}}
+			{{ .Name | decapitalize }}Value := planData.{{ .Name }}
+									{{- else if not (isNewNamedClassAttribute $Overwrite) }}
+			{{ .Name | decapitalize }}Value := basetypes.NewStringUnknown()
+									{{- end}}
+								{{- end}}
+			if stateData != nil && !IsEmptySingleNestedAttribute(stateData.{{ $SetName }}.Attributes()) {
+				stateData.{{ $SetName }}.As(ctx, &newAttributeValues, basetypes.ObjectAsOptions{})
+								{{- range .Properties}}
+									{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
+									{{- if not (isNewNamedClassAttribute $Overwrite) }}
+				{{ .Name | decapitalize }}Value = newAttributeValues.{{.Name}}
+									{{- end}}
+								{{- end}}
+								{{- range .Children}}
+				{{ .ResourceClassName | decapitalize }}{{.ParentHierarchy}}Value = newAttributeValues.{{.ResourceClassName}}
+								{{- end}}
+			}
 								{{- range .Properties}}
 							{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
 							{{- $AttributeName := getLegacyChildAttribute .PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
-									{{- if and (ne $AttributeName "") (isNewNamedClassAttributeMatch $Overwrite $ResourceName)}}
-				if GetMOName(stateData.Deprecated{{$SetName}}.ValueString()) == attributeValues.{{ .Name }}.ValueString() && !attributeValues.{{ .Name }}.IsNull() {
-					planData.Deprecated{{$SetName}} = stateData.Deprecated{{$SetName}}
-				}
-								{{- end}}
-							{{- end}}
-			}
-		} else if !configData.Deprecated{{ $SetName }}.IsNull() {
-			var newAttributeValues {{ $SetName }}{{.ParentHierarchy}}ResourceModel
-			{{- range .Children}}
-				{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
-			{{ .ResourceClassName | decapitalize }}{{.ParentHierarchy}}Value, _ := types.ObjectValueFrom(ctx, {{ .ResourceClassName }}{{.ParentHierarchy}}Type, getEmpty{{ .ResourceClassName }}{{.ParentHierarchy}}ResourceModel())
-				{{- else}}
-			{{ .ResourceClassName | decapitalize }}{{.ParentHierarchy}}Value, _ := types.SetValueFrom(ctx, {{ .ResourceClassName }}{{.ParentHierarchy}}Type, make([]{{ .ResourceClassName }}{{.ParentHierarchy}}ResourceModel, 0))
-				{{- end}}	
-			{{- end}}
-			{{- range .Properties}}
-					{{- if eq .Name "Annotation"}}
-				{{ .Name | decapitalize }}Value := planData.Annotation
-					{{- end}}
-			{{- end}}
-			if stateData != nil {
-				stateData.{{ $SetName }}.As(ctx, &newAttributeValues, basetypes.ObjectAsOptions{})
-				{{- range .Properties}}
-					{{- if eq .Name "Annotation"}}
-				{{ .Name | decapitalize }}Value = newAttributeValues.Annotation
-					{{- end}}
-				{{- end}}
-				{{- range .Children}}
-				{{ .ResourceClassName | decapitalize }}{{.ParentHierarchy}}Value = newAttributeValues.{{.ResourceClassName}}
-				{{- end}}
-			}
-			{{- range .Properties}}
-				{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
-				{{- $AttributeName := getLegacyChildAttribute .PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
-						{{- if isNewNamedClassAttribute $Overwrite }}
-							{{- if isNewNamedClassAttributeMatch $Overwrite $ResourceName}}
+									{{- if isNewNamedClassAttribute $Overwrite }}
+										{{- if isNewNamedClassAttributeMatch $Overwrite $ResourceName}}
 				{{ .Name | decapitalize }}Value := basetypes.NewStringUnknown()
 				if !configData.Deprecated{{ $SetName }}.IsUnknown() {
 					{{ .Name | decapitalize }}Value = basetypes.NewStringValue(GetMOName(configData.Deprecated{{ $AttributeName }}.ValueString()))
 				}
 										{{- end}}
 									{{- end}}
-			{{- end}}
+								{{- end}}
 			{{$SetName}} := {{$SetName}}{{$.ResourceClassName}}ResourceModel{
 								{{- range .Properties}}
 								{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
 								{{- $AttributeName := getLegacyChildAttribute .PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
-									{{- if eq .Name "Annotation"}}
+									{{- if or (eq .Name "Annotation") (eq $AttributeName "")}}
 				{{ .Name }}: {{ .Name | decapitalize }}Value,
-									{{- else if eq $AttributeName ""}}
-				{{ .Name }}: basetypes.NewStringNull(),
 									{{- else}}
 										{{- if isNewNamedClassAttribute $Overwrite }}
 											{{- if isNewNamedClassAttributeMatch $Overwrite $ResourceName}}
@@ -899,88 +896,43 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 			}
 			{{$SetName}}Object, _ := types.ObjectValueFrom(ctx, {{$SetName}}{{$.ResourceClassName}}Type, {{$SetName}})
 			planData.{{$SetName}} = {{$SetName}}Object
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.Deprecated{{$SetName}} = stateData.Deprecated{{$SetName}}
-		}					{{- end}}	
+		}			
+							{{- end}}	
 						{{- else}}
 							{{- if isLegacyChild .PkgName $.LegacyChildren}}
 								{{- if eq $SetName (capitalize .PkgName)}}
-		if !configData.{{ $SetName }}.IsNull() && stateData != nil {
-			var attributeValues []{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel
-			configData.{{.ResourceClassName}}.ElementsAs(ctx, &attributeValues, false)
-			for _, attributeValue := range attributeValues {
-								{{- range .Properties}}
-								{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
-								{{- $AttributeName := getLegacyChildAttribute .PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
-									{{- if ne $AttributeName ""}}
-				if GetMOName(stateData.Deprecated{{.ResourceClassName}}.ValueString()) == attributeValue.{{ .Name }}.ValueString() {
-					planData.Deprecated{{.ResourceClassName}} = stateData.Deprecated{{.ResourceClassName}}
-				}
-									{{- end}}
-								{{- end}}
-			}	
-		} else if !configData.Deprecated{{ $SetName }}.IsNull() {
+		if !configData.Deprecated{{ $SetName }}.IsNull() {
 			{{.ResourceClassName}}List := make([]{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel, 0)
 			{{.ResourceClassName}} := {{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel{
-								{{- range .Properties}}
-								{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
-								{{- $AttributeName := getLegacyChildAttribute .PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
-									{{- if eq .Name "Annotation"}}
+									{{- range .Properties}}
+									{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
+									{{- $AttributeName := getLegacyChildAttribute .PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
+										{{- if eq .Name "Annotation"}}
 				{{ .Name }}: planData.Annotation,
-									{{- else if eq $AttributeName ""}}
+										{{- else if eq $AttributeName ""}}
 				{{ .Name }}: basetypes.NewStringNull(),
-									{{- else}}
+										{{- else}}
 				{{ .Name }}: {{- if isNewNamedClassAttribute $Overwrite }}basetypes.NewStringValue(GetMOName(configData.Deprecated{{ $AttributeName }}.ValueString())){{- else }}configData.Deprecated{{ .Name }}{{- end }},
+										{{- end}}
 									{{- end}}
-								{{- end}}
 			}
 			{{.ResourceClassName}}List = append({{.ResourceClassName}}List, {{.ResourceClassName}})
 			{{.ResourceClassName}}Set, _ := types.SetValueFrom(ctx, {{.ResourceClassName}}{{.ParentHierarchy}}Type, {{.ResourceClassName}}List)
 			planData.{{.ResourceClassName}} = {{.ResourceClassName}}Set
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.Deprecated{{.ResourceClassName}} = stateData.Deprecated{{.ResourceClassName}}
 		}
+								{{- end }}
 							{{- end }}
 						{{- end }}
 					{{- end }}
-				{{- end }}
-			{{- else if ne .ReplacedBy.AttributeName "" }}
-				{{- range $.Children}}
-					{{- if isLegacyChild .PkgName $.LegacyChildren}}
-						{{- if eq $SetName (capitalize .PkgName)}}
-		if !configData.{{ $SetName }}.IsNull() && stateData != nil {
-			var attributeValues []{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel
-			var newAttributeValues, stateAttributeValues []string
-			configData.{{.ResourceClassName}}.ElementsAs(ctx, &attributeValues, false)
-			stateData.Deprecated{{.ResourceClassName}}.ElementsAs(ctx, &stateAttributeValues, false)
-			for _, attributeValue := range attributeValues {
-						{{- range .Properties}}
-							{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
-							{{- $AttributeName := getLegacyChildAttribute .PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
-							{{- if or (eq .Name "TDn") (isNewNamedClassAttribute $Overwrite)}}
-				newAttributeValues = append(newAttributeValues, attributeValue.{{ .Name }}.ValueString())
-							{{- end }}
-						{{- end }}
-			}
-
-			if len(newAttributeValues) == len(stateAttributeValues) {
-				allMatchState := true
-				for _, stateAttributeValue := range stateAttributeValues {
-					if !ContainsString(newAttributeValues, GetMOName(stateAttributeValue)) {
-						allMatchState = false
-						break
-					}
-				}
-				if allMatchState {
-					{{.ResourceClassName}}Set, _ := types.SetValueFrom(ctx, basetypes.StringType{}, stateAttributeValues)
-					planData.Deprecated{{.ResourceClassName}} = {{.ResourceClassName}}Set
-				}
-			}
-		} else if !configData.Deprecated{{ $SetName }}.IsNull() {
+				{{- else if ne .ReplacedBy.AttributeName "" }}
+					{{- range $.Children}}
+						{{- if isLegacyChild .PkgName $.LegacyChildren}}
+							{{- if eq $SetName (capitalize .PkgName)}}{{$tDn := false}}
+		if !configData.Deprecated{{ $SetName }}.IsNull() {
 			{{.ResourceClassName}}List := make([]{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel, 0)
 			var attributeValues []basetypes.StringValue
 			var newAttributeValues []{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel
-			configData.Deprecated{{.ResourceClassName}}.ElementsAs(ctx, &attributeValues, false)
+			planData.Deprecated{{.ResourceClassName}}.ElementsAs(ctx, &attributeValues, false)
 			if stateData != nil {
 				stateData.{{.ResourceClassName}}.ElementsAs(ctx, &newAttributeValues, false)
 			}
@@ -988,76 +940,76 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 				{{.ResourceClassName}}Value := {{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel{}
 				foundAttributeValue := false
 				for _, newAttributeValue := range newAttributeValues {
-					{{- range .Properties}}
-						{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
-						{{- $AttributeName := getLegacyChildAttribute .PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
-						{{- if or (eq .Name "TDn") (isNewNamedClassAttribute $Overwrite)}}
+								{{- range .Properties}}
+									{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
+									{{- $AttributeName := getLegacyChildAttribute .PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
+									{{- if or (eq .Name "TDn") (isNewNamedClassAttribute $Overwrite)}}
 					if newAttributeValue.{{ .Name }}.ValueString() == {{- if isNewNamedClassAttribute $Overwrite }}GetMOName(attributeValue.ValueString()){{- else}}attributeValue.ValueString(){{- end}} {
 						{{.ResourceClassName}}Value = newAttributeValue
 						foundAttributeValue = true
 						break
 					}
-						{{- end}}
-					{{- end}}
+									{{- end}}
+								{{- end}}
 				}
-				{{- range .Properties}}
-					{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
-					{{- $AttributeName := getLegacyChildAttribute .PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
-					{{- if or (eq .Name "TDn") (isNewNamedClassAttribute $Overwrite)}}
+								{{- range .Properties}}
+									{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
+									{{- $AttributeName := getLegacyChildAttribute .PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
+									{{- if or (eq .Name "TDn") (isNewNamedClassAttribute $Overwrite)}}
 				{{ .Name | decapitalize}}Value := basetypes.NewStringUnknown()
 				if !attributeValue.IsUnknown(){
 					{{ .Name | decapitalize }}Value = {{- if isNewNamedClassAttribute $Overwrite }}basetypes.NewStringValue(GetMOName(attributeValue.ValueString())){{- else}}basetypes.NewStringValue(attributeValue.ValueString()){{- end}}
 				}
-					{{- end}}
-				{{- end}}
+									{{- end}}
+								{{- end}}
 				{{ .ResourceClassName }} := {{ .ResourceClassName }}{{$.ResourceClassName}}ResourceModel {
-						{{- range .Properties}}
-						{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
-						{{- $AttributeName := getLegacyChildAttribute .PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
-							{{- if or (eq .Name "TDn") (isNewNamedClassAttribute $Overwrite)}}
+								{{- range .Properties}}
+								{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
+								{{- $AttributeName := getLegacyChildAttribute .PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
+									{{- if or (eq .Name "TDn") (isNewNamedClassAttribute $Overwrite)}}
 					{{ .Name }}: {{ .Name | decapitalize }}Value,
-							{{- end}}
-						{{- end}}
+									{{- end}}
+								{{- end}}
 				}
 
 				if foundAttributeValue {
-					{{- range .Properties}}
-						{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
-						{{- $AttributeName := getLegacyChildAttribute .PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
-						{{- if and (ne .Name "TDn") (not (isNewNamedClassAttribute $Overwrite))}}
+								{{- range .Properties}}
+									{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
+									{{- $AttributeName := getLegacyChildAttribute .PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
+									{{- if and (ne .Name "TDn") (not (isNewNamedClassAttribute $Overwrite))}}
 					{{ .ResourceClassName }}.{{ .Name }} = {{.ResourceClassName}}Value.{{ .Name }}
-						{{- end}}
-					{{- end}}
+									{{- end}}
+								{{- end}}
 				} else {
-					{{- range .Properties}}
-						{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
-						{{- $AttributeName := getLegacyChildAttribute .PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
-						{{- if eq .Name "Annotation"}}
+								{{- range .Properties}}
+									{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
+									{{- $AttributeName := getLegacyChildAttribute .PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
+									{{- if eq .Name "Annotation"}}
 					{{ .ResourceClassName }}.{{ .Name }} = planData.Annotation
-						{{- else if ne .DefaultValue ""}}
-							{{- if .HasCustomType}}
-					{{ .ResourceClassName }}.{{ .Name }} = customTypes.New{{.ResourceClassName}}{{.Name}}StringValue("{{ .DefaultValue }}") // Default to default value from meta when not found
-							{{- else}}
-					{{ .ResourceClassName }}.{{ .Name }} = basetypes.NewStringValue("{{ .DefaultValue }}") // Default to default value from meta when not found
-							{{- end}}
-						{{- end}}
-					{{- end}}
+									{{- else if ne .DefaultValue ""}}
+										{{- if .HasCustomType}}
+					{{ .ResourceClassName }}.{{ .Name }} = customTypes.New{{.ResourceClassName}}{{.Name}}StringUnknown()
+										{{- else}}
+					{{ .ResourceClassName }}.{{ .Name }} = basetypes.NewStringUnknown()
+										{{- end}}
+									{{- else if and (ne .Name "TDn") (not (isNewNamedClassAttribute $Overwrite))}}
+					{{ .ResourceClassName }}.{{ .Name }} = basetypes.NewStringUnknown()
+									{{- end}}
+								{{- end}}
 				}
-					{{- $resourceClassName:= .ResourceClassName}}
-					{{- range .Children}}
-						{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
-					{{ .ResourceClassName | decapitalize }}{{.ParentHierarchy}}Value, _ := types.ObjectValueFrom(ctx, {{ .ResourceClassName }}{{.ParentHierarchy}}Type, getEmpty{{ .ResourceClassName }}{{.ParentHierarchy}}ResourceModel())
-						{{- else}}
-					{{ .ResourceClassName | decapitalize }}{{.ParentHierarchy}}Value, _ := types.SetValueFrom(ctx, {{ .ResourceClassName }}{{.ParentHierarchy}}Type, make([]{{ .ResourceClassName }}{{.ParentHierarchy}}ResourceModel, 0))
-						{{- end}}	
-					{{ $resourceClassName }}.{{.ResourceClassName}} = {{ .ResourceClassName | decapitalize }}{{.ParentHierarchy}}Value
-					{{- end}}
+								{{- $resourceClassName:= .ResourceClassName}}
+								{{- range .Children}}
+									{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+				{{ .ResourceClassName | decapitalize }}{{.ParentHierarchy}}Value, _ := types.ObjectValueFrom(ctx, {{ .ResourceClassName }}{{.ParentHierarchy}}Type, getEmpty{{ .ResourceClassName }}{{.ParentHierarchy}}ResourceModel())
+									{{- else}}
+				{{ .ResourceClassName | decapitalize }}{{.ParentHierarchy}}Value, _ := types.SetValueFrom(ctx, {{ .ResourceClassName }}{{.ParentHierarchy}}Type, make([]{{ .ResourceClassName }}{{.ParentHierarchy}}ResourceModel, 0))
+									{{- end}}	
+				{{ $resourceClassName }}.{{.ResourceClassName}} = {{ .ResourceClassName | decapitalize }}{{.ParentHierarchy}}Value
+								{{- end}}
 				{{.ResourceClassName}}List = append({{.ResourceClassName}}List, {{ .ResourceClassName }})
 			}
 			{{.ResourceClassName}}Set, _ := types.SetValueFrom(ctx, {{.ResourceClassName}}{{.ParentHierarchy}}Type, {{.ResourceClassName}}List)
 			planData.{{.ResourceClassName}} = {{.ResourceClassName}}Set
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.Deprecated{{.ResourceClassName}} = stateData.Deprecated{{.ResourceClassName}}
 		}
 						{{- end }}
 					{{- end }}
@@ -1066,126 +1018,199 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 		{{ end }}
 
 		{{ range .LegacyBlocks}}{{$ClassName := .ClassName}}{{$Attributes := .Attributes}}
-		planData.Deprecated{{ capitalize .ClassName }} = types.SetNull(deprecated{{ capitalize .ClassName }}Type)
 		if !configData.Deprecated{{ capitalize .ClassName }}.IsNull() {
 			{{- range $.Children}}
 				{{- if isLegacyChild .PkgName $.LegacyChildren}}
 					{{- if eq $ClassName .PkgName}}
 			{{ .ResourceClassName }}List := make([]{{ .ResourceClassName }}{{$.ResourceClassName}}ResourceModel, 0)
 			var attributeValues []{{ .ResourceClassName }}{{$.ResourceClassName}}ResourceModelV1
+			{{- $NewProperties := getNewChildAttributes (getChildAttributesFromBlocks $ClassName $.LegacyBlocks) .Properties}}
 			var newAttributeValues []{{ .ResourceClassName }}{{$.ResourceClassName}}ResourceModel
-			configData.Deprecated{{.ResourceClassName}}.ElementsAs(ctx, &attributeValues, false)
-			{{- range .Properties}}
-					{{- if eq .Name "Annotation"}}
-				{{ .Name | decapitalize }}Value := planData.Annotation
-					{{- end}}
-			{{- end}}
 			if stateData != nil {
 				stateData.{{.ResourceClassName}}.ElementsAs(ctx, &newAttributeValues, false)
-				for _, newAttributeValue := range newAttributeValues {
-					{{- range .Properties}}
-						{{- if eq .Name "Annotation"}}
-				{{ .Name | decapitalize }}Value = newAttributeValue.Annotation
-						{{- end}}
-					{{- end}}
-				}
 			}
+			planData.Deprecated{{.ResourceClassName}}.ElementsAs(ctx, &attributeValues, false)
 			for _, attributeValue := range attributeValues {
-				{{- $NewProperties := getNewChildAttributes (getChildAttributesFromBlocks $ClassName $.LegacyBlocks) .Properties}}
-				{{- if ne (len $NewProperties) 0 }}
 				planned{{ .ResourceClassName }} := {{ .ResourceClassName }}{{$.ResourceClassName}}ResourceModel{}
     			foundAttributeValue := false
 				for _, newAttributeValue := range newAttributeValues {
-					{{- range .Properties}}
-					{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
-					{{- $AttributeName := getLegacyChildAttribute .PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
-					{{- if and (ne $AttributeName "") (.IsRequired) (or (eq .Name "TDn") (isNewNamedClassAttribute $Overwrite)) }}
+							{{- range .Properties}}
+							{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
+							{{- $AttributeName := getLegacyChildAttribute .PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
+							{{- if and (ne $AttributeName "") (.IsRequired) (or (eq .Name "TDn") (isNewNamedClassAttribute $Overwrite)) }}
 					if newAttributeValue.{{ .Name }}.ValueString() == {{- if isNewNamedClassAttribute $Overwrite }}GetMOName(attributeValue.{{ $AttributeName }}.ValueString()){{- else}}attributeValue.TDn.ValueString(){{- end}} {
 						planned{{ .ResourceClassName }} = newAttributeValue
-						{{- if ne (len $NewProperties) 0 }}
 						foundAttributeValue = true
-						{{- end}}
 						break
 					}
 				}
+							{{- end}}
 					{{- end}}
-				{{- end}}
-				{{- end}}
-
-				{{- range .Properties}}
+					{{- range .Properties}}
 				{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
 				{{- $AttributeName := getLegacyChildAttribute .PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
 						{{- if or (eq .Name "TDn") (isNewNamedClassAttribute $Overwrite)}}
 				{{ .Name | decapitalize }}Value := basetypes.NewStringUnknown()
 				if !attributeValue.{{ $AttributeName }}.IsUnknown() {
-					{{ .Name | decapitalize }}Value = {{- if isNewNamedClassAttribute $Overwrite }}basetypes.NewStringValue(GetMOName(attributeValue.{{ $AttributeName }}.ValueString())){{- else}}basetypes.NewStringValue(attributeValue.TDn.ValueString()){{- end}}
+					{{ .Name | decapitalize }}Value = {{ if isNewNamedClassAttribute $Overwrite }}basetypes.NewStringValue(GetMOName(attributeValue.{{ $AttributeName }}.ValueString())){{- else}}basetypes.NewStringValue(attributeValue.TDn.ValueString()){{- end}}
 				}
 						{{- end}}
-				{{- end}}
-				
+					{{- end}}
 				{{ .ResourceClassName }} := {{ .ResourceClassName }}{{$.ResourceClassName}}ResourceModel {
 					{{- range .Properties}}
-					{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
-					{{- $AttributeName := getLegacyChildAttribute .PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
-						{{- if or (eq .Name "TDn") (isNewNamedClassAttribute $Overwrite) (eq .Name "Annotation")}}
+						{{- if or .IsRequired (eq .Name "Annotation")}}
+							{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
+							{{- $AttributeName := getLegacyChildAttribute .PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
+							{{- if or (eq .Name "TDn") (isNewNamedClassAttribute $Overwrite) }}
 					{{ .Name }}: {{ .Name | decapitalize }}Value,
-						{{- else if and (ne $AttributeName "") (not (isNewNamedClassAttribute $Overwrite)) }}
-							{{- if .HasCustomType}}
+							{{ else if eq .Name "Annotation"}}
+					{{ .Name }}: planData.{{ .Name  }},
+							{{- else if and (ne $AttributeName "") (not (isNewNamedClassAttribute $Overwrite)) }}
+								{{- if .HasCustomType}}
 					{{ .Name }}: customTypes.{{.ResourceClassName}}{{.Name}}StringValue{StringValue: attributeValue.{{ .Name }}},
-							{{- else}}
+								{{- else}}
 					{{ .Name }}: attributeValue.{{ .Name }},
+								{{- end}}
 							{{- end}}
 						{{- end}}
 					{{- end}}
 				}
-
-				{{- if ne (len $NewProperties) 0}}
-				
-				if foundAttributeValue {
-					{{- range $NewProperties}}
-					{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
-					{{- $AttributeName := getLegacyChildAttribute .PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
-					{{ .ResourceClassName }}.{{ .Name }} = planned{{ .ResourceClassName }}.{{ .Name }}
-					{{- end}}
-				} else {
-					{{- range $NewProperties}}
-					{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
-					{{- $AttributeName := getLegacyChildAttribute .PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
-						{{- if isNewNamedClassAttribute $Overwrite }}
-					{{ .ResourceClassName }}.{{ .Name }} = {{ .Name | decapitalize }}Value
-						{{- else if ne .DefaultValue ""}}
-					{{ .ResourceClassName }}.{{ .Name }} = basetypes.NewStringValue("{{.DefaultValue}}") // Default to default value from meta when not found
-						{{- else}}
+					{{- range .Properties}}
+						{{- if and (not .IsRequired) (ne .Name "Annotation")}}
+							{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
+							{{- $AttributeName := getLegacyChildAttribute .PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
+				if !attributeValue.{{ .Name }}.IsNull() {
+							{{- if .HasCustomType}}
+					{{ .ResourceClassName }}.{{ .Name }} = customTypes.{{.ResourceClassName}}{{.Name}}StringValue{StringValue: attributeValue.{{ .Name }}}
+							{{- else}}
 					{{ .ResourceClassName }}.{{ .Name }} = attributeValue.{{ .Name }}
+							{{- end}}
+				} else {
+							{{- if .HasCustomType}}
+					{{ .ResourceClassName }}.{{ .Name }} = customTypes.{{.ResourceClassName}}{{.Name}}StringValue{StringValue: basetypes.NewStringUnknown()}
+							{{- else}}
+					{{ .ResourceClassName }}.{{ .Name }} = basetypes.NewStringUnknown()
+							{{- end}}
+				}
 						{{- end}}
 					{{- end}}
+				if foundAttributeValue {
+						{{- range $NewProperties}}
+						{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
+						{{- $AttributeName := getLegacyChildAttribute .PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
+					{{ .ResourceClassName }}.{{ .Name }} = planned{{ .ResourceClassName }}.{{ .Name }}
+						{{- end}}
+						{{- range .Properties}}
+							{{- if eq .Name "Annotation"}}
+					{{ .ResourceClassName }}.{{ .Name }} = planned{{ .ResourceClassName }}.{{ .Name }}
+							{{- end}}
+						{{- end}}
 				}
-				{{- end}}
 
-				{{- $resourceClassName:= .ResourceClassName}}
-				{{- range .Children}}
-					{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+					{{- $resourceClassName:= .ResourceClassName}}
+					{{- range .Children}}
+						{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
 				{{ .ResourceClassName | decapitalize }}{{.ParentHierarchy}}Value, _ := types.ObjectValueFrom(ctx, {{ .ResourceClassName }}{{.ParentHierarchy}}Type, getEmpty{{ .ResourceClassName }}{{.ParentHierarchy}}ResourceModel())
-					{{- else}}
+						{{- else}}
 				{{ .ResourceClassName | decapitalize }}{{.ParentHierarchy}}Value, _ := types.SetValueFrom(ctx, {{ .ResourceClassName }}{{.ParentHierarchy}}Type, make([]{{ .ResourceClassName }}{{.ParentHierarchy}}ResourceModel, 0))
-					{{- end}}	
+						{{- end}}	
 				{{ $resourceClassName }}.{{.ResourceClassName}} = {{ .ResourceClassName | decapitalize }}{{.ParentHierarchy}}Value
-				{{- end}}
+					{{- end}}
 				{{.ResourceClassName}}List = append({{.ResourceClassName}}List, {{ .ResourceClassName }})
 			}
-
 			{{.ResourceClassName}}Set, _ := types.SetValueFrom(ctx, {{.ResourceClassName}}{{.ParentHierarchy}}Type, {{.ResourceClassName}}List)
 			planData.{{.ResourceClassName}} = {{.ResourceClassName}}Set
-			
-					{{- end }}
+		} else if !configData.{{.ResourceClassName}}.IsNull() && stateData == nil {
+			setUnknownDeprecated{{.ResourceClassName}}{{.ParentHierarchy}}ResourceModelToPlan(ctx , planData)
+		}
 				{{- end }}
 			{{- end }}
-		}
+		{{- end }}
 		{{ end }}
 		{{ end }}
+		{{- if .LegacyAttributes}}
+		
+		// Workaround to compare the state with plan to avoid plan changes with only known after apply
+		if stateData != nil {
+			avoid{{.ResourceClassName}}PlanChangeForKnownAfterApplyOnly(ctx, planData, stateData, configData)
+ 		}
+		{{- end}}
+		
 		resp.Diagnostics.Append(resp.Plan.Set(ctx, &planData)...)
 	}
 }
+
+{{- if .LegacyAttributes}}
+
+	{{- if .LegacyBlocks}}
+		{{- range .LegacyBlocks}}
+func setUnknownDeprecated{{capitalize .ClassName}}{{$.ResourceClassName}}ResourceModelToPlan(ctx context.Context, planData *{{$.ResourceClassName}}ResourceModel) {
+	var attributeValues []{{capitalize .ClassName}}{{$.ResourceClassName}}ResourceModel
+	var legacyAttributeValues []{{capitalize .ClassName}}{{$.ResourceClassName}}ResourceModelV1
+	planData.{{capitalize .ClassName}}.ElementsAs(ctx, &attributeValues, false)
+	for i := 0; i < len(attributeValues); i++ {
+		legacyAttributeValues = append(legacyAttributeValues, {{capitalize .ClassName}}{{$.ResourceClassName}}ResourceModelV1{ {{- range .Attributes}}
+			{{.Name}}: basetypes.NewStringUnknown(),
+			{{- end}}
+		})
+	}
+	Deprecated{{capitalize .ClassName}}Set, _ := types.SetValueFrom(ctx, deprecated{{capitalize .ClassName}}Type, legacyAttributeValues)
+	planData.Deprecated{{capitalize .ClassName}} = Deprecated{{capitalize .ClassName}}Set
+}
+		{{- end}}
+	{{- end}}
+
+func avoid{{.ResourceClassName}}PlanChangeForKnownAfterApplyOnly(ctx context.Context, planData, stateData, configData *{{.ResourceClassName}}ResourceModel) {
+	// Set read-only and deprecated attributes in planData from stateData
+	{{- range .Properties}}
+		{{- if .ReadOnly}}
+	planData.{{.Name}} = stateData.{{.Name}}
+		{{- end}}
+	{{- end}}
+	{{- range .LegacyAttributes}}
+		{{- if ne .ReplacedBy.AttributeName "" }}
+	if configData.Deprecated{{ .Name }}.IsNull() {
+		planData.Deprecated{{.Name}} = stateData.Deprecated{{.Name}}
+	}
+		{{- end}}
+	{{- end }}
+	{{- range .LegacyBlocks}}
+	if configData.Deprecated{{ capitalize .ClassName }}.IsNull() {
+		planData.Deprecated{{ capitalize .ClassName }} = stateData.Deprecated{{ capitalize .ClassName }}
+	}
+	{{- end }}
+
+	// Compare the string representation of the planData and stateData because structs cannot be compared directly
+	if fmt.Sprintf("%s", planData) != fmt.Sprintf("%s", stateData) {
+	{{- range .Properties}}
+		{{- if .ReadOnly}}
+		planData.{{.Name}} = basetypes.NewStringUnknown()
+		{{- end}}
+	{{- end}}
+	{{- range .LegacyAttributes}}
+		{{- if ne .ReplacedBy.AttributeName "" }}
+			{{- if eq (getMigrationType .ValueType) "String"}}
+		if configData.Deprecated{{.Name}}.IsNull() {
+			planData.Deprecated{{.Name}} = basetypes.NewStringUnknown()
+		}
+			{{- else if eq (getMigrationType .ValueType) "Set"}}
+		if configData.Deprecated{{.Name}}.IsNull() {
+			planData.Deprecated{{.Name}} = basetypes.NewSetUnknown(basetypes.StringType{})
+		}
+			{{- end}}
+		{{- end}}
+	{{- end }}
+	{{- if .LegacyBlocks}}
+		{{- range .LegacyBlocks}}
+		if configData.Deprecated{{ capitalize .ClassName }}.IsNull() { 
+			setUnknownDeprecated{{capitalize .ClassName}}{{$.ResourceClassName}}ResourceModelToPlan(ctx, planData)
+		}
+		{{- end}}
+	{{- end}}
+	}
+}
+{{- end}}
+
 {{- if .TypeChanges}}
 	{{- range $version, $value := .TypeChanges}}
 type {{$.ResourceClassName}}ResourceModelV{{$version}} struct {
@@ -1421,6 +1446,7 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 				DeprecationMessage: "Attribute `{{.AttributeName}}` is deprecated. The attribute will be removed in the next major version of the provider.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 			},
 						{{- end}}
@@ -1501,7 +1527,7 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 				{{- if not .ReadOnly }}
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
-					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 
 				},
 				{{- end}}
@@ -1522,9 +1548,12 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 					{{- end}}
 					{{- if or .IsNaming .IsRequired}}
 						{{- if ne $LegacyAttributeName ""}}
-				{{- if not .ReadOnly }}
-				Optional:            true,
-				{{- end }}
+							{{- if not .ReadOnly }}
+				Optional: true,
+							{{- end }}
+				Computed: true,
+						{{else if $.HasReadOnlyProperties}}
+				Optional: true,
 				Computed: true,
 						{{- else}}
 				Required:            true,
@@ -1569,6 +1598,10 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 					}...),
 						{{- end}}
 				},
+				    {{- else if and (or .IsNaming .IsRequired) $.HasReadOnlyProperties}}
+				Validators: []validator.String{
+					MakeStringRequired(),
+				},
 					{{- end}}
 				MarkdownDescription: `{{.Comment}}`,
 			},
@@ -1595,6 +1628,9 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 								stringvalidator.ConflictsWith(path.Expressions{
 									path.MatchRoot("{{getConflictingAttributeName .ReplacedBy.AttributeName}}"),
 								}...),
+								{{- if .Required }}
+								MakeStringRequired(),
+								{{- end }}
 							},
 						},
 							{{- end}}
@@ -2528,6 +2564,7 @@ func getEmpty{{.ResourceClassName}}{{.ParentHierarchy}}ResourceModel() {{.Resour
 		{{- end}}
     }
 }
+
 {{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
 var {{.ResourceClassName}}{{.ParentHierarchy}}Type = map[string]attr.Type{
 	{{- range .Properties}}
@@ -2566,6 +2603,41 @@ var {{.ResourceClassName}}{{.ParentHierarchy}}Type = types.ObjectType{
 	{{- end}}
 	},
 }
+
+{{- if excludeForNullInSetCheck .ResourceClassName}}
+func {{.ResourceClassName}}{{.ParentHierarchy}}SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(ctx context.Context, planValue, stateValue types.Set) basetypes.SetValue {
+	//  Function is needed to handle the case that an attribute is not yet suppored in a version and gets set to null during read
+	var planSetValues, stateSetValues []{{.ResourceClassName}}{{.ParentHierarchy}}ResourceModel
+	stateValue.ElementsAs(ctx, &stateSetValues, false)
+	planValue.ElementsAs(ctx, &planSetValues, false)
+	
+	// If the length of the state and plan values are different a change is already detected the loop can be skipped
+	if len(stateSetValues) == len(planSetValues) {
+		for index, stateValue := range stateSetValues {
+ 			nullInStateFound := false
+			{{- range .Properties}}
+			if stateValue.{{ .Name }}.IsNull() {
+				nullInStateFound = true
+				{{- if eq .ValueType "bitmask"}}
+				planSetValues[index].{{ .Name }} = basetypes.NewSetNull(types.StringType)
+ 				{{- else if .HasCustomType}}
+ 				planSetValues[index].{{ .Name }} = customTypes.New{{.ResourceClassName}}{{.Name}}StringNull()
+				{{- else}}
+				planSetValues[index].{{ .Name }} = basetypes.NewStringNull()
+ 				{{- end}}
+			}
+			{{- end}}
+ 			if !nullInStateFound {
+				// when there are no null fields we can conclude the version supports all attributes in set
+				break
+			}
+		}
+	}
+	planSet, _ := types.SetValueFrom(ctx, {{.ResourceClassName}}{{.ParentHierarchy}}Type, planSetValues)
+	return planSet
+	
+}
+{{- end}}
 {{- end}}
 {{- range .Children}}
 	{{- template "childStructsAndAttributeTypes" . }}
@@ -2643,6 +2715,9 @@ var {{.ResourceClassName}}{{.ParentHierarchy}}Type = types.ObjectType{
     Computed:            true,
     PlanModifiers: []planmodifier.Set{
         setplanmodifier.UseStateForUnknown(),
+		{{- if excludeForNullInSetCheck .ResourceClassName}}
+		SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate({{.ResourceClassName}}{{.ParentHierarchy}}SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
+		{{- end}}
     },
     NestedObject: schema.NestedAttributeObject{
         Attributes: map[string]schema.Attribute{

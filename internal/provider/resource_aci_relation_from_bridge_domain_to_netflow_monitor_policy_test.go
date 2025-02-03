@@ -189,7 +189,14 @@ func TestAccResourceFvRsBDToNetflowMonitorPolWithFvBD(t *testing.T) {
 	})
 }
 
-const testConfigFvRsBDToNetflowMonitorPolMinDependencyWithFvBDAllowExisting = testConfigFvBDMinDependencyWithFvTenant + `
+const testDependencyConfigFvRsBDToNetflowMonitorPol = `
+resource "aci_netflow_monitor_policy" "test_netflow_monitor_policy_0" {
+  parent_dn = aci_tenant.test.id
+  name = "netflow_monitor_policy_name_1"
+}
+`
+
+const testConfigFvRsBDToNetflowMonitorPolMinDependencyWithFvBDAllowExisting = testDependencyConfigFvRsBDToNetflowMonitorPol + testConfigFvBDMinDependencyWithFvTenant + `
 resource "aci_relation_from_bridge_domain_to_netflow_monitor_policy" "allow_test" {
   parent_dn = aci_bridge_domain.test.id
   filter_type = "ipv4"
@@ -203,7 +210,7 @@ resource "aci_relation_from_bridge_domain_to_netflow_monitor_policy" "allow_test
 }
 `
 
-const testConfigFvRsBDToNetflowMonitorPolMinDependencyWithFvBD = testConfigFvBDMinDependencyWithFvTenant + `
+const testConfigFvRsBDToNetflowMonitorPolMinDependencyWithFvBD = testDependencyConfigFvRsBDToNetflowMonitorPol + testConfigFvBDMinDependencyWithFvTenant + `
 resource "aci_relation_from_bridge_domain_to_netflow_monitor_policy" "test" {
   parent_dn = aci_bridge_domain.test.id
   filter_type = "ipv4"
@@ -211,7 +218,7 @@ resource "aci_relation_from_bridge_domain_to_netflow_monitor_policy" "test" {
 }
 `
 
-const testConfigFvRsBDToNetflowMonitorPolAllDependencyWithFvBD = testConfigFvBDMinDependencyWithFvTenant + `
+const testConfigFvRsBDToNetflowMonitorPolAllDependencyWithFvBD = testDependencyConfigFvRsBDToNetflowMonitorPol + testConfigFvBDMinDependencyWithFvTenant + `
 resource "aci_relation_from_bridge_domain_to_netflow_monitor_policy" "test" {
   parent_dn = aci_bridge_domain.test.id
   netflow_monitor_policy_name = "test_tn_netflow_monitor_pol_name"
@@ -220,7 +227,7 @@ resource "aci_relation_from_bridge_domain_to_netflow_monitor_policy" "test" {
 }
 `
 
-const testConfigFvRsBDToNetflowMonitorPolResetDependencyWithFvBD = testConfigFvBDMinDependencyWithFvTenant + `
+const testConfigFvRsBDToNetflowMonitorPolResetDependencyWithFvBD = testDependencyConfigFvRsBDToNetflowMonitorPol + testConfigFvBDMinDependencyWithFvTenant + `
 resource "aci_relation_from_bridge_domain_to_netflow_monitor_policy" "test" {
   parent_dn = aci_bridge_domain.test.id
   netflow_monitor_policy_name = "test_tn_netflow_monitor_pol_name"
@@ -228,7 +235,7 @@ resource "aci_relation_from_bridge_domain_to_netflow_monitor_policy" "test" {
   filter_type = "ipv4"
 }
 `
-const testConfigFvRsBDToNetflowMonitorPolChildrenDependencyWithFvBD = testConfigFvBDMinDependencyWithFvTenant + `
+const testConfigFvRsBDToNetflowMonitorPolChildrenDependencyWithFvBD = testDependencyConfigFvRsBDToNetflowMonitorPol + testConfigFvBDMinDependencyWithFvTenant + `
 resource "aci_relation_from_bridge_domain_to_netflow_monitor_policy" "test" {
   parent_dn = aci_bridge_domain.test.id
   filter_type = "ipv4"
@@ -256,7 +263,7 @@ resource "aci_relation_from_bridge_domain_to_netflow_monitor_policy" "test" {
 }
 `
 
-const testConfigFvRsBDToNetflowMonitorPolChildrenRemoveFromConfigDependencyWithFvBD = testConfigFvBDMinDependencyWithFvTenant + `
+const testConfigFvRsBDToNetflowMonitorPolChildrenRemoveFromConfigDependencyWithFvBD = testDependencyConfigFvRsBDToNetflowMonitorPol + testConfigFvBDMinDependencyWithFvTenant + `
 resource "aci_relation_from_bridge_domain_to_netflow_monitor_policy" "test" {
   parent_dn = aci_bridge_domain.test.id
   filter_type = "ipv4"
@@ -264,7 +271,7 @@ resource "aci_relation_from_bridge_domain_to_netflow_monitor_policy" "test" {
 }
 `
 
-const testConfigFvRsBDToNetflowMonitorPolChildrenRemoveOneDependencyWithFvBD = testConfigFvBDMinDependencyWithFvTenant + `
+const testConfigFvRsBDToNetflowMonitorPolChildrenRemoveOneDependencyWithFvBD = testDependencyConfigFvRsBDToNetflowMonitorPol + testConfigFvBDMinDependencyWithFvTenant + `
 resource "aci_relation_from_bridge_domain_to_netflow_monitor_policy" "test" {
   parent_dn = aci_bridge_domain.test.id
   filter_type = "ipv4"
@@ -284,7 +291,7 @@ resource "aci_relation_from_bridge_domain_to_netflow_monitor_policy" "test" {
 }
 `
 
-const testConfigFvRsBDToNetflowMonitorPolChildrenRemoveAllDependencyWithFvBD = testConfigFvBDMinDependencyWithFvTenant + `
+const testConfigFvRsBDToNetflowMonitorPolChildrenRemoveAllDependencyWithFvBD = testDependencyConfigFvRsBDToNetflowMonitorPol + testConfigFvBDMinDependencyWithFvTenant + `
 resource "aci_relation_from_bridge_domain_to_netflow_monitor_policy" "test" {
   parent_dn = aci_bridge_domain.test.id
   filter_type = "ipv4"

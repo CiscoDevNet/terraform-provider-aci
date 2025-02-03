@@ -111,6 +111,10 @@ func (d *FvBDDataSource) Schema(ctx context.Context, req datasource.SchemaReques
 				ElementType:        types.StringType,
 				DeprecationMessage: "Attribute `relation_fv_rs_bd_flood_to` is deprecated. The attribute will be removed in the next major version of the provider.",
 			},
+			"relation_fv_rs_bd_to_profile": schema.StringAttribute{
+				Computed:           true,
+				DeprecationMessage: "Attribute `relation_fv_rs_bd_to_profile` is deprecated. The attribute will be removed in the next major version of the provider.",
+			},
 			"relation_fv_rs_bd_to_relay_p": schema.StringAttribute{
 				Computed:           true,
 				DeprecationMessage: "Attribute 'relation_fv_rs_bd_to_relay_p' is deprecated, please refer to 'relation_to_dhcp_relay_policy.dhcp_relay_policy_name' instead. The attribute will be removed in the next major version of the provider.",
@@ -143,10 +147,6 @@ func (d *FvBDDataSource) Schema(ctx context.Context, req datasource.SchemaReques
 			"relation_fv_rs_bd_to_nd_p": schema.StringAttribute{
 				Computed:           true,
 				DeprecationMessage: "Attribute 'relation_fv_rs_bd_to_nd_p' is deprecated, please refer to 'relation_to_neighbor_discovery_interface_policy.neighbor_discovery_interface_policy_name' instead. The attribute will be removed in the next major version of the provider.",
-			},
-			"relation_fv_rs_bd_to_profile": schema.StringAttribute{
-				Computed:           true,
-				DeprecationMessage: "Attribute 'relation_fv_rs_bd_to_profile' is deprecated, please refer to 'relation_to_route_control_profile.route_control_profile_name' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			"relation_fv_rs_ctx": schema.StringAttribute{
 				Computed:           true,

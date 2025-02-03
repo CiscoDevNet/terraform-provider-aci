@@ -138,6 +138,35 @@ var L3extRsLblToInstPL3extConsLblType = types.ObjectType{
 	},
 }
 
+func L3extRsLblToInstPL3extConsLblSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(ctx context.Context, planValue, stateValue types.Set) basetypes.SetValue {
+	//  Function is needed to handle the case that an attribute is not yet suppored in a version and gets set to null during read
+	var planSetValues, stateSetValues []L3extRsLblToInstPL3extConsLblResourceModel
+	stateValue.ElementsAs(ctx, &stateSetValues, false)
+	planValue.ElementsAs(ctx, &planSetValues, false)
+
+	// If the length of the state and plan values are different a change is already detected the loop can be skipped
+	if len(stateSetValues) == len(planSetValues) {
+		for index, stateValue := range stateSetValues {
+			nullInStateFound := false
+			if stateValue.Annotation.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Annotation = basetypes.NewStringNull()
+			}
+			if stateValue.TDn.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].TDn = basetypes.NewStringNull()
+			}
+			if !nullInStateFound {
+				// when there are no null fields we can conclude the version supports all attributes in set
+				break
+			}
+		}
+	}
+	planSet, _ := types.SetValueFrom(ctx, L3extRsLblToInstPL3extConsLblType, planSetValues)
+	return planSet
+
+}
+
 // TagAnnotationL3extRsLblToInstPL3extConsLblResourceModel describes the resource data model for the children without relation ships.
 type TagAnnotationL3extRsLblToInstPL3extConsLblResourceModel struct {
 	Key   types.String `tfsdk:"key"`
@@ -215,6 +244,39 @@ var L3extRsLblToProfileL3extConsLblType = types.ObjectType{
 		"annotations": types.SetType{ElemType: TagAnnotationL3extRsLblToProfileL3extConsLblType},
 		"tags":        types.SetType{ElemType: TagTagL3extRsLblToProfileL3extConsLblType},
 	},
+}
+
+func L3extRsLblToProfileL3extConsLblSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(ctx context.Context, planValue, stateValue types.Set) basetypes.SetValue {
+	//  Function is needed to handle the case that an attribute is not yet suppored in a version and gets set to null during read
+	var planSetValues, stateSetValues []L3extRsLblToProfileL3extConsLblResourceModel
+	stateValue.ElementsAs(ctx, &stateSetValues, false)
+	planValue.ElementsAs(ctx, &planSetValues, false)
+
+	// If the length of the state and plan values are different a change is already detected the loop can be skipped
+	if len(stateSetValues) == len(planSetValues) {
+		for index, stateValue := range stateSetValues {
+			nullInStateFound := false
+			if stateValue.Annotation.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Annotation = basetypes.NewStringNull()
+			}
+			if stateValue.Direction.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Direction = basetypes.NewStringNull()
+			}
+			if stateValue.TDn.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].TDn = basetypes.NewStringNull()
+			}
+			if !nullInStateFound {
+				// when there are no null fields we can conclude the version supports all attributes in set
+				break
+			}
+		}
+	}
+	planSet, _ := types.SetValueFrom(ctx, L3extRsLblToProfileL3extConsLblType, planSetValues)
+	return planSet
+
 }
 
 // TagAnnotationL3extRsLblToProfileL3extConsLblResourceModel describes the resource data model for the children without relation ships.
@@ -439,6 +501,7 @@ func (r *L3extConsLblResource) Schema(ctx context.Context, req resource.SchemaRe
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(L3extRsLblToInstPL3extConsLblSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
@@ -518,6 +581,7 @@ func (r *L3extConsLblResource) Schema(ctx context.Context, req resource.SchemaRe
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(L3extRsLblToProfileL3extConsLblSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{

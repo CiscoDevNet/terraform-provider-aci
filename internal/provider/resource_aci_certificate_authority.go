@@ -208,7 +208,7 @@ func (r *PkiTPResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
-					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 				},
 				Validators: []validator.Set{
 					setvalidator.SizeAtMost(2),

@@ -222,7 +222,7 @@ func (r *MldSnoopPolResource) Schema(ctx context.Context, req resource.SchemaReq
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
-					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 				},
 				Validators: []validator.Set{
 					setvalidator.SizeAtMost(4),

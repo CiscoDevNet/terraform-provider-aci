@@ -142,6 +142,137 @@ var templateFuncs = template.FuncMap{
 	"addToChild":                            AddToChildInTestTemplate,
 	"checkDeletableChild":                   CheckDeletableChild,
 	"emptyChild":                            EmptyChild,
+	"excludeForNullInSetCheck":              ExcludeForNullInSetCheck,
+	"getTestTargetValue":                    GetTestTargetValue,
+	"isReference":                           IsReference,
+	"getLegacyPropertyTestValue":            GetTestValue,
+	"getLegacyBlockTestValue":               GetBlockTestValue,
+}
+
+func getChildTarget(model Model, childKey, childValue string, tDn bool) string {
+
+	for index, childDependency := range model.ChildTestDependencies {
+		targetResourceName := childDependency.TargetResourceName
+		if !tDn {
+			if childKey == fmt.Sprintf("%s_name", targetResourceName) {
+				childKey = "name"
+			}
+			if result, ok := childDependency.Properties[childKey]; ok && childValue == result {
+				return fmt.Sprintf(`aci_%s.test_%s_%d.id`, targetResourceName, targetResourceName, index%2)
+			}
+		} else {
+			if childDependency.Source == childKey || DefinedInList(childDependency.SharedClasses, childKey) {
+				if !childDependency.Static {
+					return fmt.Sprintf(`aci_%s.test_%s_%d.id`, targetResourceName, targetResourceName, index%2)
+				} else {
+					return childDependency.TargetDn
+				}
+			}
+		}
+	}
+	return childValue
+}
+
+func GetBlockTestValue(className, attributeName string, model Model) string {
+	for _, child := range model.Children {
+		if child.PkgName == className {
+			if attributeName == "TargetDn" {
+				return getChildTarget(model, className, "target_dn_2", true)
+			}
+			for _, property := range child.Properties {
+				if property.Name == attributeName {
+					if len(property.ValidValues) > 0 {
+						childKey := GetOverwriteAttributeName(model.PkgName, property.SnakeCaseName, model.Definitions)
+						return GetOverwriteAttributeValue(child.PkgName, childKey, property.ValidValues[0], "legacy", 0, model.Definitions).(string)
+					} else if property.PropertyName == "tDn" {
+						return getChildTarget(model, className, "target_dn_1", true)
+					}
+					childKey := GetOverwriteAttributeName(child.PkgName, property.SnakeCaseName, model.Definitions)
+					childValue := GetOverwriteAttributeValue(child.PkgName, childKey, fmt.Sprintf("%s_1", childKey), "default", 0, model.Definitions).(string)
+					return getChildTarget(model, childKey, childValue, false)
+				}
+			}
+		}
+	}
+	return attributeName
+}
+
+func GetTestValue(name string, model Model) string {
+
+	for _, property := range model.Properties {
+		if property.Name == name {
+			childKey := GetOverwriteAttributeName(model.PkgName, property.SnakeCaseName, model.Definitions)
+			if len(property.ValidValues) > 0 {
+				return GetOverwriteAttributeValue(model.PkgName, childKey, property.ValidValues[0], "legacy", 0, model.Definitions).(string)
+			}
+			return GetOverwriteAttributeValue(model.PkgName, childKey, fmt.Sprintf("%s_1", childKey), "legacy", 0, model.Definitions).(string)
+		}
+	}
+
+	for _, child := range model.Children {
+		if Capitalize(child.PkgName) == name {
+			properties := []string{}
+			for _, property := range child.Properties {
+				if strings.HasSuffix(property.PropertyName, "Name") {
+					childKey := GetOverwriteAttributeName(child.PkgName, property.SnakeCaseName, model.Definitions)
+					childValue := GetOverwriteAttributeValue(child.PkgName, childKey, fmt.Sprintf("%s_1", childKey), "default", 0, model.Definitions).(string)
+					properties = append(properties, getChildTarget(model, childKey, childValue, false))
+				} else if property.PropertyName == "tDn" {
+					return getChildTarget(model, child.PkgName, "target_dn_0", true)
+				}
+			}
+			// If there are multiple properties that has suffix of Name, return the one that matches the child resource name
+			if len(properties) > 1 {
+				for _, property := range properties {
+					if strings.Contains(property, string(child.ChildResourceName[strings.Index(child.ChildResourceName, "_to_")+4])) {
+						return property
+					}
+				}
+			} else if len(properties) == 1 {
+				return properties[0]
+			}
+		}
+	}
+	if name == "ParentDn" {
+		if len(model.ContainedBy) > 0 {
+			parentResource := GetResourceName(model.ContainedBy[0], model.Definitions)
+			return fmt.Sprintf(`aci_%s.test.id`, parentResource)
+		}
+	}
+	return name
+}
+
+func GetTestTargetValue(targets []interface{}, key, value string) string {
+
+	for index, target := range targets {
+
+		var resourceName string
+		if targetResourceName, ok := target.(map[interface{}]interface{})["target_resource_name"]; ok {
+			resourceName = targetResourceName.(string)
+		}
+
+		if properties, ok := target.(map[interface{}]interface{})["properties"]; ok {
+
+			if key == fmt.Sprintf("%s_name", resourceName) {
+				key = "name"
+			}
+			if result, ok := properties.(map[interface{}]interface{})[key]; ok && value == result {
+				return fmt.Sprintf(`aci_%s.test_%s_%d.%s`, resourceName, resourceName, index%2, key)
+			}
+		}
+	}
+	return value
+}
+
+func ExcludeForNullInSetCheck(resourceClassName string) bool {
+	// Function to exclude TagTag and TagAnnotation from the null check in the Set function
+	// Done to reduce the amount of functions created which are not needed for these classes
+	// During refactor to struct per class which is reused in children this is not needed anymore
+	var childClasses []string
+	for _, child := range alwaysIncludeChildren {
+		childClasses = append(childClasses, Capitalize(strings.ReplaceAll(child, ":", "")))
+	}
+	return !slices.Contains(childClasses, resourceClassName)
 }
 
 func ContainsRequired(properties map[string]Property) bool {
@@ -407,6 +538,10 @@ func DefinedInList(list interface{}, item string) bool {
 
 func ContainsString(s, sub string) bool {
 	return strings.Contains(s, sub)
+}
+
+func IsReference(s string) bool {
+	return strings.HasPrefix(s, "aci_") || strings.HasPrefix(s, "data.aci_")
 }
 
 // Reused from https://github.com/buxizhizhoum/inflection/blob/master/inflection.go#L8 to avoid importing the whole package
@@ -1241,6 +1376,8 @@ type TypeChange struct {
 }
 
 type TestDependency struct {
+	Source                string
+	SharedClasses         interface{}
 	ClassName             string
 	ParentDependency      string
 	ParentDependencyDnRef string
@@ -2687,7 +2824,7 @@ func (m *Model) SetModelTestDependencies(classModels map[string]Model, definitio
 				for index, v := range value.([]interface{}) {
 					targetMap := v.(map[interface{}]interface{})
 					if className, ok := targetMap["class_name"]; ok {
-						testDependencies = append(testDependencies, getTestDependency(className.(string), targetMap, definitions, index))
+						testDependencies = append(testDependencies, getTestDependency(m.PkgName, className.(string), targetMap, definitions, index))
 					}
 				}
 			}
@@ -2702,7 +2839,7 @@ func (m *Model) SetModelTestDependencies(classModels map[string]Model, definitio
 					for index, v := range value.([]interface{}) {
 						targetMap := v.(map[interface{}]interface{})
 						if className, ok := targetMap["class_name"]; ok && !slices.Contains(m.getExcludeTargets(), className.(string)) {
-							childTestDependencies = append(childTestDependencies, getTestDependency(className.(string), targetMap, definitions, index))
+							childTestDependencies = append(childTestDependencies, getTestDependency(child, className.(string), targetMap, definitions, index))
 						}
 					}
 				}
@@ -2729,9 +2866,10 @@ func (m *Model) getExcludeTargets() []string {
 	return excludeTargets
 }
 
-func getTestDependency(className string, targetMap map[interface{}]interface{}, definitions Definitions, index int) TestDependency {
+func getTestDependency(sourceClassName, className string, targetMap map[interface{}]interface{}, definitions Definitions, index int) TestDependency {
 
 	testDependency := TestDependency{}
+	testDependency.Source = sourceClassName
 	testDependency.ClassName = className
 	testDependency.TargetResourceName = GetResourceName(className, definitions)
 	testDependency.RelationResourceName = testDependency.TargetResourceName
@@ -2741,9 +2879,17 @@ func getTestDependency(className string, targetMap map[interface{}]interface{}, 
 		testDependency.RelationResourceName = relationResourceName.(string)
 	}
 
+	if sharedClasses, ok := targetMap["shared_classes"]; ok {
+		testDependency.SharedClasses = sharedClasses
+	}
+
 	if parentDependency, ok := targetMap["parent_dependency"]; ok {
 		testDependency.ParentDependency = parentDependency.(string)
-		testDependency.ParentDependencyDnRef = fmt.Sprintf("%s_%s.test.id", providerName, GetResourceName(parentDependency.(string), definitions))
+		if parentDependencyDn, ok := targetMap["parent_dependency_dn_ref"]; ok {
+			testDependency.ParentDependencyDnRef = parentDependencyDn.(string)
+		} else {
+			testDependency.ParentDependencyDnRef = fmt.Sprintf("%s_%s.test.id", providerName, GetResourceName(parentDependency.(string), definitions))
+		}
 	}
 
 	if targetDn, ok := targetMap["target_dn"]; ok {

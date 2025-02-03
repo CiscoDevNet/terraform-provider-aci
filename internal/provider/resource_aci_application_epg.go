@@ -93,6 +93,7 @@ type FvAEPgResourceModel struct {
 	DeprecatedPrefGrMemb               types.String                      `tfsdk:"pref_gr_memb"`
 	DeprecatedPrio                     types.String                      `tfsdk:"prio"`
 	DeprecatedShutdown                 types.String                      `tfsdk:"shutdown"`
+	Deprecated_relation_fv_rs_path_att types.Set                         `tfsdk:"relation_fv_rs_path_att"`
 	Deprecated_relation_fv_rs_prov_def types.Set                         `tfsdk:"relation_fv_rs_prov_def"`
 	DeprecatedFvRsAEPgMonPol           types.String                      `tfsdk:"relation_fv_rs_aepg_mon_pol"`
 	DeprecatedFvRsBd                   types.String                      `tfsdk:"relation_fv_rs_bd"`
@@ -104,7 +105,6 @@ type FvAEPgResourceModel struct {
 	DeprecatedFvRsConsIf               types.Set                         `tfsdk:"relation_fv_rs_cons_if"`
 	DeprecatedFvRsIntraEpg             types.Set                         `tfsdk:"relation_fv_rs_intra_epg"`
 	DeprecatedFvRsProv                 types.Set                         `tfsdk:"relation_fv_rs_prov"`
-	DeprecatedFvRsPathAtt              types.Set                         `tfsdk:"relation_fv_rs_path_att"`
 	DeprecatedFvRsProtBy               types.Set                         `tfsdk:"relation_fv_rs_prot_by"`
 	DeprecatedFvRsTrustCtrl            types.String                      `tfsdk:"relation_fv_rs_trust_ctrl"`
 	DeprecatedFvRsNodeAtt              types.Set                         `tfsdk:"relation_fv_rs_node_att"`
@@ -315,6 +315,7 @@ func getEmptyFvAEPgResourceModel() *FvAEPgResourceModel {
 		DeprecatedPrefGrMemb:               types.String{},
 		DeprecatedPrio:                     types.String{},
 		DeprecatedShutdown:                 types.String{},
+		Deprecated_relation_fv_rs_path_att: types.SetNull(types.StringType),
 		Deprecated_relation_fv_rs_prov_def: types.SetNull(types.StringType),
 		DeprecatedFvRsAEPgMonPol:           types.String{},
 		DeprecatedFvRsBd:                   types.String{},
@@ -326,7 +327,6 @@ func getEmptyFvAEPgResourceModel() *FvAEPgResourceModel {
 		DeprecatedFvRsConsIf:               types.SetNull(types.StringType),
 		DeprecatedFvRsIntraEpg:             types.SetNull(types.StringType),
 		DeprecatedFvRsProv:                 types.SetNull(types.StringType),
-		DeprecatedFvRsPathAtt:              types.SetNull(types.StringType),
 		DeprecatedFvRsProtBy:               types.SetNull(types.StringType),
 		DeprecatedFvRsTrustCtrl:            types.String{},
 		DeprecatedFvRsNodeAtt:              types.SetNull(deprecatedFvRsNodeAttType),
@@ -615,6 +615,39 @@ var FvRsConsFvAEPgType = types.ObjectType{
 	},
 }
 
+func FvRsConsFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(ctx context.Context, planValue, stateValue types.Set) basetypes.SetValue {
+	//  Function is needed to handle the case that an attribute is not yet suppored in a version and gets set to null during read
+	var planSetValues, stateSetValues []FvRsConsFvAEPgResourceModel
+	stateValue.ElementsAs(ctx, &stateSetValues, false)
+	planValue.ElementsAs(ctx, &planSetValues, false)
+
+	// If the length of the state and plan values are different a change is already detected the loop can be skipped
+	if len(stateSetValues) == len(planSetValues) {
+		for index, stateValue := range stateSetValues {
+			nullInStateFound := false
+			if stateValue.Annotation.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Annotation = basetypes.NewStringNull()
+			}
+			if stateValue.Prio.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Prio = customTypes.NewFvRsConsPrioStringNull()
+			}
+			if stateValue.TnVzBrCPName.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].TnVzBrCPName = basetypes.NewStringNull()
+			}
+			if !nullInStateFound {
+				// when there are no null fields we can conclude the version supports all attributes in set
+				break
+			}
+		}
+	}
+	planSet, _ := types.SetValueFrom(ctx, FvRsConsFvAEPgType, planSetValues)
+	return planSet
+
+}
+
 // TagAnnotationFvRsConsFvAEPgResourceModel describes the resource data model for the children without relation ships.
 type TagAnnotationFvRsConsFvAEPgResourceModel struct {
 	Key   types.String `tfsdk:"key"`
@@ -692,6 +725,39 @@ var FvRsConsIfFvAEPgType = types.ObjectType{
 		"annotations":            types.SetType{ElemType: TagAnnotationFvRsConsIfFvAEPgType},
 		"tags":                   types.SetType{ElemType: TagTagFvRsConsIfFvAEPgType},
 	},
+}
+
+func FvRsConsIfFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(ctx context.Context, planValue, stateValue types.Set) basetypes.SetValue {
+	//  Function is needed to handle the case that an attribute is not yet suppored in a version and gets set to null during read
+	var planSetValues, stateSetValues []FvRsConsIfFvAEPgResourceModel
+	stateValue.ElementsAs(ctx, &stateSetValues, false)
+	planValue.ElementsAs(ctx, &planSetValues, false)
+
+	// If the length of the state and plan values are different a change is already detected the loop can be skipped
+	if len(stateSetValues) == len(planSetValues) {
+		for index, stateValue := range stateSetValues {
+			nullInStateFound := false
+			if stateValue.Annotation.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Annotation = basetypes.NewStringNull()
+			}
+			if stateValue.Prio.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Prio = customTypes.NewFvRsConsIfPrioStringNull()
+			}
+			if stateValue.TnVzCPIfName.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].TnVzCPIfName = basetypes.NewStringNull()
+			}
+			if !nullInStateFound {
+				// when there are no null fields we can conclude the version supports all attributes in set
+				break
+			}
+		}
+	}
+	planSet, _ := types.SetValueFrom(ctx, FvRsConsIfFvAEPgType, planSetValues)
+	return planSet
+
 }
 
 // TagAnnotationFvRsConsIfFvAEPgResourceModel describes the resource data model for the children without relation ships.
@@ -913,6 +979,127 @@ var FvRsDomAttFvAEPgType = types.ObjectType{
 	},
 }
 
+func FvRsDomAttFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(ctx context.Context, planValue, stateValue types.Set) basetypes.SetValue {
+	//  Function is needed to handle the case that an attribute is not yet suppored in a version and gets set to null during read
+	var planSetValues, stateSetValues []FvRsDomAttFvAEPgResourceModel
+	stateValue.ElementsAs(ctx, &stateSetValues, false)
+	planValue.ElementsAs(ctx, &planSetValues, false)
+
+	// If the length of the state and plan values are different a change is already detected the loop can be skipped
+	if len(stateSetValues) == len(planSetValues) {
+		for index, stateValue := range stateSetValues {
+			nullInStateFound := false
+			if stateValue.Annotation.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Annotation = basetypes.NewStringNull()
+			}
+			if stateValue.BindingType.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].BindingType = basetypes.NewStringNull()
+			}
+			if stateValue.ClassPref.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].ClassPref = basetypes.NewStringNull()
+			}
+			if stateValue.CustomEpgName.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].CustomEpgName = basetypes.NewStringNull()
+			}
+			if stateValue.Delimiter.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Delimiter = basetypes.NewStringNull()
+			}
+			if stateValue.Encap.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Encap = basetypes.NewStringNull()
+			}
+			if stateValue.EncapMode.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].EncapMode = basetypes.NewStringNull()
+			}
+			if stateValue.EpgCos.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].EpgCos = basetypes.NewStringNull()
+			}
+			if stateValue.EpgCosPref.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].EpgCosPref = basetypes.NewStringNull()
+			}
+			if stateValue.InstrImedcy.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].InstrImedcy = basetypes.NewStringNull()
+			}
+			if stateValue.IpamDhcpOverride.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].IpamDhcpOverride = basetypes.NewStringNull()
+			}
+			if stateValue.IpamEnabled.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].IpamEnabled = basetypes.NewStringNull()
+			}
+			if stateValue.IpamGateway.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].IpamGateway = basetypes.NewStringNull()
+			}
+			if stateValue.LagPolicyName.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].LagPolicyName = basetypes.NewStringNull()
+			}
+			if stateValue.NetflowDir.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].NetflowDir = basetypes.NewStringNull()
+			}
+			if stateValue.NetflowPref.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].NetflowPref = basetypes.NewStringNull()
+			}
+			if stateValue.NumPorts.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].NumPorts = basetypes.NewStringNull()
+			}
+			if stateValue.PortAllocation.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].PortAllocation = basetypes.NewStringNull()
+			}
+			if stateValue.PrimaryEncap.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].PrimaryEncap = basetypes.NewStringNull()
+			}
+			if stateValue.PrimaryEncapInner.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].PrimaryEncapInner = basetypes.NewStringNull()
+			}
+			if stateValue.ResImedcy.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].ResImedcy = basetypes.NewStringNull()
+			}
+			if stateValue.SecondaryEncapInner.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].SecondaryEncapInner = basetypes.NewStringNull()
+			}
+			if stateValue.SwitchingMode.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].SwitchingMode = basetypes.NewStringNull()
+			}
+			if stateValue.TDn.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].TDn = basetypes.NewStringNull()
+			}
+			if stateValue.Untagged.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Untagged = basetypes.NewStringNull()
+			}
+			if !nullInStateFound {
+				// when there are no null fields we can conclude the version supports all attributes in set
+				break
+			}
+		}
+	}
+	planSet, _ := types.SetValueFrom(ctx, FvRsDomAttFvAEPgType, planSetValues)
+	return planSet
+
+}
+
 // TagAnnotationFvRsDomAttFvAEPgResourceModel describes the resource data model for the children without relation ships.
 type TagAnnotationFvRsDomAttFvAEPgResourceModel struct {
 	Key   types.String `tfsdk:"key"`
@@ -1072,6 +1259,47 @@ var FvRsFcPathAttFvAEPgType = types.ObjectType{
 	},
 }
 
+func FvRsFcPathAttFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(ctx context.Context, planValue, stateValue types.Set) basetypes.SetValue {
+	//  Function is needed to handle the case that an attribute is not yet suppored in a version and gets set to null during read
+	var planSetValues, stateSetValues []FvRsFcPathAttFvAEPgResourceModel
+	stateValue.ElementsAs(ctx, &stateSetValues, false)
+	planValue.ElementsAs(ctx, &planSetValues, false)
+
+	// If the length of the state and plan values are different a change is already detected the loop can be skipped
+	if len(stateSetValues) == len(planSetValues) {
+		for index, stateValue := range stateSetValues {
+			nullInStateFound := false
+			if stateValue.Annotation.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Annotation = basetypes.NewStringNull()
+			}
+			if stateValue.Descr.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Descr = basetypes.NewStringNull()
+			}
+			if stateValue.TDn.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].TDn = basetypes.NewStringNull()
+			}
+			if stateValue.Vsan.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Vsan = basetypes.NewStringNull()
+			}
+			if stateValue.VsanMode.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].VsanMode = basetypes.NewStringNull()
+			}
+			if !nullInStateFound {
+				// when there are no null fields we can conclude the version supports all attributes in set
+				break
+			}
+		}
+	}
+	planSet, _ := types.SetValueFrom(ctx, FvRsFcPathAttFvAEPgType, planSetValues)
+	return planSet
+
+}
+
 // TagAnnotationFvRsFcPathAttFvAEPgResourceModel describes the resource data model for the children without relation ships.
 type TagAnnotationFvRsFcPathAttFvAEPgResourceModel struct {
 	Key   types.String `tfsdk:"key"`
@@ -1146,6 +1374,35 @@ var FvRsIntraEpgFvAEPgType = types.ObjectType{
 		"annotations":   types.SetType{ElemType: TagAnnotationFvRsIntraEpgFvAEPgType},
 		"tags":          types.SetType{ElemType: TagTagFvRsIntraEpgFvAEPgType},
 	},
+}
+
+func FvRsIntraEpgFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(ctx context.Context, planValue, stateValue types.Set) basetypes.SetValue {
+	//  Function is needed to handle the case that an attribute is not yet suppored in a version and gets set to null during read
+	var planSetValues, stateSetValues []FvRsIntraEpgFvAEPgResourceModel
+	stateValue.ElementsAs(ctx, &stateSetValues, false)
+	planValue.ElementsAs(ctx, &planSetValues, false)
+
+	// If the length of the state and plan values are different a change is already detected the loop can be skipped
+	if len(stateSetValues) == len(planSetValues) {
+		for index, stateValue := range stateSetValues {
+			nullInStateFound := false
+			if stateValue.Annotation.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Annotation = basetypes.NewStringNull()
+			}
+			if stateValue.TnVzBrCPName.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].TnVzBrCPName = basetypes.NewStringNull()
+			}
+			if !nullInStateFound {
+				// when there are no null fields we can conclude the version supports all attributes in set
+				break
+			}
+		}
+	}
+	planSet, _ := types.SetValueFrom(ctx, FvRsIntraEpgFvAEPgType, planSetValues)
+	return planSet
+
 }
 
 // TagAnnotationFvRsIntraEpgFvAEPgResourceModel describes the resource data model for the children without relation ships.
@@ -1234,6 +1491,51 @@ var FvRsNodeAttFvAEPgType = types.ObjectType{
 		"annotations":          types.SetType{ElemType: TagAnnotationFvRsNodeAttFvAEPgType},
 		"tags":                 types.SetType{ElemType: TagTagFvRsNodeAttFvAEPgType},
 	},
+}
+
+func FvRsNodeAttFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(ctx context.Context, planValue, stateValue types.Set) basetypes.SetValue {
+	//  Function is needed to handle the case that an attribute is not yet suppored in a version and gets set to null during read
+	var planSetValues, stateSetValues []FvRsNodeAttFvAEPgResourceModel
+	stateValue.ElementsAs(ctx, &stateSetValues, false)
+	planValue.ElementsAs(ctx, &planSetValues, false)
+
+	// If the length of the state and plan values are different a change is already detected the loop can be skipped
+	if len(stateSetValues) == len(planSetValues) {
+		for index, stateValue := range stateSetValues {
+			nullInStateFound := false
+			if stateValue.Annotation.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Annotation = basetypes.NewStringNull()
+			}
+			if stateValue.Descr.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Descr = basetypes.NewStringNull()
+			}
+			if stateValue.Encap.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Encap = basetypes.NewStringNull()
+			}
+			if stateValue.InstrImedcy.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].InstrImedcy = basetypes.NewStringNull()
+			}
+			if stateValue.Mode.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Mode = basetypes.NewStringNull()
+			}
+			if stateValue.TDn.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].TDn = basetypes.NewStringNull()
+			}
+			if !nullInStateFound {
+				// when there are no null fields we can conclude the version supports all attributes in set
+				break
+			}
+		}
+	}
+	planSet, _ := types.SetValueFrom(ctx, FvRsNodeAttFvAEPgType, planSetValues)
+	return planSet
+
 }
 
 // TagAnnotationFvRsNodeAttFvAEPgResourceModel describes the resource data model for the children without relation ships.
@@ -1327,6 +1629,55 @@ var FvRsPathAttFvAEPgType = types.ObjectType{
 	},
 }
 
+func FvRsPathAttFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(ctx context.Context, planValue, stateValue types.Set) basetypes.SetValue {
+	//  Function is needed to handle the case that an attribute is not yet suppored in a version and gets set to null during read
+	var planSetValues, stateSetValues []FvRsPathAttFvAEPgResourceModel
+	stateValue.ElementsAs(ctx, &stateSetValues, false)
+	planValue.ElementsAs(ctx, &planSetValues, false)
+
+	// If the length of the state and plan values are different a change is already detected the loop can be skipped
+	if len(stateSetValues) == len(planSetValues) {
+		for index, stateValue := range stateSetValues {
+			nullInStateFound := false
+			if stateValue.Annotation.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Annotation = basetypes.NewStringNull()
+			}
+			if stateValue.Descr.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Descr = basetypes.NewStringNull()
+			}
+			if stateValue.Encap.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Encap = basetypes.NewStringNull()
+			}
+			if stateValue.InstrImedcy.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].InstrImedcy = basetypes.NewStringNull()
+			}
+			if stateValue.Mode.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Mode = basetypes.NewStringNull()
+			}
+			if stateValue.PrimaryEncap.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].PrimaryEncap = basetypes.NewStringNull()
+			}
+			if stateValue.TDn.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].TDn = basetypes.NewStringNull()
+			}
+			if !nullInStateFound {
+				// when there are no null fields we can conclude the version supports all attributes in set
+				break
+			}
+		}
+	}
+	planSet, _ := types.SetValueFrom(ctx, FvRsPathAttFvAEPgType, planSetValues)
+	return planSet
+
+}
+
 // TagAnnotationFvRsPathAttFvAEPgResourceModel describes the resource data model for the children without relation ships.
 type TagAnnotationFvRsPathAttFvAEPgResourceModel struct {
 	Key   types.String `tfsdk:"key"`
@@ -1401,6 +1752,35 @@ var FvRsProtByFvAEPgType = types.ObjectType{
 		"annotations":         types.SetType{ElemType: TagAnnotationFvRsProtByFvAEPgType},
 		"tags":                types.SetType{ElemType: TagTagFvRsProtByFvAEPgType},
 	},
+}
+
+func FvRsProtByFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(ctx context.Context, planValue, stateValue types.Set) basetypes.SetValue {
+	//  Function is needed to handle the case that an attribute is not yet suppored in a version and gets set to null during read
+	var planSetValues, stateSetValues []FvRsProtByFvAEPgResourceModel
+	stateValue.ElementsAs(ctx, &stateSetValues, false)
+	planValue.ElementsAs(ctx, &planSetValues, false)
+
+	// If the length of the state and plan values are different a change is already detected the loop can be skipped
+	if len(stateSetValues) == len(planSetValues) {
+		for index, stateValue := range stateSetValues {
+			nullInStateFound := false
+			if stateValue.Annotation.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Annotation = basetypes.NewStringNull()
+			}
+			if stateValue.TnVzTabooName.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].TnVzTabooName = basetypes.NewStringNull()
+			}
+			if !nullInStateFound {
+				// when there are no null fields we can conclude the version supports all attributes in set
+				break
+			}
+		}
+	}
+	planSet, _ := types.SetValueFrom(ctx, FvRsProtByFvAEPgType, planSetValues)
+	return planSet
+
 }
 
 // TagAnnotationFvRsProtByFvAEPgResourceModel describes the resource data model for the children without relation ships.
@@ -1485,6 +1865,43 @@ var FvRsProvFvAEPgType = types.ObjectType{
 	},
 }
 
+func FvRsProvFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(ctx context.Context, planValue, stateValue types.Set) basetypes.SetValue {
+	//  Function is needed to handle the case that an attribute is not yet suppored in a version and gets set to null during read
+	var planSetValues, stateSetValues []FvRsProvFvAEPgResourceModel
+	stateValue.ElementsAs(ctx, &stateSetValues, false)
+	planValue.ElementsAs(ctx, &planSetValues, false)
+
+	// If the length of the state and plan values are different a change is already detected the loop can be skipped
+	if len(stateSetValues) == len(planSetValues) {
+		for index, stateValue := range stateSetValues {
+			nullInStateFound := false
+			if stateValue.Annotation.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Annotation = basetypes.NewStringNull()
+			}
+			if stateValue.MatchT.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].MatchT = basetypes.NewStringNull()
+			}
+			if stateValue.Prio.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Prio = customTypes.NewFvRsProvPrioStringNull()
+			}
+			if stateValue.TnVzBrCPName.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].TnVzBrCPName = basetypes.NewStringNull()
+			}
+			if !nullInStateFound {
+				// when there are no null fields we can conclude the version supports all attributes in set
+				break
+			}
+		}
+	}
+	planSet, _ := types.SetValueFrom(ctx, FvRsProvFvAEPgType, planSetValues)
+	return planSet
+
+}
+
 // TagAnnotationFvRsProvFvAEPgResourceModel describes the resource data model for the children without relation ships.
 type TagAnnotationFvRsProvFvAEPgResourceModel struct {
 	Key   types.String `tfsdk:"key"`
@@ -1559,6 +1976,35 @@ var FvRsSecInheritedFvAEPgType = types.ObjectType{
 		"annotations": types.SetType{ElemType: TagAnnotationFvRsSecInheritedFvAEPgType},
 		"tags":        types.SetType{ElemType: TagTagFvRsSecInheritedFvAEPgType},
 	},
+}
+
+func FvRsSecInheritedFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(ctx context.Context, planValue, stateValue types.Set) basetypes.SetValue {
+	//  Function is needed to handle the case that an attribute is not yet suppored in a version and gets set to null during read
+	var planSetValues, stateSetValues []FvRsSecInheritedFvAEPgResourceModel
+	stateValue.ElementsAs(ctx, &stateSetValues, false)
+	planValue.ElementsAs(ctx, &planSetValues, false)
+
+	// If the length of the state and plan values are different a change is already detected the loop can be skipped
+	if len(stateSetValues) == len(planSetValues) {
+		for index, stateValue := range stateSetValues {
+			nullInStateFound := false
+			if stateValue.Annotation.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Annotation = basetypes.NewStringNull()
+			}
+			if stateValue.TDn.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].TDn = basetypes.NewStringNull()
+			}
+			if !nullInStateFound {
+				// when there are no null fields we can conclude the version supports all attributes in set
+				break
+			}
+		}
+	}
+	planSet, _ := types.SetValueFrom(ctx, FvRsSecInheritedFvAEPgType, planSetValues)
+	return planSet
+
 }
 
 // TagAnnotationFvRsSecInheritedFvAEPgResourceModel describes the resource data model for the children without relation ships.
@@ -1746,6 +2192,7 @@ type FvAEPgResourceModelV1 struct {
 	PrefGrMemb                         types.String `tfsdk:"pref_gr_memb"`
 	Prio                               types.String `tfsdk:"prio"`
 	Shutdown                           types.String `tfsdk:"shutdown"`
+	Deprecated_relation_fv_rs_path_att types.Set    `tfsdk:"relation_fv_rs_path_att"`
 	Deprecated_relation_fv_rs_prov_def types.Set    `tfsdk:"relation_fv_rs_prov_def"`
 	FvRsAEPgMonPol                     types.String `tfsdk:"relation_fv_rs_aepg_mon_pol"`
 	FvRsBd                             types.String `tfsdk:"relation_fv_rs_bd"`
@@ -1757,7 +2204,6 @@ type FvAEPgResourceModelV1 struct {
 	FvRsConsIf                         types.Set    `tfsdk:"relation_fv_rs_cons_if"`
 	FvRsIntraEpg                       types.Set    `tfsdk:"relation_fv_rs_intra_epg"`
 	FvRsProv                           types.Set    `tfsdk:"relation_fv_rs_prov"`
-	FvRsPathAtt                        types.Set    `tfsdk:"relation_fv_rs_path_att"`
 	FvRsProtBy                         types.Set    `tfsdk:"relation_fv_rs_prot_by"`
 	FvRsTrustCtrl                      types.String `tfsdk:"relation_fv_rs_trust_ctrl"`
 	FvRsNodeAtt                        types.Set    `tfsdk:"relation_fv_rs_node_att"`
@@ -1769,6 +2215,16 @@ type FvRsNodeAttFvAEPgResourceModelV1 struct {
 	Encap       types.String `tfsdk:"encap"`
 	Mode        types.String `tfsdk:"mode"`
 	TDn         types.String `tfsdk:"node_dn"`
+}
+
+func getEmptyFvRsNodeAttFvAEPgResourceModelV1() FvRsNodeAttFvAEPgResourceModelV1 {
+	return FvRsNodeAttFvAEPgResourceModelV1{
+		InstrImedcy: basetypes.NewStringNull(),
+		Descr:       basetypes.NewStringNull(),
+		Encap:       basetypes.NewStringNull(),
+		Mode:        basetypes.NewStringNull(),
+		TDn:         basetypes.NewStringNull(),
+	}
 }
 
 func (r *FvAEPgResource) UpgradeState(ctx context.Context) map[int64]resource.StateUpgrader {
@@ -1856,6 +2312,12 @@ func (r *FvAEPgResource) UpgradeState(ctx context.Context) map[int64]resource.St
 						Optional: true,
 						Computed: true,
 					},
+					"relation_fv_rs_path_att": schema.SetAttribute{
+						Required:    false,
+						Optional:    true,
+						Computed:    false,
+						ElementType: types.StringType,
+					},
 					"relation_fv_rs_prov_def": schema.SetAttribute{
 						Required:    false,
 						Optional:    true,
@@ -1913,12 +2375,6 @@ func (r *FvAEPgResource) UpgradeState(ctx context.Context) map[int64]resource.St
 						ElementType: types.StringType,
 					},
 					"relation_fv_rs_prov": schema.SetAttribute{
-						Required:    false,
-						Optional:    true,
-						Computed:    false,
-						ElementType: types.StringType,
-					},
-					"relation_fv_rs_path_att": schema.SetAttribute{
 						Required:    false,
 						Optional:    true,
 						Computed:    false,
@@ -2009,6 +2465,7 @@ func (r *FvAEPgResource) UpgradeState(ctx context.Context) map[int64]resource.St
 					DeprecatedPrefGrMemb:               priorStateData.PrefGrMemb,
 					DeprecatedPrio:                     priorStateData.Prio,
 					DeprecatedShutdown:                 priorStateData.Shutdown,
+					Deprecated_relation_fv_rs_path_att: priorStateData.Deprecated_relation_fv_rs_path_att,
 					Deprecated_relation_fv_rs_prov_def: priorStateData.Deprecated_relation_fv_rs_prov_def,
 					DeprecatedFvRsAEPgMonPol:           priorStateData.FvRsAEPgMonPol,
 					DeprecatedFvRsBd:                   priorStateData.FvRsBd,
@@ -2261,34 +2718,21 @@ func (r *FvAEPgResource) UpgradeState(ctx context.Context) map[int64]resource.St
 				FvRsNodeAttSet, _ := types.SetValueFrom(ctx, FvRsNodeAttFvAEPgType, FvRsNodeAttList)
 				upgradedStateData.FvRsNodeAtt = FvRsNodeAttSet
 
-				FvRsPathAttList := make([]FvRsPathAttFvAEPgResourceModel, 0)
-				var priorStateDataFvRsPathAttList []string
-				priorStateData.FvRsPathAtt.ElementsAs(ctx, &priorStateDataFvRsPathAttList, false)
-				for _, priorStateDataFvRsPathAtt := range priorStateDataFvRsPathAttList {
-					FvRsPathAtt := FvRsPathAttFvAEPgResourceModel{
-						Annotation:   basetypes.NewStringNull(),
-						Descr:        basetypes.NewStringNull(),
-						InstrImedcy:  basetypes.NewStringNull(),
-						Mode:         basetypes.NewStringNull(),
-						PrimaryEncap: basetypes.NewStringNull(),
-						TDn:          basetypes.NewStringValue(priorStateDataFvRsPathAtt),
-						TagAnnotation: basetypes.NewSetNull(types.ObjectType{
-							AttrTypes: map[string]attr.Type{
-								"key":   types.StringType,
-								"value": types.StringType,
-							},
-						}),
-						TagTag: basetypes.NewSetNull(types.ObjectType{
-							AttrTypes: map[string]attr.Type{
-								"key":   types.StringType,
-								"value": types.StringType,
-							},
-						}),
-					}
-					FvRsPathAttList = append(FvRsPathAttList, FvRsPathAtt)
-				}
-				FvRsPathAttSet, _ := types.SetValueFrom(ctx, FvRsPathAttFvAEPgType, FvRsPathAttList)
-				upgradedStateData.FvRsPathAtt = FvRsPathAttSet
+				upgradedStateData.FvRsPathAtt = types.SetNull(
+					types.ObjectType{
+						AttrTypes: map[string]attr.Type{
+							"annotation":            basetypes.StringType{},
+							"description":           basetypes.StringType{},
+							"encapsulation":         basetypes.StringType{},
+							"deployment_immediacy":  basetypes.StringType{},
+							"mode":                  basetypes.StringType{},
+							"primary_encapsulation": basetypes.StringType{},
+							"target_dn":             basetypes.StringType{},
+							"annotations":           basetypes.SetType{ElemType: TagAnnotationFvRsPathAttFvAEPgType},
+							"tags":                  basetypes.SetType{ElemType: TagTagFvRsPathAttFvAEPgType},
+						},
+					},
+				)
 
 				FvRsProtByList := make([]FvRsProtByFvAEPgResourceModel, 0)
 				var priorStateDataFvRsProtByList []string
@@ -2432,11 +2876,6 @@ func (r *FvAEPgResource) UpgradeState(ctx context.Context) map[int64]resource.St
 				DeprecatedFvRsProvSet, _ := types.SetValueFrom(ctx, types.StringType, deprecatedFvRsProvList)
 				upgradedStateData.DeprecatedFvRsProv = DeprecatedFvRsProvSet
 
-				var deprecatedFvRsPathAttList []string
-				priorStateData.FvRsPathAtt.ElementsAs(ctx, &deprecatedFvRsPathAttList, false)
-				DeprecatedFvRsPathAttSet, _ := types.SetValueFrom(ctx, types.StringType, deprecatedFvRsPathAttList)
-				upgradedStateData.DeprecatedFvRsPathAtt = DeprecatedFvRsPathAttSet
-
 				var deprecatedFvRsProtByList []string
 				priorStateData.FvRsProtBy.ElementsAs(ctx, &deprecatedFvRsProtByList, false)
 				DeprecatedFvRsProtBySet, _ := types.SetValueFrom(ctx, types.StringType, deprecatedFvRsProtByList)
@@ -2455,6 +2894,12 @@ func (r *FvAEPgResource) UpgradeState(ctx context.Context) map[int64]resource.St
 
 func setFvAEPgLegacyAttributes(ctx context.Context, diags *diag.Diagnostics, data, staticData *FvAEPgResourceModel, classReadInfo []interface{}) {
 	data.DeprecatedParentDn = data.ParentDn
+	if !staticData.Deprecated_relation_fv_rs_path_att.IsUnknown() && !staticData.Deprecated_relation_fv_rs_path_att.IsNull() {
+		data.Deprecated_relation_fv_rs_path_att = staticData.Deprecated_relation_fv_rs_path_att
+	} else {
+		Deprecated_relation_fv_rs_path_attSet, _ := types.SetValueFrom(ctx, types.StringType, []string{})
+		data.Deprecated_relation_fv_rs_path_att = Deprecated_relation_fv_rs_path_attSet
+	}
 	if !staticData.Deprecated_relation_fv_rs_prov_def.IsUnknown() && !staticData.Deprecated_relation_fv_rs_prov_def.IsNull() {
 		data.Deprecated_relation_fv_rs_prov_def = staticData.Deprecated_relation_fv_rs_prov_def
 	} else {
@@ -2504,7 +2949,7 @@ func setFvAEPgLegacyAttributes(ctx context.Context, diags *diag.Diagnostics, dat
 	data.DeprecatedFvRsDppPol = basetypes.NewStringNull()
 	DeprecatedFvRsFcPathAttFvAEPgList := make([]string, 0)
 	DeprecatedFvRsIntraEpgFvAEPgList := make([]string, 0)
-	DeprecatedFvRsPathAttFvAEPgList := make([]string, 0)
+	DeprecatedFvRsNodeAttFvAEPgList := make([]FvRsNodeAttFvAEPgResourceModelV1, 0)
 	DeprecatedFvRsProtByFvAEPgList := make([]string, 0)
 	DeprecatedFvRsProvFvAEPgList := make([]string, 0)
 	DeprecatedFvRsSecInheritedFvAEPgList := make([]string, 0)
@@ -2572,12 +3017,26 @@ func setFvAEPgLegacyAttributes(ctx context.Context, diags *diag.Diagnostics, dat
 						}
 					}
 				}
-				if childClassName == "fvRsPathAtt" {
+				if childClassName == "fvRsNodeAtt" {
+					DeprecatedFvRsNodeAttFvAEPg := getEmptyFvRsNodeAttFvAEPgResourceModelV1()
 					for childAttributeName, childAttributeValue := range childAttributes {
-						if childAttributeName == "tDn" && childAttributeValue != "" && !ContainsString(DeprecatedFvRsPathAttFvAEPgList, childAttributeValue.(string)) {
-							DeprecatedFvRsPathAttFvAEPgList = append(DeprecatedFvRsPathAttFvAEPgList, childAttributeValue.(string))
+						if childAttributeName == "descr" {
+							DeprecatedFvRsNodeAttFvAEPg.Descr = basetypes.NewStringValue(childAttributeValue.(string))
+						}
+						if childAttributeName == "encap" {
+							DeprecatedFvRsNodeAttFvAEPg.Encap = basetypes.NewStringValue(childAttributeValue.(string))
+						}
+						if childAttributeName == "instrImedcy" {
+							DeprecatedFvRsNodeAttFvAEPg.InstrImedcy = basetypes.NewStringValue(childAttributeValue.(string))
+						}
+						if childAttributeName == "mode" {
+							DeprecatedFvRsNodeAttFvAEPg.Mode = basetypes.NewStringValue(childAttributeValue.(string))
+						}
+						if childAttributeName == "tDn" {
+							DeprecatedFvRsNodeAttFvAEPg.TDn = basetypes.NewStringValue(childAttributeValue.(string))
 						}
 					}
+					DeprecatedFvRsNodeAttFvAEPgList = append(DeprecatedFvRsNodeAttFvAEPgList, DeprecatedFvRsNodeAttFvAEPg)
 				}
 				if childClassName == "fvRsProtBy" {
 					for childAttributeName, childAttributeValue := range childAttributes {
@@ -2617,9 +3076,8 @@ func setFvAEPgLegacyAttributes(ctx context.Context, diags *diag.Diagnostics, dat
 		data.DeprecatedFvRsFcPathAtt = fvRsFcPathAttSet
 		fvRsIntraEpgSet, _ := types.SetValueFrom(ctx, data.DeprecatedFvRsIntraEpg.ElementType(ctx), DeprecatedFvRsIntraEpgFvAEPgList)
 		data.DeprecatedFvRsIntraEpg = fvRsIntraEpgSet
-		data.DeprecatedFvRsNodeAtt = types.SetNull(deprecatedFvRsNodeAttType)
-		fvRsPathAttSet, _ := types.SetValueFrom(ctx, data.DeprecatedFvRsPathAtt.ElementType(ctx), DeprecatedFvRsPathAttFvAEPgList)
-		data.DeprecatedFvRsPathAtt = fvRsPathAttSet
+		fvRsNodeAttSet, _ := types.SetValueFrom(ctx, data.DeprecatedFvRsNodeAtt.ElementType(ctx), DeprecatedFvRsNodeAttFvAEPgList)
+		data.DeprecatedFvRsNodeAtt = fvRsNodeAttSet
 		fvRsProtBySet, _ := types.SetValueFrom(ctx, data.DeprecatedFvRsProtBy.ElementType(ctx), DeprecatedFvRsProtByFvAEPgList)
 		data.DeprecatedFvRsProtBy = fvRsProtBySet
 		fvRsProvSet, _ := types.SetValueFrom(ctx, data.DeprecatedFvRsProv.ElementType(ctx), DeprecatedFvRsProvFvAEPgList)
@@ -2687,124 +3145,56 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 			}
 		}
 
-		if !configData.ExceptionTag.IsNull() {
-			planData.DeprecatedExceptionTag = configData.ExceptionTag
-		} else if !configData.DeprecatedExceptionTag.IsNull() {
+		if !configData.DeprecatedExceptionTag.IsNull() {
 			planData.ExceptionTag = configData.DeprecatedExceptionTag
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedExceptionTag = stateData.DeprecatedExceptionTag
 		}
 
-		if !configData.FloodOnEncap.IsNull() {
-			planData.DeprecatedFloodOnEncap = configData.FloodOnEncap
-		} else if !configData.DeprecatedFloodOnEncap.IsNull() {
+		if !configData.DeprecatedFloodOnEncap.IsNull() {
 			planData.FloodOnEncap = configData.DeprecatedFloodOnEncap
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedFloodOnEncap = stateData.DeprecatedFloodOnEncap
 		}
 
-		if !configData.FwdCtrl.IsNull() {
-			planData.DeprecatedFwdCtrl = configData.FwdCtrl
-		} else if !configData.DeprecatedFwdCtrl.IsNull() {
+		if !configData.DeprecatedFwdCtrl.IsNull() {
 			planData.FwdCtrl = configData.DeprecatedFwdCtrl
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedFwdCtrl = stateData.DeprecatedFwdCtrl
 		}
 
-		if !configData.HasMcastSource.IsNull() {
-			planData.DeprecatedHasMcastSource = configData.HasMcastSource
-		} else if !configData.DeprecatedHasMcastSource.IsNull() {
+		if !configData.DeprecatedHasMcastSource.IsNull() {
 			planData.HasMcastSource = configData.DeprecatedHasMcastSource
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedHasMcastSource = stateData.DeprecatedHasMcastSource
 		}
 
-		if !configData.IsAttrBasedEPg.IsNull() {
-			planData.DeprecatedIsAttrBasedEPg = configData.IsAttrBasedEPg
-		} else if !configData.DeprecatedIsAttrBasedEPg.IsNull() {
+		if !configData.DeprecatedIsAttrBasedEPg.IsNull() {
 			planData.IsAttrBasedEPg = configData.DeprecatedIsAttrBasedEPg
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedIsAttrBasedEPg = stateData.DeprecatedIsAttrBasedEPg
 		}
 
-		if !configData.MatchT.IsNull() {
-			planData.DeprecatedMatchT = configData.MatchT
-		} else if !configData.DeprecatedMatchT.IsNull() {
+		if !configData.DeprecatedMatchT.IsNull() {
 			planData.MatchT = configData.DeprecatedMatchT
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedMatchT = stateData.DeprecatedMatchT
 		}
 
-		if !configData.ParentDn.IsNull() {
-			planData.DeprecatedParentDn = configData.ParentDn
-		} else if !configData.DeprecatedParentDn.IsNull() {
+		if !configData.DeprecatedParentDn.IsNull() {
 			planData.ParentDn = configData.DeprecatedParentDn
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedParentDn = stateData.DeprecatedParentDn
 		}
 
-		if !configData.PcEnfPref.IsNull() {
-			planData.DeprecatedPcEnfPref = configData.PcEnfPref
-		} else if !configData.DeprecatedPcEnfPref.IsNull() {
+		if !configData.DeprecatedPcEnfPref.IsNull() {
 			planData.PcEnfPref = configData.DeprecatedPcEnfPref
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedPcEnfPref = stateData.DeprecatedPcEnfPref
 		}
 
-		if !configData.PrefGrMemb.IsNull() {
-			planData.DeprecatedPrefGrMemb = configData.PrefGrMemb
-		} else if !configData.DeprecatedPrefGrMemb.IsNull() {
+		if !configData.DeprecatedPrefGrMemb.IsNull() {
 			planData.PrefGrMemb = configData.DeprecatedPrefGrMemb
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedPrefGrMemb = stateData.DeprecatedPrefGrMemb
 		}
 
-		if !configData.Prio.IsNull() {
-			matchMap := map[string]string{
-				"0": "unspecified",
-				"1": "level3",
-				"2": "level2",
-				"3": "level1",
-				"7": "level6",
-				"8": "level5",
-				"9": "level4",
-			}
-			if configDataPrio, ok := matchMap[configData.Prio.ValueString()]; ok {
-				planData.DeprecatedPrio = basetypes.NewStringValue(configDataPrio)
-			} else {
-				planData.DeprecatedPrio = configData.Prio.StringValue
-			}
-		} else if !configData.DeprecatedPrio.IsNull() {
+		if !configData.DeprecatedPrio.IsNull() {
 			planData.Prio = customTypes.FvAEPgPrioStringValue{StringValue: configData.DeprecatedPrio}
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedPrio = stateData.DeprecatedPrio
 		}
 
-		if !configData.Shutdown.IsNull() {
-			planData.DeprecatedShutdown = configData.Shutdown
-		} else if !configData.DeprecatedShutdown.IsNull() {
+		if !configData.DeprecatedShutdown.IsNull() {
 			planData.Shutdown = configData.DeprecatedShutdown
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedShutdown = stateData.DeprecatedShutdown
 		}
 
-		if !configData.FvRsAEPgMonPol.IsNull() && stateData != nil {
-			if IsEmptySingleNestedAttribute(configData.FvRsAEPgMonPol.Attributes()) {
-				planData.FvRsAEPgMonPol = configData.FvRsAEPgMonPol
-				planData.DeprecatedFvRsAEPgMonPol = basetypes.NewStringNull()
-			} else {
-				var attributeValues FvRsAEPgMonPolFvAEPgResourceModel
-				configData.FvRsAEPgMonPol.As(ctx, &attributeValues, basetypes.ObjectAsOptions{})
-				if GetMOName(stateData.DeprecatedFvRsAEPgMonPol.ValueString()) == attributeValues.TnMonEPGPolName.ValueString() && !attributeValues.TnMonEPGPolName.IsNull() {
-					planData.DeprecatedFvRsAEPgMonPol = stateData.DeprecatedFvRsAEPgMonPol
-				}
-			}
-		} else if !configData.DeprecatedFvRsAEPgMonPol.IsNull() {
+		if !configData.DeprecatedFvRsAEPgMonPol.IsNull() {
 			var newAttributeValues FvRsAEPgMonPolFvAEPgResourceModel
 			tagAnnotationFvRsAEPgMonPolFvAEPgValue, _ := types.SetValueFrom(ctx, TagAnnotationFvRsAEPgMonPolFvAEPgType, make([]TagAnnotationFvRsAEPgMonPolFvAEPgResourceModel, 0))
 			tagTagFvRsAEPgMonPolFvAEPgValue, _ := types.SetValueFrom(ctx, TagTagFvRsAEPgMonPolFvAEPgType, make([]TagTagFvRsAEPgMonPolFvAEPgResourceModel, 0))
 			annotationValue := planData.Annotation
-			if stateData != nil {
+			if stateData != nil && !IsEmptySingleNestedAttribute(stateData.FvRsAEPgMonPol.Attributes()) {
 				stateData.FvRsAEPgMonPol.As(ctx, &newAttributeValues, basetypes.ObjectAsOptions{})
 				annotationValue = newAttributeValues.Annotation
 				tagAnnotationFvRsAEPgMonPolFvAEPgValue = newAttributeValues.TagAnnotation
@@ -2822,27 +3212,14 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 			}
 			FvRsAEPgMonPolObject, _ := types.ObjectValueFrom(ctx, FvRsAEPgMonPolFvAEPgType, FvRsAEPgMonPol)
 			planData.FvRsAEPgMonPol = FvRsAEPgMonPolObject
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedFvRsAEPgMonPol = stateData.DeprecatedFvRsAEPgMonPol
 		}
 
-		if !configData.FvRsBd.IsNull() && stateData != nil {
-			if IsEmptySingleNestedAttribute(configData.FvRsBd.Attributes()) {
-				planData.FvRsBd = configData.FvRsBd
-				planData.DeprecatedFvRsBd = basetypes.NewStringNull()
-			} else {
-				var attributeValues FvRsBdFvAEPgResourceModel
-				configData.FvRsBd.As(ctx, &attributeValues, basetypes.ObjectAsOptions{})
-				if GetMOName(stateData.DeprecatedFvRsBd.ValueString()) == attributeValues.TnFvBDName.ValueString() && !attributeValues.TnFvBDName.IsNull() {
-					planData.DeprecatedFvRsBd = stateData.DeprecatedFvRsBd
-				}
-			}
-		} else if !configData.DeprecatedFvRsBd.IsNull() {
+		if !configData.DeprecatedFvRsBd.IsNull() {
 			var newAttributeValues FvRsBdFvAEPgResourceModel
 			tagAnnotationFvRsBdFvAEPgValue, _ := types.SetValueFrom(ctx, TagAnnotationFvRsBdFvAEPgType, make([]TagAnnotationFvRsBdFvAEPgResourceModel, 0))
 			tagTagFvRsBdFvAEPgValue, _ := types.SetValueFrom(ctx, TagTagFvRsBdFvAEPgType, make([]TagTagFvRsBdFvAEPgResourceModel, 0))
 			annotationValue := planData.Annotation
-			if stateData != nil {
+			if stateData != nil && !IsEmptySingleNestedAttribute(stateData.FvRsBd.Attributes()) {
 				stateData.FvRsBd.As(ctx, &newAttributeValues, basetypes.ObjectAsOptions{})
 				annotationValue = newAttributeValues.Annotation
 				tagAnnotationFvRsBdFvAEPgValue = newAttributeValues.TagAnnotation
@@ -2860,37 +3237,13 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 			}
 			FvRsBdObject, _ := types.ObjectValueFrom(ctx, FvRsBdFvAEPgType, FvRsBd)
 			planData.FvRsBd = FvRsBdObject
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedFvRsBd = stateData.DeprecatedFvRsBd
 		}
 
-		if !configData.FvRsCons.IsNull() && stateData != nil {
-			var attributeValues []FvRsConsFvAEPgResourceModel
-			var newAttributeValues, stateAttributeValues []string
-			configData.FvRsCons.ElementsAs(ctx, &attributeValues, false)
-			stateData.DeprecatedFvRsCons.ElementsAs(ctx, &stateAttributeValues, false)
-			for _, attributeValue := range attributeValues {
-				newAttributeValues = append(newAttributeValues, attributeValue.TnVzBrCPName.ValueString())
-			}
-
-			if len(newAttributeValues) == len(stateAttributeValues) {
-				allMatchState := true
-				for _, stateAttributeValue := range stateAttributeValues {
-					if !ContainsString(newAttributeValues, GetMOName(stateAttributeValue)) {
-						allMatchState = false
-						break
-					}
-				}
-				if allMatchState {
-					FvRsConsSet, _ := types.SetValueFrom(ctx, basetypes.StringType{}, stateAttributeValues)
-					planData.DeprecatedFvRsCons = FvRsConsSet
-				}
-			}
-		} else if !configData.DeprecatedFvRsCons.IsNull() {
+		if !configData.DeprecatedFvRsCons.IsNull() {
 			FvRsConsList := make([]FvRsConsFvAEPgResourceModel, 0)
 			var attributeValues []basetypes.StringValue
 			var newAttributeValues []FvRsConsFvAEPgResourceModel
-			configData.DeprecatedFvRsCons.ElementsAs(ctx, &attributeValues, false)
+			planData.DeprecatedFvRsCons.ElementsAs(ctx, &attributeValues, false)
 			if stateData != nil {
 				stateData.FvRsCons.ElementsAs(ctx, &newAttributeValues, false)
 			}
@@ -2917,7 +3270,7 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 					FvRsCons.Prio = FvRsConsValue.Prio
 				} else {
 					FvRsCons.Annotation = planData.Annotation
-					FvRsCons.Prio = customTypes.NewFvRsConsPrioStringValue("unspecified") // Default to default value from meta when not found
+					FvRsCons.Prio = customTypes.NewFvRsConsPrioStringUnknown()
 				}
 				tagAnnotationFvRsConsFvAEPgValue, _ := types.SetValueFrom(ctx, TagAnnotationFvRsConsFvAEPgType, make([]TagAnnotationFvRsConsFvAEPgResourceModel, 0))
 				FvRsCons.TagAnnotation = tagAnnotationFvRsConsFvAEPgValue
@@ -2927,37 +3280,13 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 			}
 			FvRsConsSet, _ := types.SetValueFrom(ctx, FvRsConsFvAEPgType, FvRsConsList)
 			planData.FvRsCons = FvRsConsSet
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedFvRsCons = stateData.DeprecatedFvRsCons
 		}
 
-		if !configData.FvRsSecInherited.IsNull() && stateData != nil {
-			var attributeValues []FvRsSecInheritedFvAEPgResourceModel
-			var newAttributeValues, stateAttributeValues []string
-			configData.FvRsSecInherited.ElementsAs(ctx, &attributeValues, false)
-			stateData.DeprecatedFvRsSecInherited.ElementsAs(ctx, &stateAttributeValues, false)
-			for _, attributeValue := range attributeValues {
-				newAttributeValues = append(newAttributeValues, attributeValue.TDn.ValueString())
-			}
-
-			if len(newAttributeValues) == len(stateAttributeValues) {
-				allMatchState := true
-				for _, stateAttributeValue := range stateAttributeValues {
-					if !ContainsString(newAttributeValues, GetMOName(stateAttributeValue)) {
-						allMatchState = false
-						break
-					}
-				}
-				if allMatchState {
-					FvRsSecInheritedSet, _ := types.SetValueFrom(ctx, basetypes.StringType{}, stateAttributeValues)
-					planData.DeprecatedFvRsSecInherited = FvRsSecInheritedSet
-				}
-			}
-		} else if !configData.DeprecatedFvRsSecInherited.IsNull() {
+		if !configData.DeprecatedFvRsSecInherited.IsNull() {
 			FvRsSecInheritedList := make([]FvRsSecInheritedFvAEPgResourceModel, 0)
 			var attributeValues []basetypes.StringValue
 			var newAttributeValues []FvRsSecInheritedFvAEPgResourceModel
-			configData.DeprecatedFvRsSecInherited.ElementsAs(ctx, &attributeValues, false)
+			planData.DeprecatedFvRsSecInherited.ElementsAs(ctx, &attributeValues, false)
 			if stateData != nil {
 				stateData.FvRsSecInherited.ElementsAs(ctx, &newAttributeValues, false)
 			}
@@ -2992,27 +3321,14 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 			}
 			FvRsSecInheritedSet, _ := types.SetValueFrom(ctx, FvRsSecInheritedFvAEPgType, FvRsSecInheritedList)
 			planData.FvRsSecInherited = FvRsSecInheritedSet
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedFvRsSecInherited = stateData.DeprecatedFvRsSecInherited
 		}
 
-		if !configData.FvRsCustQosPol.IsNull() && stateData != nil {
-			if IsEmptySingleNestedAttribute(configData.FvRsCustQosPol.Attributes()) {
-				planData.FvRsCustQosPol = configData.FvRsCustQosPol
-				planData.DeprecatedFvRsCustQosPol = basetypes.NewStringNull()
-			} else {
-				var attributeValues FvRsCustQosPolFvAEPgResourceModel
-				configData.FvRsCustQosPol.As(ctx, &attributeValues, basetypes.ObjectAsOptions{})
-				if GetMOName(stateData.DeprecatedFvRsCustQosPol.ValueString()) == attributeValues.TnQosCustomPolName.ValueString() && !attributeValues.TnQosCustomPolName.IsNull() {
-					planData.DeprecatedFvRsCustQosPol = stateData.DeprecatedFvRsCustQosPol
-				}
-			}
-		} else if !configData.DeprecatedFvRsCustQosPol.IsNull() {
+		if !configData.DeprecatedFvRsCustQosPol.IsNull() {
 			var newAttributeValues FvRsCustQosPolFvAEPgResourceModel
 			tagAnnotationFvRsCustQosPolFvAEPgValue, _ := types.SetValueFrom(ctx, TagAnnotationFvRsCustQosPolFvAEPgType, make([]TagAnnotationFvRsCustQosPolFvAEPgResourceModel, 0))
 			tagTagFvRsCustQosPolFvAEPgValue, _ := types.SetValueFrom(ctx, TagTagFvRsCustQosPolFvAEPgType, make([]TagTagFvRsCustQosPolFvAEPgResourceModel, 0))
 			annotationValue := planData.Annotation
-			if stateData != nil {
+			if stateData != nil && !IsEmptySingleNestedAttribute(stateData.FvRsCustQosPol.Attributes()) {
 				stateData.FvRsCustQosPol.As(ctx, &newAttributeValues, basetypes.ObjectAsOptions{})
 				annotationValue = newAttributeValues.Annotation
 				tagAnnotationFvRsCustQosPolFvAEPgValue = newAttributeValues.TagAnnotation
@@ -3030,27 +3346,14 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 			}
 			FvRsCustQosPolObject, _ := types.ObjectValueFrom(ctx, FvRsCustQosPolFvAEPgType, FvRsCustQosPol)
 			planData.FvRsCustQosPol = FvRsCustQosPolObject
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedFvRsCustQosPol = stateData.DeprecatedFvRsCustQosPol
 		}
 
-		if !configData.FvRsDppPol.IsNull() && stateData != nil {
-			if IsEmptySingleNestedAttribute(configData.FvRsDppPol.Attributes()) {
-				planData.FvRsDppPol = configData.FvRsDppPol
-				planData.DeprecatedFvRsDppPol = basetypes.NewStringNull()
-			} else {
-				var attributeValues FvRsDppPolFvAEPgResourceModel
-				configData.FvRsDppPol.As(ctx, &attributeValues, basetypes.ObjectAsOptions{})
-				if GetMOName(stateData.DeprecatedFvRsDppPol.ValueString()) == attributeValues.TnQosDppPolName.ValueString() && !attributeValues.TnQosDppPolName.IsNull() {
-					planData.DeprecatedFvRsDppPol = stateData.DeprecatedFvRsDppPol
-				}
-			}
-		} else if !configData.DeprecatedFvRsDppPol.IsNull() {
+		if !configData.DeprecatedFvRsDppPol.IsNull() {
 			var newAttributeValues FvRsDppPolFvAEPgResourceModel
 			tagAnnotationFvRsDppPolFvAEPgValue, _ := types.SetValueFrom(ctx, TagAnnotationFvRsDppPolFvAEPgType, make([]TagAnnotationFvRsDppPolFvAEPgResourceModel, 0))
 			tagTagFvRsDppPolFvAEPgValue, _ := types.SetValueFrom(ctx, TagTagFvRsDppPolFvAEPgType, make([]TagTagFvRsDppPolFvAEPgResourceModel, 0))
 			annotationValue := planData.Annotation
-			if stateData != nil {
+			if stateData != nil && !IsEmptySingleNestedAttribute(stateData.FvRsDppPol.Attributes()) {
 				stateData.FvRsDppPol.As(ctx, &newAttributeValues, basetypes.ObjectAsOptions{})
 				annotationValue = newAttributeValues.Annotation
 				tagAnnotationFvRsDppPolFvAEPgValue = newAttributeValues.TagAnnotation
@@ -3068,37 +3371,13 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 			}
 			FvRsDppPolObject, _ := types.ObjectValueFrom(ctx, FvRsDppPolFvAEPgType, FvRsDppPol)
 			planData.FvRsDppPol = FvRsDppPolObject
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedFvRsDppPol = stateData.DeprecatedFvRsDppPol
 		}
 
-		if !configData.FvRsFcPathAtt.IsNull() && stateData != nil {
-			var attributeValues []FvRsFcPathAttFvAEPgResourceModel
-			var newAttributeValues, stateAttributeValues []string
-			configData.FvRsFcPathAtt.ElementsAs(ctx, &attributeValues, false)
-			stateData.DeprecatedFvRsFcPathAtt.ElementsAs(ctx, &stateAttributeValues, false)
-			for _, attributeValue := range attributeValues {
-				newAttributeValues = append(newAttributeValues, attributeValue.TDn.ValueString())
-			}
-
-			if len(newAttributeValues) == len(stateAttributeValues) {
-				allMatchState := true
-				for _, stateAttributeValue := range stateAttributeValues {
-					if !ContainsString(newAttributeValues, GetMOName(stateAttributeValue)) {
-						allMatchState = false
-						break
-					}
-				}
-				if allMatchState {
-					FvRsFcPathAttSet, _ := types.SetValueFrom(ctx, basetypes.StringType{}, stateAttributeValues)
-					planData.DeprecatedFvRsFcPathAtt = FvRsFcPathAttSet
-				}
-			}
-		} else if !configData.DeprecatedFvRsFcPathAtt.IsNull() {
+		if !configData.DeprecatedFvRsFcPathAtt.IsNull() {
 			FvRsFcPathAttList := make([]FvRsFcPathAttFvAEPgResourceModel, 0)
 			var attributeValues []basetypes.StringValue
 			var newAttributeValues []FvRsFcPathAttFvAEPgResourceModel
-			configData.DeprecatedFvRsFcPathAtt.ElementsAs(ctx, &attributeValues, false)
+			planData.DeprecatedFvRsFcPathAtt.ElementsAs(ctx, &attributeValues, false)
 			if stateData != nil {
 				stateData.FvRsFcPathAtt.ElementsAs(ctx, &newAttributeValues, false)
 			}
@@ -3127,8 +3406,9 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 					FvRsFcPathAtt.VsanMode = FvRsFcPathAttValue.VsanMode
 				} else {
 					FvRsFcPathAtt.Annotation = planData.Annotation
-					FvRsFcPathAtt.Vsan = basetypes.NewStringValue("unknown")     // Default to default value from meta when not found
-					FvRsFcPathAtt.VsanMode = basetypes.NewStringValue("regular") // Default to default value from meta when not found
+					FvRsFcPathAtt.Descr = basetypes.NewStringUnknown()
+					FvRsFcPathAtt.Vsan = basetypes.NewStringUnknown()
+					FvRsFcPathAtt.VsanMode = basetypes.NewStringUnknown()
 				}
 				tagAnnotationFvRsFcPathAttFvAEPgValue, _ := types.SetValueFrom(ctx, TagAnnotationFvRsFcPathAttFvAEPgType, make([]TagAnnotationFvRsFcPathAttFvAEPgResourceModel, 0))
 				FvRsFcPathAtt.TagAnnotation = tagAnnotationFvRsFcPathAttFvAEPgValue
@@ -3138,37 +3418,13 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 			}
 			FvRsFcPathAttSet, _ := types.SetValueFrom(ctx, FvRsFcPathAttFvAEPgType, FvRsFcPathAttList)
 			planData.FvRsFcPathAtt = FvRsFcPathAttSet
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedFvRsFcPathAtt = stateData.DeprecatedFvRsFcPathAtt
 		}
 
-		if !configData.FvRsConsIf.IsNull() && stateData != nil {
-			var attributeValues []FvRsConsIfFvAEPgResourceModel
-			var newAttributeValues, stateAttributeValues []string
-			configData.FvRsConsIf.ElementsAs(ctx, &attributeValues, false)
-			stateData.DeprecatedFvRsConsIf.ElementsAs(ctx, &stateAttributeValues, false)
-			for _, attributeValue := range attributeValues {
-				newAttributeValues = append(newAttributeValues, attributeValue.TnVzCPIfName.ValueString())
-			}
-
-			if len(newAttributeValues) == len(stateAttributeValues) {
-				allMatchState := true
-				for _, stateAttributeValue := range stateAttributeValues {
-					if !ContainsString(newAttributeValues, GetMOName(stateAttributeValue)) {
-						allMatchState = false
-						break
-					}
-				}
-				if allMatchState {
-					FvRsConsIfSet, _ := types.SetValueFrom(ctx, basetypes.StringType{}, stateAttributeValues)
-					planData.DeprecatedFvRsConsIf = FvRsConsIfSet
-				}
-			}
-		} else if !configData.DeprecatedFvRsConsIf.IsNull() {
+		if !configData.DeprecatedFvRsConsIf.IsNull() {
 			FvRsConsIfList := make([]FvRsConsIfFvAEPgResourceModel, 0)
 			var attributeValues []basetypes.StringValue
 			var newAttributeValues []FvRsConsIfFvAEPgResourceModel
-			configData.DeprecatedFvRsConsIf.ElementsAs(ctx, &attributeValues, false)
+			planData.DeprecatedFvRsConsIf.ElementsAs(ctx, &attributeValues, false)
 			if stateData != nil {
 				stateData.FvRsConsIf.ElementsAs(ctx, &newAttributeValues, false)
 			}
@@ -3195,7 +3451,7 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 					FvRsConsIf.Prio = FvRsConsIfValue.Prio
 				} else {
 					FvRsConsIf.Annotation = planData.Annotation
-					FvRsConsIf.Prio = customTypes.NewFvRsConsIfPrioStringValue("unspecified") // Default to default value from meta when not found
+					FvRsConsIf.Prio = customTypes.NewFvRsConsIfPrioStringUnknown()
 				}
 				tagAnnotationFvRsConsIfFvAEPgValue, _ := types.SetValueFrom(ctx, TagAnnotationFvRsConsIfFvAEPgType, make([]TagAnnotationFvRsConsIfFvAEPgResourceModel, 0))
 				FvRsConsIf.TagAnnotation = tagAnnotationFvRsConsIfFvAEPgValue
@@ -3205,37 +3461,13 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 			}
 			FvRsConsIfSet, _ := types.SetValueFrom(ctx, FvRsConsIfFvAEPgType, FvRsConsIfList)
 			planData.FvRsConsIf = FvRsConsIfSet
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedFvRsConsIf = stateData.DeprecatedFvRsConsIf
 		}
 
-		if !configData.FvRsIntraEpg.IsNull() && stateData != nil {
-			var attributeValues []FvRsIntraEpgFvAEPgResourceModel
-			var newAttributeValues, stateAttributeValues []string
-			configData.FvRsIntraEpg.ElementsAs(ctx, &attributeValues, false)
-			stateData.DeprecatedFvRsIntraEpg.ElementsAs(ctx, &stateAttributeValues, false)
-			for _, attributeValue := range attributeValues {
-				newAttributeValues = append(newAttributeValues, attributeValue.TnVzBrCPName.ValueString())
-			}
-
-			if len(newAttributeValues) == len(stateAttributeValues) {
-				allMatchState := true
-				for _, stateAttributeValue := range stateAttributeValues {
-					if !ContainsString(newAttributeValues, GetMOName(stateAttributeValue)) {
-						allMatchState = false
-						break
-					}
-				}
-				if allMatchState {
-					FvRsIntraEpgSet, _ := types.SetValueFrom(ctx, basetypes.StringType{}, stateAttributeValues)
-					planData.DeprecatedFvRsIntraEpg = FvRsIntraEpgSet
-				}
-			}
-		} else if !configData.DeprecatedFvRsIntraEpg.IsNull() {
+		if !configData.DeprecatedFvRsIntraEpg.IsNull() {
 			FvRsIntraEpgList := make([]FvRsIntraEpgFvAEPgResourceModel, 0)
 			var attributeValues []basetypes.StringValue
 			var newAttributeValues []FvRsIntraEpgFvAEPgResourceModel
-			configData.DeprecatedFvRsIntraEpg.ElementsAs(ctx, &attributeValues, false)
+			planData.DeprecatedFvRsIntraEpg.ElementsAs(ctx, &attributeValues, false)
 			if stateData != nil {
 				stateData.FvRsIntraEpg.ElementsAs(ctx, &newAttributeValues, false)
 			}
@@ -3270,37 +3502,13 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 			}
 			FvRsIntraEpgSet, _ := types.SetValueFrom(ctx, FvRsIntraEpgFvAEPgType, FvRsIntraEpgList)
 			planData.FvRsIntraEpg = FvRsIntraEpgSet
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedFvRsIntraEpg = stateData.DeprecatedFvRsIntraEpg
 		}
 
-		if !configData.FvRsProv.IsNull() && stateData != nil {
-			var attributeValues []FvRsProvFvAEPgResourceModel
-			var newAttributeValues, stateAttributeValues []string
-			configData.FvRsProv.ElementsAs(ctx, &attributeValues, false)
-			stateData.DeprecatedFvRsProv.ElementsAs(ctx, &stateAttributeValues, false)
-			for _, attributeValue := range attributeValues {
-				newAttributeValues = append(newAttributeValues, attributeValue.TnVzBrCPName.ValueString())
-			}
-
-			if len(newAttributeValues) == len(stateAttributeValues) {
-				allMatchState := true
-				for _, stateAttributeValue := range stateAttributeValues {
-					if !ContainsString(newAttributeValues, GetMOName(stateAttributeValue)) {
-						allMatchState = false
-						break
-					}
-				}
-				if allMatchState {
-					FvRsProvSet, _ := types.SetValueFrom(ctx, basetypes.StringType{}, stateAttributeValues)
-					planData.DeprecatedFvRsProv = FvRsProvSet
-				}
-			}
-		} else if !configData.DeprecatedFvRsProv.IsNull() {
+		if !configData.DeprecatedFvRsProv.IsNull() {
 			FvRsProvList := make([]FvRsProvFvAEPgResourceModel, 0)
 			var attributeValues []basetypes.StringValue
 			var newAttributeValues []FvRsProvFvAEPgResourceModel
-			configData.DeprecatedFvRsProv.ElementsAs(ctx, &attributeValues, false)
+			planData.DeprecatedFvRsProv.ElementsAs(ctx, &attributeValues, false)
 			if stateData != nil {
 				stateData.FvRsProv.ElementsAs(ctx, &newAttributeValues, false)
 			}
@@ -3328,8 +3536,8 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 					FvRsProv.Prio = FvRsProvValue.Prio
 				} else {
 					FvRsProv.Annotation = planData.Annotation
-					FvRsProv.MatchT = basetypes.NewStringValue("AtleastOne")              // Default to default value from meta when not found
-					FvRsProv.Prio = customTypes.NewFvRsProvPrioStringValue("unspecified") // Default to default value from meta when not found
+					FvRsProv.MatchT = basetypes.NewStringUnknown()
+					FvRsProv.Prio = customTypes.NewFvRsProvPrioStringUnknown()
 				}
 				tagAnnotationFvRsProvFvAEPgValue, _ := types.SetValueFrom(ctx, TagAnnotationFvRsProvFvAEPgType, make([]TagAnnotationFvRsProvFvAEPgResourceModel, 0))
 				FvRsProv.TagAnnotation = tagAnnotationFvRsProvFvAEPgValue
@@ -3339,109 +3547,13 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 			}
 			FvRsProvSet, _ := types.SetValueFrom(ctx, FvRsProvFvAEPgType, FvRsProvList)
 			planData.FvRsProv = FvRsProvSet
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedFvRsProv = stateData.DeprecatedFvRsProv
 		}
 
-		if !configData.FvRsPathAtt.IsNull() && stateData != nil {
-			var attributeValues []FvRsPathAttFvAEPgResourceModel
-			var newAttributeValues, stateAttributeValues []string
-			configData.FvRsPathAtt.ElementsAs(ctx, &attributeValues, false)
-			stateData.DeprecatedFvRsPathAtt.ElementsAs(ctx, &stateAttributeValues, false)
-			for _, attributeValue := range attributeValues {
-				newAttributeValues = append(newAttributeValues, attributeValue.TDn.ValueString())
-			}
-
-			if len(newAttributeValues) == len(stateAttributeValues) {
-				allMatchState := true
-				for _, stateAttributeValue := range stateAttributeValues {
-					if !ContainsString(newAttributeValues, GetMOName(stateAttributeValue)) {
-						allMatchState = false
-						break
-					}
-				}
-				if allMatchState {
-					FvRsPathAttSet, _ := types.SetValueFrom(ctx, basetypes.StringType{}, stateAttributeValues)
-					planData.DeprecatedFvRsPathAtt = FvRsPathAttSet
-				}
-			}
-		} else if !configData.DeprecatedFvRsPathAtt.IsNull() {
-			FvRsPathAttList := make([]FvRsPathAttFvAEPgResourceModel, 0)
-			var attributeValues []basetypes.StringValue
-			var newAttributeValues []FvRsPathAttFvAEPgResourceModel
-			configData.DeprecatedFvRsPathAtt.ElementsAs(ctx, &attributeValues, false)
-			if stateData != nil {
-				stateData.FvRsPathAtt.ElementsAs(ctx, &newAttributeValues, false)
-			}
-			for _, attributeValue := range attributeValues {
-				FvRsPathAttValue := FvRsPathAttFvAEPgResourceModel{}
-				foundAttributeValue := false
-				for _, newAttributeValue := range newAttributeValues {
-					if newAttributeValue.TDn.ValueString() == attributeValue.ValueString() {
-						FvRsPathAttValue = newAttributeValue
-						foundAttributeValue = true
-						break
-					}
-				}
-				tDnValue := basetypes.NewStringUnknown()
-				if !attributeValue.IsUnknown() {
-					tDnValue = basetypes.NewStringValue(attributeValue.ValueString())
-				}
-				FvRsPathAtt := FvRsPathAttFvAEPgResourceModel{
-					TDn: tDnValue,
-				}
-
-				if foundAttributeValue {
-					FvRsPathAtt.Annotation = FvRsPathAttValue.Annotation
-					FvRsPathAtt.Descr = FvRsPathAttValue.Descr
-					FvRsPathAtt.Encap = FvRsPathAttValue.Encap
-					FvRsPathAtt.InstrImedcy = FvRsPathAttValue.InstrImedcy
-					FvRsPathAtt.Mode = FvRsPathAttValue.Mode
-					FvRsPathAtt.PrimaryEncap = FvRsPathAttValue.PrimaryEncap
-				} else {
-					FvRsPathAtt.Annotation = planData.Annotation
-					FvRsPathAtt.InstrImedcy = basetypes.NewStringValue("lazy") // Default to default value from meta when not found
-					FvRsPathAtt.Mode = basetypes.NewStringValue("regular")     // Default to default value from meta when not found
-				}
-				tagAnnotationFvRsPathAttFvAEPgValue, _ := types.SetValueFrom(ctx, TagAnnotationFvRsPathAttFvAEPgType, make([]TagAnnotationFvRsPathAttFvAEPgResourceModel, 0))
-				FvRsPathAtt.TagAnnotation = tagAnnotationFvRsPathAttFvAEPgValue
-				tagTagFvRsPathAttFvAEPgValue, _ := types.SetValueFrom(ctx, TagTagFvRsPathAttFvAEPgType, make([]TagTagFvRsPathAttFvAEPgResourceModel, 0))
-				FvRsPathAtt.TagTag = tagTagFvRsPathAttFvAEPgValue
-				FvRsPathAttList = append(FvRsPathAttList, FvRsPathAtt)
-			}
-			FvRsPathAttSet, _ := types.SetValueFrom(ctx, FvRsPathAttFvAEPgType, FvRsPathAttList)
-			planData.FvRsPathAtt = FvRsPathAttSet
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedFvRsPathAtt = stateData.DeprecatedFvRsPathAtt
-		}
-
-		if !configData.FvRsProtBy.IsNull() && stateData != nil {
-			var attributeValues []FvRsProtByFvAEPgResourceModel
-			var newAttributeValues, stateAttributeValues []string
-			configData.FvRsProtBy.ElementsAs(ctx, &attributeValues, false)
-			stateData.DeprecatedFvRsProtBy.ElementsAs(ctx, &stateAttributeValues, false)
-			for _, attributeValue := range attributeValues {
-				newAttributeValues = append(newAttributeValues, attributeValue.TnVzTabooName.ValueString())
-			}
-
-			if len(newAttributeValues) == len(stateAttributeValues) {
-				allMatchState := true
-				for _, stateAttributeValue := range stateAttributeValues {
-					if !ContainsString(newAttributeValues, GetMOName(stateAttributeValue)) {
-						allMatchState = false
-						break
-					}
-				}
-				if allMatchState {
-					FvRsProtBySet, _ := types.SetValueFrom(ctx, basetypes.StringType{}, stateAttributeValues)
-					planData.DeprecatedFvRsProtBy = FvRsProtBySet
-				}
-			}
-		} else if !configData.DeprecatedFvRsProtBy.IsNull() {
+		if !configData.DeprecatedFvRsProtBy.IsNull() {
 			FvRsProtByList := make([]FvRsProtByFvAEPgResourceModel, 0)
 			var attributeValues []basetypes.StringValue
 			var newAttributeValues []FvRsProtByFvAEPgResourceModel
-			configData.DeprecatedFvRsProtBy.ElementsAs(ctx, &attributeValues, false)
+			planData.DeprecatedFvRsProtBy.ElementsAs(ctx, &attributeValues, false)
 			if stateData != nil {
 				stateData.FvRsProtBy.ElementsAs(ctx, &newAttributeValues, false)
 			}
@@ -3476,27 +3588,14 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 			}
 			FvRsProtBySet, _ := types.SetValueFrom(ctx, FvRsProtByFvAEPgType, FvRsProtByList)
 			planData.FvRsProtBy = FvRsProtBySet
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedFvRsProtBy = stateData.DeprecatedFvRsProtBy
 		}
 
-		if !configData.FvRsTrustCtrl.IsNull() && stateData != nil {
-			if IsEmptySingleNestedAttribute(configData.FvRsTrustCtrl.Attributes()) {
-				planData.FvRsTrustCtrl = configData.FvRsTrustCtrl
-				planData.DeprecatedFvRsTrustCtrl = basetypes.NewStringNull()
-			} else {
-				var attributeValues FvRsTrustCtrlFvAEPgResourceModel
-				configData.FvRsTrustCtrl.As(ctx, &attributeValues, basetypes.ObjectAsOptions{})
-				if GetMOName(stateData.DeprecatedFvRsTrustCtrl.ValueString()) == attributeValues.TnFhsTrustCtrlPolName.ValueString() && !attributeValues.TnFhsTrustCtrlPolName.IsNull() {
-					planData.DeprecatedFvRsTrustCtrl = stateData.DeprecatedFvRsTrustCtrl
-				}
-			}
-		} else if !configData.DeprecatedFvRsTrustCtrl.IsNull() {
+		if !configData.DeprecatedFvRsTrustCtrl.IsNull() {
 			var newAttributeValues FvRsTrustCtrlFvAEPgResourceModel
 			tagAnnotationFvRsTrustCtrlFvAEPgValue, _ := types.SetValueFrom(ctx, TagAnnotationFvRsTrustCtrlFvAEPgType, make([]TagAnnotationFvRsTrustCtrlFvAEPgResourceModel, 0))
 			tagTagFvRsTrustCtrlFvAEPgValue, _ := types.SetValueFrom(ctx, TagTagFvRsTrustCtrlFvAEPgType, make([]TagTagFvRsTrustCtrlFvAEPgResourceModel, 0))
 			annotationValue := planData.Annotation
-			if stateData != nil {
+			if stateData != nil && !IsEmptySingleNestedAttribute(stateData.FvRsTrustCtrl.Attributes()) {
 				stateData.FvRsTrustCtrl.As(ctx, &newAttributeValues, basetypes.ObjectAsOptions{})
 				annotationValue = newAttributeValues.Annotation
 				tagAnnotationFvRsTrustCtrlFvAEPgValue = newAttributeValues.TagAnnotation
@@ -3514,36 +3613,52 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 			}
 			FvRsTrustCtrlObject, _ := types.ObjectValueFrom(ctx, FvRsTrustCtrlFvAEPgType, FvRsTrustCtrl)
 			planData.FvRsTrustCtrl = FvRsTrustCtrlObject
-		} else if stateData != nil { // used to replace use state for unknown
-			planData.DeprecatedFvRsTrustCtrl = stateData.DeprecatedFvRsTrustCtrl
 		}
 
-		planData.DeprecatedFvRsNodeAtt = types.SetNull(deprecatedFvRsNodeAttType)
 		if !configData.DeprecatedFvRsNodeAtt.IsNull() {
 			FvRsNodeAttList := make([]FvRsNodeAttFvAEPgResourceModel, 0)
 			var attributeValues []FvRsNodeAttFvAEPgResourceModelV1
 			var newAttributeValues []FvRsNodeAttFvAEPgResourceModel
-			configData.DeprecatedFvRsNodeAtt.ElementsAs(ctx, &attributeValues, false)
-			annotationValue := planData.Annotation
 			if stateData != nil {
 				stateData.FvRsNodeAtt.ElementsAs(ctx, &newAttributeValues, false)
-				for _, newAttributeValue := range newAttributeValues {
-					annotationValue = newAttributeValue.Annotation
-				}
 			}
+			planData.DeprecatedFvRsNodeAtt.ElementsAs(ctx, &attributeValues, false)
 			for _, attributeValue := range attributeValues {
+				plannedFvRsNodeAtt := FvRsNodeAttFvAEPgResourceModel{}
+				foundAttributeValue := false
+				for _, newAttributeValue := range newAttributeValues {
+					if newAttributeValue.TDn.ValueString() == attributeValue.TDn.ValueString() {
+						plannedFvRsNodeAtt = newAttributeValue
+						foundAttributeValue = true
+						break
+					}
+				}
 				tDnValue := basetypes.NewStringUnknown()
 				if !attributeValue.TDn.IsUnknown() {
 					tDnValue = basetypes.NewStringValue(attributeValue.TDn.ValueString())
 				}
-
 				FvRsNodeAtt := FvRsNodeAttFvAEPgResourceModel{
-					Annotation:  annotationValue,
-					Descr:       attributeValue.Descr,
-					Encap:       attributeValue.Encap,
-					InstrImedcy: attributeValue.InstrImedcy,
-					Mode:        attributeValue.Mode,
-					TDn:         tDnValue,
+					Annotation: planData.Annotation,
+					Encap:      attributeValue.Encap,
+					TDn:        tDnValue,
+				}
+				if !attributeValue.Descr.IsNull() {
+					FvRsNodeAtt.Descr = attributeValue.Descr
+				} else {
+					FvRsNodeAtt.Descr = basetypes.NewStringUnknown()
+				}
+				if !attributeValue.InstrImedcy.IsNull() {
+					FvRsNodeAtt.InstrImedcy = attributeValue.InstrImedcy
+				} else {
+					FvRsNodeAtt.InstrImedcy = basetypes.NewStringUnknown()
+				}
+				if !attributeValue.Mode.IsNull() {
+					FvRsNodeAtt.Mode = attributeValue.Mode
+				} else {
+					FvRsNodeAtt.Mode = basetypes.NewStringUnknown()
+				}
+				if foundAttributeValue {
+					FvRsNodeAtt.Annotation = plannedFvRsNodeAtt.Annotation
 				}
 				tagAnnotationFvRsNodeAttFvAEPgValue, _ := types.SetValueFrom(ctx, TagAnnotationFvRsNodeAttFvAEPgType, make([]TagAnnotationFvRsNodeAttFvAEPgResourceModel, 0))
 				FvRsNodeAtt.TagAnnotation = tagAnnotationFvRsNodeAttFvAEPgValue
@@ -3551,12 +3666,190 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 				FvRsNodeAtt.TagTag = tagTagFvRsNodeAttFvAEPgValue
 				FvRsNodeAttList = append(FvRsNodeAttList, FvRsNodeAtt)
 			}
-
 			FvRsNodeAttSet, _ := types.SetValueFrom(ctx, FvRsNodeAttFvAEPgType, FvRsNodeAttList)
 			planData.FvRsNodeAtt = FvRsNodeAttSet
+		} else if !configData.FvRsNodeAtt.IsNull() && stateData == nil {
+			setUnknownDeprecatedFvRsNodeAttFvAEPgResourceModelToPlan(ctx, planData)
+		}
+
+		// Workaround to compare the state with plan to avoid plan changes with only known after apply
+		if stateData != nil {
+			avoidFvAEPgPlanChangeForKnownAfterApplyOnly(ctx, planData, stateData, configData)
 		}
 
 		resp.Diagnostics.Append(resp.Plan.Set(ctx, &planData)...)
+	}
+}
+func setUnknownDeprecatedFvRsNodeAttFvAEPgResourceModelToPlan(ctx context.Context, planData *FvAEPgResourceModel) {
+	var attributeValues []FvRsNodeAttFvAEPgResourceModel
+	var legacyAttributeValues []FvRsNodeAttFvAEPgResourceModelV1
+	planData.FvRsNodeAtt.ElementsAs(ctx, &attributeValues, false)
+	for i := 0; i < len(attributeValues); i++ {
+		legacyAttributeValues = append(legacyAttributeValues, FvRsNodeAttFvAEPgResourceModelV1{
+			InstrImedcy: basetypes.NewStringUnknown(),
+			Descr:       basetypes.NewStringUnknown(),
+			Encap:       basetypes.NewStringUnknown(),
+			Mode:        basetypes.NewStringUnknown(),
+			TDn:         basetypes.NewStringUnknown(),
+		})
+	}
+	DeprecatedFvRsNodeAttSet, _ := types.SetValueFrom(ctx, deprecatedFvRsNodeAttType, legacyAttributeValues)
+	planData.DeprecatedFvRsNodeAtt = DeprecatedFvRsNodeAttSet
+}
+
+func avoidFvAEPgPlanChangeForKnownAfterApplyOnly(ctx context.Context, planData, stateData, configData *FvAEPgResourceModel) {
+	// Set read-only and deprecated attributes in planData from stateData
+	planData.PcTag = stateData.PcTag
+	planData.Scope = stateData.Scope
+	if configData.DeprecatedExceptionTag.IsNull() {
+		planData.DeprecatedExceptionTag = stateData.DeprecatedExceptionTag
+	}
+	if configData.DeprecatedFloodOnEncap.IsNull() {
+		planData.DeprecatedFloodOnEncap = stateData.DeprecatedFloodOnEncap
+	}
+	if configData.DeprecatedFwdCtrl.IsNull() {
+		planData.DeprecatedFwdCtrl = stateData.DeprecatedFwdCtrl
+	}
+	if configData.DeprecatedHasMcastSource.IsNull() {
+		planData.DeprecatedHasMcastSource = stateData.DeprecatedHasMcastSource
+	}
+	if configData.DeprecatedIsAttrBasedEPg.IsNull() {
+		planData.DeprecatedIsAttrBasedEPg = stateData.DeprecatedIsAttrBasedEPg
+	}
+	if configData.DeprecatedMatchT.IsNull() {
+		planData.DeprecatedMatchT = stateData.DeprecatedMatchT
+	}
+	if configData.DeprecatedParentDn.IsNull() {
+		planData.DeprecatedParentDn = stateData.DeprecatedParentDn
+	}
+	if configData.DeprecatedPcEnfPref.IsNull() {
+		planData.DeprecatedPcEnfPref = stateData.DeprecatedPcEnfPref
+	}
+	if configData.DeprecatedPrefGrMemb.IsNull() {
+		planData.DeprecatedPrefGrMemb = stateData.DeprecatedPrefGrMemb
+	}
+	if configData.DeprecatedPrio.IsNull() {
+		planData.DeprecatedPrio = stateData.DeprecatedPrio
+	}
+	if configData.DeprecatedShutdown.IsNull() {
+		planData.DeprecatedShutdown = stateData.DeprecatedShutdown
+	}
+	if configData.DeprecatedFvRsAEPgMonPol.IsNull() {
+		planData.DeprecatedFvRsAEPgMonPol = stateData.DeprecatedFvRsAEPgMonPol
+	}
+	if configData.DeprecatedFvRsBd.IsNull() {
+		planData.DeprecatedFvRsBd = stateData.DeprecatedFvRsBd
+	}
+	if configData.DeprecatedFvRsCons.IsNull() {
+		planData.DeprecatedFvRsCons = stateData.DeprecatedFvRsCons
+	}
+	if configData.DeprecatedFvRsSecInherited.IsNull() {
+		planData.DeprecatedFvRsSecInherited = stateData.DeprecatedFvRsSecInherited
+	}
+	if configData.DeprecatedFvRsCustQosPol.IsNull() {
+		planData.DeprecatedFvRsCustQosPol = stateData.DeprecatedFvRsCustQosPol
+	}
+	if configData.DeprecatedFvRsDppPol.IsNull() {
+		planData.DeprecatedFvRsDppPol = stateData.DeprecatedFvRsDppPol
+	}
+	if configData.DeprecatedFvRsFcPathAtt.IsNull() {
+		planData.DeprecatedFvRsFcPathAtt = stateData.DeprecatedFvRsFcPathAtt
+	}
+	if configData.DeprecatedFvRsConsIf.IsNull() {
+		planData.DeprecatedFvRsConsIf = stateData.DeprecatedFvRsConsIf
+	}
+	if configData.DeprecatedFvRsIntraEpg.IsNull() {
+		planData.DeprecatedFvRsIntraEpg = stateData.DeprecatedFvRsIntraEpg
+	}
+	if configData.DeprecatedFvRsProv.IsNull() {
+		planData.DeprecatedFvRsProv = stateData.DeprecatedFvRsProv
+	}
+	if configData.DeprecatedFvRsProtBy.IsNull() {
+		planData.DeprecatedFvRsProtBy = stateData.DeprecatedFvRsProtBy
+	}
+	if configData.DeprecatedFvRsTrustCtrl.IsNull() {
+		planData.DeprecatedFvRsTrustCtrl = stateData.DeprecatedFvRsTrustCtrl
+	}
+	if configData.DeprecatedFvRsNodeAtt.IsNull() {
+		planData.DeprecatedFvRsNodeAtt = stateData.DeprecatedFvRsNodeAtt
+	}
+
+	// Compare the string representation of the planData and stateData because structs cannot be compared directly
+	if fmt.Sprintf("%s", planData) != fmt.Sprintf("%s", stateData) {
+		planData.PcTag = basetypes.NewStringUnknown()
+		planData.Scope = basetypes.NewStringUnknown()
+		if configData.DeprecatedExceptionTag.IsNull() {
+			planData.DeprecatedExceptionTag = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedFloodOnEncap.IsNull() {
+			planData.DeprecatedFloodOnEncap = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedFwdCtrl.IsNull() {
+			planData.DeprecatedFwdCtrl = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedHasMcastSource.IsNull() {
+			planData.DeprecatedHasMcastSource = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedIsAttrBasedEPg.IsNull() {
+			planData.DeprecatedIsAttrBasedEPg = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedMatchT.IsNull() {
+			planData.DeprecatedMatchT = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedParentDn.IsNull() {
+			planData.DeprecatedParentDn = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedPcEnfPref.IsNull() {
+			planData.DeprecatedPcEnfPref = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedPrefGrMemb.IsNull() {
+			planData.DeprecatedPrefGrMemb = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedPrio.IsNull() {
+			planData.DeprecatedPrio = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedShutdown.IsNull() {
+			planData.DeprecatedShutdown = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedFvRsAEPgMonPol.IsNull() {
+			planData.DeprecatedFvRsAEPgMonPol = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedFvRsBd.IsNull() {
+			planData.DeprecatedFvRsBd = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedFvRsCons.IsNull() {
+			planData.DeprecatedFvRsCons = basetypes.NewSetUnknown(basetypes.StringType{})
+		}
+		if configData.DeprecatedFvRsSecInherited.IsNull() {
+			planData.DeprecatedFvRsSecInherited = basetypes.NewSetUnknown(basetypes.StringType{})
+		}
+		if configData.DeprecatedFvRsCustQosPol.IsNull() {
+			planData.DeprecatedFvRsCustQosPol = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedFvRsDppPol.IsNull() {
+			planData.DeprecatedFvRsDppPol = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedFvRsFcPathAtt.IsNull() {
+			planData.DeprecatedFvRsFcPathAtt = basetypes.NewSetUnknown(basetypes.StringType{})
+		}
+		if configData.DeprecatedFvRsConsIf.IsNull() {
+			planData.DeprecatedFvRsConsIf = basetypes.NewSetUnknown(basetypes.StringType{})
+		}
+		if configData.DeprecatedFvRsIntraEpg.IsNull() {
+			planData.DeprecatedFvRsIntraEpg = basetypes.NewSetUnknown(basetypes.StringType{})
+		}
+		if configData.DeprecatedFvRsProv.IsNull() {
+			planData.DeprecatedFvRsProv = basetypes.NewSetUnknown(basetypes.StringType{})
+		}
+		if configData.DeprecatedFvRsProtBy.IsNull() {
+			planData.DeprecatedFvRsProtBy = basetypes.NewSetUnknown(basetypes.StringType{})
+		}
+		if configData.DeprecatedFvRsTrustCtrl.IsNull() {
+			planData.DeprecatedFvRsTrustCtrl = basetypes.NewStringUnknown()
+		}
+		if configData.DeprecatedFvRsNodeAtt.IsNull() {
+			setUnknownDeprecatedFvRsNodeAttFvAEPgResourceModelToPlan(ctx, planData)
+		}
 	}
 }
 
@@ -3685,6 +3978,15 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 					}...),
 				},
 			},
+			"relation_fv_rs_path_att": schema.SetAttribute{
+				Optional:           true,
+				Computed:           true,
+				ElementType:        types.StringType,
+				DeprecationMessage: "Attribute `relation_fv_rs_path_att` is deprecated. The attribute will be removed in the next major version of the provider.",
+				PlanModifiers: []planmodifier.Set{
+					setplanmodifier.UseStateForUnknown(),
+				},
+			},
 			"relation_fv_rs_prov_def": schema.SetAttribute{
 				Optional:           true,
 				Computed:           true,
@@ -3797,17 +4099,6 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Validators: []validator.Set{
 					setvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("relation_to_provided_contracts"),
-					}...),
-				},
-			},
-			"relation_fv_rs_path_att": schema.SetAttribute{
-				Optional:           true,
-				Computed:           true,
-				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute 'relation_fv_rs_path_att' is deprecated, please refer to 'relation_to_static_paths.target_dn' instead. The attribute will be removed in the next major version of the provider.",
-				Validators: []validator.Set{
-					setvalidator.ConflictsWith(path.Expressions{
-						path.MatchRoot("relation_to_static_paths"),
 					}...),
 				},
 			},
@@ -3944,11 +4235,15 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				MarkdownDescription: `The provider label match criteria.`,
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				Optional: true,
+				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
+				},
+				Validators: []validator.String{
+					MakeStringRequired(),
 				},
 				MarkdownDescription: `The name of the Application EPG object.`,
 			},
@@ -4371,6 +4666,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(FvRsConsFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
@@ -4486,6 +4782,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(FvRsConsIfFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
@@ -4695,6 +4992,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(FvRsDomAttFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
@@ -5125,6 +5423,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Computed: true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(FvRsFcPathAttFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
@@ -5258,6 +5557,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Computed: true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(FvRsIntraEpgFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
@@ -5358,6 +5658,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(FvRsNodeAttFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
@@ -5500,6 +5801,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(FvRsPathAttFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
@@ -5651,6 +5953,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(FvRsProtByFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
@@ -5751,6 +6054,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(FvRsProvFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
@@ -5877,6 +6181,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(FvRsSecInheritedFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
@@ -6166,6 +6471,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 								stringvalidator.ConflictsWith(path.Expressions{
 									path.MatchRoot("relation_to_static_leafs"),
 								}...),
+								MakeStringRequired(),
 							},
 						},
 						"mode": schema.StringAttribute{
@@ -6186,6 +6492,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 								stringvalidator.ConflictsWith(path.Expressions{
 									path.MatchRoot("relation_to_static_leafs"),
 								}...),
+								MakeStringRequired(),
 							},
 						},
 					},

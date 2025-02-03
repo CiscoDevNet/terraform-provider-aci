@@ -130,6 +130,35 @@ var NetflowRsMonitorToExporterNetflowMonitorPolType = types.ObjectType{
 	},
 }
 
+func NetflowRsMonitorToExporterNetflowMonitorPolSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(ctx context.Context, planValue, stateValue types.Set) basetypes.SetValue {
+	//  Function is needed to handle the case that an attribute is not yet suppored in a version and gets set to null during read
+	var planSetValues, stateSetValues []NetflowRsMonitorToExporterNetflowMonitorPolResourceModel
+	stateValue.ElementsAs(ctx, &stateSetValues, false)
+	planValue.ElementsAs(ctx, &planSetValues, false)
+
+	// If the length of the state and plan values are different a change is already detected the loop can be skipped
+	if len(stateSetValues) == len(planSetValues) {
+		for index, stateValue := range stateSetValues {
+			nullInStateFound := false
+			if stateValue.Annotation.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Annotation = basetypes.NewStringNull()
+			}
+			if stateValue.TnNetflowExporterPolName.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].TnNetflowExporterPolName = basetypes.NewStringNull()
+			}
+			if !nullInStateFound {
+				// when there are no null fields we can conclude the version supports all attributes in set
+				break
+			}
+		}
+	}
+	planSet, _ := types.SetValueFrom(ctx, NetflowRsMonitorToExporterNetflowMonitorPolType, planSetValues)
+	return planSet
+
+}
+
 // TagAnnotationNetflowRsMonitorToExporterNetflowMonitorPolResourceModel describes the resource data model for the children without relation ships.
 type TagAnnotationNetflowRsMonitorToExporterNetflowMonitorPolResourceModel struct {
 	Key   types.String `tfsdk:"key"`
@@ -588,6 +617,7 @@ func (r *NetflowMonitorPolResource) Schema(ctx context.Context, req resource.Sch
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(NetflowRsMonitorToExporterNetflowMonitorPolSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{

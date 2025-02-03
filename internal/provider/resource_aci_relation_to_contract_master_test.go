@@ -22,8 +22,8 @@ func TestAccResourceFvRsSecInheritedWithFvAEPg(t *testing.T) {
 				Config:             testConfigFvRsSecInheritedMinDependencyWithFvAEPgAllowExisting,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.allow_test", "target_dn", "uni/tn-test_tenant/ap-test_ap/epg-epg_2"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.allow_test_2", "target_dn", "uni/tn-test_tenant/ap-test_ap/epg-epg_2"),
+					resource.TestCheckResourceAttr("aci_relation_to_contract_master.allow_test", "target_dn", "uni/tn-test_tenant/ap-test_ap/epg-epg_0"),
+					resource.TestCheckResourceAttr("aci_relation_to_contract_master.allow_test_2", "target_dn", "uni/tn-test_tenant/ap-test_ap/epg-epg_0"),
 					resource.TestCheckResourceAttr("aci_relation_to_contract_master.allow_test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_relation_to_contract_master.allow_test_2", "annotation", "orchestrator:terraform"),
 				),
@@ -54,8 +54,8 @@ func TestAccResourceFvRsSecInheritedWithFvAEPg(t *testing.T) {
 				Config:             testConfigFvRsSecInheritedMinDependencyWithFvAEPgAllowExisting,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.allow_test", "target_dn", "uni/tn-test_tenant/ap-test_ap/epg-epg_2"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.allow_test_2", "target_dn", "uni/tn-test_tenant/ap-test_ap/epg-epg_2"),
+					resource.TestCheckResourceAttr("aci_relation_to_contract_master.allow_test", "target_dn", "uni/tn-test_tenant/ap-test_ap/epg-epg_0"),
+					resource.TestCheckResourceAttr("aci_relation_to_contract_master.allow_test_2", "target_dn", "uni/tn-test_tenant/ap-test_ap/epg-epg_0"),
 					resource.TestCheckResourceAttr("aci_relation_to_contract_master.allow_test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_relation_to_contract_master.allow_test_2", "annotation", "orchestrator:terraform"),
 				),
@@ -72,7 +72,7 @@ func TestAccResourceFvRsSecInheritedWithFvAEPg(t *testing.T) {
 				Config:             testConfigFvRsSecInheritedMinDependencyWithFvAEPg,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "target_dn", "uni/tn-test_tenant/ap-test_ap/epg-epg_2"),
+					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "target_dn", "uni/tn-test_tenant/ap-test_ap/epg-epg_0"),
 					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotation", "orchestrator:terraform"),
 				),
 			},
@@ -81,7 +81,7 @@ func TestAccResourceFvRsSecInheritedWithFvAEPg(t *testing.T) {
 				Config:             testConfigFvRsSecInheritedAllDependencyWithFvAEPg,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "target_dn", "uni/tn-test_tenant/ap-test_ap/epg-epg_2"),
+					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "target_dn", "uni/tn-test_tenant/ap-test_ap/epg-epg_0"),
 					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotation", "annotation"),
 				),
 			},
@@ -90,7 +90,7 @@ func TestAccResourceFvRsSecInheritedWithFvAEPg(t *testing.T) {
 				Config:             testConfigFvRsSecInheritedMinDependencyWithFvAEPg,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "target_dn", "uni/tn-test_tenant/ap-test_ap/epg-epg_2"),
+					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "target_dn", "uni/tn-test_tenant/ap-test_ap/epg-epg_0"),
 				),
 			},
 			// Update with empty strings config or default value
@@ -98,7 +98,7 @@ func TestAccResourceFvRsSecInheritedWithFvAEPg(t *testing.T) {
 				Config:             testConfigFvRsSecInheritedResetDependencyWithFvAEPg,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "target_dn", "uni/tn-test_tenant/ap-test_ap/epg-epg_2"),
+					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "target_dn", "uni/tn-test_tenant/ap-test_ap/epg-epg_0"),
 					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotation", "orchestrator:terraform"),
 				),
 			},
@@ -113,7 +113,7 @@ func TestAccResourceFvRsSecInheritedWithFvAEPg(t *testing.T) {
 				Config:             testConfigFvRsSecInheritedChildrenDependencyWithFvAEPg,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "target_dn", "uni/tn-test_tenant/ap-test_ap/epg-epg_2"),
+					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "target_dn", "uni/tn-test_tenant/ap-test_ap/epg-epg_0"),
 					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.0.value", "value_1"),
@@ -359,11 +359,11 @@ resource "aci_endpoint_security_group" "test_endpoint_security_group_1" {
 }
 resource "aci_application_epg" "test_application_epg_0" {
   application_profile_dn = aci_application_profile.test.id
-  name = "epg_2"
+  name = "epg_0"
 }
 resource "aci_application_epg" "test_application_epg_1" {
   application_profile_dn = aci_application_profile.test.id
-  name = "epg_3"
+  name = "epg_1"
 }
 `
 

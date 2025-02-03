@@ -170,6 +170,63 @@ var QosDot1PClassQosCustomPolType = types.ObjectType{
 	},
 }
 
+func QosDot1PClassQosCustomPolSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(ctx context.Context, planValue, stateValue types.Set) basetypes.SetValue {
+	//  Function is needed to handle the case that an attribute is not yet suppored in a version and gets set to null during read
+	var planSetValues, stateSetValues []QosDot1PClassQosCustomPolResourceModel
+	stateValue.ElementsAs(ctx, &stateSetValues, false)
+	planValue.ElementsAs(ctx, &planSetValues, false)
+
+	// If the length of the state and plan values are different a change is already detected the loop can be skipped
+	if len(stateSetValues) == len(planSetValues) {
+		for index, stateValue := range stateSetValues {
+			nullInStateFound := false
+			if stateValue.Annotation.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Annotation = basetypes.NewStringNull()
+			}
+			if stateValue.Descr.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Descr = basetypes.NewStringNull()
+			}
+			if stateValue.From.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].From = customTypes.NewQosDot1PClassFromStringNull()
+			}
+			if stateValue.Name.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Name = basetypes.NewStringNull()
+			}
+			if stateValue.NameAlias.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].NameAlias = basetypes.NewStringNull()
+			}
+			if stateValue.Prio.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Prio = customTypes.NewQosDot1PClassPrioStringNull()
+			}
+			if stateValue.Target.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Target = customTypes.NewQosDot1PClassTargetStringNull()
+			}
+			if stateValue.TargetCos.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].TargetCos = customTypes.NewQosDot1PClassTargetCosStringNull()
+			}
+			if stateValue.To.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].To = customTypes.NewQosDot1PClassToStringNull()
+			}
+			if !nullInStateFound {
+				// when there are no null fields we can conclude the version supports all attributes in set
+				break
+			}
+		}
+	}
+	planSet, _ := types.SetValueFrom(ctx, QosDot1PClassQosCustomPolType, planSetValues)
+	return planSet
+
+}
+
 // TagAnnotationQosDot1PClassQosCustomPolResourceModel describes the resource data model for the children without relation ships.
 type TagAnnotationQosDot1PClassQosCustomPolResourceModel struct {
 	Key   types.String `tfsdk:"key"`
@@ -265,6 +322,63 @@ var QosDscpClassQosCustomPolType = types.ObjectType{
 		"annotations": types.SetType{ElemType: TagAnnotationQosDscpClassQosCustomPolType},
 		"tags":        types.SetType{ElemType: TagTagQosDscpClassQosCustomPolType},
 	},
+}
+
+func QosDscpClassQosCustomPolSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(ctx context.Context, planValue, stateValue types.Set) basetypes.SetValue {
+	//  Function is needed to handle the case that an attribute is not yet suppored in a version and gets set to null during read
+	var planSetValues, stateSetValues []QosDscpClassQosCustomPolResourceModel
+	stateValue.ElementsAs(ctx, &stateSetValues, false)
+	planValue.ElementsAs(ctx, &planSetValues, false)
+
+	// If the length of the state and plan values are different a change is already detected the loop can be skipped
+	if len(stateSetValues) == len(planSetValues) {
+		for index, stateValue := range stateSetValues {
+			nullInStateFound := false
+			if stateValue.Annotation.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Annotation = basetypes.NewStringNull()
+			}
+			if stateValue.Descr.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Descr = basetypes.NewStringNull()
+			}
+			if stateValue.From.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].From = customTypes.NewQosDscpClassFromStringNull()
+			}
+			if stateValue.Name.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Name = basetypes.NewStringNull()
+			}
+			if stateValue.NameAlias.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].NameAlias = basetypes.NewStringNull()
+			}
+			if stateValue.Prio.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Prio = customTypes.NewQosDscpClassPrioStringNull()
+			}
+			if stateValue.Target.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].Target = customTypes.NewQosDscpClassTargetStringNull()
+			}
+			if stateValue.TargetCos.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].TargetCos = customTypes.NewQosDscpClassTargetCosStringNull()
+			}
+			if stateValue.To.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].To = customTypes.NewQosDscpClassToStringNull()
+			}
+			if !nullInStateFound {
+				// when there are no null fields we can conclude the version supports all attributes in set
+				break
+			}
+		}
+	}
+	planSet, _ := types.SetValueFrom(ctx, QosDscpClassQosCustomPolType, planSetValues)
+	return planSet
+
 }
 
 // TagAnnotationQosDscpClassQosCustomPolResourceModel describes the resource data model for the children without relation ships.
@@ -465,6 +579,7 @@ func (r *QosCustomPolResource) Schema(ctx context.Context, req resource.SchemaRe
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(QosDot1PClassQosCustomPolSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
@@ -634,6 +749,7 @@ func (r *QosCustomPolResource) Schema(ctx context.Context, req resource.SchemaRe
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
+					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(QosDscpClassQosCustomPolSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
