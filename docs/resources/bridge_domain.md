@@ -331,6 +331,10 @@ All examples for the Bridge Domain resource can be found in the [examples](https
 ### Read-Only ###
 
 * `id` - (string) The distinguished name (DN) of the Bridge Domain object.
+* `pc_tag` (pcTag) - (string) The classification tag used for policy enforcement and zoning.
+* `scope` (scope) - (string) The scope ID (L3-VNI) of the Bridge Domain object.
+  - Default: `0`
+* `segment` (seg) - (string) The segment ID (L2-VNI) of the Bridge Domain object.
 
 ### Optional ###
 
@@ -384,10 +388,6 @@ All examples for the Bridge Domain resource can be found in the [examples](https
 * `name_alias` (nameAlias) - (string) The name alias of the Bridge Domain object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
-* `pc_tag` (pcTag) - (string) The classification tag used for policy enforcement and zoning.
-* `scope` (scope) - (string) The scope ID (L3-VNI) of the Bridge Domain object.
-  - Default: `0`
-* `segment` (seg) - (string) The segment ID (L2-VNI) of the Bridge Domain object.
 * `service_bd_routing_disable` (serviceBdRoutingDisable) - (string) Disable Routing on service BD.
   - Default: `no`
   - Valid Values: `no`, `yes`.

@@ -413,6 +413,9 @@ All examples for the Application EPG resource can be found in the [examples](htt
 ### Read-Only ###
 
 * `id` - (string) The distinguished name (DN) of the Application EPG object.
+* `pc_tag` (pcTag) - (string) The classification tag used for policy enforcement and zoning.
+* `scope` (scope) - (string) The scope ID (L3-VNI) of the Application EPG object.
+  - Default: `0`
 
 ### Optional ###
 
@@ -439,15 +442,12 @@ All examples for the Application EPG resource can be found in the [examples](htt
 * `intra_epg_isolation` (pcEnfPref) - (string) Parameter used to determine whether communication between endpoints within the EPG is blocked.
   - Default: `unenforced`
   - Valid Values: `enforced`, `unenforced`.
-* `pc_tag` (pcTag) - (string) The classification tag used for policy enforcement and zoning.
 * `preferred_group_member` (prefGrMemb) - (string) Parameter used to determine whether the EPG is part of the preferred group. Members of this group are allowed to communicate without contracts.
   - Default: `exclude`
   - Valid Values: `exclude`, `include`.
 * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
   - Default: `unspecified`
   - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
-* `scope` (scope) - (string) The scope ID (L3-VNI) of the Application EPG object.
-  - Default: `0`
 * `admin_state` (shutdown) - (string) Withdraw AEPg Configuration from all Nodes in the Fabric.
   - Default: `no`
   - Valid Values: `no`, `yes`.

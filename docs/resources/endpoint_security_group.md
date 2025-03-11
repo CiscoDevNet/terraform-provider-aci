@@ -196,6 +196,9 @@ All examples for the Endpoint Security Group resource can be found in the [examp
 ### Read-Only ###
 
 * `id` - (string) The distinguished name (DN) of the Endpoint Security Group object.
+* `pc_tag` (pcTag) - (string) The classification tag used for policy enforcement and zoning.
+* `scope` (scope) - (string) The scope ID (L3-VNI) of the Endpoint Security Group object.
+  - Default: `0`
 
 ### Optional ###
 
@@ -210,12 +213,9 @@ All examples for the Endpoint Security Group resource can be found in the [examp
 * `intra_esg_isolation` (pcEnfPref) - (string) Parameter used to determine whether communication between endpoints within the ESG is blocked.
   - Default: `unenforced`
   - Valid Values: `enforced`, `unenforced`.
-* `pc_tag` (pcTag) - (string) The classification tag used for policy enforcement and zoning.
 * `preferred_group_member` (prefGrMemb) - (string) Parameter used to determine whether the ESG is part of the preferred group. Members of this group are allowed to communicate without contracts.
   - Default: `exclude`
   - Valid Values: `exclude`, `include`.
-* `scope` (scope) - (string) The scope ID (L3-VNI) of the Endpoint Security Group object.
-  - Default: `0`
 * `admin_state` (shutdown) - (string) Withdraw the ESG configuration from all nodes in the fabric.
   - Default: `no`
   - Valid Values: `no`, `yes`.
