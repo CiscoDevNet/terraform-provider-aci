@@ -90,6 +90,14 @@ All examples for the {{.ResourceNameAsDescription}} resource can be found in the
 ### Read-Only ###
 
 * `id` - (string) The distinguished name (DN) of the {{.ResourceNameAsDescription}} object.
+{{- range .Properties}}
+    {{- if .ReadOnly}}
+* `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}}{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
+        {{- if .DefaultValue }}
+  - Default: `{{ .DefaultValue }}`
+        {{- end}}
+    {{- end }}
+{{- end }}
 {{- if .HasOptionalProperties}}
 
 ### Optional ###
@@ -101,7 +109,7 @@ All examples for the {{.ResourceNameAsDescription}} resource can be found in the
   - Default: `{{ getDefaultValues .PkgName "parent_dn" $.Definitions}}`
 {{- end}}
   {{- range .Properties}}
-    {{- if and (not .IsNaming) (not .IsRequired)}}
+    {{- if and (and (not .IsNaming) (not .IsRequired)) (not .ReadOnly)}}
       {{- if eq .ValueType "bitmask"}}
 * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (list) {{.Comment}}{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
         {{- if .DefaultValue }}
