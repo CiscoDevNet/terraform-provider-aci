@@ -1,0 +1,3509 @@
+{
+        "fv:Tenant": {
+            "contains": {
+                "aaa:DomainRef": "",
+                "aaa:PartialRbacRule": "",
+                "aaa:RbacAnnotation": "",
+                "arp:IfPol": "",
+                "auth:SvrGroup": "",
+                "bfd:IfPol": "",
+                "bfd:MhIfPol": "",
+                "bfd:MhNodePol": "",
+                "bgp:BestPathCtrlPol": "",
+                "bgp:CtxAfPol": "",
+                "bgp:CtxPol": "",
+                "bgp:PeerPfxPol": "",
+                "bgp:RtSummPol": "",
+                "cloud:AD": "",
+                "cloud:AccessPolicy": "",
+                "cloud:Account": "",
+                "cloud:ApicSubnetPool": "",
+                "cloud:App": "",
+                "cloud:AppGwStatsAg15min": "",
+                "cloud:AppGwStatsAg1d": "",
+                "cloud:AppGwStatsAg1h": "",
+                "cloud:AppGwStatsAg1mo": "",
+                "cloud:AppGwStatsAg1qtr": "",
+                "cloud:AppGwStatsAg1w": "",
+                "cloud:AppGwStatsAg1year": "",
+                "cloud:AppGwStatsAg5min": "",
+                "cloud:AppGwStatsAgHist15min": "",
+                "cloud:AppGwStatsAgHist1d": "",
+                "cloud:AppGwStatsAgHist1h": "",
+                "cloud:AppGwStatsAgHist1mo": "",
+                "cloud:AppGwStatsAgHist1qtr": "",
+                "cloud:AppGwStatsAgHist1w": "",
+                "cloud:AppGwStatsAgHist1year": "",
+                "cloud:AppGwStatsAgHist5min": "",
+                "cloud:AwsFlowLogPol": "",
+                "cloud:AwsLogGroup": "",
+                "cloud:AwsProvider": "",
+                "cloud:AzNLBStatsAg15min": "",
+                "cloud:AzNLBStatsAg1d": "",
+                "cloud:AzNLBStatsAg1h": "",
+                "cloud:AzNLBStatsAg1mo": "",
+                "cloud:AzNLBStatsAg1qtr": "",
+                "cloud:AzNLBStatsAg1w": "",
+                "cloud:AzNLBStatsAg1year": "",
+                "cloud:AzNLBStatsAg5min": "",
+                "cloud:AzNLBStatsAgHist15min": "",
+                "cloud:AzNLBStatsAgHist1d": "",
+                "cloud:AzNLBStatsAgHist1h": "",
+                "cloud:AzNLBStatsAgHist1mo": "",
+                "cloud:AzNLBStatsAgHist1qtr": "",
+                "cloud:AzNLBStatsAgHist1w": "",
+                "cloud:AzNLBStatsAgHist1year": "",
+                "cloud:AzNLBStatsAgHist5min": "",
+                "cloud:AzureStatsPol": "",
+                "cloud:BfdPol": "",
+                "cloud:CDevDef": "",
+                "cloud:CertStore": "",
+                "cloud:Counter": "",
+                "cloud:Credentials": "",
+                "cloud:CtxProfile": "",
+                "cloud:Depl": "",
+                "cloud:EgressBytesAg15min": "",
+                "cloud:EgressBytesAg1d": "",
+                "cloud:EgressBytesAg1h": "",
+                "cloud:EgressBytesAg1mo": "",
+                "cloud:EgressBytesAg1qtr": "",
+                "cloud:EgressBytesAg1w": "",
+                "cloud:EgressBytesAg1year": "",
+                "cloud:EgressBytesAg5min": "",
+                "cloud:EgressBytesAgHist15min": "",
+                "cloud:EgressBytesAgHist1d": "",
+                "cloud:EgressBytesAgHist1h": "",
+                "cloud:EgressBytesAgHist1mo": "",
+                "cloud:EgressBytesAgHist1qtr": "",
+                "cloud:EgressBytesAgHist1w": "",
+                "cloud:EgressBytesAgHist1year": "",
+                "cloud:EgressBytesAgHist5min": "",
+                "cloud:EgressPktsAg15min": "",
+                "cloud:EgressPktsAg1d": "",
+                "cloud:EgressPktsAg1h": "",
+                "cloud:EgressPktsAg1mo": "",
+                "cloud:EgressPktsAg1qtr": "",
+                "cloud:EgressPktsAg1w": "",
+                "cloud:EgressPktsAg1year": "",
+                "cloud:EgressPktsAg5min": "",
+                "cloud:EgressPktsAgHist15min": "",
+                "cloud:EgressPktsAgHist1d": "",
+                "cloud:EgressPktsAgHist1h": "",
+                "cloud:EgressPktsAgHist1mo": "",
+                "cloud:EgressPktsAgHist1qtr": "",
+                "cloud:EgressPktsAgHist1w": "",
+                "cloud:EgressPktsAgHist1year": "",
+                "cloud:EgressPktsAgHist5min": "",
+                "cloud:ExtCtxProfile": "",
+                "cloud:GatewayRouterP": "",
+                "cloud:GcpFlowLogPol": "",
+                "cloud:HostRouterEgressBytesAg15min": "",
+                "cloud:HostRouterEgressBytesAg1d": "",
+                "cloud:HostRouterEgressBytesAg1h": "",
+                "cloud:HostRouterEgressBytesAg1mo": "",
+                "cloud:HostRouterEgressBytesAg1qtr": "",
+                "cloud:HostRouterEgressBytesAg1w": "",
+                "cloud:HostRouterEgressBytesAg1year": "",
+                "cloud:HostRouterEgressBytesAg5min": "",
+                "cloud:HostRouterEgressBytesAgHist15min": "",
+                "cloud:HostRouterEgressBytesAgHist1d": "",
+                "cloud:HostRouterEgressBytesAgHist1h": "",
+                "cloud:HostRouterEgressBytesAgHist1mo": "",
+                "cloud:HostRouterEgressBytesAgHist1qtr": "",
+                "cloud:HostRouterEgressBytesAgHist1w": "",
+                "cloud:HostRouterEgressBytesAgHist1year": "",
+                "cloud:HostRouterEgressBytesAgHist5min": "",
+                "cloud:HostRouterEgressPktsAg15min": "",
+                "cloud:HostRouterEgressPktsAg1d": "",
+                "cloud:HostRouterEgressPktsAg1h": "",
+                "cloud:HostRouterEgressPktsAg1mo": "",
+                "cloud:HostRouterEgressPktsAg1qtr": "",
+                "cloud:HostRouterEgressPktsAg1w": "",
+                "cloud:HostRouterEgressPktsAg1year": "",
+                "cloud:HostRouterEgressPktsAg5min": "",
+                "cloud:HostRouterEgressPktsAgHist15min": "",
+                "cloud:HostRouterEgressPktsAgHist1d": "",
+                "cloud:HostRouterEgressPktsAgHist1h": "",
+                "cloud:HostRouterEgressPktsAgHist1mo": "",
+                "cloud:HostRouterEgressPktsAgHist1qtr": "",
+                "cloud:HostRouterEgressPktsAgHist1w": "",
+                "cloud:HostRouterEgressPktsAgHist1year": "",
+                "cloud:HostRouterEgressPktsAgHist5min": "",
+                "cloud:HostRouterIngressBytesAg15min": "",
+                "cloud:HostRouterIngressBytesAg1d": "",
+                "cloud:HostRouterIngressBytesAg1h": "",
+                "cloud:HostRouterIngressBytesAg1mo": "",
+                "cloud:HostRouterIngressBytesAg1qtr": "",
+                "cloud:HostRouterIngressBytesAg1w": "",
+                "cloud:HostRouterIngressBytesAg1year": "",
+                "cloud:HostRouterIngressBytesAg5min": "",
+                "cloud:HostRouterIngressBytesAgHist15min": "",
+                "cloud:HostRouterIngressBytesAgHist1d": "",
+                "cloud:HostRouterIngressBytesAgHist1h": "",
+                "cloud:HostRouterIngressBytesAgHist1mo": "",
+                "cloud:HostRouterIngressBytesAgHist1qtr": "",
+                "cloud:HostRouterIngressBytesAgHist1w": "",
+                "cloud:HostRouterIngressBytesAgHist1year": "",
+                "cloud:HostRouterIngressBytesAgHist5min": "",
+                "cloud:HostRouterIngressPktsAg15min": "",
+                "cloud:HostRouterIngressPktsAg1d": "",
+                "cloud:HostRouterIngressPktsAg1h": "",
+                "cloud:HostRouterIngressPktsAg1mo": "",
+                "cloud:HostRouterIngressPktsAg1qtr": "",
+                "cloud:HostRouterIngressPktsAg1w": "",
+                "cloud:HostRouterIngressPktsAg1year": "",
+                "cloud:HostRouterIngressPktsAg5min": "",
+                "cloud:HostRouterIngressPktsAgHist15min": "",
+                "cloud:HostRouterIngressPktsAgHist1d": "",
+                "cloud:HostRouterIngressPktsAgHist1h": "",
+                "cloud:HostRouterIngressPktsAgHist1mo": "",
+                "cloud:HostRouterIngressPktsAgHist1qtr": "",
+                "cloud:HostRouterIngressPktsAgHist1w": "",
+                "cloud:HostRouterIngressPktsAgHist1year": "",
+                "cloud:HostRouterIngressPktsAgHist5min": "",
+                "cloud:HostRouterPol": "",
+                "cloud:IngressBytesAg15min": "",
+                "cloud:IngressBytesAg1d": "",
+                "cloud:IngressBytesAg1h": "",
+                "cloud:IngressBytesAg1mo": "",
+                "cloud:IngressBytesAg1qtr": "",
+                "cloud:IngressBytesAg1w": "",
+                "cloud:IngressBytesAg1year": "",
+                "cloud:IngressBytesAg5min": "",
+                "cloud:IngressBytesAgHist15min": "",
+                "cloud:IngressBytesAgHist1d": "",
+                "cloud:IngressBytesAgHist1h": "",
+                "cloud:IngressBytesAgHist1mo": "",
+                "cloud:IngressBytesAgHist1qtr": "",
+                "cloud:IngressBytesAgHist1w": "",
+                "cloud:IngressBytesAgHist1year": "",
+                "cloud:IngressBytesAgHist5min": "",
+                "cloud:IngressPktsAg15min": "",
+                "cloud:IngressPktsAg1d": "",
+                "cloud:IngressPktsAg1h": "",
+                "cloud:IngressPktsAg1mo": "",
+                "cloud:IngressPktsAg1qtr": "",
+                "cloud:IngressPktsAg1w": "",
+                "cloud:IngressPktsAg1year": "",
+                "cloud:IngressPktsAg5min": "",
+                "cloud:IngressPktsAgHist15min": "",
+                "cloud:IngressPktsAgHist1d": "",
+                "cloud:IngressPktsAgHist1h": "",
+                "cloud:IngressPktsAgHist1mo": "",
+                "cloud:IngressPktsAgHist1qtr": "",
+                "cloud:IngressPktsAgHist1w": "",
+                "cloud:IngressPktsAgHist1year": "",
+                "cloud:IngressPktsAgHist5min": "",
+                "cloud:LB": "",
+                "cloud:LBStatsAg15min": "",
+                "cloud:LBStatsAg1d": "",
+                "cloud:LBStatsAg1h": "",
+                "cloud:LBStatsAg1mo": "",
+                "cloud:LBStatsAg1qtr": "",
+                "cloud:LBStatsAg1w": "",
+                "cloud:LBStatsAg1year": "",
+                "cloud:LBStatsAg5min": "",
+                "cloud:LBStatsAgHist15min": "",
+                "cloud:LBStatsAgHist1d": "",
+                "cloud:LBStatsAgHist1h": "",
+                "cloud:LBStatsAgHist1mo": "",
+                "cloud:LBStatsAgHist1qtr": "",
+                "cloud:LBStatsAgHist1w": "",
+                "cloud:LBStatsAgHist1year": "",
+                "cloud:LBStatsAgHist5min": "",
+                "cloud:LDev": "",
+                "cloud:LDevDef": "",
+                "cloud:NLBStatsAg15min": "",
+                "cloud:NLBStatsAg1d": "",
+                "cloud:NLBStatsAg1h": "",
+                "cloud:NLBStatsAg1mo": "",
+                "cloud:NLBStatsAg1qtr": "",
+                "cloud:NLBStatsAg1w": "",
+                "cloud:NLBStatsAg1year": "",
+                "cloud:NLBStatsAg5min": "",
+                "cloud:NLBStatsAgHist15min": "",
+                "cloud:NLBStatsAgHist1d": "",
+                "cloud:NLBStatsAgHist1h": "",
+                "cloud:NLBStatsAgHist1mo": "",
+                "cloud:NLBStatsAgHist1qtr": "",
+                "cloud:NLBStatsAgHist1w": "",
+                "cloud:NLBStatsAgHist1year": "",
+                "cloud:NLBStatsAgHist5min": "",
+                "cloud:PoolHealthStatsAg15min": "",
+                "cloud:PoolHealthStatsAg1d": "",
+                "cloud:PoolHealthStatsAg1h": "",
+                "cloud:PoolHealthStatsAg1mo": "",
+                "cloud:PoolHealthStatsAg1qtr": "",
+                "cloud:PoolHealthStatsAg1w": "",
+                "cloud:PoolHealthStatsAg1year": "",
+                "cloud:PoolHealthStatsAg5min": "",
+                "cloud:PoolHealthStatsAgHist15min": "",
+                "cloud:PoolHealthStatsAgHist1d": "",
+                "cloud:PoolHealthStatsAgHist1h": "",
+                "cloud:PoolHealthStatsAgHist1mo": "",
+                "cloud:PoolHealthStatsAgHist1qtr": "",
+                "cloud:PoolHealthStatsAgHist1w": "",
+                "cloud:PoolHealthStatsAgHist1year": "",
+                "cloud:PoolHealthStatsAgHist5min": "",
+                "cloud:PoolResponseLatencyAg15min": "",
+                "cloud:PoolResponseLatencyAg1d": "",
+                "cloud:PoolResponseLatencyAg1h": "",
+                "cloud:PoolResponseLatencyAg1mo": "",
+                "cloud:PoolResponseLatencyAg1qtr": "",
+                "cloud:PoolResponseLatencyAg1w": "",
+                "cloud:PoolResponseLatencyAg1year": "",
+                "cloud:PoolResponseLatencyAg5min": "",
+                "cloud:PoolResponseLatencyAgHist15min": "",
+                "cloud:PoolResponseLatencyAgHist1d": "",
+                "cloud:PoolResponseLatencyAgHist1h": "",
+                "cloud:PoolResponseLatencyAgHist1mo": "",
+                "cloud:PoolResponseLatencyAgHist1qtr": "",
+                "cloud:PoolResponseLatencyAgHist1w": "",
+                "cloud:PoolResponseLatencyAgHist1year": "",
+                "cloud:PoolResponseLatencyAgHist5min": "",
+                "cloud:StatsFilter": "",
+                "cloud:SvcDevPol": "",
+                "cloud:TransitHubGwPol": "",
+                "cloud:VpcInfoHolder": "",
+                "cloud:VpnGwPol": "",
+                "cloud:VrfRouteLeakPol": "",
+                "cloudsec:IfPol": "",
+                "cloudtemplate:InfraNetwork": "",
+                "dbgac:AnyToEp": "",
+                "dbgac:EpToAny": "",
+                "dbgac:EpToEp": "",
+                "dbgac:EpToEpg": "",
+                "dbgac:EpToExt": "",
+                "dbgac:EpgToEp": "",
+                "dbgac:EpgToEpg": "",
+                "dbgac:EpgToIp": "",
+                "dbgac:ExtToEp": "",
+                "dbgac:IpToEpg": "",
+                "dbgac:IpToIp": "",
+                "dhcp:OptionPol": "",
+                "dhcp:RelayP": "",
+                "dnsepg:SvrGrp": "",
+                "draw:Cont": "",
+                "eigrp:CtxAfPol": "",
+                "eigrp:IfPol": "",
+                "eigrp:RtSummPol": "",
+                "extdev:SDWanPolCont": "",
+                "extdev:SDWanVpnCont": "",
+                "fault:CountsWithDetails": "",
+                "fault:Delegate": "",
+                "fault:Inst": "",
+                "fc:PinningP": "",
+                "fhs:BDPol": "",
+                "fhs:TrustCtrlPol": "",
+                "fv:AddrMgmtPool": "",
+                "fv:Ap": "",
+                "fv:BD": "",
+                "fv:ConnInstrPol": "",
+                "fv:Ctx": "",
+                "fv:EpRetPol": "",
+                "fv:EpTags": "",
+                "fv:FabricExtConnP": "",
+                "fv:FltCounter15min": "",
+                "fv:FltCounter1d": "",
+                "fv:FltCounter1h": "",
+                "fv:FltCounter1mo": "",
+                "fv:FltCounter1qtr": "",
+                "fv:FltCounter1w": "",
+                "fv:FltCounter1year": "",
+                "fv:FltCounter5min": "",
+                "fv:FltCounterHist15min": "",
+                "fv:FltCounterHist1d": "",
+                "fv:FltCounterHist1h": "",
+                "fv:FltCounterHist1mo": "",
+                "fv:FltCounterHist1qtr": "",
+                "fv:FltCounterHist1w": "",
+                "fv:FltCounterHist1year": "",
+                "fv:FltCounterHist5min": "",
+                "fv:IPSLAMonitoringPol": "",
+                "fv:IntAp": "",
+                "fv:InterShardTagSelectorCont": "",
+                "fv:KeyChainPol": "",
+                "fv:OverallHealth15min": "",
+                "fv:OverallHealth1d": "",
+                "fv:OverallHealth1h": "",
+                "fv:OverallHealth1mo": "",
+                "fv:OverallHealth1qtr": "",
+                "fv:OverallHealth1w": "",
+                "fv:OverallHealth1year": "",
+                "fv:OverallHealthHist15min": "",
+                "fv:OverallHealthHist1d": "",
+                "fv:OverallHealthHist1h": "",
+                "fv:OverallHealthHist1mo": "",
+                "fv:OverallHealthHist1qtr": "",
+                "fv:OverallHealthHist1w": "",
+                "fv:OverallHealthHist1year": "",
+                "fv:RsCloudAccount": "",
+                "fv:RsTenantMonPol": "",
+                "fv:RsTnDenyRule": "",
+                "fv:RtTenant": "",
+                "fv:RtTenantInfra": "",
+                "fv:SlaDef": "",
+                "fv:SvcBD": "",
+                "fv:TnlCtx": "",
+                "fv:TnlEPg": "",
+                "fv:TrackList": "",
+                "fv:TrackMember": "",
+                "fvns:AddrInst": "",
+                "health:Inst": "",
+                "health:NodeInst": "",
+                "hostprot:Pol": "",
+                "hsrp:GroupPol": "",
+                "hsrp:IfPol": "",
+                "igmp:IfPol": "",
+                "igmp:SnoopPol": "",
+                "infra:ClP": "",
+                "infra:ProvP": "",
+                "ipsec:IsakmpPhase1Pol": "",
+                "ipsec:IsakmpPhase2Pol": "",
+                "isakmp:GlobalPol": "",
+                "isakmp:Keyring": "",
+                "isakmp:Policy": "",
+                "isakmp:Profile": "",
+                "l2:EgrBytesAg15min": "",
+                "l2:EgrBytesAg1d": "",
+                "l2:EgrBytesAg1h": "",
+                "l2:EgrBytesAg1mo": "",
+                "l2:EgrBytesAg1qtr": "",
+                "l2:EgrBytesAg1w": "",
+                "l2:EgrBytesAg1year": "",
+                "l2:EgrBytesAgHist15min": "",
+                "l2:EgrBytesAgHist1d": "",
+                "l2:EgrBytesAgHist1h": "",
+                "l2:EgrBytesAgHist1mo": "",
+                "l2:EgrBytesAgHist1qtr": "",
+                "l2:EgrBytesAgHist1w": "",
+                "l2:EgrBytesAgHist1year": "",
+                "l2:EgrPktsAg15min": "",
+                "l2:EgrPktsAg1d": "",
+                "l2:EgrPktsAg1h": "",
+                "l2:EgrPktsAg1mo": "",
+                "l2:EgrPktsAg1qtr": "",
+                "l2:EgrPktsAg1w": "",
+                "l2:EgrPktsAg1year": "",
+                "l2:EgrPktsAgHist15min": "",
+                "l2:EgrPktsAgHist1d": "",
+                "l2:EgrPktsAgHist1h": "",
+                "l2:EgrPktsAgHist1mo": "",
+                "l2:EgrPktsAgHist1qtr": "",
+                "l2:EgrPktsAgHist1w": "",
+                "l2:EgrPktsAgHist1year": "",
+                "l2:IngrBytesAg15min": "",
+                "l2:IngrBytesAg1d": "",
+                "l2:IngrBytesAg1h": "",
+                "l2:IngrBytesAg1mo": "",
+                "l2:IngrBytesAg1qtr": "",
+                "l2:IngrBytesAg1w": "",
+                "l2:IngrBytesAg1year": "",
+                "l2:IngrBytesAgHist15min": "",
+                "l2:IngrBytesAgHist1d": "",
+                "l2:IngrBytesAgHist1h": "",
+                "l2:IngrBytesAgHist1mo": "",
+                "l2:IngrBytesAgHist1qtr": "",
+                "l2:IngrBytesAgHist1w": "",
+                "l2:IngrBytesAgHist1year": "",
+                "l2:IngrPktsAg15min": "",
+                "l2:IngrPktsAg1d": "",
+                "l2:IngrPktsAg1h": "",
+                "l2:IngrPktsAg1mo": "",
+                "l2:IngrPktsAg1qtr": "",
+                "l2:IngrPktsAg1w": "",
+                "l2:IngrPktsAg1year": "",
+                "l2:IngrPktsAgHist15min": "",
+                "l2:IngrPktsAgHist1d": "",
+                "l2:IngrPktsAgHist1h": "",
+                "l2:IngrPktsAgHist1mo": "",
+                "l2:IngrPktsAgHist1qtr": "",
+                "l2:IngrPktsAgHist1w": "",
+                "l2:IngrPktsAgHist1year": "",
+                "l2ext:Out": "",
+                "l3ext:BdProfile": "",
+                "l3ext:Out": "",
+                "l3ext:OutDef": "",
+                "l3ext:RogueExceptionMacGroup": "",
+                "l3ext:RouteTagPol": "",
+                "l3ext:VrfValidationPol": "",
+                "mdp:LocalTenant": "",
+                "mdp:RemoteTenant": "",
+                "mgmt:ExtMgmtEntity": "",
+                "mgmt:MgmtP": "",
+                "mld:SnoopPol": "",
+                "mon:EPGPol": "",
+                "mpls:IfPol": "",
+                "mpls:LabelPol": "",
+                "nd:IfPol": "",
+                "nd:PfxPol": "",
+                "netflow:ExporterPol": "",
+                "netflow:MonitorPol": "",
+                "netflow:RecordPol": "",
+                "orchs:SvcRsrcPool": "",
+                "ospf:CtxPol": "",
+                "ospf:IfPol": "",
+                "ospf:RtSummPol": "",
+                "pim:IfPol": "",
+                "pim:RouteMapPol": "",
+                "qos:CustomPol": "",
+                "qos:DppPol": "",
+                "qos:DscpTransPol": "",
+                "qos:MplsCustomPol": "",
+                "qos:Requirement": "",
+                "qos:VxlanCustomPol": "",
+                "rtctrl:AttrP": "",
+                "rtctrl:Profile": "",
+                "rtctrl:SubjP": "",
+                "span:DestGrp": "",
+                "span:SrcGrp": "",
+                "span:VDestGrp": "",
+                "span:VSrcGrp": "",
+                "tag:AliasDelInst": "",
+                "tag:AliasInst": "",
+                "tag:Annotation": "",
+                "tag:ExtMngdInst": "",
+                "tag:Inst": "",
+                "tag:Tag": "",
+                "telemetry:Selector": "",
+                "traceroutep:TrEp": "",
+                "traceroutep:TrEpExt": "",
+                "traceroutep:TrExtEp": "",
+                "traceroutep:TrExtExt": "",
+                "uribv4:EgrBytesAg15min": "",
+                "uribv4:EgrBytesAg1d": "",
+                "uribv4:EgrBytesAg1h": "",
+                "uribv4:EgrBytesAg1mo": "",
+                "uribv4:EgrBytesAg1qtr": "",
+                "uribv4:EgrBytesAg1w": "",
+                "uribv4:EgrBytesAg1year": "",
+                "uribv4:EgrBytesAgHist15min": "",
+                "uribv4:EgrBytesAgHist1d": "",
+                "uribv4:EgrBytesAgHist1h": "",
+                "uribv4:EgrBytesAgHist1mo": "",
+                "uribv4:EgrBytesAgHist1qtr": "",
+                "uribv4:EgrBytesAgHist1w": "",
+                "uribv4:EgrBytesAgHist1year": "",
+                "uribv4:EgrPktsAg15min": "",
+                "uribv4:EgrPktsAg1d": "",
+                "uribv4:EgrPktsAg1h": "",
+                "uribv4:EgrPktsAg1mo": "",
+                "uribv4:EgrPktsAg1qtr": "",
+                "uribv4:EgrPktsAg1w": "",
+                "uribv4:EgrPktsAg1year": "",
+                "uribv4:EgrPktsAgHist15min": "",
+                "uribv4:EgrPktsAgHist1d": "",
+                "uribv4:EgrPktsAgHist1h": "",
+                "uribv4:EgrPktsAgHist1mo": "",
+                "uribv4:EgrPktsAgHist1qtr": "",
+                "uribv4:EgrPktsAgHist1w": "",
+                "uribv4:EgrPktsAgHist1year": "",
+                "vmm:OrchsExtTenant": "",
+                "vns:AbsCfgRel": "",
+                "vns:AbsFolder": "",
+                "vns:AbsFuncProfContr": "",
+                "vns:AbsGraph": "",
+                "vns:AbsParam": "",
+                "vns:CFolder": "",
+                "vns:CParam": "",
+                "vns:CRel": "",
+                "vns:CfgRelInst": "",
+                "vns:Chassis": "",
+                "vns:CopyBdHolder": "",
+                "vns:CtrlrMgmtPol": "",
+                "vns:DevMgr": "",
+                "vns:DevProf": "",
+                "vns:EPGExtRequest": "",
+                "vns:FWReq": "",
+                "vns:FolderInst": "",
+                "vns:GFolder": "",
+                "vns:GParam": "",
+                "vns:GRel": "",
+                "vns:GraphInst": "",
+                "vns:InBHolder": "",
+                "vns:LDevCtx": "",
+                "vns:LDevIf": "",
+                "vns:LDevInst": "",
+                "vns:LDevVip": "",
+                "vns:MscGraphXlateCont": "",
+                "vns:NatInst": "",
+                "vns:ParamInst": "",
+                "vns:PbrByPassCont": "",
+                "vns:RtrCfg": "",
+                "vns:SvcCont": "",
+                "vns:SvcL3Cont": "",
+                "vns:SvcPol": "",
+                "vns:UnitHolder": "",
+                "vxlan:BgwSet": "",
+                "vxlan:RemoteFabric": "",
+                "vz:BrCP": "",
+                "vz:CPIf": "",
+                "vz:ERFltP": "",
+                "vz:Filter": "",
+                "vz:OOBBrCP": "",
+                "vz:RFltP": "",
+                "vz:Taboo": ""
+            },
+            "rnMap": {
+                "AbsGraph-": "vns:AbsGraph",
+                "BD-": "fv:BD",
+                "CDcloudAppGwStatsAg15min": "cloud:AppGwStatsAg15min",
+                "CDcloudAppGwStatsAg1d": "cloud:AppGwStatsAg1d",
+                "CDcloudAppGwStatsAg1h": "cloud:AppGwStatsAg1h",
+                "CDcloudAppGwStatsAg1mo": "cloud:AppGwStatsAg1mo",
+                "CDcloudAppGwStatsAg1qtr": "cloud:AppGwStatsAg1qtr",
+                "CDcloudAppGwStatsAg1w": "cloud:AppGwStatsAg1w",
+                "CDcloudAppGwStatsAg1year": "cloud:AppGwStatsAg1year",
+                "CDcloudAppGwStatsAg5min": "cloud:AppGwStatsAg5min",
+                "CDcloudAzNLBStatsAg15min": "cloud:AzNLBStatsAg15min",
+                "CDcloudAzNLBStatsAg1d": "cloud:AzNLBStatsAg1d",
+                "CDcloudAzNLBStatsAg1h": "cloud:AzNLBStatsAg1h",
+                "CDcloudAzNLBStatsAg1mo": "cloud:AzNLBStatsAg1mo",
+                "CDcloudAzNLBStatsAg1qtr": "cloud:AzNLBStatsAg1qtr",
+                "CDcloudAzNLBStatsAg1w": "cloud:AzNLBStatsAg1w",
+                "CDcloudAzNLBStatsAg1year": "cloud:AzNLBStatsAg1year",
+                "CDcloudAzNLBStatsAg5min": "cloud:AzNLBStatsAg5min",
+                "CDcloudEgressBytesAg15min": "cloud:EgressBytesAg15min",
+                "CDcloudEgressBytesAg1d": "cloud:EgressBytesAg1d",
+                "CDcloudEgressBytesAg1h": "cloud:EgressBytesAg1h",
+                "CDcloudEgressBytesAg1mo": "cloud:EgressBytesAg1mo",
+                "CDcloudEgressBytesAg1qtr": "cloud:EgressBytesAg1qtr",
+                "CDcloudEgressBytesAg1w": "cloud:EgressBytesAg1w",
+                "CDcloudEgressBytesAg1year": "cloud:EgressBytesAg1year",
+                "CDcloudEgressBytesAg5min": "cloud:EgressBytesAg5min",
+                "CDcloudEgressPktsAg15min": "cloud:EgressPktsAg15min",
+                "CDcloudEgressPktsAg1d": "cloud:EgressPktsAg1d",
+                "CDcloudEgressPktsAg1h": "cloud:EgressPktsAg1h",
+                "CDcloudEgressPktsAg1mo": "cloud:EgressPktsAg1mo",
+                "CDcloudEgressPktsAg1qtr": "cloud:EgressPktsAg1qtr",
+                "CDcloudEgressPktsAg1w": "cloud:EgressPktsAg1w",
+                "CDcloudEgressPktsAg1year": "cloud:EgressPktsAg1year",
+                "CDcloudEgressPktsAg5min": "cloud:EgressPktsAg5min",
+                "CDcloudHostRouterEgressBytesAg15min": "cloud:HostRouterEgressBytesAg15min",
+                "CDcloudHostRouterEgressBytesAg1d": "cloud:HostRouterEgressBytesAg1d",
+                "CDcloudHostRouterEgressBytesAg1h": "cloud:HostRouterEgressBytesAg1h",
+                "CDcloudHostRouterEgressBytesAg1mo": "cloud:HostRouterEgressBytesAg1mo",
+                "CDcloudHostRouterEgressBytesAg1qtr": "cloud:HostRouterEgressBytesAg1qtr",
+                "CDcloudHostRouterEgressBytesAg1w": "cloud:HostRouterEgressBytesAg1w",
+                "CDcloudHostRouterEgressBytesAg1year": "cloud:HostRouterEgressBytesAg1year",
+                "CDcloudHostRouterEgressBytesAg5min": "cloud:HostRouterEgressBytesAg5min",
+                "CDcloudHostRouterEgressPktsAg15min": "cloud:HostRouterEgressPktsAg15min",
+                "CDcloudHostRouterEgressPktsAg1d": "cloud:HostRouterEgressPktsAg1d",
+                "CDcloudHostRouterEgressPktsAg1h": "cloud:HostRouterEgressPktsAg1h",
+                "CDcloudHostRouterEgressPktsAg1mo": "cloud:HostRouterEgressPktsAg1mo",
+                "CDcloudHostRouterEgressPktsAg1qtr": "cloud:HostRouterEgressPktsAg1qtr",
+                "CDcloudHostRouterEgressPktsAg1w": "cloud:HostRouterEgressPktsAg1w",
+                "CDcloudHostRouterEgressPktsAg1year": "cloud:HostRouterEgressPktsAg1year",
+                "CDcloudHostRouterEgressPktsAg5min": "cloud:HostRouterEgressPktsAg5min",
+                "CDcloudHostRouterIngressBytesAg15min": "cloud:HostRouterIngressBytesAg15min",
+                "CDcloudHostRouterIngressBytesAg1d": "cloud:HostRouterIngressBytesAg1d",
+                "CDcloudHostRouterIngressBytesAg1h": "cloud:HostRouterIngressBytesAg1h",
+                "CDcloudHostRouterIngressBytesAg1mo": "cloud:HostRouterIngressBytesAg1mo",
+                "CDcloudHostRouterIngressBytesAg1qtr": "cloud:HostRouterIngressBytesAg1qtr",
+                "CDcloudHostRouterIngressBytesAg1w": "cloud:HostRouterIngressBytesAg1w",
+                "CDcloudHostRouterIngressBytesAg1year": "cloud:HostRouterIngressBytesAg1year",
+                "CDcloudHostRouterIngressBytesAg5min": "cloud:HostRouterIngressBytesAg5min",
+                "CDcloudHostRouterIngressPktsAg15min": "cloud:HostRouterIngressPktsAg15min",
+                "CDcloudHostRouterIngressPktsAg1d": "cloud:HostRouterIngressPktsAg1d",
+                "CDcloudHostRouterIngressPktsAg1h": "cloud:HostRouterIngressPktsAg1h",
+                "CDcloudHostRouterIngressPktsAg1mo": "cloud:HostRouterIngressPktsAg1mo",
+                "CDcloudHostRouterIngressPktsAg1qtr": "cloud:HostRouterIngressPktsAg1qtr",
+                "CDcloudHostRouterIngressPktsAg1w": "cloud:HostRouterIngressPktsAg1w",
+                "CDcloudHostRouterIngressPktsAg1year": "cloud:HostRouterIngressPktsAg1year",
+                "CDcloudHostRouterIngressPktsAg5min": "cloud:HostRouterIngressPktsAg5min",
+                "CDcloudIngressBytesAg15min": "cloud:IngressBytesAg15min",
+                "CDcloudIngressBytesAg1d": "cloud:IngressBytesAg1d",
+                "CDcloudIngressBytesAg1h": "cloud:IngressBytesAg1h",
+                "CDcloudIngressBytesAg1mo": "cloud:IngressBytesAg1mo",
+                "CDcloudIngressBytesAg1qtr": "cloud:IngressBytesAg1qtr",
+                "CDcloudIngressBytesAg1w": "cloud:IngressBytesAg1w",
+                "CDcloudIngressBytesAg1year": "cloud:IngressBytesAg1year",
+                "CDcloudIngressBytesAg5min": "cloud:IngressBytesAg5min",
+                "CDcloudIngressPktsAg15min": "cloud:IngressPktsAg15min",
+                "CDcloudIngressPktsAg1d": "cloud:IngressPktsAg1d",
+                "CDcloudIngressPktsAg1h": "cloud:IngressPktsAg1h",
+                "CDcloudIngressPktsAg1mo": "cloud:IngressPktsAg1mo",
+                "CDcloudIngressPktsAg1qtr": "cloud:IngressPktsAg1qtr",
+                "CDcloudIngressPktsAg1w": "cloud:IngressPktsAg1w",
+                "CDcloudIngressPktsAg1year": "cloud:IngressPktsAg1year",
+                "CDcloudIngressPktsAg5min": "cloud:IngressPktsAg5min",
+                "CDcloudLBStatsAg15min": "cloud:LBStatsAg15min",
+                "CDcloudLBStatsAg1d": "cloud:LBStatsAg1d",
+                "CDcloudLBStatsAg1h": "cloud:LBStatsAg1h",
+                "CDcloudLBStatsAg1mo": "cloud:LBStatsAg1mo",
+                "CDcloudLBStatsAg1qtr": "cloud:LBStatsAg1qtr",
+                "CDcloudLBStatsAg1w": "cloud:LBStatsAg1w",
+                "CDcloudLBStatsAg1year": "cloud:LBStatsAg1year",
+                "CDcloudLBStatsAg5min": "cloud:LBStatsAg5min",
+                "CDcloudNLBStatsAg15min": "cloud:NLBStatsAg15min",
+                "CDcloudNLBStatsAg1d": "cloud:NLBStatsAg1d",
+                "CDcloudNLBStatsAg1h": "cloud:NLBStatsAg1h",
+                "CDcloudNLBStatsAg1mo": "cloud:NLBStatsAg1mo",
+                "CDcloudNLBStatsAg1qtr": "cloud:NLBStatsAg1qtr",
+                "CDcloudNLBStatsAg1w": "cloud:NLBStatsAg1w",
+                "CDcloudNLBStatsAg1year": "cloud:NLBStatsAg1year",
+                "CDcloudNLBStatsAg5min": "cloud:NLBStatsAg5min",
+                "CDcloudPoolHealthStatsAg15min": "cloud:PoolHealthStatsAg15min",
+                "CDcloudPoolHealthStatsAg1d": "cloud:PoolHealthStatsAg1d",
+                "CDcloudPoolHealthStatsAg1h": "cloud:PoolHealthStatsAg1h",
+                "CDcloudPoolHealthStatsAg1mo": "cloud:PoolHealthStatsAg1mo",
+                "CDcloudPoolHealthStatsAg1qtr": "cloud:PoolHealthStatsAg1qtr",
+                "CDcloudPoolHealthStatsAg1w": "cloud:PoolHealthStatsAg1w",
+                "CDcloudPoolHealthStatsAg1year": "cloud:PoolHealthStatsAg1year",
+                "CDcloudPoolHealthStatsAg5min": "cloud:PoolHealthStatsAg5min",
+                "CDcloudPoolResponseLatencyAg15min": "cloud:PoolResponseLatencyAg15min",
+                "CDcloudPoolResponseLatencyAg1d": "cloud:PoolResponseLatencyAg1d",
+                "CDcloudPoolResponseLatencyAg1h": "cloud:PoolResponseLatencyAg1h",
+                "CDcloudPoolResponseLatencyAg1mo": "cloud:PoolResponseLatencyAg1mo",
+                "CDcloudPoolResponseLatencyAg1qtr": "cloud:PoolResponseLatencyAg1qtr",
+                "CDcloudPoolResponseLatencyAg1w": "cloud:PoolResponseLatencyAg1w",
+                "CDcloudPoolResponseLatencyAg1year": "cloud:PoolResponseLatencyAg1year",
+                "CDcloudPoolResponseLatencyAg5min": "cloud:PoolResponseLatencyAg5min",
+                "CDfvFltCounter15min": "fv:FltCounter15min",
+                "CDfvFltCounter1d": "fv:FltCounter1d",
+                "CDfvFltCounter1h": "fv:FltCounter1h",
+                "CDfvFltCounter1mo": "fv:FltCounter1mo",
+                "CDfvFltCounter1qtr": "fv:FltCounter1qtr",
+                "CDfvFltCounter1w": "fv:FltCounter1w",
+                "CDfvFltCounter1year": "fv:FltCounter1year",
+                "CDfvFltCounter5min": "fv:FltCounter5min",
+                "CDfvOverallHealth15min": "fv:OverallHealth15min",
+                "CDfvOverallHealth1d": "fv:OverallHealth1d",
+                "CDfvOverallHealth1h": "fv:OverallHealth1h",
+                "CDfvOverallHealth1mo": "fv:OverallHealth1mo",
+                "CDfvOverallHealth1qtr": "fv:OverallHealth1qtr",
+                "CDfvOverallHealth1w": "fv:OverallHealth1w",
+                "CDfvOverallHealth1year": "fv:OverallHealth1year",
+                "CDl2EgrBytesAg15min": "l2:EgrBytesAg15min",
+                "CDl2EgrBytesAg1d": "l2:EgrBytesAg1d",
+                "CDl2EgrBytesAg1h": "l2:EgrBytesAg1h",
+                "CDl2EgrBytesAg1mo": "l2:EgrBytesAg1mo",
+                "CDl2EgrBytesAg1qtr": "l2:EgrBytesAg1qtr",
+                "CDl2EgrBytesAg1w": "l2:EgrBytesAg1w",
+                "CDl2EgrBytesAg1year": "l2:EgrBytesAg1year",
+                "CDl2EgrPktsAg15min": "l2:EgrPktsAg15min",
+                "CDl2EgrPktsAg1d": "l2:EgrPktsAg1d",
+                "CDl2EgrPktsAg1h": "l2:EgrPktsAg1h",
+                "CDl2EgrPktsAg1mo": "l2:EgrPktsAg1mo",
+                "CDl2EgrPktsAg1qtr": "l2:EgrPktsAg1qtr",
+                "CDl2EgrPktsAg1w": "l2:EgrPktsAg1w",
+                "CDl2EgrPktsAg1year": "l2:EgrPktsAg1year",
+                "CDl2IngrBytesAg15min": "l2:IngrBytesAg15min",
+                "CDl2IngrBytesAg1d": "l2:IngrBytesAg1d",
+                "CDl2IngrBytesAg1h": "l2:IngrBytesAg1h",
+                "CDl2IngrBytesAg1mo": "l2:IngrBytesAg1mo",
+                "CDl2IngrBytesAg1qtr": "l2:IngrBytesAg1qtr",
+                "CDl2IngrBytesAg1w": "l2:IngrBytesAg1w",
+                "CDl2IngrBytesAg1year": "l2:IngrBytesAg1year",
+                "CDl2IngrPktsAg15min": "l2:IngrPktsAg15min",
+                "CDl2IngrPktsAg1d": "l2:IngrPktsAg1d",
+                "CDl2IngrPktsAg1h": "l2:IngrPktsAg1h",
+                "CDl2IngrPktsAg1mo": "l2:IngrPktsAg1mo",
+                "CDl2IngrPktsAg1qtr": "l2:IngrPktsAg1qtr",
+                "CDl2IngrPktsAg1w": "l2:IngrPktsAg1w",
+                "CDl2IngrPktsAg1year": "l2:IngrPktsAg1year",
+                "CDuribv4EgrBytesAg15min": "uribv4:EgrBytesAg15min",
+                "CDuribv4EgrBytesAg1d": "uribv4:EgrBytesAg1d",
+                "CDuribv4EgrBytesAg1h": "uribv4:EgrBytesAg1h",
+                "CDuribv4EgrBytesAg1mo": "uribv4:EgrBytesAg1mo",
+                "CDuribv4EgrBytesAg1qtr": "uribv4:EgrBytesAg1qtr",
+                "CDuribv4EgrBytesAg1w": "uribv4:EgrBytesAg1w",
+                "CDuribv4EgrBytesAg1year": "uribv4:EgrBytesAg1year",
+                "CDuribv4EgrPktsAg15min": "uribv4:EgrPktsAg15min",
+                "CDuribv4EgrPktsAg1d": "uribv4:EgrPktsAg1d",
+                "CDuribv4EgrPktsAg1h": "uribv4:EgrPktsAg1h",
+                "CDuribv4EgrPktsAg1mo": "uribv4:EgrPktsAg1mo",
+                "CDuribv4EgrPktsAg1qtr": "uribv4:EgrPktsAg1qtr",
+                "CDuribv4EgrPktsAg1w": "uribv4:EgrPktsAg1w",
+                "CDuribv4EgrPktsAg1year": "uribv4:EgrPktsAg1year",
+                "CfgRelInst-": "vns:CfgRelInst",
+                "FI_C-": "vns:FolderInst",
+                "FW_C-": "vns:FWReq",
+                "GraphInst_C-": "vns:GraphInst",
+                "HDcloudAppGwStatsAg15min-": "cloud:AppGwStatsAgHist15min",
+                "HDcloudAppGwStatsAg1d-": "cloud:AppGwStatsAgHist1d",
+                "HDcloudAppGwStatsAg1h-": "cloud:AppGwStatsAgHist1h",
+                "HDcloudAppGwStatsAg1mo-": "cloud:AppGwStatsAgHist1mo",
+                "HDcloudAppGwStatsAg1qtr-": "cloud:AppGwStatsAgHist1qtr",
+                "HDcloudAppGwStatsAg1w-": "cloud:AppGwStatsAgHist1w",
+                "HDcloudAppGwStatsAg1year-": "cloud:AppGwStatsAgHist1year",
+                "HDcloudAppGwStatsAg5min-": "cloud:AppGwStatsAgHist5min",
+                "HDcloudAzNLBStatsAg15min-": "cloud:AzNLBStatsAgHist15min",
+                "HDcloudAzNLBStatsAg1d-": "cloud:AzNLBStatsAgHist1d",
+                "HDcloudAzNLBStatsAg1h-": "cloud:AzNLBStatsAgHist1h",
+                "HDcloudAzNLBStatsAg1mo-": "cloud:AzNLBStatsAgHist1mo",
+                "HDcloudAzNLBStatsAg1qtr-": "cloud:AzNLBStatsAgHist1qtr",
+                "HDcloudAzNLBStatsAg1w-": "cloud:AzNLBStatsAgHist1w",
+                "HDcloudAzNLBStatsAg1year-": "cloud:AzNLBStatsAgHist1year",
+                "HDcloudAzNLBStatsAg5min-": "cloud:AzNLBStatsAgHist5min",
+                "HDcloudEgressBytesAg15min-": "cloud:EgressBytesAgHist15min",
+                "HDcloudEgressBytesAg1d-": "cloud:EgressBytesAgHist1d",
+                "HDcloudEgressBytesAg1h-": "cloud:EgressBytesAgHist1h",
+                "HDcloudEgressBytesAg1mo-": "cloud:EgressBytesAgHist1mo",
+                "HDcloudEgressBytesAg1qtr-": "cloud:EgressBytesAgHist1qtr",
+                "HDcloudEgressBytesAg1w-": "cloud:EgressBytesAgHist1w",
+                "HDcloudEgressBytesAg1year-": "cloud:EgressBytesAgHist1year",
+                "HDcloudEgressBytesAg5min-": "cloud:EgressBytesAgHist5min",
+                "HDcloudEgressPktsAg15min-": "cloud:EgressPktsAgHist15min",
+                "HDcloudEgressPktsAg1d-": "cloud:EgressPktsAgHist1d",
+                "HDcloudEgressPktsAg1h-": "cloud:EgressPktsAgHist1h",
+                "HDcloudEgressPktsAg1mo-": "cloud:EgressPktsAgHist1mo",
+                "HDcloudEgressPktsAg1qtr-": "cloud:EgressPktsAgHist1qtr",
+                "HDcloudEgressPktsAg1w-": "cloud:EgressPktsAgHist1w",
+                "HDcloudEgressPktsAg1year-": "cloud:EgressPktsAgHist1year",
+                "HDcloudEgressPktsAg5min-": "cloud:EgressPktsAgHist5min",
+                "HDcloudHostRouterEgressBytesAg15min-": "cloud:HostRouterEgressBytesAgHist15min",
+                "HDcloudHostRouterEgressBytesAg1d-": "cloud:HostRouterEgressBytesAgHist1d",
+                "HDcloudHostRouterEgressBytesAg1h-": "cloud:HostRouterEgressBytesAgHist1h",
+                "HDcloudHostRouterEgressBytesAg1mo-": "cloud:HostRouterEgressBytesAgHist1mo",
+                "HDcloudHostRouterEgressBytesAg1qtr-": "cloud:HostRouterEgressBytesAgHist1qtr",
+                "HDcloudHostRouterEgressBytesAg1w-": "cloud:HostRouterEgressBytesAgHist1w",
+                "HDcloudHostRouterEgressBytesAg1year-": "cloud:HostRouterEgressBytesAgHist1year",
+                "HDcloudHostRouterEgressBytesAg5min-": "cloud:HostRouterEgressBytesAgHist5min",
+                "HDcloudHostRouterEgressPktsAg15min-": "cloud:HostRouterEgressPktsAgHist15min",
+                "HDcloudHostRouterEgressPktsAg1d-": "cloud:HostRouterEgressPktsAgHist1d",
+                "HDcloudHostRouterEgressPktsAg1h-": "cloud:HostRouterEgressPktsAgHist1h",
+                "HDcloudHostRouterEgressPktsAg1mo-": "cloud:HostRouterEgressPktsAgHist1mo",
+                "HDcloudHostRouterEgressPktsAg1qtr-": "cloud:HostRouterEgressPktsAgHist1qtr",
+                "HDcloudHostRouterEgressPktsAg1w-": "cloud:HostRouterEgressPktsAgHist1w",
+                "HDcloudHostRouterEgressPktsAg1year-": "cloud:HostRouterEgressPktsAgHist1year",
+                "HDcloudHostRouterEgressPktsAg5min-": "cloud:HostRouterEgressPktsAgHist5min",
+                "HDcloudHostRouterIngressBytesAg15min-": "cloud:HostRouterIngressBytesAgHist15min",
+                "HDcloudHostRouterIngressBytesAg1d-": "cloud:HostRouterIngressBytesAgHist1d",
+                "HDcloudHostRouterIngressBytesAg1h-": "cloud:HostRouterIngressBytesAgHist1h",
+                "HDcloudHostRouterIngressBytesAg1mo-": "cloud:HostRouterIngressBytesAgHist1mo",
+                "HDcloudHostRouterIngressBytesAg1qtr-": "cloud:HostRouterIngressBytesAgHist1qtr",
+                "HDcloudHostRouterIngressBytesAg1w-": "cloud:HostRouterIngressBytesAgHist1w",
+                "HDcloudHostRouterIngressBytesAg1year-": "cloud:HostRouterIngressBytesAgHist1year",
+                "HDcloudHostRouterIngressBytesAg5min-": "cloud:HostRouterIngressBytesAgHist5min",
+                "HDcloudHostRouterIngressPktsAg15min-": "cloud:HostRouterIngressPktsAgHist15min",
+                "HDcloudHostRouterIngressPktsAg1d-": "cloud:HostRouterIngressPktsAgHist1d",
+                "HDcloudHostRouterIngressPktsAg1h-": "cloud:HostRouterIngressPktsAgHist1h",
+                "HDcloudHostRouterIngressPktsAg1mo-": "cloud:HostRouterIngressPktsAgHist1mo",
+                "HDcloudHostRouterIngressPktsAg1qtr-": "cloud:HostRouterIngressPktsAgHist1qtr",
+                "HDcloudHostRouterIngressPktsAg1w-": "cloud:HostRouterIngressPktsAgHist1w",
+                "HDcloudHostRouterIngressPktsAg1year-": "cloud:HostRouterIngressPktsAgHist1year",
+                "HDcloudHostRouterIngressPktsAg5min-": "cloud:HostRouterIngressPktsAgHist5min",
+                "HDcloudIngressBytesAg15min-": "cloud:IngressBytesAgHist15min",
+                "HDcloudIngressBytesAg1d-": "cloud:IngressBytesAgHist1d",
+                "HDcloudIngressBytesAg1h-": "cloud:IngressBytesAgHist1h",
+                "HDcloudIngressBytesAg1mo-": "cloud:IngressBytesAgHist1mo",
+                "HDcloudIngressBytesAg1qtr-": "cloud:IngressBytesAgHist1qtr",
+                "HDcloudIngressBytesAg1w-": "cloud:IngressBytesAgHist1w",
+                "HDcloudIngressBytesAg1year-": "cloud:IngressBytesAgHist1year",
+                "HDcloudIngressBytesAg5min-": "cloud:IngressBytesAgHist5min",
+                "HDcloudIngressPktsAg15min-": "cloud:IngressPktsAgHist15min",
+                "HDcloudIngressPktsAg1d-": "cloud:IngressPktsAgHist1d",
+                "HDcloudIngressPktsAg1h-": "cloud:IngressPktsAgHist1h",
+                "HDcloudIngressPktsAg1mo-": "cloud:IngressPktsAgHist1mo",
+                "HDcloudIngressPktsAg1qtr-": "cloud:IngressPktsAgHist1qtr",
+                "HDcloudIngressPktsAg1w-": "cloud:IngressPktsAgHist1w",
+                "HDcloudIngressPktsAg1year-": "cloud:IngressPktsAgHist1year",
+                "HDcloudIngressPktsAg5min-": "cloud:IngressPktsAgHist5min",
+                "HDcloudLBStatsAg15min-": "cloud:LBStatsAgHist15min",
+                "HDcloudLBStatsAg1d-": "cloud:LBStatsAgHist1d",
+                "HDcloudLBStatsAg1h-": "cloud:LBStatsAgHist1h",
+                "HDcloudLBStatsAg1mo-": "cloud:LBStatsAgHist1mo",
+                "HDcloudLBStatsAg1qtr-": "cloud:LBStatsAgHist1qtr",
+                "HDcloudLBStatsAg1w-": "cloud:LBStatsAgHist1w",
+                "HDcloudLBStatsAg1year-": "cloud:LBStatsAgHist1year",
+                "HDcloudLBStatsAg5min-": "cloud:LBStatsAgHist5min",
+                "HDcloudNLBStatsAg15min-": "cloud:NLBStatsAgHist15min",
+                "HDcloudNLBStatsAg1d-": "cloud:NLBStatsAgHist1d",
+                "HDcloudNLBStatsAg1h-": "cloud:NLBStatsAgHist1h",
+                "HDcloudNLBStatsAg1mo-": "cloud:NLBStatsAgHist1mo",
+                "HDcloudNLBStatsAg1qtr-": "cloud:NLBStatsAgHist1qtr",
+                "HDcloudNLBStatsAg1w-": "cloud:NLBStatsAgHist1w",
+                "HDcloudNLBStatsAg1year-": "cloud:NLBStatsAgHist1year",
+                "HDcloudNLBStatsAg5min-": "cloud:NLBStatsAgHist5min",
+                "HDcloudPoolHealthStatsAg15min-": "cloud:PoolHealthStatsAgHist15min",
+                "HDcloudPoolHealthStatsAg1d-": "cloud:PoolHealthStatsAgHist1d",
+                "HDcloudPoolHealthStatsAg1h-": "cloud:PoolHealthStatsAgHist1h",
+                "HDcloudPoolHealthStatsAg1mo-": "cloud:PoolHealthStatsAgHist1mo",
+                "HDcloudPoolHealthStatsAg1qtr-": "cloud:PoolHealthStatsAgHist1qtr",
+                "HDcloudPoolHealthStatsAg1w-": "cloud:PoolHealthStatsAgHist1w",
+                "HDcloudPoolHealthStatsAg1year-": "cloud:PoolHealthStatsAgHist1year",
+                "HDcloudPoolHealthStatsAg5min-": "cloud:PoolHealthStatsAgHist5min",
+                "HDcloudPoolResponseLatencyAg15min-": "cloud:PoolResponseLatencyAgHist15min",
+                "HDcloudPoolResponseLatencyAg1d-": "cloud:PoolResponseLatencyAgHist1d",
+                "HDcloudPoolResponseLatencyAg1h-": "cloud:PoolResponseLatencyAgHist1h",
+                "HDcloudPoolResponseLatencyAg1mo-": "cloud:PoolResponseLatencyAgHist1mo",
+                "HDcloudPoolResponseLatencyAg1qtr-": "cloud:PoolResponseLatencyAgHist1qtr",
+                "HDcloudPoolResponseLatencyAg1w-": "cloud:PoolResponseLatencyAgHist1w",
+                "HDcloudPoolResponseLatencyAg1year-": "cloud:PoolResponseLatencyAgHist1year",
+                "HDcloudPoolResponseLatencyAg5min-": "cloud:PoolResponseLatencyAgHist5min",
+                "HDfvFltCounter15min-": "fv:FltCounterHist15min",
+                "HDfvFltCounter1d-": "fv:FltCounterHist1d",
+                "HDfvFltCounter1h-": "fv:FltCounterHist1h",
+                "HDfvFltCounter1mo-": "fv:FltCounterHist1mo",
+                "HDfvFltCounter1qtr-": "fv:FltCounterHist1qtr",
+                "HDfvFltCounter1w-": "fv:FltCounterHist1w",
+                "HDfvFltCounter1year-": "fv:FltCounterHist1year",
+                "HDfvFltCounter5min-": "fv:FltCounterHist5min",
+                "HDfvOverallHealth15min-": "fv:OverallHealthHist15min",
+                "HDfvOverallHealth1d-": "fv:OverallHealthHist1d",
+                "HDfvOverallHealth1h-": "fv:OverallHealthHist1h",
+                "HDfvOverallHealth1mo-": "fv:OverallHealthHist1mo",
+                "HDfvOverallHealth1qtr-": "fv:OverallHealthHist1qtr",
+                "HDfvOverallHealth1w-": "fv:OverallHealthHist1w",
+                "HDfvOverallHealth1year-": "fv:OverallHealthHist1year",
+                "HDl2EgrBytesAg15min-": "l2:EgrBytesAgHist15min",
+                "HDl2EgrBytesAg1d-": "l2:EgrBytesAgHist1d",
+                "HDl2EgrBytesAg1h-": "l2:EgrBytesAgHist1h",
+                "HDl2EgrBytesAg1mo-": "l2:EgrBytesAgHist1mo",
+                "HDl2EgrBytesAg1qtr-": "l2:EgrBytesAgHist1qtr",
+                "HDl2EgrBytesAg1w-": "l2:EgrBytesAgHist1w",
+                "HDl2EgrBytesAg1year-": "l2:EgrBytesAgHist1year",
+                "HDl2EgrPktsAg15min-": "l2:EgrPktsAgHist15min",
+                "HDl2EgrPktsAg1d-": "l2:EgrPktsAgHist1d",
+                "HDl2EgrPktsAg1h-": "l2:EgrPktsAgHist1h",
+                "HDl2EgrPktsAg1mo-": "l2:EgrPktsAgHist1mo",
+                "HDl2EgrPktsAg1qtr-": "l2:EgrPktsAgHist1qtr",
+                "HDl2EgrPktsAg1w-": "l2:EgrPktsAgHist1w",
+                "HDl2EgrPktsAg1year-": "l2:EgrPktsAgHist1year",
+                "HDl2IngrBytesAg15min-": "l2:IngrBytesAgHist15min",
+                "HDl2IngrBytesAg1d-": "l2:IngrBytesAgHist1d",
+                "HDl2IngrBytesAg1h-": "l2:IngrBytesAgHist1h",
+                "HDl2IngrBytesAg1mo-": "l2:IngrBytesAgHist1mo",
+                "HDl2IngrBytesAg1qtr-": "l2:IngrBytesAgHist1qtr",
+                "HDl2IngrBytesAg1w-": "l2:IngrBytesAgHist1w",
+                "HDl2IngrBytesAg1year-": "l2:IngrBytesAgHist1year",
+                "HDl2IngrPktsAg15min-": "l2:IngrPktsAgHist15min",
+                "HDl2IngrPktsAg1d-": "l2:IngrPktsAgHist1d",
+                "HDl2IngrPktsAg1h-": "l2:IngrPktsAgHist1h",
+                "HDl2IngrPktsAg1mo-": "l2:IngrPktsAgHist1mo",
+                "HDl2IngrPktsAg1qtr-": "l2:IngrPktsAgHist1qtr",
+                "HDl2IngrPktsAg1w-": "l2:IngrPktsAgHist1w",
+                "HDl2IngrPktsAg1year-": "l2:IngrPktsAgHist1year",
+                "HDuribv4EgrBytesAg15min-": "uribv4:EgrBytesAgHist15min",
+                "HDuribv4EgrBytesAg1d-": "uribv4:EgrBytesAgHist1d",
+                "HDuribv4EgrBytesAg1h-": "uribv4:EgrBytesAgHist1h",
+                "HDuribv4EgrBytesAg1mo-": "uribv4:EgrBytesAgHist1mo",
+                "HDuribv4EgrBytesAg1qtr-": "uribv4:EgrBytesAgHist1qtr",
+                "HDuribv4EgrBytesAg1w-": "uribv4:EgrBytesAgHist1w",
+                "HDuribv4EgrBytesAg1year-": "uribv4:EgrBytesAgHist1year",
+                "HDuribv4EgrPktsAg15min-": "uribv4:EgrPktsAgHist15min",
+                "HDuribv4EgrPktsAg1d-": "uribv4:EgrPktsAgHist1d",
+                "HDuribv4EgrPktsAg1h-": "uribv4:EgrPktsAgHist1h",
+                "HDuribv4EgrPktsAg1mo-": "uribv4:EgrPktsAgHist1mo",
+                "HDuribv4EgrPktsAg1qtr-": "uribv4:EgrPktsAgHist1qtr",
+                "HDuribv4EgrPktsAg1w-": "uribv4:EgrPktsAgHist1w",
+                "HDuribv4EgrPktsAg1year-": "uribv4:EgrPktsAgHist1year",
+                "InBHolder": "vns:InBHolder",
+                "LDevInst-": "vns:LDevInst",
+                "ParamInst-": "vns:ParamInst",
+                "Tnlepg-": "fv:TnlEPg",
+                "UnitHolder-": "vns:UnitHolder",
+                "absFolder-": "vns:AbsFolder",
+                "absFuncProfContr": "vns:AbsFuncProfContr",
+                "absParam-": "vns:AbsParam",
+                "absRel-": "vns:AbsCfgRel",
+                "acAnyToEp-": "dbgac:AnyToEp",
+                "acEpToAny-": "dbgac:EpToAny",
+                "acEpToEp-": "dbgac:EpToEp",
+                "acEpToExt-": "dbgac:EpToExt",
+                "acExtToEp-": "dbgac:ExtToEp",
+                "acIpToIp-": "dbgac:IpToIp",
+                "accesspolicy-": "cloud:AccessPolicy",
+                "act-": "cloud:Account",
+                "ad-": "cloud:AD",
+                "addrinst-": "fvns:AddrInst",
+                "alias": "tag:AliasInst",
+                "aliasdel-": "tag:AliasDelInst",
+                "annotationKey-": "tag:Annotation",
+                "ap-": "fv:Ap",
+                "apicsubnetpool-": "cloud:ApicSubnetPool",
+                "arpifpol-": "arp:IfPol",
+                "attr-": "rtctrl:AttrP",
+                "authsvrgrp-": "auth:SvrGroup",
+                "awsprovider": "cloud:AwsProvider",
+                "azstatpol-": "cloud:AzureStatsPol",
+                "bdpol-": "fhs:BDPol",
+                "bdprofile-": "l3ext:BdProfile",
+                "bestpath-": "bgp:BestPathCtrlPol",
+                "bfdIfPol-": "bfd:IfPol",
+                "bfdMhIfPol-": "bfd:MhIfPol",
+                "bfdMhNodePol-": "bfd:MhNodePol",
+                "bfdPol-": "cloud:BfdPol",
+                "bgpCtxAfP-": "bgp:CtxAfPol",
+                "bgpCtxP-": "bgp:CtxPol",
+                "bgpPfxP-": "bgp:PeerPfxPol",
+                "bgprtsum-": "bgp:RtSummPol",
+                "brc-": "vz:BrCP",
+                "bypassCont": "vns:PbrByPassCont",
+                "cFolder-": "vns:CFolder",
+                "cParam-": "vns:CParam",
+                "cRel-": "vns:CRel",
+                "cdevdef-": "cloud:CDevDef",
+                "certstore": "cloud:CertStore",
+                "chassis-": "vns:Chassis",
+                "cif-": "vz:CPIf",
+                "clb-": "cloud:LB",
+                "cld-": "cloud:LDev",
+                "cldDepl": "cloud:Depl",
+                "cloudapp-": "cloud:App",
+                "cloudsecifp-": "cloudsec:IfPol",
+                "clp-": "infra:ClP",
+                "connInstrPol": "fv:ConnInstrPol",
+                "cont": "draw:Cont",
+                "copybdholder-": "vns:CopyBdHolder",
+                "counter": "cloud:Counter",
+                "credentials-": "cloud:Credentials",
+                "ctx-": "fv:Ctx",
+                "ctxprofile-": "cloud:CtxProfile",
+                "destgrp-": "span:DestGrp",
+                "devMgr-": "vns:DevMgr",
+                "devProf-": "vns:DevProf",
+                "dhcpoptpol-": "dhcp:OptionPol",
+                "dnssvrgrp-": "dnsepg:SvrGrp",
+                "domain-": "aaa:DomainRef",
+                "dscptranspol-": "qos:DscpTransPol",
+                "efp-": "vz:ERFltP",
+                "eigrpCtxAfP-": "eigrp:CtxAfPol",
+                "eigrpIfPol-": "eigrp:IfPol",
+                "eigrprtsumm-": "eigrp:RtSummPol",
+                "epRPol-": "fv:EpRetPol",
+                "epToEpg-": "dbgac:EpToEpg",
+                "epgToEp-": "dbgac:EpgToEp",
+                "epgToEpg-": "dbgac:EpgToEpg",
+                "epgToIp-": "dbgac:EpgToIp",
+                "epgextrequest-": "vns:EPGExtRequest",
+                "eptags": "fv:EpTags",
+                "exporterpol-": "netflow:ExporterPol",
+                "extctxprofile-": "cloud:ExtCtxProfile",
+                "extmgmt-": "mgmt:ExtMgmtEntity",
+                "extmngd": "tag:ExtMngdInst",
+                "fabricExtConnP-": "fv:FabricExtConnP",
+                "fault-": "fault:Inst",
+                "fd-": "fault:Delegate",
+                "flowlog-": "cloud:AwsFlowLogPol",
+                "flt-": "vz:Filter",
+                "fltCnts": "fault:CountsWithDetails",
+                "fp-": "vz:RFltP",
+                "gFolder-": "vns:GFolder",
+                "gParam-": "vns:GParam",
+                "gRel-": "vns:GRel",
+                "gcpfl-": "cloud:GcpFlowLogPol",
+                "globalpol": "isakmp:GlobalPol",
+                "gwrouterp-": "cloud:GatewayRouterP",
+                "health": "health:Inst",
+                "hostrouterpol-": "cloud:HostRouterPol",
+                "hsrpGroupPol-": "hsrp:GroupPol",
+                "hsrpIfPol-": "hsrp:IfPol",
+                "igmpIfPol-": "igmp:IfPol",
+                "infranetwork-": "cloudtemplate:InfraNetwork",
+                "intap": "fv:IntAp",
+                "intershardtagselcont-": "fv:InterShardTagSelectorCont",
+                "ip-": "vns:NatInst",
+                "ipToEpg-": "dbgac:IpToEpg",
+                "ipampool-": "fv:AddrMgmtPool",
+                "ipslaMonitoringPol-": "fv:IPSLAMonitoringPol",
+                "isakmp1-": "ipsec:IsakmpPhase1Pol",
+                "isakmp2-": "ipsec:IsakmpPhase2Pol",
+                "isakmpp-": "isakmp:Profile",
+                "keychainp-": "fv:KeyChainPol",
+                "keyring-": "isakmp:Keyring",
+                "l2out-": "l2ext:Out",
+                "lDevIf-": "vns:LDevIf",
+                "lDevVip-": "vns:LDevVip",
+                "ldevCtx-": "vns:LDevCtx",
+                "ldevdef-": "cloud:LDevDef",
+                "loggrp-": "cloud:AwsLogGroup",
+                "mdpLocalTenant": "mdp:LocalTenant",
+                "mdpRemoteTenant": "mdp:RemoteTenant",
+                "mgmtPolicy-": "vns:CtrlrMgmtPol",
+                "mgmtp-": "mgmt:MgmtP",
+                "mldsnoopPol-": "mld:SnoopPol",
+                "monepg-": "mon:EPGPol",
+                "monitorpol-": "netflow:MonitorPol",
+                "mplsifpol-": "mpls:IfPol",
+                "mplslabelpol-": "mpls:LabelPol",
+                "mscGraphXlateCont": "vns:MscGraphXlateCont",
+                "ndifpol-": "nd:IfPol",
+                "ndpfxpol-": "nd:PfxPol",
+                "nodehealth-": "health:NodeInst",
+                "oobbrc-": "vz:OOBBrCP",
+                "orchsTn-": "vmm:OrchsExtTenant",
+                "ospfCtxP-": "ospf:CtxPol",
+                "ospfIfPol-": "ospf:IfPol",
+                "ospfrtsumm-": "ospf:RtSummPol",
+                "out-": "l3ext:Out",
+                "outdef-": "l3ext:OutDef",
+                "pimifpol-": "pim:IfPol",
+                "pinningp-": "fc:PinningP",
+                "pol-": "hostprot:Pol",
+                "policy-": "isakmp:Policy",
+                "prof-": "rtctrl:Profile",
+                "provp-": "infra:ProvP",
+                "prule-": "aaa:PartialRbacRule",
+                "qoscustom-": "qos:CustomPol",
+                "qosdpppol-": "qos:DppPol",
+                "qosmplscustom-": "qos:MplsCustomPol",
+                "qosreq-": "qos:Requirement",
+                "qosvxlancustom-": "qos:VxlanCustomPol",
+                "rbacDom-": "aaa:RbacAnnotation",
+                "recordpol-": "netflow:RecordPol",
+                "relayp-": "dhcp:RelayP",
+                "rmacg-": "l3ext:RogueExceptionMacGroup",
+                "rsCloudAccount": "fv:RsCloudAccount",
+                "rsTenantMonPol": "fv:RsTenantMonPol",
+                "rstnDenyRule-": "fv:RsTnDenyRule",
+                "rtmap-": "pim:RouteMapPol",
+                "rtrCfg-": "vns:RtrCfg",
+                "rttag-": "l3ext:RouteTagPol",
+                "rttenantInfra": "fv:RtTenantInfra",
+                "rtvnsTenant-": "fv:RtTenant",
+                "sdwanpolcont": "extdev:SDWanPolCont",
+                "sdwanvpncont": "extdev:SDWanVpnCont",
+                "selector-": "telemetry:Selector",
+                "sfpeerip-": "cloud:StatsFilter",
+                "slaDefPol-": "fv:SlaDef",
+                "snPol-": "igmp:SnoopPol",
+                "srcgrp-": "span:SrcGrp",
+                "subj-": "rtctrl:SubjP",
+                "svcBD-": "fv:SvcBD",
+                "svcCont": "vns:SvcCont",
+                "svcL3Cont": "vns:SvcL3Cont",
+                "svcdevpol-": "cloud:SvcDevPol",
+                "svcpol_C-": "vns:SvcPol",
+                "svcs-": "orchs:SvcRsrcPool",
+                "taboo-": "vz:Taboo",
+                "tag-": "tag:Inst",
+                "tagKey-": "tag:Tag",
+                "tnlctx-": "fv:TnlCtx",
+                "trEp-": "traceroutep:TrEp",
+                "trEpExt-": "traceroutep:TrEpExt",
+                "trExtEp-": "traceroutep:TrExtEp",
+                "trExtExt-": "traceroutep:TrExtExt",
+                "tracklist-": "fv:TrackList",
+                "trackmember-": "fv:TrackMember",
+                "transithubgwpol-": "cloud:TransitHubGwPol",
+                "trustctrlpol-": "fhs:TrustCtrlPol",
+                "vdestgrp-": "span:VDestGrp",
+                "vpc-": "cloud:VpcInfoHolder",
+                "vpngwpol-": "cloud:VpnGwPol",
+                "vrfRtLeakPol-": "cloud:VrfRouteLeakPol",
+                "vrfvalidationpol-": "l3ext:VrfValidationPol",
+                "vsrcgrp-": "span:VSrcGrp",
+                "vxlanbgwset-": "vxlan:BgwSet",
+                "vxlanremotefabric-": "vxlan:RemoteFabric"
+            },
+            "identifiedBy": [
+                "name"
+            ],
+            "rnFormat": "tn-{name}",
+            "containedBy": {
+                "pol:Uni": ""
+            },
+            "superClasses": [
+                "pol:Dom",
+                "pol:Cont",
+                "pol:Obj",
+                "naming:NamedObject"
+            ],
+            "subClasses": {
+
+            },
+            "relationFrom": {
+                "fv:RtTenant": "vns:RelnHolder",
+                "fv:RtTenantInfra": "aaa:SecRelnHolder"
+            },
+            "relationTo": {
+                "fv:RsCloudAccount": "cloud:Account",
+                "fv:RsTenantMonPol": "mon:EPGPol",
+                "fv:RsTnDenyRule": "vz:Filter"
+            },
+            "dnFormats": [
+                "uni/tn-{name}"
+            ],
+            "writeAccess": [
+                "admin"
+            ],
+            "readAccess": [
+                "aaa",
+                "access-connectivity",
+                "access-equipment",
+                "access-protocol",
+                "access-qos",
+                "admin",
+                "fabric-connectivity",
+                "fabric-equipment",
+                "fabric-protocol",
+                "nw-svc-params",
+                "nw-svc-policy",
+                "ops",
+                "tenant-connectivity",
+                "tenant-epg",
+                "tenant-ext-connectivity",
+                "tenant-ext-protocol",
+                "tenant-network-profile",
+                "tenant-protocol",
+                "tenant-qos",
+                "tenant-security",
+                "vmm-policy"
+            ],
+            "faults": {
+
+            },
+            "events": {
+                "E4212041": "creation||fv:Tenant",
+                "E4212042": "modification||fv:Tenant",
+                "E4212043": "deletion||fv:Tenant",
+                "E4216167": "state-transition|OneNodeRuleEvent|fv:Tenant",
+                "E4216168": "state-transition|ParentChildRuleEvent|fv:Tenant"
+            },
+            "stats": {
+                "cloud:AppGwStatsAg15min": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for  Azure ALB front end stats in a 15 minute sampling interval.  This class updates every 5 minutes."
+                    ]
+                },
+                "cloud:AppGwStatsAg1d": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for  Azure ALB front end stats in a 1 day sampling interval.  This class updates every hour."
+                    ]
+                },
+                "cloud:AppGwStatsAg1h": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for  Azure ALB front end stats in a 1 hour sampling interval.  This class updates every 15 minutes."
+                    ]
+                },
+                "cloud:AppGwStatsAg1mo": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for  Azure ALB front end stats in a 1 month sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:AppGwStatsAg1qtr": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for  Azure ALB front end stats in a 1 quarter sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:AppGwStatsAg1w": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for  Azure ALB front end stats in a 1 week sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:AppGwStatsAg1year": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for  Azure ALB front end stats in a 1 year sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:AppGwStatsAg5min": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for  Azure ALB front end stats in a 5 minute sampling interval.  This class updates every 10 seconds."
+                    ]
+                },
+                "cloud:AppGwStatsAgHist15min": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for  Azure ALB front end stats in a 15 minute sampling interval.  This class updates every 5 minutes."
+                    ]
+                },
+                "cloud:AppGwStatsAgHist1d": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for  Azure ALB front end stats in a 1 day sampling interval.  This class updates every hour."
+                    ]
+                },
+                "cloud:AppGwStatsAgHist1h": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for  Azure ALB front end stats in a 1 hour sampling interval.  This class updates every 15 minutes."
+                    ]
+                },
+                "cloud:AppGwStatsAgHist1mo": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for  Azure ALB front end stats in a 1 month sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:AppGwStatsAgHist1qtr": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for  Azure ALB front end stats in a 1 quarter sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:AppGwStatsAgHist1w": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for  Azure ALB front end stats in a 1 week sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:AppGwStatsAgHist1year": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for  Azure ALB front end stats in a 1 year sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:AppGwStatsAgHist5min": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for  Azure ALB front end stats in a 5 minute sampling interval.  This class updates every 10 seconds."
+                    ]
+                },
+                "cloud:AzNLBStatsAg15min": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for  Azure NLB front end stats in a 15 minute sampling interval.  This class updates every 5 minutes."
+                    ]
+                },
+                "cloud:AzNLBStatsAg1d": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for  Azure NLB front end stats in a 1 day sampling interval.  This class updates every hour."
+                    ]
+                },
+                "cloud:AzNLBStatsAg1h": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for  Azure NLB front end stats in a 1 hour sampling interval.  This class updates every 15 minutes."
+                    ]
+                },
+                "cloud:AzNLBStatsAg1mo": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for  Azure NLB front end stats in a 1 month sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:AzNLBStatsAg1qtr": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for  Azure NLB front end stats in a 1 quarter sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:AzNLBStatsAg1w": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for  Azure NLB front end stats in a 1 week sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:AzNLBStatsAg1year": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for  Azure NLB front end stats in a 1 year sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:AzNLBStatsAg5min": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for  Azure NLB front end stats in a 5 minute sampling interval.  This class updates every 10 seconds."
+                    ]
+                },
+                "cloud:AzNLBStatsAgHist15min": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for  Azure NLB front end stats in a 15 minute sampling interval.  This class updates every 5 minutes."
+                    ]
+                },
+                "cloud:AzNLBStatsAgHist1d": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for  Azure NLB front end stats in a 1 day sampling interval.  This class updates every hour."
+                    ]
+                },
+                "cloud:AzNLBStatsAgHist1h": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for  Azure NLB front end stats in a 1 hour sampling interval.  This class updates every 15 minutes."
+                    ]
+                },
+                "cloud:AzNLBStatsAgHist1mo": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for  Azure NLB front end stats in a 1 month sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:AzNLBStatsAgHist1qtr": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for  Azure NLB front end stats in a 1 quarter sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:AzNLBStatsAgHist1w": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for  Azure NLB front end stats in a 1 week sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:AzNLBStatsAgHist1year": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for  Azure NLB front end stats in a 1 year sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:AzNLBStatsAgHist5min": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for  Azure NLB front end stats in a 5 minute sampling interval.  This class updates every 10 seconds."
+                    ]
+                },
+                "cloud:EgressBytesAg15min": {
+                    "comment": [
+                         "Egress bytes. A class that represents the most current aggregated statistics for cloud egress bytes in a 15 minute sampling interval.  This class updates every 5 minutes."
+                    ]
+                },
+                "cloud:EgressBytesAg1d": {
+                    "comment": [
+                         "Egress bytes. A class that represents the most current aggregated statistics for cloud egress bytes in a 1 day sampling interval.  This class updates every hour."
+                    ]
+                },
+                "cloud:EgressBytesAg1h": {
+                    "comment": [
+                         "Egress bytes. A class that represents the most current aggregated statistics for cloud egress bytes in a 1 hour sampling interval.  This class updates every 15 minutes."
+                    ]
+                },
+                "cloud:EgressBytesAg1mo": {
+                    "comment": [
+                         "Egress bytes. A class that represents the most current aggregated statistics for cloud egress bytes in a 1 month sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:EgressBytesAg1qtr": {
+                    "comment": [
+                         "Egress bytes. A class that represents the most current aggregated statistics for cloud egress bytes in a 1 quarter sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:EgressBytesAg1w": {
+                    "comment": [
+                         "Egress bytes. A class that represents the most current aggregated statistics for cloud egress bytes in a 1 week sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:EgressBytesAg1year": {
+                    "comment": [
+                         "Egress bytes. A class that represents the most current aggregated statistics for cloud egress bytes in a 1 year sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:EgressBytesAg5min": {
+                    "comment": [
+                         "Egress bytes. A class that represents the most current aggregated statistics for cloud egress bytes in a 5 minute sampling interval.  This class updates every 10 seconds."
+                    ]
+                },
+                "cloud:EgressBytesAgHist15min": {
+                    "comment": [
+                         "Egress bytes. A class that represents historical aggregated statistics for cloud egress bytes in a 15 minute sampling interval.  This class updates every 5 minutes."
+                    ]
+                },
+                "cloud:EgressBytesAgHist1d": {
+                    "comment": [
+                         "Egress bytes. A class that represents historical aggregated statistics for cloud egress bytes in a 1 day sampling interval.  This class updates every hour."
+                    ]
+                },
+                "cloud:EgressBytesAgHist1h": {
+                    "comment": [
+                         "Egress bytes. A class that represents historical aggregated statistics for cloud egress bytes in a 1 hour sampling interval.  This class updates every 15 minutes."
+                    ]
+                },
+                "cloud:EgressBytesAgHist1mo": {
+                    "comment": [
+                         "Egress bytes. A class that represents historical aggregated statistics for cloud egress bytes in a 1 month sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:EgressBytesAgHist1qtr": {
+                    "comment": [
+                         "Egress bytes. A class that represents historical aggregated statistics for cloud egress bytes in a 1 quarter sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:EgressBytesAgHist1w": {
+                    "comment": [
+                         "Egress bytes. A class that represents historical aggregated statistics for cloud egress bytes in a 1 week sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:EgressBytesAgHist1year": {
+                    "comment": [
+                         "Egress bytes. A class that represents historical aggregated statistics for cloud egress bytes in a 1 year sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:EgressBytesAgHist5min": {
+                    "comment": [
+                         "Egress bytes. A class that represents historical aggregated statistics for cloud egress bytes in a 5 minute sampling interval.  This class updates every 10 seconds."
+                    ]
+                },
+                "cloud:EgressPktsAg15min": {
+                    "comment": [
+                         "Egress packet. A class that represents the most current aggregated statistics for cloud egress packets in a 15 minute sampling interval.  This class updates every 5 minutes."
+                    ]
+                },
+                "cloud:EgressPktsAg1d": {
+                    "comment": [
+                         "Egress packet. A class that represents the most current aggregated statistics for cloud egress packets in a 1 day sampling interval.  This class updates every hour."
+                    ]
+                },
+                "cloud:EgressPktsAg1h": {
+                    "comment": [
+                         "Egress packet. A class that represents the most current aggregated statistics for cloud egress packets in a 1 hour sampling interval.  This class updates every 15 minutes."
+                    ]
+                },
+                "cloud:EgressPktsAg1mo": {
+                    "comment": [
+                         "Egress packet. A class that represents the most current aggregated statistics for cloud egress packets in a 1 month sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:EgressPktsAg1qtr": {
+                    "comment": [
+                         "Egress packet. A class that represents the most current aggregated statistics for cloud egress packets in a 1 quarter sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:EgressPktsAg1w": {
+                    "comment": [
+                         "Egress packet. A class that represents the most current aggregated statistics for cloud egress packets in a 1 week sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:EgressPktsAg1year": {
+                    "comment": [
+                         "Egress packet. A class that represents the most current aggregated statistics for cloud egress packets in a 1 year sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:EgressPktsAg5min": {
+                    "comment": [
+                         "Egress packet. A class that represents the most current aggregated statistics for cloud egress packets in a 5 minute sampling interval.  This class updates every 10 seconds."
+                    ]
+                },
+                "cloud:EgressPktsAgHist15min": {
+                    "comment": [
+                         "Egress packet. A class that represents historical aggregated statistics for cloud egress packets in a 15 minute sampling interval.  This class updates every 5 minutes."
+                    ]
+                },
+                "cloud:EgressPktsAgHist1d": {
+                    "comment": [
+                         "Egress packet. A class that represents historical aggregated statistics for cloud egress packets in a 1 day sampling interval.  This class updates every hour."
+                    ]
+                },
+                "cloud:EgressPktsAgHist1h": {
+                    "comment": [
+                         "Egress packet. A class that represents historical aggregated statistics for cloud egress packets in a 1 hour sampling interval.  This class updates every 15 minutes."
+                    ]
+                },
+                "cloud:EgressPktsAgHist1mo": {
+                    "comment": [
+                         "Egress packet. A class that represents historical aggregated statistics for cloud egress packets in a 1 month sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:EgressPktsAgHist1qtr": {
+                    "comment": [
+                         "Egress packet. A class that represents historical aggregated statistics for cloud egress packets in a 1 quarter sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:EgressPktsAgHist1w": {
+                    "comment": [
+                         "Egress packet. A class that represents historical aggregated statistics for cloud egress packets in a 1 week sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:EgressPktsAgHist1year": {
+                    "comment": [
+                         "Egress packet. A class that represents historical aggregated statistics for cloud egress packets in a 1 year sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:EgressPktsAgHist5min": {
+                    "comment": [
+                         "Egress packet. A class that represents historical aggregated statistics for cloud egress packets in a 5 minute sampling interval.  This class updates every 10 seconds."
+                    ]
+                },
+                "cloud:HostRouterEgressBytesAg15min": {
+                    "comment": [
+                         "Egress bytes. A class that represents the most current aggregated statistics for host router egress bytes in a 15 minute sampling interval.  This class updates every 5 minutes."
+                    ]
+                },
+                "cloud:HostRouterEgressBytesAg1d": {
+                    "comment": [
+                         "Egress bytes. A class that represents the most current aggregated statistics for host router egress bytes in a 1 day sampling interval.  This class updates every hour."
+                    ]
+                },
+                "cloud:HostRouterEgressBytesAg1h": {
+                    "comment": [
+                         "Egress bytes. A class that represents the most current aggregated statistics for host router egress bytes in a 1 hour sampling interval.  This class updates every 15 minutes."
+                    ]
+                },
+                "cloud:HostRouterEgressBytesAg1mo": {
+                    "comment": [
+                         "Egress bytes. A class that represents the most current aggregated statistics for host router egress bytes in a 1 month sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:HostRouterEgressBytesAg1qtr": {
+                    "comment": [
+                         "Egress bytes. A class that represents the most current aggregated statistics for host router egress bytes in a 1 quarter sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:HostRouterEgressBytesAg1w": {
+                    "comment": [
+                         "Egress bytes. A class that represents the most current aggregated statistics for host router egress bytes in a 1 week sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:HostRouterEgressBytesAg1year": {
+                    "comment": [
+                         "Egress bytes. A class that represents the most current aggregated statistics for host router egress bytes in a 1 year sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:HostRouterEgressBytesAg5min": {
+                    "comment": [
+                         "Egress bytes. A class that represents the most current aggregated statistics for host router egress bytes in a 5 minute sampling interval.  This class updates every 10 seconds."
+                    ]
+                },
+                "cloud:HostRouterEgressBytesAgHist15min": {
+                    "comment": [
+                         "Egress bytes. A class that represents historical aggregated statistics for host router egress bytes in a 15 minute sampling interval.  This class updates every 5 minutes."
+                    ]
+                },
+                "cloud:HostRouterEgressBytesAgHist1d": {
+                    "comment": [
+                         "Egress bytes. A class that represents historical aggregated statistics for host router egress bytes in a 1 day sampling interval.  This class updates every hour."
+                    ]
+                },
+                "cloud:HostRouterEgressBytesAgHist1h": {
+                    "comment": [
+                         "Egress bytes. A class that represents historical aggregated statistics for host router egress bytes in a 1 hour sampling interval.  This class updates every 15 minutes."
+                    ]
+                },
+                "cloud:HostRouterEgressBytesAgHist1mo": {
+                    "comment": [
+                         "Egress bytes. A class that represents historical aggregated statistics for host router egress bytes in a 1 month sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:HostRouterEgressBytesAgHist1qtr": {
+                    "comment": [
+                         "Egress bytes. A class that represents historical aggregated statistics for host router egress bytes in a 1 quarter sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:HostRouterEgressBytesAgHist1w": {
+                    "comment": [
+                         "Egress bytes. A class that represents historical aggregated statistics for host router egress bytes in a 1 week sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:HostRouterEgressBytesAgHist1year": {
+                    "comment": [
+                         "Egress bytes. A class that represents historical aggregated statistics for host router egress bytes in a 1 year sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:HostRouterEgressBytesAgHist5min": {
+                    "comment": [
+                         "Egress bytes. A class that represents historical aggregated statistics for host router egress bytes in a 5 minute sampling interval.  This class updates every 10 seconds."
+                    ]
+                },
+                "cloud:HostRouterEgressPktsAg15min": {
+                    "comment": [
+                         "Egress packet. A class that represents the most current aggregated statistics for host router egress packets in a 15 minute sampling interval.  This class updates every 5 minutes."
+                    ]
+                },
+                "cloud:HostRouterEgressPktsAg1d": {
+                    "comment": [
+                         "Egress packet. A class that represents the most current aggregated statistics for host router egress packets in a 1 day sampling interval.  This class updates every hour."
+                    ]
+                },
+                "cloud:HostRouterEgressPktsAg1h": {
+                    "comment": [
+                         "Egress packet. A class that represents the most current aggregated statistics for host router egress packets in a 1 hour sampling interval.  This class updates every 15 minutes."
+                    ]
+                },
+                "cloud:HostRouterEgressPktsAg1mo": {
+                    "comment": [
+                         "Egress packet. A class that represents the most current aggregated statistics for host router egress packets in a 1 month sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:HostRouterEgressPktsAg1qtr": {
+                    "comment": [
+                         "Egress packet. A class that represents the most current aggregated statistics for host router egress packets in a 1 quarter sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:HostRouterEgressPktsAg1w": {
+                    "comment": [
+                         "Egress packet. A class that represents the most current aggregated statistics for host router egress packets in a 1 week sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:HostRouterEgressPktsAg1year": {
+                    "comment": [
+                         "Egress packet. A class that represents the most current aggregated statistics for host router egress packets in a 1 year sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:HostRouterEgressPktsAg5min": {
+                    "comment": [
+                         "Egress packet. A class that represents the most current aggregated statistics for host router egress packets in a 5 minute sampling interval.  This class updates every 10 seconds."
+                    ]
+                },
+                "cloud:HostRouterEgressPktsAgHist15min": {
+                    "comment": [
+                         "Egress packet. A class that represents historical aggregated statistics for host router egress packets in a 15 minute sampling interval.  This class updates every 5 minutes."
+                    ]
+                },
+                "cloud:HostRouterEgressPktsAgHist1d": {
+                    "comment": [
+                         "Egress packet. A class that represents historical aggregated statistics for host router egress packets in a 1 day sampling interval.  This class updates every hour."
+                    ]
+                },
+                "cloud:HostRouterEgressPktsAgHist1h": {
+                    "comment": [
+                         "Egress packet. A class that represents historical aggregated statistics for host router egress packets in a 1 hour sampling interval.  This class updates every 15 minutes."
+                    ]
+                },
+                "cloud:HostRouterEgressPktsAgHist1mo": {
+                    "comment": [
+                         "Egress packet. A class that represents historical aggregated statistics for host router egress packets in a 1 month sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:HostRouterEgressPktsAgHist1qtr": {
+                    "comment": [
+                         "Egress packet. A class that represents historical aggregated statistics for host router egress packets in a 1 quarter sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:HostRouterEgressPktsAgHist1w": {
+                    "comment": [
+                         "Egress packet. A class that represents historical aggregated statistics for host router egress packets in a 1 week sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:HostRouterEgressPktsAgHist1year": {
+                    "comment": [
+                         "Egress packet. A class that represents historical aggregated statistics for host router egress packets in a 1 year sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:HostRouterEgressPktsAgHist5min": {
+                    "comment": [
+                         "Egress packet. A class that represents historical aggregated statistics for host router egress packets in a 5 minute sampling interval.  This class updates every 10 seconds."
+                    ]
+                },
+                "cloud:HostRouterIngressBytesAg15min": {
+                    "comment": [
+                         "Ingress bytes. A class that represents the most current aggregated statistics for host router cloud ingress bytess in a 15 minute sampling interval.  This class updates every 5 minutes."
+                    ]
+                },
+                "cloud:HostRouterIngressBytesAg1d": {
+                    "comment": [
+                         "Ingress bytes. A class that represents the most current aggregated statistics for host router cloud ingress bytess in a 1 day sampling interval.  This class updates every hour."
+                    ]
+                },
+                "cloud:HostRouterIngressBytesAg1h": {
+                    "comment": [
+                         "Ingress bytes. A class that represents the most current aggregated statistics for host router cloud ingress bytess in a 1 hour sampling interval.  This class updates every 15 minutes."
+                    ]
+                },
+                "cloud:HostRouterIngressBytesAg1mo": {
+                    "comment": [
+                         "Ingress bytes. A class that represents the most current aggregated statistics for host router cloud ingress bytess in a 1 month sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:HostRouterIngressBytesAg1qtr": {
+                    "comment": [
+                         "Ingress bytes. A class that represents the most current aggregated statistics for host router cloud ingress bytess in a 1 quarter sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:HostRouterIngressBytesAg1w": {
+                    "comment": [
+                         "Ingress bytes. A class that represents the most current aggregated statistics for host router cloud ingress bytess in a 1 week sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:HostRouterIngressBytesAg1year": {
+                    "comment": [
+                         "Ingress bytes. A class that represents the most current aggregated statistics for host router cloud ingress bytess in a 1 year sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:HostRouterIngressBytesAg5min": {
+                    "comment": [
+                         "Ingress bytes. A class that represents the most current aggregated statistics for host router cloud ingress bytess in a 5 minute sampling interval.  This class updates every 10 seconds."
+                    ]
+                },
+                "cloud:HostRouterIngressBytesAgHist15min": {
+                    "comment": [
+                         "Ingress bytes. A class that represents historical aggregated statistics for host router cloud ingress bytess in a 15 minute sampling interval.  This class updates every 5 minutes."
+                    ]
+                },
+                "cloud:HostRouterIngressBytesAgHist1d": {
+                    "comment": [
+                         "Ingress bytes. A class that represents historical aggregated statistics for host router cloud ingress bytess in a 1 day sampling interval.  This class updates every hour."
+                    ]
+                },
+                "cloud:HostRouterIngressBytesAgHist1h": {
+                    "comment": [
+                         "Ingress bytes. A class that represents historical aggregated statistics for host router cloud ingress bytess in a 1 hour sampling interval.  This class updates every 15 minutes."
+                    ]
+                },
+                "cloud:HostRouterIngressBytesAgHist1mo": {
+                    "comment": [
+                         "Ingress bytes. A class that represents historical aggregated statistics for host router cloud ingress bytess in a 1 month sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:HostRouterIngressBytesAgHist1qtr": {
+                    "comment": [
+                         "Ingress bytes. A class that represents historical aggregated statistics for host router cloud ingress bytess in a 1 quarter sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:HostRouterIngressBytesAgHist1w": {
+                    "comment": [
+                         "Ingress bytes. A class that represents historical aggregated statistics for host router cloud ingress bytess in a 1 week sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:HostRouterIngressBytesAgHist1year": {
+                    "comment": [
+                         "Ingress bytes. A class that represents historical aggregated statistics for host router cloud ingress bytess in a 1 year sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:HostRouterIngressBytesAgHist5min": {
+                    "comment": [
+                         "Ingress bytes. A class that represents historical aggregated statistics for host router cloud ingress bytess in a 5 minute sampling interval.  This class updates every 10 seconds."
+                    ]
+                },
+                "cloud:HostRouterIngressPktsAg15min": {
+                    "comment": [
+                         "Ingress packet. A class that represents the most current aggregated statistics for host router ingress packets in a 15 minute sampling interval.  This class updates every 5 minutes."
+                    ]
+                },
+                "cloud:HostRouterIngressPktsAg1d": {
+                    "comment": [
+                         "Ingress packet. A class that represents the most current aggregated statistics for host router ingress packets in a 1 day sampling interval.  This class updates every hour."
+                    ]
+                },
+                "cloud:HostRouterIngressPktsAg1h": {
+                    "comment": [
+                         "Ingress packet. A class that represents the most current aggregated statistics for host router ingress packets in a 1 hour sampling interval.  This class updates every 15 minutes."
+                    ]
+                },
+                "cloud:HostRouterIngressPktsAg1mo": {
+                    "comment": [
+                         "Ingress packet. A class that represents the most current aggregated statistics for host router ingress packets in a 1 month sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:HostRouterIngressPktsAg1qtr": {
+                    "comment": [
+                         "Ingress packet. A class that represents the most current aggregated statistics for host router ingress packets in a 1 quarter sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:HostRouterIngressPktsAg1w": {
+                    "comment": [
+                         "Ingress packet. A class that represents the most current aggregated statistics for host router ingress packets in a 1 week sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:HostRouterIngressPktsAg1year": {
+                    "comment": [
+                         "Ingress packet. A class that represents the most current aggregated statistics for host router ingress packets in a 1 year sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:HostRouterIngressPktsAg5min": {
+                    "comment": [
+                         "Ingress packet. A class that represents the most current aggregated statistics for host router ingress packets in a 5 minute sampling interval.  This class updates every 10 seconds."
+                    ]
+                },
+                "cloud:HostRouterIngressPktsAgHist15min": {
+                    "comment": [
+                         "Ingress packet. A class that represents historical aggregated statistics for host router ingress packets in a 15 minute sampling interval.  This class updates every 5 minutes."
+                    ]
+                },
+                "cloud:HostRouterIngressPktsAgHist1d": {
+                    "comment": [
+                         "Ingress packet. A class that represents historical aggregated statistics for host router ingress packets in a 1 day sampling interval.  This class updates every hour."
+                    ]
+                },
+                "cloud:HostRouterIngressPktsAgHist1h": {
+                    "comment": [
+                         "Ingress packet. A class that represents historical aggregated statistics for host router ingress packets in a 1 hour sampling interval.  This class updates every 15 minutes."
+                    ]
+                },
+                "cloud:HostRouterIngressPktsAgHist1mo": {
+                    "comment": [
+                         "Ingress packet. A class that represents historical aggregated statistics for host router ingress packets in a 1 month sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:HostRouterIngressPktsAgHist1qtr": {
+                    "comment": [
+                         "Ingress packet. A class that represents historical aggregated statistics for host router ingress packets in a 1 quarter sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:HostRouterIngressPktsAgHist1w": {
+                    "comment": [
+                         "Ingress packet. A class that represents historical aggregated statistics for host router ingress packets in a 1 week sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:HostRouterIngressPktsAgHist1year": {
+                    "comment": [
+                         "Ingress packet. A class that represents historical aggregated statistics for host router ingress packets in a 1 year sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:HostRouterIngressPktsAgHist5min": {
+                    "comment": [
+                         "Ingress packet. A class that represents historical aggregated statistics for host router ingress packets in a 5 minute sampling interval.  This class updates every 10 seconds."
+                    ]
+                },
+                "cloud:IngressBytesAg15min": {
+                    "comment": [
+                         "Ingress bytes. A class that represents the most current aggregated statistics for cloud ingress bytess in a 15 minute sampling interval.  This class updates every 5 minutes."
+                    ]
+                },
+                "cloud:IngressBytesAg1d": {
+                    "comment": [
+                         "Ingress bytes. A class that represents the most current aggregated statistics for cloud ingress bytess in a 1 day sampling interval.  This class updates every hour."
+                    ]
+                },
+                "cloud:IngressBytesAg1h": {
+                    "comment": [
+                         "Ingress bytes. A class that represents the most current aggregated statistics for cloud ingress bytess in a 1 hour sampling interval.  This class updates every 15 minutes."
+                    ]
+                },
+                "cloud:IngressBytesAg1mo": {
+                    "comment": [
+                         "Ingress bytes. A class that represents the most current aggregated statistics for cloud ingress bytess in a 1 month sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:IngressBytesAg1qtr": {
+                    "comment": [
+                         "Ingress bytes. A class that represents the most current aggregated statistics for cloud ingress bytess in a 1 quarter sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:IngressBytesAg1w": {
+                    "comment": [
+                         "Ingress bytes. A class that represents the most current aggregated statistics for cloud ingress bytess in a 1 week sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:IngressBytesAg1year": {
+                    "comment": [
+                         "Ingress bytes. A class that represents the most current aggregated statistics for cloud ingress bytess in a 1 year sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:IngressBytesAg5min": {
+                    "comment": [
+                         "Ingress bytes. A class that represents the most current aggregated statistics for cloud ingress bytess in a 5 minute sampling interval.  This class updates every 10 seconds."
+                    ]
+                },
+                "cloud:IngressBytesAgHist15min": {
+                    "comment": [
+                         "Ingress bytes. A class that represents historical aggregated statistics for cloud ingress bytess in a 15 minute sampling interval.  This class updates every 5 minutes."
+                    ]
+                },
+                "cloud:IngressBytesAgHist1d": {
+                    "comment": [
+                         "Ingress bytes. A class that represents historical aggregated statistics for cloud ingress bytess in a 1 day sampling interval.  This class updates every hour."
+                    ]
+                },
+                "cloud:IngressBytesAgHist1h": {
+                    "comment": [
+                         "Ingress bytes. A class that represents historical aggregated statistics for cloud ingress bytess in a 1 hour sampling interval.  This class updates every 15 minutes."
+                    ]
+                },
+                "cloud:IngressBytesAgHist1mo": {
+                    "comment": [
+                         "Ingress bytes. A class that represents historical aggregated statistics for cloud ingress bytess in a 1 month sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:IngressBytesAgHist1qtr": {
+                    "comment": [
+                         "Ingress bytes. A class that represents historical aggregated statistics for cloud ingress bytess in a 1 quarter sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:IngressBytesAgHist1w": {
+                    "comment": [
+                         "Ingress bytes. A class that represents historical aggregated statistics for cloud ingress bytess in a 1 week sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:IngressBytesAgHist1year": {
+                    "comment": [
+                         "Ingress bytes. A class that represents historical aggregated statistics for cloud ingress bytess in a 1 year sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:IngressBytesAgHist5min": {
+                    "comment": [
+                         "Ingress bytes. A class that represents historical aggregated statistics for cloud ingress bytess in a 5 minute sampling interval.  This class updates every 10 seconds."
+                    ]
+                },
+                "cloud:IngressPktsAg15min": {
+                    "comment": [
+                         "Ingress packet. A class that represents the most current aggregated statistics for cloud ingress packets in a 15 minute sampling interval.  This class updates every 5 minutes."
+                    ]
+                },
+                "cloud:IngressPktsAg1d": {
+                    "comment": [
+                         "Ingress packet. A class that represents the most current aggregated statistics for cloud ingress packets in a 1 day sampling interval.  This class updates every hour."
+                    ]
+                },
+                "cloud:IngressPktsAg1h": {
+                    "comment": [
+                         "Ingress packet. A class that represents the most current aggregated statistics for cloud ingress packets in a 1 hour sampling interval.  This class updates every 15 minutes."
+                    ]
+                },
+                "cloud:IngressPktsAg1mo": {
+                    "comment": [
+                         "Ingress packet. A class that represents the most current aggregated statistics for cloud ingress packets in a 1 month sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:IngressPktsAg1qtr": {
+                    "comment": [
+                         "Ingress packet. A class that represents the most current aggregated statistics for cloud ingress packets in a 1 quarter sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:IngressPktsAg1w": {
+                    "comment": [
+                         "Ingress packet. A class that represents the most current aggregated statistics for cloud ingress packets in a 1 week sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:IngressPktsAg1year": {
+                    "comment": [
+                         "Ingress packet. A class that represents the most current aggregated statistics for cloud ingress packets in a 1 year sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:IngressPktsAg5min": {
+                    "comment": [
+                         "Ingress packet. A class that represents the most current aggregated statistics for cloud ingress packets in a 5 minute sampling interval.  This class updates every 10 seconds."
+                    ]
+                },
+                "cloud:IngressPktsAgHist15min": {
+                    "comment": [
+                         "Ingress packet. A class that represents historical aggregated statistics for cloud ingress packets in a 15 minute sampling interval.  This class updates every 5 minutes."
+                    ]
+                },
+                "cloud:IngressPktsAgHist1d": {
+                    "comment": [
+                         "Ingress packet. A class that represents historical aggregated statistics for cloud ingress packets in a 1 day sampling interval.  This class updates every hour."
+                    ]
+                },
+                "cloud:IngressPktsAgHist1h": {
+                    "comment": [
+                         "Ingress packet. A class that represents historical aggregated statistics for cloud ingress packets in a 1 hour sampling interval.  This class updates every 15 minutes."
+                    ]
+                },
+                "cloud:IngressPktsAgHist1mo": {
+                    "comment": [
+                         "Ingress packet. A class that represents historical aggregated statistics for cloud ingress packets in a 1 month sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:IngressPktsAgHist1qtr": {
+                    "comment": [
+                         "Ingress packet. A class that represents historical aggregated statistics for cloud ingress packets in a 1 quarter sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:IngressPktsAgHist1w": {
+                    "comment": [
+                         "Ingress packet. A class that represents historical aggregated statistics for cloud ingress packets in a 1 week sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:IngressPktsAgHist1year": {
+                    "comment": [
+                         "Ingress packet. A class that represents historical aggregated statistics for cloud ingress packets in a 1 year sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:IngressPktsAgHist5min": {
+                    "comment": [
+                         "Ingress packet. A class that represents historical aggregated statistics for cloud ingress packets in a 5 minute sampling interval.  This class updates every 10 seconds."
+                    ]
+                },
+                "cloud:LBStatsAg15min": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for ALB front end stats in a 15 minute sampling interval.  This class updates every 5 minutes."
+                    ]
+                },
+                "cloud:LBStatsAg1d": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for ALB front end stats in a 1 day sampling interval.  This class updates every hour."
+                    ]
+                },
+                "cloud:LBStatsAg1h": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for ALB front end stats in a 1 hour sampling interval.  This class updates every 15 minutes."
+                    ]
+                },
+                "cloud:LBStatsAg1mo": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for ALB front end stats in a 1 month sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:LBStatsAg1qtr": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for ALB front end stats in a 1 quarter sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:LBStatsAg1w": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for ALB front end stats in a 1 week sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:LBStatsAg1year": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for ALB front end stats in a 1 year sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:LBStatsAg5min": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for ALB front end stats in a 5 minute sampling interval.  This class updates every 10 seconds."
+                    ]
+                },
+                "cloud:LBStatsAgHist15min": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for ALB front end stats in a 15 minute sampling interval.  This class updates every 5 minutes."
+                    ]
+                },
+                "cloud:LBStatsAgHist1d": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for ALB front end stats in a 1 day sampling interval.  This class updates every hour."
+                    ]
+                },
+                "cloud:LBStatsAgHist1h": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for ALB front end stats in a 1 hour sampling interval.  This class updates every 15 minutes."
+                    ]
+                },
+                "cloud:LBStatsAgHist1mo": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for ALB front end stats in a 1 month sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:LBStatsAgHist1qtr": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for ALB front end stats in a 1 quarter sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:LBStatsAgHist1w": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for ALB front end stats in a 1 week sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:LBStatsAgHist1year": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for ALB front end stats in a 1 year sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:LBStatsAgHist5min": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for ALB front end stats in a 5 minute sampling interval.  This class updates every 10 seconds."
+                    ]
+                },
+                "cloud:NLBStatsAg15min": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for NLB front end stats in a 15 minute sampling interval.  This class updates every 5 minutes."
+                    ]
+                },
+                "cloud:NLBStatsAg1d": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for NLB front end stats in a 1 day sampling interval.  This class updates every hour."
+                    ]
+                },
+                "cloud:NLBStatsAg1h": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for NLB front end stats in a 1 hour sampling interval.  This class updates every 15 minutes."
+                    ]
+                },
+                "cloud:NLBStatsAg1mo": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for NLB front end stats in a 1 month sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:NLBStatsAg1qtr": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for NLB front end stats in a 1 quarter sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:NLBStatsAg1w": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for NLB front end stats in a 1 week sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:NLBStatsAg1year": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for NLB front end stats in a 1 year sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:NLBStatsAg5min": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for NLB front end stats in a 5 minute sampling interval.  This class updates every 10 seconds."
+                    ]
+                },
+                "cloud:NLBStatsAgHist15min": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for NLB front end stats in a 15 minute sampling interval.  This class updates every 5 minutes."
+                    ]
+                },
+                "cloud:NLBStatsAgHist1d": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for NLB front end stats in a 1 day sampling interval.  This class updates every hour."
+                    ]
+                },
+                "cloud:NLBStatsAgHist1h": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for NLB front end stats in a 1 hour sampling interval.  This class updates every 15 minutes."
+                    ]
+                },
+                "cloud:NLBStatsAgHist1mo": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for NLB front end stats in a 1 month sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:NLBStatsAgHist1qtr": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for NLB front end stats in a 1 quarter sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:NLBStatsAgHist1w": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for NLB front end stats in a 1 week sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:NLBStatsAgHist1year": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for NLB front end stats in a 1 year sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:NLBStatsAgHist5min": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for NLB front end stats in a 5 minute sampling interval.  This class updates every 10 seconds."
+                    ]
+                },
+                "cloud:PoolHealthStatsAg15min": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for ALB back end pool health stats in a 15 minute sampling interval.  This class updates every 5 minutes."
+                    ]
+                },
+                "cloud:PoolHealthStatsAg1d": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for ALB back end pool health stats in a 1 day sampling interval.  This class updates every hour."
+                    ]
+                },
+                "cloud:PoolHealthStatsAg1h": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for ALB back end pool health stats in a 1 hour sampling interval.  This class updates every 15 minutes."
+                    ]
+                },
+                "cloud:PoolHealthStatsAg1mo": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for ALB back end pool health stats in a 1 month sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:PoolHealthStatsAg1qtr": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for ALB back end pool health stats in a 1 quarter sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:PoolHealthStatsAg1w": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for ALB back end pool health stats in a 1 week sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:PoolHealthStatsAg1year": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for ALB back end pool health stats in a 1 year sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:PoolHealthStatsAg5min": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for ALB back end pool health stats in a 5 minute sampling interval.  This class updates every 10 seconds."
+                    ]
+                },
+                "cloud:PoolHealthStatsAgHist15min": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for ALB back end pool health stats in a 15 minute sampling interval.  This class updates every 5 minutes."
+                    ]
+                },
+                "cloud:PoolHealthStatsAgHist1d": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for ALB back end pool health stats in a 1 day sampling interval.  This class updates every hour."
+                    ]
+                },
+                "cloud:PoolHealthStatsAgHist1h": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for ALB back end pool health stats in a 1 hour sampling interval.  This class updates every 15 minutes."
+                    ]
+                },
+                "cloud:PoolHealthStatsAgHist1mo": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for ALB back end pool health stats in a 1 month sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:PoolHealthStatsAgHist1qtr": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for ALB back end pool health stats in a 1 quarter sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:PoolHealthStatsAgHist1w": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for ALB back end pool health stats in a 1 week sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:PoolHealthStatsAgHist1year": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for ALB back end pool health stats in a 1 year sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:PoolHealthStatsAgHist5min": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for ALB back end pool health stats in a 5 minute sampling interval.  This class updates every 10 seconds."
+                    ]
+                },
+                "cloud:PoolResponseLatencyAg15min": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for ALB back end pool response latency in a 15 minute sampling interval.  This class updates every 5 minutes."
+                    ]
+                },
+                "cloud:PoolResponseLatencyAg1d": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for ALB back end pool response latency in a 1 day sampling interval.  This class updates every hour."
+                    ]
+                },
+                "cloud:PoolResponseLatencyAg1h": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for ALB back end pool response latency in a 1 hour sampling interval.  This class updates every 15 minutes."
+                    ]
+                },
+                "cloud:PoolResponseLatencyAg1mo": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for ALB back end pool response latency in a 1 month sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:PoolResponseLatencyAg1qtr": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for ALB back end pool response latency in a 1 quarter sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:PoolResponseLatencyAg1w": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for ALB back end pool response latency in a 1 week sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:PoolResponseLatencyAg1year": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for ALB back end pool response latency in a 1 year sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:PoolResponseLatencyAg5min": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for ALB back end pool response latency in a 5 minute sampling interval.  This class updates every 10 seconds."
+                    ]
+                },
+                "cloud:PoolResponseLatencyAgHist15min": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for ALB back end pool response latency in a 15 minute sampling interval.  This class updates every 5 minutes."
+                    ]
+                },
+                "cloud:PoolResponseLatencyAgHist1d": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for ALB back end pool response latency in a 1 day sampling interval.  This class updates every hour."
+                    ]
+                },
+                "cloud:PoolResponseLatencyAgHist1h": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for ALB back end pool response latency in a 1 hour sampling interval.  This class updates every 15 minutes."
+                    ]
+                },
+                "cloud:PoolResponseLatencyAgHist1mo": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for ALB back end pool response latency in a 1 month sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:PoolResponseLatencyAgHist1qtr": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for ALB back end pool response latency in a 1 quarter sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:PoolResponseLatencyAgHist1w": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for ALB back end pool response latency in a 1 week sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:PoolResponseLatencyAgHist1year": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for ALB back end pool response latency in a 1 year sampling interval.  This class updates every day."
+                    ]
+                },
+                "cloud:PoolResponseLatencyAgHist5min": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for ALB back end pool response latency in a 5 minute sampling interval.  This class updates every 10 seconds."
+                    ]
+                },
+                "fv:FltCounter15min": {
+                    "comment": [
+                         "A class that represents the most current statistics for  Fault  Counter in a 15 minute sampling interval.  This class updates every 5 minutes."
+                    ]
+                },
+                "fv:FltCounter1d": {
+                    "comment": [
+                         "A class that represents the most current statistics for  Fault  Counter in a 1 day sampling interval.  This class updates every hour."
+                    ]
+                },
+                "fv:FltCounter1h": {
+                    "comment": [
+                         "A class that represents the most current statistics for  Fault  Counter in a 1 hour sampling interval.  This class updates every 15 minutes."
+                    ]
+                },
+                "fv:FltCounter1mo": {
+                    "comment": [
+                         "A class that represents the most current statistics for  Fault  Counter in a 1 month sampling interval.  This class updates every day."
+                    ]
+                },
+                "fv:FltCounter1qtr": {
+                    "comment": [
+                         "A class that represents the most current statistics for  Fault  Counter in a 1 quarter sampling interval.  This class updates every day."
+                    ]
+                },
+                "fv:FltCounter1w": {
+                    "comment": [
+                         "A class that represents the most current statistics for  Fault  Counter in a 1 week sampling interval.  This class updates every day."
+                    ]
+                },
+                "fv:FltCounter1year": {
+                    "comment": [
+                         "A class that represents the most current statistics for  Fault  Counter in a 1 year sampling interval.  This class updates every day."
+                    ]
+                },
+                "fv:FltCounter5min": {
+                    "comment": [
+                         "A class that represents the most current statistics for  Fault  Counter in a 5 minute sampling interval.  This class updates every 10 seconds."
+                    ]
+                },
+                "fv:FltCounterHist15min": {
+                    "comment": [
+                         "A class that represents historical statistics for  Fault  Counter in a 15 minute sampling interval.  This class updates every 5 minutes."
+                    ]
+                },
+                "fv:FltCounterHist1d": {
+                    "comment": [
+                         "A class that represents historical statistics for  Fault  Counter in a 1 day sampling interval.  This class updates every hour."
+                    ]
+                },
+                "fv:FltCounterHist1h": {
+                    "comment": [
+                         "A class that represents historical statistics for  Fault  Counter in a 1 hour sampling interval.  This class updates every 15 minutes."
+                    ]
+                },
+                "fv:FltCounterHist1mo": {
+                    "comment": [
+                         "A class that represents historical statistics for  Fault  Counter in a 1 month sampling interval.  This class updates every day."
+                    ]
+                },
+                "fv:FltCounterHist1qtr": {
+                    "comment": [
+                         "A class that represents historical statistics for  Fault  Counter in a 1 quarter sampling interval.  This class updates every day."
+                    ]
+                },
+                "fv:FltCounterHist1w": {
+                    "comment": [
+                         "A class that represents historical statistics for  Fault  Counter in a 1 week sampling interval.  This class updates every day."
+                    ]
+                },
+                "fv:FltCounterHist1year": {
+                    "comment": [
+                         "A class that represents historical statistics for  Fault  Counter in a 1 year sampling interval.  This class updates every day."
+                    ]
+                },
+                "fv:FltCounterHist5min": {
+                    "comment": [
+                         "A class that represents historical statistics for  Fault  Counter in a 5 minute sampling interval.  This class updates every 10 seconds."
+                    ]
+                },
+                "fv:OverallHealth15min": {
+                    "comment": [
+                         "A class that represents the most current statistics for overall tenant health in a 15 minute sampling interval.  This class updates every 5 minutes."
+                    ]
+                },
+                "fv:OverallHealth1d": {
+                    "comment": [
+                         "A class that represents the most current statistics for overall tenant health in a 1 day sampling interval.  This class updates every hour."
+                    ]
+                },
+                "fv:OverallHealth1h": {
+                    "comment": [
+                         "A class that represents the most current statistics for overall tenant health in a 1 hour sampling interval.  This class updates every 15 minutes."
+                    ]
+                },
+                "fv:OverallHealth1mo": {
+                    "comment": [
+                         "A class that represents the most current statistics for overall tenant health in a 1 month sampling interval.  This class updates every day."
+                    ]
+                },
+                "fv:OverallHealth1qtr": {
+                    "comment": [
+                         "A class that represents the most current statistics for overall tenant health in a 1 quarter sampling interval.  This class updates every day."
+                    ]
+                },
+                "fv:OverallHealth1w": {
+                    "comment": [
+                         "A class that represents the most current statistics for overall tenant health in a 1 week sampling interval.  This class updates every day."
+                    ]
+                },
+                "fv:OverallHealth1year": {
+                    "comment": [
+                         "A class that represents the most current statistics for overall tenant health in a 1 year sampling interval.  This class updates every day."
+                    ]
+                },
+                "fv:OverallHealthHist15min": {
+                    "comment": [
+                         "A class that represents historical statistics for overall tenant health in a 15 minute sampling interval.  This class updates every 5 minutes."
+                    ]
+                },
+                "fv:OverallHealthHist1d": {
+                    "comment": [
+                         "A class that represents historical statistics for overall tenant health in a 1 day sampling interval.  This class updates every hour."
+                    ]
+                },
+                "fv:OverallHealthHist1h": {
+                    "comment": [
+                         "A class that represents historical statistics for overall tenant health in a 1 hour sampling interval.  This class updates every 15 minutes."
+                    ]
+                },
+                "fv:OverallHealthHist1mo": {
+                    "comment": [
+                         "A class that represents historical statistics for overall tenant health in a 1 month sampling interval.  This class updates every day."
+                    ]
+                },
+                "fv:OverallHealthHist1qtr": {
+                    "comment": [
+                         "A class that represents historical statistics for overall tenant health in a 1 quarter sampling interval.  This class updates every day."
+                    ]
+                },
+                "fv:OverallHealthHist1w": {
+                    "comment": [
+                         "A class that represents historical statistics for overall tenant health in a 1 week sampling interval.  This class updates every day."
+                    ]
+                },
+                "fv:OverallHealthHist1year": {
+                    "comment": [
+                         "A class that represents historical statistics for overall tenant health in a 1 year sampling interval.  This class updates every day."
+                    ]
+                },
+                "l2:EgrBytesAg15min": {
+                    "comment": [
+                         "Egress byte. A class that represents the most current aggregated statistics for egress bytes in a 15 minute sampling interval.  This class updates every 5 minutes."
+                    ]
+                },
+                "l2:EgrBytesAg1d": {
+                    "comment": [
+                         "Egress byte. A class that represents the most current aggregated statistics for egress bytes in a 1 day sampling interval.  This class updates every hour."
+                    ]
+                },
+                "l2:EgrBytesAg1h": {
+                    "comment": [
+                         "Egress byte. A class that represents the most current aggregated statistics for egress bytes in a 1 hour sampling interval.  This class updates every 15 minutes."
+                    ]
+                },
+                "l2:EgrBytesAg1mo": {
+                    "comment": [
+                         "Egress byte. A class that represents the most current aggregated statistics for egress bytes in a 1 month sampling interval.  This class updates every day."
+                    ]
+                },
+                "l2:EgrBytesAg1qtr": {
+                    "comment": [
+                         "Egress byte. A class that represents the most current aggregated statistics for egress bytes in a 1 quarter sampling interval.  This class updates every day."
+                    ]
+                },
+                "l2:EgrBytesAg1w": {
+                    "comment": [
+                         "Egress byte. A class that represents the most current aggregated statistics for egress bytes in a 1 week sampling interval.  This class updates every day."
+                    ]
+                },
+                "l2:EgrBytesAg1year": {
+                    "comment": [
+                         "Egress byte. A class that represents the most current aggregated statistics for egress bytes in a 1 year sampling interval.  This class updates every day."
+                    ]
+                },
+                "l2:EgrBytesAgHist15min": {
+                    "comment": [
+                         "Egress byte. A class that represents historical aggregated statistics for egress bytes in a 15 minute sampling interval.  This class updates every 5 minutes."
+                    ]
+                },
+                "l2:EgrBytesAgHist1d": {
+                    "comment": [
+                         "Egress byte. A class that represents historical aggregated statistics for egress bytes in a 1 day sampling interval.  This class updates every hour."
+                    ]
+                },
+                "l2:EgrBytesAgHist1h": {
+                    "comment": [
+                         "Egress byte. A class that represents historical aggregated statistics for egress bytes in a 1 hour sampling interval.  This class updates every 15 minutes."
+                    ]
+                },
+                "l2:EgrBytesAgHist1mo": {
+                    "comment": [
+                         "Egress byte. A class that represents historical aggregated statistics for egress bytes in a 1 month sampling interval.  This class updates every day."
+                    ]
+                },
+                "l2:EgrBytesAgHist1qtr": {
+                    "comment": [
+                         "Egress byte. A class that represents historical aggregated statistics for egress bytes in a 1 quarter sampling interval.  This class updates every day."
+                    ]
+                },
+                "l2:EgrBytesAgHist1w": {
+                    "comment": [
+                         "Egress byte. A class that represents historical aggregated statistics for egress bytes in a 1 week sampling interval.  This class updates every day."
+                    ]
+                },
+                "l2:EgrBytesAgHist1year": {
+                    "comment": [
+                         "Egress byte. A class that represents historical aggregated statistics for egress bytes in a 1 year sampling interval.  This class updates every day."
+                    ]
+                },
+                "l2:EgrPktsAg15min": {
+                    "comment": [
+                         "Egress packet. A class that represents the most current aggregated statistics for egress packets in a 15 minute sampling interval.  This class updates every 5 minutes."
+                    ]
+                },
+                "l2:EgrPktsAg1d": {
+                    "comment": [
+                         "Egress packet. A class that represents the most current aggregated statistics for egress packets in a 1 day sampling interval.  This class updates every hour."
+                    ]
+                },
+                "l2:EgrPktsAg1h": {
+                    "comment": [
+                         "Egress packet. A class that represents the most current aggregated statistics for egress packets in a 1 hour sampling interval.  This class updates every 15 minutes."
+                    ]
+                },
+                "l2:EgrPktsAg1mo": {
+                    "comment": [
+                         "Egress packet. A class that represents the most current aggregated statistics for egress packets in a 1 month sampling interval.  This class updates every day."
+                    ]
+                },
+                "l2:EgrPktsAg1qtr": {
+                    "comment": [
+                         "Egress packet. A class that represents the most current aggregated statistics for egress packets in a 1 quarter sampling interval.  This class updates every day."
+                    ]
+                },
+                "l2:EgrPktsAg1w": {
+                    "comment": [
+                         "Egress packet. A class that represents the most current aggregated statistics for egress packets in a 1 week sampling interval.  This class updates every day."
+                    ]
+                },
+                "l2:EgrPktsAg1year": {
+                    "comment": [
+                         "Egress packet. A class that represents the most current aggregated statistics for egress packets in a 1 year sampling interval.  This class updates every day."
+                    ]
+                },
+                "l2:EgrPktsAgHist15min": {
+                    "comment": [
+                         "Egress packet. A class that represents historical aggregated statistics for egress packets in a 15 minute sampling interval.  This class updates every 5 minutes."
+                    ]
+                },
+                "l2:EgrPktsAgHist1d": {
+                    "comment": [
+                         "Egress packet. A class that represents historical aggregated statistics for egress packets in a 1 day sampling interval.  This class updates every hour."
+                    ]
+                },
+                "l2:EgrPktsAgHist1h": {
+                    "comment": [
+                         "Egress packet. A class that represents historical aggregated statistics for egress packets in a 1 hour sampling interval.  This class updates every 15 minutes."
+                    ]
+                },
+                "l2:EgrPktsAgHist1mo": {
+                    "comment": [
+                         "Egress packet. A class that represents historical aggregated statistics for egress packets in a 1 month sampling interval.  This class updates every day."
+                    ]
+                },
+                "l2:EgrPktsAgHist1qtr": {
+                    "comment": [
+                         "Egress packet. A class that represents historical aggregated statistics for egress packets in a 1 quarter sampling interval.  This class updates every day."
+                    ]
+                },
+                "l2:EgrPktsAgHist1w": {
+                    "comment": [
+                         "Egress packet. A class that represents historical aggregated statistics for egress packets in a 1 week sampling interval.  This class updates every day."
+                    ]
+                },
+                "l2:EgrPktsAgHist1year": {
+                    "comment": [
+                         "Egress packet. A class that represents historical aggregated statistics for egress packets in a 1 year sampling interval.  This class updates every day."
+                    ]
+                },
+                "l2:IngrBytesAg15min": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for ingress bytes in a 15 minute sampling interval.  This class updates every 5 minutes."
+                    ]
+                },
+                "l2:IngrBytesAg1d": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for ingress bytes in a 1 day sampling interval.  This class updates every hour."
+                    ]
+                },
+                "l2:IngrBytesAg1h": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for ingress bytes in a 1 hour sampling interval.  This class updates every 15 minutes."
+                    ]
+                },
+                "l2:IngrBytesAg1mo": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for ingress bytes in a 1 month sampling interval.  This class updates every day."
+                    ]
+                },
+                "l2:IngrBytesAg1qtr": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for ingress bytes in a 1 quarter sampling interval.  This class updates every day."
+                    ]
+                },
+                "l2:IngrBytesAg1w": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for ingress bytes in a 1 week sampling interval.  This class updates every day."
+                    ]
+                },
+                "l2:IngrBytesAg1year": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for ingress bytes in a 1 year sampling interval.  This class updates every day."
+                    ]
+                },
+                "l2:IngrBytesAgHist15min": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for ingress bytes in a 15 minute sampling interval.  This class updates every 5 minutes."
+                    ]
+                },
+                "l2:IngrBytesAgHist1d": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for ingress bytes in a 1 day sampling interval.  This class updates every hour."
+                    ]
+                },
+                "l2:IngrBytesAgHist1h": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for ingress bytes in a 1 hour sampling interval.  This class updates every 15 minutes."
+                    ]
+                },
+                "l2:IngrBytesAgHist1mo": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for ingress bytes in a 1 month sampling interval.  This class updates every day."
+                    ]
+                },
+                "l2:IngrBytesAgHist1qtr": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for ingress bytes in a 1 quarter sampling interval.  This class updates every day."
+                    ]
+                },
+                "l2:IngrBytesAgHist1w": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for ingress bytes in a 1 week sampling interval.  This class updates every day."
+                    ]
+                },
+                "l2:IngrBytesAgHist1year": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for ingress bytes in a 1 year sampling interval.  This class updates every day."
+                    ]
+                },
+                "l2:IngrPktsAg15min": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for ingress packets in a 15 minute sampling interval.  This class updates every 5 minutes."
+                    ]
+                },
+                "l2:IngrPktsAg1d": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for ingress packets in a 1 day sampling interval.  This class updates every hour."
+                    ]
+                },
+                "l2:IngrPktsAg1h": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for ingress packets in a 1 hour sampling interval.  This class updates every 15 minutes."
+                    ]
+                },
+                "l2:IngrPktsAg1mo": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for ingress packets in a 1 month sampling interval.  This class updates every day."
+                    ]
+                },
+                "l2:IngrPktsAg1qtr": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for ingress packets in a 1 quarter sampling interval.  This class updates every day."
+                    ]
+                },
+                "l2:IngrPktsAg1w": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for ingress packets in a 1 week sampling interval.  This class updates every day."
+                    ]
+                },
+                "l2:IngrPktsAg1year": {
+                    "comment": [
+                         "A class that represents the most current aggregated statistics for ingress packets in a 1 year sampling interval.  This class updates every day."
+                    ]
+                },
+                "l2:IngrPktsAgHist15min": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for ingress packets in a 15 minute sampling interval.  This class updates every 5 minutes."
+                    ]
+                },
+                "l2:IngrPktsAgHist1d": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for ingress packets in a 1 day sampling interval.  This class updates every hour."
+                    ]
+                },
+                "l2:IngrPktsAgHist1h": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for ingress packets in a 1 hour sampling interval.  This class updates every 15 minutes."
+                    ]
+                },
+                "l2:IngrPktsAgHist1mo": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for ingress packets in a 1 month sampling interval.  This class updates every day."
+                    ]
+                },
+                "l2:IngrPktsAgHist1qtr": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for ingress packets in a 1 quarter sampling interval.  This class updates every day."
+                    ]
+                },
+                "l2:IngrPktsAgHist1w": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for ingress packets in a 1 week sampling interval.  This class updates every day."
+                    ]
+                },
+                "l2:IngrPktsAgHist1year": {
+                    "comment": [
+                         "A class that represents historical aggregated statistics for ingress packets in a 1 year sampling interval.  This class updates every day."
+                    ]
+                },
+                "uribv4:EgrBytesAg15min": {
+                    "comment": [
+                         "Egress byte. A class that represents the most current aggregated statistics for l3 LSP egress bytes in a 15 minute sampling interval.  This class updates every 5 minutes."
+                    ]
+                },
+                "uribv4:EgrBytesAg1d": {
+                    "comment": [
+                         "Egress byte. A class that represents the most current aggregated statistics for l3 LSP egress bytes in a 1 day sampling interval.  This class updates every hour."
+                    ]
+                },
+                "uribv4:EgrBytesAg1h": {
+                    "comment": [
+                         "Egress byte. A class that represents the most current aggregated statistics for l3 LSP egress bytes in a 1 hour sampling interval.  This class updates every 15 minutes."
+                    ]
+                },
+                "uribv4:EgrBytesAg1mo": {
+                    "comment": [
+                         "Egress byte. A class that represents the most current aggregated statistics for l3 LSP egress bytes in a 1 month sampling interval.  This class updates every day."
+                    ]
+                },
+                "uribv4:EgrBytesAg1qtr": {
+                    "comment": [
+                         "Egress byte. A class that represents the most current aggregated statistics for l3 LSP egress bytes in a 1 quarter sampling interval.  This class updates every day."
+                    ]
+                },
+                "uribv4:EgrBytesAg1w": {
+                    "comment": [
+                         "Egress byte. A class that represents the most current aggregated statistics for l3 LSP egress bytes in a 1 week sampling interval.  This class updates every day."
+                    ]
+                },
+                "uribv4:EgrBytesAg1year": {
+                    "comment": [
+                         "Egress byte. A class that represents the most current aggregated statistics for l3 LSP egress bytes in a 1 year sampling interval.  This class updates every day."
+                    ]
+                },
+                "uribv4:EgrBytesAgHist15min": {
+                    "comment": [
+                         "Egress byte. A class that represents historical aggregated statistics for l3 LSP egress bytes in a 15 minute sampling interval.  This class updates every 5 minutes."
+                    ]
+                },
+                "uribv4:EgrBytesAgHist1d": {
+                    "comment": [
+                         "Egress byte. A class that represents historical aggregated statistics for l3 LSP egress bytes in a 1 day sampling interval.  This class updates every hour."
+                    ]
+                },
+                "uribv4:EgrBytesAgHist1h": {
+                    "comment": [
+                         "Egress byte. A class that represents historical aggregated statistics for l3 LSP egress bytes in a 1 hour sampling interval.  This class updates every 15 minutes."
+                    ]
+                },
+                "uribv4:EgrBytesAgHist1mo": {
+                    "comment": [
+                         "Egress byte. A class that represents historical aggregated statistics for l3 LSP egress bytes in a 1 month sampling interval.  This class updates every day."
+                    ]
+                },
+                "uribv4:EgrBytesAgHist1qtr": {
+                    "comment": [
+                         "Egress byte. A class that represents historical aggregated statistics for l3 LSP egress bytes in a 1 quarter sampling interval.  This class updates every day."
+                    ]
+                },
+                "uribv4:EgrBytesAgHist1w": {
+                    "comment": [
+                         "Egress byte. A class that represents historical aggregated statistics for l3 LSP egress bytes in a 1 week sampling interval.  This class updates every day."
+                    ]
+                },
+                "uribv4:EgrBytesAgHist1year": {
+                    "comment": [
+                         "Egress byte. A class that represents historical aggregated statistics for l3 LSP egress bytes in a 1 year sampling interval.  This class updates every day."
+                    ]
+                },
+                "uribv4:EgrPktsAg15min": {
+                    "comment": [
+                         "Egress packet. A class that represents the most current aggregated statistics for l3 LSP egress packets in a 15 minute sampling interval.  This class updates every 5 minutes."
+                    ]
+                },
+                "uribv4:EgrPktsAg1d": {
+                    "comment": [
+                         "Egress packet. A class that represents the most current aggregated statistics for l3 LSP egress packets in a 1 day sampling interval.  This class updates every hour."
+                    ]
+                },
+                "uribv4:EgrPktsAg1h": {
+                    "comment": [
+                         "Egress packet. A class that represents the most current aggregated statistics for l3 LSP egress packets in a 1 hour sampling interval.  This class updates every 15 minutes."
+                    ]
+                },
+                "uribv4:EgrPktsAg1mo": {
+                    "comment": [
+                         "Egress packet. A class that represents the most current aggregated statistics for l3 LSP egress packets in a 1 month sampling interval.  This class updates every day."
+                    ]
+                },
+                "uribv4:EgrPktsAg1qtr": {
+                    "comment": [
+                         "Egress packet. A class that represents the most current aggregated statistics for l3 LSP egress packets in a 1 quarter sampling interval.  This class updates every day."
+                    ]
+                },
+                "uribv4:EgrPktsAg1w": {
+                    "comment": [
+                         "Egress packet. A class that represents the most current aggregated statistics for l3 LSP egress packets in a 1 week sampling interval.  This class updates every day."
+                    ]
+                },
+                "uribv4:EgrPktsAg1year": {
+                    "comment": [
+                         "Egress packet. A class that represents the most current aggregated statistics for l3 LSP egress packets in a 1 year sampling interval.  This class updates every day."
+                    ]
+                },
+                "uribv4:EgrPktsAgHist15min": {
+                    "comment": [
+                         "Egress packet. A class that represents historical aggregated statistics for l3 LSP egress packets in a 15 minute sampling interval.  This class updates every 5 minutes."
+                    ]
+                },
+                "uribv4:EgrPktsAgHist1d": {
+                    "comment": [
+                         "Egress packet. A class that represents historical aggregated statistics for l3 LSP egress packets in a 1 day sampling interval.  This class updates every hour."
+                    ]
+                },
+                "uribv4:EgrPktsAgHist1h": {
+                    "comment": [
+                         "Egress packet. A class that represents historical aggregated statistics for l3 LSP egress packets in a 1 hour sampling interval.  This class updates every 15 minutes."
+                    ]
+                },
+                "uribv4:EgrPktsAgHist1mo": {
+                    "comment": [
+                         "Egress packet. A class that represents historical aggregated statistics for l3 LSP egress packets in a 1 month sampling interval.  This class updates every day."
+                    ]
+                },
+                "uribv4:EgrPktsAgHist1qtr": {
+                    "comment": [
+                         "Egress packet. A class that represents historical aggregated statistics for l3 LSP egress packets in a 1 quarter sampling interval.  This class updates every day."
+                    ]
+                },
+                "uribv4:EgrPktsAgHist1w": {
+                    "comment": [
+                         "Egress packet. A class that represents historical aggregated statistics for l3 LSP egress packets in a 1 week sampling interval.  This class updates every day."
+                    ]
+                },
+                "uribv4:EgrPktsAgHist1year": {
+                    "comment": [
+                         "Egress packet. A class that represents historical aggregated statistics for l3 LSP egress packets in a 1 year sampling interval.  This class updates every day."
+                    ]
+                }
+            },
+            "versions": "1.0(1e)-",
+            "isAbstract": false,
+            "isConfigurable": true,
+            "isContextRoot": true,
+            "isNxosConverged": false,
+            "isDeprecated": false,
+            "isHidden": false,
+            "isEncrypted": false,
+            "isExportable": true,
+            "isPersistent": true,
+            "isSubjectToQuota": false,
+            "isObservable": true,
+            "hasStats": true,
+            "isStat": false,
+            "isFaultable": true,
+            "isDomainable": true,
+            "isHealthScorable": true,
+            "shouldCollectHealthStats": true,
+            "healthCollectionSource": "node",
+            "hasEventRules": true,
+            "abstractionLayer": "logical",
+            "apicNxProcessing": false,
+            "monitoringPolicySource": "Explicit",
+            "isCreatableDeletable": "always",
+            "platformFlavors": [
+
+            ],
+            "classId": "1975",
+            "className": "Tenant",
+            "classPkg": "fv",
+            "featureTag": "",
+            "moCategory": "Regular",
+            "label": "Tenant",
+            "comment": [
+                "A policy owner in the virtual fabric. A tenant can be either a private or a shared entity. For example, you can create a tenant with contexts and bridge domains shared by other tenants. A shared type of tenant is typically named common, default, or infra."
+            ],
+            "properties": {
+                "annotation": {
+                    "versions": "3.2(1l)-",
+                    "comment": [
+                         "User annotation. Suggested format orchestrator:value"
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "37655",
+                    "propLocalId": "8719",
+                    "label": "Annotation",
+                    "baseType": "string:Basic",
+                    "modelType": "mo:Annotation",
+                    "needsPropDelimiters": false,
+                    "uitype": "string",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validators": [
+                         {"min" : 0, "max": 128,
+                             "regexs": [
+                                 {"regex" : "^[a-zA-Z0-9_.:-]+$", "type": "include"}
+                             ]
+                         }
+                    ],
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "childAction": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "Delete or ignore. For internal use only."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "4",
+                    "propLocalId": "5",
+                    "label": "childAction",
+                    "baseType": "scalar:Bitmask32",
+                    "modelType": "mo:ModificationChildAction",
+                    "needsPropDelimiters": false,
+                    "uitype": "bitmask",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "16384", "localName": "deleteAll",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Delete All "},
+                         { "value": "8192", "localName": "deleteNonPresent",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Delete Non Present "},
+                         { "value": "4096", "localName": "ignore",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Ignore "}
+                    ],
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "descr": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "The description of the tenant."
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "5616",
+                    "propLocalId": "28",
+                    "label": "Description",
+                    "baseType": "string:Basic",
+                    "modelType": "naming:Descr",
+                    "needsPropDelimiters": false,
+                    "uitype": "string",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": true,
+                    "likeProp": "naming:Described:descr",
+                    "validators": [
+                         {"min" : 0, "max": 128,
+                             "regexs": [
+                                 {"regex" : "^[a-zA-Z0-9\\\\!#$%()*,-./:;@ _{|}~?&+]+$", "type": "include"}
+                             ]
+                         }
+                    ],
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "dn": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "A tag or metadata is a non-hierarchical keyword or term assigned to the fabric module."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "1",
+                    "propLocalId": "2",
+                    "label": "dn",
+                    "baseType": "reference:BinRef",
+                    "modelType": "reference:BinRef",
+                    "needsPropDelimiters": true,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "extMngdBy": {
+                    "versions": "3.2(1l)-",
+                    "comment": [
+                         "Indicates which orchestrator is managing this MO"
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "39794",
+                    "propLocalId": "8023",
+                    "label": "Managed By",
+                    "baseType": "scalar:Bitmask32",
+                    "modelType": "mo:ExtMngdByType",
+                    "needsPropDelimiters": false,
+                    "uitype": "bitmask",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "undefined", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "1", "localName": "msc",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "MSC "},
+                         { "value": "0", "localName": "undefined",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Undefined "}
+                    ],
+                    "default": "undefined",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "lcOwn": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "A value that indicates how this object was created. For internal use only."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "9",
+                    "propLocalId": "9",
+                    "label": "lcOwn",
+                    "baseType": "scalar:Enum8",
+                    "modelType": "mo:Owner",
+                    "needsPropDelimiters": false,
+                    "uitype": "enum",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "local", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "4", "localName": "implicit",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Implicit "},
+                         { "value": "0", "localName": "local",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Local "},
+                         { "value": "1", "localName": "policy",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Policy "},
+                         { "value": "2", "localName": "replica",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Replica "},
+                         { "value": "3", "localName": "resolveOnBehalf",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Resolved On Behalf "}
+                    ],
+                    "default": "local",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "modTs": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "The time when this object was last modified."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "7",
+                    "propLocalId": "7",
+                    "label": "modTs",
+                    "baseType": "scalar:Date",
+                    "modelType": "mo:TStamp",
+                    "needsPropDelimiters": false,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "never", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "0", "localName": "never",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Never "}
+                    ],
+                    "default": "never",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "monPolDn": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "Monitoring policy attached to this observable object"
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "14283",
+                    "propLocalId": "228",
+                    "label": "Monitoring Policy",
+                    "baseType": "reference:BinRef",
+                    "modelType": "reference:BinRef",
+                    "needsPropDelimiters": true,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "name": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "The name of the tenant."
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "6562",
+                    "propLocalId": "13",
+                    "label": "Name",
+                    "baseType": "string:Basic",
+                    "modelType": "naming:Name",
+                    "needsPropDelimiters": false,
+                    "uitype": "string",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": false,
+                    "isNaming": true,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": true,
+                    "isLike": false,
+                    "validators": [
+                         {"min" : 1, "max": 63,
+                             "regexs": [
+                                 {"regex" : "^[a-zA-Z0-9_.-]+$", "type": "include"}
+                             ]
+                         }
+                    ],
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "nameAlias": {
+                    "versions": "2.2(1k)-",
+                    "isConfigurable": true,
+                    "propGlobalId": "28417",
+                    "propLocalId": "6719",
+                    "label": "Display Name",
+                    "baseType": "string:Basic",
+                    "modelType": "naming:NameAlias",
+                    "needsPropDelimiters": false,
+                    "uitype": "string",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validators": [
+                         {"min" : 0, "max": 63,
+                             "regexs": [
+                                 {"regex" : "^[a-zA-Z0-9_.-]+$", "type": "include"}
+                             ]
+                         }
+                    ],
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "ownerKey": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "The key for enabling clients to own their data for entity correlation."
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "15232",
+                    "propLocalId": "4100",
+                    "label": "ownerKey",
+                    "baseType": "string:Basic",
+                    "modelType": "naming:Descr",
+                    "needsPropDelimiters": false,
+                    "uitype": "string",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validators": [
+                         {"min" : 0, "max": 128,
+                             "regexs": [
+                                 {"regex" : "^[a-zA-Z0-9\\\\!#$%()*,-./:;@ _{|}~?&+]+$", "type": "include"}
+                             ]
+                         }
+                    ],
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "ownerTag": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "A tag for enabling clients to add their own data. For example, to indicate who created this object."
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "15233",
+                    "propLocalId": "4101",
+                    "label": "ownerTag",
+                    "baseType": "string:Basic",
+                    "modelType": "naming:Descr",
+                    "needsPropDelimiters": false,
+                    "uitype": "string",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validators": [
+                         {"min" : 0, "max": 64,
+                             "regexs": [
+                                 {"regex" : "^[a-zA-Z0-9\\\\!#$%()*,-./:;@ _{|}~?&+]+$", "type": "include"}
+                             ]
+                         }
+                    ],
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "rn": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "Identifies an object from its siblings within the context of its parent object. The distinguished name contains a sequence of relative names."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "2",
+                    "propLocalId": "3",
+                    "label": "rn",
+                    "baseType": "reference:BinRN",
+                    "modelType": "reference:BinRN",
+                    "needsPropDelimiters": true,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "status": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "The upgrade status. This property is for internal use only."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "3",
+                    "propLocalId": "4",
+                    "label": "status",
+                    "baseType": "scalar:Bitmask32",
+                    "modelType": "mo:ModificationStatus",
+                    "needsPropDelimiters": false,
+                    "uitype": "bitmask",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "2", "localName": "created",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "In a setter method: specifies that an object should be created. An error is returned if the object already exists.  \nIn the return value of a setter method: indicates that an object has been created.  \n"
+                             ],
+                             "label": "Created "},
+                         { "value": "8", "localName": "deleted",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "In a setter method: specifies that an object should be deleted.  \nIn the return value of a setter method: indicates that an object has been deleted.\n"
+                             ],
+                             "label": "Deleted "},
+                         { "value": "4", "localName": "modified",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "In a setter method: specifies that an object should be modified  \nIn the return value of a setter method: indicates that an object has been modified.\n"
+                             ],
+                             "label": "Modified "}
+                    ],
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "uid": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "A unique identifier for this object."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "8",
+                    "propLocalId": "8",
+                    "label": "uid",
+                    "baseType": "scalar:Uint16",
+                    "modelType": "scalar:Uint16",
+                    "needsPropDelimiters": false,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "userdom": {
+                    "versions": "5.0(1k)-",
+                    "isConfigurable": true,
+                    "propGlobalId": "60657",
+                    "propLocalId": "13244",
+                    "label": "userdom",
+                    "baseType": "string:Basic",
+                    "modelType": "mo:UserDomType",
+                    "needsPropDelimiters": false,
+                    "uitype": "string",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validators": [
+                         {"min" : 0, "max": 1024,
+                             "regexs": [
+                                 {"regex" : "^[a-zA-Z0-9_.:-]+$", "type": "include"}
+                             ]
+                         }
+                    ],
+                    "validValues": [
+                         { "value": "all", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "}
+                    ],
+                    "default": "all",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                }
+            }
+        }
+}
