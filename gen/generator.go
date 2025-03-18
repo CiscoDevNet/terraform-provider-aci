@@ -1515,7 +1515,6 @@ func (m *Model) setClassModel(metaPath string, isChildIteration bool, definition
 		if len(parents) != 0 {
 			m.SetParentName(parents)
 		}
-		m.SetResourceNotesAndWarnigns(m.PkgName, definitions)
 		m.SetResourceNameAsDescription(m.PkgName, definitions)
 		m.SetTestType(classDetails, definitions)
 		m.SetTestApplicableFromVersion(classDetails)
@@ -1577,6 +1576,7 @@ func (m *Model) setClassModel(metaPath string, isChildIteration bool, definition
 	}
 
 	m.SetStateUpgradeTypeChanges(definitions)
+	m.SetResourceNotesAndWarnigns(m.PkgName, definitions)
 
 }
 
@@ -1870,6 +1870,13 @@ func (m *Model) SetResourceNotesAndWarnigns(classPkgName string, definitions Def
 				}
 			}
 		}
+	}
+
+	if len(m.LegacyAttributes) > 0 {
+		m.ResourceWarnings = append(
+			m.ResourceWarnings,
+			"This resource has been migrated to the terraform plugin protocol version 6, refer to the [migration guide](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/guides/migration) for more details and implications for already managed resources.",
+		)
 	}
 }
 
