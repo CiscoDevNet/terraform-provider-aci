@@ -1078,7 +1078,7 @@ func migrateLegacyDocumentation() {
 
 // Container function to clean all directories properly
 func cleanDirectories() {
-	cleanDirectory(docsPath, []string{"resources", "data-sources"})
+	cleanDirectory(docsPath, []string{"resources", "data-sources", "guides"})
 	cleanDirectory(providerPath, []string{"provider_test.go", "utils.go", "test_constants.go", "resource_aci_rest_managed.go", "resource_aci_rest_managed_test.go", "data_source_aci_rest_managed.go", "data_source_aci_rest_managed_test.go", "annotation_unsupported.go", "data_source_aci_system.go", "data_source_aci_system_test.go", "function_compare_versions.go", "function_compare_versions_test.go"})
 	cleanDirectory(resourcesDocsPath, []string{})
 	cleanDirectory(datasourcesDocsPath, []string{"system.md"})
