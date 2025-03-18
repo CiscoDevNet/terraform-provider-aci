@@ -432,7 +432,7 @@ var FvRogueExceptionMacFvBDType = types.ObjectType{
 }
 
 func FvRogueExceptionMacFvBDSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(ctx context.Context, planValue, stateValue types.Set) basetypes.SetValue {
-	//  Function is needed to handle the case that an attribute is not yet suppored in a version and gets set to null during read
+	//  Function is needed to handle the case that an attribute is not yet supported in a version and gets set to null during read
 	var planSetValues, stateSetValues []FvRogueExceptionMacFvBDResourceModel
 	stateValue.ElementsAs(ctx, &stateSetValues, false)
 	planValue.ElementsAs(ctx, &planSetValues, false)
@@ -774,7 +774,7 @@ var FvRsBDToNetflowMonitorPolFvBDType = types.ObjectType{
 }
 
 func FvRsBDToNetflowMonitorPolFvBDSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(ctx context.Context, planValue, stateValue types.Set) basetypes.SetValue {
-	//  Function is needed to handle the case that an attribute is not yet suppored in a version and gets set to null during read
+	//  Function is needed to handle the case that an attribute is not yet supported in a version and gets set to null during read
 	var planSetValues, stateSetValues []FvRsBDToNetflowMonitorPolFvBDResourceModel
 	stateValue.ElementsAs(ctx, &stateSetValues, false)
 	planValue.ElementsAs(ctx, &planSetValues, false)
@@ -883,7 +883,7 @@ var FvRsBDToOutFvBDType = types.ObjectType{
 }
 
 func FvRsBDToOutFvBDSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(ctx context.Context, planValue, stateValue types.Set) basetypes.SetValue {
-	//  Function is needed to handle the case that an attribute is not yet suppored in a version and gets set to null during read
+	//  Function is needed to handle the case that an attribute is not yet supported in a version and gets set to null during read
 	var planSetValues, stateSetValues []FvRsBDToOutFvBDResourceModel
 	stateValue.ElementsAs(ctx, &stateSetValues, false)
 	planValue.ElementsAs(ctx, &planSetValues, false)
