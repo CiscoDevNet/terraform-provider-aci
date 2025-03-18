@@ -1,3 +1,49 @@
+# Terraform Provider ACI - Changelog
+
+All notable changes to this project will be documented in this file.
+
+## 3.0.0 (March 18, 2025)
+
+BREAKING CHANGES:
+- Add stateupgrader logic to support the type change of already released attributes with setnestedattribute that should be singlenestedattribute. this requires a configuration change when the relation_to_netflow_record attribute is defined for already existing aci_netflow_monitor_policy resources
+
+IMPROVEMENTS:
+- Migration of aci_endpoint_security_group into plugin framework
+- Add datasource and resource for fvfbroute in aci_vrf_fallback_route and aci_vrf_fallback_route_group
+- Introduction of a provider level flag to prevent creation of objects that are already existing in apic configuration
+- Display id during plan for plugin framework resources where the dn can be constructed
+- Added useg attribute resource and data-source files
+- Migration of aci_application_epg into plugin framework
+- Add default parent dn for data plane policing policy resource
+- Add read-only pctag attribute to aci_endpoint_security_group resource and datasource
+- [minor] removed legacy route_control_profile resource files and recreated the new route_control_profile resource using the generator
+- Add resource and datasource for host path selector (infrahpaths).
+- Add resource and data source for relation_to_host_path (infrarshpathatt). provide attribute to add access base group to host path selector.
+- Updated terraform plugin testing to v1.10.0 and aci go client to v2.31.0
+- Add relation_from_l3out_consumer_label_to_external_network_instance_profile and relation_from_l3out_consumer_label_to_route_control_profile resources (dcne-153) (#1277)
+- Migration of the data source aci_system into plugin framework
+- Add resource and datasource for netflow exporter policy (netflowexporterpol).
+- Added functionality to commission a node (decommissioned but not removed from controller).
+- Fixed documentation for adding 'commission' argument.
+- Add aci_certificate_authority and aci_key_ring resources and data sources (#1145)
+- Migration of aci_bridge_domain into plugin framework. new resources and datasources aci_first_hop_security_policy, aci_igmp_snooping_policy, aci_mld_snooping_policy, aci_neighbor_discovery_interface_policy, aci_relation_from_bridge_domain_to_l3_outside, aci_relation_from_bridge_domain_to_netflow_monitor_policy, and aci_rogue_coop_exception
+- Added generator function to re-fetch latest metadata and generate.
+- added a github workflow that runs the code regeneration weekly.
+- Added certificate_usage property to aci_certificate_authority
+- Addition of recursive logic in the templates to incorporate grand children of the parent class as nested children within the immediate child of the parent
+- Add read-only pctag, scope and segment attributes to aci_bridge_domain resource and datasource and add scope to aci_endpoint_security_group and aci_application_epg resources and datasources
+- Add resources and datasources to support qosdot1pclass and qosdscpclass and expose them in aci_custom_qos_policy resource and datasource as children
+- Add service_bd_routing_disable attribute to aci_bridge_domain resource and datasource
+
+BUG FIXES:
+- Modified functionality of dorestrequest in utils.go to catch the appropriate errors returned by apic
+- Fix to set version to match the pre-migration version when a resource is migrated without changes
+- Resolves deletion of nodes from controller upon destroy.
+- Fix computed behaviour when configuration not provided for relation_infra_rs_att_ent_p and relation_infra_rs_l2_inst_pol in the aci_leaf_access_bundle_policy_group resource
+
+OTHER:
+- [docs] fix categorization for aci_cloud_ipsec_tunnel_subnet_pool on terraform registry
+
 ## 2.15.0 (July 2, 2024)
 DEPRECATIONS:
 - Deprecate the non-functional `relation_vz_rs_graph_att` attribute from `aci_contract`. Use `relation_vz_rs_subj_graph_att` on `aci_contract_subject` instead.
