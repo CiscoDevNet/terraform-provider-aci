@@ -8,6 +8,18 @@ global:
 fvTenant:
   resource_name: "tenant"
   resource_identifier: "tn"
+  exclude_children:
+    - "cloudCertStore"
+  ui_locations:
+    - "Tenants"
+  sub_category: "Application Management"
+  migration_version: 1
+  migration_blocks:
+    fvRsTenantMonPol:
+      relation_fv_rs_tenant_mon_pol: relation_to_tenant_monitoring_policy.monitoring_policy_name
+
+fvRsTenantMonPol:
+  resource_name: "relation_to_tenant_monitoring_policy"
 
 fvAEPg:
   resource_name: "application_epg"
