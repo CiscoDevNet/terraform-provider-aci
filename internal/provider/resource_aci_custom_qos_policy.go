@@ -171,7 +171,7 @@ var QosDot1PClassQosCustomPolType = types.ObjectType{
 }
 
 func QosDot1PClassQosCustomPolSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(ctx context.Context, planValue, stateValue types.Set) basetypes.SetValue {
-	//  Function is needed to handle the case that an attribute is not yet suppored in a version and gets set to null during read
+	//  Function is needed to handle the case that an attribute is not yet supported in a version and gets set to null during read
 	var planSetValues, stateSetValues []QosDot1PClassQosCustomPolResourceModel
 	stateValue.ElementsAs(ctx, &stateSetValues, false)
 	planValue.ElementsAs(ctx, &planSetValues, false)
@@ -325,7 +325,7 @@ var QosDscpClassQosCustomPolType = types.ObjectType{
 }
 
 func QosDscpClassQosCustomPolSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(ctx context.Context, planValue, stateValue types.Set) basetypes.SetValue {
-	//  Function is needed to handle the case that an attribute is not yet suppored in a version and gets set to null during read
+	//  Function is needed to handle the case that an attribute is not yet supported in a version and gets set to null during read
 	var planSetValues, stateSetValues []QosDscpClassQosCustomPolResourceModel
 	stateValue.ElementsAs(ctx, &stateSetValues, false)
 	planValue.ElementsAs(ctx, &planSetValues, false)
