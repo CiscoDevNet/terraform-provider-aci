@@ -21,7 +21,7 @@ func TestAccDataSourceFvRsSecInheritedWithFvAEPg(t *testing.T) {
 				Config:             testConfigFvRsSecInheritedDataSourceDependencyWithFvAEPg,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.aci_relation_to_contract_master.test", "target_dn", "uni/tn-test_tenant/ap-test_ap/epg-epg_0"),
+					resource.TestCheckResourceAttr("data.aci_relation_to_contract_master.test", "target_dn", "uni/tn-test_tenant/ap-test_name/epg-epg_0"),
 					resource.TestCheckResourceAttr("data.aci_relation_to_contract_master.test", "annotation", "orchestrator:terraform"),
 				),
 			},
@@ -42,7 +42,7 @@ func TestAccDataSourceFvRsSecInheritedWithFvESg(t *testing.T) {
 				Config:             testConfigFvRsSecInheritedDataSourceDependencyWithFvESg,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.aci_relation_to_contract_master.test", "target_dn", "uni/tn-test_tenant/ap-test_ap/esg-esg_0"),
+					resource.TestCheckResourceAttr("data.aci_relation_to_contract_master.test", "target_dn", "uni/tn-test_tenant/ap-test_name/esg-esg_0"),
 					resource.TestCheckResourceAttr("data.aci_relation_to_contract_master.test", "annotation", "orchestrator:terraform"),
 				),
 			},
@@ -65,7 +65,7 @@ data "aci_relation_to_contract_master" "test" {
 const testConfigFvRsSecInheritedNotExistingFvAEPg = testConfigFvAEPgMinDependencyWithFvAp + `
 data "aci_relation_to_contract_master" "test_non_existing" {
   parent_dn = aci_application_epg.test.id
-  target_dn = "uni/tn-test_tenant/ap-test_ap/epg-epg_0_not_existing"
+  target_dn = "uni/tn-test_tenant/ap-test_name/epg-epg_0_not_existing"
 }
 `
 const testConfigFvRsSecInheritedDataSourceDependencyWithFvESg = testConfigFvRsSecInheritedMinDependencyWithFvESg + `
@@ -79,6 +79,6 @@ data "aci_relation_to_contract_master" "test" {
 const testConfigFvRsSecInheritedNotExistingFvESg = testConfigFvESgMinDependencyWithFvAp + `
 data "aci_relation_to_contract_master" "test_non_existing" {
   parent_dn = aci_endpoint_security_group.test.id
-  target_dn = "uni/tn-test_tenant/ap-test_ap/esg-esg_0_not_existing"
+  target_dn = "uni/tn-test_tenant/ap-test_name/esg-esg_0_not_existing"
 }
 `

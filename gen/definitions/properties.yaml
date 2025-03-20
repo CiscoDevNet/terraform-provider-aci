@@ -590,28 +590,28 @@ fvRsSecInherited:
     - class_name: "fvESg"
       parent_dependency: "fvAp"
       overwrite_parent_dn_key: "application_profile_dn"
-      target_dn: "uni/tn-test_tenant/ap-test_ap/esg-esg_0"
+      target_dn: "uni/tn-test_tenant/ap-test_name/esg-esg_0"
       relation_resource_name: "contract_master"
       properties:
         name: "esg_0"
     - class_name: "fvESg"
       parent_dependency: "fvAp"
       overwrite_parent_dn_key: "application_profile_dn"
-      target_dn: "uni/tn-test_tenant/ap-test_ap/esg-esg_1"
+      target_dn: "uni/tn-test_tenant/ap-test_name/esg-esg_1"
       relation_resource_name: "contract_master"
       properties:
         name: "esg_1"
     - class_name: "fvAEPg"
       parent_dependency: "fvAp"
       overwrite_parent_dn_key: "application_profile_dn"
-      target_dn: "uni/tn-test_tenant/ap-test_ap/epg-epg_0"
+      target_dn: "uni/tn-test_tenant/ap-test_name/epg-epg_0"
       relation_resource_name: "contract_master"
       properties:
         name: "epg_0"
     - class_name: "fvAEPg"
       parent_dependency: "fvAp"
       overwrite_parent_dn_key: "application_profile_dn"
-      target_dn: "uni/tn-test_tenant/ap-test_ap/epg-epg_1"
+      target_dn: "uni/tn-test_tenant/ap-test_name/epg-epg_1"
       relation_resource_name: "contract_master"
       properties:
         name: "epg_1"
@@ -1198,7 +1198,7 @@ netflowRsExporterToEPg:
         - "fvEPg"
   targets:
     - class_name: "fvAEPg"
-      target_dn: "uni/tn-test_tenant/ap-test_ap/epg-test_epg"
+      target_dn: "uni/tn-test_tenant/ap-test_name/epg-test_epg"
       target_dn_overwrite_docs: "aci_application_epg.example.id"
       relation_resource_name: "application_epg"
       static: true

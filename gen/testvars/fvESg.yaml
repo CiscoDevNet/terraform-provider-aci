@@ -362,7 +362,7 @@ child_targets:
     properties:
         name: "vrf_name_0"
   - class_name: "fvESg"
-    target_dn: "uni/tn-test_tenant/ap-test_ap/esg-esg_0"
+    target_dn: "uni/tn-test_tenant/ap-test_name/esg-esg_0"
     relation_resource_name: "contract_master"
     static: false
     target_dn_ref: "aci_endpoint_security_group.test_endpoint_security_group_0.id"
@@ -373,7 +373,7 @@ child_targets:
     properties:
         name: "esg_0"
   - class_name: "fvESg"
-    target_dn: "uni/tn-test_tenant/ap-test_ap/esg-esg_1"
+    target_dn: "uni/tn-test_tenant/ap-test_name/esg-esg_1"
     relation_resource_name: "contract_master"
     static: false
     target_dn_ref: "aci_endpoint_security_group.test_endpoint_security_group_1.id"
