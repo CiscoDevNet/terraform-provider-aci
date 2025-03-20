@@ -300,7 +300,7 @@ func (d *FvAEPgDataSource) Schema(ctx context.Context, req datasource.SchemaRequ
 					},
 				},
 			},
-			"relation_to_application_epg_monitoring_policy": schema.SingleNestedAttribute{
+			"relation_to_monitor_policy": schema.SingleNestedAttribute{
 				MarkdownDescription: `A source relation to the monitoring policy model for the endpoint group semantic scope. This is an internal object.`,
 				Computed:            true,
 				Attributes: map[string]schema.Attribute{

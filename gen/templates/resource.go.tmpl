@@ -1416,7 +1416,7 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 				DeprecationMessage: "Attribute '{{.AttributeName}}' is deprecated, please refer to '{{.ReplacedBy.AttributeName}}' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.String{
 					stringvalidator.ConflictsWith(path.Expressions{
-						path.MatchRoot("{{getConflictingAttributeName .ReplacedBy.AttributeName}}"),
+						path.MatchRoot("{{overwriteProperty .ReplacedBy.ClassName (getConflictingAttributeName .ReplacedBy.AttributeName) $.Definitions}}"),
 					}...),
 				},
 			},
@@ -1429,7 +1429,7 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 				DeprecationMessage: "Attribute '{{.AttributeName}}' is deprecated, please refer to '{{.ReplacedBy.AttributeName}}' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.Set{
 					setvalidator.ConflictsWith(path.Expressions{
-						path.MatchRoot("{{getConflictingAttributeName .ReplacedBy.AttributeName}}"),
+						path.MatchRoot("{{overwriteProperty .ReplacedBy.ClassName (getConflictingAttributeName .ReplacedBy.AttributeName) $.Definitions}}"),
 					}...),
 				},
 			},

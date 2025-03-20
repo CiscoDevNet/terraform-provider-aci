@@ -85,7 +85,7 @@ resource "aci_application_epg" "full_example_application_profile" {
       }
     ]
   }
-  relation_to_application_epg_monitoring_policy = {
+  relation_to_monitor_policy = {
     annotation             = "annotation_1"
     monitoring_policy_name = aci_monitoring_policy.example.name
     annotations = [
@@ -478,7 +478,7 @@ All examples for the Application EPG resource can be found in the [examples](htt
   
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-* `relation_to_application_epg_monitoring_policy` - (map) A map of Relation To Application EPG Monitoring Policy (ACI object [fvRsAEPgMonPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsAEPgMonPol/overview)) pointing to Monitoring Policy (ACI Object [monEPGPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/monEPGPol/overview)) which can be configured using the [aci_monitoring_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/monitoring_policy) resource.
+* `relation_to_monitor_policy` - (map) A map of Relation To Application EPG Monitoring Policy (ACI object [fvRsAEPgMonPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsAEPgMonPol/overview)) pointing to Monitoring Policy (ACI Object [monEPGPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/monEPGPol/overview)) which can be configured using the [aci_monitoring_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/monitoring_policy) resource.
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation To Application EPG Monitoring Policy object.
