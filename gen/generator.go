@@ -2208,11 +2208,12 @@ func (m *Model) SetMigrationClassTypes(definitions Definitions) {
 	migrationClassTypes := map[string]string{}
 	resource_name := fmt.Sprintf("%s_%s", providerName, resourceNames[m.PkgName])
 	legacyResource := definitions.Migration["provider_schemas"].(map[string]interface{})["registry.terraform.io/ciscodevnet/aci"].(map[string]interface{})["resource_schemas"].(map[string]interface{})[resource_name]
-	blockTypes := legacyResource.(map[string]interface{})["block"].(map[string]interface{})["block_types"].(map[string]interface{})
-	for blockName, blockDetails := range blockTypes {
-		className := m.GetClassFromMigrationClassMapping(definitions, blockName, false)
-		attributeType := fmt.Sprintf("block,%s", blockDetails.(map[string]interface{})["nesting_mode"].(string))
-		migrationClassTypes[className] = attributeType
+	if blockTypes, ok := legacyResource.(map[string]interface{})["block"].(map[string]interface{})["block_types"]; ok {
+		for blockName, blockDetails := range blockTypes.(map[string]interface{}) {
+			className := m.GetClassFromMigrationClassMapping(definitions, blockName, false)
+			attributeType := fmt.Sprintf("block,%s", blockDetails.(map[string]interface{})["nesting_mode"].(string))
+			migrationClassTypes[className] = attributeType
+		}
 	}
 
 	attributes := legacyResource.(map[string]interface{})["block"].(map[string]interface{})["attributes"].(map[string]interface{})
@@ -2277,36 +2278,37 @@ func (m *Model) SetLegacyAttributes(definitions Definitions) {
 			attributeNames = append(attributeNames, property.SnakeCaseName)
 		}
 
-		blockTypes := legacyResource.(map[string]interface{})["block"].(map[string]interface{})["block_types"].(map[string]interface{})
-		for blockName, blockDetails := range blockTypes {
+		if blockTypes, ok := legacyResource.(map[string]interface{})["block"].(map[string]interface{})["block_types"]; ok {
+			for blockName, blockDetails := range blockTypes.(map[string]interface{}) {
 
-			block := LegacyBlock{
-				Name:        blockName,
-				NestingMode: blockDetails.(map[string]interface{})["nesting_mode"].(string),
-				Attributes:  make(map[string]LegacyAttribute),
-			}
-			block.ClassName = m.GetClassForBlockName(definitions, block.Name)
-			attributes := blockDetails.(map[string]interface{})["block"].(map[string]interface{})["attributes"].(map[string]interface{})
-			for attributeName, attributeValue := range attributes {
-				legacyAttribute, propertyName := m.GetLegacyAttribute(attributeName, block.ClassName, attributeValue, definitions)
-
-				if legacyAttribute.AttributeName == "target_dn" {
-					legacyAttribute.Name = "TargetDn"
-				} else if strings.HasSuffix(legacyAttribute.AttributeName, "_dn") {
-					legacyAttribute.Name = "TDn"
+				block := LegacyBlock{
+					Name:        blockName,
+					NestingMode: blockDetails.(map[string]interface{})["nesting_mode"].(string),
+					Attributes:  make(map[string]LegacyAttribute),
 				}
+				block.ClassName = m.GetClassForBlockName(definitions, block.Name)
+				attributes := blockDetails.(map[string]interface{})["block"].(map[string]interface{})["attributes"].(map[string]interface{})
+				for attributeName, attributeValue := range attributes {
+					legacyAttribute, propertyName := m.GetLegacyAttribute(attributeName, block.ClassName, attributeValue, definitions)
 
-				childClass := m.Children[block.ClassName]
-				for _, property := range childClass.Properties {
-					if GetOverwriteAttributeName(m.PkgName, legacyAttribute.AttributeName, definitions) == GetOverwriteAttributeName(m.PkgName, property.SnakeCaseName, definitions) {
-						legacyAttribute.Name = property.Name
-						break
+					if legacyAttribute.AttributeName == "target_dn" {
+						legacyAttribute.Name = "TargetDn"
+					} else if strings.HasSuffix(legacyAttribute.AttributeName, "_dn") {
+						legacyAttribute.Name = "TDn"
 					}
-				}
-				block.Attributes[propertyName] = legacyAttribute
-			}
 
-			m.LegacyBlocks = append(m.LegacyBlocks, block)
+					childClass := m.Children[block.ClassName]
+					for _, property := range childClass.Properties {
+						if GetOverwriteAttributeName(m.PkgName, legacyAttribute.AttributeName, definitions) == GetOverwriteAttributeName(m.PkgName, property.SnakeCaseName, definitions) {
+							legacyAttribute.Name = property.Name
+							break
+						}
+					}
+					block.Attributes[propertyName] = legacyAttribute
+				}
+
+				m.LegacyBlocks = append(m.LegacyBlocks, block)
+			}
 		}
 
 		// sort LegacyBlocks to guarantee consistent output

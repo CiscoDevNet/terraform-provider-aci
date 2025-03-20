@@ -50,7 +50,7 @@ parents:
     test_type: both
 targets:
   - class_name: "fvESg"
-    target_dn: "uni/tn-test_tenant/ap-test_ap/esg-esg_0"
+    target_dn: "uni/tn-test_tenant/ap-test_name/esg-esg_0"
     target_dn_ref: "aci_endpoint_security_group.test_endpoint_security_group_0.id"
     parent_dependency: "fvAp"
     parent_dependency_dn_ref: "aci_application_profile.test.id"
@@ -61,7 +61,7 @@ targets:
     properties:
         name: "esg_0"
   - class_name: "fvESg"
-    target_dn: "uni/tn-test_tenant/ap-test_ap/esg-esg_1"
+    target_dn: "uni/tn-test_tenant/ap-test_name/esg-esg_1"
     target_dn_ref: "aci_endpoint_security_group.test_endpoint_security_group_1.id"
     parent_dependency: "fvAp"
     parent_dependency_dn_ref: "aci_application_profile.test.id"
@@ -72,7 +72,7 @@ targets:
     properties:
         name: "esg_1"
   - class_name: "fvAEPg"
-    target_dn: "uni/tn-test_tenant/ap-test_ap/epg-epg_0"
+    target_dn: "uni/tn-test_tenant/ap-test_name/epg-epg_0"
     target_dn_ref: "aci_application_epg.test_application_epg_0.id"
     parent_dependency: "fvAp"
     parent_dependency_dn_ref: "aci_application_profile.test.id"
@@ -83,7 +83,7 @@ targets:
     properties:
         name: "epg_0"
   - class_name: "fvAEPg"
-    target_dn: "uni/tn-test_tenant/ap-test_ap/epg-epg_1"
+    target_dn: "uni/tn-test_tenant/ap-test_name/epg-epg_1"
     target_dn_ref: "aci_application_epg.test_application_epg_1.id"
     parent_dependency: "fvAp"
     parent_dependency_dn_ref: "aci_application_profile.test.id"

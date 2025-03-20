@@ -115,7 +115,7 @@ children:
           - key: "key_1"
             value: "test_value"
       
-  relation_to_application_epg_monitoring_policy:
+  relation_to_monitor_policy:
     - annotation: "annotation_1"
       monitoring_policy_name: "monitoring_policy_name_1"
       deletable_child: true
@@ -824,7 +824,7 @@ child_targets:
     properties:
         name: "taboo_contract_name_1"
   - class_name: "fvAEPg"
-    target_dn: "uni/tn-test_tenant/ap-test_ap/epg-epg_0"
+    target_dn: "uni/tn-test_tenant/ap-test_name/epg-epg_0"
     relation_resource_name: "contract_master"
     static: false
     target_dn_ref: "aci_application_epg.test_application_epg_0.id"
@@ -835,7 +835,7 @@ child_targets:
     properties:
         name: "epg_0"
   - class_name: "fvAEPg"
-    target_dn: "uni/tn-test_tenant/ap-test_ap/epg-epg_1"
+    target_dn: "uni/tn-test_tenant/ap-test_name/epg-epg_1"
     relation_resource_name: "contract_master"
     static: false
     target_dn_ref: "aci_application_epg.test_application_epg_1.id"

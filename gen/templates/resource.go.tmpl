@@ -638,6 +638,15 @@ func set{{ .ResourceClassName }}LegacyAttributes(ctx context.Context, diags *dia
 			{{- end}}
 		{{- end }}
 	{{- end }}
+	{{- $changed := false}}
+		{{- range .LegacyAttributes}}
+		{{- if ne .ReplacedBy.AttributeName "" }}
+			{{- if and (isNewAttributeStringType .ReplacedBy.AttributeName) (ne .Name "ParentDn")}}
+				{{- $changed = true}}
+			{{- end}}
+		{{- end}}
+	{{- end}}
+	{{- if $changed}}
 	attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
 	for attributeName, attributeValue := range attributes {
 		{{- range .LegacyAttributes}}{{- if ne .ReplacedBy.AttributeName "" }}
@@ -656,7 +665,7 @@ func set{{ .ResourceClassName }}LegacyAttributes(ctx context.Context, diags *dia
 			{{- end }}{{- end }}
 		{{- end }}
 	}
-
+	{{- end }}
 	{{- if .HasChild}}
 		{{- range $.Children}}{{- if isLegacyChild .PkgName $.LegacyChildren}}
 		{{- $childClassType := getValueFromMap .PkgName $.MigrationClassTypes}}
@@ -1407,7 +1416,7 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 				DeprecationMessage: "Attribute '{{.AttributeName}}' is deprecated, please refer to '{{.ReplacedBy.AttributeName}}' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.String{
 					stringvalidator.ConflictsWith(path.Expressions{
-						path.MatchRoot("{{getConflictingAttributeName .ReplacedBy.AttributeName}}"),
+						path.MatchRoot("{{overwriteProperty .ReplacedBy.ClassName (getConflictingAttributeName .ReplacedBy.AttributeName) $.Definitions}}"),
 					}...),
 				},
 			},
@@ -1420,7 +1429,7 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 				DeprecationMessage: "Attribute '{{.AttributeName}}' is deprecated, please refer to '{{.ReplacedBy.AttributeName}}' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.Set{
 					setvalidator.ConflictsWith(path.Expressions{
-						path.MatchRoot("{{getConflictingAttributeName .ReplacedBy.AttributeName}}"),
+						path.MatchRoot("{{overwriteProperty .ReplacedBy.ClassName (getConflictingAttributeName .ReplacedBy.AttributeName) $.Definitions}}"),
 					}...),
 				},
 			},

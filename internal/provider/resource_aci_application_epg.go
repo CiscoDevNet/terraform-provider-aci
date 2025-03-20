@@ -65,7 +65,7 @@ type FvAEPgResourceModel struct {
 	Scope                              types.String                      `tfsdk:"scope"`
 	Shutdown                           types.String                      `tfsdk:"admin_state"`
 	FvCrtrn                            types.Object                      `tfsdk:"epg_useg_block_statement"`
-	FvRsAEPgMonPol                     types.Object                      `tfsdk:"relation_to_application_epg_monitoring_policy"`
+	FvRsAEPgMonPol                     types.Object                      `tfsdk:"relation_to_monitor_policy"`
 	FvRsBd                             types.Object                      `tfsdk:"relation_to_bridge_domain"`
 	FvRsCons                           types.Set                         `tfsdk:"relation_to_consumed_contracts"`
 	FvRsConsIf                         types.Set                         `tfsdk:"relation_to_imported_contracts"`
@@ -4002,7 +4002,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				DeprecationMessage: "Attribute 'relation_fv_rs_aepg_mon_pol' is deprecated, please refer to 'relation_to_application_epg_monitoring_policy.monitoring_policy_name' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.String{
 					stringvalidator.ConflictsWith(path.Expressions{
-						path.MatchRoot("relation_to_application_epg_monitoring_policy"),
+						path.MatchRoot("relation_to_monitor_policy"),
 					}...),
 				},
 			},
@@ -4472,7 +4472,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 					},
 				},
 			},
-			"relation_to_application_epg_monitoring_policy": schema.SingleNestedAttribute{
+			"relation_to_monitor_policy": schema.SingleNestedAttribute{
 				MarkdownDescription: `A source relation to the monitoring policy model for the endpoint group semantic scope. This is an internal object.`,
 				Optional:            true,
 				Computed:            true,

@@ -144,6 +144,19 @@ vmmDomP:
 
 fvAp:
   resource_name: "application_profile"
+  ui_locations:
+    - "Tenants -> Application Profiles"
+  sub_category: "Application Management"
+  migration_version: 1
+  migration_blocks:
+    fvAp:
+      tenant_dn: parent_dn
+      prio: priority
+    fvRsApMonPol:
+      relation_fv_rs_ap_mon_pol: relation_to_application_profile_monitoring_policy.monitoring_policy_name
+
+fvRsApMonPol:
+  resource_name: "relation_to_application_profile_monitoring_policy"
 
 fvCtx:
   resource_name: "vrf"
