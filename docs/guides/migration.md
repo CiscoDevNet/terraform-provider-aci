@@ -5,13 +5,149 @@ description: |-
     An overview of resource and datasource migration changes
 ---
 
-# Introduction
+## Introduction
 
 Since the first release in September 2020, the Terraform ACI provider has come a long way, adding new resources and datasources to make managing Cisco ACI environments easier. Over the years, we've moved from SDKv1 to [SDKv2](https://developer.hashicorp.com/terraform/plugin/sdkv2), and now to the latest [Terraform Plugin Framework](https://developer.hashicorp.com/terraform/plugin/framework), which is the recommended way to develop Terraform plugins and offers many advantages over SDKv2.
 
 To take full advantage of the new features in the Terraform Plugin Framework, we had to completely rewrite the Terraform ACI provider resources and datasources. While this was a big task, it also gave us a chance to review and improve the current ACI provider. This guide explains the new features that the Terraform Plugin Framework provides and the changes we have made to the ACI provider and why we made them.
 
-# Changes to the ACI Provider
+## Upgrading the ACI Terraform Provider
+
+Upgrading the ACI Terraform provider to a new version involves several steps to ensure a smooth transition and to avoid any disruptions to your existing configurations. This guide will walk you through the process, including taking a backup of your current state.
+
+#### Step 1: Backup Your Current State
+
+Before making any changes, it's crucial to back up your current Terraform state. This ensures that you can restore your environment if anything goes wrong during the upgrade process.
+
+1. **Local Backend**: Navigate to Your Terraform Project Directory and open a terminal and navigate to the directory containing your Terraform configuration files and copy the current state file (`terraform.tfstate`) to a backup location.
+   
+   ```bash
+   cd /path/to/your/terraform/project
+   cp terraform.tfstate terraform.tfstate.backup
+   ```
+
+2. **Remote Backend**: If you are using a remote backend (e.g., S3, Azure Blob Storage), ensure you have a backup of the state file from the remote location.
+
+### Step 2: Update the Provider Version
+
+1. **Open the Terraform Configuration File**: Open the `main.tf` or the relevant Terraform configuration file where the provider is defined.
+
+2. **Update the Provider Version**: Modify the provider block to specify the new version of the ACI provider.
+
+   ```hcl
+   provider "aci" {
+     version = "x.y.z"  # Replace with the new version number
+     # Other provider configuration options
+   }
+   ```
+
+3. **Initialize the Configuration**: Run `terraform init` to reinitialize your configuration with the updated provider version.
+
+   ```bash
+   terraform init
+   ```
+
+### Step 3: Review the Changes
+
+1. **Plan the Changes**: Run `terraform plan` without any changes to the configuration to see the changes that will be applied with the new provider version.
+
+   ```bash
+   terraform plan
+   ```
+
+2. **Review the Plan**: Carefully review the output of the `terraform plan` command to ensure that there are no changes.
+
+    ```bash
+    No changes. Your infrastructure matches the configuration.
+    ```
+
+### Step 4: Apply the Changes
+
+1. **Apply the Changes**: If the plan looks good, apply the changes to upgrade to the new provider version.
+
+   ```bash
+   terraform apply
+   ```
+
+2. **Verify the Changes**: After the apply completes, verify that the changes have been applied correctly and that your environment is functioning as expected. The state file should now reflect the new attributes.
+
+### Step 5: Migrate deprecated configuration
+
+1. **Identify the deprecated attributes**: The `terraform plan` command only displays a single warning, which can make it hard to do a full analysis of which attributes are deprecated.
+
+    ```bash
+    No changes. Your infrastructure matches the configuration.
+
+    Terraform has compared your real infrastructure against your configuration and found no differences, so no changes are needed.
+    ╷
+    │ Warning: Attribute Deprecated
+    │ 
+    │   with aci_bridge_domain.terraform_bd,
+    │   on main.tf line 70, in resource "aci_bridge_domain" "terraform_bd":
+    │   70:   tenant_dn = aci_tenant.terraform_tenant.id
+    │ 
+    │ Attribute 'tenant_dn' is deprecated, please refer to 'parent_dn' instead. The attribute will be removed in the next major version of the provider.
+    │ 
+    │ (and 3 more similar warnings elsewhere)
+    ```
+
+    To display the other warnings the `terraform validate` command can be used.
+
+    ```bash
+    terraform validate -json | jq '.diagnostics[] | {detail: .detail, filename: .range.filename, start_line: .range.start.line}'
+    {
+        "detail": "Attribute 'unk_mcast_act' is deprecated, please refer to 'l3_unknown_multicast_flooding' instead. The attribute will be removed in the next major version of the provider.",
+        "filename": "main.tf",
+        "start_line": 73
+    }
+    {
+        "detail": "Attribute 'll_addr' is deprecated, please refer to 'link_local_ipv6_address' instead. The attribute will be removed in the next major version of the provider.",
+        "filename": "main.tf",
+        "start_line": 72
+    }
+    ```
+
+2. **Change the deprecated attributes**: Replace the deprecated attributes in your configuration file with the new attributes and execute the plan again.
+
+    ***Old Configuration***
+    ```hcl
+    resource "aci_bridge_domain" "terraform_bd" {
+        tenant_dn = aci_tenant.terraform_tenant.id
+        name = "terraform_bd"
+        ll_addr = "::"
+        unk_mcast_act = "flood"
+    }
+    ```
+
+    ***New Configuration***
+    ```hcl
+    resource "aci_bridge_domain" "terraform_bd" {
+        parent_dn = aci_tenant.terraform_tenant.id
+        name = "terraform_bd"
+        link_local_ipv6_address = "::"
+        l3_unknown_multicast_flooding = "flood"
+    }
+    ```
+
+    The `terraform plan` command should not display any warnings anymore.
+
+    ```bash
+    No changes. Your infrastructure matches the configuration.
+
+    Terraform has compared your real infrastructure against your configuration and found no differences, so no changes are needed.
+    ```
+
+### Step 6: Cleanup
+
+1. **Remove Backup (Optional)**: If everything is working correctly, you can remove the backup state file.
+
+   ```bash
+   rm terraform.tfstate.backup
+   ```
+
+By following these steps, you can safely upgrade the ACI Terraform provider to a new version while ensuring that you have a backup of your current state in case anything goes wrong.
+
+## Changes to the ACI Provider
 
 In this section, we outline the key changes made to the Terraform ACI provider as part of the migration to the Terraform Plugin Framework. These changes aim to enhance the provider's functionality, performance, and usability. The new provider is generated from meta files, ensuring consistency and accuracy across resources and datasources. Below, we detail the specific improvements and modifications implemented during this migration.
 
