@@ -824,7 +824,7 @@ child_targets:
     properties:
         name: "taboo_contract_name_1"
   - class_name: "fvAEPg"
-    target_dn: "uni/tn-test_tenant/ap-test_ap/epg-epg_0"
+    target_dn: "uni/tn-test_tenant/ap-test_name/epg-epg_0"
     relation_resource_name: "contract_master"
     static: false
     target_dn_ref: "aci_application_epg.test_application_epg_0.id"
@@ -835,7 +835,7 @@ child_targets:
     properties:
         name: "epg_0"
   - class_name: "fvAEPg"
-    target_dn: "uni/tn-test_tenant/ap-test_ap/epg-epg_1"
+    target_dn: "uni/tn-test_tenant/ap-test_name/epg-epg_1"
     relation_resource_name: "contract_master"
     static: false
     target_dn_ref: "aci_application_epg.test_application_epg_1.id"
