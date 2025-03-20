@@ -2063,3 +2063,15 @@ commTelnet:
   test_values:
     all:
       port: "23"
+
+fvRsApMonPol:
+  documentation:
+    tnMonEPGPolName: "The name of the monitoring policy."
+  targets:
+    - class_name: "monEPGPol"
+      parent_dependency: "fvTenant"
+      overwrite_parent_dn_key: "tenant_dn"
+      target_dn: "uni/tn-test_tenant/monepg-monitoring_policy_name_1"
+      relation_resource_name: "monitoring_policy"
+      properties:
+        name: "monitoring_policy_name_1"
