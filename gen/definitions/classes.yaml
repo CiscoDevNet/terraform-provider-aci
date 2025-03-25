@@ -21,6 +21,36 @@ fvTenant:
 fvRsTenantMonPol:
   resource_name: "relation_from_tenant_to_monitoring_policy"
 
+fvTrackList:
+  resource_name: "ip_sla_track_list"
+  ui_locations:
+    - "Tenants -> Policies -> Protocol -> IP SLA -> Track Lists"
+  sub_category: "Tenant Policies"
+
+fvRsOtmListMember:
+  resource_name: "relation_to_ip_sla_track_member"
+  ui_locations:
+    - "Tenants -> Policies -> Protocol -> IP SLA -> Track Lists -> Track list to track member"
+  sub_category: "Tenant Policies"
+
+fvTrackMember:
+  resource_name: "ip_sla_track_member"
+  ui_locations:
+    - "Tenants -> Policies -> Protocol -> IP SLA -> Track Members"
+  sub_category: "Tenant Policies"
+
+fvRsIpslaMonPol:
+  resource_name: "relation_to_ip_sla_monitoring_policy"
+  ui_locations:
+    - "Tenants -> Policies -> Protocol -> IP SLA -> Track Member"
+  sub_category: "Tenant Policies"
+
+fvIPSLAMonitoringPol:
+  resource_name: "ip_sla_monitoring_policy"
+  ui_locations:
+    - "Tenants -> Policies -> Protocol -> IP SLA -> IP SLA Monitoring Policies"
+  sub_category: "Tenant Policies"
+
 fvAEPg:
   resource_name: "application_epg"
   ui_locations:
