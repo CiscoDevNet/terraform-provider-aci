@@ -72,6 +72,7 @@ global:
     Http Ssl Configuration: "HTTPS Service"
     Http Service: "HTTP Service"
     Dscp To: "DSCP to"
+    Sla: "SLA"
   ignores:
     - "userdom"
 
@@ -2092,3 +2093,82 @@ fvRsApMonPol:
       relation_resource_name: "monitoring_policy"
       properties:
         name: "monitoring_policy_name_1"
+
+fvTrackList:
+  documentation:
+    weightDown: "The down weight assigned to the %s to determine the route to be considered available or unavailable. This attribute is only applicable when the track type is 'weight'."
+    weightUp: "The up weight assigned to the %s to determine the route to be considered available or unavailable. The weight up must be greater than weight down. This attribute is only applicable when the track type is 'weight'."
+    percentageDown: "The down percentage of the %s to determine the route to be considered available or unavailable. This attribute is only applicable when the track type is 'percentage'."
+    percentageUp: "The up percentage of the %s to determine the route to be considered available or unavailable. The percentage up must be greater than percentage down. This attribute is only applicable when the track type is 'percentage'."
+    type: "The type of the %s."
+  test_values:
+    default:
+      weight_down: "0"
+      weight_up: "1"
+      percentage_down: "0"
+      percentage_up: "1"
+      type: "percentage"
+    all:
+      weight_down: "10"
+      weight_up: "20"
+      percentage_down: "30"
+      percentage_up: "40"
+      type: "weight"
+
+fvTrackMember:
+  documentation:
+    scopeDn: "The scope (Bridge Domain or L3Out) of the %s. For a Bridge Domain this attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bridge_domain) with 'aci_bridge_domain.example.id' or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/bridge_domain) with 'data.aci_bridge_domain.example.id'. For a L3out this attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3_outside) with 'aci_l3_outside.example.id' or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/l3_outside) with 'data.aci_l3_outside.example.id'."
+    dstIpAddr: "The destination IP address to be tracked."
+  overwrites:
+    dst_ip_addr: "destination_ip_address"
+    scope_dn: "scope"
+  test_values:
+    default:
+      scope: ""
+      destination_ip_address: "0.0.0.0"
+    all:
+      scope: "uni/tn-test_tenant/BD-test_bd"
+      destination_ip_address: "2.2.2.2"
+
+fvRsOtmListMember:
+  documentation:
+    tDn: "The distinguished name (DN) of the IP SLA Track Member."
+  test_values:
+    default:
+      weight: "10"
+    all:
+      weight: "20"
+    test_values_for_parent:
+      - target_dn: "uni/tn-test_tenant/trackmember-track_member_name_1"
+      - target_dn: "uni/tn-test_tenant/trackmember-track_member_name_2"
+  parents:
+    - class_name: "fvTrackList"
+      parent_dependency: "fvTenant"
+      parent_dn: "aci_ip_sla_track_list.test.id"
+  targets:
+    - class_name: "fvTrackMember"
+      target_dn: "uni/tn-test_tenant/trackmember-track_member_name_1"
+      relation_resource_name: "ip_sla_track_member"
+      parent_dependency: "fvTenant"
+      target_dn_overwrite_docs: "aci_ip_sla_track_member.example.id"
+      properties:
+        name: "track_member_name_1"
+      static: true
+
+fvRsIpslaMonPol:
+  overwrites:
+    relation_to_ip_sla_monitoring_policy: "relation_to_monitoring_policy"
+  documentation:
+    tDn: "The distinguished name (DN) of the IP SLA Monitoring Policy."
+  test_values:
+    test_values_for_parent:
+      - target_dn: "uni/tn-test_tenant/ipslaMonitoringPol-monitoring_policy_name_1"
+  targets:
+    - class_name: "fvIPSLAMonitoringPol"
+      target_dn: "uni/tn-test_tenant/ipslaMonitoringPol-monitoring_policy_name_1"
+      relation_resource_name: "monitoring_policy"
+      parent_dependency: "fvTenant"
+      target_dn_overwrite_docs: "aci_ip_sla_monitoring_policy.example.id"
+      properties:
+        name: "monitoring_policy_name_1"
+      static: true
