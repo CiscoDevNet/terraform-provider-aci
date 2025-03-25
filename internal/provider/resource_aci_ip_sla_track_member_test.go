@@ -31,16 +31,16 @@ func TestAccResourceFvTrackMemberWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.allow_test_2", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.allow_test", "description", ""),
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.allow_test_2", "description", ""),
-					resource.TestCheckResourceAttr("aci_ip_sla_track_member.allow_test", "destination_ip_address", "0.0.0.0"),
-					resource.TestCheckResourceAttr("aci_ip_sla_track_member.allow_test_2", "destination_ip_address", "0.0.0.0"),
+					resource.TestCheckResourceAttr("aci_ip_sla_track_member.allow_test", "destination_ip_address", "1.1.1.1"),
+					resource.TestCheckResourceAttr("aci_ip_sla_track_member.allow_test_2", "destination_ip_address", "1.1.1.1"),
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.allow_test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.allow_test_2", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.allow_test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.allow_test_2", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.allow_test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.allow_test_2", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_ip_sla_track_member.allow_test", "scope", ""),
-					resource.TestCheckResourceAttr("aci_ip_sla_track_member.allow_test_2", "scope", ""),
+					resource.TestCheckResourceAttr("aci_ip_sla_track_member.allow_test", "scope", "uni/tn-test_tenant/BD-test_bd"),
+					resource.TestCheckResourceAttr("aci_ip_sla_track_member.allow_test_2", "scope", "uni/tn-test_tenant/BD-test_bd"),
 				),
 			},
 		},
@@ -75,16 +75,16 @@ func TestAccResourceFvTrackMemberWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.allow_test_2", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.allow_test", "description", ""),
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.allow_test_2", "description", ""),
-					resource.TestCheckResourceAttr("aci_ip_sla_track_member.allow_test", "destination_ip_address", "0.0.0.0"),
-					resource.TestCheckResourceAttr("aci_ip_sla_track_member.allow_test_2", "destination_ip_address", "0.0.0.0"),
+					resource.TestCheckResourceAttr("aci_ip_sla_track_member.allow_test", "destination_ip_address", "1.1.1.1"),
+					resource.TestCheckResourceAttr("aci_ip_sla_track_member.allow_test_2", "destination_ip_address", "1.1.1.1"),
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.allow_test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.allow_test_2", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.allow_test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.allow_test_2", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.allow_test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.allow_test_2", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_ip_sla_track_member.allow_test", "scope", ""),
-					resource.TestCheckResourceAttr("aci_ip_sla_track_member.allow_test_2", "scope", ""),
+					resource.TestCheckResourceAttr("aci_ip_sla_track_member.allow_test", "scope", "uni/tn-test_tenant/BD-test_bd"),
+					resource.TestCheckResourceAttr("aci_ip_sla_track_member.allow_test_2", "scope", "uni/tn-test_tenant/BD-test_bd"),
 				),
 			},
 		},
@@ -102,11 +102,11 @@ func TestAccResourceFvTrackMemberWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "destination_ip_address", "0.0.0.0"),
+					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "destination_ip_address", "1.1.1.1"),
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "scope", ""),
+					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "scope", "uni/tn-test_tenant/BD-test_bd"),
 				),
 			},
 			// Update with all config and verify default APIC values
@@ -121,7 +121,7 @@ func TestAccResourceFvTrackMemberWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "name_alias", "name_alias_1"),
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "owner_key", "owner_key_1"),
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "owner_tag", "owner_tag_1"),
-					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "scope", "uni/tn-test_tenant/BD-test_bd"),
+					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "scope", "uni/tn-test_tenant/BD-test_bd_2"),
 				),
 			},
 			// Update with minimum config and verify config is unchanged
@@ -129,7 +129,9 @@ func TestAccResourceFvTrackMemberWithFvTenant(t *testing.T) {
 				Config:             testConfigFvTrackMemberMinDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "destination_ip_address", "1.1.1.1"),
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "scope", "uni/tn-test_tenant/BD-test_bd"),
 				),
 			},
 			// Update with empty strings config or default value
@@ -137,14 +139,14 @@ func TestAccResourceFvTrackMemberWithFvTenant(t *testing.T) {
 				Config:             testConfigFvTrackMemberResetDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "destination_ip_address", "1.1.1.1"),
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "scope", "uni/tn-test_tenant/BD-test_bd"),
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "destination_ip_address", "0.0.0.0"),
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "scope", ""),
 				),
 			},
 			// Import testing
@@ -158,14 +160,14 @@ func TestAccResourceFvTrackMemberWithFvTenant(t *testing.T) {
 				Config:             testConfigFvTrackMemberChildrenDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "destination_ip_address", "1.1.1.1"),
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "scope", "uni/tn-test_tenant/BD-test_bd"),
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "destination_ip_address", "0.0.0.0"),
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "scope", ""),
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "annotations.1.key", "key_1"),
@@ -277,11 +279,15 @@ const testChildDependencyConfigFvTrackMember = `
 const testConfigFvTrackMemberMinDependencyWithFvTenantAllowExisting = testConfigFvTenantMin + `
 resource "aci_ip_sla_track_member" "allow_test" {
   parent_dn = aci_tenant.test.id
+  destination_ip_address = "1.1.1.1"
   name = "test_name"
+  scope = "uni/tn-test_tenant/BD-test_bd"
 }
 resource "aci_ip_sla_track_member" "allow_test_2" {
   parent_dn = aci_tenant.test.id
+  destination_ip_address = "1.1.1.1"
   name = "test_name"
+  scope = "uni/tn-test_tenant/BD-test_bd"
   depends_on = [aci_ip_sla_track_member.allow_test]
 }
 `
@@ -289,7 +295,9 @@ resource "aci_ip_sla_track_member" "allow_test_2" {
 const testConfigFvTrackMemberMinDependencyWithFvTenant = testConfigFvTenantMin + `
 resource "aci_ip_sla_track_member" "test" {
   parent_dn = aci_tenant.test.id
+  destination_ip_address = "1.1.1.1"
   name = "test_name"
+  scope = "uni/tn-test_tenant/BD-test_bd"
 }
 `
 
@@ -303,7 +311,7 @@ resource "aci_ip_sla_track_member" "test" {
   name_alias = "name_alias_1"
   owner_key = "owner_key_1"
   owner_tag = "owner_tag_1"
-  scope = "uni/tn-test_tenant/BD-test_bd"
+  scope = "uni/tn-test_tenant/BD-test_bd_2"
 }
 `
 
@@ -313,17 +321,19 @@ resource "aci_ip_sla_track_member" "test" {
   name = "test_name"
   annotation = "orchestrator:terraform"
   description = ""
-  destination_ip_address = "0.0.0.0"
+  destination_ip_address = "1.1.1.1"
   name_alias = ""
   owner_key = ""
   owner_tag = ""
-  scope = ""
+  scope = "uni/tn-test_tenant/BD-test_bd"
 }
 `
 const testConfigFvTrackMemberChildrenDependencyWithFvTenant = testChildDependencyConfigFvTrackMember + testConfigFvTenantMin + `
 resource "aci_ip_sla_track_member" "test" {
   parent_dn = aci_tenant.test.id
+  destination_ip_address = "1.1.1.1"
   name = "test_name"
+  scope = "uni/tn-test_tenant/BD-test_bd"
   annotations = [
     {
       key = "key_0"
@@ -374,14 +384,18 @@ resource "aci_ip_sla_track_member" "test" {
 const testConfigFvTrackMemberChildrenRemoveFromConfigDependencyWithFvTenant = testChildDependencyConfigFvTrackMember + testConfigFvTenantMin + `
 resource "aci_ip_sla_track_member" "test" {
   parent_dn = aci_tenant.test.id
+  destination_ip_address = "1.1.1.1"
   name = "test_name"
+  scope = "uni/tn-test_tenant/BD-test_bd"
 }
 `
 
 const testConfigFvTrackMemberChildrenRemoveOneDependencyWithFvTenant = testChildDependencyConfigFvTrackMember + testConfigFvTenantMin + `
 resource "aci_ip_sla_track_member" "test" {
   parent_dn = aci_tenant.test.id
+  destination_ip_address = "1.1.1.1"
   name = "test_name"
+  scope = "uni/tn-test_tenant/BD-test_bd"
   annotations = [ 
 	{
 	  key = "key_1"
@@ -401,7 +415,9 @@ resource "aci_ip_sla_track_member" "test" {
 const testConfigFvTrackMemberChildrenRemoveAllDependencyWithFvTenant = testChildDependencyConfigFvTrackMember + testConfigFvTenantMin + `
 resource "aci_ip_sla_track_member" "test" {
   parent_dn = aci_tenant.test.id
+  destination_ip_address = "1.1.1.1"
   name = "test_name"
+  scope = "uni/tn-test_tenant/BD-test_bd"
   annotations = []
   relation_to_monitoring_policy = {}
   tags = []
