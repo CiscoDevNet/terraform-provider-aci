@@ -6,11 +6,11 @@
 default:
   annotation: "orchestrator:terraform"
   description: ""
-  destination_ip_address: "0.0.0.0"
+  destination_ip_address: "1.1.1.1"
   name_alias: ""
   owner_key: ""
   owner_tag: ""
-  scope: ""
+  scope: "uni/tn-test_tenant/BD-test_bd"
 
 datasource_non_existing:
   name: "non_existing_name"
@@ -19,7 +19,9 @@ datasource_required:
   name: "test_name"
 
 resource_required:
+  destination_ip_address: "1.1.1.1"
   name: "test_name"
+  scope: "uni/tn-test_tenant/BD-test_bd"
 
 all:
   annotation: "annotation"
@@ -28,7 +30,7 @@ all:
   name_alias: "name_alias_1"
   owner_key: "owner_key_1"
   owner_tag: "owner_tag_1"
-  scope: "uni/tn-test_tenant/BD-test_bd"
+  scope: "uni/tn-test_tenant/BD-test_bd_2"
 
 children:
   relation_to_monitoring_policy:

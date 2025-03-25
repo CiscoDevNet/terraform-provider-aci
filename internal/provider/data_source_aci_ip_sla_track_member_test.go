@@ -24,11 +24,11 @@ func TestAccDataSourceFvTrackMemberWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("data.aci_ip_sla_track_member.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("data.aci_ip_sla_track_member.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("data.aci_ip_sla_track_member.test", "description", ""),
-					resource.TestCheckResourceAttr("data.aci_ip_sla_track_member.test", "destination_ip_address", "0.0.0.0"),
+					resource.TestCheckResourceAttr("data.aci_ip_sla_track_member.test", "destination_ip_address", "1.1.1.1"),
 					resource.TestCheckResourceAttr("data.aci_ip_sla_track_member.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("data.aci_ip_sla_track_member.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("data.aci_ip_sla_track_member.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("data.aci_ip_sla_track_member.test", "scope", ""),
+					resource.TestCheckResourceAttr("data.aci_ip_sla_track_member.test", "scope", "uni/tn-test_tenant/BD-test_bd"),
 				),
 			},
 			{
