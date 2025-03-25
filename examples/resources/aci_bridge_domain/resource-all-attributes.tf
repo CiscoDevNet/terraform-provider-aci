@@ -72,7 +72,7 @@ resource "aci_bridge_domain" "full_example_tenant" {
       ]
     }
   ]
-  relation_to_monitor_policy = {
+  relation_to_monitoring_policy = {
     annotation             = "annotation_1"
     monitoring_policy_name = aci_monitoring_policy.example.name
     annotations = [

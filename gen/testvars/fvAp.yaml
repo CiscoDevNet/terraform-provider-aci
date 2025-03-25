@@ -37,7 +37,7 @@ all:
   priority: "level1"
 
 children:
-  relation_to_application_profile_monitoring_policy:
+  relation_to_monitoring_policy:
     - annotation: "annotation_1"
       monitoring_policy_name: "monitoring_policy_name_1"
       deletable_child: true

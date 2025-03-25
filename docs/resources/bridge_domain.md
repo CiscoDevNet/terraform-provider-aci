@@ -119,7 +119,7 @@ resource "aci_bridge_domain" "full_example_tenant" {
       ]
     }
   ]
-  relation_to_monitor_policy = {
+  relation_to_monitoring_policy = {
     annotation             = "annotation_1"
     monitoring_policy_name = aci_monitoring_policy.example.name
     annotations = [
@@ -452,7 +452,7 @@ All examples for the Bridge Domain resource can be found in the [examples](https
   
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-* `relation_to_monitor_policy` - (map) A map of Relation From Bridge Domain To Monitoring Policy (ACI object [fvRsABDPolMonPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsABDPolMonPol/overview)) pointing to Monitoring Policy (ACI Object [monEPGPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/monEPGPol/overview)) which can be configured using the [aci_monitoring_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/monitoring_policy) resource.
+* `relation_to_monitoring_policy` - (map) A map of Relation From Bridge Domain To Monitoring Policy (ACI object [fvRsABDPolMonPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsABDPolMonPol/overview)) pointing to Monitoring Policy (ACI Object [monEPGPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/monEPGPol/overview)) which can be configured using the [aci_monitoring_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/monitoring_policy) resource.
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation From Bridge Domain To Monitoring Policy object.

@@ -55,7 +55,7 @@ resource "aci_application_profile" "full_example_tenant" {
   owner_key   = "owner_key_1"
   owner_tag   = "owner_tag_1"
   priority    = "level1"
-  relation_to_application_profile_monitoring_policy = {
+  relation_to_monitoring_policy = {
     annotation             = "annotation_1"
     monitoring_policy_name = aci_monitoring_policy.example.name
     annotations = [
@@ -114,10 +114,10 @@ All examples for the Application Profile resource can be found in the [examples]
   - Valid Values:
     * `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
     * Or a value in the range of `0` to `9`.
-* `relation_to_application_profile_monitoring_policy` - (map) A map of Relation To Application Profile Monitoring Policy (ACI object [fvRsApMonPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsApMonPol/overview)) pointing to Monitoring Policy (ACI Object [monEPGPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/monEPGPol/overview)) which can be configured using the [aci_monitoring_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/monitoring_policy) resource.
+* `relation_to_monitoring_policy` - (map) A map of Relation From Application Profile To Monitoring Policy (ACI object [fvRsApMonPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsApMonPol/overview)) pointing to Monitoring Policy (ACI Object [monEPGPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/monEPGPol/overview)) which can be configured using the [aci_monitoring_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/monitoring_policy) resource.
   #### Optional ####
     
-    * `annotation` (annotation) - (string) The annotation of the Relation To Application Profile Monitoring Policy object.
+    * `annotation` (annotation) - (string) The annotation of the Relation From Application Profile To Monitoring Policy object.
       - Default: `orchestrator:terraform`
     * `monitoring_policy_name` (tnMonEPGPolName) - (string) The name of the monitoring policy.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.

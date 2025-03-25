@@ -54,7 +54,7 @@ type FvApResourceModel struct {
 	OwnerKey               types.String                    `tfsdk:"owner_key"`
 	OwnerTag               types.String                    `tfsdk:"owner_tag"`
 	Prio                   customTypes.FvApPrioStringValue `tfsdk:"priority"`
-	FvRsApMonPol           types.Object                    `tfsdk:"relation_to_application_profile_monitoring_policy"`
+	FvRsApMonPol           types.Object                    `tfsdk:"relation_to_monitoring_policy"`
 	TagAnnotation          types.Set                       `tfsdk:"annotations"`
 	TagTag                 types.Set                       `tfsdk:"tags"`
 	DeprecatedParentDn     types.String                    `tfsdk:"tenant_dn"`
@@ -503,10 +503,10 @@ func (r *FvApResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 			"relation_fv_rs_ap_mon_pol": schema.StringAttribute{
 				Optional:           true,
 				Computed:           true,
-				DeprecationMessage: "Attribute 'relation_fv_rs_ap_mon_pol' is deprecated, please refer to 'relation_to_application_profile_monitoring_policy.monitoring_policy_name' instead. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "Attribute 'relation_fv_rs_ap_mon_pol' is deprecated, please refer to 'relation_to_monitoring_policy' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.String{
 					stringvalidator.ConflictsWith(path.Expressions{
-						path.MatchRoot("relation_to_application_profile_monitoring_policy"),
+						path.MatchRoot("relation_to_monitoring_policy"),
 					}...),
 				},
 			},
@@ -603,7 +603,7 @@ func (r *FvApResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 				},
 				MarkdownDescription: `The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.`,
 			},
-			"relation_to_application_profile_monitoring_policy": schema.SingleNestedAttribute{
+			"relation_to_monitoring_policy": schema.SingleNestedAttribute{
 				MarkdownDescription: `A source relation to the monitoring policy model for the endpoint group semantic scope. This is an internal object.`,
 				Optional:            true,
 				Computed:            true,
@@ -617,7 +617,7 @@ func (r *FvApResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						MarkdownDescription: `The annotation of the Relation To Application Profile Monitoring Policy object.`,
+						MarkdownDescription: `The annotation of the Relation From Application Profile To Monitoring Policy object.`,
 					},
 					"monitoring_policy_name": schema.StringAttribute{
 						Optional: true,

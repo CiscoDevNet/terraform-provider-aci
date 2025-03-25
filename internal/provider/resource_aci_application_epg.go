@@ -65,7 +65,7 @@ type FvAEPgResourceModel struct {
 	Scope                              types.String                      `tfsdk:"scope"`
 	Shutdown                           types.String                      `tfsdk:"admin_state"`
 	FvCrtrn                            types.Object                      `tfsdk:"epg_useg_block_statement"`
-	FvRsAEPgMonPol                     types.Object                      `tfsdk:"relation_to_application_epg_monitoring_policy"`
+	FvRsAEPgMonPol                     types.Object                      `tfsdk:"relation_to_monitoring_policy"`
 	FvRsBd                             types.Object                      `tfsdk:"relation_to_bridge_domain"`
 	FvRsCons                           types.Set                         `tfsdk:"relation_to_consumed_contracts"`
 	FvRsConsIf                         types.Set                         `tfsdk:"relation_to_imported_contracts"`
@@ -93,9 +93,9 @@ type FvAEPgResourceModel struct {
 	DeprecatedPrefGrMemb               types.String                      `tfsdk:"pref_gr_memb"`
 	DeprecatedPrio                     types.String                      `tfsdk:"prio"`
 	DeprecatedShutdown                 types.String                      `tfsdk:"shutdown"`
+	DeprecatedFvRsAEPgMonPol           types.String                      `tfsdk:"relation_fv_rs_aepg_mon_pol"`
 	Deprecated_relation_fv_rs_path_att types.Set                         `tfsdk:"relation_fv_rs_path_att"`
 	Deprecated_relation_fv_rs_prov_def types.Set                         `tfsdk:"relation_fv_rs_prov_def"`
-	DeprecatedFvRsAEPgMonPol           types.String                      `tfsdk:"relation_fv_rs_aepg_mon_pol"`
 	DeprecatedFvRsBd                   types.String                      `tfsdk:"relation_fv_rs_bd"`
 	DeprecatedFvRsCons                 types.Set                         `tfsdk:"relation_fv_rs_cons"`
 	DeprecatedFvRsSecInherited         types.Set                         `tfsdk:"relation_fv_rs_sec_inherited"`
@@ -315,9 +315,9 @@ func getEmptyFvAEPgResourceModel() *FvAEPgResourceModel {
 		DeprecatedPrefGrMemb:               types.String{},
 		DeprecatedPrio:                     types.String{},
 		DeprecatedShutdown:                 types.String{},
+		DeprecatedFvRsAEPgMonPol:           types.String{},
 		Deprecated_relation_fv_rs_path_att: types.SetNull(types.StringType),
 		Deprecated_relation_fv_rs_prov_def: types.SetNull(types.StringType),
-		DeprecatedFvRsAEPgMonPol:           types.String{},
 		DeprecatedFvRsBd:                   types.String{},
 		DeprecatedFvRsCons:                 types.SetNull(types.StringType),
 		DeprecatedFvRsSecInherited:         types.SetNull(types.StringType),
@@ -2192,9 +2192,9 @@ type FvAEPgResourceModelV1 struct {
 	PrefGrMemb                         types.String `tfsdk:"pref_gr_memb"`
 	Prio                               types.String `tfsdk:"prio"`
 	Shutdown                           types.String `tfsdk:"shutdown"`
+	FvRsAEPgMonPol                     types.String `tfsdk:"relation_fv_rs_aepg_mon_pol"`
 	Deprecated_relation_fv_rs_path_att types.Set    `tfsdk:"relation_fv_rs_path_att"`
 	Deprecated_relation_fv_rs_prov_def types.Set    `tfsdk:"relation_fv_rs_prov_def"`
-	FvRsAEPgMonPol                     types.String `tfsdk:"relation_fv_rs_aepg_mon_pol"`
 	FvRsBd                             types.String `tfsdk:"relation_fv_rs_bd"`
 	FvRsCons                           types.Set    `tfsdk:"relation_fv_rs_cons"`
 	FvRsSecInherited                   types.Set    `tfsdk:"relation_fv_rs_sec_inherited"`
@@ -2312,6 +2312,11 @@ func (r *FvAEPgResource) UpgradeState(ctx context.Context) map[int64]resource.St
 						Optional: true,
 						Computed: true,
 					},
+					"relation_fv_rs_aepg_mon_pol": schema.StringAttribute{
+						Required: false,
+						Optional: true,
+						Computed: false,
+					},
 					"relation_fv_rs_path_att": schema.SetAttribute{
 						Required:    false,
 						Optional:    true,
@@ -2323,11 +2328,6 @@ func (r *FvAEPgResource) UpgradeState(ctx context.Context) map[int64]resource.St
 						Optional:    true,
 						Computed:    false,
 						ElementType: types.StringType,
-					},
-					"relation_fv_rs_aepg_mon_pol": schema.StringAttribute{
-						Required: false,
-						Optional: true,
-						Computed: false,
 					},
 					"relation_fv_rs_bd": schema.StringAttribute{
 						Required: false,
@@ -2465,9 +2465,9 @@ func (r *FvAEPgResource) UpgradeState(ctx context.Context) map[int64]resource.St
 					DeprecatedPrefGrMemb:               priorStateData.PrefGrMemb,
 					DeprecatedPrio:                     priorStateData.Prio,
 					DeprecatedShutdown:                 priorStateData.Shutdown,
+					DeprecatedFvRsAEPgMonPol:           priorStateData.FvRsAEPgMonPol,
 					Deprecated_relation_fv_rs_path_att: priorStateData.Deprecated_relation_fv_rs_path_att,
 					Deprecated_relation_fv_rs_prov_def: priorStateData.Deprecated_relation_fv_rs_prov_def,
-					DeprecatedFvRsAEPgMonPol:           priorStateData.FvRsAEPgMonPol,
 					DeprecatedFvRsBd:                   priorStateData.FvRsBd,
 					DeprecatedFvRsCustQosPol:           priorStateData.FvRsCustQosPol,
 					DeprecatedFvRsDppPol:               priorStateData.FvRsDppPol,
@@ -3978,6 +3978,16 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 					}...),
 				},
 			},
+			"relation_fv_rs_aepg_mon_pol": schema.StringAttribute{
+				Optional:           true,
+				Computed:           true,
+				DeprecationMessage: "Attribute 'relation_fv_rs_aepg_mon_pol' is deprecated, please refer to 'relation_to_monitoring_policy' instead. The attribute will be removed in the next major version of the provider.",
+				Validators: []validator.String{
+					stringvalidator.ConflictsWith(path.Expressions{
+						path.MatchRoot("relation_to_monitoring_policy"),
+					}...),
+				},
+			},
 			"relation_fv_rs_path_att": schema.SetAttribute{
 				Optional:           true,
 				Computed:           true,
@@ -3996,20 +4006,10 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 					setplanmodifier.UseStateForUnknown(),
 				},
 			},
-			"relation_fv_rs_aepg_mon_pol": schema.StringAttribute{
-				Optional:           true,
-				Computed:           true,
-				DeprecationMessage: "Attribute 'relation_fv_rs_aepg_mon_pol' is deprecated, please refer to 'relation_to_application_epg_monitoring_policy.monitoring_policy_name' instead. The attribute will be removed in the next major version of the provider.",
-				Validators: []validator.String{
-					stringvalidator.ConflictsWith(path.Expressions{
-						path.MatchRoot("relation_to_application_epg_monitoring_policy"),
-					}...),
-				},
-			},
 			"relation_fv_rs_bd": schema.StringAttribute{
 				Optional:           true,
 				Computed:           true,
-				DeprecationMessage: "Attribute 'relation_fv_rs_bd' is deprecated, please refer to 'relation_to_bridge_domain.bridge_domain_name' instead. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "Attribute 'relation_fv_rs_bd' is deprecated, please refer to 'relation_to_bridge_domain' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.String{
 					stringvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("relation_to_bridge_domain"),
@@ -4020,7 +4020,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Optional:           true,
 				Computed:           true,
 				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute 'relation_fv_rs_cons' is deprecated, please refer to 'relation_to_consumed_contracts.contract_name' instead. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "Attribute 'relation_fv_rs_cons' is deprecated, please refer to 'relation_to_consumed_contracts' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.Set{
 					setvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("relation_to_consumed_contracts"),
@@ -4031,7 +4031,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Optional:           true,
 				Computed:           true,
 				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute 'relation_fv_rs_sec_inherited' is deprecated, please refer to 'relation_to_contract_masters.target_dn' instead. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "Attribute 'relation_fv_rs_sec_inherited' is deprecated, please refer to 'relation_to_contract_masters' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.Set{
 					setvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("relation_to_contract_masters"),
@@ -4041,7 +4041,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 			"relation_fv_rs_cust_qos_pol": schema.StringAttribute{
 				Optional:           true,
 				Computed:           true,
-				DeprecationMessage: "Attribute 'relation_fv_rs_cust_qos_pol' is deprecated, please refer to 'relation_to_custom_qos_policy.custom_qos_policy_name' instead. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "Attribute 'relation_fv_rs_cust_qos_pol' is deprecated, please refer to 'relation_to_custom_qos_policy' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.String{
 					stringvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("relation_to_custom_qos_policy"),
@@ -4051,7 +4051,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 			"relation_fv_rs_dpp_pol": schema.StringAttribute{
 				Optional:           true,
 				Computed:           true,
-				DeprecationMessage: "Attribute 'relation_fv_rs_dpp_pol' is deprecated, please refer to 'relation_to_data_plane_policing_policy.data_plane_policing_policy_name' instead. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "Attribute 'relation_fv_rs_dpp_pol' is deprecated, please refer to 'relation_to_data_plane_policing_policy' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.String{
 					stringvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("relation_to_data_plane_policing_policy"),
@@ -4062,7 +4062,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Optional:           true,
 				Computed:           true,
 				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute 'relation_fv_rs_fc_path_att' is deprecated, please refer to 'relation_to_fibre_channel_paths.fibre_channel_path_name' instead. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "Attribute 'relation_fv_rs_fc_path_att' is deprecated, please refer to 'relation_to_fibre_channel_paths' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.Set{
 					setvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("relation_to_fibre_channel_paths"),
@@ -4073,7 +4073,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Optional:           true,
 				Computed:           true,
 				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute 'relation_fv_rs_cons_if' is deprecated, please refer to 'relation_to_imported_contracts.imported_contract_name' instead. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "Attribute 'relation_fv_rs_cons_if' is deprecated, please refer to 'relation_to_imported_contracts' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.Set{
 					setvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("relation_to_imported_contracts"),
@@ -4084,7 +4084,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Optional:           true,
 				Computed:           true,
 				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute 'relation_fv_rs_intra_epg' is deprecated, please refer to 'relation_to_intra_epg_contracts.contract_name' instead. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "Attribute 'relation_fv_rs_intra_epg' is deprecated, please refer to 'relation_to_intra_epg_contracts' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.Set{
 					setvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("relation_to_intra_epg_contracts"),
@@ -4095,7 +4095,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Optional:           true,
 				Computed:           true,
 				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute 'relation_fv_rs_prov' is deprecated, please refer to 'relation_to_provided_contracts.contract_name' instead. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "Attribute 'relation_fv_rs_prov' is deprecated, please refer to 'relation_to_provided_contracts' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.Set{
 					setvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("relation_to_provided_contracts"),
@@ -4106,7 +4106,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Optional:           true,
 				Computed:           true,
 				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute 'relation_fv_rs_prot_by' is deprecated, please refer to 'relation_to_taboo_contracts.taboo_contract_name' instead. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "Attribute 'relation_fv_rs_prot_by' is deprecated, please refer to 'relation_to_taboo_contracts' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.Set{
 					setvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("relation_to_taboo_contracts"),
@@ -4116,7 +4116,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 			"relation_fv_rs_trust_ctrl": schema.StringAttribute{
 				Optional:           true,
 				Computed:           true,
-				DeprecationMessage: "Attribute 'relation_fv_rs_trust_ctrl' is deprecated, please refer to 'relation_to_trust_control_policy.trust_control_policy_name' instead. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "Attribute 'relation_fv_rs_trust_ctrl' is deprecated, please refer to 'relation_to_trust_control_policy' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.String{
 					stringvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("relation_to_trust_control_policy"),
@@ -4472,7 +4472,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 					},
 				},
 			},
-			"relation_to_application_epg_monitoring_policy": schema.SingleNestedAttribute{
+			"relation_to_monitoring_policy": schema.SingleNestedAttribute{
 				MarkdownDescription: `A source relation to the monitoring policy model for the endpoint group semantic scope. This is an internal object.`,
 				Optional:            true,
 				Computed:            true,
@@ -4486,7 +4486,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						MarkdownDescription: `The annotation of the Relation To Application EPG Monitoring Policy object.`,
+						MarkdownDescription: `The annotation of the Relation From Application EPG To Monitoring Policy object.`,
 					},
 					"monitoring_policy_name": schema.StringAttribute{
 						Optional: true,

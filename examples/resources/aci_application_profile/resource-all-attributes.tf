@@ -8,7 +8,7 @@ resource "aci_application_profile" "full_example_tenant" {
   owner_key   = "owner_key_1"
   owner_tag   = "owner_tag_1"
   priority    = "level1"
-  relation_to_application_profile_monitoring_policy = {
+  relation_to_monitoring_policy = {
     annotation             = "annotation_1"
     monitoring_policy_name = aci_monitoring_policy.example.name
     annotations = [

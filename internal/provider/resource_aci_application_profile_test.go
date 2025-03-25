@@ -162,8 +162,8 @@ func TestAccResourceFvApWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_profile.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_profile.test", "annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_profile.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_application_profile_monitoring_policy.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_application_profile_monitoring_policy.monitoring_policy_name", "monitoring_policy_name_1"),
+					resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_monitoring_policy.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_monitoring_policy.monitoring_policy_name", "monitoring_policy_name_1"),
 					resource.TestCheckResourceAttr("aci_application_profile.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_application_profile.test", "tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_profile.test", "tags.1.key", "key_1"),
@@ -191,18 +191,18 @@ func TestAccResourceFvApWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_profile.test", "annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_profile.test", "annotations.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_application_profile.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_application_profile_monitoring_policy.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_application_profile_monitoring_policy.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_application_profile_monitoring_policy.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_application_profile_monitoring_policy.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_application_profile_monitoring_policy.annotations.1.value", "test_value"),
+					resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_monitoring_policy.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_monitoring_policy.annotations.0.key", "key_0"),
+					resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_monitoring_policy.annotations.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_monitoring_policy.annotations.1.key", "key_1"),
+					resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_monitoring_policy.annotations.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_application_profile.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_application_profile_monitoring_policy.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_application_profile_monitoring_policy.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_application_profile_monitoring_policy.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_application_profile_monitoring_policy.tags.1.value", "test_value"),
+					resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_monitoring_policy.tags.0.key", "key_0"),
+					resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_monitoring_policy.tags.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_monitoring_policy.tags.1.key", "key_1"),
+					resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_monitoring_policy.tags.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_application_profile.test", "tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_application_profile_monitoring_policy.monitoring_policy_name", "monitoring_policy_name_1"),
+					resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_monitoring_policy.monitoring_policy_name", "monitoring_policy_name_1"),
 					resource.TestCheckResourceAttr("aci_application_profile.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_application_profile.test", "tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_profile.test", "tags.1.key", "key_1"),
@@ -224,7 +224,7 @@ func TestAccResourceFvApWithFvTenant(t *testing.T) {
 				),
 				ConfigStateChecks: []statecheck.StateCheck{
 					statecheck.ExpectKnownValue("aci_application_profile.test",
-						tfjsonpath.New("relation_to_application_profile_monitoring_policy"),
+						tfjsonpath.New("relation_to_monitoring_policy"),
 						knownvalue.MapExact(
 							map[string]knownvalue.Check{
 								"annotation":             knownvalue.Null(),
@@ -246,7 +246,7 @@ func TestAccResourceFvApWithFvTenant(t *testing.T) {
 				),
 				ConfigStateChecks: []statecheck.StateCheck{
 					statecheck.ExpectKnownValue("aci_application_profile.test",
-						tfjsonpath.New("relation_to_application_profile_monitoring_policy"),
+						tfjsonpath.New("relation_to_monitoring_policy"),
 						knownvalue.MapExact(
 							map[string]knownvalue.Check{
 								"annotation":             knownvalue.Null(),
@@ -354,7 +354,7 @@ resource "aci_application_profile" "test" {
       value = "test_value"
     },
   ]
-  relation_to_application_profile_monitoring_policy = {
+  relation_to_monitoring_policy = {
     annotation = "annotation_1"
     annotations = [
 	  {
@@ -408,7 +408,7 @@ resource "aci_application_profile" "test" {
 	  value = "test_value"
 	},
   ]
-  relation_to_application_profile_monitoring_policy = {}
+  relation_to_monitoring_policy = {}
   tags = [ 
 	{
 	  key = "key_1"
@@ -423,7 +423,7 @@ resource "aci_application_profile" "test" {
   parent_dn = aci_tenant.test.id
   name = "test_name"
   annotations = []
-  relation_to_application_profile_monitoring_policy = {}
+  relation_to_monitoring_policy = {}
   tags = []
 }
 `

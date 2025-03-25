@@ -52,7 +52,7 @@ func (d *FvApDataSource) Schema(ctx context.Context, req datasource.SchemaReques
 			},
 			"relation_fv_rs_ap_mon_pol": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'relation_fv_rs_ap_mon_pol' is deprecated, please refer to 'relation_to_application_profile_monitoring_policy.monitoring_policy_name' instead. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "Attribute 'relation_fv_rs_ap_mon_pol' is deprecated, please refer to 'relation_to_monitoring_policy' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			// End of deprecated attributes
 			"id": schema.StringAttribute{
@@ -92,13 +92,13 @@ func (d *FvApDataSource) Schema(ctx context.Context, req datasource.SchemaReques
 				Computed:            true,
 				MarkdownDescription: `The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.`,
 			},
-			"relation_to_application_profile_monitoring_policy": schema.SingleNestedAttribute{
+			"relation_to_monitoring_policy": schema.SingleNestedAttribute{
 				MarkdownDescription: `A source relation to the monitoring policy model for the endpoint group semantic scope. This is an internal object.`,
 				Computed:            true,
 				Attributes: map[string]schema.Attribute{
 					"annotation": schema.StringAttribute{
 						Computed:            true,
-						MarkdownDescription: `The annotation of the Relation To Application Profile Monitoring Policy object.`,
+						MarkdownDescription: `The annotation of the Relation From Application Profile To Monitoring Policy object.`,
 					},
 					"monitoring_policy_name": schema.StringAttribute{
 						Computed:            true,

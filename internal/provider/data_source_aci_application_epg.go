@@ -87,6 +87,10 @@ func (d *FvAEPgDataSource) Schema(ctx context.Context, req datasource.SchemaRequ
 				Computed:           true,
 				DeprecationMessage: "Attribute 'shutdown' is deprecated, please refer to 'admin_state' instead. The attribute will be removed in the next major version of the provider.",
 			},
+			"relation_fv_rs_aepg_mon_pol": schema.StringAttribute{
+				Computed:           true,
+				DeprecationMessage: "Attribute 'relation_fv_rs_aepg_mon_pol' is deprecated, please refer to 'relation_to_monitoring_policy' instead. The attribute will be removed in the next major version of the provider.",
+			},
 			"relation_fv_rs_path_att": schema.SetAttribute{
 				Computed:           true,
 				ElementType:        types.StringType,
@@ -97,60 +101,56 @@ func (d *FvAEPgDataSource) Schema(ctx context.Context, req datasource.SchemaRequ
 				ElementType:        types.StringType,
 				DeprecationMessage: "Attribute `relation_fv_rs_prov_def` is deprecated. The attribute will be removed in the next major version of the provider.",
 			},
-			"relation_fv_rs_aepg_mon_pol": schema.StringAttribute{
-				Computed:           true,
-				DeprecationMessage: "Attribute 'relation_fv_rs_aepg_mon_pol' is deprecated, please refer to 'relation_to_application_epg_monitoring_policy.monitoring_policy_name' instead. The attribute will be removed in the next major version of the provider.",
-			},
 			"relation_fv_rs_bd": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'relation_fv_rs_bd' is deprecated, please refer to 'relation_to_bridge_domain.bridge_domain_name' instead. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "Attribute 'relation_fv_rs_bd' is deprecated, please refer to 'relation_to_bridge_domain' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			"relation_fv_rs_cons": schema.SetAttribute{
 				Computed:           true,
 				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute 'relation_fv_rs_cons' is deprecated, please refer to 'relation_to_consumed_contracts.contract_name' instead. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "Attribute 'relation_fv_rs_cons' is deprecated, please refer to 'relation_to_consumed_contracts' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			"relation_fv_rs_sec_inherited": schema.SetAttribute{
 				Computed:           true,
 				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute 'relation_fv_rs_sec_inherited' is deprecated, please refer to 'relation_to_contract_masters.target_dn' instead. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "Attribute 'relation_fv_rs_sec_inherited' is deprecated, please refer to 'relation_to_contract_masters' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			"relation_fv_rs_cust_qos_pol": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'relation_fv_rs_cust_qos_pol' is deprecated, please refer to 'relation_to_custom_qos_policy.custom_qos_policy_name' instead. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "Attribute 'relation_fv_rs_cust_qos_pol' is deprecated, please refer to 'relation_to_custom_qos_policy' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			"relation_fv_rs_dpp_pol": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'relation_fv_rs_dpp_pol' is deprecated, please refer to 'relation_to_data_plane_policing_policy.data_plane_policing_policy_name' instead. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "Attribute 'relation_fv_rs_dpp_pol' is deprecated, please refer to 'relation_to_data_plane_policing_policy' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			"relation_fv_rs_fc_path_att": schema.SetAttribute{
 				Computed:           true,
 				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute 'relation_fv_rs_fc_path_att' is deprecated, please refer to 'relation_to_fibre_channel_paths.fibre_channel_path_name' instead. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "Attribute 'relation_fv_rs_fc_path_att' is deprecated, please refer to 'relation_to_fibre_channel_paths' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			"relation_fv_rs_cons_if": schema.SetAttribute{
 				Computed:           true,
 				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute 'relation_fv_rs_cons_if' is deprecated, please refer to 'relation_to_imported_contracts.imported_contract_name' instead. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "Attribute 'relation_fv_rs_cons_if' is deprecated, please refer to 'relation_to_imported_contracts' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			"relation_fv_rs_intra_epg": schema.SetAttribute{
 				Computed:           true,
 				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute 'relation_fv_rs_intra_epg' is deprecated, please refer to 'relation_to_intra_epg_contracts.contract_name' instead. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "Attribute 'relation_fv_rs_intra_epg' is deprecated, please refer to 'relation_to_intra_epg_contracts' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			"relation_fv_rs_prov": schema.SetAttribute{
 				Computed:           true,
 				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute 'relation_fv_rs_prov' is deprecated, please refer to 'relation_to_provided_contracts.contract_name' instead. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "Attribute 'relation_fv_rs_prov' is deprecated, please refer to 'relation_to_provided_contracts' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			"relation_fv_rs_prot_by": schema.SetAttribute{
 				Computed:           true,
 				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute 'relation_fv_rs_prot_by' is deprecated, please refer to 'relation_to_taboo_contracts.taboo_contract_name' instead. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "Attribute 'relation_fv_rs_prot_by' is deprecated, please refer to 'relation_to_taboo_contracts' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			"relation_fv_rs_trust_ctrl": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'relation_fv_rs_trust_ctrl' is deprecated, please refer to 'relation_to_trust_control_policy.trust_control_policy_name' instead. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "Attribute 'relation_fv_rs_trust_ctrl' is deprecated, please refer to 'relation_to_trust_control_policy' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			// End of deprecated attributes
 			"id": schema.StringAttribute{
@@ -300,13 +300,13 @@ func (d *FvAEPgDataSource) Schema(ctx context.Context, req datasource.SchemaRequ
 					},
 				},
 			},
-			"relation_to_application_epg_monitoring_policy": schema.SingleNestedAttribute{
+			"relation_to_monitoring_policy": schema.SingleNestedAttribute{
 				MarkdownDescription: `A source relation to the monitoring policy model for the endpoint group semantic scope. This is an internal object.`,
 				Computed:            true,
 				Attributes: map[string]schema.Attribute{
 					"annotation": schema.StringAttribute{
 						Computed:            true,
-						MarkdownDescription: `The annotation of the Relation To Application EPG Monitoring Policy object.`,
+						MarkdownDescription: `The annotation of the Relation From Application EPG To Monitoring Policy object.`,
 					},
 					"monitoring_policy_name": schema.StringAttribute{
 						Computed:            true,

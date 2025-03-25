@@ -106,6 +106,31 @@ func (d *FvBDDataSource) Schema(ctx context.Context, req datasource.SchemaReques
 				Computed:           true,
 				DeprecationMessage: "Attribute 'vmac' is deprecated, please refer to 'virtual_mac_address' instead. The attribute will be removed in the next major version of the provider.",
 			},
+			"relation_fv_rs_bd_to_relay_p": schema.StringAttribute{
+				Computed:           true,
+				DeprecationMessage: "Attribute 'relation_fv_rs_bd_to_relay_p' is deprecated, please refer to 'relation_to_dhcp_relay_policy' instead. The attribute will be removed in the next major version of the provider.",
+			},
+			"relation_fv_rs_bd_to_ep_ret": schema.StringAttribute{
+				Computed:           true,
+				DeprecationMessage: "Attribute 'relation_fv_rs_bd_to_ep_ret' is deprecated, please refer to 'relation_to_end_point_retention_policy' instead. The attribute will be removed in the next major version of the provider.",
+			},
+			"relation_fv_rs_bd_to_fhs": schema.StringAttribute{
+				Computed:           true,
+				DeprecationMessage: "Attribute 'relation_fv_rs_bd_to_fhs' is deprecated, please refer to 'relation_to_first_hop_security_policy' instead. The attribute will be removed in the next major version of the provider.",
+			},
+			"relation_fv_rs_bd_to_out": schema.SetAttribute{
+				Computed:           true,
+				ElementType:        types.StringType,
+				DeprecationMessage: "Attribute 'relation_fv_rs_bd_to_out' is deprecated, please refer to 'relation_to_l3_outsides' instead. The attribute will be removed in the next major version of the provider.",
+			},
+			"relation_fv_rs_abd_pol_mon_pol": schema.StringAttribute{
+				Computed:           true,
+				DeprecationMessage: "Attribute 'relation_fv_rs_abd_pol_mon_pol' is deprecated, please refer to 'relation_to_monitoring_policy' instead. The attribute will be removed in the next major version of the provider.",
+			},
+			"relation_fv_rs_bd_to_nd_p": schema.StringAttribute{
+				Computed:           true,
+				DeprecationMessage: "Attribute 'relation_fv_rs_bd_to_nd_p' is deprecated, please refer to 'relation_to_neighbor_discovery_interface_policy' instead. The attribute will be removed in the next major version of the provider.",
+			},
 			"relation_fv_rs_bd_flood_to": schema.SetAttribute{
 				Computed:           true,
 				ElementType:        types.StringType,
@@ -115,42 +140,17 @@ func (d *FvBDDataSource) Schema(ctx context.Context, req datasource.SchemaReques
 				Computed:           true,
 				DeprecationMessage: "Attribute `relation_fv_rs_bd_to_profile` is deprecated. The attribute will be removed in the next major version of the provider.",
 			},
-			"relation_fv_rs_bd_to_relay_p": schema.StringAttribute{
-				Computed:           true,
-				DeprecationMessage: "Attribute 'relation_fv_rs_bd_to_relay_p' is deprecated, please refer to 'relation_to_dhcp_relay_policy.dhcp_relay_policy_name' instead. The attribute will be removed in the next major version of the provider.",
-			},
-			"relation_fv_rs_bd_to_ep_ret": schema.StringAttribute{
-				Computed:           true,
-				DeprecationMessage: "Attribute 'relation_fv_rs_bd_to_ep_ret' is deprecated, please refer to 'relation_to_end_point_retention_policy.end_point_retention_policy_name' instead. The attribute will be removed in the next major version of the provider.",
-			},
-			"relation_fv_rs_bd_to_fhs": schema.StringAttribute{
-				Computed:           true,
-				DeprecationMessage: "Attribute 'relation_fv_rs_bd_to_fhs' is deprecated, please refer to 'relation_to_first_hop_security_policy.first_hop_security_policy_name' instead. The attribute will be removed in the next major version of the provider.",
-			},
 			"relation_fv_rs_igmpsn": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'relation_fv_rs_igmpsn' is deprecated, please refer to 'relation_to_igmp_snooping_policy.igmp_snooping_policy_name' instead. The attribute will be removed in the next major version of the provider.",
-			},
-			"relation_fv_rs_bd_to_out": schema.SetAttribute{
-				Computed:           true,
-				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute 'relation_fv_rs_bd_to_out' is deprecated, please refer to 'relation_to_l3_outsides.l3_outside_name' instead. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "Attribute 'relation_fv_rs_igmpsn' is deprecated, please refer to 'relation_to_igmp_snooping_policy' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			"relation_fv_rs_mldsn": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'relation_fv_rs_mldsn' is deprecated, please refer to 'relation_to_mld_snooping_policy.mld_snooping_policy_name' instead. The attribute will be removed in the next major version of the provider.",
-			},
-			"relation_fv_rs_abd_pol_mon_pol": schema.StringAttribute{
-				Computed:           true,
-				DeprecationMessage: "Attribute 'relation_fv_rs_abd_pol_mon_pol' is deprecated, please refer to 'relation_to_monitor_policy.monitoring_policy_name' instead. The attribute will be removed in the next major version of the provider.",
-			},
-			"relation_fv_rs_bd_to_nd_p": schema.StringAttribute{
-				Computed:           true,
-				DeprecationMessage: "Attribute 'relation_fv_rs_bd_to_nd_p' is deprecated, please refer to 'relation_to_neighbor_discovery_interface_policy.neighbor_discovery_interface_policy_name' instead. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "Attribute 'relation_fv_rs_mldsn' is deprecated, please refer to 'relation_to_mld_snooping_policy' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			"relation_fv_rs_ctx": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'relation_fv_rs_ctx' is deprecated, please refer to 'relation_to_vrf.vrf_name' instead. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "Attribute 'relation_fv_rs_ctx' is deprecated, please refer to 'relation_to_vrf' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			// End of deprecated attributes
 			"id": schema.StringAttribute{
@@ -415,7 +415,7 @@ func (d *FvBDDataSource) Schema(ctx context.Context, req datasource.SchemaReques
 					},
 				},
 			},
-			"relation_to_monitor_policy": schema.SingleNestedAttribute{
+			"relation_to_monitoring_policy": schema.SingleNestedAttribute{
 				MarkdownDescription: `A source relation to the monitoring policy model for the endpoint group semantic scope. This is an internal object.`,
 				Computed:            true,
 				Attributes: map[string]schema.Attribute{

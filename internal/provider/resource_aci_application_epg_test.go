@@ -250,8 +250,6 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)", ">=",
 						resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.precedence", "1"),
 						resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.scope", "scope-bd")),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_application_epg_monitoring_policy.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_application_epg_monitoring_policy.monitoring_policy_name", "monitoring_policy_name_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_bridge_domain.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_bridge_domain.bridge_domain_name", "bridge_domain_name_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_consumed_contracts.0.annotation", "annotation_1"),
@@ -336,6 +334,8 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_intra_epg_contracts.0.contract_name", "contract_name_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_intra_epg_contracts.1.annotation", "annotation_2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_intra_epg_contracts.1.contract_name", "contract_name_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_monitoring_policy.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_monitoring_policy.monitoring_policy_name", "monitoring_policy_name_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.0.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.0.contract_name", "contract_name_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.0.match_criteria", "All"),
@@ -425,18 +425,6 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)", ">=",
 						resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.precedence", "1"),
 						resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.scope", "scope-bd")),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_application_epg_monitoring_policy.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_application_epg_monitoring_policy.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_application_epg_monitoring_policy.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_application_epg_monitoring_policy.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_application_epg_monitoring_policy.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_application_epg_monitoring_policy.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_application_epg_monitoring_policy.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_application_epg_monitoring_policy.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_application_epg_monitoring_policy.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_application_epg_monitoring_policy.monitoring_policy_name", "monitoring_policy_name_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_bridge_domain.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_bridge_domain.bridge_domain_name", "bridge_domain_name_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_bridge_domain.annotations.0.key", "key_0"),
@@ -677,6 +665,18 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "tags.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_intra_epg_contracts.1.contract_name", "contract_name_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_intra_epg_contracts.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_monitoring_policy.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_monitoring_policy.annotations.0.key", "key_0"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_monitoring_policy.annotations.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_monitoring_policy.annotations.1.key", "key_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_monitoring_policy.annotations.1.value", "test_value"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_monitoring_policy.tags.0.key", "key_0"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_monitoring_policy.tags.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_monitoring_policy.tags.1.key", "key_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_monitoring_policy.tags.1.value", "test_value"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "tags.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_monitoring_policy.monitoring_policy_name", "monitoring_policy_name_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.0.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.0.annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.0.annotations.0.value", "value_1"),
@@ -996,17 +996,6 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 						),
 					),
 					statecheck.ExpectKnownValue("aci_application_epg.test",
-						tfjsonpath.New("relation_to_application_epg_monitoring_policy"),
-						knownvalue.MapExact(
-							map[string]knownvalue.Check{
-								"annotation":             knownvalue.Null(),
-								"annotations":            knownvalue.Null(),
-								"tags":                   knownvalue.Null(),
-								"monitoring_policy_name": knownvalue.Null(),
-							},
-						),
-					),
-					statecheck.ExpectKnownValue("aci_application_epg.test",
 						tfjsonpath.New("relation_to_data_plane_policing_policy"),
 						knownvalue.MapExact(
 							map[string]knownvalue.Check{
@@ -1014,6 +1003,17 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 								"annotations":                     knownvalue.Null(),
 								"tags":                            knownvalue.Null(),
 								"data_plane_policing_policy_name": knownvalue.Null(),
+							},
+						),
+					),
+					statecheck.ExpectKnownValue("aci_application_epg.test",
+						tfjsonpath.New("relation_to_monitoring_policy"),
+						knownvalue.MapExact(
+							map[string]knownvalue.Check{
+								"annotation":             knownvalue.Null(),
+								"annotations":            knownvalue.Null(),
+								"tags":                   knownvalue.Null(),
+								"monitoring_policy_name": knownvalue.Null(),
 							},
 						),
 					),
@@ -1078,17 +1078,6 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 						),
 					),
 					statecheck.ExpectKnownValue("aci_application_epg.test",
-						tfjsonpath.New("relation_to_application_epg_monitoring_policy"),
-						knownvalue.MapExact(
-							map[string]knownvalue.Check{
-								"annotation":             knownvalue.Null(),
-								"annotations":            knownvalue.Null(),
-								"tags":                   knownvalue.Null(),
-								"monitoring_policy_name": knownvalue.Null(),
-							},
-						),
-					),
-					statecheck.ExpectKnownValue("aci_application_epg.test",
 						tfjsonpath.New("relation_to_data_plane_policing_policy"),
 						knownvalue.MapExact(
 							map[string]knownvalue.Check{
@@ -1096,6 +1085,17 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 								"annotations":                     knownvalue.Null(),
 								"tags":                            knownvalue.Null(),
 								"data_plane_policing_policy_name": knownvalue.Null(),
+							},
+						),
+					),
+					statecheck.ExpectKnownValue("aci_application_epg.test",
+						tfjsonpath.New("relation_to_monitoring_policy"),
+						knownvalue.MapExact(
+							map[string]knownvalue.Check{
+								"annotation":             knownvalue.Null(),
+								"annotations":            knownvalue.Null(),
+								"tags":                   knownvalue.Null(),
+								"monitoring_policy_name": knownvalue.Null(),
 							},
 						),
 					),
@@ -1300,30 +1300,6 @@ resource "aci_application_epg" "test" {
     owner_tag = "owner_tag_1"
   	precedence = provider::aci::compare_versions(data.aci_system.version.version,">=","4.1(1i)") ? "1" : null
   	scope = provider::aci::compare_versions(data.aci_system.version.version,">=","4.1(1i)") ? "scope-bd" : null
-  }
-  relation_to_application_epg_monitoring_policy = {
-    annotation = "annotation_1"
-    annotations = [
-	  {
-        key = "key_0"
-        value = "value_1"
-	  },
-	  {
-        key = "key_1"
-        value = "test_value"
-	  },
-    ]
-    tags = [
-	  {
-        key = "key_0"
-        value = "value_1"
-	  },
-	  {
-        key = "key_1"
-        value = "test_value"
-	  },
-    ]
-    monitoring_policy_name = aci_monitoring_policy.test_monitoring_policy_0.name
   }
   relation_to_bridge_domain = {
     annotation = "annotation_1"
@@ -1747,6 +1723,30 @@ resource "aci_application_epg" "test" {
       contract_name = aci_contract.test_contract_1.name
     },
   ]
+  relation_to_monitoring_policy = {
+    annotation = "annotation_1"
+    annotations = [
+	  {
+        key = "key_0"
+        value = "value_1"
+	  },
+	  {
+        key = "key_1"
+        value = "test_value"
+	  },
+    ]
+    tags = [
+	  {
+        key = "key_0"
+        value = "value_1"
+	  },
+	  {
+        key = "key_1"
+        value = "test_value"
+	  },
+    ]
+    monitoring_policy_name = aci_monitoring_policy.test_monitoring_policy_0.name
+  }
   relation_to_provided_contracts = [
     {
       annotation = "annotation_1"
@@ -2024,7 +2024,6 @@ resource "aci_application_epg" "test" {
 	},
   ]
   epg_useg_block_statement = {}
-  relation_to_application_epg_monitoring_policy = {}
   relation_to_bridge_domain = {
     annotation = "annotation_1"
     bridge_domain_name = aci_bridge_domain.test_bridge_domain_1.name
@@ -2191,6 +2190,7 @@ resource "aci_application_epg" "test" {
 	  contract_name = aci_contract.test_contract_1.name
 	},
   ]
+  relation_to_monitoring_policy = {}
   relation_to_provided_contracts = [ 
 	{
 	  annotation = "annotation_2"
@@ -2290,7 +2290,6 @@ resource "aci_application_epg" "test" {
   name = "test_name"
   annotations = []
   epg_useg_block_statement = {}
-  relation_to_application_epg_monitoring_policy = {}
   relation_to_bridge_domain = {
     annotation = "annotation_1"
     bridge_domain_name = aci_bridge_domain.test_bridge_domain_1.name
@@ -2310,6 +2309,7 @@ resource "aci_application_epg" "test" {
   relation_to_fibre_channel_paths = []
   relation_to_imported_contracts = []
   relation_to_intra_epg_contracts = []
+  relation_to_monitoring_policy = {}
   relation_to_provided_contracts = []
   relation_to_static_leafs = []
   relation_to_static_paths = []
