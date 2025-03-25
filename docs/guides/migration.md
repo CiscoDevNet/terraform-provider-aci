@@ -1,15 +1,15 @@
 ---
 subcategory: "Guides"
-page_title: "Migration"
+page_title: "Migration to Terraform Plugin Framework"
 description: |-
-    An overview of resource and datasource migration changes
+    An overview of resource and data source migration to Terraform Plugin Framework
 ---
 
 ## Introduction
 
-Since the first release in September 2020, the Terraform ACI provider has come a long way, adding new resources and datasources to make managing Cisco ACI environments easier. Over the years, we've moved from SDKv1 to [SDKv2](https://developer.hashicorp.com/terraform/plugin/sdkv2), and now to the latest [Terraform Plugin Framework](https://developer.hashicorp.com/terraform/plugin/framework), which is the recommended way to develop Terraform plugins and offers many advantages over SDKv2.
+Since its first release in September 2020, the Terraform ACI provider has come a long way, adding new resources and data sources to make managing Cisco ACI environments easier. Over the years, we've moved from SDKv1 to [SDKv2](https://developer.hashicorp.com/terraform/plugin/sdkv2), and now to the latest [Terraform Plugin Framework](https://developer.hashicorp.com/terraform/plugin/framework), which is the recommended way to develop Terraform plugins and offers many advantages over SDKv2.
 
-To take full advantage of the new features in the Terraform Plugin Framework, we had to completely rewrite the Terraform ACI provider resources and datasources. While this was a big task, it also gave us a chance to review and improve the current ACI provider. This guide explains the new features that the Terraform Plugin Framework provides and the changes we have made to the ACI provider and why we made them.
+To take full advantage of the new features in the Terraform Plugin Framework, we had to completely rewrite the Terraform ACI provider resources and data sources. While this was a big task, it also gave us a chance to review and improve the current ACI provider. This guide explains the new features that the Terraform Plugin Framework provides and the changes we have made to the ACI provider and why we made them.
 
 ## Upgrading the ACI Terraform Provider
 
@@ -19,7 +19,7 @@ Upgrading the ACI Terraform provider to a new version involves several steps to 
 
 Before making any changes, it's crucial to back up your current Terraform state. This ensures that you can restore your environment if anything goes wrong during the upgrade process.
 
-1. **Local Backend**: Navigate to Your Terraform Project Directory and open a terminal and navigate to the directory containing your Terraform configuration files and copy the current state file (`terraform.tfstate`) to a backup location.
+1. **Local Backend**: Open a terminal and navigate to the directory containing your ACI Terraform configuration files with the state and copy the current state file (terraform.tfstate) to a backup location.
    
    ```bash
    cd /path/to/your/terraform/project
@@ -149,14 +149,14 @@ By following these steps, you can safely upgrade the ACI Terraform provider to a
 
 ## Changes to the ACI Provider
 
-In this section, we outline the key changes made to the Terraform ACI provider as part of the migration to the Terraform Plugin Framework. These changes aim to enhance the provider's functionality, performance, and usability. The new provider is generated from meta files, ensuring consistency and accuracy across resources and datasources. Below, we detail the specific improvements and modifications implemented during this migration.
+In this section, we outline the key changes made to the Terraform ACI provider as part of the migration to the Terraform Plugin Framework. These changes aim to enhance the provider's functionality, performance, and usability. The new provider is generated from meta files, ensuring consistency and accuracy across resources and data sources. Below, we detail the specific improvements and modifications implemented during this migration.
 
 ## Cleaning and Renaming of Attributes
 
 Over time, some attributes became outdated, were inconsistently named, or were not exposed correctly. This made the resources sometimes challenging to understand and thus use the ACI provider effectively. By cleaning and renaming these attributes, we aim to:
 
 1. **Improve Clarity**: Ensure that attribute names are clear and descriptive, making it easier for users to understand their purpose.
-2. **Enhance Consistency**: Standardize attribute names and structures across resources and datasources.
+2. **Enhance Consistency**: Standardize attribute names and structures across resources and data sources.
 3. **Simplify Usage**: Remove outdated attributes to streamline the configuration process.
 
 We understand the importance of maintaining backward compatibility to avoid disrupting existing configurations. This is why during a transition period, both old and new style attributes can be used. It allows users to continue using their existing configurations while gradually adopting the new style attributes. We have implemented deprecation warnings for old style attributes, informing users of the upcoming changes and encouraging them to transition to the new attribute style as soon as possible.
@@ -204,11 +204,11 @@ Terraform supports three states for any value: null (missing), unknown ("known a
 
 ## Include Annotations and Tags
 
-All migrated resources and datasources expose [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview) and [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview) MOs as children inside the resource when the model allows for its configuration.
+All migrated resources and data sources expose [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview) and [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview) MOs as children inside the resource when the model allows for its configuration.
 
 ## Documentation Enhancements
 
-The documentation for migrated resources and datasources is auto-generated to provide better accuracy and consistency. The following changes have been made:
+The documentation for migrated resources and data sources is auto-generated to provide better accuracy and consistency. The following changes have been made:
 
 1. Class names have references to the [model documentation](https://developer.cisco.com/site/apic-mim-ref-api/?version=latest).
 2. Parents of the resource are provided with references to their corresponding resources at the `parent_dn` attribute.
