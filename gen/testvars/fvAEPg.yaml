@@ -115,7 +115,7 @@ children:
           - key: "key_1"
             value: "test_value"
       
-  relation_to_application_epg_monitoring_policy:
+  relation_to_monitoring_policy:
     - annotation: "annotation_1"
       monitoring_policy_name: "monitoring_policy_name_1"
       deletable_child: true

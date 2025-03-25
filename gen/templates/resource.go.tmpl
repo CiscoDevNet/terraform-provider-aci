@@ -1408,15 +1408,15 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 			{{- if .LegacyAttributes}}{{$ResourceName := .ResourceName}}
 			// Deprecated attributes
 				{{- range .LegacyAttributes}}
-					{{- if ne .ReplacedBy.AttributeName "" }}
+					{{- if ne .ReplacedBy.AttributeName "" }}{{$ReplacedAttribute := overwriteProperty .ReplacedBy.ClassName (getConflictingAttributeName .ReplacedBy.AttributeName) $.Definitions}}
 						{{- if eq (getMigrationType .ValueType) "String"}}
 			"{{.AttributeName}}": schema.StringAttribute{
 				Optional: true,
 				Computed: true,
-				DeprecationMessage: "Attribute '{{.AttributeName}}' is deprecated, please refer to '{{.ReplacedBy.AttributeName}}' instead. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "Attribute '{{.AttributeName}}' is deprecated, please refer to '{{$ReplacedAttribute}}' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.String{
 					stringvalidator.ConflictsWith(path.Expressions{
-						path.MatchRoot("{{getConflictingAttributeName .ReplacedBy.AttributeName}}"),
+						path.MatchRoot("{{$ReplacedAttribute}}"),
 					}...),
 				},
 			},
@@ -1426,10 +1426,10 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 				Optional: true,
 				Computed: true,
 				ElementType: types.StringType,
-				DeprecationMessage: "Attribute '{{.AttributeName}}' is deprecated, please refer to '{{.ReplacedBy.AttributeName}}' instead. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "Attribute '{{.AttributeName}}' is deprecated, please refer to '{{$ReplacedAttribute}}' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.Set{
 					setvalidator.ConflictsWith(path.Expressions{
-						path.MatchRoot("{{getConflictingAttributeName .ReplacedBy.AttributeName}}"),
+						path.MatchRoot("{{$ReplacedAttribute}}"),
 					}...),
 				},
 			},

@@ -105,7 +105,7 @@ data "aci_bridge_domain" "example_tenant" {
     * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-* `relation_to_monitor_policy` - (map) A map of Relation From Bridge Domain To Monitoring Policy (ACI object [fvRsABDPolMonPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsABDPolMonPol/overview)) pointing to Monitoring Policy (ACI Object [monEPGPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/monEPGPol/overview)).
+* `relation_to_monitoring_policy` - (map) A map of Relation From Bridge Domain To Monitoring Policy (ACI object [fvRsABDPolMonPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsABDPolMonPol/overview)) pointing to Monitoring Policy (ACI Object [monEPGPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/monEPGPol/overview)).
     * `annotation` (annotation) - (string) The annotation of the Relation From Bridge Domain To Monitoring Policy object.
     * `monitoring_policy_name` (tnMonEPGPolName) - (string) The name of the Monitoring Policy object.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.

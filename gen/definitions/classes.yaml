@@ -49,7 +49,7 @@ fvAEPg:
     fvRsProtBy:
       relation_fv_rs_prot_by: relation_to_taboo_contracts.taboo_contract_name
     fvRsAEPgMonPol:
-      relation_fv_rs_aepg_mon_pol: relation_to_application_epg_monitoring_policy.monitoring_policy_name
+      relation_fv_rs_aepg_mon_pol: relation_from_application_epg_to_monitoring_policy.monitoring_policy_name
     fvRsIntraEpg:
       relation_fv_rs_intra_epg: relation_to_intra_epg_contracts.contract_name
     fvRsNodeAtt:
@@ -61,7 +61,7 @@ fvAEPg:
       mode: relation_to_static_leafs.mode
 
 fvRsAEPgMonPol:
-  resource_name: "relation_to_application_epg_monitoring_policy"
+  resource_name: "relation_from_application_epg_to_monitoring_policy"
 
 fvRsBd:
   resource_name: "relation_to_bridge_domain"
@@ -153,10 +153,10 @@ fvAp:
       tenant_dn: parent_dn
       prio: priority
     fvRsApMonPol:
-      relation_fv_rs_ap_mon_pol: relation_to_application_profile_monitoring_policy.monitoring_policy_name
+      relation_fv_rs_ap_mon_pol: relation_from_application_profile_to_monitoring_policy.monitoring_policy_name
 
 fvRsApMonPol:
-  resource_name: "relation_to_application_profile_monitoring_policy"
+  resource_name: "relation_from_application_profile_to_monitoring_policy"
 
 fvCtx:
   resource_name: "vrf"
@@ -726,21 +726,21 @@ fvBD:
       vmac: virtual_mac_address
       intersite_bum_traffic_allow: enable_intersite_bum_traffic
     fvRsABDPolMonPol:
-      relation_fv_rs_abd_pol_mon_pol: relation_to_monitor_policy.monitoring_policy_name
+      relation_fv_rs_abd_pol_mon_pol: relation_from_bridge_domain_to_monitoring_policy.monitoring_policy_name
     fvRsBdToEpRet:
-      relation_fv_rs_bd_to_ep_ret: relation_to_end_point_retention_policy.end_point_retention_policy_name
+      relation_fv_rs_bd_to_ep_ret: relation_from_bridge_domain_to_end_point_retention_policy.end_point_retention_policy_name
     fvRsBDToFhs:
-      relation_fv_rs_bd_to_fhs: relation_to_first_hop_security_policy.first_hop_security_policy_name
+      relation_fv_rs_bd_to_fhs: relation_from_bridge_domain_to_first_hop_security_policy.first_hop_security_policy_name
     fvRsBDToNdP:
-      relation_fv_rs_bd_to_nd_p: relation_to_neighbor_discovery_interface_policy.neighbor_discovery_interface_policy_name
+      relation_fv_rs_bd_to_nd_p: relation_from_bridge_domain_to_neighbor_discovery_interface_policy.neighbor_discovery_interface_policy_name
     fvRsBDToNetflowMonitorPol:
-      relation_fv_rs_bd_to_netflow_monitor_pol: relation_to_netflow_monitor_policies
+      relation_fv_rs_bd_to_netflow_monitor_pol: relation_from_bridge_domain_to_netflow_monitor_policy
       tn_netflow_monitor_pol_name: relation_to_netflow_monitor_policies.netflow_monitor_policy_name
       flt_type: relation_to_netflow_monitor_policies.filter_type
     fvRsBDToOut:
-      relation_fv_rs_bd_to_out: relation_to_l3_outsides.l3_outside_name
+      relation_fv_rs_bd_to_out: relation_from_bridge_domain_to_l3_outsides.l3_outside_name
     fvRsBDToRelayP:
-      relation_fv_rs_bd_to_relay_p: relation_to_dhcp_relay_policy.dhcp_relay_policy_name
+      relation_fv_rs_bd_to_relay_p: relation_from_bridge_domain_to_dhcp_relay_policy.dhcp_relay_policy_name
     fvRsCtx:
       relation_fv_rs_ctx: relation_to_vrf.vrf_name
     fvRsIgmpsn:

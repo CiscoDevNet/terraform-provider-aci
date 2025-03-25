@@ -71,16 +71,16 @@ func (d *FvESgDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 			"relation_fv_rs_sec_inherited": schema.SetAttribute{
 				Computed:           true,
 				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute 'relation_fv_rs_sec_inherited' is deprecated, please refer to 'relation_to_contract_masters.target_dn' instead. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "Attribute 'relation_fv_rs_sec_inherited' is deprecated, please refer to 'relation_to_contract_masters' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			"relation_fv_rs_intra_epg": schema.SetAttribute{
 				Computed:           true,
 				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute 'relation_fv_rs_intra_epg' is deprecated, please refer to 'relation_to_intra_epg_contracts.contract_name' instead. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "Attribute 'relation_fv_rs_intra_epg' is deprecated, please refer to 'relation_to_intra_epg_contracts' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			"relation_fv_rs_scope": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'relation_fv_rs_scope' is deprecated, please refer to 'relation_to_vrf.vrf_name' instead. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "Attribute 'relation_fv_rs_scope' is deprecated, please refer to 'relation_to_vrf' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			// End of deprecated attributes
 			"id": schema.StringAttribute{

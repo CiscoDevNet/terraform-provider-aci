@@ -38,7 +38,7 @@ resource "aci_application_epg" "full_example_application_profile" {
       }
     ]
   }
-  relation_to_application_epg_monitoring_policy = {
+  relation_to_monitoring_policy = {
     annotation             = "annotation_1"
     monitoring_policy_name = aci_monitoring_policy.example.name
     annotations = [

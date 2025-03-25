@@ -826,6 +826,8 @@ fvAEPg:
       parent_dependency: "fvTenant"
 
 fvRsAEPgMonPol:
+  overwrites:
+    relation_from_application_epg_to_monitoring_policy: "relation_to_monitoring_policy"
   documentation:
     tnMonEPGPolName: "The name of the monitoring policy."
   targets:
@@ -1565,7 +1567,7 @@ fvBD:
 
 fvRsABDPolMonPol:
   overwrites:
-    relation_from_bridge_domain_to_monitoring_policy: "relation_to_monitor_policy"
+    relation_from_bridge_domain_to_monitoring_policy: "relation_to_monitoring_policy"
   documentation:
     tnMonEPGPolName: "The name of the Monitoring Policy object."
   targets:
@@ -2065,6 +2067,8 @@ commTelnet:
       port: "23"
 
 fvRsApMonPol:
+  overwrites:
+    relation_from_application_profile_to_monitoring_policy: "relation_to_monitoring_policy"
   documentation:
     tnMonEPGPolName: "The name of the monitoring policy."
   targets:

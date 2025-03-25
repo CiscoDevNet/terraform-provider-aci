@@ -406,8 +406,8 @@ func TestAccResourceFvBDWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.1.l3_outside_name", "l3_outside_name_1"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_mld_snooping_policy.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_mld_snooping_policy.mld_snooping_policy_name", "mld_snooping_policy_name_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitor_policy.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitor_policy.monitoring_policy_name", "monitoring_policy_name_1"),
+					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitoring_policy.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitoring_policy.monitoring_policy_name", "monitoring_policy_name_1"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.neighbor_discovery_interface_policy_name", "neighbor_discovery_interface_policy_name_1"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.annotation", "annotation_1"),
@@ -564,18 +564,18 @@ func TestAccResourceFvBDWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_mld_snooping_policy.tags.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "tags.#", "2"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_mld_snooping_policy.mld_snooping_policy_name", "mld_snooping_policy_name_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitor_policy.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitor_policy.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitor_policy.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitor_policy.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitor_policy.annotations.1.value", "test_value"),
+					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitoring_policy.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitoring_policy.annotations.0.key", "key_0"),
+					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitoring_policy.annotations.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitoring_policy.annotations.1.key", "key_1"),
+					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitoring_policy.annotations.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitor_policy.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitor_policy.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitor_policy.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitor_policy.tags.1.value", "test_value"),
+					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitoring_policy.tags.0.key", "key_0"),
+					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitoring_policy.tags.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitoring_policy.tags.1.key", "key_1"),
+					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitoring_policy.tags.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitor_policy.monitoring_policy_name", "monitoring_policy_name_1"),
+					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitoring_policy.monitoring_policy_name", "monitoring_policy_name_1"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.annotations.0.value", "value_1"),
@@ -805,7 +805,7 @@ func TestAccResourceFvBDWithFvTenant(t *testing.T) {
 						),
 					),
 					statecheck.ExpectKnownValue("aci_bridge_domain.test",
-						tfjsonpath.New("relation_to_monitor_policy"),
+						tfjsonpath.New("relation_to_monitoring_policy"),
 						knownvalue.MapExact(
 							map[string]knownvalue.Check{
 								"annotation":             knownvalue.Null(),
@@ -904,7 +904,7 @@ func TestAccResourceFvBDWithFvTenant(t *testing.T) {
 						),
 					),
 					statecheck.ExpectKnownValue("aci_bridge_domain.test",
-						tfjsonpath.New("relation_to_monitor_policy"),
+						tfjsonpath.New("relation_to_monitoring_policy"),
 						knownvalue.MapExact(
 							map[string]knownvalue.Check{
 								"annotation":             knownvalue.Null(),
@@ -1303,7 +1303,7 @@ resource "aci_bridge_domain" "test" {
     ]
     mld_snooping_policy_name = aci_mld_snooping_policy.test_mld_snooping_policy_1.name
   }
-  relation_to_monitor_policy = {
+  relation_to_monitoring_policy = {
     annotation = "annotation_1"
     annotations = [
 	  {
@@ -1608,7 +1608,7 @@ resource "aci_bridge_domain" "test" {
     ]
     mld_snooping_policy_name = aci_mld_snooping_policy.test_mld_snooping_policy_1.name
   }
-  relation_to_monitor_policy = {}
+  relation_to_monitoring_policy = {}
   relation_to_neighbor_discovery_interface_policy = {
     annotation = "annotation_1"
     annotations = [ 
@@ -1719,7 +1719,7 @@ resource "aci_bridge_domain" "test" {
     tags = []
     mld_snooping_policy_name = aci_mld_snooping_policy.test_mld_snooping_policy_1.name
   }
-  relation_to_monitor_policy = {}
+  relation_to_monitoring_policy = {}
   relation_to_neighbor_discovery_interface_policy = {
     annotation = "annotation_1"
     annotations = []

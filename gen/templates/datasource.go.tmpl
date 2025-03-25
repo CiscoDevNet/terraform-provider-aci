@@ -52,25 +52,25 @@ func (d *{{.ResourceClassName}}DataSource) Schema(ctx context.Context, req datas
 			{{- if .LegacyAttributes}}{{$ResourceName := .ResourceName}}
 			// Deprecated attributes
 				{{- range .LegacyAttributes}}
-					{{- if ne .ReplacedBy.AttributeName "" }}
+					{{- if ne .ReplacedBy.AttributeName "" }}{{$ReplacedAttribute := overwriteProperty .ReplacedBy.ClassName (getConflictingAttributeName .ReplacedBy.AttributeName) $.Definitions}}
 						{{- if eq (getMigrationType .ValueType) "String"}}
 			"{{.AttributeName}}": schema.StringAttribute{
 				Computed: true,
-				DeprecationMessage: "Attribute '{{.AttributeName}}' is deprecated, please refer to '{{.ReplacedBy.AttributeName}}' instead. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "Attribute '{{.AttributeName}}' is deprecated, please refer to '{{$ReplacedAttribute}}' instead. The attribute will be removed in the next major version of the provider.",
 			},
 						{{- end}}
 						{{- if eq (getMigrationType .ValueType) "Set"}}
 			"{{.AttributeName}}": schema.SetAttribute{
 				Computed: true,
 				ElementType: types.StringType,
-				DeprecationMessage: "Attribute '{{.AttributeName}}' is deprecated, please refer to '{{.ReplacedBy.AttributeName}}' instead. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "Attribute '{{.AttributeName}}' is deprecated, please refer to '{{$ReplacedAttribute}}' instead. The attribute will be removed in the next major version of the provider.",
 			},
 						{{- end}}
 						{{- if eq (getMigrationType .ValueType) "List"}}
 			"{{.AttributeName}}": schema.ListAttribute{
 				Computed: true,
 				ElementType: types.StringType,
-				DeprecationMessage: "Attribute '{{.AttributeName}}' is deprecated, please refer to '{{.ReplacedBy.AttributeName}}' instead. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "Attribute '{{.AttributeName}}' is deprecated, please refer to '{{$ReplacedAttribute}}' instead. The attribute will be removed in the next major version of the provider.",
 			},
 						{{- end}}
 					{{- else if containsString .Name .AttributeName}}
