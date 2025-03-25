@@ -176,11 +176,11 @@ In non-migrated resources of the Terraform Provider ACI, the relationship types 
 
 This means that for the ACI Provider, when the name of the provided tDn is used for named relation MOs, we can't guarantee the DN input will match the resolved tDn, potentially causing provider panics. Because of this change, we decided to only expose configurable attributes as input for resources, so for a named relationship instead of DN we require the name attribute to be provided.
 
-Finally, because the final plan needs to match the applied state, old style attributes that represent a DN of a named relation require to be resolved into the correct tDn. This means that the object must exist when creating the relationship; if you fail to do so, the provider will panic. This can be prevented by leveraging new style resources where the configurable attribute is used.
+To ensure the final plan matches the applied state, old-style attributes representing a Distinguished Name (DN) of a named relation must be resolved into the correct target Distinguished Name (tDn). This requires the object to exist when establishing the relationship; failure to do so will cause the provider to panic. This issue can be avoided by using new-style resources where a configurable attribute is utilized.
 
-## Changed Child Objects in Configuration
+## Changes to Child Objects in Configuration
 
-In migrated resources, all children MOs are exposed in configuration as a map or a list of maps, instead of single attribute types (e.g., string, boolean, integer). The decision is made to have the configuration resemble the model more to provide flexibility of adding new attributes for a child without introducing breaking changes.
+In migrated resources, all child Managed Objects (MOs) are represented in the configuration as a map or a list of maps, rather than single attribute types (such as string, boolean, or integer). This approach is chosen to ensure the configuration closely resembles the model, allowing for the addition of new attributes to a child without causing breaking changes.
 
 ## Changed Child Objects in Payloads
 
@@ -190,9 +190,18 @@ In non-migrated resources, the children were managed via individual REST API req
 
 The annotation attribute can be set for each MO that exposes the attribute, including children inside a resource. By default, the annotation is set to `orchestrator:terraform`, but this default can be overwritten at the provider level.
 
+```hcl
+provider "aci" {
+  username   = "admin"
+  password   = "password"
+  url        = "https://my-cisco-aci.com"
+  annotation = "provider-level-annotation-overwrite"
+}
+```
+
 ## Showing ID in Plan for Create
 
-In non-migrated resources, the ID of the resource would show as "known after apply". For migrated resources, the decision is made to calculate the ID during the plan and provide this in the plan output.
+For non-migrated resources, the ID of the resource appears as "known after apply." In the case of migrated resources, the ID is calculated during the planning phase and included in the plan output.
 
 ## Error for Existing MO on Create
 
@@ -208,16 +217,16 @@ All migrated resources and data sources expose [tagAnnotation](https://pubhub.de
 
 ## Documentation Enhancements
 
-The documentation for migrated resources and data sources is auto-generated to provide better accuracy and consistency. The following changes have been made:
+The documentation for migrated resources and data sources is automatically generated to enhance relevancy and consistency. The following changes have been made:
 
 1. Class names have references to the [model documentation](https://developer.cisco.com/site/apic-mim-ref-api/?version=latest).
 2. Parents of the resource are provided with references to their corresponding resources at the `parent_dn` attribute.
-3. Relational children of the resource are provided with references to their corresponding child resource and the resource the child is pointing towards.
+3. Relational children of the resource include references to both their corresponding child resource and the target resource they are associated with.
 4. Non-relational children of the resource are provided with references to their corresponding resources at the bottom of the documentation.
-5. Attribute default behavior is documented per attribute.
-6. Attribute valid inputs are documented per attribute.
+5. The default behaviour of each attribute is documented individually.
+6. The valid inputs for each attribute are documented individually.
 7. Applicable versions of classes and attributes are documented.
-8. UI location information is provided for every configuration option.
+8. UI location information is provided for each configuration option.
 9. Resource DN format (resource ID) is documented.
-10. A minimal and full example is provided (max 2 parents).
-11. Importing examples for both CLI and blocks in HCL configuration.
+10. Both minimal and full examples are provided, featuring up to two parent resources when applicable.
+11. Examples for importing resources using both CLI commands and HCL configuration blocks are provided.
