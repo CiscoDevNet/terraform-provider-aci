@@ -3,7 +3,7 @@ resource "aci_ip_sla_track_member" "full_example_tenant" {
   parent_dn              = aci_tenant.example.id
   annotation             = "annotation"
   description            = "description_1"
-  destination_ip_address = "2.2.2.2"
+  destination_ip_address = "1.1.1.1"
   name                   = "test_name"
   name_alias             = "name_alias_1"
   owner_key              = "owner_key_1"

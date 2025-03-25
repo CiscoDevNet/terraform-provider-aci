@@ -35,8 +35,10 @@ The configuration snippet below creates a IP SLA Track Member with only required
 ```hcl
 
 resource "aci_ip_sla_track_member" "example_tenant" {
-  parent_dn = aci_tenant.example.id
-  name      = "test_name"
+  parent_dn              = aci_tenant.example.id
+  destination_ip_address = "1.1.1.1"
+  name                   = "test_name"
+  scope                  = "uni/tn-test_tenant/BD-test_bd"
 }
 
 ```
@@ -50,7 +52,7 @@ resource "aci_ip_sla_track_member" "full_example_tenant" {
   parent_dn              = aci_tenant.example.id
   annotation             = "annotation"
   description            = "description_1"
-  destination_ip_address = "2.2.2.2"
+  destination_ip_address = "1.1.1.1"
   name                   = "test_name"
   name_alias             = "name_alias_1"
   owner_key              = "owner_key_1"
@@ -96,7 +98,9 @@ All examples for the IP SLA Track Member resource can be found in the [examples]
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
+* `destination_ip_address` (dstIpAddr) - (string) The destination IP address to be tracked.
 * `name` (name) - (string) The name of the IP SLA Track Member object.
+* `scope` (scopeDn) - (string) The scope (Bridge Domain or L3Out) of the IP SLA Track Member. For a Bridge Domain this attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bridge_domain) with 'aci_bridge_domain.example.id' or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/bridge_domain) with 'data.aci_bridge_domain.example.id'. For a L3out this attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3_outside) with 'aci_l3_outside.example.id' or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/l3_outside) with 'data.aci_l3_outside.example.id'.
 
 ### Read-Only ###
 
@@ -107,11 +111,9 @@ All examples for the IP SLA Track Member resource can be found in the [examples]
 * `annotation` (annotation) - (string) The annotation of the IP SLA Track Member object.
   - Default: `orchestrator:terraform`
 * `description` (descr) - (string) The description of the IP SLA Track Member object.
-* `destination_ip_address` (dstIpAddr) - (string) The destination IP address to be tracked.
 * `name_alias` (nameAlias) - (string) The name alias of the IP SLA Track Member object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
-* `scope` (scopeDn) - (string) The scope (Bridge Domain or L3Out) of the IP SLA Track Member. For a Bridge Domain this attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bridge_domain) with 'aci_bridge_domain.example.id' or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/bridge_domain) with 'data.aci_bridge_domain.example.id'. For a L3out this attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3_outside) with 'aci_l3_outside.example.id' or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/l3_outside) with 'data.aci_l3_outside.example.id'.
 * `relation_to_monitoring_policy` - (map) A map of Relation To IP SLA Monitoring Policy (ACI object [fvRsIpslaMonPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsIpslaMonPol/overview)) pointing to IP SLA Monitoring Policy (ACI Object [fvIPSLAMonitoringPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvIPSLAMonitoringPol/overview)) which can be configured using the [aci_ip_sla_monitoring_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/ip_sla_monitoring_policy) resource.
   #### Optional ####
     

@@ -287,8 +287,7 @@ func (r *FvTrackMemberResource) Schema(ctx context.Context, req resource.SchemaR
 				MarkdownDescription: `The description of the IP SLA Track Member object.`,
 			},
 			"destination_ip_address": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
+				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
@@ -332,8 +331,7 @@ func (r *FvTrackMemberResource) Schema(ctx context.Context, req resource.SchemaR
 				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
 			},
 			"scope": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
+				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
