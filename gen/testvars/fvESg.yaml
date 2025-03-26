@@ -221,7 +221,7 @@ children:
     - annotation: "annotation_1"
       vrf_name: "vrf_name_1"
       deletable_child: false
-      
+      child_required: false
       children:
         annotations:
           - key: "key_0"

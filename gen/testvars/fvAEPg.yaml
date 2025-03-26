@@ -96,6 +96,7 @@ children:
       owner_key: "owner_key_1"
       owner_tag: "owner_tag_1"
       deletable_child: true
+      child_required: false
       version_mismatch:
         4.1(1i):
           precedence: "1"
@@ -119,6 +120,7 @@ children:
     - annotation: "annotation_1"
       monitoring_policy_name: "monitoring_policy_name_1"
       deletable_child: true
+      child_required: false
       children:
         annotations:
           - key: "key_0"
@@ -138,7 +140,7 @@ children:
     - annotation: "annotation_1"
       bridge_domain_name: "bridge_domain_name_1"
       deletable_child: false
-      
+      child_required: false
       children:
         annotations:
           - key: "key_0"
@@ -236,7 +238,7 @@ children:
     - annotation: "annotation_1"
       custom_qos_policy_name: "custom_qos_policy_name_1"
       deletable_child: false
-      
+      child_required: false
       children:
         annotations:
           - key: "key_0"
@@ -339,6 +341,7 @@ children:
     - annotation: "annotation_1"
       data_plane_policing_policy_name: "data_plane_policing_policy_name_1"
       deletable_child: true
+      child_required: false
       children:
         annotations:
           - key: "key_0"
@@ -645,6 +648,7 @@ children:
     - annotation: "annotation_1"
       trust_control_policy_name: "trust_control_policy_name_1"
       deletable_child: true
+      child_required: false
       children:
         annotations:
           - key: "key_0"

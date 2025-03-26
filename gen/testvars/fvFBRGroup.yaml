@@ -73,6 +73,7 @@ children:
       name: "name_1"
       name_alias: "name_alias_1"
       deletable_child: true
+      child_required: false
       children:
         annotations:
           - key: "key_0"

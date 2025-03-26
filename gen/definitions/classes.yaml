@@ -41,8 +41,9 @@ fvTrackMember:
 
 fvRsIpslaMonPol:
   resource_name: "relation_to_ip_sla_monitoring_policy"
+  required_as_child: true
   ui_locations:
-    - "Tenants -> Policies -> Protocol -> IP SLA -> Track Member"
+    - "Tenants -> Policies -> Protocol -> IP SLA -> Track Members"
   sub_category: "Tenant Policies"
 
 fvIPSLAMonitoringPol:

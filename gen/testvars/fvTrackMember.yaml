@@ -36,7 +36,8 @@ children:
   relation_to_monitoring_policy:
     - annotation: "annotation_1"
       target_dn: "target_dn_1"
-      deletable_child: true
+      deletable_child: false
+      child_required: true
       children:
         annotations:
           - key: "key_0"

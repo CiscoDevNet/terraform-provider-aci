@@ -340,8 +340,7 @@ func (r *FvTrackMemberResource) Schema(ctx context.Context, req resource.SchemaR
 			},
 			"relation_to_monitoring_policy": schema.SingleNestedAttribute{
 				MarkdownDescription: ``,
-				Optional:            true,
-				Computed:            true,
+				Required:            true,
 				PlanModifiers: []planmodifier.Object{
 					objectplanmodifier.UseStateForUnknown(),
 				},
@@ -355,8 +354,7 @@ func (r *FvTrackMemberResource) Schema(ctx context.Context, req resource.SchemaR
 						MarkdownDescription: `The annotation of the Relation To IP SLA Monitoring Policy object.`,
 					},
 					"target_dn": schema.StringAttribute{
-						Optional: true,
-						Computed: true,
+						Required: true,
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
@@ -589,6 +587,13 @@ func (r *FvTrackMemberResource) Update(ctx context.Context, req resource.UpdateR
 	// Read Terraform plan data into the model
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
 	resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
+	// Error out when child object fvRsIpslaMonPol is being deleted
+	if IsEmptySingleNestedAttribute(data.FvRsIpslaMonPol.Attributes()) && !IsEmptySingleNestedAttribute(stateData.FvRsIpslaMonPol.Attributes()) {
+		resp.Diagnostics.AddError(
+			"FvRsIpslaMonPol object cannot be deleted",
+			"deletion of child is only possible upon deletion of the parent",
+		)
+	}
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -852,8 +857,6 @@ func getFvTrackMemberFvRsIpslaMonPolChildPayloads(ctx context.Context, diags *di
 			if !fvRsIpslaMonPolFvTrackMemberPlan.TDn.IsUnknown() && !fvRsIpslaMonPolFvTrackMemberPlan.TDn.IsNull() {
 				childMap.Attributes["tDn"] = fvRsIpslaMonPolFvTrackMemberPlan.TDn.ValueString()
 			}
-		} else {
-			childMap.Attributes["status"] = "deleted"
 		}
 
 		var tagAnnotationFvRsIpslaMonPolFvTrackMemberPlan, tagAnnotationFvRsIpslaMonPolFvTrackMemberState []TagAnnotationFvRsIpslaMonPolFvTrackMemberResourceModel
