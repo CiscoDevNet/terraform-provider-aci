@@ -115,11 +115,13 @@ All examples for the IP SLA Track Member resource can be found in the [examples]
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `relation_to_monitoring_policy` - (map) A map of Relation To IP SLA Monitoring Policy (ACI object [fvRsIpslaMonPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsIpslaMonPol/overview)) pointing to IP SLA Monitoring Policy (ACI Object [fvIPSLAMonitoringPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvIPSLAMonitoringPol/overview)) which can be configured using the [aci_ip_sla_monitoring_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/ip_sla_monitoring_policy) resource.
+  #### Required ####
+  
+    * `target_dn` (tDn) - (string) The distinguished name (DN) of the IP SLA Monitoring Policy.
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation To IP SLA Monitoring Policy object.
       - Default: `orchestrator:terraform`
-    * `target_dn` (tDn) - (string) The distinguished name (DN) of the IP SLA Monitoring Policy.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
   

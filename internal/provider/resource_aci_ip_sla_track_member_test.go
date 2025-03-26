@@ -9,9 +9,6 @@ import (
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
-	"github.com/hashicorp/terraform-plugin-testing/knownvalue"
-	"github.com/hashicorp/terraform-plugin-testing/statecheck"
-	"github.com/hashicorp/terraform-plugin-testing/tfjsonpath"
 )
 
 func TestAccResourceFvTrackMemberWithFvTenant(t *testing.T) {
@@ -228,23 +225,18 @@ func TestAccResourceFvTrackMemberWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "annotations.0.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "annotations.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "annotations.#", "1"),
+					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "relation_to_monitoring_policy.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "relation_to_monitoring_policy.annotations.0.key", "key_1"),
+					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "relation_to_monitoring_policy.annotations.0.value", "test_value"),
+					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "relation_to_monitoring_policy.annotations.#", "1"),
+					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "relation_to_monitoring_policy.tags.0.key", "key_1"),
+					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "relation_to_monitoring_policy.tags.0.value", "test_value"),
+					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "relation_to_monitoring_policy.tags.#", "1"),
+					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "relation_to_monitoring_policy.target_dn", "uni/tn-test_tenant/ipslaMonitoringPol-monitoring_policy_name_1"),
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "tags.0.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "tags.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "tags.#", "1"),
 				),
-				ConfigStateChecks: []statecheck.StateCheck{
-					statecheck.ExpectKnownValue("aci_ip_sla_track_member.test",
-						tfjsonpath.New("relation_to_monitoring_policy"),
-						knownvalue.MapExact(
-							map[string]knownvalue.Check{
-								"annotation":  knownvalue.Null(),
-								"annotations": knownvalue.Null(),
-								"tags":        knownvalue.Null(),
-								"target_dn":   knownvalue.Null(),
-							},
-						),
-					),
-				},
 			},
 			// Update with all children removed
 			{
@@ -254,19 +246,6 @@ func TestAccResourceFvTrackMemberWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "annotations.#", "0"),
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "tags.#", "0"),
 				),
-				ConfigStateChecks: []statecheck.StateCheck{
-					statecheck.ExpectKnownValue("aci_ip_sla_track_member.test",
-						tfjsonpath.New("relation_to_monitoring_policy"),
-						knownvalue.MapExact(
-							map[string]knownvalue.Check{
-								"annotation":  knownvalue.Null(),
-								"annotations": knownvalue.Null(),
-								"tags":        knownvalue.Null(),
-								"target_dn":   knownvalue.Null(),
-							},
-						),
-					),
-				},
 			},
 		},
 		CheckDestroy: testCheckResourceDestroy,
@@ -282,12 +261,20 @@ resource "aci_ip_sla_track_member" "allow_test" {
   destination_ip_address = "1.1.1.1"
   name = "test_name"
   scope = "uni/tn-test_tenant/BD-test_bd"
+  relation_to_monitoring_policy = {
+    annotation = "annotation_1"
+    target_dn = "uni/tn-test_tenant/ipslaMonitoringPol-monitoring_policy_name_1"
+  }
 }
 resource "aci_ip_sla_track_member" "allow_test_2" {
   parent_dn = aci_tenant.test.id
   destination_ip_address = "1.1.1.1"
   name = "test_name"
   scope = "uni/tn-test_tenant/BD-test_bd"
+  relation_to_monitoring_policy = {
+    annotation = "annotation_1"
+    target_dn = "uni/tn-test_tenant/ipslaMonitoringPol-monitoring_policy_name_1"
+  }
   depends_on = [aci_ip_sla_track_member.allow_test]
 }
 `
@@ -298,6 +285,10 @@ resource "aci_ip_sla_track_member" "test" {
   destination_ip_address = "1.1.1.1"
   name = "test_name"
   scope = "uni/tn-test_tenant/BD-test_bd"
+  relation_to_monitoring_policy = {
+    annotation = "annotation_1"
+    target_dn = "uni/tn-test_tenant/ipslaMonitoringPol-monitoring_policy_name_1"
+  }
 }
 `
 
@@ -312,6 +303,10 @@ resource "aci_ip_sla_track_member" "test" {
   owner_key = "owner_key_1"
   owner_tag = "owner_tag_1"
   scope = "uni/tn-test_tenant/BD-test_bd_2"
+  relation_to_monitoring_policy = {
+    annotation = "annotation_1"
+    target_dn = "uni/tn-test_tenant/ipslaMonitoringPol-monitoring_policy_name_1"
+  }
 }
 `
 
@@ -326,6 +321,10 @@ resource "aci_ip_sla_track_member" "test" {
   owner_key = ""
   owner_tag = ""
   scope = "uni/tn-test_tenant/BD-test_bd"
+  relation_to_monitoring_policy = {
+    annotation = "annotation_1"
+    target_dn = "uni/tn-test_tenant/ipslaMonitoringPol-monitoring_policy_name_1"
+  }
 }
 `
 const testConfigFvTrackMemberChildrenDependencyWithFvTenant = testChildDependencyConfigFvTrackMember + testConfigFvTenantMin + `
@@ -387,6 +386,10 @@ resource "aci_ip_sla_track_member" "test" {
   destination_ip_address = "1.1.1.1"
   name = "test_name"
   scope = "uni/tn-test_tenant/BD-test_bd"
+  relation_to_monitoring_policy = {
+    annotation = "annotation_1"
+    target_dn = "uni/tn-test_tenant/ipslaMonitoringPol-monitoring_policy_name_1"
+  }
 }
 `
 
@@ -402,7 +405,22 @@ resource "aci_ip_sla_track_member" "test" {
 	  value = "test_value"
 	},
   ]
-  relation_to_monitoring_policy = {}
+  relation_to_monitoring_policy = {
+    annotation = "annotation_1"
+    annotations = [ 
+	  {
+        key = "key_1"
+        value = "test_value"
+	  },
+    ]
+    tags = [ 
+	  {
+        key = "key_1"
+        value = "test_value"
+	  },
+    ]
+    target_dn = "uni/tn-test_tenant/ipslaMonitoringPol-monitoring_policy_name_1"
+  }
   tags = [ 
 	{
 	  key = "key_1"
@@ -419,7 +437,12 @@ resource "aci_ip_sla_track_member" "test" {
   name = "test_name"
   scope = "uni/tn-test_tenant/BD-test_bd"
   annotations = []
-  relation_to_monitoring_policy = {}
+  relation_to_monitoring_policy = {
+    annotation = "annotation_1"
+    annotations = []
+    tags = []
+    target_dn = "uni/tn-test_tenant/ipslaMonitoringPol-monitoring_policy_name_1"
+  }
   tags = []
 }
 `

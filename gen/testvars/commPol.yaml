@@ -42,7 +42,7 @@ children:
       login_throttle_state: "disabled"
       visore_access: "disabled"
       deletable_child: false
-      
+      child_required: false
       version_mismatch:
         4.1(1i):
           cli_only_mode: "disabled"
@@ -85,7 +85,7 @@ children:
       login_throttle_state: "disabled"
       visore_access: "disabled"
       deletable_child: false
-      
+      child_required: false
       version_mismatch:
         4.0(1h):
           client_certificate_authentication_state: "disabled"
@@ -106,6 +106,7 @@ children:
           - annotation: "annotation_1"
             target_dn: "uni/userext/pkiext/tp-test_name"
             deletable_child: true
+            child_required: false
             children:
               annotations:
                 - key: "key_0"
@@ -125,7 +126,7 @@ children:
           - annotation: "annotation_1"
             key_ring_name: "default"
             deletable_child: false
-      
+            child_required: false
             children:
               annotations:
                 - key: "key_0"
@@ -162,7 +163,7 @@ children:
       name: "name_1"
       name_alias: "name_alias_1"
       deletable_child: false
-      
+      child_required: false
       children:
         annotations:
           - key: "key_0"
@@ -188,7 +189,7 @@ children:
       ssh_ciphers: ["aes192-ctr"]
       ssh_macs: ["hmac-sha1"]
       deletable_child: false
-      
+      child_required: false
       version_mismatch:
         4.1(1i):
           password_authentication_state: "disabled"
@@ -215,7 +216,7 @@ children:
       name_alias: "name_alias_1"
       port: "23"
       deletable_child: false
-      
+      child_required: false
       children:
         annotations:
           - key: "key_0"
