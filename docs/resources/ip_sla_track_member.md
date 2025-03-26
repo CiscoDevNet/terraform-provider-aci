@@ -104,19 +104,6 @@ All examples for the IP SLA Track Member resource can be found in the [examples]
 * `destination_ip_address` (dstIpAddr) - (string) The destination IP address to be tracked.
 * `name` (name) - (string) The name of the IP SLA Track Member object.
 * `scope` (scopeDn) - (string) The scope (Bridge Domain or L3Out) of the IP SLA Track Member. For a Bridge Domain this attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bridge_domain) with 'aci_bridge_domain.example.id' or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/bridge_domain) with 'data.aci_bridge_domain.example.id'. For a L3out this attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3_outside) with 'aci_l3_outside.example.id' or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/l3_outside) with 'data.aci_l3_outside.example.id'.
-
-### Read-Only ###
-
-* `id` - (string) The distinguished name (DN) of the IP SLA Track Member object.
-
-### Optional ###
-
-* `annotation` (annotation) - (string) The annotation of the IP SLA Track Member object.
-  - Default: `orchestrator:terraform`
-* `description` (descr) - (string) The description of the IP SLA Track Member object.
-* `name_alias` (nameAlias) - (string) The name alias of the IP SLA Track Member object.
-* `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
-* `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `relation_to_monitoring_policy` - (map) A map of Relation To IP SLA Monitoring Policy (ACI object [fvRsIpslaMonPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsIpslaMonPol/overview)) pointing to IP SLA Monitoring Policy (ACI Object [fvIPSLAMonitoringPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvIPSLAMonitoringPol/overview)) which can be configured using the [aci_ip_sla_monitoring_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/ip_sla_monitoring_policy) resource.
   #### Required ####
   
@@ -135,6 +122,19 @@ All examples for the IP SLA Track Member resource can be found in the [examples]
   
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
+
+### Read-Only ###
+
+* `id` - (string) The distinguished name (DN) of the IP SLA Track Member object.
+
+### Optional ###
+
+* `annotation` (annotation) - (string) The annotation of the IP SLA Track Member object.
+  - Default: `orchestrator:terraform`
+* `description` (descr) - (string) The description of the IP SLA Track Member object.
+* `name_alias` (nameAlias) - (string) The name alias of the IP SLA Track Member object.
+* `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
+* `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
   
