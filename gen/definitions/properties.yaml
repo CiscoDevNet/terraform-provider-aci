@@ -2125,6 +2125,8 @@ fvTrackMember:
   overwrites:
     dst_ip_addr: "destination_ip_address"
     scope_dn: "scope"
+  example_value_overwrite:
+    scope: "aci_bridge_domain.example.id"
   test_values:
     default:
       scope: "uni/tn-test_tenant/BD-test_bd"
