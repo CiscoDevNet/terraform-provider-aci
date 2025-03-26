@@ -68,7 +68,7 @@ children:
     - annotation: "annotation_1"
       netflow_record_policy_name: "netflow_record_policy_name_1"
       deletable_child: false
-      
+      child_required: false
       children:
         annotations:
           - key: "key_0"

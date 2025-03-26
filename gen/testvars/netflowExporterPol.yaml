@@ -53,6 +53,7 @@ children:
     - annotation: "annotation_1"
       target_dn: "target_dn_1"
       deletable_child: true
+      child_required: false
       children:
         annotations:
           - key: "key_0"
@@ -72,6 +73,7 @@ children:
     - annotation: "annotation_1"
       target_dn: "target_dn_1"
       deletable_child: true
+      child_required: false
       children:
         annotations:
           - key: "key_0"

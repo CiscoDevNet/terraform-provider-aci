@@ -1378,6 +1378,7 @@ type Model struct {
 	Exclude                   bool
 	VersionMismatched         map[string][]string
 	TemplateProperties        map[string]interface{}
+	RequiredAsChild           bool
 }
 
 type TypeChange struct {
@@ -1503,6 +1504,7 @@ func (m *Model) setClassModel(metaPath string, isChildIteration bool, definition
 		m.SetResourceNameAsDescription(m.PkgName, definitions)
 		m.SetTestType(classDetails, definitions)
 		m.SetTestApplicableFromVersion(classDetails)
+		m.SetRequiredAsChild(m.PkgName, definitions)
 	}
 
 	/*
@@ -1948,6 +1950,17 @@ func (m *Model) SetTestApplicableFromVersion(classDetails interface{}) {
 			m.ClassVersion = versions.(string)
 		} else {
 			m.ClassVersion = "unknown"
+		}
+	}
+}
+
+func (m *Model) SetRequiredAsChild(classPkgName string, definitions Definitions) {
+	if classDetails, ok := definitions.Classes[classPkgName]; ok {
+		for key, value := range classDetails.(map[interface{}]interface{}) {
+			if key.(string) == "required_as_child" {
+				m.RequiredAsChild = value.(bool)
+				m.AllowDelete = false
+			}
 		}
 	}
 }

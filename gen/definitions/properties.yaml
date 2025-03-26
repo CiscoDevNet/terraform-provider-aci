@@ -2162,6 +2162,8 @@ fvRsOtmListMember:
       static: true
 
 fvRsIpslaMonPol:
+  resource_required:
+    - tDn
   overwrites:
     relation_to_ip_sla_monitoring_policy: "relation_to_monitoring_policy"
   documentation:
