@@ -15,7 +15,7 @@ To take full advantage of the new features in the Terraform Plugin Framework, we
 
 Upgrading the ACI Terraform provider to a new version involves several steps to ensure a smooth transition and to avoid any disruptions to your existing configurations. This guide will walk you through the process, including taking a backup of your current state.
 
-#### Step 1: Backup Your Current State
+### Step 1: Backup Your Current State
 
 Before making any changes, it's crucial to back up your current Terraform state. This ensures that you can restore your environment if anything goes wrong during the upgrade process.
 
