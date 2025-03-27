@@ -6,54 +6,42 @@
 default:
   annotation: "orchestrator:terraform"
   description: ""
-  qos_dscp_value: "CS2"
-  destination_ip_address: "2.2.2.1"
-  destination_port: "https"
   name_alias: ""
   owner_key: ""
   owner_tag: ""
-  source_ip_type: "custom-src-ip"
-  source_ip_address: "1.1.1.1/10"
-  version: "v9"
+  percentage_down: "0"
+  percentage_up: "1"
+  type: "percentage"
+  weight_down: "0"
+  weight_up: "1"
 
 datasource_non_existing:
-  name: "netfow_exporter_non_existing"
+  name: "non_existing_name"
 
 datasource_required:
-  name: "netfow_exporter"
+  name: "test_name"
 
 resource_required:
-  destination_ip_address: "2.2.2.1"
-  destination_port: "https"
-  name: "netfow_exporter"
-  source_ip_address: "1.1.1.1/10"
-
-custom_type:
-  qos_dscp_value: "0"
-  destination_ip_address: "2.2.2.1"
-  destination_port: "110"
-  name: "netfow_exporter"
-  source_ip_address: "1.1.1.1/10"
+  name: "test_name"
 
 all:
   annotation: "annotation"
   description: "description_1"
-  qos_dscp_value: "AF11"
-  destination_ip_address: "12.12.12.1"
-  destination_port: "ssh"
   name_alias: "name_alias_1"
   owner_key: "owner_key_1"
   owner_tag: "owner_tag_1"
-  source_ip_type: "custom-src-ip"
-  source_ip_address: "11.11.11.1/11"
-  version: "v9"
+  percentage_down: "30"
+  percentage_up: "40"
+  type: "weight"
+  weight_down: "10"
+  weight_up: "20"
 
 children:
-  relation_to_vrf:
+  relation_to_ip_sla_track_members:
     - annotation: "annotation_1"
-      target_dn: "target_dn_1"
-      deletable_child: true
-      child_required: false
+      target_dn: "uni/tn-test_tenant/trackmember-track_member_name_1"
+      weight: "20"
+      
       children:
         annotations:
           - key: "key_0"
@@ -69,11 +57,10 @@ children:
           - key: "key_1"
             value: "test_value"
       
-  relation_to_epg:
-    - annotation: "annotation_1"
-      target_dn: "target_dn_1"
-      deletable_child: true
-      child_required: false
+    - annotation: "annotation_2"
+      target_dn: "uni/tn-test_tenant/trackmember-track_member_name_2"
+      weight: "10"
+      
       children:
         annotations:
           - key: "key_0"
@@ -110,14 +97,9 @@ parents:
     class_in_parent: false
     test_type: both
 child_targets:
-  - class_name: "fvCtx"
-    target_dn: "uni/tn-test_tenant/ctx-test_vrf"
-    target_dn_overwrite_docs: "aci_vrf.example.id"
-    relation_resource_name: "vrf"
+  - class_name: "fvTrackMember"
+    target_dn: "uni/tn-test_tenant/trackmember-track_member_name_1"
+    target_dn_overwrite_docs: "aci_ip_sla_track_member.example.id"
+    relation_resource_name: "ip_sla_track_member"
     static: true
-  - class_name: "fvAEPg"
-    target_dn: "uni/tn-test_tenant/ap-test_ap/epg-test_epg"
-    target_dn_overwrite_docs: "aci_application_epg.example.id"
-    relation_resource_name: "application_epg"
-    static: true
-class_version: 2.2(1k)-
+class_version: 4.1(1i)-

@@ -391,7 +391,7 @@ version_mismatch: true
 {{- define "nestedChildren" -}}
 {{ $versionMismatch := .VersionMismatched}}
 {{- $indent := .TemplateProperties.Indent -}}
-{{$name := .ResourceName}}{{$child_deletable := .AllowDelete}}
+{{$name := .ResourceName}}{{$child_deletable := .AllowDelete}}{{$child_required := .RequiredAsChild}}
   {{ $indent }}{{overwriteProperty $.PkgName .ResourceName $.Definitions}}:
   {{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
   {{- $versionMismatchExists := false}}
@@ -402,7 +402,12 @@ version_mismatch: true
     {{ $indent }}deletable_child: true
       {{- else -}}
     {{ $indent }}deletable_child: false
-      {{ end}}
+      {{- end}}
+      {{ if $child_required -}}
+    {{ $indent }}child_required: true
+      {{- else -}}
+    {{ $indent }}child_required: false
+      {{- end}}
     {{- if $versionMismatchExists}}
       {{- $properties := .Properties }}
       {{ $indent }}version_mismatch:
