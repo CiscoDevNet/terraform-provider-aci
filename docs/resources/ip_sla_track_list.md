@@ -116,16 +116,16 @@ All examples for the IP SLA Track List resource can be found in the [examples](h
 * `name_alias` (nameAlias) - (string) The name alias of the IP SLA Track List object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
-* `percentage_down` (percentageDown) - (string) The down percentage of the IP SLA Track List to determine the route to be considered available or unavailable. This attribute is only applicable when the track type is 'percentage'.
+* `percentage_down` (percentageDown) - (string) The down percentage assigned to the IP SLA Track List determines whether a route is considered available or unavailable. This attribute is applicable only when the track type is 'percentage'.
   - Default: `0`
-* `percentage_up` (percentageUp) - (string) The up percentage of the IP SLA Track List to determine the route to be considered available or unavailable. The percentage up must be greater than percentage down. This attribute is only applicable when the track type is 'percentage'.
+* `percentage_up` (percentageUp) - (string) The up percentage assigned to the IP SLA Track List determines whether a route is considered available or unavailable. The percentage up must be greater than the percentage down. This attribute is applicable only when the track type is 'percentage'.
   - Default: `1`
 * `type` (type) - (string) The type of the IP SLA Track List.
   - Default: `percentage`
   - Valid Values: `percentage`, `weight`.
-* `weight_down` (weightDown) - (string) The down weight assigned to the IP SLA Track List to determine the route to be considered available or unavailable. This attribute is only applicable when the track type is 'weight'.
+* `weight_down` (weightDown) - (string) The down weight assigned to the IP SLA Track List determines whether a route is considered available or unavailable. This attribute is applicable only when the track type is 'weight'.
   - Default: `0`
-* `weight_up` (weightUp) - (string) The up weight assigned to the IP SLA Track List to determine the route to be considered available or unavailable. The weight up must be greater than weight down. This attribute is only applicable when the track type is 'weight'.
+* `weight_up` (weightUp) - (string) The up weight assigned to the IP SLA Track List determines whether a route is considered available or unavailable. The up weight must be greater than the down weight. This attribute is applicable only when the track type is 'weight'.
   - Default: `1`
 * `relation_to_ip_sla_track_members` - (list) A list of Relation To IP SLA Track Members (ACI object [fvRsOtmListMember](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsOtmListMember/overview)) pointing to IP SLA Track Member (ACI Object [fvTrackMember](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTrackMember/overview)) which can be configured using the [aci_ip_sla_track_member](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/ip_sla_track_member) resource.
   #### Required ####
