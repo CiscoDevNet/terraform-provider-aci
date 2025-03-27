@@ -370,7 +370,7 @@ func (r *FvTrackListResource) Schema(ctx context.Context, req resource.SchemaReq
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The down percentage of the IP SLA Track List to determine the route to be considered available or unavailable. This attribute is only applicable when the track type is 'percentage'.`,
+				MarkdownDescription: `The down percentage assigned to the IP SLA Track List determines whether a route is considered available or unavailable. This attribute is applicable only when the track type is 'percentage'.`,
 			},
 			"percentage_up": schema.StringAttribute{
 				Optional: true,
@@ -379,7 +379,7 @@ func (r *FvTrackListResource) Schema(ctx context.Context, req resource.SchemaReq
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The up percentage of the IP SLA Track List to determine the route to be considered available or unavailable. The percentage up must be greater than percentage down. This attribute is only applicable when the track type is 'percentage'.`,
+				MarkdownDescription: `The up percentage assigned to the IP SLA Track List determines whether a route is considered available or unavailable. The percentage up must be greater than the percentage down. This attribute is applicable only when the track type is 'percentage'.`,
 			},
 			"type": schema.StringAttribute{
 				Optional: true,
@@ -401,7 +401,7 @@ func (r *FvTrackListResource) Schema(ctx context.Context, req resource.SchemaReq
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The down weight assigned to the IP SLA Track List to determine the route to be considered available or unavailable. This attribute is only applicable when the track type is 'weight'.`,
+				MarkdownDescription: `The down weight assigned to the IP SLA Track List determines whether a route is considered available or unavailable. This attribute is applicable only when the track type is 'weight'.`,
 			},
 			"weight_up": schema.StringAttribute{
 				Optional: true,
@@ -410,7 +410,7 @@ func (r *FvTrackListResource) Schema(ctx context.Context, req resource.SchemaReq
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The up weight assigned to the IP SLA Track List to determine the route to be considered available or unavailable. The weight up must be greater than weight down. This attribute is only applicable when the track type is 'weight'.`,
+				MarkdownDescription: `The up weight assigned to the IP SLA Track List determines whether a route is considered available or unavailable. The up weight must be greater than the down weight. This attribute is applicable only when the track type is 'weight'.`,
 			},
 			"relation_to_ip_sla_track_members": schema.SetNestedAttribute{
 				MarkdownDescription: ``,

@@ -2096,10 +2096,10 @@ fvRsApMonPol:
 
 fvTrackList:
   documentation:
-    weightDown: "The down weight assigned to the %s to determine the route to be considered available or unavailable. This attribute is only applicable when the track type is 'weight'."
-    weightUp: "The up weight assigned to the %s to determine the route to be considered available or unavailable. The weight up must be greater than weight down. This attribute is only applicable when the track type is 'weight'."
-    percentageDown: "The down percentage of the %s to determine the route to be considered available or unavailable. This attribute is only applicable when the track type is 'percentage'."
-    percentageUp: "The up percentage of the %s to determine the route to be considered available or unavailable. The percentage up must be greater than percentage down. This attribute is only applicable when the track type is 'percentage'."
+    weightDown: "The down weight assigned to the %s determines whether a route is considered available or unavailable. This attribute is applicable only when the track type is 'weight'."
+    weightUp: "The up weight assigned to the %s determines whether a route is considered available or unavailable. The up weight must be greater than the down weight. This attribute is applicable only when the track type is 'weight'."
+    percentageDown: "The down percentage assigned to the %s determines whether a route is considered available or unavailable. This attribute is applicable only when the track type is 'percentage'."
+    percentageUp: "The up percentage assigned to the %s determines whether a route is considered available or unavailable. The percentage up must be greater than the percentage down. This attribute is applicable only when the track type is 'percentage'."
     type: "The type of the %s."
   test_values:
     default:
