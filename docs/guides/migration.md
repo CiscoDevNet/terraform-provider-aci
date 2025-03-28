@@ -7,19 +7,19 @@ description: |-
 
 ## Introduction
 
-Since its first release in September 2020, the Terraform ACI provider has come a long way, adding new resources and data sources to make managing Cisco ACI environments easier. Over the years, we've moved from SDKv1 to [SDKv2](https://developer.hashicorp.com/terraform/plugin/sdkv2), and now to the latest [Terraform Plugin Framework](https://developer.hashicorp.com/terraform/plugin/framework), which is the recommended way to develop Terraform plugins and offers many advantages over SDKv2.
+Since its first release in September 2020, the Terraform ACI provider has significantly progressed, adding new resources and data sources to streamline the management of Cisco ACI environments. Over the years, we've transitioned from SDKv1 to [SDKv2](https://developer.hashicorp.com/terraform/plugin/sdkv2), and now to the latest [Terraform Plugin Framework](https://developer.hashicorp.com/terraform/plugin/framework). This new Plugin Framework is the recommended way for developing Terraform plugins and offers several advantages over SDKv2.
 
-To take full advantage of the new features in the Terraform Plugin Framework, we had to completely rewrite the Terraform ACI provider resources and data sources. While this was a big task, it also gave us a chance to review and improve the current ACI provider. This guide explains the new features that the Terraform Plugin Framework provides and the changes we have made to the ACI provider and why we made them.
+In order to fully leverage the new features of the Terraform Plugin Framework, we undertook a complete rewrite of the Terraform ACI provider's resources and data sources. Although this was a significant effort, it presented an opportunity to review and enhance the existing ACI provider. This guide outlines the new features introduced by the Terraform Plugin Framework, along with the modifications we implemented in the ACI provider and the rationale behind these changes.
 
 ## Upgrading the ACI Terraform Provider
 
-Upgrading the ACI Terraform provider to a new version involves several steps to ensure a smooth transition and to avoid any disruptions to your existing configurations. This guide will walk you through the process, including taking a backup of your current state.
+Upgrading the ACI Terraform provider to a new version requires careful planning to ensure a seamless transition and prevent any disruptions to your existing configurations. This guide will lead you through each step of the process, including how to back up your current state.
 
 ### Step 1: Backup Your Current State
 
-Before making any changes, it's crucial to back up your current Terraform state. This ensures that you can restore your environment if anything goes wrong during the upgrade process.
+Before making any changes, it's crucial to back up your current Terraform state. This precaution ensures that you can revert your environment to its previous state if any issues arise during the upgrade process.
 
-1. **Local Backend**: Open a terminal and navigate to the directory containing your ACI Terraform configuration files with the state and copy the current state file (terraform.tfstate) to a backup location.
+1. **Local Backend**: Open a terminal and navigate to the directory where your ACI Terraform configuration files with the state are located. Copy the current state file (terraform.tfstate) to a backup location..
    
    ```bash
    cd /path/to/your/terraform/project
@@ -30,7 +30,7 @@ Before making any changes, it's crucial to back up your current Terraform state.
 
 ### Step 2: Update the Provider Version
 
-1. **Open the Terraform Configuration File**: Open the `main.tf` or the relevant Terraform configuration file where the provider is defined.
+1. **Open the Terraform Configuration File**: Open the `main.tf` or the relevant Terraform configuration file where the ACI provider is defined.
 
 2. **Update the Provider Version**: Modify the provider block to specify the new version of the ACI provider.
 
@@ -49,7 +49,7 @@ Before making any changes, it's crucial to back up your current Terraform state.
 
 ### Step 3: Review the Changes
 
-1. **Plan the Changes**: Run `terraform plan` without any changes to the configuration to see the changes that will be applied with the new provider version.
+1. **Plan the Changes**: Run `terraform plan` without modifying the configuration to preview the changes that will be applied with the new provider version.
 
    ```bash
    terraform plan
@@ -63,17 +63,17 @@ Before making any changes, it's crucial to back up your current Terraform state.
 
 ### Step 4: Apply the Changes
 
-1. **Apply the Changes**: If the plan looks good, apply the changes to upgrade to the new provider version.
+1. **Apply the Changes**: If the plan output is satisfactory, apply the changes to upgrade to the new provider version.
 
    ```bash
    terraform apply
    ```
 
-2. **Verify the Changes**: After the apply completes, verify that the changes have been applied correctly and that your environment is functioning as expected. The state file should now reflect the new attributes.
+2. **Verify the Changes**: Once the apply step is complete, verify that the changes have been applied correctly and ensure your environment is functioning as expected. The state file should now reflect the new attributes.
 
 ### Step 5: Migrate deprecated configuration
 
-1. **Identify the deprecated attributes**: The `terraform plan` command only displays a single warning, which can make it hard to do a full analysis of which attributes are deprecated.
+1. **Identify the deprecated attributes**: The `terraform plan` command only displays a single warning, which can make it challenging to fully analyze deprecated attributes.
 
     ```bash
     No changes. Your infrastructure matches the configuration.
@@ -153,38 +153,38 @@ In this section, we outline the key changes made to the Terraform ACI provider a
 
 ## Cleaning and Renaming of Attributes
 
-Over time, some attributes became outdated, were inconsistently named, or were not exposed correctly. This made the resources sometimes challenging to understand and thus use the ACI provider effectively. By cleaning and renaming these attributes, we aim to:
+Over time, some attributes became outdated, were inconsistently named, or were not exposed correctly, making certain resources challenging to understand and use effectively within the ACI provider. By cleaning and renaming these attributes, we aim to:
 
 1. **Improve Clarity**: Ensure that attribute names are clear and descriptive, making it easier for users to understand their purpose.
 2. **Enhance Consistency**: Standardize attribute names and structures across resources and data sources.
 3. **Simplify Usage**: Remove outdated attributes to streamline the configuration process.
 
-We understand the importance of maintaining backward compatibility to avoid disrupting existing configurations. This is why during a transition period, both old and new style attributes can be used. It allows users to continue using their existing configurations while gradually adopting the new style attributes. We have implemented deprecation warnings for old style attributes, informing users of the upcoming changes and encouraging them to transition to the new attribute style as soon as possible.
+We understand the importance of maintaining backward compatibility to avoid disrupting existing configurations. Therefore, during the transition period, both old and new style attributes are supported. This approach allows users to continue using their existing configurations while gradually adopting the new style attributes. We have implemented deprecation warnings for old style attributes, informing users of the upcoming changes and encouraging them to transition to the new attribute style as soon as possible.
 
-> For the same ACI property, the old and new style attributes cannot be used together. Doing so will cause the provider to error during configuration validation.
+> It is important to note that for the same ACI property, old and new style attributes cannot be used simultaneously. Attempting to do so will result in an error during configuration validation.
 
-A downside to this approach is that the plan output will be more verbose due to known after applies for each old style attribute that is not provided when a change is detected. This is a temporary drawback which will be resolved when the deprecated attributes are removed in the next major release.
+A downside to this approach is increased verbosity in the plan output due to known after applies for each old style attribute not provided when a change is detected. This is a temporary drawback which will be resolved once deprecated attributes are removed in the next major release.
 
 ## Changed Behavior for Relations
 
 In an ACI setup, Managed Objects (MOs) represent the different physical and logical parts within the Management Information Tree (MIT). These MOs can be linked through relationship MOs, which define how different MOs are connected. Relationship MOs act as connectors that establish links between two or more MOs, helping to organize and structure the hierarchical relationships within the MIT. In ACI, these relationships can be of two types: explicit or named.
 
-1. **Explicit relations** need the target DN to be filled in the tDn attribute of the relationship MO, where there is only one target for the relationship. If the target DN doesn't exist, the relationship can't be formed.
-2. **Named relations** need the name (identifier) attribute to be filled in the relationship MO, which triggers a resolving mechanism based on precedence order. This means the relationship could be formed with any MO in the precedence order, usually ending with a common tenant default MO.
+1. **Explicit relations** These require the target Distinguished Name (DN) to be specified in the tDn attribute of the relationship MO, where only one target exists for the relationship. If the target DN is absent, the relationship cannot be established.
+2. **Named relations** These require the name (identifier) attribute to be specified in the relationship MO, triggering a resolving mechanism based on precedence order. This allows the relationship to form with any MO in the precedence order, typically ending with a default MO in the common tenant.
 
 In non-migrated resources of the Terraform Provider ACI, the relationship types are hidden from the user by allowing a DN (resource ID) or name input. The relationship type determines which attribute (name vs tDn) is added to the payload. In SDKv2, there was no enforcement (only warnings in logs) of the final plan needing to match the applied state, which allowed us to strip the name from a provided DN for named relations and add that to the payload for named relations. However, the migration to the Plugin Framework enforces the final plan to match the applied state.
 
-This means that for the ACI Provider, when the name of the provided tDn is used for named relation MOs, we can't guarantee the DN input will match the resolved tDn, potentially causing provider panics. Because of this change, we decided to only expose configurable attributes as input for resources, so for a named relationship instead of DN we require the name attribute to be provided.
+Consequently, for the ACI Provider, using the name of the provided tDn for named relation MOs means the DN input may not match the resolved tDn, potentially causing provider errors. Due to this change, we decided to expose only configurable attributes as input for resources, requiring the name attribute instead of the DN for named relationships.
 
 To ensure the final plan matches the applied state, old-style attributes representing a Distinguished Name (DN) of a named relation must be resolved into the correct target Distinguished Name (tDn). This requires the object to exist when establishing the relationship; failure to do so will cause the provider to panic. This issue can be avoided by using new-style resources where a configurable attribute is utilized.
 
 ## Changes to Child Objects in Configuration
 
-In migrated resources, all child Managed Objects (MOs) are represented in the configuration as a map or a list of maps, rather than single attribute types (such as string, boolean, or integer). This approach is chosen to ensure the configuration closely resembles the model, allowing for the addition of new attributes to a child without causing breaking changes.
+In migrated resources, all child Managed Objects (MOs) are represented in the configuration as a map or a list of maps, rather than single attribute types (such as string, boolean, or integer). This approach ensures the configuration closely resembles the model, allowing for the addition of new attributes to a child without causing breaking changes.
 
 ## Changed Child Objects in Payloads
 
-In non-migrated resources, the children were managed via individual REST API requests, which could lead to a large number of REST API calls for a single resource when a lot of children were defined. For migrated resources, the decision is made to include all children inside a single GET/POST request to limit the number of REST API calls.
+In non-migrated resources, child objects were managed via individual REST API requests, which could lead to a large number of REST API calls for a single resource when many children were defined. For migrated resources, the decision is made to include all children inside a single GET/POST request to limit the number of REST API calls.
 
 ## Changed Annotation Behavior
 
@@ -205,11 +205,11 @@ For non-migrated resources, the ID of the resource appears as "known after apply
 
 ## Error for Existing MO on Create
 
-In migrated resources, we provide the provider level option (`allow_existing_on_create`) to check during the plan if an object already exists. By default, we allow existing MOs to be managed, but this option can be set to `false` to allow for a safeguard mechanism to prevent managing the same MO by different configuration parts. The drawback of this safeguard mechanism is that during a plan, an additional API call is made per resource to verify that the object does not already exist.
+Migrated resources offer a provider-level option (`allow_existing_on_create`) to check during the plan if an object already exists. By default, existing MOs can be managed, but this option can be set to `false`, providing a safeguard mechanism to prevent managing the same MO by different configuration parts. The drawback of this safeguard mechanism is an additional API call per resource during the plan to verify that the object does not already exist.
 
 ## Allowing Empty Input for Attributes
 
-Terraform supports three states for any value: null (missing), unknown ("known after apply"), and known. The previous SDKs did not support null and unknown value states, which meant that before the Plugin Framework, we couldn't differentiate between an empty value and a value that wasn't provided. Because of this limitation, we were unable to update a string value to an empty string.
+Terraform supports three states for any value: null (missing), unknown ("known after apply"), and known. Previous SDKs did not support null and unknown states, which prevented differentiating between an empty value and a non-provided value. Because of this limitation, updating a string value to an empty string was not possible before the Plugin Framework.
 
 ## Include Annotations and Tags
 
