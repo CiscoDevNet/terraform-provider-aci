@@ -15,6 +15,7 @@ description: |-
 Manages ACI Application Profile
 
 
+  !> This resource has been migrated to the terraform plugin protocol version 6, refer to the [migration guide](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/guides/migration) for more details and implications for already managed resources.
 
 ## API Information ##
 
