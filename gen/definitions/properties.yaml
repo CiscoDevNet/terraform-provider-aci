@@ -314,7 +314,7 @@ l3extRsOutToFBRGroup:
   targets:
     - class_name: "fvFBRGroup"
       parent_dependency: "fvCtx"
-      target_dn: "uni/tn-test_tenant/ctx-test_vrf/fbrg-vrf_fallback_route_group_0"
+      target_dn: "uni/tn-test_name/ctx-test_vrf/fbrg-vrf_fallback_route_group_0"
       relation_resource_name: "vrf_fallback_route_group"
       properties:
         name: "vrf_fallback_route_group_0"
@@ -467,14 +467,14 @@ fvRsScope:
     - class_name: "fvCtx"
       parent_dependency: "fvTenant"
       overwrite_parent_dn_key: "tenant_dn"
-      target_dn: "uni/tn-test_tenant/ctx-vrf_name_1"
+      target_dn: "uni/tn-test_name/ctx-vrf_name_1"
       relation_resource_name: "vrf"
       properties:
         name: "vrf_name_1"
     - class_name: "fvCtx"
       parent_dependency: "fvTenant"
       overwrite_parent_dn_key: "tenant_dn"
-      target_dn: "uni/tn-test_tenant/ctx-vrf_name_0"
+      target_dn: "uni/tn-test_name/ctx-vrf_name_0"
       relation_resource_name: "vrf"
       properties:
         name: "vrf_name_0"
@@ -495,14 +495,14 @@ fvRsCons:
         - "fvRsProv"
       parent_dependency: "fvTenant"
       overwrite_parent_dn_key: "tenant_dn"
-      target_dn: "uni/tn-test_tenant/brc-contract_name_0"
+      target_dn: "uni/tn-test_name/brc-contract_name_0"
       relation_resource_name: "contract"
       properties:
         name: "contract_name_0"
     - class_name: "vzBrCP"
       parent_dependency: "fvTenant"
       overwrite_parent_dn_key: "tenant_dn"
-      target_dn: "uni/tn-test_tenant/brc-contract_name_1"
+      target_dn: "uni/tn-test_name/brc-contract_name_1"
       relation_resource_name: "contract"
       properties:
         name: "contract_name_1"
@@ -531,14 +531,14 @@ fvRsConsIf:
     - class_name: "vzCPIf"
       parent_dependency: "fvTenant"
       overwrite_parent_dn_key: "tenant_dn"
-      target_dn: "uni/tn-test_tenant/cif-imported_contract_name_0"
+      target_dn: "uni/tn-test_name/cif-imported_contract_name_0"
       relation_resource_name: "imported_contract"
       properties:
         name: "imported_contract_name_0"
     - class_name: "vzCPIf"
       parent_dependency: "fvTenant"
       overwrite_parent_dn_key: "tenant_dn"
-      target_dn: "uni/tn-test_tenant/cif-imported_contract_name_1"
+      target_dn: "uni/tn-test_name/cif-imported_contract_name_1"
       relation_resource_name: "imported_contract"
       properties:
         name: "imported_contract_name_1"
@@ -553,14 +553,14 @@ fvRsProtBy:
     - class_name: "vzTaboo"
       parent_dependency: "fvTenant"
       overwrite_parent_dn_key: "tenant_dn"
-      target_dn: "uni/tn-test_tenant/taboo-taboo_contract_name_0"
+      target_dn: "uni/tn-test_name/taboo-taboo_contract_name_0"
       relation_resource_name: "taboo_contract"
       properties:
         name: "taboo_contract_name_0"
     - class_name: "vzTaboo"
       parent_dependency: "fvTenant"
       overwrite_parent_dn_key: "tenant_dn"
-      target_dn: "uni/tn-test_tenant/taboo-taboo_contract_name_1"
+      target_dn: "uni/tn-test_name/taboo-taboo_contract_name_1"
       relation_resource_name: "taboo_contract"
       properties:
         name: "taboo_contract_name_1"
@@ -590,28 +590,28 @@ fvRsSecInherited:
     - class_name: "fvESg"
       parent_dependency: "fvAp"
       overwrite_parent_dn_key: "application_profile_dn"
-      target_dn: "uni/tn-test_tenant/ap-test_name/esg-esg_0"
+      target_dn: "uni/tn-test_name/ap-test_name/esg-esg_0"
       relation_resource_name: "contract_master"
       properties:
         name: "esg_0"
     - class_name: "fvESg"
       parent_dependency: "fvAp"
       overwrite_parent_dn_key: "application_profile_dn"
-      target_dn: "uni/tn-test_tenant/ap-test_name/esg-esg_1"
+      target_dn: "uni/tn-test_name/ap-test_name/esg-esg_1"
       relation_resource_name: "contract_master"
       properties:
         name: "esg_1"
     - class_name: "fvAEPg"
       parent_dependency: "fvAp"
       overwrite_parent_dn_key: "application_profile_dn"
-      target_dn: "uni/tn-test_tenant/ap-test_name/epg-epg_0"
+      target_dn: "uni/tn-test_name/ap-test_name/epg-epg_0"
       relation_resource_name: "contract_master"
       properties:
         name: "epg_0"
     - class_name: "fvAEPg"
       parent_dependency: "fvAp"
       overwrite_parent_dn_key: "application_profile_dn"
-      target_dn: "uni/tn-test_tenant/ap-test_name/epg-epg_1"
+      target_dn: "uni/tn-test_name/ap-test_name/epg-epg_1"
       relation_resource_name: "contract_master"
       properties:
         name: "epg_1"
@@ -834,7 +834,7 @@ fvRsAEPgMonPol:
     - class_name: "monEPGPol"
       parent_dependency: "fvTenant"
       overwrite_parent_dn_key: "tenant_dn"
-      target_dn: "uni/tn-test_tenant/monepg-monitoring_policy_name_1"
+      target_dn: "uni/tn-test_name/monepg-monitoring_policy_name_1"
       relation_resource_name: "monitoring_policy"
       properties:
         name: "monitoring_policy_name_1"
@@ -843,16 +843,29 @@ fvRsCustQosPol:
   targets:
     - class_name: "qosCustomPol"
       parent_dependency: "fvTenant"
-      target_dn: "uni/tn-test_tenant/qoscustom-custom_qos_policy_name_1"
+      target_dn: "uni/tn-test_name/qoscustom-custom_qos_policy_name_1"
       relation_resource_name: "custom_qos_policy"
       properties:
         name: "custom_qos_policy_name_1"
+
+fvRsTenantMonPol:
+  overwrites:
+    relation_from_tenant_to_monitoring_policy: "relation_to_monitoring_policy"
+  documentation:
+    tnMonEPGPolName: "The name of the monitoring policy."
+  test_values:
+    default:
+      # default set because else cyclic dependency would arise in testing since the monitoring policy is defined in the tenant but cannot exist without it
+      # only used for legacy attributes because in named equivalent the resolved name is not passed in
+      monitoring_policy_name: "uni/tn-common/monepg-default"
+    all:
+      monitoring_policy_name: "default"
 
 fvRsTrustCtrl:
   targets:
     - class_name: "fhsTrustCtrlPol"
       parent_dependency: "fvTenant"
-      target_dn: "uni/tn-test_tenant/trustctrlpol-trust_control_policy_name_1"
+      target_dn: "uni/tn-test_name/trustctrlpol-trust_control_policy_name_1"
       relation_resource_name: "trust_control_policy"
       properties:
         name: "trust_control_policy_name_1"
@@ -861,7 +874,7 @@ fvRsDppPol:
   targets:
     - class_name: "qosDppPol"
       parent_dependency: "fvTenant"
-      target_dn: "uni/tn-test_tenant/qosdpppol-data_plane_policing_policy_name_1"
+      target_dn: "uni/tn-test_name/qosdpppol-data_plane_policing_policy_name_1"
       relation_resource_name: "data_plane_policing_policy"
       properties:
         name: "data_plane_policing_policy_name_1"
@@ -870,7 +883,7 @@ fvRsBd:
   targets:
     - class_name: "fvBD"
       parent_dependency: "fvTenant"
-      target_dn: "uni/tn-test_tenant/BD-bridge_domain_name_1"
+      target_dn: "uni/tn-test_name/BD-bridge_domain_name_1"
       relation_resource_name: "bridge_domain_name"
       properties:
         name: "bridge_domain_name_1"
@@ -1200,7 +1213,7 @@ netflowRsExporterToEPg:
         - "fvEPg"
   targets:
     - class_name: "fvAEPg"
-      target_dn: "uni/tn-test_tenant/ap-test_name/epg-test_epg"
+      target_dn: "uni/tn-test_name/ap-test_name/epg-test_epg"
       target_dn_overwrite_docs: "aci_application_epg.example.id"
       relation_resource_name: "application_epg"
       static: true
@@ -1214,7 +1227,7 @@ netflowRsExporterToCtx:
         - "fvCtx"
   targets:
     - class_name: "fvCtx"
-      target_dn: "uni/tn-test_tenant/ctx-test_vrf"
+      target_dn: "uni/tn-test_name/ctx-test_vrf"
       target_dn_overwrite_docs: "aci_vrf.example.id"
       relation_resource_name: "vrf"
       static: true
@@ -1275,8 +1288,8 @@ l3extRsLblToInstP:
     tDn: "The distinguished name (DN) of the External EPG object."
   test_values:
     test_values_for_parent:
-      - target_dn: "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile_1"
-      - target_dn: "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile_2"
+      - target_dn: "uni/tn-test_name/out-test_l3_outside/instP-inst_profile_1"
+      - target_dn: "uni/tn-test_name/out-test_l3_outside/instP-inst_profile_2"
   parents:
     - class_name: "l3extConsLbl"
       parent_dependency: "l3extOut"
@@ -1285,7 +1298,7 @@ l3extRsLblToInstP:
         - "l3extInstP"
   targets:
     - class_name: "l3extInstP"
-      target_dn: "uni/tn-test_tenant/out-test_l3_outside/instP-inst_profile_1"
+      target_dn: "uni/tn-test_name/out-test_l3_outside/instP-inst_profile_1"
       relation_resource_name: "external_network_instance_profile"
       parent_dependency: "l3extOut"
       target_dn_overwrite_docs: "aci_external_network_instance_profile.example.id"
@@ -1310,8 +1323,8 @@ l3extRsLblToProfile:
     datasource_non_existing:
       direction: "import"
     test_values_for_parent:
-      - target_dn: "uni/tn-test_tenant/prof-rt_ctrl_profile_1"
-      - target_dn: "uni/tn-test_tenant/prof-rt_ctrl_profile_2"
+      - target_dn: "uni/tn-test_name/prof-rt_ctrl_profile_1"
+      - target_dn: "uni/tn-test_name/prof-rt_ctrl_profile_2"
   parents:
     - class_name: "l3extConsLbl"
       parent_dependency: "l3extOut"
@@ -1320,7 +1333,7 @@ l3extRsLblToProfile:
         - "rtctrlProfile"
   targets:
     - class_name: "rtctrlProfile"
-      target_dn: "uni/tn-test_tenant/prof-rt_ctrl_profile_1"
+      target_dn: "uni/tn-test_name/prof-rt_ctrl_profile_1"
       relation_resource_name: "route_control_profile"
       parent_dependency: "fvTenant"
       target_dn_overwrite_docs: "aci_route_control_profile.example.id"
@@ -1574,7 +1587,7 @@ fvRsABDPolMonPol:
     - class_name: "monEPGPol"
       parent_dependency: "fvTenant"
       overwrite_parent_dn_key: "tenant_dn"
-      target_dn: "uni/tn-test_tenant/monepg-monitoring_policy_name_1"
+      target_dn: "uni/tn-test_name/monepg-monitoring_policy_name_1"
       relation_resource_name: "monitoring_policy"
       properties:
         name: "monitoring_policy_name_1"
@@ -1590,7 +1603,7 @@ fvRsBdToEpRet:
     - class_name: "fvEpRetPol"
       parent_dependency: "fvTenant"
       overwrite_parent_dn_key: "tenant_dn"
-      target_dn: "uni/tn-test_tenant/epRPol-end_point_retention_policy_name_1"
+      target_dn: "uni/tn-test_name/epRPol-end_point_retention_policy_name_1"
       relation_resource_name: "end_point_retention_policy"
       properties:
         name: "end_point_retention_policy_name_1"
@@ -1603,7 +1616,7 @@ fvRsBDToFhs:
   targets:
     - class_name: "fhsBDPol"
       parent_dependency: "fvTenant"
-      target_dn: "uni/tn-test_tenant/bdpol-first_hop_security_policy_name_1"
+      target_dn: "uni/tn-test_name/bdpol-first_hop_security_policy_name_1"
       relation_resource_name: "first_hop_security_policy"
       properties:
         name: "first_hop_security_policy_name_1"
@@ -1616,7 +1629,7 @@ fvRsBDToNdP:
   targets:
     - class_name: "ndIfPol"
       parent_dependency: "fvTenant"
-      target_dn: "uni/tn-test_tenant/ndifpol-neighbor_discovery_interface_policy_name_1"
+      target_dn: "uni/tn-test_name/ndifpol-neighbor_discovery_interface_policy_name_1"
       relation_resource_name: "neighbor_discovery_interface_policy"
       properties:
         name: "neighbor_discovery_interface_policy_name_1"
@@ -1646,7 +1659,7 @@ fvRsBDToNetflowMonitorPol:
   targets:
     - class_name: "netflowMonitorPol"
       parent_dependency: "fvTenant"
-      target_dn: "uni/tn-test_tenant/monitorpol-netflow_monitor_policy_name_1"
+      target_dn: "uni/tn-test_name/monitorpol-netflow_monitor_policy_name_1"
       relation_resource_name: "netflow_monitor_policy_name"
       properties:
         name: "netflow_monitor_policy_name_1"
@@ -1666,14 +1679,14 @@ fvRsBDToProfile:
     - class_name: "fvCtx"
       parent_dependency: "fvTenant"
       overwrite_parent_dn_key: "tenant_dn"
-      target_dn: "uni/tn-test_tenant/ctx-vrf_name_1"
+      target_dn: "uni/tn-test_name/ctx-vrf_name_1"
       relation_resource_name: "vrf"
       properties:
         name: "vrf_name_1"
     - class_name: "l3extOut"
       parent_dependency: "fvTenant"
       overwrite_parent_dn_key: "tenant_dn"
-      target_dn: "uni/tn-test_tenant/out-abr_l3_outside_name_1"
+      target_dn: "uni/tn-test_name/out-abr_l3_outside_name_1"
       relation_resource_name: "l3_outside"
       properties:
         name: "l3_outside_name_1"
@@ -1681,14 +1694,14 @@ fvRsBDToProfile:
     - class_name: "l3extOut"
       parent_dependency: "fvTenant"
       overwrite_parent_dn_key: "tenant_dn"
-      target_dn: "uni/tn-test_tenant/out-abr_l3_outside_name_0"
+      target_dn: "uni/tn-test_name/out-abr_l3_outside_name_0"
       relation_resource_name: "l3_outside"
       properties:
         name: "l3_outside_name_0"
         relation_l3ext_rs_ectx: aci_vrf.test_vrf_0.id
     - class_name: "rtctrlProfile"
       parent_dependency: "l3extOut"
-      target_dn: "uni/tn-test_tenant/out-abr_l3_outside_name_0/prof-route_control_profile_name_1"
+      target_dn: "uni/tn-test_name/out-abr_l3_outside_name_0/prof-route_control_profile_name_1"
       parent_dependency_dn_ref: aci_l3_outside.test_l3_outside_0.id
       relation_resource_name: "route_control_profile"
       properties:
@@ -1703,7 +1716,7 @@ fvRsBDToRelayP:
     - class_name: "dhcpRelayP"
       parent_dependency: "fvTenant"
       overwrite_parent_dn_key: "tenant_dn"
-      target_dn: "uni/tn-test_tenant/relayp-dhcp_relay_policy_name_1"
+      target_dn: "uni/tn-test_name/relayp-dhcp_relay_policy_name_1"
       relation_resource_name: "dhcp_relay_policy"
       properties:
         name: "dhcp_relay_policy_name_1"
@@ -1718,7 +1731,7 @@ fvRsIgmpsn:
   targets:
     - class_name: "igmpSnoopPol"
       parent_dependency: "fvTenant"
-      target_dn: "uni/tn-test_tenant/snPol-igmp_snooping_policy_name_1"
+      target_dn: "uni/tn-test_name/snPol-igmp_snooping_policy_name_1"
       relation_resource_name: "igmp_snooping_policy"
       properties:
         name: "igmp_snooping_policy_name_1"
@@ -1729,7 +1742,7 @@ fvRsMldsn:
   targets:
     - class_name: "mldSnoopPol"
       parent_dependency: "fvTenant"
-      target_dn: "uni/tn-test_tenant/mldsnoopPol-mld_snooping_policy_name_1"
+      target_dn: "uni/tn-test_name/mldsnoopPol-mld_snooping_policy_name_1"
       relation_resource_name: "mld_snooping_policy"
       properties:
         name: "mld_snooping_policy_name_1"
@@ -2075,7 +2088,7 @@ fvRsApMonPol:
     - class_name: "monEPGPol"
       parent_dependency: "fvTenant"
       overwrite_parent_dn_key: "tenant_dn"
-      target_dn: "uni/tn-test_tenant/monepg-monitoring_policy_name_1"
+      target_dn: "uni/tn-test_name/monepg-monitoring_policy_name_1"
       relation_resource_name: "monitoring_policy"
       properties:
         name: "monitoring_policy_name_1"

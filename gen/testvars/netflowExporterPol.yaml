@@ -109,12 +109,12 @@ parents:
     test_type: both
 child_targets:
   - class_name: "fvCtx"
-    target_dn: "uni/tn-test_tenant/ctx-test_vrf"
+    target_dn: "uni/tn-test_name/ctx-test_vrf"
     target_dn_overwrite_docs: "aci_vrf.example.id"
     relation_resource_name: "vrf"
     static: true
   - class_name: "fvAEPg"
-    target_dn: "uni/tn-test_tenant/ap-test_name/epg-test_epg"
+    target_dn: "uni/tn-test_name/ap-test_name/epg-test_epg"
     target_dn_overwrite_docs: "aci_application_epg.example.id"
     relation_resource_name: "application_epg"
     static: true

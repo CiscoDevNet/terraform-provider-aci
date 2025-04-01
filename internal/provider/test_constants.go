@@ -1,12 +1,12 @@
 package provider
 
-const testConfigFvTenantMin = `
+const testConstantsConfigFvTenantMin = `
 resource "aci_tenant" "test" {
-  name = "test_tenant"
+  name = "test_name"
 }
 `
 
-const testConfigL3extOutMin = testConfigFvTenantMin + `
+const testConfigL3extOutMin = testConstantsConfigFvTenantMin + `
 resource "aci_vrf" "test" {
   tenant_dn = aci_tenant.test.id
   name      = "test_vrf"
@@ -19,7 +19,7 @@ resource "aci_l3_outside" "test" {
 }
 `
 
-const testConfigFvAEPgMin = testConfigFvTenantMin + `
+const testConfigFvAEPgMin = testConstantsConfigFvTenantMin + `
 resource "aci_application_profile" "test" {
   tenant_dn = aci_tenant.test.id
   name      = "test_ap"
@@ -31,7 +31,7 @@ resource "aci_application_epg" "test" {
 }
 `
 
-const testConfigL3extOutMinDependencyWithFvTenant = testConfigFvTenantMin + `
+const testConfigL3extOutMinDependencyWithFvTenant = testConstantsConfigFvTenantMin + `
 resource "aci_vrf" "test" {
   tenant_dn = aci_tenant.test.id
   name      = "test_vrf"
@@ -44,7 +44,7 @@ resource "aci_l3_outside" "test" {
 }
 `
 
-const testConfigFvCtxMinDependencyWithFvTenant = testConfigFvTenantMin + `
+const testConfigFvCtxMinDependencyWithFvTenant = testConstantsConfigFvTenantMin + `
 resource "aci_vrf" "test" {
   tenant_dn = aci_tenant.test.id
   name      = "test_vrf"
@@ -88,7 +88,7 @@ resource "aci_l3out_loopback_interface_profile" "test" {
 }
 `
 
-const testConfigFvTenantMinDependencyWithPkiTP = testConfigFvTenantMin + `
+const testConstantsConfigFvTenantMinDependencyWithPkiTP = testConstantsConfigFvTenantMin + `
 resource "aci_certificate_authority" "test" {
   parent_dn = aci_tenant.test.id
   certificate_chain = <<EOT

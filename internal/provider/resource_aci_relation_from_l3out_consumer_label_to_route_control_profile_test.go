@@ -22,8 +22,8 @@ func TestAccResourceL3extRsLblToProfileWithL3extConsLbl(t *testing.T) {
 				Config:             testConfigL3extRsLblToProfileMinDependencyWithL3extConsLblAllowExisting,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_route_control_profile.allow_test", "target_dn", "uni/tn-test_tenant/prof-rt_ctrl_profile_1"),
-					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_route_control_profile.allow_test_2", "target_dn", "uni/tn-test_tenant/prof-rt_ctrl_profile_1"),
+					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_route_control_profile.allow_test", "target_dn", "uni/tn-test_name/prof-rt_ctrl_profile_1"),
+					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_route_control_profile.allow_test_2", "target_dn", "uni/tn-test_name/prof-rt_ctrl_profile_1"),
 					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_route_control_profile.allow_test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_route_control_profile.allow_test_2", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_route_control_profile.allow_test", "direction", "import"),
@@ -56,8 +56,8 @@ func TestAccResourceL3extRsLblToProfileWithL3extConsLbl(t *testing.T) {
 				Config:             testConfigL3extRsLblToProfileMinDependencyWithL3extConsLblAllowExisting,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_route_control_profile.allow_test", "target_dn", "uni/tn-test_tenant/prof-rt_ctrl_profile_1"),
-					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_route_control_profile.allow_test_2", "target_dn", "uni/tn-test_tenant/prof-rt_ctrl_profile_1"),
+					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_route_control_profile.allow_test", "target_dn", "uni/tn-test_name/prof-rt_ctrl_profile_1"),
+					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_route_control_profile.allow_test_2", "target_dn", "uni/tn-test_name/prof-rt_ctrl_profile_1"),
 					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_route_control_profile.allow_test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_route_control_profile.allow_test_2", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_route_control_profile.allow_test", "direction", "import"),
@@ -76,7 +76,7 @@ func TestAccResourceL3extRsLblToProfileWithL3extConsLbl(t *testing.T) {
 				Config:             testConfigL3extRsLblToProfileMinDependencyWithL3extConsLbl,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_route_control_profile.test", "target_dn", "uni/tn-test_tenant/prof-rt_ctrl_profile_1"),
+					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_route_control_profile.test", "target_dn", "uni/tn-test_name/prof-rt_ctrl_profile_1"),
 					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_route_control_profile.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_route_control_profile.test", "direction", "import"),
 				),
@@ -86,7 +86,7 @@ func TestAccResourceL3extRsLblToProfileWithL3extConsLbl(t *testing.T) {
 				Config:             testConfigL3extRsLblToProfileAllDependencyWithL3extConsLbl,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_route_control_profile.test", "target_dn", "uni/tn-test_tenant/prof-rt_ctrl_profile_1"),
+					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_route_control_profile.test", "target_dn", "uni/tn-test_name/prof-rt_ctrl_profile_1"),
 					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_route_control_profile.test", "annotation", "annotation"),
 					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_route_control_profile.test", "direction", "export"),
 				),
@@ -97,7 +97,7 @@ func TestAccResourceL3extRsLblToProfileWithL3extConsLbl(t *testing.T) {
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_route_control_profile.test", "direction", "import"),
-					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_route_control_profile.test", "target_dn", "uni/tn-test_tenant/prof-rt_ctrl_profile_1"),
+					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_route_control_profile.test", "target_dn", "uni/tn-test_name/prof-rt_ctrl_profile_1"),
 				),
 			},
 			// Update with empty strings config or default value
@@ -106,7 +106,7 @@ func TestAccResourceL3extRsLblToProfileWithL3extConsLbl(t *testing.T) {
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_route_control_profile.test", "direction", "import"),
-					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_route_control_profile.test", "target_dn", "uni/tn-test_tenant/prof-rt_ctrl_profile_1"),
+					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_route_control_profile.test", "target_dn", "uni/tn-test_name/prof-rt_ctrl_profile_1"),
 					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_route_control_profile.test", "annotation", "orchestrator:terraform"),
 				),
 			},
@@ -122,7 +122,7 @@ func TestAccResourceL3extRsLblToProfileWithL3extConsLbl(t *testing.T) {
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_route_control_profile.test", "direction", "import"),
-					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_route_control_profile.test", "target_dn", "uni/tn-test_tenant/prof-rt_ctrl_profile_1"),
+					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_route_control_profile.test", "target_dn", "uni/tn-test_name/prof-rt_ctrl_profile_1"),
 					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_route_control_profile.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_route_control_profile.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_relation_from_l3out_consumer_label_to_route_control_profile.test", "annotations.0.value", "value_1"),
@@ -196,12 +196,12 @@ const testConfigL3extRsLblToProfileMinDependencyWithL3extConsLblAllowExisting = 
 resource "aci_relation_from_l3out_consumer_label_to_route_control_profile" "allow_test" {
   parent_dn = aci_l3out_consumer_label.test.id
   direction = "import"
-  target_dn = "uni/tn-test_tenant/prof-rt_ctrl_profile_1"
+  target_dn = "uni/tn-test_name/prof-rt_ctrl_profile_1"
 }
 resource "aci_relation_from_l3out_consumer_label_to_route_control_profile" "allow_test_2" {
   parent_dn = aci_l3out_consumer_label.test.id
   direction = "import"
-  target_dn = "uni/tn-test_tenant/prof-rt_ctrl_profile_1"
+  target_dn = "uni/tn-test_name/prof-rt_ctrl_profile_1"
   depends_on = [aci_relation_from_l3out_consumer_label_to_route_control_profile.allow_test]
 }
 `
@@ -210,14 +210,14 @@ const testConfigL3extRsLblToProfileMinDependencyWithL3extConsLbl = testDependenc
 resource "aci_relation_from_l3out_consumer_label_to_route_control_profile" "test" {
   parent_dn = aci_l3out_consumer_label.test.id
   direction = "import"
-  target_dn = "uni/tn-test_tenant/prof-rt_ctrl_profile_1"
+  target_dn = "uni/tn-test_name/prof-rt_ctrl_profile_1"
 }
 `
 
 const testConfigL3extRsLblToProfileAllDependencyWithL3extConsLbl = testDependencyConfigL3extRsLblToProfile + testConfigL3extConsLblMinDependencyWithL3extOut + `
 resource "aci_relation_from_l3out_consumer_label_to_route_control_profile" "test" {
   parent_dn = aci_l3out_consumer_label.test.id
-  target_dn = "uni/tn-test_tenant/prof-rt_ctrl_profile_1"
+  target_dn = "uni/tn-test_name/prof-rt_ctrl_profile_1"
   annotation = "annotation"
   direction = "export"
 }
@@ -226,7 +226,7 @@ resource "aci_relation_from_l3out_consumer_label_to_route_control_profile" "test
 const testConfigL3extRsLblToProfileResetDependencyWithL3extConsLbl = testDependencyConfigL3extRsLblToProfile + testConfigL3extConsLblMinDependencyWithL3extOut + `
 resource "aci_relation_from_l3out_consumer_label_to_route_control_profile" "test" {
   parent_dn = aci_l3out_consumer_label.test.id
-  target_dn = "uni/tn-test_tenant/prof-rt_ctrl_profile_1"
+  target_dn = "uni/tn-test_name/prof-rt_ctrl_profile_1"
   annotation = "orchestrator:terraform"
   direction = "import"
 }
@@ -235,7 +235,7 @@ const testConfigL3extRsLblToProfileChildrenDependencyWithL3extConsLbl = testDepe
 resource "aci_relation_from_l3out_consumer_label_to_route_control_profile" "test" {
   parent_dn = aci_l3out_consumer_label.test.id
   direction = "import"
-  target_dn = "uni/tn-test_tenant/prof-rt_ctrl_profile_1"
+  target_dn = "uni/tn-test_name/prof-rt_ctrl_profile_1"
   annotations = [
     {
       key = "key_0"
@@ -263,7 +263,7 @@ const testConfigL3extRsLblToProfileChildrenRemoveFromConfigDependencyWithL3extCo
 resource "aci_relation_from_l3out_consumer_label_to_route_control_profile" "test" {
   parent_dn = aci_l3out_consumer_label.test.id
   direction = "import"
-  target_dn = "uni/tn-test_tenant/prof-rt_ctrl_profile_1"
+  target_dn = "uni/tn-test_name/prof-rt_ctrl_profile_1"
 }
 `
 
@@ -271,7 +271,7 @@ const testConfigL3extRsLblToProfileChildrenRemoveOneDependencyWithL3extConsLbl =
 resource "aci_relation_from_l3out_consumer_label_to_route_control_profile" "test" {
   parent_dn = aci_l3out_consumer_label.test.id
   direction = "import"
-  target_dn = "uni/tn-test_tenant/prof-rt_ctrl_profile_1"
+  target_dn = "uni/tn-test_name/prof-rt_ctrl_profile_1"
   annotations = [ 
 	{
 	  key = "key_1"
@@ -291,7 +291,7 @@ const testConfigL3extRsLblToProfileChildrenRemoveAllDependencyWithL3extConsLbl =
 resource "aci_relation_from_l3out_consumer_label_to_route_control_profile" "test" {
   parent_dn = aci_l3out_consumer_label.test.id
   direction = "import"
-  target_dn = "uni/tn-test_tenant/prof-rt_ctrl_profile_1"
+  target_dn = "uni/tn-test_name/prof-rt_ctrl_profile_1"
   annotations = []
   tags = []
 }

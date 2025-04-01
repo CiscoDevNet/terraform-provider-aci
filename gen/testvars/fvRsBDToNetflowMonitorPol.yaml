@@ -46,7 +46,7 @@ parents:
     test_type: both
 targets:
   - class_name: "netflowMonitorPol"
-    target_dn: "uni/tn-test_tenant/monitorpol-netflow_monitor_policy_name_1"
+    target_dn: "uni/tn-test_name/monitorpol-netflow_monitor_policy_name_1"
     target_dn_ref: "aci_netflow_monitor_policy.test_netflow_monitor_policy_0.id"
     parent_dependency: "fvTenant"
     parent_dependency_dn_ref: "aci_tenant.test.id"

@@ -2,9 +2,7 @@
 # In order to regenerate this file execute `go generate` from the repository root.
 # More details can be found in the [README](https://github.com/CiscoDevNet/terraform-provider-aci/blob/master/README.md).
 legacy_attributes:
-  tenant_dn: "aci_tenant.test.id"
-  prio: "level1"
-  relation_fv_rs_ap_mon_pol: "aci_monitoring_policy.test_monitoring_policy_0.id"
+  relation_fv_rs_tenant_mon_pol: "uni/tn-common/monepg-default"
 
 
 default:
@@ -13,7 +11,6 @@ default:
   name_alias: ""
   owner_key: ""
   owner_tag: ""
-  priority: "unspecified"
 
 datasource_non_existing:
   name: "non_existing_name"
@@ -24,23 +21,19 @@ datasource_required:
 resource_required:
   name: "test_name"
 
-custom_type:
-  name: "test_name"
-  priority: "1"
-
 all:
   annotation: "annotation"
   description: "description_1"
   name_alias: "name_alias_1"
   owner_key: "owner_key_1"
   owner_tag: "owner_tag_1"
-  priority: "level1"
 
 children:
-  relation_to_monitoring_policy:
+  relation_to_tenant_monitoring_policy:
     - annotation: "annotation_1"
-      monitoring_policy_name: "monitoring_policy_name_1"
-      deletable_child: true
+      monitoring_policy_name: "default"
+      deletable_child: false
+      
       children:
         annotations:
           - key: "key_0"
@@ -70,22 +63,6 @@ children:
     - key: "key_1"
       value: "test_value"
       
-parents:
-  - class_name: "fvTenant"
-    parent_dependency: ""
-    parent_dn: "aci_tenant.test.id"
-    class_in_parent: false
-    test_type: apic
-child_targets:
-  - class_name: "monEPGPol"
-    target_dn: "uni/tn-test_name/monepg-monitoring_policy_name_1"
-    relation_resource_name: "monitoring_policy"
-    static: false
-    target_dn_ref: "aci_monitoring_policy.test_monitoring_policy_0.id"
-    parent_dependency: "fvTenant"
-    parent_dependency_dn_ref: "aci_tenant.test.id"
-    target_resource_name: "monitoring_policy"
-    parent_dn_key: "tenant_dn"
-    properties:
-        name: "monitoring_policy_name_1"
+
+test_type: both
 class_version: 1.0(1e)-
