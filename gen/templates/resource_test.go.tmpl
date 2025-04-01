@@ -1677,9 +1677,28 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 				),
 			},
 		{{- end}}
+		{{- if $.legacy_attributes}}
+			// Update with legacy attribute config
+			{
+				Config: testConfig{{$.resourceClassName}}LegacyAttributes{{if $.version_mismatch}} + testConfigDataSourceSystem{{end}},
+			},
+		{{- end}}
 		},
 		CheckDestroy: testCheckResourceDestroy,
 	})
+		{{- if $.legacy_attributes}}
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t, "apic", "1.0(1e)-") },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create with legacy attribute config
+			{
+				Config:      testConfig{{$.resourceClassName}}LegacyAttributes{{if $.version_mismatch}} + testConfigDataSourceSystem{{end}},
+			},
+		},
+		CheckDestroy: testCheckResourceDestroy,
+	})
+		{{- end}}
 }
 {{end}}
 
@@ -2443,9 +2462,33 @@ resource "aci_{{$.resourceName}}" "test" {
 	{{if $.custom_type}}
 const testConfig{{.resourceClassName}}CustomType = `
 resource "aci_{{$.resourceName}}" "test" {
-	{{- range $key, $value := $.custom_type}}
+		{{- range $key, $value := $.custom_type}}
   {{$key}} = "{{$value}}"
+		{{- end}}
+}
+`
+
 	{{- end}}
+	{{- if $.legacy_attributes }}
+const testConfig{{$.resourceClassName}}LegacyAttributes = {{- if $childDependencies }} testChildDependencyConfig{{$.resourceClassName}} + {{- end }}`
+resource "aci_{{$.resourceName}}" "test" {
+			{{- range $key, $value := $.resource_required}}
+  {{$key}} = "{{$value}}"
+			{{- end}}
+			{{- range $key, $value := $.legacy_attributes}}
+				{{- if isInterfaceSlice $value}}{{$list_value := index $value 0}}
+  {{$key}} = {{if isReference $list_value}}{{$value}}{{else}}["{{$list_value}}"]{{end}}
+				{{- else}}
+  {{$key}} = {{if isReference $value}}{{$value}}{{else}}"{{$value}}"{{end}}
+				{{- end}}
+			{{- end}}
+			{{- range $key, $value := $.legacy_blocks}}
+  {{$key}} {
+				{{- range $block_key, $block_value := $value}}
+    {{$block_key}} = {{if isReference $block_value}}{{$block_value}}{{else}}"{{$block_value}}"{{end}}
+				{{- end}}
+  }
+			{{- end}}
 }
 `
 	{{- end}}

@@ -48,7 +48,7 @@ parents:
     test_type: both
 targets:
   - class_name: "rtctrlProfile"
-    target_dn: "uni/tn-test_tenant/prof-rt_ctrl_profile_1"
+    target_dn: "uni/tn-test_name/prof-rt_ctrl_profile_1"
     target_dn_ref: "aci_route_control_profile.test_route_control_profile_0.id"
     target_dn_overwrite_docs: "aci_route_control_profile.example.id"
     parent_dependency: "fvTenant"

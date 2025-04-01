@@ -22,7 +22,7 @@ func TestAccDataSourceL3extRsLblToProfileWithL3extConsLbl(t *testing.T) {
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("data.aci_relation_from_l3out_consumer_label_to_route_control_profile.test", "direction", "import"),
-					resource.TestCheckResourceAttr("data.aci_relation_from_l3out_consumer_label_to_route_control_profile.test", "target_dn", "uni/tn-test_tenant/prof-rt_ctrl_profile_1"),
+					resource.TestCheckResourceAttr("data.aci_relation_from_l3out_consumer_label_to_route_control_profile.test", "target_dn", "uni/tn-test_name/prof-rt_ctrl_profile_1"),
 					resource.TestCheckResourceAttr("data.aci_relation_from_l3out_consumer_label_to_route_control_profile.test", "annotation", "orchestrator:terraform"),
 				),
 			},
@@ -38,7 +38,7 @@ const testConfigL3extRsLblToProfileDataSourceDependencyWithL3extConsLbl = testCo
 data "aci_relation_from_l3out_consumer_label_to_route_control_profile" "test" {
   parent_dn = aci_l3out_consumer_label.test.id
   direction = "import"
-  target_dn = "uni/tn-test_tenant/prof-rt_ctrl_profile_1"
+  target_dn = "uni/tn-test_name/prof-rt_ctrl_profile_1"
   depends_on = [aci_relation_from_l3out_consumer_label_to_route_control_profile.test]
 }
 `
@@ -47,6 +47,6 @@ const testConfigL3extRsLblToProfileNotExistingL3extConsLbl = testConfigL3extCons
 data "aci_relation_from_l3out_consumer_label_to_route_control_profile" "test_non_existing" {
   parent_dn = aci_l3out_consumer_label.test.id
   direction = "import"
-  target_dn = "uni/tn-test_tenant/prof-rt_ctrl_profile_1_not_existing"
+  target_dn = "uni/tn-test_name/prof-rt_ctrl_profile_1_not_existing"
 }
 `

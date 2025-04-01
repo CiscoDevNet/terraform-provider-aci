@@ -52,7 +52,7 @@ parents:
     test_type: both
 targets:
   - class_name: "vzBrCP"
-    target_dn: "uni/tn-test_tenant/brc-contract_name_0"
+    target_dn: "uni/tn-test_name/brc-contract_name_0"
     target_dn_ref: "aci_contract.test_contract_0.id"
     parent_dependency: "fvTenant"
     parent_dependency_dn_ref: "aci_tenant.test.id"
@@ -63,7 +63,7 @@ targets:
     properties:
         name: "contract_name_0"
   - class_name: "vzBrCP"
-    target_dn: "uni/tn-test_tenant/brc-contract_name_1"
+    target_dn: "uni/tn-test_name/brc-contract_name_1"
     target_dn_ref: "aci_contract.test_contract_1.id"
     parent_dependency: "fvTenant"
     parent_dependency_dn_ref: "aci_tenant.test.id"
