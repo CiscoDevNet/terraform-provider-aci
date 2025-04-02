@@ -69,7 +69,7 @@ Before making any changes, it's crucial to back up your current Terraform state.
    terraform apply
    ```
 
-2. **Verify the Changes**: Once the apply step is complete, verify that the changes have been applied correctly and ensure your environment is functioning as expected. The state file should now reflect the new attributes.
+2. **Verify the Changes**: Once the apply step is complete, verify that the changes have been applied correctly and ensure your environment is functioning as expected. The state file should now reflect the redefined attributes.
 
 ### Step 5: Migrate deprecated configuration
 
@@ -107,7 +107,7 @@ Before making any changes, it's crucial to back up your current Terraform state.
     }
     ```
 
-2. **Change the deprecated attributes**: Replace the deprecated attributes in your configuration file with the new attributes and execute the plan again.
+2. **Change the deprecated attributes**: Replace the deprecated attributes in your configuration file with the redefined attributes and execute the plan again.
 
     ***Old Configuration***
     ```hcl
@@ -159,11 +159,11 @@ Over time, some attributes became outdated, were inconsistently named, or were n
 2. **Enhance Consistency**: Standardize attribute names and structures across resources and data sources.
 3. **Simplify Usage**: Remove outdated attributes to streamline the configuration process.
 
-We understand the importance of maintaining backward compatibility to avoid disrupting existing configurations. Therefore, during the transition period, both old and new style attributes are supported. This approach allows users to continue using their existing configurations while gradually adopting the new style attributes. We have implemented deprecation warnings for old style attributes, informing users of the upcoming changes and encouraging them to transition to the new attribute style as soon as possible.
+We understand the importance of maintaining backward compatibility to avoid disrupting existing configurations. Therefore, during the transition period, both legacy and redefined attributes are supported. This approach allows users to continue using their existing configurations while gradually adopting the redefined attributes. We have implemented deprecation warnings for legacy attributes, informing users of the upcoming changes and encouraging them to transition to the redefined attribute as soon as possible.
 
-> It is important to note that for the same ACI property, old and new style attributes cannot be used simultaneously. Attempting to do so will result in an error during configuration validation.
+> It is important to note that for the same ACI property, legacy and redefined attributes cannot be used simultaneously. Attempting to do so will result in an error during configuration validation.
 
-A downside to this approach is increased verbosity in the plan output due to known after applies for each old style attribute not provided when a change is detected. This is a temporary drawback which will be resolved once deprecated attributes are removed in the next major release.
+A downside to this approach is increased verbosity in the plan output due to known after applies for each legacy attribute not provided when a change is detected. This is a temporary drawback which will be resolved once deprecated attributes are removed in the next major release.
 
 ## Changed Behavior for Relations
 
@@ -176,11 +176,11 @@ In non-migrated resources of the Terraform Provider ACI, the relationship types 
 
 Consequently, for the ACI Provider, using the name of the provided tDn for named relation MOs means the DN input may not match the resolved tDn, potentially causing provider errors. Due to this change, we decided to expose only configurable attributes as input for resources, requiring the name attribute instead of the DN for named relationships.
 
-To ensure the final plan matches the applied state, old-style attributes representing a Distinguished Name (DN) of a named relation must be resolved into the correct target Distinguished Name (tDn). This requires the object to exist when establishing the relationship; failure to do so will cause the provider to panic. This issue can be avoided by using new-style resources where a configurable attribute is utilized.
+To ensure the final plan matches the applied state, legacy attributes representing a Distinguished Name (DN) of a named relation must be resolved into the correct target Distinguished Name (tDn). This requires the object to exist when establishing the relationship; failure to do so will cause the provider to panic. This issue can be avoided by using redefined resources where a configurable attribute is utilized.
 
 ## Changes to Child Objects in Configuration
 
-In migrated resources, all child Managed Objects (MOs) are represented in the configuration as a map or a list of maps, rather than single attribute types (such as string, boolean, or integer). This approach ensures the configuration closely resembles the model, allowing for the addition of new attributes to a child without causing breaking changes.
+In migrated resources, all child Managed Objects (MOs) are represented in the configuration as a map or a list of maps, rather than single attribute types (such as string, boolean, or integer). This approach ensures the configuration closely resembles the model, allowing for the addition of redefined attributes to a child without causing breaking changes.
 
 ## Changed Child Objects in Payloads
 
