@@ -50,8 +50,8 @@ data "aci_tenant" "example" {
 * `name_alias` (nameAlias) - (string) The name alias of the Tenant object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
-* `relation_to_tenant_monitoring_policy` - (map) A map of Relation To Tenant Monitoring Policy (ACI object [fvRsTenantMonPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsTenantMonPol/overview)) pointing to Monitoring Policy (ACI Object [monEPGPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/monEPGPol/overview)).
-    * `annotation` (annotation) - (string) The annotation of the Relation To Tenant Monitoring Policy object.
+* `relation_to_monitoring_policy` - (map) A map of Relation From Tenant To Monitoring Policy (ACI object [fvRsTenantMonPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsTenantMonPol/overview)) pointing to Monitoring Policy (ACI Object [monEPGPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/monEPGPol/overview)).
+    * `annotation` (annotation) - (string) The annotation of the Relation From Tenant To Monitoring Policy object.
     * `monitoring_policy_name` (tnMonEPGPolName) - (string) The name of the monitoring policy.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
         * `key` (key) - (string) The key used to uniquely identify this configuration object.

@@ -149,18 +149,18 @@ func TestAccResourceFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_tenant.test", "annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_tenant.test", "annotations.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_tenant.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_tenant_monitoring_policy.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_tenant_monitoring_policy.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_tenant_monitoring_policy.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_tenant_monitoring_policy.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_tenant_monitoring_policy.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_tenant_monitoring_policy.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_tenant_monitoring_policy.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_tenant_monitoring_policy.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_tenant_monitoring_policy.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_tenant_monitoring_policy.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_tenant_monitoring_policy.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_tenant_monitoring_policy.monitoring_policy_name", "default"),
+					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_monitoring_policy.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_monitoring_policy.annotations.0.key", "key_0"),
+					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_monitoring_policy.annotations.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_monitoring_policy.annotations.1.key", "key_1"),
+					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_monitoring_policy.annotations.1.value", "test_value"),
+					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_monitoring_policy.annotations.#", "2"),
+					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_monitoring_policy.tags.0.key", "key_0"),
+					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_monitoring_policy.tags.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_monitoring_policy.tags.1.key", "key_1"),
+					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_monitoring_policy.tags.1.value", "test_value"),
+					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_monitoring_policy.tags.#", "2"),
+					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_monitoring_policy.monitoring_policy_name", "default"),
 					resource.TestCheckResourceAttr("aci_tenant.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_tenant.test", "tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_tenant.test", "tags.1.key", "key_1"),
@@ -182,18 +182,18 @@ func TestAccResourceFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_tenant.test", "annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_tenant.test", "annotations.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_tenant.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_tenant_monitoring_policy.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_tenant_monitoring_policy.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_tenant_monitoring_policy.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_tenant_monitoring_policy.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_tenant_monitoring_policy.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_tenant_monitoring_policy.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_tenant_monitoring_policy.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_tenant_monitoring_policy.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_tenant_monitoring_policy.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_tenant_monitoring_policy.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_tenant_monitoring_policy.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_tenant_monitoring_policy.monitoring_policy_name", "default"),
+					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_monitoring_policy.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_monitoring_policy.annotations.0.key", "key_0"),
+					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_monitoring_policy.annotations.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_monitoring_policy.annotations.1.key", "key_1"),
+					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_monitoring_policy.annotations.1.value", "test_value"),
+					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_monitoring_policy.annotations.#", "2"),
+					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_monitoring_policy.tags.0.key", "key_0"),
+					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_monitoring_policy.tags.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_monitoring_policy.tags.1.key", "key_1"),
+					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_monitoring_policy.tags.1.value", "test_value"),
+					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_monitoring_policy.tags.#", "2"),
+					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_monitoring_policy.monitoring_policy_name", "default"),
 					resource.TestCheckResourceAttr("aci_tenant.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_tenant.test", "tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_tenant.test", "tags.1.key", "key_1"),
@@ -213,14 +213,14 @@ func TestAccResourceFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_tenant.test", "annotations.0.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_tenant.test", "annotations.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_tenant.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_tenant_monitoring_policy.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_tenant_monitoring_policy.annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_tenant_monitoring_policy.annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_tenant_monitoring_policy.annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_tenant_monitoring_policy.tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_tenant_monitoring_policy.tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_tenant_monitoring_policy.tags.#", "1"),
-					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_tenant_monitoring_policy.monitoring_policy_name", "default"),
+					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_monitoring_policy.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_monitoring_policy.annotations.0.key", "key_1"),
+					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_monitoring_policy.annotations.0.value", "test_value"),
+					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_monitoring_policy.annotations.#", "1"),
+					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_monitoring_policy.tags.0.key", "key_1"),
+					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_monitoring_policy.tags.0.value", "test_value"),
+					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_monitoring_policy.tags.#", "1"),
+					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_monitoring_policy.monitoring_policy_name", "default"),
 					resource.TestCheckResourceAttr("aci_tenant.test", "tags.0.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_tenant.test", "tags.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_tenant.test", "tags.#", "1"),
@@ -236,10 +236,10 @@ func TestAccResourceFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_tenant.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_tenant.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_tenant.test", "annotations.#", "0"),
-					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_tenant_monitoring_policy.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_tenant_monitoring_policy.annotations.#", "0"),
-					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_tenant_monitoring_policy.tags.#", "0"),
-					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_tenant_monitoring_policy.monitoring_policy_name", "default"),
+					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_monitoring_policy.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_monitoring_policy.annotations.#", "0"),
+					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_monitoring_policy.tags.#", "0"),
+					resource.TestCheckResourceAttr("aci_tenant.test", "relation_to_monitoring_policy.monitoring_policy_name", "default"),
 					resource.TestCheckResourceAttr("aci_tenant.test", "tags.#", "0"),
 				),
 			},
@@ -313,7 +313,7 @@ resource "aci_tenant" "test" {
 	  value = "test_value"
 	},
   ]
-  relation_to_tenant_monitoring_policy = {
+  relation_to_monitoring_policy = {
     annotation = "annotation_1"
     annotations = [
 	  {
@@ -365,7 +365,7 @@ resource "aci_tenant" "test" {
 	  value = "test_value"
 	},
   ]
-  relation_to_tenant_monitoring_policy = {
+  relation_to_monitoring_policy = {
     annotation = "annotation_1"
     annotations = [ 
 	  {
@@ -394,7 +394,7 @@ const testConfigFvTenantChildrenRemoveAll = `
 resource "aci_tenant" "test" {
   name = "test_name"
   annotations = []
-  relation_to_tenant_monitoring_policy = {
+  relation_to_monitoring_policy = {
     annotation = "annotation_1"
     annotations = []
     tags = []
