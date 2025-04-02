@@ -51,11 +51,11 @@ type FvTenantResourceModel struct {
 	NameAlias                              types.String `tfsdk:"name_alias"`
 	OwnerKey                               types.String `tfsdk:"owner_key"`
 	OwnerTag                               types.String `tfsdk:"owner_tag"`
-	FvRsTenantMonPol                       types.Object `tfsdk:"relation_to_tenant_monitoring_policy"`
+	FvRsTenantMonPol                       types.Object `tfsdk:"relation_to_monitoring_policy"`
 	TagAnnotation                          types.Set    `tfsdk:"annotations"`
 	TagTag                                 types.Set    `tfsdk:"tags"`
-	Deprecated_relation_fv_rs_tn_deny_rule types.Set    `tfsdk:"relation_fv_rs_tn_deny_rule"`
 	DeprecatedFvRsTenantMonPol             types.String `tfsdk:"relation_fv_rs_tenant_mon_pol"`
+	Deprecated_relation_fv_rs_tn_deny_rule types.Set    `tfsdk:"relation_fv_rs_tn_deny_rule"`
 }
 
 func getEmptyFvTenantResourceModel() *FvTenantResourceModel {
@@ -85,8 +85,8 @@ func getEmptyFvTenantResourceModel() *FvTenantResourceModel {
 				"value": types.StringType,
 			},
 		}),
-		Deprecated_relation_fv_rs_tn_deny_rule: types.SetNull(types.StringType),
 		DeprecatedFvRsTenantMonPol:             types.String{},
+		Deprecated_relation_fv_rs_tn_deny_rule: types.SetNull(types.StringType),
 	}
 }
 
@@ -214,8 +214,8 @@ type FvTenantResourceModelV1 struct {
 	Id                                     types.String `tfsdk:"id"`
 	Name                                   types.String `tfsdk:"name"`
 	NameAlias                              types.String `tfsdk:"name_alias"`
-	Deprecated_relation_fv_rs_tn_deny_rule types.Set    `tfsdk:"relation_fv_rs_tn_deny_rule"`
 	FvRsTenantMonPol                       types.String `tfsdk:"relation_fv_rs_tenant_mon_pol"`
+	Deprecated_relation_fv_rs_tn_deny_rule types.Set    `tfsdk:"relation_fv_rs_tn_deny_rule"`
 }
 
 func (r *FvTenantResource) UpgradeState(ctx context.Context) map[int64]resource.StateUpgrader {
@@ -248,16 +248,16 @@ func (r *FvTenantResource) UpgradeState(ctx context.Context) map[int64]resource.
 						Optional: true,
 						Computed: true,
 					},
+					"relation_fv_rs_tenant_mon_pol": schema.StringAttribute{
+						Required: false,
+						Optional: true,
+						Computed: true,
+					},
 					"relation_fv_rs_tn_deny_rule": schema.SetAttribute{
 						Required:    false,
 						Optional:    true,
 						Computed:    false,
 						ElementType: types.StringType,
-					},
-					"relation_fv_rs_tenant_mon_pol": schema.StringAttribute{
-						Required: false,
-						Optional: true,
-						Computed: true,
 					},
 				},
 				Blocks: map[string]schema.Block{},
@@ -279,8 +279,8 @@ func (r *FvTenantResource) UpgradeState(ctx context.Context) map[int64]resource.
 					NameAlias:                              priorStateData.NameAlias,
 					OwnerKey:                               basetypes.NewStringNull(),
 					OwnerTag:                               basetypes.NewStringNull(),
-					Deprecated_relation_fv_rs_tn_deny_rule: priorStateData.Deprecated_relation_fv_rs_tn_deny_rule,
 					DeprecatedFvRsTenantMonPol:             priorStateData.FvRsTenantMonPol,
+					Deprecated_relation_fv_rs_tn_deny_rule: priorStateData.Deprecated_relation_fv_rs_tn_deny_rule,
 				}
 
 				FvRsTenantMonPolObject := FvRsTenantMonPolFvTenantResourceModel{
@@ -444,6 +444,16 @@ func (r *FvTenantResource) Schema(ctx context.Context, req resource.SchemaReques
 
 		Attributes: map[string]schema.Attribute{
 			// Deprecated attributes
+			"relation_fv_rs_tenant_mon_pol": schema.StringAttribute{
+				Optional:           true,
+				Computed:           true,
+				DeprecationMessage: "Attribute 'relation_fv_rs_tenant_mon_pol' is deprecated, please refer to 'relation_to_monitoring_policy' instead. The attribute will be removed in the next major version of the provider.",
+				Validators: []validator.String{
+					stringvalidator.ConflictsWith(path.Expressions{
+						path.MatchRoot("relation_to_monitoring_policy"),
+					}...),
+				},
+			},
 			"relation_fv_rs_tn_deny_rule": schema.SetAttribute{
 				Optional:           true,
 				Computed:           true,
@@ -451,16 +461,6 @@ func (r *FvTenantResource) Schema(ctx context.Context, req resource.SchemaReques
 				DeprecationMessage: "Attribute `relation_fv_rs_tn_deny_rule` is deprecated. The attribute will be removed in the next major version of the provider.",
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
-				},
-			},
-			"relation_fv_rs_tenant_mon_pol": schema.StringAttribute{
-				Optional:           true,
-				Computed:           true,
-				DeprecationMessage: "Attribute 'relation_fv_rs_tenant_mon_pol' is deprecated, please refer to 'relation_to_tenant_monitoring_policy' instead. The attribute will be removed in the next major version of the provider.",
-				Validators: []validator.String{
-					stringvalidator.ConflictsWith(path.Expressions{
-						path.MatchRoot("relation_to_tenant_monitoring_policy"),
-					}...),
 				},
 			},
 			// End of deprecated attributes
@@ -526,7 +526,7 @@ func (r *FvTenantResource) Schema(ctx context.Context, req resource.SchemaReques
 				},
 				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
 			},
-			"relation_to_tenant_monitoring_policy": schema.SingleNestedAttribute{
+			"relation_to_monitoring_policy": schema.SingleNestedAttribute{
 				MarkdownDescription: `A source relation to the monitoring policy model for the endpoint group semantic scope. This is an internal object.`,
 				Optional:            true,
 				Computed:            true,
@@ -540,7 +540,7 @@ func (r *FvTenantResource) Schema(ctx context.Context, req resource.SchemaReques
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						MarkdownDescription: `The annotation of the Relation To Tenant Monitoring Policy object.`,
+						MarkdownDescription: `The annotation of the Relation From Tenant To Monitoring Policy object.`,
 					},
 					"monitoring_policy_name": schema.StringAttribute{
 						Optional: true,

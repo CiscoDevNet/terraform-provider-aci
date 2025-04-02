@@ -42,14 +42,14 @@ func (d *FvTenantDataSource) Schema(ctx context.Context, req datasource.SchemaRe
 
 		Attributes: map[string]schema.Attribute{
 			// Deprecated attributes
+			"relation_fv_rs_tenant_mon_pol": schema.StringAttribute{
+				Computed:           true,
+				DeprecationMessage: "Attribute 'relation_fv_rs_tenant_mon_pol' is deprecated, please refer to 'relation_to_monitoring_policy' instead. The attribute will be removed in the next major version of the provider.",
+			},
 			"relation_fv_rs_tn_deny_rule": schema.SetAttribute{
 				Computed:           true,
 				ElementType:        types.StringType,
 				DeprecationMessage: "Attribute `relation_fv_rs_tn_deny_rule` is deprecated. The attribute will be removed in the next major version of the provider.",
-			},
-			"relation_fv_rs_tenant_mon_pol": schema.StringAttribute{
-				Computed:           true,
-				DeprecationMessage: "Attribute 'relation_fv_rs_tenant_mon_pol' is deprecated, please refer to 'relation_to_tenant_monitoring_policy' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			// End of deprecated attributes
 			"id": schema.StringAttribute{
@@ -80,13 +80,13 @@ func (d *FvTenantDataSource) Schema(ctx context.Context, req datasource.SchemaRe
 				Computed:            true,
 				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
 			},
-			"relation_to_tenant_monitoring_policy": schema.SingleNestedAttribute{
+			"relation_to_monitoring_policy": schema.SingleNestedAttribute{
 				MarkdownDescription: `A source relation to the monitoring policy model for the endpoint group semantic scope. This is an internal object.`,
 				Computed:            true,
 				Attributes: map[string]schema.Attribute{
 					"annotation": schema.StringAttribute{
 						Computed:            true,
-						MarkdownDescription: `The annotation of the Relation To Tenant Monitoring Policy object.`,
+						MarkdownDescription: `The annotation of the Relation From Tenant To Monitoring Policy object.`,
 					},
 					"monitoring_policy_name": schema.StringAttribute{
 						Computed:            true,
