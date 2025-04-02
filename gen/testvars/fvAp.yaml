@@ -41,6 +41,7 @@ children:
     - annotation: "annotation_1"
       monitoring_policy_name: "monitoring_policy_name_1"
       deletable_child: true
+      child_required: false
       children:
         annotations:
           - key: "key_0"
