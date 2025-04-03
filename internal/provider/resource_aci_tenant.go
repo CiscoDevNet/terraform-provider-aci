@@ -44,18 +44,18 @@ type FvTenantResource struct {
 
 // FvTenantResourceModel describes the resource data model.
 type FvTenantResourceModel struct {
-	Id                                     types.String `tfsdk:"id"`
-	Annotation                             types.String `tfsdk:"annotation"`
-	Descr                                  types.String `tfsdk:"description"`
-	Name                                   types.String `tfsdk:"name"`
-	NameAlias                              types.String `tfsdk:"name_alias"`
-	OwnerKey                               types.String `tfsdk:"owner_key"`
-	OwnerTag                               types.String `tfsdk:"owner_tag"`
-	FvRsTenantMonPol                       types.Object `tfsdk:"relation_to_monitoring_policy"`
-	TagAnnotation                          types.Set    `tfsdk:"annotations"`
-	TagTag                                 types.Set    `tfsdk:"tags"`
-	DeprecatedFvRsTenantMonPol             types.String `tfsdk:"relation_fv_rs_tenant_mon_pol"`
-	Deprecated_relation_fv_rs_tn_deny_rule types.Set    `tfsdk:"relation_fv_rs_tn_deny_rule"`
+	Id                                  types.String `tfsdk:"id"`
+	Annotation                          types.String `tfsdk:"annotation"`
+	Descr                               types.String `tfsdk:"description"`
+	Name                                types.String `tfsdk:"name"`
+	NameAlias                           types.String `tfsdk:"name_alias"`
+	OwnerKey                            types.String `tfsdk:"owner_key"`
+	OwnerTag                            types.String `tfsdk:"owner_tag"`
+	FvRsTenantMonPol                    types.Object `tfsdk:"relation_to_monitoring_policy"`
+	TagAnnotation                       types.Set    `tfsdk:"annotations"`
+	TagTag                              types.Set    `tfsdk:"tags"`
+	DeprecatedFvRsTenantMonPol          types.String `tfsdk:"relation_fv_rs_tenant_mon_pol"`
+	Ignored_relation_fv_rs_tn_deny_rule types.Set    `tfsdk:"relation_fv_rs_tn_deny_rule"`
 }
 
 func getEmptyFvTenantResourceModel() *FvTenantResourceModel {
@@ -85,8 +85,8 @@ func getEmptyFvTenantResourceModel() *FvTenantResourceModel {
 				"value": types.StringType,
 			},
 		}),
-		DeprecatedFvRsTenantMonPol:             types.String{},
-		Deprecated_relation_fv_rs_tn_deny_rule: types.SetNull(types.StringType),
+		DeprecatedFvRsTenantMonPol:          types.String{},
+		Ignored_relation_fv_rs_tn_deny_rule: types.SetNull(types.StringType),
 	}
 }
 
@@ -209,13 +209,13 @@ type FvTenantIdentifier struct {
 }
 
 type FvTenantResourceModelV1 struct {
-	Annotation                             types.String `tfsdk:"annotation"`
-	Descr                                  types.String `tfsdk:"description"`
-	Id                                     types.String `tfsdk:"id"`
-	Name                                   types.String `tfsdk:"name"`
-	NameAlias                              types.String `tfsdk:"name_alias"`
-	FvRsTenantMonPol                       types.String `tfsdk:"relation_fv_rs_tenant_mon_pol"`
-	Deprecated_relation_fv_rs_tn_deny_rule types.Set    `tfsdk:"relation_fv_rs_tn_deny_rule"`
+	Annotation                          types.String `tfsdk:"annotation"`
+	Descr                               types.String `tfsdk:"description"`
+	Id                                  types.String `tfsdk:"id"`
+	Name                                types.String `tfsdk:"name"`
+	NameAlias                           types.String `tfsdk:"name_alias"`
+	FvRsTenantMonPol                    types.String `tfsdk:"relation_fv_rs_tenant_mon_pol"`
+	Ignored_relation_fv_rs_tn_deny_rule types.Set    `tfsdk:"relation_fv_rs_tn_deny_rule"`
 }
 
 func (r *FvTenantResource) UpgradeState(ctx context.Context) map[int64]resource.StateUpgrader {
@@ -272,15 +272,15 @@ func (r *FvTenantResource) UpgradeState(ctx context.Context) map[int64]resource.
 				}
 
 				upgradedStateData := FvTenantResourceModel{
-					Id:                                     priorStateData.Id,
-					Annotation:                             priorStateData.Annotation,
-					Descr:                                  priorStateData.Descr,
-					Name:                                   priorStateData.Name,
-					NameAlias:                              priorStateData.NameAlias,
-					OwnerKey:                               basetypes.NewStringNull(),
-					OwnerTag:                               basetypes.NewStringNull(),
-					DeprecatedFvRsTenantMonPol:             priorStateData.FvRsTenantMonPol,
-					Deprecated_relation_fv_rs_tn_deny_rule: priorStateData.Deprecated_relation_fv_rs_tn_deny_rule,
+					Id:                                  priorStateData.Id,
+					Annotation:                          priorStateData.Annotation,
+					Descr:                               priorStateData.Descr,
+					Name:                                priorStateData.Name,
+					NameAlias:                           priorStateData.NameAlias,
+					OwnerKey:                            basetypes.NewStringNull(),
+					OwnerTag:                            basetypes.NewStringNull(),
+					DeprecatedFvRsTenantMonPol:          priorStateData.FvRsTenantMonPol,
+					Ignored_relation_fv_rs_tn_deny_rule: priorStateData.Ignored_relation_fv_rs_tn_deny_rule,
 				}
 
 				FvRsTenantMonPolObject := FvRsTenantMonPolFvTenantResourceModel{
@@ -327,11 +327,11 @@ func (r *FvTenantResource) UpgradeState(ctx context.Context) map[int64]resource.
 }
 
 func setFvTenantLegacyAttributes(ctx context.Context, diags *diag.Diagnostics, data, staticData *FvTenantResourceModel, classReadInfo []interface{}) {
-	if !staticData.Deprecated_relation_fv_rs_tn_deny_rule.IsUnknown() && !staticData.Deprecated_relation_fv_rs_tn_deny_rule.IsNull() {
-		data.Deprecated_relation_fv_rs_tn_deny_rule = staticData.Deprecated_relation_fv_rs_tn_deny_rule
+	if !staticData.Ignored_relation_fv_rs_tn_deny_rule.IsUnknown() && !staticData.Ignored_relation_fv_rs_tn_deny_rule.IsNull() {
+		data.Ignored_relation_fv_rs_tn_deny_rule = staticData.Ignored_relation_fv_rs_tn_deny_rule
 	} else {
-		Deprecated_relation_fv_rs_tn_deny_ruleSet, _ := types.SetValueFrom(ctx, types.StringType, []string{})
-		data.Deprecated_relation_fv_rs_tn_deny_rule = Deprecated_relation_fv_rs_tn_deny_ruleSet
+		Ignored_relation_fv_rs_tn_deny_ruleSet, _ := types.SetValueFrom(ctx, types.StringType, []string{})
+		data.Ignored_relation_fv_rs_tn_deny_rule = Ignored_relation_fv_rs_tn_deny_ruleSet
 	}
 	data.DeprecatedFvRsTenantMonPol = basetypes.NewStringNull()
 
@@ -458,7 +458,7 @@ func (r *FvTenantResource) Schema(ctx context.Context, req resource.SchemaReques
 				Optional:           true,
 				Computed:           true,
 				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute `relation_fv_rs_tn_deny_rule` is deprecated. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "Attribute `relation_fv_rs_tn_deny_rule` is deprecated. The configuration was not functioning as intended because the Managed Object (MO) created by the pre-migrated resource was either configured incorrectly or exposed without any implemented functionality on the APIC. The MO for this attribute is no longer created on the APIC, but the existing MO will remain present until the resource is destroyed. This attribute will be removed in the next major version of the provider.",
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
 				},

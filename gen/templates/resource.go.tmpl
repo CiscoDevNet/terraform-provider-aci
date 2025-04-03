@@ -1413,7 +1413,7 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 			"{{.AttributeName}}": schema.StringAttribute{
 				Optional: true,
 				Computed: true,
-				DeprecationMessage: "Attribute '{{.AttributeName}}' is deprecated, please refer to '{{$ReplacedAttribute}}' instead. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "{{getDeprecatedExplanation .AttributeName $ReplacedAttribute}}",
 				Validators: []validator.String{
 					stringvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("{{$ReplacedAttribute}}"),
@@ -1426,7 +1426,7 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 				Optional: true,
 				Computed: true,
 				ElementType: types.StringType,
-				DeprecationMessage: "Attribute '{{.AttributeName}}' is deprecated, please refer to '{{$ReplacedAttribute}}' instead. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "{{getDeprecatedExplanation .AttributeName $ReplacedAttribute}}",
 				Validators: []validator.Set{
 					setvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("{{$ReplacedAttribute}}"),
@@ -1439,7 +1439,7 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 				Optional: true,
 				Computed: true,
 				ElementType: types.StringType,
-				DeprecationMessage: "Attribute '{{.AttributeName}}' is deprecated, please refer to '{{.ReplacedBy.AttributeName}}' instead. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "{{getDeprecatedExplanation .AttributeName .ReplacedBy.AttributeName}}",
 				Validators: []validator.List{
 					listvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("{{getConflictingAttributeName .ReplacedBy.AttributeName}}"),
@@ -1452,7 +1452,7 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 			"{{.AttributeName}}": schema.StringAttribute{
 				Optional: true,
 				Computed: true,
-				DeprecationMessage: "Attribute `{{.AttributeName}}` is deprecated. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "{{getIgnoredExplanation .AttributeName}}",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
@@ -1464,7 +1464,7 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 				Optional: true,
 				Computed: true,
 				ElementType: types.StringType,
-				DeprecationMessage: "Attribute `{{.AttributeName}}` is deprecated. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "{{getIgnoredExplanation .AttributeName}}",
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
 				},
@@ -1475,7 +1475,7 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 				Optional: true,
 				Computed: true,
 				ElementType: types.StringType,
-				DeprecationMessage: "Attribute `{{.AttributeName}}` is deprecated. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "{{getIgnoredExplanation .AttributeName}}",
 				PlanModifiers: []planmodifier.List{
 					listplanmodifier.UseStateForUnknown(),
 				},

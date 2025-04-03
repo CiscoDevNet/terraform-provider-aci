@@ -147,6 +147,16 @@ var templateFuncs = template.FuncMap{
 	"isReference":                           IsReference,
 	"getLegacyPropertyTestValue":            GetTestValue,
 	"getLegacyBlockTestValue":               GetBlockTestValue,
+	"getDeprecatedExplanation":              GetDeprecatedExplanation,
+	"getIgnoredExplanation":                 GetIgnoredExplanation,
+}
+
+func GetDeprecatedExplanation(attributeName, replacedByAttributeName string) string {
+	return fmt.Sprintf("Attribute '%s' is deprecated, please refer to '%s' instead. The attribute will be removed in the next major version of the provider.", attributeName, replacedByAttributeName)
+}
+
+func GetIgnoredExplanation(attributeName string) string {
+	return fmt.Sprintf("Attribute `%s` is deprecated. The configuration was not functioning as intended because the Managed Object (MO) created by the pre-migrated resource was either configured incorrectly or exposed without any implemented functionality on the APIC. The MO for this attribute is no longer created on the APIC, but the existing MO will remain present until the resource is destroyed. This attribute will be removed in the next major version of the provider.", attributeName)
 }
 
 func getChildTarget(model Model, childKey, childValue string, tDn bool) string {
@@ -2320,7 +2330,7 @@ func (m *Model) SetLegacyAttributes(definitions Definitions) {
 		for attributeName, attributeValue := range attributes {
 			legacyAttribute, propertyName := m.GetLegacyAttribute(attributeName, m.GetClassFromMigrationClassMapping(definitions, attributeName, true), attributeValue, definitions)
 			if attributeName == propertyName {
-				legacyAttribute.Name = fmt.Sprintf("Deprecated_%s", legacyAttribute.Name)
+				legacyAttribute.Name = fmt.Sprintf("Ignored_%s", legacyAttribute.Name)
 			}
 			if legacyAttribute.ReplacedBy.ClassName != "" && legacyAttribute.ReplacedBy.ClassName != m.PkgName {
 				legacyAttribute.Name = Capitalize(legacyAttribute.ReplacedBy.ClassName)
