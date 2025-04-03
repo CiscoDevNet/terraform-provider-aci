@@ -46,39 +46,39 @@ type FvESgResource struct {
 
 // FvESgResourceModel describes the resource data model.
 type FvESgResourceModel struct {
-	Id                                     types.String `tfsdk:"id"`
-	ParentDn                               types.String `tfsdk:"parent_dn"`
-	Annotation                             types.String `tfsdk:"annotation"`
-	Descr                                  types.String `tfsdk:"description"`
-	ExceptionTag                           types.String `tfsdk:"exception_tag"`
-	MatchT                                 types.String `tfsdk:"match_criteria"`
-	Name                                   types.String `tfsdk:"name"`
-	NameAlias                              types.String `tfsdk:"name_alias"`
-	PcEnfPref                              types.String `tfsdk:"intra_esg_isolation"`
-	PcTag                                  types.String `tfsdk:"pc_tag"`
-	PrefGrMemb                             types.String `tfsdk:"preferred_group_member"`
-	Scope                                  types.String `tfsdk:"scope"`
-	Shutdown                               types.String `tfsdk:"admin_state"`
-	FvRsCons                               types.Set    `tfsdk:"relation_to_consumed_contracts"`
-	FvRsConsIf                             types.Set    `tfsdk:"relation_to_imported_contracts"`
-	FvRsIntraEpg                           types.Set    `tfsdk:"relation_to_intra_epg_contracts"`
-	FvRsProv                               types.Set    `tfsdk:"relation_to_provided_contracts"`
-	FvRsScope                              types.Object `tfsdk:"relation_to_vrf"`
-	FvRsSecInherited                       types.Set    `tfsdk:"relation_to_contract_masters"`
-	TagAnnotation                          types.Set    `tfsdk:"annotations"`
-	TagTag                                 types.Set    `tfsdk:"tags"`
-	DeprecatedMatchT                       types.String `tfsdk:"match_t"`
-	DeprecatedParentDn                     types.String `tfsdk:"application_profile_dn"`
-	DeprecatedPcEnfPref                    types.String `tfsdk:"pc_enf_pref"`
-	DeprecatedPrefGrMemb                   types.String `tfsdk:"pref_gr_memb"`
-	Deprecated_relation_fv_rs_cust_qos_pol types.String `tfsdk:"relation_fv_rs_cust_qos_pol"`
-	Deprecated_relation_fv_rs_prot_by      types.Set    `tfsdk:"relation_fv_rs_prot_by"`
-	DeprecatedFvRsSecInherited             types.Set    `tfsdk:"relation_fv_rs_sec_inherited"`
-	DeprecatedFvRsIntraEpg                 types.Set    `tfsdk:"relation_fv_rs_intra_epg"`
-	DeprecatedFvRsScope                    types.String `tfsdk:"relation_fv_rs_scope"`
-	DeprecatedFvRsCons                     types.Set    `tfsdk:"relation_fv_rs_cons"`
-	DeprecatedFvRsConsIf                   types.Set    `tfsdk:"relation_fv_rs_cons_if"`
-	DeprecatedFvRsProv                     types.Set    `tfsdk:"relation_fv_rs_prov"`
+	Id                                  types.String `tfsdk:"id"`
+	ParentDn                            types.String `tfsdk:"parent_dn"`
+	Annotation                          types.String `tfsdk:"annotation"`
+	Descr                               types.String `tfsdk:"description"`
+	ExceptionTag                        types.String `tfsdk:"exception_tag"`
+	MatchT                              types.String `tfsdk:"match_criteria"`
+	Name                                types.String `tfsdk:"name"`
+	NameAlias                           types.String `tfsdk:"name_alias"`
+	PcEnfPref                           types.String `tfsdk:"intra_esg_isolation"`
+	PcTag                               types.String `tfsdk:"pc_tag"`
+	PrefGrMemb                          types.String `tfsdk:"preferred_group_member"`
+	Scope                               types.String `tfsdk:"scope"`
+	Shutdown                            types.String `tfsdk:"admin_state"`
+	FvRsCons                            types.Set    `tfsdk:"relation_to_consumed_contracts"`
+	FvRsConsIf                          types.Set    `tfsdk:"relation_to_imported_contracts"`
+	FvRsIntraEpg                        types.Set    `tfsdk:"relation_to_intra_epg_contracts"`
+	FvRsProv                            types.Set    `tfsdk:"relation_to_provided_contracts"`
+	FvRsScope                           types.Object `tfsdk:"relation_to_vrf"`
+	FvRsSecInherited                    types.Set    `tfsdk:"relation_to_contract_masters"`
+	TagAnnotation                       types.Set    `tfsdk:"annotations"`
+	TagTag                              types.Set    `tfsdk:"tags"`
+	DeprecatedMatchT                    types.String `tfsdk:"match_t"`
+	DeprecatedParentDn                  types.String `tfsdk:"application_profile_dn"`
+	DeprecatedPcEnfPref                 types.String `tfsdk:"pc_enf_pref"`
+	DeprecatedPrefGrMemb                types.String `tfsdk:"pref_gr_memb"`
+	Ignored_relation_fv_rs_cust_qos_pol types.String `tfsdk:"relation_fv_rs_cust_qos_pol"`
+	Ignored_relation_fv_rs_prot_by      types.Set    `tfsdk:"relation_fv_rs_prot_by"`
+	DeprecatedFvRsSecInherited          types.Set    `tfsdk:"relation_fv_rs_sec_inherited"`
+	DeprecatedFvRsIntraEpg              types.Set    `tfsdk:"relation_fv_rs_intra_epg"`
+	DeprecatedFvRsScope                 types.String `tfsdk:"relation_fv_rs_scope"`
+	DeprecatedFvRsCons                  types.Set    `tfsdk:"relation_fv_rs_cons"`
+	DeprecatedFvRsConsIf                types.Set    `tfsdk:"relation_fv_rs_cons_if"`
+	DeprecatedFvRsProv                  types.Set    `tfsdk:"relation_fv_rs_prov"`
 }
 
 func getEmptyFvESgResourceModel() *FvESgResourceModel {
@@ -158,18 +158,18 @@ func getEmptyFvESgResourceModel() *FvESgResourceModel {
 				"value": types.StringType,
 			},
 		}),
-		DeprecatedMatchT:                       types.String{},
-		DeprecatedParentDn:                     types.String{},
-		DeprecatedPcEnfPref:                    types.String{},
-		DeprecatedPrefGrMemb:                   types.String{},
-		Deprecated_relation_fv_rs_cust_qos_pol: types.String{},
-		Deprecated_relation_fv_rs_prot_by:      types.SetNull(types.StringType),
-		DeprecatedFvRsSecInherited:             types.SetNull(types.StringType),
-		DeprecatedFvRsIntraEpg:                 types.SetNull(types.StringType),
-		DeprecatedFvRsScope:                    types.String{},
-		DeprecatedFvRsCons:                     types.SetNull(deprecatedFvRsConsType),
-		DeprecatedFvRsConsIf:                   types.SetNull(deprecatedFvRsConsIfType),
-		DeprecatedFvRsProv:                     types.SetNull(deprecatedFvRsProvType),
+		DeprecatedMatchT:                    types.String{},
+		DeprecatedParentDn:                  types.String{},
+		DeprecatedPcEnfPref:                 types.String{},
+		DeprecatedPrefGrMemb:                types.String{},
+		Ignored_relation_fv_rs_cust_qos_pol: types.String{},
+		Ignored_relation_fv_rs_prot_by:      types.SetNull(types.StringType),
+		DeprecatedFvRsSecInherited:          types.SetNull(types.StringType),
+		DeprecatedFvRsIntraEpg:              types.SetNull(types.StringType),
+		DeprecatedFvRsScope:                 types.String{},
+		DeprecatedFvRsCons:                  types.SetNull(deprecatedFvRsConsType),
+		DeprecatedFvRsConsIf:                types.SetNull(deprecatedFvRsConsIfType),
+		DeprecatedFvRsProv:                  types.SetNull(deprecatedFvRsProvType),
 	}
 }
 
@@ -867,23 +867,23 @@ var deprecatedFvRsProvType = types.ObjectType{
 }
 
 type FvESgResourceModelV1 struct {
-	Annotation                             types.String `tfsdk:"annotation"`
-	Descr                                  types.String `tfsdk:"description"`
-	Id                                     types.String `tfsdk:"id"`
-	MatchT                                 types.String `tfsdk:"match_t"`
-	Name                                   types.String `tfsdk:"name"`
-	NameAlias                              types.String `tfsdk:"name_alias"`
-	ParentDn                               types.String `tfsdk:"application_profile_dn"`
-	PcEnfPref                              types.String `tfsdk:"pc_enf_pref"`
-	PrefGrMemb                             types.String `tfsdk:"pref_gr_memb"`
-	Deprecated_relation_fv_rs_cust_qos_pol types.String `tfsdk:"relation_fv_rs_cust_qos_pol"`
-	Deprecated_relation_fv_rs_prot_by      types.Set    `tfsdk:"relation_fv_rs_prot_by"`
-	FvRsSecInherited                       types.Set    `tfsdk:"relation_fv_rs_sec_inherited"`
-	FvRsIntraEpg                           types.Set    `tfsdk:"relation_fv_rs_intra_epg"`
-	FvRsScope                              types.String `tfsdk:"relation_fv_rs_scope"`
-	FvRsCons                               types.Set    `tfsdk:"relation_fv_rs_cons"`
-	FvRsConsIf                             types.Set    `tfsdk:"relation_fv_rs_cons_if"`
-	FvRsProv                               types.Set    `tfsdk:"relation_fv_rs_prov"`
+	Annotation                          types.String `tfsdk:"annotation"`
+	Descr                               types.String `tfsdk:"description"`
+	Id                                  types.String `tfsdk:"id"`
+	MatchT                              types.String `tfsdk:"match_t"`
+	Name                                types.String `tfsdk:"name"`
+	NameAlias                           types.String `tfsdk:"name_alias"`
+	ParentDn                            types.String `tfsdk:"application_profile_dn"`
+	PcEnfPref                           types.String `tfsdk:"pc_enf_pref"`
+	PrefGrMemb                          types.String `tfsdk:"pref_gr_memb"`
+	Ignored_relation_fv_rs_cust_qos_pol types.String `tfsdk:"relation_fv_rs_cust_qos_pol"`
+	Ignored_relation_fv_rs_prot_by      types.Set    `tfsdk:"relation_fv_rs_prot_by"`
+	FvRsSecInherited                    types.Set    `tfsdk:"relation_fv_rs_sec_inherited"`
+	FvRsIntraEpg                        types.Set    `tfsdk:"relation_fv_rs_intra_epg"`
+	FvRsScope                           types.String `tfsdk:"relation_fv_rs_scope"`
+	FvRsCons                            types.Set    `tfsdk:"relation_fv_rs_cons"`
+	FvRsConsIf                          types.Set    `tfsdk:"relation_fv_rs_cons_if"`
+	FvRsProv                            types.Set    `tfsdk:"relation_fv_rs_prov"`
 }
 
 type FvRsConsFvESgResourceModelV1 struct {
@@ -1069,26 +1069,26 @@ func (r *FvESgResource) UpgradeState(ctx context.Context) map[int64]resource.Sta
 				}
 
 				upgradedStateData := FvESgResourceModel{
-					Id:                                     priorStateData.Id,
-					ParentDn:                               priorStateData.ParentDn,
-					Annotation:                             priorStateData.Annotation,
-					Descr:                                  priorStateData.Descr,
-					ExceptionTag:                           basetypes.NewStringNull(),
-					MatchT:                                 priorStateData.MatchT,
-					Name:                                   priorStateData.Name,
-					NameAlias:                              priorStateData.NameAlias,
-					PcEnfPref:                              priorStateData.PcEnfPref,
-					PcTag:                                  basetypes.NewStringNull(),
-					PrefGrMemb:                             priorStateData.PrefGrMemb,
-					Scope:                                  basetypes.NewStringNull(),
-					Shutdown:                               basetypes.NewStringNull(),
-					DeprecatedMatchT:                       priorStateData.MatchT,
-					DeprecatedParentDn:                     priorStateData.ParentDn,
-					DeprecatedPcEnfPref:                    priorStateData.PcEnfPref,
-					DeprecatedPrefGrMemb:                   priorStateData.PrefGrMemb,
-					Deprecated_relation_fv_rs_cust_qos_pol: priorStateData.Deprecated_relation_fv_rs_cust_qos_pol,
-					Deprecated_relation_fv_rs_prot_by:      priorStateData.Deprecated_relation_fv_rs_prot_by,
-					DeprecatedFvRsScope:                    priorStateData.FvRsScope,
+					Id:                                  priorStateData.Id,
+					ParentDn:                            priorStateData.ParentDn,
+					Annotation:                          priorStateData.Annotation,
+					Descr:                               priorStateData.Descr,
+					ExceptionTag:                        basetypes.NewStringNull(),
+					MatchT:                              priorStateData.MatchT,
+					Name:                                priorStateData.Name,
+					NameAlias:                           priorStateData.NameAlias,
+					PcEnfPref:                           priorStateData.PcEnfPref,
+					PcTag:                               basetypes.NewStringNull(),
+					PrefGrMemb:                          priorStateData.PrefGrMemb,
+					Scope:                               basetypes.NewStringNull(),
+					Shutdown:                            basetypes.NewStringNull(),
+					DeprecatedMatchT:                    priorStateData.MatchT,
+					DeprecatedParentDn:                  priorStateData.ParentDn,
+					DeprecatedPcEnfPref:                 priorStateData.PcEnfPref,
+					DeprecatedPrefGrMemb:                priorStateData.PrefGrMemb,
+					Ignored_relation_fv_rs_cust_qos_pol: priorStateData.Ignored_relation_fv_rs_cust_qos_pol,
+					Ignored_relation_fv_rs_prot_by:      priorStateData.Ignored_relation_fv_rs_prot_by,
+					DeprecatedFvRsScope:                 priorStateData.FvRsScope,
 				}
 
 				FvRsConsList := make([]FvRsConsFvESgResourceModel, 0)
@@ -1290,14 +1290,14 @@ func (r *FvESgResource) UpgradeState(ctx context.Context) map[int64]resource.Sta
 
 func setFvESgLegacyAttributes(ctx context.Context, diags *diag.Diagnostics, data, staticData *FvESgResourceModel, classReadInfo []interface{}) {
 	data.DeprecatedParentDn = data.ParentDn
-	if !staticData.Deprecated_relation_fv_rs_cust_qos_pol.IsUnknown() {
-		data.Deprecated_relation_fv_rs_cust_qos_pol = staticData.Deprecated_relation_fv_rs_cust_qos_pol
+	if !staticData.Ignored_relation_fv_rs_cust_qos_pol.IsUnknown() {
+		data.Ignored_relation_fv_rs_cust_qos_pol = staticData.Ignored_relation_fv_rs_cust_qos_pol
 	}
-	if !staticData.Deprecated_relation_fv_rs_prot_by.IsUnknown() && !staticData.Deprecated_relation_fv_rs_prot_by.IsNull() {
-		data.Deprecated_relation_fv_rs_prot_by = staticData.Deprecated_relation_fv_rs_prot_by
+	if !staticData.Ignored_relation_fv_rs_prot_by.IsUnknown() && !staticData.Ignored_relation_fv_rs_prot_by.IsNull() {
+		data.Ignored_relation_fv_rs_prot_by = staticData.Ignored_relation_fv_rs_prot_by
 	} else {
-		Deprecated_relation_fv_rs_prot_bySet, _ := types.SetValueFrom(ctx, types.StringType, []string{})
-		data.Deprecated_relation_fv_rs_prot_by = Deprecated_relation_fv_rs_prot_bySet
+		Ignored_relation_fv_rs_prot_bySet, _ := types.SetValueFrom(ctx, types.StringType, []string{})
+		data.Ignored_relation_fv_rs_prot_by = Ignored_relation_fv_rs_prot_bySet
 	}
 	attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
 	for attributeName, attributeValue := range attributes {
@@ -1875,7 +1875,7 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 			"relation_fv_rs_cust_qos_pol": schema.StringAttribute{
 				Optional:           true,
 				Computed:           true,
-				DeprecationMessage: "Attribute `relation_fv_rs_cust_qos_pol` is deprecated. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "Attribute `relation_fv_rs_cust_qos_pol` is deprecated. The configuration was not functioning as intended because the Managed Object (MO) created by the pre-migrated resource was either configured incorrectly or exposed without any implemented functionality on the APIC. The MO for this attribute is no longer created on the APIC, but the existing MO will remain present until the resource is destroyed. This attribute will be removed in the next major version of the provider.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
@@ -1885,7 +1885,7 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Optional:           true,
 				Computed:           true,
 				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute `relation_fv_rs_prot_by` is deprecated. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "Attribute `relation_fv_rs_prot_by` is deprecated. The configuration was not functioning as intended because the Managed Object (MO) created by the pre-migrated resource was either configured incorrectly or exposed without any implemented functionality on the APIC. The MO for this attribute is no longer created on the APIC, but the existing MO will remain present until the resource is destroyed. This attribute will be removed in the next major version of the provider.",
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
 				},
