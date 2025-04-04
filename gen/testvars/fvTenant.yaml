@@ -33,7 +33,7 @@ children:
     - annotation: "annotation_1"
       monitoring_policy_name: "default"
       deletable_child: false
-      
+      child_required: false
       children:
         annotations:
           - key: "key_0"
