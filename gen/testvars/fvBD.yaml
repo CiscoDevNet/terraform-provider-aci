@@ -128,6 +128,7 @@ children:
       owner_key: "owner_key_1"
       owner_tag: "owner_tag_1"
       deletable_child: true
+      child_required: false
       children:
         annotations:
           - key: "key_0"
@@ -190,6 +191,7 @@ children:
     - annotation: "annotation_1"
       monitoring_policy_name: "monitoring_policy_name_1"
       deletable_child: true
+      child_required: false
       children:
         annotations:
           - key: "key_0"
@@ -209,6 +211,7 @@ children:
     - annotation: "annotation_1"
       first_hop_security_policy_name: "first_hop_security_policy_name_1"
       deletable_child: true
+      child_required: false
       children:
         annotations:
           - key: "key_0"
@@ -228,7 +231,7 @@ children:
     - annotation: "annotation_1"
       neighbor_discovery_interface_policy_name: "neighbor_discovery_interface_policy_name_1"
       deletable_child: false
-      
+      child_required: false
       children:
         annotations:
           - key: "key_0"
@@ -325,6 +328,7 @@ children:
       l3_outside_name: "l3_outside_name_1"
       route_control_profile_name: "route_control_profile_name_1"
       deletable_child: true
+      child_required: false
       children:
         annotations:
           - key: "key_0"
@@ -344,6 +348,7 @@ children:
     - annotation: "annotation_1"
       dhcp_relay_policy_name: "dhcp_relay_policy_name_1"
       deletable_child: true
+      child_required: false
       children:
         annotations:
           - key: "key_0"
@@ -364,7 +369,7 @@ children:
       resolve_action: "inherit"
       end_point_retention_policy_name: "end_point_retention_policy_name_1"
       deletable_child: false
-      
+      child_required: false
       children:
         annotations:
           - key: "key_0"
@@ -384,7 +389,7 @@ children:
     - annotation: "annotation_1"
       vrf_name: "vrf_name_1"
       deletable_child: false
-      
+      child_required: false
       children:
         annotations:
           - key: "key_0"
@@ -404,7 +409,7 @@ children:
     - annotation: "annotation_1"
       igmp_snooping_policy_name: "igmp_snooping_policy_name_1"
       deletable_child: false
-      
+      child_required: false
       children:
         annotations:
           - key: "key_0"
@@ -424,7 +429,7 @@ children:
     - annotation: "annotation_1"
       mld_snooping_policy_name: "mld_snooping_policy_name_1"
       deletable_child: false
-      
+      child_required: false
       children:
         annotations:
           - key: "key_0"

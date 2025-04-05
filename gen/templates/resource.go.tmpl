@@ -2656,15 +2656,19 @@ func {{.ResourceClassName}}{{.ParentHierarchy}}SetToSetNullWhenStateIsNullPlanIs
 
 {{/* A sub template for the child attributes used in the Attributes block. */}}
 {{- define "childAttributes" }}
-  {{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+  {{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}{{$RequiredAsChild := .RequiredAsChild}}
     "{{overwriteProperty .PkgName .ResourceName $.Definitions}}": schema.SingleNestedAttribute{
     MarkdownDescription: `{{.Comment}}`,
-    Optional:            true,
+	{{- if $RequiredAsChild}}
+	Required: true,
+	{{- else }}
+	Optional:            true,
     Computed:            true,
-    PlanModifiers: []planmodifier.Object{
+    {{- end }}
+	PlanModifiers: []planmodifier.Object{
         objectplanmodifier.UseStateForUnknown(),
     },
-    {{- if .RequiredPropertiesNames }}
+    {{- if and .RequiredPropertiesNames (not $RequiredAsChild)}}
     Validators: []validator.Object{
         MakeSingleNestedAttributeRequiredAttributesNotProvidedValidator("{{.ResourceName}}", []string{"{{listToString .RequiredPropertiesNames}}"}),
     },
@@ -2695,8 +2699,12 @@ func {{.ResourceClassName}}{{.ParentHierarchy}}SetToSetNullWhenStateIsNullPlanIs
         },
         {{- else}}
         "{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": schema.StringAttribute{
-            Optional:            true,
+            {{- if and .IsRequired $RequiredAsChild}}
+			Required:            true,
+			{{- else }}
+			Optional:            true,
             Computed:            true,
+			{{- end }}
 			{{- if not .ReadOnly }}
             PlanModifiers: []planmodifier.String{
                 stringplanmodifier.UseStateForUnknown(),

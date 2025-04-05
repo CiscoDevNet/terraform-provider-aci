@@ -709,6 +709,21 @@ func LookupTestValue(classPkgName, originalPropertyName string, testVars map[str
 		}
 	}
 
+	// Referencing is done based on target_dn logic
+	// This lookup is created as a workaround to reference in an examples on non target_dn attributes
+	// Redesign of testing / example creation logic should be done to cover this reference use-case
+	if classDetails, ok := definitions.Properties[classPkgName]; ok {
+		for key, value := range classDetails.(map[interface{}]interface{}) {
+			if key.(string) == "example_value_overwrite" {
+				for k, v := range value.(map[interface{}]interface{}) {
+					if k.(string) == propertyName {
+						return v.(string)
+					}
+				}
+			}
+		}
+	}
+
 	return lookupValue
 }
 
@@ -1378,6 +1393,7 @@ type Model struct {
 	Exclude                   bool
 	VersionMismatched         map[string][]string
 	TemplateProperties        map[string]interface{}
+	RequiredAsChild           bool
 }
 
 type TypeChange struct {
@@ -1503,6 +1519,7 @@ func (m *Model) setClassModel(metaPath string, isChildIteration bool, definition
 		m.SetResourceNameAsDescription(m.PkgName, definitions)
 		m.SetTestType(classDetails, definitions)
 		m.SetTestApplicableFromVersion(classDetails)
+		m.SetRequiredAsChild(m.PkgName, definitions)
 	}
 
 	/*
@@ -1948,6 +1965,17 @@ func (m *Model) SetTestApplicableFromVersion(classDetails interface{}) {
 			m.ClassVersion = versions.(string)
 		} else {
 			m.ClassVersion = "unknown"
+		}
+	}
+}
+
+func (m *Model) SetRequiredAsChild(classPkgName string, definitions Definitions) {
+	if classDetails, ok := definitions.Classes[classPkgName]; ok {
+		for key, value := range classDetails.(map[interface{}]interface{}) {
+			if key.(string) == "required_as_child" {
+				m.RequiredAsChild = value.(bool)
+				m.AllowDelete = false
+			}
 		}
 	}
 }
