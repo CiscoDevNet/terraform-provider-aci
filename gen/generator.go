@@ -1063,7 +1063,7 @@ func migrateLegacyDocumentation() {
 
 // Container function to clean all directories properly
 func cleanDirectories() {
-	cleanDirectory(docsPath, []string{"resources", "data-sources"})
+	cleanDirectory(docsPath, []string{"resources", "data-sources", "guides"})
 	cleanDirectory(providerPath, []string{"provider_test.go", "utils.go", "test_constants.go", "resource_aci_rest_managed.go", "resource_aci_rest_managed_test.go", "data_source_aci_rest_managed.go", "data_source_aci_rest_managed_test.go", "annotation_unsupported.go", "data_source_aci_system.go", "data_source_aci_system_test.go", "function_compare_versions.go", "function_compare_versions_test.go"})
 	cleanDirectory(resourcesDocsPath, []string{})
 	cleanDirectory(datasourcesDocsPath, []string{"system.md"})
@@ -1499,7 +1499,6 @@ func (m *Model) setClassModel(metaPath string, isChildIteration bool, definition
 		if len(parents) != 0 {
 			m.SetParentName(parents)
 		}
-		m.SetResourceNotesAndWarnigns(m.PkgName, definitions)
 		m.SetResourceNameAsDescription(m.PkgName, definitions)
 		m.SetTestType(classDetails, definitions)
 		m.SetTestApplicableFromVersion(classDetails)
@@ -1560,6 +1559,7 @@ func (m *Model) setClassModel(metaPath string, isChildIteration bool, definition
 	}
 
 	m.SetStateUpgradeTypeChanges(definitions)
+	m.SetResourceNotesAndWarnigns(m.PkgName, definitions)
 
 }
 
@@ -1853,6 +1853,13 @@ func (m *Model) SetResourceNotesAndWarnigns(classPkgName string, definitions Def
 				}
 			}
 		}
+	}
+
+	if len(m.LegacyAttributes) > 0 {
+		m.ResourceWarnings = append(
+			m.ResourceWarnings,
+			"This resource has been migrated to the terraform plugin protocol version 6, refer to the [migration guide](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/guides/migration) for more details and implications for already managed resources.",
+		)
 	}
 }
 
