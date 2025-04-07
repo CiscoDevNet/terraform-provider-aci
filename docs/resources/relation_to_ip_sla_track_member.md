@@ -26,7 +26,7 @@ Manages ACI Relation To IP SLA Track Member
 
 ## GUI Information ##
 
-* Location: `Tenants -> Policies -> Protocol -> IP SLA -> Track Lists -> Track list to track member`
+* Location: `Tenants -> Policies -> Protocol -> IP SLA -> Track Lists -> Track list to track member relation`
 
 ## Example Usage ##
 
