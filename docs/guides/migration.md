@@ -19,20 +19,20 @@ Upgrading the ACI Terraform provider to a new version requires careful planning 
 
 Before making any changes, it's crucial to back up your current Terraform state. This precaution ensures that you can revert your environment to its previous state if any issues arise during the upgrade process.
 
-1. **Local Backend**: Open a terminal and navigate to the directory where your ACI Terraform configuration files with the state are located. Copy the current state file (terraform.tfstate) to a backup location..
+1. **Local Backend:** Open a terminal and navigate to the directory where your ACI Terraform configuration files with the state are located. Copy the current state file (terraform.tfstate) to a backup location..
    
    ```bash
    cd /path/to/your/terraform/project
    cp terraform.tfstate terraform.tfstate.backup
    ```
 
-2. **Remote Backend**: If you are using a remote backend (e.g., S3, Azure Blob Storage), ensure you have a backup of the state file from the remote location.
+2. **Remote Backend:** If you are using a remote backend (e.g., S3, Azure Blob Storage), ensure you have a backup of the state file from the remote location.
 
 ### Step 2: Update the Provider Version
 
-1. **Open the Terraform Configuration File**: Open the `main.tf` or the relevant Terraform configuration file where the ACI provider is defined.
+1. **Open the Terraform Configuration File:** Open the `main.tf` or the relevant Terraform configuration file where the ACI provider is defined.
 
-2. **Update the Provider Version**: Modify the provider block to specify the new version of the ACI provider.
+2. **Update the Provider Version:** Modify the provider block to specify the new version of the ACI provider.
 
    ```hcl
    provider "aci" {
@@ -41,7 +41,7 @@ Before making any changes, it's crucial to back up your current Terraform state.
    }
    ```
 
-3. **Initialize the Configuration**: Run `terraform init` to reinitialize your configuration with the updated provider version.
+3. **Initialize the Configuration:** Run `terraform init` to reinitialize your configuration with the updated provider version.
 
    ```bash
    terraform init
@@ -49,13 +49,13 @@ Before making any changes, it's crucial to back up your current Terraform state.
 
 ### Step 3: Review the Changes
 
-1. **Plan the Changes**: Run `terraform plan` without modifying the configuration to preview the changes that will be applied with the new provider version.
+1. **Plan the Changes:** Run `terraform plan` without modifying the configuration to preview the changes that will be applied with the new provider version.
 
    ```bash
    terraform plan
    ```
 
-2. **Review the Plan**: Carefully review the output of the `terraform plan` command to ensure that there are no changes.
+2. **Review the Plan:** Carefully review the output of the `terraform plan` command to ensure that there are no changes.
 
     ```bash
     No changes. Your infrastructure matches the configuration.
@@ -63,17 +63,17 @@ Before making any changes, it's crucial to back up your current Terraform state.
 
 ### Step 4: Apply the Changes
 
-1. **Apply the Changes**: If the plan output is satisfactory, apply the changes to upgrade to the new provider version.
+1. **Apply the Changes:** If the plan output is satisfactory, apply the changes to upgrade to the new provider version.
 
    ```bash
    terraform apply
    ```
 
-2. **Verify the Changes**: Once the apply step is complete, verify that the changes have been applied correctly and ensure your environment is functioning as expected. The state file should now reflect the redefined attributes.
+2. **Verify the Changes:** Once the apply step is complete, verify that the changes have been applied correctly and ensure your environment is functioning as expected. The state file should now reflect the redefined attributes.
 
 ### Step 5: Migrate deprecated configuration
 
-1. **Identify the deprecated attributes**: The `terraform plan` command only displays a single warning, which can make it challenging to fully analyze deprecated attributes.
+1. **Identify the deprecated attributes:** The `terraform plan` command only displays a single warning, which can make it challenging to fully analyze deprecated attributes.
 
     ```bash
     No changes. Your infrastructure matches the configuration.
@@ -107,14 +107,14 @@ Before making any changes, it's crucial to back up your current Terraform state.
     }
     ```
 
-2. **Change the deprecated attributes**: Replace the deprecated attributes in your configuration file with the redefined attributes and execute the plan again.
+2. **Change the deprecated attributes:** Replace the deprecated attributes in your configuration file with the redefined attributes and execute the plan again.
 
     ***Old Configuration***
     ```hcl
     resource "aci_bridge_domain" "terraform_bd" {
-        tenant_dn = aci_tenant.terraform_tenant.id
-        name = "terraform_bd"
-        ll_addr = "::"
+        tenant_dn     = aci_tenant.terraform_tenant.id
+        name          = "terraform_bd"
+        ll_addr       = "::"
         unk_mcast_act = "flood"
     }
     ```
@@ -122,9 +122,9 @@ Before making any changes, it's crucial to back up your current Terraform state.
     ***New Configuration***
     ```hcl
     resource "aci_bridge_domain" "terraform_bd" {
-        parent_dn = aci_tenant.terraform_tenant.id
-        name = "terraform_bd"
-        link_local_ipv6_address = "::"
+        parent_dn                     = aci_tenant.terraform_tenant.id
+        name                          = "terraform_bd"
+        link_local_ipv6_address       = "::"
         l3_unknown_multicast_flooding = "flood"
     }
     ```
@@ -137,9 +137,74 @@ Before making any changes, it's crucial to back up your current Terraform state.
     Terraform has compared your real infrastructure against your configuration and found no differences, so no changes are needed.
     ```
 
+3. **Add relationships to parent resource (optional):** Reduces the amount of resources in the configuration by including children inside the parent config. This will decrease the execution time by decreasing the size of the terraform graph and reducing the amount of REST API calls made towards APIC.
+
+    ***Old Configuration***
+    ```hcl
+    resource "aci_application_epg" "terraform_epg" {
+        parent_dn = aci_application_profile.terraform_ap.id
+        name      = "terraform_epg"
+    }
+
+    resource "aci_epg_to_domain" "terraform_epg_to_domain" {
+        application_epg_dn = aci_application_epg.terraform_epg.id
+        tdn                = "uni/phys-phys"
+    }
+    ```
+
+    ***New Configuration***
+    ```
+    resource "aci_application_epg" "terraform_epg" {
+        parent_dn = aci_application_profile.terraform_ap.id
+        name      = "terraform_epg"
+        relation_to_domains = [
+            {
+                target_dn = "uni/phys-phys"
+            }
+        ]
+    }
+    ```
+
+    !> Child resources should not be used in combination with nested attributes in parent resources. Doing so will result in unexpected behaviour.
+
+    In this scenario the child configuration should not be destroyed, but should be unmanaged (removed from state) before executing the plan. Terraform will display destroy intent in the `terraform plan` output when executed without unmanaging the child resource first.
+
+    ```bash
+    Terraform will perform the following actions:                            
+
+    # aci_epg_to_domain.terraform_epg_to_domain will be destroyed
+    # (because aci_epg_to_domain.terraform_epg_to_domain is not in configuration)
+    - resource "aci_epg_to_domain" "terraform_epg_to_domain" {
+      - application_epg_dn    = "uni/tn-terraform_tenant/ap-terraform_ap/epg-terraform_epg" -> null
+      - tdn                   = "uni/phys-phys" -> null
+      ...
+      - vmm_id                = jsonencode({})
+        # (7 unchanged attributes hidden)
+    }
+
+    Plan: 0 to add, 0 to change, 1 to destroy.
+    ```
+
+    The [terraform state rm](https://developer.hashicorp.com/terraform/cli/commands/state/rm) command `terraform state rm aci_epg_to_domain.terraform_epg_to_domain` should be used to unmanage without destroying a resource. The output should reflect the succesful removal of the resource from state.
+
+    ```bash
+    Removed aci_epg_to_domain.terraform_epg_to_domain
+    Successfully removed 1 resource instance(s).
+    ```
+
+    The `terraform plan` output should reflect no changes, when the resource is unmanaged.
+    
+    ```bash
+    No changes. Your infrastructure matches the configuration.
+
+    Terraform has compared your real infrastructure against your configuration and found no differences, so no changes are needed.
+    ```
+
+    The state file does not reflect the changes yet, because a refresh has not taken place. This can be done with the `terraform refresh` or `terraform apply -refresh-only` commands, which do not modify the objects in apic, but only modifies the state file. For more information see [refresh](https://developer.hashicorp.com/terraform/cli/commands/refresh) and [planning-modes](https://developer.hashicorp.com/terraform/cli/commands/plan#planning-modes) documentation of Terraform.
+
 ### Step 6: Cleanup
 
-1. **Remove Backup (Optional)**: If everything is working correctly, you can remove the backup state file.
+1. **Remove Backup (Optional):** If everything is working correctly, you can remove the backup state file.
 
    ```bash
    rm terraform.tfstate.backup
@@ -155,9 +220,9 @@ In this section, we outline the key changes made to the Terraform ACI provider a
 
 Over time, some attributes became outdated, were inconsistently named, or were not exposed correctly, making certain resources challenging to understand and use effectively within the ACI provider. By cleaning and renaming these attributes, we aim to:
 
-1. **Improve Clarity**: Ensure that attribute names are clear and descriptive, making it easier for users to understand their purpose.
-2. **Enhance Consistency**: Standardize attribute names and structures across resources and data sources.
-3. **Simplify Usage**: Remove outdated attributes to streamline the configuration process.
+1. **Improve Clarity:** Ensure that attribute names are clear and descriptive, making it easier for users to understand their purpose.
+2. **Enhance Consistency:** Standardize attribute names and structures across resources and data sources.
+3. **Simplify Usage:** Remove outdated attributes to streamline the configuration process.
 
 We understand the importance of maintaining backward compatibility to avoid disrupting existing configurations. Therefore, during the transition period, both legacy and redefined attributes are supported. This approach allows users to continue using their existing configurations while gradually adopting the redefined attributes. We have implemented deprecation warnings for legacy attributes, informing users of the upcoming changes and encouraging them to transition to the redefined attribute as soon as possible.
 
