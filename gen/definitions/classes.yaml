@@ -203,6 +203,111 @@ fvRsApMonPol:
 
 fvCtx:
   resource_name: "vrf"
+  ui_locations:
+    - "Tenants -> Networking -> VRFs"
+  sub_category: "Networking"
+  migration_version: 1
+  migration_blocks:
+    fvCtx:
+        tenant_dn: parent_dn
+        bd_enforced_enable : bd_enforcement
+        pc_enf_dir: policy_control_enforcement_direction
+        pc_enf_pref: policy_control_enforcement_preference
+    fvRsBgpCtxPol:
+        relation_fv_rs_bgp_ctx_pol: relation_to_bgp_timers.bgp_timers_name
+    fvRsCtxMonPol:
+        relation_fv_rs_ctx_mon_pol: relation_from_vrf_to_monitoring_policy.monitoring_policy_name
+    fvRsCtxToBgpCtxAfPol:
+        relation_fv_rs_ctx_to_bgp_ctx_af_pol: relation_from_vrf_to_bgp_address_family_context
+        tn_bgp_ctx_af_pol_name: relation_from_vrf_to_bgp_address_family_context.bgp_address_family_context_name
+        af: relation_from_vrf_to_bgp_address_family_context.address_family
+    fvRsCtxToEigrpCtxAfPol:
+        relation_fv_rs_ctx_to_eigrp_ctx_af_pol: relation_from_vrf_to_eigrp_address_family_context
+        tn_eigrp_ctx_af_pol_name: relation_from_vrf_to_eigrp_address_family_context.eigrp_address_family_context_name
+        af: relation_from_vrf_to_eigrp_address_family_context.address_family
+    fvRsCtxToEpRet:
+        relation_fv_rs_ctx_to_ep_ret: relation_from_vrf_to_end_point_retention_policy.end_point_retention_policy_name
+    fvRsCtxToExtRouteTagPol:
+        relation_fv_rs_ctx_to_ext_route_tag_pol: relation_from_vrf_to_l3out_route_tag_policy.l3out_route_tag_policy_name
+    fvRsCtxToOspfCtxPol:
+        relation_fv_rs_ctx_to_ospf_ctx_pol: relation_from_vrf_to_address_family_ospf_timers
+        tn_ospf_ctx_pol_name: relation_from_vrf_to_address_family_ospf_timers.ospf_timers_name
+        af: relation_from_vrf_to_address_family_ospf_timers.address_family
+    fvRsOspfCtxPol:
+        relation_fv_rs_ospf_ctx_pol: relation_to_ospf_timers.ospf_timers_name
+
+fvRsBgpCtxPol:
+  resource_name: "relation_to_bgp_timers"
+  ui_locations:
+    - "Tenants -> Networking -> VRFs -> Policy"
+  sub_category: "Networking"
+
+bgpCtxPol:
+  resource_name: "bgp_timers" # this is existing resource name ( needs migration )
+
+fvRsCtxMonPol:
+  resource_name: "relation_from_vrf_to_monitoring_policy"
+  ui_locations:
+    - "Tenants -> Networking -> VRFs -> Policy"
+  sub_category: "Networking"
+
+fvRsCtxToBgpCtxAfPol:
+  resource_name: "relation_from_vrf_to_bgp_address_family_context"  # this has existing resource aci_vrf_to_bgp_address_family_context ( needs statemove )
+  ui_locations:
+    - "Tenants -> Networking -> VRFs -> Policy"
+  sub_category: "Networking"
+
+bgpCtxAfPol:
+  resource_name: "bgp_address_family_context" # this is existing resource name ( needs migration )
+
+fvRsCtxToEigrpCtxAfPol:
+  resource_name: "relation_from_vrf_to_eigrp_address_family_context"
+  ui_locations:
+    - "Tenants -> Networking -> VRFs -> Policy"
+  sub_category: "Networking"
+
+eigrpCtxAfPol:
+  resource_name: "eigrp_address_family_context"
+  ui_locations:
+    - "Tenants -> Policies -> Protocol -> EIGRP -> EIGRP Address Family Context"
+  sub_category: "Tenant Policies"
+
+fvRsCtxToEpRet:
+  resource_name: "relation_from_vrf_to_end_point_retention_policy"
+  ui_locations:
+    - "Tenants -> Networking -> VRFs -> Policy"
+  sub_category: "Networking"
+
+fvRsCtxToExtRouteTagPol:
+  resource_name: "relation_from_vrf_to_l3out_route_tag_policy"
+  ui_locations:
+    - "Tenants -> Networking -> VRFs -> Policy"
+  sub_category: "Networking"
+
+l3extRouteTagPol:
+  resource_name: "l3out_route_tag_policy" # this is existing resource name ( needs migration )
+
+fvRsCtxToOspfCtxPol:
+  resource_name: "relation_from_vrf_to_address_family_ospf_timers"
+  ui_locations:
+    - "Tenants -> Networking -> VRFs -> Policy"
+  sub_category: "Networking"
+
+# points to non-configurable class extdevSDWanVpnEntry with dn uni/tn-{name}/sdwanvpncont/sdwanvpnentry-{name}
+fvRsCtxToSDWanVpn:
+  resource_name: "relation_from_vrf_to_wan_vpn"
+  ui_locations:
+    - "Tenants -> Networking -> VRFs -> Policy"
+  sub_category: "Networking"
+
+fvRsOspfCtxPol:
+  resource_name: "relation_to_ospf_timers"
+  ui_locations:
+    - "Tenants -> Networking -> VRFs -> Policy"
+  sub_category: "Networking"
+
+ospfCtxPol:
+  resource_name: "ospf_timers" # this is existing resource name ( needs migration )
 
 vzCPIf:
   resource_name: "imported_contract"

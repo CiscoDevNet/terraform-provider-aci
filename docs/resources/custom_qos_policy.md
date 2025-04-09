@@ -146,7 +146,13 @@ All examples for the Custom QoS Policy resource can be found in the [examples](h
   #### Required ####
   
     * `from` (from) - (string) The Dot1p priority range starting value.
+     - Valid Values:
+       * `0`, `1`, `2`, `3`, `4`, `5`, `6`, `7`, `unspecified`.
+       * Or a value in the range of `0` to `8`.
     * `to` (to) - (string) The Dot1p priority range ending value.
+     - Valid Values:
+       * `0`, `1`, `2`, `3`, `4`, `5`, `6`, `7`, `unspecified`.
+       * Or a value in the range of `0` to `8`.
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Dot1p Classifier object. This attribute is supported in ACI versions: 3.2(1l) and later.
@@ -177,7 +183,13 @@ All examples for the Custom QoS Policy resource can be found in the [examples](h
   #### Required ####
   
     * `from` (from) - (string) The DSCP range starting value.
+     - Valid Values:
+       * `AF11`, `AF12`, `AF13`, `AF21`, `AF22`, `AF23`, `AF31`, `AF32`, `AF33`, `AF41`, `AF42`, `AF43`, `CS0`, `CS1`, `CS2`, `CS3`, `CS4`, `CS5`, `CS6`, `CS7`, `EF`, `VA`.
+       * Or a value in the range of `0` to `63`.
     * `to` (to) - (string) The DSCP range ending value.
+     - Valid Values:
+       * `AF11`, `AF12`, `AF13`, `AF21`, `AF22`, `AF23`, `AF31`, `AF32`, `AF33`, `AF41`, `AF42`, `AF43`, `CS0`, `CS1`, `CS2`, `CS3`, `CS4`, `CS5`, `CS6`, `CS7`, `EF`, `VA`.
+       * Or a value in the range of `0` to `63`.
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the DSCP to Priority Map object. This attribute is supported in ACI versions: 3.2(1l) and later.

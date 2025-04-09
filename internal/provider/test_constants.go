@@ -44,13 +44,6 @@ resource "aci_l3_outside" "test" {
 }
 `
 
-const testConfigFvCtxMinDependencyWithFvTenant = testConstantsConfigFvTenantMin + `
-resource "aci_vrf" "test" {
-  tenant_dn = aci_tenant.test.id
-  name      = "test_vrf"
-}
-`
-
 const testConfigFvTenantInfraMin = `
 data "aci_tenant" "test" {
   name = "infra"
