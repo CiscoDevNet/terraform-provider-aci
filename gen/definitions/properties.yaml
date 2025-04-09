@@ -26,6 +26,7 @@ global:
     startQueryIntvl: "The query interval (seconds) of the %s object at start-up."
     seg: "The segment ID (L2-VNI) of the %s object."
     pcTag: "The classification tag used for policy enforcement and zoning."
+    af: "The type of address family for the %s."
   overwrites:
     count: "apic_count" # count is a terraform reserved schema entry
     provider: "prov" # provider is a terraform reserved schema entry
@@ -47,6 +48,7 @@ global:
     num_ports: "number_of_ports"
     class_pref: "class_preference"
     seg: "segment"
+    af: "address_family"
   resource_name_doc_overwrite:
     Vrf: "VRF"
     Sid: "SR-MPLS Segment ID"
@@ -73,9 +75,16 @@ global:
     Http Service: "HTTP Service"
     Dscp To: "DSCP to"
     Sla: "SLA"
+<<<<<<< HEAD
     Dhcp: "DHCP"
     Pim: "PIM"
     Qos: "QoS"
+=======
+    Wan: "WAN"
+    Vpn: "VPN"
+    Eigrp: "EIGRP"
+    Bgp: "BGP"
+>>>>>>> 38c596aa ([minor_change] Migration of vrf into plugin framework and addition of aci_eigrp_address_family_context resource and datasource)
   ignores:
     - "userdom"
 
@@ -2220,3 +2229,175 @@ vzRsDenyRule:
       relation_resource_name: "filter"
       properties:
         name: "filter_name_1"
+
+fvCtx:
+  documentation:
+    bdEnforcedEnable: "The Bridge Domain (BD) enforcement status of the %s. BD enforcement will restrict a host from sending ping requests to subnets outside the Bridge Domain (BD). The feature blocks ICMP, TCP and UDP traffic between BDs."
+    ipDataPlaneLearning: "The IP data plane status of the %s object. The process known as IP dataplane learning involves acquiring the endpoint's IPv4 or IPv6 address through dataplane routing of traffic from the endpoint."
+    pcEnfDir: "The policy control enforcement direction of the %s object. VRF ingress policy enforcement involves ACL filtering on the leaf switch where the endpoint is located, reducing the policy CAM usage on the border leaf switch by confining the filtering to 'compute' leaf switches. VRF egress policy enforcement extends ACL filtering to the border leaf switch, increasing its policy CAM usage. The border leaf switch handles filtering for traffic from L3Out to EPG after the endpoint is learned, unless the endpoint-to-destination class mapping is unknown, in which case the compute leaf switch handles the filtering."
+    pcEnfPref: "The policy control enforcement preference of the %s object."
+  ignores:
+    - "knwMcastAct"
+    - "vrfIndex"
+  remove_valid_values:
+    pcEnfDir:
+      - "mixed"
+  overwrites:
+    bd_enforced_enable : bd_enforcement
+    pc_enf_dir: policy_control_enforcement_direction
+    pc_enf_pref: policy_control_enforcement_preference
+  test_values:
+    default:
+      bd_enforcement: "no"
+
+fvRsCtxMonPol:
+  overwrites:
+    relation_from_vrf_to_monitoring_policy: "relation_to_monitoring_policy"
+  targets:
+    - class_name: "monEPGPol"
+      parent_dependency: "fvTenant"
+      overwrite_parent_dn_key: "tenant_dn"
+      target_dn: "uni/tn-test_name/monepg-monitoring_policy_name_1"
+      relation_resource_name: "monitoring_policy"
+      properties:
+        name: "monitoring_policy_name_1"
+
+fvRsCtxToBgpCtxAfPol:
+  documentation:
+    tnBgpCtxAfPolName: "The name of the BGP Address Family Context."
+  overwrites:
+    relation_from_vrf_to_bgp_address_family_contexts: "relation_to_bgp_address_family_contexts"
+  parents:
+    - class_name: "fvCtx"
+      parent_dependency: "fvTenant"
+      parent_dn: "aci_vrf.test.id"
+  test_values:
+    default:
+      address_family: "ipv4-ucast"
+    all:
+      address_family: "ipv4-ucast"
+    resource_required:
+      address_family: "ipv4-ucast"
+    datasource_required:
+      address_family: "ipv4-ucast"
+    datasource_non_existing:
+      address_family: "ipv6-ucast"
+  targets:
+    - class_name: "bgpCtxAfPol"
+      parent_dependency: "fvTenant"
+      overwrite_parent_dn_key: "tenant_dn"
+      target_dn: "uni/tn-test_name/bgpCtxAfP-bgp_address_family_context_name_1"
+      relation_resource_name: "bgp_address_family_context"
+      properties:
+        name: "bgp_address_family_context_name_1"
+
+fvRsBgpCtxPol:
+  documentation:
+    tnBgpCtxPolName: "The name of the BGP timers policy associated with this context."
+  targets:
+    - class_name: "bgpCtxPol"
+      parent_dependency: "fvTenant"
+      overwrite_parent_dn_key: "tenant_dn"
+      target_dn: "uni/tn-test_name/bgpCtxP-bgp_timers_name_1"
+      relation_resource_name: "bgp_timers"
+      properties:
+        name: "bgp_timers_name_1"
+
+fvRsCtxToEigrpCtxAfPol:
+  documentation:
+    tnEigrpCtxAfPolName: "The name of the EIGRP Address Family Context."
+  overwrites:
+    relation_from_vrf_to_eigrp_address_family_contexts: "relation_to_eigrp_address_family_contexts"
+  parents:
+    - class_name: "fvCtx"
+      parent_dependency: "fvTenant"
+      parent_dn: "aci_vrf.test.id"
+  test_values:
+    default:
+      address_family: "ipv4-ucast"
+    all:
+      address_family: "ipv4-ucast"
+    resource_required:
+      address_family: "ipv4-ucast"
+    datasource_required:
+      address_family: "ipv4-ucast"
+    datasource_non_existing:
+      address_family: "ipv6-ucast"
+  targets:
+    - class_name: "eigrpCtxAfPol"
+      parent_dependency: "fvTenant"
+      target_dn: "uni/tn-test_name/eigrpCtxAfP-eigrp_address_family_context_name_1"
+      relation_resource_name: "eigrp_address_family_context"
+      properties:
+        name: "eigrp_address_family_context_name_1"
+
+fvRsCtxToEpRet:
+  overwrites:
+    relation_from_vrf_to_end_point_retention_policy: "relation_to_end_point_retention_policy"
+  targets:
+    - class_name: "fvEpRetPol"
+      parent_dependency: "fvTenant"
+      overwrite_parent_dn_key: "tenant_dn"
+      target_dn: "uni/tn-test_name/epRPol-end_point_retention_policy_name_1"
+      relation_resource_name: "end_point_retention_policy"
+      properties:
+        name: "end_point_retention_policy_name_1"
+
+fvRsCtxToExtRouteTagPol:
+  documentation:
+    tnL3extRouteTagPolName: "The name of the External Route Tag policy associated with this context."
+  overwrites:
+    relation_from_vrf_to_l3out_route_tag_policy: "relation_to_l3out_route_tag_policy"
+  targets:
+    - class_name: "l3extRouteTagPol"
+      parent_dependency: "fvTenant"
+      overwrite_parent_dn_key: "tenant_dn"
+      target_dn: "uni/tn-test_name/rttag-l3out_route_tag_policy_name_1"
+      relation_resource_name: "l3out_route_tag_policy"
+      properties:
+        name: "l3out_route_tag_policy_name_1"
+
+fvRsCtxToOspfCtxPol:
+  overwrites:
+    relation_from_vrf_to_address_family_ospf_timers: "relation_to_address_family_ospf_timers"
+  parents:
+    - class_name: "fvCtx"
+      parent_dependency: "fvTenant"
+      parent_dn: "aci_vrf.test.id"
+  test_values:
+    default:
+      address_family: "ipv4-ucast"
+    all:
+      address_family: "ipv4-ucast"
+    resource_required:
+      address_family: "ipv4-ucast"
+    datasource_required:
+      address_family: "ipv4-ucast"
+    datasource_non_existing:
+      address_family: "ipv6-ucast"
+  targets:
+    - class_name: "ospfCtxPol"
+      parent_dependency: "fvTenant"
+      overwrite_parent_dn_key: "tenant_dn"
+      target_dn: "uni/tn-test_name/ospfCtxP-ospf_timers_name_1"
+      relation_resource_name: "ospf_timers"
+      properties:
+        name: "ospf_timers_name_1"
+
+fvRsCtxToSDWanVpn:
+  overwrites:
+    relation_from_vrf_to_wan_vpn: "relation_to_wan_vpn"
+  targets:
+    - class_name: "extdevSDWanVpnEntry"
+      target_dn: "uni/tn-test_tenant/sdwanvpncont/sdwanvpnentry-sdwanvpn_1"
+      relation_resource_name: "wan_vpn"
+      static: true
+
+eigrpCtxAfPol:
+  overwrites:
+    act_intvl: active_interval
+    ext_dist: external_distance
+    int_dist: internal_distance
+    max_paths: maximum_path_limit
+  documentation:
+    metricStyle: The metric style used for metric calculations.

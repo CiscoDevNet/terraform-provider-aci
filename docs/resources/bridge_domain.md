@@ -505,6 +505,7 @@ All examples for the Bridge Domain resource can be found in the [examples](https
   #### Required ####
   
     * `filter_type` (fltType) - (string) The filter type of the NetFlow Monitor Policy object.
+     - Valid Values: `ce`, `ipv4`, `ipv6`, `unspecified`.
     * `netflow_monitor_policy_name` (tnNetflowMonitorPolName) - (string) The name of the NetFlow Monitor Policy object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/netflow_monitor_policy) with `aci_netflow_monitor_policy.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/netflow_monitor_policy) with `data.aci_netflow_monitor_policy.example.name`.
   #### Optional ####
     
