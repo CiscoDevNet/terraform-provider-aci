@@ -1629,15 +1629,15 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 			"{{ .Name }}": schema.SetNestedBlock{
 				NestedObject: schema.NestedBlockObject{
 					Attributes: map[string]schema.Attribute{
-					{{- range .Attributes}}
+					{{- range .Attributes}}{{$depreactionAttributeName := getAttributeNameForDeprecationMessage . $}}
 						{{- if eq (getMigrationType .ValueType) "String"}}
 						"{{.AttributeName}}": schema.StringAttribute{
 							Optional: true,
 							Computed: true,
-							DeprecationMessage: "Attribute '{{.AttributeName}}' will be deprecated soon, please use '{{.ReplacedBy.AttributeName}}' instead",
+							DeprecationMessage: "Attribute '{{.AttributeName}}' will be deprecated soon, please use '{{$depreactionAttributeName}}' instead",
 							Validators: []validator.String{
 								stringvalidator.ConflictsWith(path.Expressions{
-									path.MatchRoot("{{getConflictingAttributeName .ReplacedBy.AttributeName}}"),
+									path.MatchRoot("{{getConflictingAttributeName $depreactionAttributeName}}"),
 								}...),
 								{{- if .Required }}
 								MakeStringRequired(),
@@ -1649,10 +1649,10 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 						"{{.AttributeName}}": schema.SetAttribute{
 							Optional: true,
 							Computed: true,
-							DeprecationMessage: "Attribute '{{.AttributeName}}' will be deprecated soon, please use '{{.ReplacedBy.AttributeName}}' instead",
+							DeprecationMessage: "Attribute '{{.AttributeName}}' will be deprecated soon, please use '{{$depreactionAttributeName}}' instead",
 							Validators: []validator.Set{
 								setvalidator.ConflictsWith(path.Expressions{
-									path.MatchRoot("{{getConflictingAttributeName .ReplacedBy.AttributeName}}"),
+									path.MatchRoot("{{getConflictingAttributeName $depreactionAttributeName}}"),
 								}...),
 							},
 						},
@@ -1661,10 +1661,10 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 						"{{.AttributeName}}": schema.ListAttribute{
 							Optional: true,
 							Computed: true,
-							DeprecationMessage: "Attribute '{{.AttributeName}}' will be deprecated soon, please use '{{.ReplacedBy.AttributeName}}' instead",
+							DeprecationMessage: "Attribute '{{.AttributeName}}' will be deprecated soon, please use '{{$depreactionAttributeName}}' instead",
 							Validators: []validator.List{
 								listvalidator.ConflictsWith(path.Expressions{
-									path.MatchRoot("{{getConflictingAttributeName .ReplacedBy.AttributeName}}"),
+									path.MatchRoot("{{getConflictingAttributeName $depreactionAttributeName}}"),
 								}...),
 							},	
 						},
