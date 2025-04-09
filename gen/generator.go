@@ -117,6 +117,7 @@ var templateFuncs = template.FuncMap{
 	"isLegacyChild":                         IsLegacyChild,
 	"getLegacyChildAttribute":               GetLegacyChildAttribute,
 	"getConflictingAttributeName":           GetConflictingAttributeName,
+	"getAttributeNameForDeprecationMessage": GetAttributeNameForDeprecationMessage,
 	"getPropertyNameForLegacyAttribute":     GetPropertyNameForLegacyAttribute,
 	"isNewAttributeStringType":              IsNewAttributeStringType,
 	"isNewNamedClassAttribute":              IsNewNamedClassAttribute,
@@ -386,6 +387,13 @@ func IsNewNamedClassAttribute(attributeName string) bool {
 func IsNewNamedClassAttributeMatch(attributeName, resourceName string) bool {
 	// Function to determine the correct named attribute when multiple named attributes are present but only 1 in legacy configuration
 	return strings.Contains(resourceName, attributeName[:len(attributeName)-5])
+}
+
+func GetAttributeNameForDeprecationMessage(attribute LegacyAttribute, model Model) string {
+	if childModel, ok := model.Children[attribute.ReplacedBy.ClassName]; ok && len(strings.Split(attribute.ReplacedBy.AttributeName, ".")) > 1 {
+		return fmt.Sprintf("%s.%s", GetOverwriteAttributeName(childModel.PkgName, childModel.ResourceName, model.Definitions), strings.Split(attribute.ReplacedBy.AttributeName, ".")[1])
+	}
+	return attribute.AttributeName
 }
 
 func GetConflictingAttributeName(attributeName string) string {
@@ -1781,7 +1789,7 @@ func SetChildClassNames(definitions Definitions, model *Model, children map[stri
 	for childName, childModel := range children {
 		childModel.ChildResourceName = GetResourceName(childModel.PkgName, definitions)
 		childModel.ResourceNameDocReference = childModel.ChildResourceName
-		if len(childModel.IdentifiedBy) > 0 && !childModel.MaxOneClassAllowed {
+		if len(childModel.IdentifiedBy) > 0 && !childModel.MaxOneClassAllowed && !strings.HasSuffix(childModel.ChildResourceName, "s") {
 			// TODO add logic to determine the naming for plural child resources
 			childModel.ResourceName = fmt.Sprintf("%ss", childModel.ChildResourceName)
 		} else {
