@@ -2104,7 +2104,7 @@ fvSiteAssociated:
     siteId: "0"
   test_values:
     all:
-      site_id: "0" # site id cannot be modified should we call RequiresReplace() to destroy and recreate?
+      site_id: "0"
   parents:
     - class_name: "fvAEPg"
       parent_dependency: "fvAp"
