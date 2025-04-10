@@ -9,7 +9,7 @@ description: |-
 
 Since its first release in September 2020, the Terraform ACI provider has significantly progressed, adding new resources and data sources to streamline the management of Cisco ACI environments. Over the years, we've transitioned from SDKv1 to [SDKv2](https://developer.hashicorp.com/terraform/plugin/sdkv2), and now to the latest [Terraform Plugin Framework](https://developer.hashicorp.com/terraform/plugin/framework). This new Plugin Framework is the recommended way for developing Terraform plugins and offers several advantages over SDKv2.
 
-In order to fully leverage the new features of the Terraform Plugin Framework, we undertook a complete rewrite of the Terraform ACI provider's resources and data sources. Although this was a significant effort, it presented an opportunity to review and enhance the existing ACI provider. This guide outlines the new features introduced by the Terraform Plugin Framework, along with the modifications we implemented in the ACI provider and the rationale behind these changes.
+In order to fully leverage the new features of the Terraform Plugin Framework, we undertook a complete rewrite of the Terraform ACI provider's resources and data sources. Although this was a significant effort, it presented an opportunity to review and enhance the existing ACI provider. This guide provides detailed steps for migrating from previous versions, outlines key optimization steps to enhance performance, and aims to facilitate a smoother transition for users adapting to these updates. Additionally, it outlines the new features introduced by the Terraform Plugin Framework, along with the modifications we implemented in the ACI provider and the rationale behind these changes.
 
 ## Upgrading the ACI Terraform Provider
 
@@ -61,17 +61,9 @@ Before making any changes, it's crucial to back up your current Terraform state.
     No changes. Your infrastructure matches the configuration.
     ```
 
-### Step 4: Apply the Changes
+The state file does not reflect the changes yet, because a refresh has not taken place. This can be done with the `terraform refresh` or `terraform apply -refresh-only` commands, which do not modify the objects in apic, but only modifies the state file. For more information see [refresh](https://developer.hashicorp.com/terraform/cli/commands/refresh) and [planning-modes](https://developer.hashicorp.com/terraform/cli/commands/plan#planning-modes) documentation of Terraform.
 
-1. **Apply the Changes:** If the plan output is satisfactory, apply the changes to upgrade to the new provider version.
-
-   ```bash
-   terraform apply
-   ```
-
-2. **Verify the Changes:** Once the apply step is complete, verify that the changes have been applied correctly and ensure your environment is functioning as expected. The state file should now reflect the redefined attributes.
-
-### Step 5: Migrate deprecated configuration
+### Step 4: Migrate deprecated configuration
 
 1. **Identify the deprecated attributes:** The `terraform plan` command only displays a single warning, which can make it challenging to fully analyze deprecated attributes.
 
@@ -137,7 +129,19 @@ Before making any changes, it's crucial to back up your current Terraform state.
     Terraform has compared your real infrastructure against your configuration and found no differences, so no changes are needed.
     ```
 
-3. **Add relationships to parent resource (optional):** Reduces the amount of resources in the configuration by including children inside the parent config. This will decrease the execution time by decreasing the size of the terraform graph and reducing the amount of REST API calls made towards APIC.
+### Step 5: Cleanup
+
+1. **Remove Backup (Optional):** If everything is working correctly, you can remove the backup state file.
+
+   ```bash
+   rm terraform.tfstate.backup
+   ```
+
+By following these steps, you can safely upgrade the ACI Terraform provider to a new version while ensuring that you have a backup of your current state in case anything goes wrong.
+
+## Optional Optimization Possibilites
+
+1. **Add relationships to parent resource:** Reduces the amount of resources in the configuration by including children inside the parent config. This will decrease the execution time by decreasing the size of the terraform graph and reducing the amount of REST API calls made towards APIC.
 
     ***Old Configuration***
     ```hcl
@@ -202,16 +206,6 @@ Before making any changes, it's crucial to back up your current Terraform state.
 
     The state file does not reflect the changes yet, because a refresh has not taken place. This can be done with the `terraform refresh` or `terraform apply -refresh-only` commands, which do not modify the objects in apic, but only modifies the state file. For more information see [refresh](https://developer.hashicorp.com/terraform/cli/commands/refresh) and [planning-modes](https://developer.hashicorp.com/terraform/cli/commands/plan#planning-modes) documentation of Terraform.
 
-### Step 6: Cleanup
-
-1. **Remove Backup (Optional):** If everything is working correctly, you can remove the backup state file.
-
-   ```bash
-   rm terraform.tfstate.backup
-   ```
-
-By following these steps, you can safely upgrade the ACI Terraform provider to a new version while ensuring that you have a backup of your current state in case anything goes wrong.
-
 ## Changes to the ACI Provider
 
 In this section, we outline the key changes made to the Terraform ACI provider as part of the migration to the Terraform Plugin Framework. These changes aim to enhance the provider's functionality, performance, and usability. The new provider is generated from meta files, ensuring consistency and accuracy across resources and data sources. Below, we detail the specific improvements and modifications implemented during this migration.
@@ -228,20 +222,42 @@ We understand the importance of maintaining backward compatibility to avoid disr
 
 > It is important to note that for the same ACI property, legacy and redefined attributes cannot be used simultaneously. Attempting to do so will result in an error during configuration validation.
 
-A downside to this approach is increased verbosity in the plan output due to known after applies for each legacy attribute not provided when a change is detected. This is a temporary drawback which will be resolved once deprecated attributes are removed in the next major release.
+A downside to this approach is increased verbosity in the plan output due to "known after applies" for each legacy attribute not provided when a change is detected. This is a temporary drawback which will be resolved once deprecated attributes are removed in the next major release.
 
 ## Changed Behavior for Relations
 
 In an ACI setup, Managed Objects (MOs) represent the different physical and logical parts within the Management Information Tree (MIT). These MOs can be linked through relationship MOs, which define how different MOs are connected. Relationship MOs act as connectors that establish links between two or more MOs, helping to organize and structure the hierarchical relationships within the MIT. In ACI, these relationships can be of two types: explicit or named.
 
 1. **Explicit relations** These require the target Distinguished Name (DN) to be specified in the tDn attribute of the relationship MO, where only one target exists for the relationship. If the target DN is absent, the relationship cannot be established.
-2. **Named relations** These require the name (identifier) attribute to be specified in the relationship MO, triggering a resolving mechanism based on precedence order. This allows the relationship to form with any MO in the precedence order, typically ending with a default MO in the common tenant.
+2. **Named relations** These require the name (identifier) attribute to be specified in the relationship MO, triggering a resolving mechanism based on precedence order. This allows the relationship to form with any MO in the precedence order.
 
 In non-migrated resources of the Terraform Provider ACI, the relationship types are hidden from the user by allowing a DN (resource ID) or name input. The relationship type determines which attribute (name vs tDn) is added to the payload. In SDKv2, there was no enforcement (only warnings in logs) of the final plan needing to match the applied state, which allowed us to strip the name from a provided DN for named relations and add that to the payload for named relations. However, the migration to the Plugin Framework enforces the final plan to match the applied state.
 
 Consequently, for the ACI Provider, using the name of the provided tDn for named relation MOs means the DN input may not match the resolved tDn, potentially causing provider errors. Due to this change, we decided to expose only configurable attributes as input for resources, requiring the name attribute instead of the DN for named relationships.
 
-To ensure the final plan matches the applied state, legacy attributes representing a Distinguished Name (DN) of a named relation must be resolved into the correct target Distinguished Name (tDn). This requires the object to exist when establishing the relationship; failure to do so will cause the provider to panic. This issue can be avoided by using redefined resources where a configurable attribute is utilized.
+To ensure the final plan matches the applied state, legacy attributes representing a Distinguished Name (DN) of a named relation must be resolved into the correct target Distinguished Name (tDn). This requires the object to exist when establishing the relationship; failure to do so will cause the provider to panic. See provider panic exmaple below.
+
+```bash
+╷
+│ Warning: Attribute Deprecated
+│
+│   with aci_bridge_domain.terraform_bd,
+│   on main.tf line 59, in resource "aci_bridge_domain" "terraform_bd":
+│   59:     relation_fv_rs_bd_to_ep_ret = "uni/tn-terraform_tenant/epRPol-ep_pol"
+│
+│ Attribute 'relation_fv_rs_bd_to_ep_ret' is deprecated, please refer to 'relation_to_end_point_retention_policy' instead. The attribute will
+│ be removed in the next major version of the provider.
+╵
+╷
+│ Error: Provider produced inconsistent result after apply
+│
+│ When applying changes to aci_bridge_domain.terraform_bd, provider "provider[\"registry.terraform.io/ciscodevnet/aci\"]" produced an
+│ unexpected new value: .relation_fv_rs_bd_to_ep_ret: was cty.StringVal("uni/tn-terraform_tenant/epRPol-ep_pol"), but now
+│ cty.StringVal("uni/tn-common/epRPol-default").
+╵
+```
+
+This issue can be avoided by using the redefined resources with a configurable name attribute or by ensuring that the tDn can be resolved during the apply phase.
 
 ## Changes to Child Objects in Configuration
 
@@ -266,7 +282,7 @@ provider "aci" {
 
 ## Showing ID in Plan for Create
 
-For non-migrated resources, the ID of the resource appears as "known after apply." In the case of migrated resources, the ID is calculated during the planning phase and included in the plan output.
+For non-migrated resources, the ID of the resource appears as "known after apply". In the case of migrated resources, the ID is calculated during the planning phase and included in the plan output.
 
 ## Error for Existing MO on Create
 
@@ -278,7 +294,7 @@ Terraform supports three states for any value: null (missing), unknown ("known a
 
 ## Include Annotations and Tags
 
-All migrated resources and data sources expose [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview) and [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview) MOs as children inside the resource when the model allows for its configuration.
+All migrated resources and data sources expose [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview) and [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview) MOs as children inside the resource when the model allows for its configuration. See the [aci doumentation](https://www.cisco.com/c/en/us/td/docs/dcn/aci/apic/5x/system-management-configuration/cisco-apic-system-management-configuration-guide-52x/m-alias-annotations-and-tags.html) for more explanation about these MOs.
 
 ## Documentation Enhancements
 
