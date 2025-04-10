@@ -57,6 +57,8 @@ Before making any changes, it's crucial to back up your current Terraform state.
 
 2. **Review the Plan:** Carefully review the output of the `terraform plan` command to ensure that there are no changes.
 
+~>  Warnings are expected to be displayed in the plan output for legacy attributes, this topic will be addressed in ***Step 4: Migrate deprecated configuration***.
+
     ```bash
     No changes. Your infrastructure matches the configuration.
     ```
