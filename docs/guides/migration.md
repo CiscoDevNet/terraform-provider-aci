@@ -224,7 +224,7 @@ We understand the importance of maintaining backward compatibility to avoid disr
 
 > It is important to note that for the same ACI property, legacy and redefined attributes cannot be used simultaneously. Attempting to do so will result in an error during configuration validation.
 
-A downside to this approach is increased verbosity in the plan output due to "known after applies" for each legacy attribute not provided when a change is detected. This is a temporary drawback which will be resolved once deprecated attributes are removed in the next major release.
+A downside to this approach is increased verbosity in the plan output due to the "known after apply" state for each legacy attribute not provided when a change is detected. This is a temporary drawback which will be resolved once deprecated attributes are removed in the next major release.
 
 ## Changed Behavior for Relations
 
