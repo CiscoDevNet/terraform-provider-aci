@@ -260,7 +260,7 @@ func (r *FvRemoteIdResource) Schema(ctx context.Context, req resource.SchemaRequ
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
-				MarkdownDescription: `The remote site that is associated with the object of the primary site.`,
+				MarkdownDescription: `The remote site identifier that is associated with the object of the primary/local site as an integer.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,

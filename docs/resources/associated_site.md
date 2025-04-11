@@ -181,12 +181,12 @@ All examples for the Associated Site resource can be found in the [examples](htt
 * `name_alias` (nameAlias) - (string) The name alias of the Associated Site object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
-* `site_id` (siteId) - (string) The primary site associated with the object.
+* `site_id` (siteId) - (string) The primary/local site identifier associated with the object as an integer.
   - Default: `0`
 * `remote_sites` - (list) A list of Remote Sites (ACI object [fvRemoteId](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRemoteId/overview)). Remote Sites can also be configured using a separate [aci_remote_site](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/remote_site) resource.
   #### Required ####
   
-    * `site_id` (siteId) - (string) The remote site that is associated with the object of the primary site.
+    * `site_id` (siteId) - (string) The remote site identifier that is associated with the object of the primary/local site as an integer.
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Remote Site object.

@@ -87,7 +87,7 @@ All examples for the Remote Site resource can be found in the [examples](https:/
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_associated_site](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/associated_site) ([fvSiteAssociated](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvSiteAssociated/overview))
-* `site_id` (siteId) - (string) The remote site that is associated with the object of the primary site.
+* `site_id` (siteId) - (string) The remote site identifier that is associated with the object of the primary/local site as an integer.
 
 ### Read-Only ###
 

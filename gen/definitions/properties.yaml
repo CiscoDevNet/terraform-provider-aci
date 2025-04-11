@@ -2097,7 +2097,7 @@ fvSiteAssociated:
   overwrites:
     siteId: "site_id"
   documentation:
-    siteId: "The primary site associated with the object."
+    siteId: "The primary/local site identifier associated with the object as an integer."
   ignores:
     - "siteStretched" # no version provided in the documentation for this property ( cdets raised to solve this issue )
   default_values:
@@ -2118,7 +2118,7 @@ fvRemoteId:
     siteId: "site_id"
     remote_ctx_pc_tag: "remote_vrf_pc_tag"
   documentation:
-    siteId: "The remote site that is associated with the object of the primary site."
+    siteId: "The remote site identifier that is associated with the object of the primary/local site as an integer."
     remotePcTag: "The policy class tag (pcTag) of the remote object."
     remoteCtxPcTag: "The policy class tag (pcTag) of the remote VRF. This attribute can only be present when the object for site association is a VRF."
   remove_valid_values:

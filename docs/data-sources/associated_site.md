@@ -67,7 +67,7 @@ data "aci_associated_site" "example_bridge_domain" {
 * `name_alias` (nameAlias) - (string) The name alias of the Associated Site object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
-* `site_id` (siteId) - (string) The primary site associated with the object.
+* `site_id` (siteId) - (string) The primary/local site identifier associated with the object as an integer.
 * `remote_sites` - (list) A list of Remote Sites (ACI object [fvRemoteId](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRemoteId/overview)).
     * `annotation` (annotation) - (string) The annotation of the Remote Site object.
     * `description` (descr) - (string) The description of the Remote Site object.
@@ -77,7 +77,7 @@ data "aci_associated_site" "example_bridge_domain" {
     * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
     * `remote_vrf_pc_tag` (remoteCtxPcTag) - (string) The policy class tag (pcTag) of the remote VRF. This attribute can only be present when the object for site association is a VRF.
     * `remote_pc_tag` (remotePcTag) - (string) The policy class tag (pcTag) of the remote object.
-    * `site_id` (siteId) - (string) The remote site that is associated with the object of the primary site.
+    * `site_id` (siteId) - (string) The remote site identifier that is associated with the object of the primary/local site as an integer.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.

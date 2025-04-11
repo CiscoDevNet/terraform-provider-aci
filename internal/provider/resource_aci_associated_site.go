@@ -404,7 +404,7 @@ func (r *FvSiteAssociatedResource) Schema(ctx context.Context, req resource.Sche
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The primary site associated with the object.`,
+				MarkdownDescription: `The primary/local site identifier associated with the object as an integer.`,
 			},
 			"remote_sites": schema.SetNestedAttribute{
 				MarkdownDescription: ``,
@@ -485,7 +485,7 @@ func (r *FvSiteAssociatedResource) Schema(ctx context.Context, req resource.Sche
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
-							MarkdownDescription: `The remote site that is associated with the object of the primary site.`,
+							MarkdownDescription: `The remote site identifier that is associated with the object of the primary/local site as an integer.`,
 						},
 						"annotations": schema.SetNestedAttribute{
 							MarkdownDescription: ``,

@@ -82,7 +82,7 @@ func (d *FvRemoteIdDataSource) Schema(ctx context.Context, req datasource.Schema
 			},
 			"site_id": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: `The remote site that is associated with the object of the primary site.`,
+				MarkdownDescription: `The remote site identifier that is associated with the object of the primary/local site as an integer.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,
