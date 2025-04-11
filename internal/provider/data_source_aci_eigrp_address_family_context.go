@@ -70,7 +70,7 @@ func (d *EigrpCtxAfPolDataSource) Schema(ctx context.Context, req datasource.Sch
 			},
 			"maximum_path_limit": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The maximum number of equal cost different paths.`,
+				MarkdownDescription: `The maximum number of different equal cost paths to install in the routing table.`,
 			},
 			"metric_style": schema.StringAttribute{
 				Computed:            true,
