@@ -392,7 +392,7 @@ func (r *FvTrackListResource) Schema(ctx context.Context, req resource.SchemaReq
 				Validators: []validator.String{
 					stringvalidator.OneOf("percentage", "weight"),
 				},
-				MarkdownDescription: `The type of the IP SLA Track List.`,
+				MarkdownDescription: `The type of the IP SLA Track List. Choose 'percentage' if you want the route availability to be based on the percentage of track members that are up or down. Choose 'weight' if the route availability is based on a weight value that is assigned to each track member.`,
 			},
 			"weight_down": schema.StringAttribute{
 				Optional: true,
@@ -443,7 +443,7 @@ func (r *FvTrackListResource) Schema(ctx context.Context, req resource.SchemaReq
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
-							MarkdownDescription: `The weight of the fault in calculating the health score of an object. A higher weight causes a higher degradation of the health score of the affected object.`,
+							MarkdownDescription: `The weight associated with the IP SLA Track Member that contributes to the total weight that is used to determines whether a route is considered available or unavailable.`,
 						},
 						"annotations": schema.SetNestedAttribute{
 							MarkdownDescription: ``,

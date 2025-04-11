@@ -55,13 +55,13 @@ data "aci_ip_sla_track_list" "example_tenant" {
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `percentage_down` (percentageDown) - (string) The down percentage assigned to the IP SLA Track List determines whether a route is considered available or unavailable. This attribute is applicable only when the track type is 'percentage'.
 * `percentage_up` (percentageUp) - (string) The up percentage assigned to the IP SLA Track List determines whether a route is considered available or unavailable. The percentage up must be greater than the percentage down. This attribute is applicable only when the track type is 'percentage'.
-* `type` (type) - (string) The type of the IP SLA Track List.
+* `type` (type) - (string) The type of the IP SLA Track List. Choose 'percentage' if you want the route availability to be based on the percentage of track members that are up or down. Choose 'weight' if the route availability is based on a weight value that is assigned to each track member.
 * `weight_down` (weightDown) - (string) The down weight assigned to the IP SLA Track List determines whether a route is considered available or unavailable. This attribute is applicable only when the track type is 'weight'.
 * `weight_up` (weightUp) - (string) The up weight assigned to the IP SLA Track List determines whether a route is considered available or unavailable. The up weight must be greater than the down weight. This attribute is applicable only when the track type is 'weight'.
 * `relation_to_ip_sla_track_members` - (list) A list of Relation To IP SLA Track Members (ACI object [fvRsOtmListMember](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsOtmListMember/overview)) pointing to IP SLA Track Member (ACI Object [fvTrackMember](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTrackMember/overview)).
     * `annotation` (annotation) - (string) The annotation of the Relation To IP SLA Track Member object.
     * `target_dn` (tDn) - (string) The distinguished name (DN) of the IP SLA Track Member.
-    * `weight` (weight) - (string) The weight of the fault in calculating the health score of an object. A higher weight causes a higher degradation of the health score of the affected object.
+    * `weight` (weight) - (string) The weight associated with the IP SLA Track Member that contributes to the total weight that is used to determines whether a route is considered available or unavailable.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.

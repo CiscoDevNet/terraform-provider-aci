@@ -194,7 +194,7 @@ func (r *FvRsOtmListMemberResource) Schema(ctx context.Context, req resource.Sch
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The weight of the fault in calculating the health score of an object. A higher weight causes a higher degradation of the health score of the affected object.`,
+				MarkdownDescription: `The weight associated with the IP SLA Track Member that contributes to the total weight that is used to determines whether a route is considered available or unavailable.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,
