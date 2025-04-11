@@ -120,7 +120,7 @@ All examples for the IP SLA Track List resource can be found in the [examples](h
   - Default: `0`
 * `percentage_up` (percentageUp) - (string) The up percentage assigned to the IP SLA Track List determines whether a route is considered available or unavailable. The percentage up must be greater than the percentage down. This attribute is applicable only when the track type is 'percentage'.
   - Default: `1`
-* `type` (type) - (string) The type of the IP SLA Track List.
+* `type` (type) - (string) The type of the IP SLA Track List. Choose 'percentage' if you want the route availability to be based on the percentage of track members that are up or down. Choose 'weight' if the route availability is based on a weight value that is assigned to each track member.
   - Default: `percentage`
   - Valid Values: `percentage`, `weight`.
 * `weight_down` (weightDown) - (string) The down weight assigned to the IP SLA Track List determines whether a route is considered available or unavailable. This attribute is applicable only when the track type is 'weight'.
@@ -135,7 +135,7 @@ All examples for the IP SLA Track List resource can be found in the [examples](h
     
     * `annotation` (annotation) - (string) The annotation of the Relation To IP SLA Track Member object.
       - Default: `orchestrator:terraform`
-    * `weight` (weight) - (string) The weight of the fault in calculating the health score of an object. A higher weight causes a higher degradation of the health score of the affected object.
+    * `weight` (weight) - (string) The weight associated with the IP SLA Track Member that contributes to the total weight that is used to determines whether a route is considered available or unavailable.
       - Default: `10`
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####

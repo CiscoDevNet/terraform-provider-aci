@@ -2100,7 +2100,7 @@ fvTrackList:
     weightUp: "The up weight assigned to the %s determines whether a route is considered available or unavailable. The up weight must be greater than the down weight. This attribute is applicable only when the track type is 'weight'."
     percentageDown: "The down percentage assigned to the %s determines whether a route is considered available or unavailable. This attribute is applicable only when the track type is 'percentage'."
     percentageUp: "The up percentage assigned to the %s determines whether a route is considered available or unavailable. The percentage up must be greater than the percentage down. This attribute is applicable only when the track type is 'percentage'."
-    type: "The type of the %s."
+    type: "The type of the %s. Choose 'percentage' if you want the route availability to be based on the percentage of track members that are up or down. Choose 'weight' if the route availability is based on a weight value that is assigned to each track member."
   test_values:
     default:
       weight_down: "0"
@@ -2120,7 +2120,7 @@ fvTrackMember:
     - dstIpAddr
     - scopeDn
   documentation:
-    scopeDn: "The scope (Bridge Domain or L3Out) of the %s. For a Bridge Domain this attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bridge_domain) with 'aci_bridge_domain.example.id' or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/bridge_domain) with 'data.aci_bridge_domain.example.id'. For a L3out this attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3_outside) with 'aci_l3_outside.example.id' or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/l3_outside) with 'data.aci_l3_outside.example.id'."
+    scopeDn: "The distinguished name (DN) of the scope (Bridge Domain or L3Out) of the %s. For a Bridge Domain this attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bridge_domain) with 'aci_bridge_domain.example.id' or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/bridge_domain) with 'data.aci_bridge_domain.example.id'. For a L3out this attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3_outside) with 'aci_l3_outside.example.id' or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/l3_outside) with 'data.aci_l3_outside.example.id'."
     dstIpAddr: "The destination IP address to be tracked."
   overwrites:
     dst_ip_addr: "destination_ip_address"
@@ -2141,6 +2141,7 @@ fvTrackMember:
 fvRsOtmListMember:
   documentation:
     tDn: "The distinguished name (DN) of the IP SLA Track Member."
+    weight: "The weight associated with the IP SLA Track Member that contributes to the total weight that is used to determines whether a route is considered available or unavailable."
   test_values:
     default:
       weight: "10"
