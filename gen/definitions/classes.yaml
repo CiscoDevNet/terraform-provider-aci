@@ -882,7 +882,7 @@ fvRemoteId:
   sub_category: "Multi-Site"
   resource_notes:
     - "This resource should only be used to accomplish multi-site orchestration."
-  dn_formats: # specispecified in different order field to avoid mscGraphXlateCont as import example
+  dn_formats: # specified in different order to avoid mscGraphXlateCont as import example
     - "uni/tn-{name}/ap-{name}/epg-{name}/stAsc/site-{siteId}"
     - "uni/tn-{name}/ctx-{name}/stAsc/site-{siteId}"
     - "uni/tn-{name}/BD-{name}/stAsc/site-{siteId}"
