@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_relation_from_vrf_to_address_family_ospf_timers"
 sidebar_current: "docs-aci-data-source-aci_relation_from_vrf_to_address_family_ospf_timers"
 description: |-
-  Data source for ACI Relation From VRF To Address Family Ospf Timers
+  Data source for ACI Relation From VRF To Address Family OSPF Timers
 ---
 
 # aci_relation_from_vrf_to_address_family_ospf_timers #
 
-Data source for ACI Relation From VRF To Address Family Ospf Timers
+Data source for ACI Relation From VRF To Address Family OSPF Timers
 
 ## API Information ##
 
@@ -44,14 +44,14 @@ data "aci_relation_from_vrf_to_address_family_ospf_timers" "example_vrf" {
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_vrf](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vrf) ([fvCtx](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvCtx/overview))
-* `address_family` (af) - (string) The type of address family for the Relation From VRF To Address Family Ospf Timers.
+* `address_family` (af) - (string) The type of address family for the Relation From VRF To Address Family OSPF Timers.
   - Valid Values: `ipv4-ucast`, `ipv6-ucast`.
 * `ospf_timers_name` (tnOspfCtxPolName) - (string) The name of the OSPF timers policy associated with this object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/ospf_timers) with `aci_ospf_timers.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/ospf_timers) with `data.aci_ospf_timers.example.name`.
 
 ### Read-Only ###
 
-* `id` - (string) The distinguished name (DN) of the Relation From VRF To Address Family Ospf Timers object.
-* `annotation` (annotation) - (string) The annotation of the Relation From VRF To Address Family Ospf Timers object.
+* `id` - (string) The distinguished name (DN) of the Relation From VRF To Address Family OSPF Timers object.
+* `annotation` (annotation) - (string) The annotation of the Relation From VRF To Address Family OSPF Timers object.
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.

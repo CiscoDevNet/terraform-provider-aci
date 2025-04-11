@@ -100,7 +100,7 @@ All examples for the EIGRP Address Family Context resource can be found in the [
   - Default: `170`
 * `internal_distance` (intDist) - (string) The administrative distance preference for internal routes.
   - Default: `90`
-* `maximum_path_limit` (maxPaths) - (string) The maximum number of equal cost different paths.
+* `maximum_path_limit` (maxPaths) - (string) The maximum number of different equal cost paths to install in the routing table.
   - Default: `8`
 * `metric_style` (metricStyle) - (string) The metric style used for metric calculations.
   - Default: `narrow`

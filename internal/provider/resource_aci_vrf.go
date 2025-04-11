@@ -2264,7 +2264,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Validators: []validator.String{
 					stringvalidator.OneOf("disabled", "enabled"),
 				},
-				MarkdownDescription: `The IP data plane status of the VRF object. The process known as IP dataplane learning involves acquiring the endpoint's IPv4 or IPv6 address through dataplane routing of traffic from the endpoint.`,
+				MarkdownDescription: `The IP data plane status of the VRF object. The process known as IP data plane learning involves acquiring the endpoint's IPv4 or IPv6 address through data plane routing of traffic from the endpoint.`,
 			},
 			"name": schema.StringAttribute{
 				Required: true,
@@ -2324,7 +2324,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Validators: []validator.String{
 					stringvalidator.OneOf("enforced", "unenforced"),
 				},
-				MarkdownDescription: `The policy control enforcement preference of the VRF object.`,
+				MarkdownDescription: `The policy control enforcement preference of the VRF object. Unenforced VRFs allow traffic between EPGs that are member of the VRF. Enforced VRFs restrict traffic between EPGs that are member of the VRF. The policy control enforcement direction is used to determine the preferred enforcement method.`,
 			},
 			"relation_to_bgp_timers": schema.SingleNestedAttribute{
 				MarkdownDescription: `A source relation to the BGP timer policy. This is an internal object.`,
@@ -2839,7 +2839,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 								stringvalidator.OneOf("ipv4-ucast", "ipv6-ucast"),
 								MakeStringRequired(),
 							},
-							MarkdownDescription: `The type of address family for the Relation From VRF To Address Family Ospf Timers.`,
+							MarkdownDescription: `The type of address family for the Relation From VRF To Address Family OSPF Timers.`,
 						},
 						"annotation": schema.StringAttribute{
 							Optional: true,
@@ -2847,7 +2847,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
-							MarkdownDescription: `The annotation of the Relation From VRF To Address Family Ospf Timers object.`,
+							MarkdownDescription: `The annotation of the Relation From VRF To Address Family OSPF Timers object.`,
 						},
 						"ospf_timers_name": schema.StringAttribute{
 							Required: true,
@@ -3003,7 +3003,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						MarkdownDescription: `The annotation of the Relation To Ospf Timers object.`,
+						MarkdownDescription: `The annotation of the Relation To OSPF Timers object.`,
 					},
 					"ospf_timers_name": schema.StringAttribute{
 						Optional: true,
