@@ -431,6 +431,18 @@ func GetLegacyChildAttribute(className, overwriteProperty string, property Prope
 
 	for _, legacyBlock := range legacyBlocks {
 		if legacyBlock.ClassName == className {
+			// Temporary fix for the issue with the legacy block where the wrong value is returned because the attribute name is also used in the child name and other attribute name in the legacy block
+			//  example for this is the relation_from_vrf_to_bgp_address_family_context
+			// 	tn_bgp_ctx_af_pol_name: relation_from_vrf_to_bgp_address_family_context.bgp_address_family_context_name
+			//  af: relation_from_vrf_to_bgp_address_family_context.address_family
+			// when matching for address_family the order of the attribute is of importance, because it was matching on any attribute that contains the string address_family
+			// thus when relation_from_vrf_to_bgp_address_family_context.bgp_address_family_context_name it would match on the first attribute in loop, which could be the wrong attribute
+			for _, legacyAttribute := range legacyBlock.Attributes {
+				attributeName := strings.Split(legacyAttribute.ReplacedBy.AttributeName, ".")
+				if len(attributeName) > 1 && attributeName[1] == overwriteProperty {
+					return legacyAttribute.Name
+				}
+			}
 			for _, legacyAttribute := range legacyBlock.Attributes {
 				if strings.Contains(legacyAttribute.ReplacedBy.AttributeName, overwriteProperty) {
 					return legacyAttribute.Name
