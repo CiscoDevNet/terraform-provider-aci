@@ -86,6 +86,7 @@ func resourceAciLinkLevelPolicy() *schema.Resource {
 					"200G",
 					"400G",
 					"inherit",
+					"auto",
 				}, false),
 			},
 		}),
