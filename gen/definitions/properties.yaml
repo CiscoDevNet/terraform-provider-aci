@@ -75,16 +75,13 @@ global:
     Http Service: "HTTP Service"
     Dscp To: "DSCP to"
     Sla: "SLA"
-<<<<<<< HEAD
     Dhcp: "DHCP"
     Pim: "PIM"
     Qos: "QoS"
-=======
     Wan: "WAN"
     Vpn: "VPN"
     Eigrp: "EIGRP"
     Bgp: "BGP"
->>>>>>> 38c596aa ([minor_change] Migration of vrf into plugin framework and addition of aci_eigrp_address_family_context resource and datasource)
   ignores:
     - "userdom"
 

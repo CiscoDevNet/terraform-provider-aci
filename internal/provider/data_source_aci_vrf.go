@@ -114,7 +114,7 @@ func (d *FvCtxDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 			},
 			"ip_data_plane_learning": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The IP data plane status of the VRF object. The process known as IP dataplane learning involves acquiring the endpoint's IPv4 or IPv6 address through dataplane routing of traffic from the endpoint.`,
+				MarkdownDescription: `The IP data plane status of the VRF object. The process known as IP data plane learning involves acquiring the endpoint's IPv4 or IPv6 address through data plane routing of traffic from the endpoint.`,
 			},
 			"name": schema.StringAttribute{
 				Required:            true,
@@ -138,7 +138,7 @@ func (d *FvCtxDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 			},
 			"policy_control_enforcement_preference": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The policy control enforcement preference of the VRF object.`,
+				MarkdownDescription: `The policy control enforcement preference of the VRF object. Unenforced VRFs allow traffic between EPGs that are member of the VRF. Enforced VRFs restrict traffic between EPGs that are member of the VRF. The policy control enforcement direction is used to determine the preferred enforcement method.`,
 			},
 			"relation_to_bgp_timers": schema.SingleNestedAttribute{
 				MarkdownDescription: `A source relation to the BGP timer policy. This is an internal object.`,
@@ -435,11 +435,11 @@ func (d *FvCtxDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 					Attributes: map[string]schema.Attribute{
 						"address_family": schema.StringAttribute{
 							Computed:            true,
-							MarkdownDescription: `The type of address family for the Relation From VRF To Address Family Ospf Timers.`,
+							MarkdownDescription: `The type of address family for the Relation From VRF To Address Family OSPF Timers.`,
 						},
 						"annotation": schema.StringAttribute{
 							Computed:            true,
-							MarkdownDescription: `The annotation of the Relation From VRF To Address Family Ospf Timers object.`,
+							MarkdownDescription: `The annotation of the Relation From VRF To Address Family OSPF Timers object.`,
 						},
 						"ospf_timers_name": schema.StringAttribute{
 							Computed:            true,
@@ -532,7 +532,7 @@ func (d *FvCtxDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 				Attributes: map[string]schema.Attribute{
 					"annotation": schema.StringAttribute{
 						Computed:            true,
-						MarkdownDescription: `The annotation of the Relation To Ospf Timers object.`,
+						MarkdownDescription: `The annotation of the Relation To OSPF Timers object.`,
 					},
 					"ospf_timers_name": schema.StringAttribute{
 						Computed:            true,
