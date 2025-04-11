@@ -239,7 +239,7 @@ func (r *EigrpCtxAfPolResource) Schema(ctx context.Context, req resource.SchemaR
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The maximum number of equal cost different paths.`,
+				MarkdownDescription: `The maximum number of different equal cost paths to install in the routing table.`,
 			},
 			"metric_style": schema.StringAttribute{
 				Optional: true,

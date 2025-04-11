@@ -249,7 +249,7 @@ All examples for the VRF resource can be found in the [examples](https://github.
   - Default: `false`
   - Valid Values: `no`, `yes`.
 * `description` (descr) - (string) The description of the VRF object.
-* `ip_data_plane_learning` (ipDataPlaneLearning) - (string) The IP data plane status of the VRF object. The process known as IP dataplane learning involves acquiring the endpoint's IPv4 or IPv6 address through dataplane routing of traffic from the endpoint.
+* `ip_data_plane_learning` (ipDataPlaneLearning) - (string) The IP data plane status of the VRF object. The process known as IP data plane learning involves acquiring the endpoint's IPv4 or IPv6 address through data plane routing of traffic from the endpoint.
   - Default: `enabled`
   - Valid Values: `disabled`, `enabled`.
 * `name_alias` (nameAlias) - (string) The name alias of the VRF object.
@@ -258,7 +258,7 @@ All examples for the VRF resource can be found in the [examples](https://github.
 * `policy_control_enforcement_direction` (pcEnfDir) - (string) The policy control enforcement direction of the VRF object. VRF ingress policy enforcement involves ACL filtering on the leaf switch where the endpoint is located, reducing the policy CAM usage on the border leaf switch by confining the filtering to 'compute' leaf switches. VRF egress policy enforcement extends ACL filtering to the border leaf switch, increasing its policy CAM usage. The border leaf switch handles filtering for traffic from L3Out to EPG after the endpoint is learned, unless the endpoint-to-destination class mapping is unknown, in which case the compute leaf switch handles the filtering.
   - Default: `ingress`
   - Valid Values: `egress`, `ingress`.
-* `policy_control_enforcement_preference` (pcEnfPref) - (string) The policy control enforcement preference of the VRF object.
+* `policy_control_enforcement_preference` (pcEnfPref) - (string) The policy control enforcement preference of the VRF object. Unenforced VRFs allow traffic between EPGs that are member of the VRF. Enforced VRFs restrict traffic between EPGs that are member of the VRF. The policy control enforcement direction is used to determine the preferred enforcement method.
   - Default: `enforced`
   - Valid Values: `enforced`, `unenforced`.
 * `relation_to_bgp_timers` - (map) A map of Relation To BGP Timers (ACI object [fvRsBgpCtxPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsBgpCtxPol/overview)) pointing to BGP Timers (ACI Object [bgpCtxPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/bgpCtxPol/overview)) which can be configured using the [aci_bgp_timers](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bgp_timers) resource.
@@ -365,15 +365,15 @@ All examples for the VRF resource can be found in the [examples](https://github.
   
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-* `relation_to_address_family_ospf_timers` - (list) A list of Relation From VRF To Address Family Ospf Timers (ACI object [fvRsCtxToOspfCtxPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsCtxToOspfCtxPol/overview)) pointing to Ospf Timers (ACI Object [ospfCtxPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/ospfCtxPol/overview)) which can be configured using the [aci_ospf_timers](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/ospf_timers) resource. This attribute is supported in ACI versions: 1.1(1j) and later.
+* `relation_to_address_family_ospf_timers` - (list) A list of Relation From VRF To Address Family OSPF Timers (ACI object [fvRsCtxToOspfCtxPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsCtxToOspfCtxPol/overview)) pointing to OSPF Timers (ACI Object [ospfCtxPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/ospfCtxPol/overview)) which can be configured using the [aci_ospf_timers](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/ospf_timers) resource. This attribute is supported in ACI versions: 1.1(1j) and later.
   #### Required ####
   
-    * `address_family` (af) - (string) The type of address family for the Relation From VRF To Address Family Ospf Timers.
+    * `address_family` (af) - (string) The type of address family for the Relation From VRF To Address Family OSPF Timers.
      - Valid Values: `ipv4-ucast`, `ipv6-ucast`.
     * `ospf_timers_name` (tnOspfCtxPolName) - (string) The name of the OSPF timers policy associated with this object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/ospf_timers) with `aci_ospf_timers.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/ospf_timers) with `data.aci_ospf_timers.example.name`.
   #### Optional ####
     
-    * `annotation` (annotation) - (string) The annotation of the Relation From VRF To Address Family Ospf Timers object.
+    * `annotation` (annotation) - (string) The annotation of the Relation From VRF To Address Family OSPF Timers object.
       - Default: `orchestrator:terraform`
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
@@ -401,10 +401,10 @@ All examples for the VRF resource can be found in the [examples](https://github.
   
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-* `relation_to_ospf_timers` - (map) A map of Relation To Ospf Timers (ACI object [fvRsOspfCtxPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsOspfCtxPol/overview)) pointing to Ospf Timers (ACI Object [ospfCtxPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/ospfCtxPol/overview)) which can be configured using the [aci_ospf_timers](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/ospf_timers) resource.
+* `relation_to_ospf_timers` - (map) A map of Relation To OSPF Timers (ACI object [fvRsOspfCtxPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsOspfCtxPol/overview)) pointing to OSPF Timers (ACI Object [ospfCtxPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/ospfCtxPol/overview)) which can be configured using the [aci_ospf_timers](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/ospf_timers) resource.
   #### Optional ####
     
-    * `annotation` (annotation) - (string) The annotation of the Relation To Ospf Timers object.
+    * `annotation` (annotation) - (string) The annotation of the Relation To OSPF Timers object.
       - Default: `orchestrator:terraform`
     * `ospf_timers_name` (tnOspfCtxPolName) - (string) The name of the OSPF timers policy associated with this context.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.

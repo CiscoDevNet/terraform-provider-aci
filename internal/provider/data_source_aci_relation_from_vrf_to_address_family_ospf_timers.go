@@ -42,7 +42,7 @@ func (d *FvRsCtxToOspfCtxPolDataSource) Schema(ctx context.Context, req datasour
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Relation From VRF To Address Family Ospf Timers object.",
+				MarkdownDescription: "The distinguished name (DN) of the Relation From VRF To Address Family OSPF Timers object.",
 			},
 			"parent_dn": schema.StringAttribute{
 				Required:            true,
@@ -50,11 +50,11 @@ func (d *FvRsCtxToOspfCtxPolDataSource) Schema(ctx context.Context, req datasour
 			},
 			"address_family": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: `The type of address family for the Relation From VRF To Address Family Ospf Timers.`,
+				MarkdownDescription: `The type of address family for the Relation From VRF To Address Family OSPF Timers.`,
 			},
 			"annotation": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The annotation of the Relation From VRF To Address Family Ospf Timers object.`,
+				MarkdownDescription: `The annotation of the Relation From VRF To Address Family OSPF Timers object.`,
 			},
 			"ospf_timers_name": schema.StringAttribute{
 				Required:            true,

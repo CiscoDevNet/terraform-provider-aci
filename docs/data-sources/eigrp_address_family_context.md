@@ -53,7 +53,7 @@ data "aci_eigrp_address_family_context" "example_tenant" {
 * `description` (descr) - (string) The description of the EIGRP Address Family Context object.
 * `external_distance` (extDist) - (string) The administrative distance preference for external routes.
 * `internal_distance` (intDist) - (string) The administrative distance preference for internal routes.
-* `maximum_path_limit` (maxPaths) - (string) The maximum number of equal cost different paths.
+* `maximum_path_limit` (maxPaths) - (string) The maximum number of different equal cost paths to install in the routing table.
 * `metric_style` (metricStyle) - (string) The metric style used for metric calculations.
 * `name_alias` (nameAlias) - (string) The name alias of the EIGRP Address Family Context object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
