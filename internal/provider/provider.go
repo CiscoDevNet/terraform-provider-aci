@@ -272,6 +272,9 @@ func (p *AciProvider) Resources(ctx context.Context) []func() resource.Resource 
 		NewTagAnnotationResource,
 		NewTagTagResource,
 		NewVzOOBBrCPResource,
+		NewVzRsDenyRuleResource,
+		NewVzTSubjResource,
+		NewVzTabooResource,
 		NewAciRestManagedResource,
 	}
 }
@@ -344,6 +347,9 @@ func (p *AciProvider) DataSources(ctx context.Context) []func() datasource.DataS
 		NewTagAnnotationDataSource,
 		NewTagTagDataSource,
 		NewVzOOBBrCPDataSource,
+		NewVzRsDenyRuleDataSource,
+		NewVzTSubjDataSource,
+		NewVzTabooDataSource,
 		NewAciRestManagedDataSource,
 		NewTopSystemDataSource,
 	}

@@ -2770,7 +2770,10 @@ func getAndSetCommPolAttributes(ctx context.Context, diags *diag.Diagnostics, cl
 									CommHttpsCommPol.ServerHeader = basetypes.NewStringValue(childAttributeValue.(string))
 								}
 								if childAttributeName == "sslProtocols" {
-									sslProtocolsList := strings.Split(childAttributeValue.(string), ",")
+									sslProtocolsList := make([]string, 0)
+									if childAttributeValue.(string) != "" {
+										sslProtocolsList = strings.Split(childAttributeValue.(string), ",")
+									}
 									sslProtocolsSet, _ := types.SetValueFrom(ctx, basetypes.StringType{}, sslProtocolsList)
 									CommHttpsCommPol.SslProtocols = sslProtocolsSet
 
@@ -3021,13 +3024,19 @@ func getAndSetCommPolAttributes(ctx context.Context, diags *diag.Diagnostics, cl
 									CommSshCommPol.Descr = basetypes.NewStringValue(childAttributeValue.(string))
 								}
 								if childAttributeName == "hostkeyAlgos" {
-									hostkeyAlgosList := strings.Split(childAttributeValue.(string), ",")
+									hostkeyAlgosList := make([]string, 0)
+									if childAttributeValue.(string) != "" {
+										hostkeyAlgosList = strings.Split(childAttributeValue.(string), ",")
+									}
 									hostkeyAlgosSet, _ := types.SetValueFrom(ctx, basetypes.StringType{}, hostkeyAlgosList)
 									CommSshCommPol.HostkeyAlgos = hostkeyAlgosSet
 
 								}
 								if childAttributeName == "kexAlgos" {
-									kexAlgosList := strings.Split(childAttributeValue.(string), ",")
+									kexAlgosList := make([]string, 0)
+									if childAttributeValue.(string) != "" {
+										kexAlgosList = strings.Split(childAttributeValue.(string), ",")
+									}
 									kexAlgosSet, _ := types.SetValueFrom(ctx, basetypes.StringType{}, kexAlgosList)
 									CommSshCommPol.KexAlgos = kexAlgosSet
 
@@ -3045,13 +3054,19 @@ func getAndSetCommPolAttributes(ctx context.Context, diags *diag.Diagnostics, cl
 									CommSshCommPol.Port = basetypes.NewStringValue(childAttributeValue.(string))
 								}
 								if childAttributeName == "sshCiphers" {
-									sshCiphersList := strings.Split(childAttributeValue.(string), ",")
+									sshCiphersList := make([]string, 0)
+									if childAttributeValue.(string) != "" {
+										sshCiphersList = strings.Split(childAttributeValue.(string), ",")
+									}
 									sshCiphersSet, _ := types.SetValueFrom(ctx, basetypes.StringType{}, sshCiphersList)
 									CommSshCommPol.SshCiphers = sshCiphersSet
 
 								}
 								if childAttributeName == "sshMacs" {
-									sshMacsList := strings.Split(childAttributeValue.(string), ",")
+									sshMacsList := make([]string, 0)
+									if childAttributeValue.(string) != "" {
+										sshMacsList = strings.Split(childAttributeValue.(string), ",")
+									}
 									sshMacsSet, _ := types.SetValueFrom(ctx, basetypes.StringType{}, sshMacsList)
 									CommSshCommPol.SshMacs = sshMacsSet
 

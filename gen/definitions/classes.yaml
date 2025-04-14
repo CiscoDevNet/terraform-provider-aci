@@ -608,6 +608,25 @@ vzBrCP:
 
 vzTaboo:
   resource_name: "taboo_contract"
+  ui_locations:
+    - "Tenants -> Contracts -> Taboos"
+  sub_category: "Contract"
+  migration_version: 1
+  migration_blocks:
+    vzTaboo:
+      tenant_dn: parent_dn
+
+vzTSubj:
+  resource_name: "taboo_contract_subject"
+  ui_locations:
+    - "Tenants -> Contracts -> Taboos -> Subjects"
+  sub_category: "Contract"
+
+vzRsDenyRule:
+  resource_name: "relation_from_taboo_contract_to_filter"
+  ui_locations:
+    - "Tenants -> Contracts -> Taboos -> Subjects -> Filters"
+  sub_category: "Contract"
 
 fabricPathEp:
   resource_name: "fabric_path_endpoint"
