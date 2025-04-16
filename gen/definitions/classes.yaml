@@ -254,7 +254,7 @@ fvRsCtxMonPol:
 fvRsCtxToBgpCtxAfPol:
   resource_name: "relation_from_vrf_to_bgp_address_family_context"  # this has existing resource aci_vrf_to_bgp_address_family_context ( needs statemove )
   ui_locations:
-    - "Tenants -> Networking -> VRFs -> Policy"
+    - "Tenants -> Networking -> VRFs -> Policy -> BGP Context Per Address Family"
   sub_category: "Networking"
 
 bgpCtxAfPol:
@@ -263,7 +263,7 @@ bgpCtxAfPol:
 fvRsCtxToEigrpCtxAfPol:
   resource_name: "relation_from_vrf_to_eigrp_address_family_context"
   ui_locations:
-    - "Tenants -> Networking -> VRFs -> Policy"
+    - "Tenants -> Networking -> VRFs -> Policy -> EIGRP Context Per Address Family"
   sub_category: "Networking"
 
 eigrpCtxAfPol:
@@ -290,7 +290,7 @@ l3extRouteTagPol:
 fvRsCtxToOspfCtxPol:
   resource_name: "relation_from_vrf_to_address_family_ospf_timers"
   ui_locations:
-    - "Tenants -> Networking -> VRFs -> Policy"
+    - "Tenants -> Networking -> VRFs -> Policy -> OSPF Context Per Address Family"
   sub_category: "Networking"
 
 # points to non-configurable class extdevSDWanVpnEntry with dn uni/tn-{name}/sdwanvpncont/sdwanvpnentry-{name}
