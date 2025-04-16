@@ -26,7 +26,7 @@ Manages ACI Relation From VRF To EIGRP Address Family Context
 
 ## GUI Information ##
 
-* Location: `Tenants -> Networking -> VRFs -> Policy`
+* Location: `Tenants -> Networking -> VRFs -> Policy -> EIGRP Context Per Address Family`
 
 ## Example Usage ##
 

@@ -24,7 +24,7 @@ Data source for ACI Relation From VRF To BGP Address Family Context
 
 ## GUI Information ##
 
-* Location: `Tenants -> Networking -> VRFs -> Policy`
+* Location: `Tenants -> Networking -> VRFs -> Policy -> BGP Context Per Address Family`
 
 ## Example Usage ##
 
