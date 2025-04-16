@@ -26,7 +26,7 @@ Manages ACI Relation From VRF To Address Family OSPF Timers
 
 ## GUI Information ##
 
-* Location: `Tenants -> Networking -> VRFs -> Policy`
+* Location: `Tenants -> Networking -> VRFs -> Policy -> OSPF Context Per Address Family`
 
 ## Example Usage ##
 
