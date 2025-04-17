@@ -117,15 +117,15 @@ All examples for the Taboo Contract Subject resource can be found in the [exampl
   
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `relation_to_filters` - (list) A list of Relation From Taboo Contract To Filters (ACI object [vzRsDenyRule](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzRsDenyRule/overview)) pointing to Filter (ACI Object [vzFilter](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzFilter/overview)) which can be configured using the [aci_filter](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/filter) resource.
+* `relation_to_filters` - (list) A list of Relation From Taboo Contract Subject To Filters (ACI object [vzRsDenyRule](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzRsDenyRule/overview)) pointing to Filter (ACI Object [vzFilter](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzFilter/overview)) which can be configured using the [aci_filter](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/filter) resource.
   #### Required ####
   
     * `filter_name` (tnVzFilterName) - (string) The name of the filter object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/filter) with `aci_filter.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/filter) with `data.aci_filter.example.name`.
   #### Optional ####
     
-    * `annotation` (annotation) - (string) The annotation of the Relation From Taboo Contract To Filter object.
+    * `annotation` (annotation) - (string) The annotation of the Relation From Taboo Contract Subject To Filter object.
       - Default: `orchestrator:terraform`
-    * `directives` (directives) - (list) The directives of the Relation From Taboo Contract To Filter object. Use the 'no_stats' option for Policy Compression, which allows for the utilization of fewer TCAM resources. Use the 'log' option to log packets and provide information about traffic that is hitting the rule of interest. See the [contract configuration options](https://www.cisco.com/c/en/us/solutions/collateral/data-center-virtualization/application-centric-infrastructure/white-paper-c11-743951.html#Contractconfigurationoptions) in the Cisco ACI Contract Guide White Paper for more information.
+    * `directives` (directives) - (list) The directives of the Relation From Taboo Contract Subject To Filter object. Use the 'no_stats' option for Policy Compression, which allows for the utilization of fewer TCAM resources. Use the 'log' option to log packets and provide information about traffic that is hitting the rule of interest. See the [contract configuration options](https://www.cisco.com/c/en/us/solutions/collateral/data-center-virtualization/application-centric-infrastructure/white-paper-c11-743951.html#Contractconfigurationoptions) in the Cisco ACI Contract Guide White Paper for more information.
       - Valid Values: `log`, `no_stats`.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####

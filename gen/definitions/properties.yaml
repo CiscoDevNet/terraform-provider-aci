@@ -2192,7 +2192,7 @@ vzTSubj:
 
 vzRsDenyRule:
   overwrites:
-    relation_from_taboo_contract_to_filters: "relation_to_filters"
+    relation_from_taboo_contract_subject_to_filters: "relation_to_filters"
   documentation:
     tnVzFilterName: "The name of the filter object."
     directives: "The directives of the %s object. Use the 'no_stats' option for Policy Compression, which allows for the utilization of fewer TCAM resources. Use the 'log' option to log packets and provide information about traffic that is hitting the rule of interest. See the [contract configuration options](https://www.cisco.com/c/en/us/solutions/collateral/data-center-virtualization/application-centric-infrastructure/white-paper-c11-743951.html#Contractconfigurationoptions) in the Cisco ACI Contract Guide White Paper for more information."

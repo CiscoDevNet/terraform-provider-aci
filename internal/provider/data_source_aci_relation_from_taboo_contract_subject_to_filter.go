@@ -29,21 +29,21 @@ type VzRsDenyRuleDataSource struct {
 }
 
 func (d *VzRsDenyRuleDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
-	tflog.Debug(ctx, "Start metadata of datasource: aci_relation_from_taboo_contract_to_filter")
-	resp.TypeName = req.ProviderTypeName + "_relation_from_taboo_contract_to_filter"
-	tflog.Debug(ctx, "End metadata of datasource: aci_relation_from_taboo_contract_to_filter")
+	tflog.Debug(ctx, "Start metadata of datasource: aci_relation_from_taboo_contract_subject_to_filter")
+	resp.TypeName = req.ProviderTypeName + "_relation_from_taboo_contract_subject_to_filter"
+	tflog.Debug(ctx, "End metadata of datasource: aci_relation_from_taboo_contract_subject_to_filter")
 }
 
 func (d *VzRsDenyRuleDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
-	tflog.Debug(ctx, "Start schema of datasource: aci_relation_from_taboo_contract_to_filter")
+	tflog.Debug(ctx, "Start schema of datasource: aci_relation_from_taboo_contract_subject_to_filter")
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "The relation_from_taboo_contract_to_filter datasource for the 'vzRsDenyRule' class",
+		MarkdownDescription: "The relation_from_taboo_contract_subject_to_filter datasource for the 'vzRsDenyRule' class",
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Relation From Taboo Contract To Filter object.",
+				MarkdownDescription: "The distinguished name (DN) of the Relation From Taboo Contract Subject To Filter object.",
 			},
 			"parent_dn": schema.StringAttribute{
 				Required:            true,
@@ -51,11 +51,11 @@ func (d *VzRsDenyRuleDataSource) Schema(ctx context.Context, req datasource.Sche
 			},
 			"annotation": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The annotation of the Relation From Taboo Contract To Filter object.`,
+				MarkdownDescription: `The annotation of the Relation From Taboo Contract Subject To Filter object.`,
 			},
 			"directives": schema.SetAttribute{
 				Computed:            true,
-				MarkdownDescription: `The directives of the Relation From Taboo Contract To Filter object. Use the 'no_stats' option for Policy Compression, which allows for the utilization of fewer TCAM resources. Use the 'log' option to log packets and provide information about traffic that is hitting the rule of interest. See the [contract configuration options](https://www.cisco.com/c/en/us/solutions/collateral/data-center-virtualization/application-centric-infrastructure/white-paper-c11-743951.html#Contractconfigurationoptions) in the Cisco ACI Contract Guide White Paper for more information.`,
+				MarkdownDescription: `The directives of the Relation From Taboo Contract Subject To Filter object. Use the 'no_stats' option for Policy Compression, which allows for the utilization of fewer TCAM resources. Use the 'log' option to log packets and provide information about traffic that is hitting the rule of interest. See the [contract configuration options](https://www.cisco.com/c/en/us/solutions/collateral/data-center-virtualization/application-centric-infrastructure/white-paper-c11-743951.html#Contractconfigurationoptions) in the Cisco ACI Contract Guide White Paper for more information.`,
 				ElementType:         types.StringType,
 			},
 			"filter_name": schema.StringAttribute{
@@ -96,11 +96,11 @@ func (d *VzRsDenyRuleDataSource) Schema(ctx context.Context, req datasource.Sche
 			},
 		},
 	}
-	tflog.Debug(ctx, "End schema of datasource: aci_relation_from_taboo_contract_to_filter")
+	tflog.Debug(ctx, "End schema of datasource: aci_relation_from_taboo_contract_subject_to_filter")
 }
 
 func (d *VzRsDenyRuleDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	tflog.Debug(ctx, "Start configure of datasource: aci_relation_from_taboo_contract_to_filter")
+	tflog.Debug(ctx, "Start configure of datasource: aci_relation_from_taboo_contract_subject_to_filter")
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
 		return
@@ -118,11 +118,11 @@ func (d *VzRsDenyRuleDataSource) Configure(ctx context.Context, req datasource.C
 	}
 
 	d.client = client
-	tflog.Debug(ctx, "End configure of datasource: aci_relation_from_taboo_contract_to_filter")
+	tflog.Debug(ctx, "End configure of datasource: aci_relation_from_taboo_contract_subject_to_filter")
 }
 
 func (d *VzRsDenyRuleDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	tflog.Debug(ctx, "Start read of datasource: aci_relation_from_taboo_contract_to_filter")
+	tflog.Debug(ctx, "Start read of datasource: aci_relation_from_taboo_contract_subject_to_filter")
 	var data *VzRsDenyRuleResourceModel
 
 	// Read Terraform configuration data into the model
@@ -137,19 +137,19 @@ func (d *VzRsDenyRuleDataSource) Read(ctx context.Context, req datasource.ReadRe
 	// Create a copy of the Id for when not found during getAndSetVzRsDenyRuleAttributes
 	cachedId := data.Id.ValueString()
 
-	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_relation_from_taboo_contract_to_filter with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_relation_from_taboo_contract_subject_to_filter with id '%s'", data.Id.ValueString()))
 
 	getAndSetVzRsDenyRuleAttributes(ctx, &resp.Diagnostics, d.client, data)
 
 	if data.Id.IsNull() {
 		resp.Diagnostics.AddError(
-			"Failed to read aci_relation_from_taboo_contract_to_filter data source",
-			fmt.Sprintf("The aci_relation_from_taboo_contract_to_filter data source with id '%s' has not been found", cachedId),
+			"Failed to read aci_relation_from_taboo_contract_subject_to_filter data source",
+			fmt.Sprintf("The aci_relation_from_taboo_contract_subject_to_filter data source with id '%s' has not been found", cachedId),
 		)
 		return
 	}
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_relation_from_taboo_contract_to_filter with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_relation_from_taboo_contract_subject_to_filter with id '%s'", data.Id.ValueString()))
 }

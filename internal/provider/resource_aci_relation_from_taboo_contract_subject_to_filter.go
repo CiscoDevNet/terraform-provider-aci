@@ -145,21 +145,21 @@ func (r *VzRsDenyRuleResource) ModifyPlan(ctx context.Context, req resource.Modi
 }
 
 func (r *VzRsDenyRuleResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	tflog.Debug(ctx, "Start metadata of resource: aci_relation_from_taboo_contract_to_filter")
-	resp.TypeName = req.ProviderTypeName + "_relation_from_taboo_contract_to_filter"
-	tflog.Debug(ctx, "End metadata of resource: aci_relation_from_taboo_contract_to_filter")
+	tflog.Debug(ctx, "Start metadata of resource: aci_relation_from_taboo_contract_subject_to_filter")
+	resp.TypeName = req.ProviderTypeName + "_relation_from_taboo_contract_subject_to_filter"
+	tflog.Debug(ctx, "End metadata of resource: aci_relation_from_taboo_contract_subject_to_filter")
 }
 
 func (r *VzRsDenyRuleResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
-	tflog.Debug(ctx, "Start schema of resource: aci_relation_from_taboo_contract_to_filter")
+	tflog.Debug(ctx, "Start schema of resource: aci_relation_from_taboo_contract_subject_to_filter")
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "The relation_from_taboo_contract_to_filter resource for the 'vzRsDenyRule' class",
+		MarkdownDescription: "The relation_from_taboo_contract_subject_to_filter resource for the 'vzRsDenyRule' class",
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Relation From Taboo Contract To Filter object.",
+				MarkdownDescription: "The distinguished name (DN) of the Relation From Taboo Contract Subject To Filter object.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
@@ -180,10 +180,10 @@ func (r *VzRsDenyRuleResource) Schema(ctx context.Context, req resource.SchemaRe
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
-				MarkdownDescription: `The annotation of the Relation From Taboo Contract To Filter object.`,
+				MarkdownDescription: `The annotation of the Relation From Taboo Contract Subject To Filter object.`,
 			},
 			"directives": schema.SetAttribute{
-				MarkdownDescription: `The directives of the Relation From Taboo Contract To Filter object. Use the 'no_stats' option for Policy Compression, which allows for the utilization of fewer TCAM resources. Use the 'log' option to log packets and provide information about traffic that is hitting the rule of interest. See the [contract configuration options](https://www.cisco.com/c/en/us/solutions/collateral/data-center-virtualization/application-centric-infrastructure/white-paper-c11-743951.html#Contractconfigurationoptions) in the Cisco ACI Contract Guide White Paper for more information.`,
+				MarkdownDescription: `The directives of the Relation From Taboo Contract Subject To Filter object. Use the 'no_stats' option for Policy Compression, which allows for the utilization of fewer TCAM resources. Use the 'log' option to log packets and provide information about traffic that is hitting the rule of interest. See the [contract configuration options](https://www.cisco.com/c/en/us/solutions/collateral/data-center-virtualization/application-centric-infrastructure/white-paper-c11-743951.html#Contractconfigurationoptions) in the Cisco ACI Contract Guide White Paper for more information.`,
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
@@ -261,11 +261,11 @@ func (r *VzRsDenyRuleResource) Schema(ctx context.Context, req resource.SchemaRe
 			},
 		},
 	}
-	tflog.Debug(ctx, "End schema of resource: aci_relation_from_taboo_contract_to_filter")
+	tflog.Debug(ctx, "End schema of resource: aci_relation_from_taboo_contract_subject_to_filter")
 }
 
 func (r *VzRsDenyRuleResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	tflog.Debug(ctx, "Start configure of resource: aci_relation_from_taboo_contract_to_filter")
+	tflog.Debug(ctx, "Start configure of resource: aci_relation_from_taboo_contract_subject_to_filter")
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
 		return
@@ -283,11 +283,11 @@ func (r *VzRsDenyRuleResource) Configure(ctx context.Context, req resource.Confi
 	}
 
 	r.client = client
-	tflog.Debug(ctx, "End configure of resource: aci_relation_from_taboo_contract_to_filter")
+	tflog.Debug(ctx, "End configure of resource: aci_relation_from_taboo_contract_subject_to_filter")
 }
 
 func (r *VzRsDenyRuleResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	tflog.Debug(ctx, "Start create of resource: aci_relation_from_taboo_contract_to_filter")
+	tflog.Debug(ctx, "Start create of resource: aci_relation_from_taboo_contract_subject_to_filter")
 	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
 	var stateData *VzRsDenyRuleResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
@@ -316,7 +316,7 @@ func (r *VzRsDenyRuleResource) Create(ctx context.Context, req resource.CreateRe
 		setVzRsDenyRuleId(ctx, data)
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_relation_from_taboo_contract_to_filter with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_relation_from_taboo_contract_subject_to_filter with id '%s'", data.Id.ValueString()))
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationVzRsDenyRuleResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
@@ -340,11 +340,11 @@ func (r *VzRsDenyRuleResource) Create(ctx context.Context, req resource.CreateRe
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_relation_from_taboo_contract_to_filter with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_relation_from_taboo_contract_subject_to_filter with id '%s'", data.Id.ValueString()))
 }
 
 func (r *VzRsDenyRuleResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
-	tflog.Debug(ctx, "Start read of resource: aci_relation_from_taboo_contract_to_filter")
+	tflog.Debug(ctx, "Start read of resource: aci_relation_from_taboo_contract_subject_to_filter")
 	var data *VzRsDenyRuleResourceModel
 
 	// Read Terraform prior state data into the model
@@ -354,7 +354,7 @@ func (r *VzRsDenyRuleResource) Read(ctx context.Context, req resource.ReadReques
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Read of resource aci_relation_from_taboo_contract_to_filter with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Read of resource aci_relation_from_taboo_contract_subject_to_filter with id '%s'", data.Id.ValueString()))
 
 	getAndSetVzRsDenyRuleAttributes(ctx, &resp.Diagnostics, r.client, data)
 
@@ -366,11 +366,11 @@ func (r *VzRsDenyRuleResource) Read(ctx context.Context, req resource.ReadReques
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_relation_from_taboo_contract_to_filter with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_relation_from_taboo_contract_subject_to_filter with id '%s'", data.Id.ValueString()))
 }
 
 func (r *VzRsDenyRuleResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	tflog.Debug(ctx, "Start update of resource: aci_relation_from_taboo_contract_to_filter")
+	tflog.Debug(ctx, "Start update of resource: aci_relation_from_taboo_contract_subject_to_filter")
 	var data *VzRsDenyRuleResourceModel
 	var stateData *VzRsDenyRuleResourceModel
 
@@ -382,7 +382,7 @@ func (r *VzRsDenyRuleResource) Update(ctx context.Context, req resource.UpdateRe
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_relation_from_taboo_contract_to_filter with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_relation_from_taboo_contract_subject_to_filter with id '%s'", data.Id.ValueString()))
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationVzRsDenyRuleResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
@@ -406,11 +406,11 @@ func (r *VzRsDenyRuleResource) Update(ctx context.Context, req resource.UpdateRe
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_relation_from_taboo_contract_to_filter with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_relation_from_taboo_contract_subject_to_filter with id '%s'", data.Id.ValueString()))
 }
 
 func (r *VzRsDenyRuleResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	tflog.Debug(ctx, "Start delete of resource: aci_relation_from_taboo_contract_to_filter")
+	tflog.Debug(ctx, "Start delete of resource: aci_relation_from_taboo_contract_subject_to_filter")
 	var data *VzRsDenyRuleResourceModel
 
 	// Read Terraform prior state data into the model
@@ -420,7 +420,7 @@ func (r *VzRsDenyRuleResource) Delete(ctx context.Context, req resource.DeleteRe
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Delete of resource aci_relation_from_taboo_contract_to_filter with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Delete of resource aci_relation_from_taboo_contract_subject_to_filter with id '%s'", data.Id.ValueString()))
 	jsonPayload := GetDeleteJsonPayload(ctx, &resp.Diagnostics, "vzRsDenyRule", data.Id.ValueString())
 	if resp.Diagnostics.HasError() {
 		return
@@ -429,18 +429,18 @@ func (r *VzRsDenyRuleResource) Delete(ctx context.Context, req resource.DeleteRe
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_relation_from_taboo_contract_to_filter with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_relation_from_taboo_contract_subject_to_filter with id '%s'", data.Id.ValueString()))
 }
 
 func (r *VzRsDenyRuleResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	tflog.Debug(ctx, "Start import state of resource: aci_relation_from_taboo_contract_to_filter")
+	tflog.Debug(ctx, "Start import state of resource: aci_relation_from_taboo_contract_subject_to_filter")
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 
 	var stateData *VzRsDenyRuleResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
-	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_relation_from_taboo_contract_to_filter with id '%s'", stateData.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_relation_from_taboo_contract_subject_to_filter with id '%s'", stateData.Id.ValueString()))
 
-	tflog.Debug(ctx, "End import of state resource: aci_relation_from_taboo_contract_to_filter")
+	tflog.Debug(ctx, "End import of state resource: aci_relation_from_taboo_contract_subject_to_filter")
 }
 
 func getAndSetVzRsDenyRuleAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *VzRsDenyRuleResourceModel) {
