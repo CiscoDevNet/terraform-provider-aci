@@ -41,8 +41,8 @@ func TestAccResourceFvCtxWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_vrf.allow_test_2", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_vrf.allow_test", "policy_control_enforcement_direction", "ingress"),
 					resource.TestCheckResourceAttr("aci_vrf.allow_test_2", "policy_control_enforcement_direction", "ingress"),
-					resource.TestCheckResourceAttr("aci_vrf.allow_test", "policy_control_enforcement_preference", "enforced"),
-					resource.TestCheckResourceAttr("aci_vrf.allow_test_2", "policy_control_enforcement_preference", "enforced"),
+					resource.TestCheckResourceAttr("aci_vrf.allow_test", "policy_control_enforcement_mode", "enforced"),
+					resource.TestCheckResourceAttr("aci_vrf.allow_test_2", "policy_control_enforcement_mode", "enforced"),
 					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)", ">=",
 						resource.TestCheckResourceAttr("aci_vrf.allow_test", "ip_data_plane_learning", "enabled"),
 						resource.TestCheckResourceAttr("aci_vrf.allow_test_2", "ip_data_plane_learning", "enabled")),
@@ -90,8 +90,8 @@ func TestAccResourceFvCtxWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_vrf.allow_test_2", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_vrf.allow_test", "policy_control_enforcement_direction", "ingress"),
 					resource.TestCheckResourceAttr("aci_vrf.allow_test_2", "policy_control_enforcement_direction", "ingress"),
-					resource.TestCheckResourceAttr("aci_vrf.allow_test", "policy_control_enforcement_preference", "enforced"),
-					resource.TestCheckResourceAttr("aci_vrf.allow_test_2", "policy_control_enforcement_preference", "enforced"),
+					resource.TestCheckResourceAttr("aci_vrf.allow_test", "policy_control_enforcement_mode", "enforced"),
+					resource.TestCheckResourceAttr("aci_vrf.allow_test_2", "policy_control_enforcement_mode", "enforced"),
 					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)", ">=",
 						resource.TestCheckResourceAttr("aci_vrf.allow_test", "ip_data_plane_learning", "enabled"),
 						resource.TestCheckResourceAttr("aci_vrf.allow_test_2", "ip_data_plane_learning", "enabled")),
@@ -117,7 +117,7 @@ func TestAccResourceFvCtxWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_vrf.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_vrf.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_vrf.test", "policy_control_enforcement_direction", "ingress"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "policy_control_enforcement_preference", "enforced"),
+					resource.TestCheckResourceAttr("aci_vrf.test", "policy_control_enforcement_mode", "enforced"),
 					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)", ">=",
 						resource.TestCheckResourceAttr("aci_vrf.test", "ip_data_plane_learning", "enabled")),
 				),
@@ -135,7 +135,7 @@ func TestAccResourceFvCtxWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_vrf.test", "owner_key", "owner_key_1"),
 					resource.TestCheckResourceAttr("aci_vrf.test", "owner_tag", "owner_tag_1"),
 					resource.TestCheckResourceAttr("aci_vrf.test", "policy_control_enforcement_direction", "egress"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "policy_control_enforcement_preference", "enforced"),
+					resource.TestCheckResourceAttr("aci_vrf.test", "policy_control_enforcement_mode", "enforced"),
 					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)", ">=",
 						resource.TestCheckResourceAttr("aci_vrf.test", "ip_data_plane_learning", "disabled")),
 				),
@@ -161,7 +161,7 @@ func TestAccResourceFvCtxWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_vrf.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_vrf.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_vrf.test", "policy_control_enforcement_direction", "ingress"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "policy_control_enforcement_preference", "enforced"),
+					resource.TestCheckResourceAttr("aci_vrf.test", "policy_control_enforcement_mode", "enforced"),
 					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)", ">=",
 						resource.TestCheckResourceAttr("aci_vrf.test", "ip_data_plane_learning", "enabled")),
 				),
@@ -185,7 +185,7 @@ func TestAccResourceFvCtxWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_vrf.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_vrf.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_vrf.test", "policy_control_enforcement_direction", "ingress"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "policy_control_enforcement_preference", "enforced"),
+					resource.TestCheckResourceAttr("aci_vrf.test", "policy_control_enforcement_mode", "enforced"),
 					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)", ">=",
 						resource.TestCheckResourceAttr("aci_vrf.test", "ip_data_plane_learning", "enabled")),
 					resource.TestCheckResourceAttr("aci_vrf.test", "annotations.0.key", "key_0"),
@@ -643,7 +643,7 @@ resource "aci_vrf" "test" {
   owner_key = "owner_key_1"
   owner_tag = "owner_tag_1"
   policy_control_enforcement_direction = "egress"
-  policy_control_enforcement_preference = "enforced"
+  policy_control_enforcement_mode = "enforced"
   ip_data_plane_learning = provider::aci::compare_versions(data.aci_system.version.version,">=","4.0(1h)") ? "disabled" : null
 }
 `
@@ -659,7 +659,7 @@ resource "aci_vrf" "test" {
   owner_key = ""
   owner_tag = ""
   policy_control_enforcement_direction = "ingress"
-  policy_control_enforcement_preference = "enforced"
+  policy_control_enforcement_mode = "enforced"
   ip_data_plane_learning = provider::aci::compare_versions(data.aci_system.version.version,">=","4.0(1h)") ? "enabled" : null
 }
 `

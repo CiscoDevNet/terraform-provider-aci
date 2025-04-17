@@ -212,7 +212,7 @@ fvCtx:
         tenant_dn: parent_dn
         bd_enforced_enable : bd_enforcement
         pc_enf_dir: policy_control_enforcement_direction
-        pc_enf_pref: policy_control_enforcement_preference
+        pc_enf_pref: policy_control_enforcement_mode
     fvRsBgpCtxPol:
         relation_fv_rs_bgp_ctx_pol: relation_to_bgp_timers.bgp_timers_name
     fvRsCtxMonPol:

@@ -47,17 +47,17 @@ The configuration snippet below shows all possible attributes of the VRF.
 ```hcl
 
 resource "aci_vrf" "full_example_tenant" {
-  parent_dn                             = aci_tenant.example.id
-  annotation                            = "annotation"
-  bd_enforcement                        = "no"
-  description                           = "description_1"
-  ip_data_plane_learning                = "disabled"
-  name                                  = "test_name"
-  name_alias                            = "name_alias_1"
-  owner_key                             = "owner_key_1"
-  owner_tag                             = "owner_tag_1"
-  policy_control_enforcement_direction  = "egress"
-  policy_control_enforcement_preference = "enforced"
+  parent_dn                            = aci_tenant.example.id
+  annotation                           = "annotation"
+  bd_enforcement                       = "no"
+  description                          = "description_1"
+  ip_data_plane_learning               = "disabled"
+  name                                 = "test_name"
+  name_alias                           = "name_alias_1"
+  owner_key                            = "owner_key_1"
+  owner_tag                            = "owner_tag_1"
+  policy_control_enforcement_direction = "egress"
+  policy_control_enforcement_mode      = "enforced"
   relation_to_bgp_timers = {
     annotation      = "annotation_1"
     bgp_timers_name = aci_bgp_timers.example.name
@@ -258,7 +258,7 @@ All examples for the VRF resource can be found in the [examples](https://github.
 * `policy_control_enforcement_direction` (pcEnfDir) - (string) The policy control enforcement direction of the VRF object. VRF ingress policy enforcement involves ACL filtering on the leaf switch where the endpoint is located, reducing the policy CAM usage on the border leaf switch by confining the filtering to 'compute' leaf switches. VRF egress policy enforcement extends ACL filtering to the border leaf switch, increasing its policy CAM usage. The border leaf switch handles filtering for traffic from L3Out to EPG after the endpoint is learned, unless the endpoint-to-destination class mapping is unknown, in which case the compute leaf switch handles the filtering.
   - Default: `ingress`
   - Valid Values: `egress`, `ingress`.
-* `policy_control_enforcement_preference` (pcEnfPref) - (string) The policy control enforcement preference of the VRF object. Unenforced VRFs allow traffic between EPGs that are member of the VRF. Enforced VRFs restrict traffic between EPGs that are member of the VRF. The policy control enforcement direction is used to determine the preferred enforcement method.
+* `policy_control_enforcement_mode` (pcEnfPref) - (string) The policy control enforcement mode of the VRF object. VRFs in unenforced mode do not restrict traffic between EPGs that are member of the VRF. VRFs in enforced mode restrict traffic not allowed by contracts between EPGs that are member of the VRF. The policy control enforcement direction is used to determine the preferred enforcement method.
   - Default: `enforced`
   - Valid Values: `enforced`, `unenforced`.
 * `relation_to_bgp_timers` - (map) A map of Relation To BGP Timers (ACI object [fvRsBgpCtxPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsBgpCtxPol/overview)) pointing to BGP Timers (ACI Object [bgpCtxPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/bgpCtxPol/overview)) which can be configured using the [aci_bgp_timers](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bgp_timers) resource.

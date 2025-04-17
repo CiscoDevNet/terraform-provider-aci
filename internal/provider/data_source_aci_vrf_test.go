@@ -29,7 +29,7 @@ func TestAccDataSourceFvCtxWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("data.aci_vrf.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("data.aci_vrf.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("data.aci_vrf.test", "policy_control_enforcement_direction", "ingress"),
-					resource.TestCheckResourceAttr("data.aci_vrf.test", "policy_control_enforcement_preference", "enforced"),
+					resource.TestCheckResourceAttr("data.aci_vrf.test", "policy_control_enforcement_mode", "enforced"),
 					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)", ">=",
 						resource.TestCheckResourceAttr("data.aci_vrf.test", "ip_data_plane_learning", "enabled")),
 				),
