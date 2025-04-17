@@ -21,29 +21,29 @@ func TestAccDataSourceVzRsDenyRuleWithVzTSubj(t *testing.T) {
 				Config:             testConfigVzRsDenyRuleDataSourceDependencyWithVzTSubj,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.aci_relation_from_taboo_contract_to_filter.test", "filter_name", "test_tn_vz_filter_name"),
-					resource.TestCheckResourceAttr("data.aci_relation_from_taboo_contract_to_filter.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("data.aci_relation_from_taboo_contract_to_filter.test", "directives.#", "0"),
+					resource.TestCheckResourceAttr("data.aci_relation_from_taboo_contract_subject_to_filter.test", "filter_name", "test_tn_vz_filter_name"),
+					resource.TestCheckResourceAttr("data.aci_relation_from_taboo_contract_subject_to_filter.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("data.aci_relation_from_taboo_contract_subject_to_filter.test", "directives.#", "0"),
 				),
 			},
 			{
 				Config:      testConfigVzRsDenyRuleNotExistingVzTSubj,
-				ExpectError: regexp.MustCompile("Failed to read aci_relation_from_taboo_contract_to_filter data source"),
+				ExpectError: regexp.MustCompile("Failed to read aci_relation_from_taboo_contract_subject_to_filter data source"),
 			},
 		},
 	})
 }
 
 const testConfigVzRsDenyRuleDataSourceDependencyWithVzTSubj = testConfigVzRsDenyRuleMinDependencyWithVzTSubj + `
-data "aci_relation_from_taboo_contract_to_filter" "test" {
+data "aci_relation_from_taboo_contract_subject_to_filter" "test" {
   parent_dn = aci_taboo_contract_subject.test.id
   filter_name = "test_tn_vz_filter_name"
-  depends_on = [aci_relation_from_taboo_contract_to_filter.test]
+  depends_on = [aci_relation_from_taboo_contract_subject_to_filter.test]
 }
 `
 
 const testConfigVzRsDenyRuleNotExistingVzTSubj = testConfigVzTSubjMinDependencyWithVzTaboo + `
-data "aci_relation_from_taboo_contract_to_filter" "test_non_existing" {
+data "aci_relation_from_taboo_contract_subject_to_filter" "test_non_existing" {
   parent_dn = aci_taboo_contract_subject.test.id
   filter_name = "non_existing_tn_vz_filter_name"
 }

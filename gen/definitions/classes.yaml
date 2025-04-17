@@ -623,7 +623,7 @@ vzTSubj:
   sub_category: "Contract"
 
 vzRsDenyRule:
-  resource_name: "relation_from_taboo_contract_to_filter"
+  resource_name: "relation_from_taboo_contract_subject_to_filter"
   ui_locations:
     - "Tenants -> Contracts -> Taboos -> Subjects -> Filters"
   sub_category: "Contract"

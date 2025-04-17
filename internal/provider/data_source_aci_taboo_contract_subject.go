@@ -104,11 +104,11 @@ func (d *VzTSubjDataSource) Schema(ctx context.Context, req datasource.SchemaReq
 					Attributes: map[string]schema.Attribute{
 						"annotation": schema.StringAttribute{
 							Computed:            true,
-							MarkdownDescription: `The annotation of the Relation From Taboo Contract To Filter object.`,
+							MarkdownDescription: `The annotation of the Relation From Taboo Contract Subject To Filter object.`,
 						},
 						"directives": schema.SetAttribute{
 							Computed:            true,
-							MarkdownDescription: `The directives of the Relation From Taboo Contract To Filter object. Use the 'no_stats' option for Policy Compression, which allows for the utilization of fewer TCAM resources. Use the 'log' option to log packets and provide information about traffic that is hitting the rule of interest. See the [contract configuration options](https://www.cisco.com/c/en/us/solutions/collateral/data-center-virtualization/application-centric-infrastructure/white-paper-c11-743951.html#Contractconfigurationoptions) in the Cisco ACI Contract Guide White Paper for more information.`,
+							MarkdownDescription: `The directives of the Relation From Taboo Contract Subject To Filter object. Use the 'no_stats' option for Policy Compression, which allows for the utilization of fewer TCAM resources. Use the 'log' option to log packets and provide information about traffic that is hitting the rule of interest. See the [contract configuration options](https://www.cisco.com/c/en/us/solutions/collateral/data-center-virtualization/application-centric-infrastructure/white-paper-c11-743951.html#Contractconfigurationoptions) in the Cisco ACI Contract Guide White Paper for more information.`,
 							ElementType:         types.StringType,
 						},
 						"filter_name": schema.StringAttribute{

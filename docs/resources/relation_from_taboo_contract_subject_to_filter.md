@@ -4,15 +4,15 @@
 # More details can be found in the [README](https://github.com/CiscoDevNet/terraform-provider-aci/blob/master/README.md).
 subcategory: "Contract"
 layout: "aci"
-page_title: "ACI: aci_relation_from_taboo_contract_to_filter"
-sidebar_current: "docs-aci-resource-aci_relation_from_taboo_contract_to_filter"
+page_title: "ACI: aci_relation_from_taboo_contract_subject_to_filter"
+sidebar_current: "docs-aci-resource-aci_relation_from_taboo_contract_subject_to_filter"
 description: |-
-  Manages ACI Relation From Taboo Contract To Filter
+  Manages ACI Relation From Taboo Contract Subject To Filter
 ---
 
-# aci_relation_from_taboo_contract_to_filter #
+# aci_relation_from_taboo_contract_subject_to_filter #
 
-Manages ACI Relation From Taboo Contract To Filter
+Manages ACI Relation From Taboo Contract Subject To Filter
 
 
 
@@ -30,23 +30,23 @@ Manages ACI Relation From Taboo Contract To Filter
 
 ## Example Usage ##
 
-The configuration snippet below creates a Relation From Taboo Contract To Filter with only required attributes.
+The configuration snippet below creates a Relation From Taboo Contract Subject To Filter with only required attributes.
 
 ```hcl
 
-resource "aci_relation_from_taboo_contract_to_filter" "example_taboo_contract_subject" {
+resource "aci_relation_from_taboo_contract_subject_to_filter" "example_taboo_contract_subject" {
   parent_dn   = aci_taboo_contract_subject.example.id
   filter_name = aci_filter.example.name
 }
 
 ```
-The configuration snippet below shows all possible attributes of the Relation From Taboo Contract To Filter.
+The configuration snippet below shows all possible attributes of the Relation From Taboo Contract Subject To Filter.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
 ```hcl
 
-resource "aci_relation_from_taboo_contract_to_filter" "full_example_taboo_contract_subject" {
+resource "aci_relation_from_taboo_contract_subject_to_filter" "full_example_taboo_contract_subject" {
   parent_dn   = aci_taboo_contract_subject.example.id
   annotation  = "annotation"
   directives  = ["log", "no_stats"]
@@ -67,7 +67,7 @@ resource "aci_relation_from_taboo_contract_to_filter" "full_example_taboo_contra
 
 ```
 
-All examples for the Relation From Taboo Contract To Filter resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/resources/aci_relation_from_taboo_contract_to_filter) folder.
+All examples for the Relation From Taboo Contract Subject To Filter resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/resources/aci_relation_from_taboo_contract_subject_to_filter) folder.
 
 ## Schema ##
 
@@ -79,13 +79,13 @@ All examples for the Relation From Taboo Contract To Filter resource can be foun
 
 ### Read-Only ###
 
-* `id` - (string) The distinguished name (DN) of the Relation From Taboo Contract To Filter object.
+* `id` - (string) The distinguished name (DN) of the Relation From Taboo Contract Subject To Filter object.
 
 ### Optional ###
 
-* `annotation` (annotation) - (string) The annotation of the Relation From Taboo Contract To Filter object.
+* `annotation` (annotation) - (string) The annotation of the Relation From Taboo Contract Subject To Filter object.
   - Default: `orchestrator:terraform`
-* `directives` (directives) - (list) The directives of the Relation From Taboo Contract To Filter object. Use the 'no_stats' option for Policy Compression, which allows for the utilization of fewer TCAM resources. Use the 'log' option to log packets and provide information about traffic that is hitting the rule of interest. See the [contract configuration options](https://www.cisco.com/c/en/us/solutions/collateral/data-center-virtualization/application-centric-infrastructure/white-paper-c11-743951.html#Contractconfigurationoptions) in the Cisco ACI Contract Guide White Paper for more information.
+* `directives` (directives) - (list) The directives of the Relation From Taboo Contract Subject To Filter object. Use the 'no_stats' option for Policy Compression, which allows for the utilization of fewer TCAM resources. Use the 'log' option to log packets and provide information about traffic that is hitting the rule of interest. See the [contract configuration options](https://www.cisco.com/c/en/us/solutions/collateral/data-center-virtualization/application-centric-infrastructure/white-paper-c11-743951.html#Contractconfigurationoptions) in the Cisco ACI Contract Guide White Paper for more information.
   - Valid Values: `log`, `no_stats`.
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
@@ -100,18 +100,18 @@ All examples for the Relation From Taboo Contract To Filter resource can be foun
 
 ## Importing
 
-An existing Relation From Taboo Contract To Filter can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
+An existing Relation From Taboo Contract Subject To Filter can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_relation_from_taboo_contract_to_filter.example_taboo_contract_subject uni/tn-{name}/taboo-{name}/tsubj-{name}/rsdenyRule-{tnVzFilterName}
+terraform import aci_relation_from_taboo_contract_subject_to_filter.example_taboo_contract_subject uni/tn-{name}/taboo-{name}/tsubj-{name}/rsdenyRule-{tnVzFilterName}
 ```
 
-Starting in Terraform version 1.5, an existing Relation From Taboo Contract To Filter can be imported
+Starting in Terraform version 1.5, an existing Relation From Taboo Contract Subject To Filter can be imported
 using [import blocks](https://developer.hashicorp.com/terraform/language/import) via the following configuration:
 
 ```
 import {
   id = "uni/tn-{name}/taboo-{name}/tsubj-{name}/rsdenyRule-{tnVzFilterName}"
-  to = aci_relation_from_taboo_contract_to_filter.example_taboo_contract_subject
+  to = aci_relation_from_taboo_contract_subject_to_filter.example_taboo_contract_subject
 }
 ```
