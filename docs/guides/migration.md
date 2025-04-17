@@ -32,8 +32,21 @@ Before making any changes, it's crucial to back up your current Terraform state.
 
 1. **Open the Terraform Configuration File:** Open the `main.tf` or the relevant Terraform configuration file where the ACI provider is defined.
 
-2. **Update the Provider Version:** Modify the provider block to specify the new version of the ACI provider.
+2. **Update the Provider Version:** We recommend setting [version constraints](https://developer.hashicorp.com/terraform/language/expressions/version-constraints) for the provider. Modify the provider block to specify the new version constraint for the ACI provider. 
 
+   ***Version constraint format***
+   ```hcl
+   terraform {
+    required_providers {
+       aci = {
+         source = "ciscodevnet/aci"
+         version = "x.y.z"  # Replace with the new version number
+       }
+     }
+   }
+   ```
+
+   ***Deprecated Terraform version constraint format***
    ```hcl
    provider "aci" {
      version = "x.y.z"  # Replace with the new version number
