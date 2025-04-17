@@ -7,9 +7,13 @@ description: |-
 
 ## Introduction
 
-Since its first release in September 2020, the Terraform ACI provider has significantly progressed, adding new resources and data sources to streamline the management of Cisco ACI environments. Over the years, we've transitioned from SDKv1 to [SDKv2](https://developer.hashicorp.com/terraform/plugin/sdkv2), and now to the latest [Terraform Plugin Framework](https://developer.hashicorp.com/terraform/plugin/framework). This new Plugin Framework is the recommended way for developing Terraform plugins and offers several advantages over SDKv2.
+Since its first release in July 2019, the Terraform ACI provider has significantly progressed, adding new resources and data sources to streamline the management of Cisco ACI environments. Over the years, we've transitioned from SDKv1 to [SDKv2](https://developer.hashicorp.com/terraform/plugin/sdkv2), and now to the latest [Terraform Plugin Framework](https://developer.hashicorp.com/terraform/plugin/framework). This new Plugin Framework is the recommended way for developing Terraform plugins and offers several advantages over SDKv2.
 
-In order to fully leverage the new features of the Terraform Plugin Framework, we undertook a complete rewrite of the Terraform ACI provider's resources and data sources. Although this was a significant effort, it presented an opportunity to review and enhance the existing ACI provider. This guide provides detailed steps for migrating from previous versions, outlines key optimization steps to enhance performance, and aims to facilitate a smoother transition for users adapting to these updates. Additionally, it outlines the new features introduced by the Terraform Plugin Framework, along with the modifications we implemented in the ACI provider and the rationale behind these changes.
+In order to fully leverage the new features of the Terraform Plugin Framework, we decided to undertake a complete rewrite of the Terraform ACI provider's resources and data sources. Although this is a significant effort, it presented an opportunity to review and enhance the existing ACI provider and how the provider is developed. 
+
+This complete rewrite will stretch a series of releases starting with [v2.16.0](https://github.com/CiscoDevNet/terraform-provider-aci/releases/tag/v2.16.0) where all new resources and data sources will be implemented using the new Terraform Plugin Framework and pre-existing resources and data sources will be slowly migrated into the Terraform Plugin Framework. Migrated resources and data sources contain a note that specifies it has been migrated at the top of their documentation. Once all pre-existing resources are migrated to the Terraform Provider Framework, a major release of the provider will be created to remove legacy attributes.
+
+This guide provides detailed steps for migrating from previous versions, outlines key optimization steps to enhance performance, and aims to facilitate a smoother transition for users adapting to these updates. Additionally, it outlines how the migrated resources use the new features introduced by the Terraform Plugin Framework, along with the modifications we implemented in the ACI provider and the rationale behind these changes.
 
 ## Upgrading the ACI Terraform Provider
 
@@ -20,57 +24,59 @@ Upgrading the ACI Terraform provider to a new version requires careful planning 
 Before making any changes, it's crucial to back up your current Terraform state. This precaution ensures that you can revert your environment to its previous state if any issues arise during the upgrade process.
 
 1. **Local Backend:** Open a terminal and navigate to the directory where your ACI Terraform configuration files with the state are located. Copy the current state file (terraform.tfstate) to a backup location.
-   
-   ```bash
-   cd /path/to/your/terraform/project
-   cp terraform.tfstate terraform.tfstate.backup
-   ```
+
+    ```bash
+    cd /path/to/your/terraform/project
+    cp terraform.tfstate /path/to/your/backup/terraform.tfstate.backup
+    ```
 
 2. **Remote Backend:** If you are using a remote backend (e.g., S3, Azure Blob Storage), ensure you have a backup of the state file from the remote location.
 
 ### Step 2: Update the Provider Version
 
-1. **Open the Terraform Configuration File:** Open the `main.tf` or the relevant Terraform configuration file where the ACI provider is defined.
+The version meta-argument specifies the version constraint for a provider. The version constraint can be specified in the [provider configuration](https://developer.hashicorp.com/terraform/language/providers/configuration) or in the [required_providers block](https://developer.hashicorp.com/terraform/language/providers/requirements). The [version](https://developer.hashicorp.com/terraform/language/providers/configuration#version-deprecated) argument in the provider configuration is deprecated, and will be removed in future Terraform versions.
 
-2. **Update the Provider Version:** We recommend setting [version constraints](https://developer.hashicorp.com/terraform/language/expressions/version-constraints) for the provider. Modify the provider block to specify the new version constraint for the ACI provider. 
+1. **Open the Terraform Configuration File:** Open the `main.tf` or the relevant Terraform configuration file where the ACI provider version constraint is defined.
 
-   ***Version constraint format***
-   ```hcl
-   terraform {
-    required_providers {
-       aci = {
-         source = "ciscodevnet/aci"
-         version = "x.y.z"  # Replace with the new version number
-       }
-     }
-   }
-   ```
+2. **Update the Provider Version:** Terraform recommends setting [version constraints](https://developer.hashicorp.com/terraform/language/expressions/version-constraints) for providers. Modify the terraform.required_providers or provider block to specify the new version constraint for the ACI provider. 
 
-   ***Deprecated Terraform version constraint format***
-   ```hcl
-   provider "aci" {
-     version = "x.y.z"  # Replace with the new version number
-     # Other provider configuration options
-   }
-   ```
+    ***Version constraint format***
+    ```hcl
+    terraform {
+      required_providers {
+        aci = {
+          source = "ciscodevnet/aci"
+          version = "~> x.y.z"  # Replace with the new version number
+        }
+      }
+    }
+    ```
 
-3. **Initialize the Configuration:** Run `terraform init` to reinitialize your configuration with the updated provider version.
+    ***Deprecated Terraform version constraint format***
+    ```hcl
+    provider "aci" {
+      version = "~> x.y.z"  # Replace with the new version number
+      # Other provider configuration options
+    }
+    ```
 
-   ```bash
-   terraform init
-   ```
+3. **Initialize the Configuration:** Run `terraform init -upgrade` to reinitialize your configuration with the updated provider version.
+
+    ```bash
+    terraform init -upgrade
+    ```
 
 ### Step 3: Review the Changes
 
 1. **Plan the Changes:** Run `terraform plan` without modifying the configuration to preview the changes that will be applied with the new provider version.
 
-   ```bash
-   terraform plan
-   ```
+    ```bash
+    terraform plan
+    ```
 
 2. **Review the Plan:** Carefully review the output of the `terraform plan` command to ensure that there are no changes.
 
-~>  Warnings are expected to be displayed in the plan output for legacy attributes, this topic will be addressed in ***Step 4: Migrate deprecated configuration***.
+    ~>  Warnings are expected to be displayed in the plan output for legacy attributes, this topic will be addressed in [Step 4: Migrate deprecated configuration](#step-4-migrate-deprecated-configuration).
 
     ```bash
     No changes. Your infrastructure matches the configuration.
@@ -119,20 +125,20 @@ The state file does not reflect the changes yet, because a refresh has not taken
     ***Old Configuration***
     ```hcl
     resource "aci_bridge_domain" "terraform_bd" {
-        tenant_dn     = aci_tenant.terraform_tenant.id
-        name          = "terraform_bd"
-        ll_addr       = "::"
-        unk_mcast_act = "flood"
+      tenant_dn     = aci_tenant.terraform_tenant.id
+      name          = "terraform_bd"
+      ll_addr       = "::"
+      unk_mcast_act = "flood"
     }
     ```
 
     ***New Configuration***
     ```hcl
     resource "aci_bridge_domain" "terraform_bd" {
-        parent_dn                     = aci_tenant.terraform_tenant.id
-        name                          = "terraform_bd"
-        link_local_ipv6_address       = "::"
-        l3_unknown_multicast_flooding = "flood"
+      parent_dn                     = aci_tenant.terraform_tenant.id
+      name                          = "terraform_bd"
+      link_local_ipv6_address       = "::"
+      l3_unknown_multicast_flooding = "flood"
     }
     ```
 
@@ -148,26 +154,26 @@ The state file does not reflect the changes yet, because a refresh has not taken
 
 1. **Remove Backup (Optional):** If everything is working correctly, you can remove the backup state file.
 
-   ```bash
-   rm terraform.tfstate.backup
-   ```
+    ```bash
+    rm terraform.tfstate.backup
+    ```
 
 By following these steps, you can safely upgrade the ACI Terraform provider to a new version while ensuring that you have a backup of your current state in case anything goes wrong.
 
 ## Optimization
 
-1. **Add relationships to parent resource:** Reduces the amount of resources in the configuration by including children inside their parent resources. This will decrease the execution time by decreasing the size of the terraform graph and reducing the amount of REST API calls made towards APIC.
+1. **Add relationships to parent resource:** Reduces the amount of resources in the configuration by including children inside their parent resources. This will decrease the execution time by decreasing the size of the terraform graph and reducing the amount of REST API calls made towards APIC. See section [Changed Child Objects in Payloads](#changed-child-objects-in-payloads) for more details.
 
     ***Old Configuration***
     ```hcl
     resource "aci_application_epg" "terraform_epg" {
-        parent_dn = aci_application_profile.terraform_ap.id
-        name      = "terraform_epg"
+      parent_dn = aci_application_profile.terraform_ap.id
+      name      = "terraform_epg"
     }
 
     resource "aci_epg_to_domain" "terraform_epg_to_domain" {
-        application_epg_dn = aci_application_epg.terraform_epg.id
-        tdn                = "uni/phys-phys"
+      application_epg_dn = aci_application_epg.terraform_epg.id
+      tdn                = "uni/phys-phys"
     }
     ```
 
@@ -177,9 +183,9 @@ By following these steps, you can safely upgrade the ACI Terraform provider to a
         parent_dn = aci_application_profile.terraform_ap.id
         name      = "terraform_epg"
         relation_to_domains = [
-            {
-                target_dn = "uni/phys-phys"
-            }
+          {
+              target_dn = "uni/phys-phys"
+          }
         ]
     }
     ```
@@ -284,7 +290,7 @@ In non-migrated resources, child objects (including relationship objects) were m
 
 ## Changed Annotation Behavior
 
-The annotation attribute can be set for each MO that exposes the attribute, including children inside a resource. By default, the annotation is set to `orchestrator:terraform`, but this default can be overwritten at the provider level.
+The annotation attribute can be set for each MO that exposes the attribute, including children inside a resource. By default, the annotation is set to `orchestrator:terraform`, but this default can be overwritten at different levels (provider, resource, child attribute).
 
 ```hcl
 provider "aci" {
@@ -311,11 +317,11 @@ For non-migrated resources, the ID of the resource appears as "known after apply
 
 ## Error for Existing MO on Create
 
-Migrated resources support the (`allow_existing_on_create`) provider-level option to check during the plan if an object already exists. By default, existing MOs will be automatically managed on apply, as (`allow_existing_on_create`) is set to `true` by default.  This option can be set to `false`, providing a mechanism to prevent the management of the same MO by separate configurations. The drawback of this mechanism is that it requires an additional API call per resource during the plan to verify that the object does not already exist.
+Migrated resources support the [allow_existing_on_create](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs#schema) provider-level option to check during the plan if an object already exists. By default, existing MOs will be automatically managed on apply, as `allow_existing_on_create` is set to `true` by default.  This option can be set to `false`, providing a mechanism to prevent the management of the same MO by separate configurations. The drawback of this mechanism is that it requires an additional API call per resource during the plan to verify that the object does not already exist.
 
 ## Allowing Empty Input for Attributes
 
-Migrated resources in the Terraform ACI provider support null, unknown, and known states. Terraform supports three states for any value: null (missing), unknown ("known after apply"), and known. Previous SDKs did not support null and unknown states, which prevented differentiating between an empty value and a non-provided value. Because of this limitation, updating a string value to an empty string was not possible before the Plugin Framework.
+The attributes of migrated resources in the Terraform ACI provider now support null, unknown, and known states which can be used to reset values to empty or to enforce that children objects are not present. Terraform supports three states for any value: null (missing), unknown ("known after apply"), and known. Previous SDKs did not support null and unknown states, which prevented differentiating between an empty value and a non-provided value. Because of this limitation, updating a string value to an empty string, updating a map to an empty map or a list of maps to an empty list was not possible before the Plugin Framework but is now supported in the migrated resources.
 
 ## Include Annotations and Tags
 
