@@ -1,16 +1,16 @@
 
 resource "aci_vrf" "full_example_tenant" {
-  parent_dn                             = aci_tenant.example.id
-  annotation                            = "annotation"
-  bd_enforcement                        = "no"
-  description                           = "description_1"
-  ip_data_plane_learning                = "disabled"
-  name                                  = "test_name"
-  name_alias                            = "name_alias_1"
-  owner_key                             = "owner_key_1"
-  owner_tag                             = "owner_tag_1"
-  policy_control_enforcement_direction  = "egress"
-  policy_control_enforcement_preference = "enforced"
+  parent_dn                            = aci_tenant.example.id
+  annotation                           = "annotation"
+  bd_enforcement                       = "no"
+  description                          = "description_1"
+  ip_data_plane_learning               = "disabled"
+  name                                 = "test_name"
+  name_alias                           = "name_alias_1"
+  owner_key                            = "owner_key_1"
+  owner_tag                            = "owner_tag_1"
+  policy_control_enforcement_direction = "egress"
+  policy_control_enforcement_mode      = "enforced"
   relation_to_bgp_timers = {
     annotation      = "annotation_1"
     bgp_timers_name = aci_bgp_timers.example.name

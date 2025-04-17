@@ -56,7 +56,7 @@ func (d *FvCtxDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 			},
 			"pc_enf_pref": schema.StringAttribute{
 				Computed:           true,
-				DeprecationMessage: "Attribute 'pc_enf_pref' is deprecated, please refer to 'policy_control_enforcement_preference' instead. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "Attribute 'pc_enf_pref' is deprecated, please refer to 'policy_control_enforcement_mode' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			"knw_mcast_act": schema.StringAttribute{
 				Computed:           true,
@@ -136,9 +136,9 @@ func (d *FvCtxDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 				Computed:            true,
 				MarkdownDescription: `The policy control enforcement direction of the VRF object. VRF ingress policy enforcement involves ACL filtering on the leaf switch where the endpoint is located, reducing the policy CAM usage on the border leaf switch by confining the filtering to 'compute' leaf switches. VRF egress policy enforcement extends ACL filtering to the border leaf switch, increasing its policy CAM usage. The border leaf switch handles filtering for traffic from L3Out to EPG after the endpoint is learned, unless the endpoint-to-destination class mapping is unknown, in which case the compute leaf switch handles the filtering.`,
 			},
-			"policy_control_enforcement_preference": schema.StringAttribute{
+			"policy_control_enforcement_mode": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The policy control enforcement preference of the VRF object. Unenforced VRFs allow traffic between EPGs that are member of the VRF. Enforced VRFs restrict traffic between EPGs that are member of the VRF. The policy control enforcement direction is used to determine the preferred enforcement method.`,
+				MarkdownDescription: `The policy control enforcement mode of the VRF object. VRFs in unenforced mode do not restrict traffic between EPGs that are member of the VRF. VRFs in enforced mode restrict traffic not allowed by contracts between EPGs that are member of the VRF. The policy control enforcement direction is used to determine the preferred enforcement method.`,
 			},
 			"relation_to_bgp_timers": schema.SingleNestedAttribute{
 				MarkdownDescription: `A source relation to the BGP timer policy. This is an internal object.`,
