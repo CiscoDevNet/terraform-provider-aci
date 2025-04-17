@@ -19,7 +19,7 @@ Upgrading the ACI Terraform provider to a new version requires careful planning 
 
 Before making any changes, it's crucial to back up your current Terraform state. This precaution ensures that you can revert your environment to its previous state if any issues arise during the upgrade process.
 
-1. **Local Backend:** Open a terminal and navigate to the directory where your ACI Terraform configuration files with the state are located. Copy the current state file (terraform.tfstate) to a backup location..
+1. **Local Backend:** Open a terminal and navigate to the directory where your ACI Terraform configuration files with the state are located. Copy the current state file (terraform.tfstate) to a backup location.
    
    ```bash
    cd /path/to/your/terraform/project
@@ -63,7 +63,7 @@ Before making any changes, it's crucial to back up your current Terraform state.
     No changes. Your infrastructure matches the configuration.
     ```
 
-The state file does not reflect the changes yet, because a refresh has not taken place. This can be done with the `terraform refresh` or `terraform apply -refresh-only` commands, which do not modify the objects in apic, but only modifies the state file. For more information see [refresh](https://developer.hashicorp.com/terraform/cli/commands/refresh) and [planning-modes](https://developer.hashicorp.com/terraform/cli/commands/plan#planning-modes) documentation of Terraform.
+The state file does not reflect the changes yet, because a refresh has not taken place. This can be done with the `terraform refresh` or `terraform apply -refresh-only` commands, which do not modify the objects in APIC, but only modifies the state file. For more information see [refresh](https://developer.hashicorp.com/terraform/cli/commands/refresh) and [planning-modes](https://developer.hashicorp.com/terraform/cli/commands/plan#planning-modes) documentation of Terraform.
 
 ### Step 4: Migrate deprecated configuration
 
@@ -123,7 +123,7 @@ The state file does not reflect the changes yet, because a refresh has not taken
     }
     ```
 
-    The `terraform plan` command should not display any warnings anymore.
+    Continue updating the deprecated attributes in the configuration file until all warnings have been resolved. The `terraform plan` command should not display any warnings anymore.
 
     ```bash
     No changes. Your infrastructure matches the configuration.
@@ -141,9 +141,9 @@ The state file does not reflect the changes yet, because a refresh has not taken
 
 By following these steps, you can safely upgrade the ACI Terraform provider to a new version while ensuring that you have a backup of your current state in case anything goes wrong.
 
-## Optional Optimization Possibilites
+## Optimization
 
-1. **Add relationships to parent resource:** Reduces the amount of resources in the configuration by including children inside the parent config. This will decrease the execution time by decreasing the size of the terraform graph and reducing the amount of REST API calls made towards APIC.
+1. **Add relationships to parent resource:** Reduces the amount of resources in the configuration by including children inside their parent resources. This will decrease the execution time by decreasing the size of the terraform graph and reducing the amount of REST API calls made towards APIC.
 
     ***Old Configuration***
     ```hcl
@@ -171,9 +171,9 @@ By following these steps, you can safely upgrade the ACI Terraform provider to a
     }
     ```
 
-    !> Child resources should not be used in combination with nested attributes in parent resources. Doing so will result in unexpected behaviour.
+    !> Use a child resource or define as nested attribute in the parent resource. Unexpected behaviour will occur when a child resource is used in combination with a nested attribute in the parent resource.
 
-    In this scenario the child configuration should not be destroyed, but should be unmanaged (removed from state) before executing the plan. Terraform will display destroy intent in the `terraform plan` output when executed without unmanaging the child resource first.
+    The child configuration should not be destroyed when moving the configuration from child to parent resource. The child resource should be unmanaged (removed from state) before executing the plan. Terraform will display destroy intent in the `terraform plan` output when executed without unmanaging the child resource first.
 
     ```bash
     Terraform will perform the following actions:                            
@@ -206,7 +206,7 @@ By following these steps, you can safely upgrade the ACI Terraform provider to a
     Terraform has compared your real infrastructure against your configuration and found no differences, so no changes are needed.
     ```
 
-    The state file does not reflect the changes yet, because a refresh has not taken place. This can be done with the `terraform refresh` or `terraform apply -refresh-only` commands, which do not modify the objects in apic, but only modifies the state file. For more information see [refresh](https://developer.hashicorp.com/terraform/cli/commands/refresh) and [planning-modes](https://developer.hashicorp.com/terraform/cli/commands/plan#planning-modes) documentation of Terraform.
+    The state file does not reflect the changes yet, because a refresh has not taken place. This can be done with the `terraform refresh` or `terraform apply -refresh-only` commands, which do not modify the objects in APIC, but only modifies the state file. For more information see [refresh](https://developer.hashicorp.com/terraform/cli/commands/refresh) and [planning-modes](https://developer.hashicorp.com/terraform/cli/commands/plan#planning-modes) documentation of Terraform.
 
 ## Changes to the ACI Provider
 
@@ -224,20 +224,20 @@ We understand the importance of maintaining backward compatibility to avoid disr
 
 > It is important to note that for the same ACI property, legacy and redefined attributes cannot be used simultaneously. Attempting to do so will result in an error during configuration validation.
 
-A downside to this approach is increased verbosity in the plan output due to the "known after apply" state for each legacy attribute not provided when a change is detected. This is a temporary drawback which will be resolved once deprecated attributes are removed in the next major release.
+A downside to this approach is the increased verbosity in the plan output when a change is detected due to the display of the "known after apply" state for each non-provided legacy attribute. This is a temporary drawback which will be resolved once deprecated attributes are removed in the next major release.
 
 ## Changed Behavior for Relations
 
-In an ACI setup, Managed Objects (MOs) represent the different physical and logical parts within the Management Information Tree (MIT). These MOs can be linked through relationship MOs, which define how different MOs are connected. Relationship MOs act as connectors that establish links between two or more MOs, helping to organize and structure the hierarchical relationships within the MIT. In ACI, these relationships can be of two types: explicit or named.
+In an ACI fabric, Managed Objects (MOs) represent the different physical and logical parts within the Management Information Tree (MIT). These MOs can be linked through relationship MOs, which define how different objects are connected. Relationship MOs act as connectors that establish links between two or more objects, helping to organize and structure the hierarchical relationships within the MIT. In ACI, these relationships can be of two types: explicit or named.
 
-1. **Explicit relations** These require the target Distinguished Name (DN) to be specified in the tDn attribute of the relationship MO, where only one target exists for the relationship. If the target DN is absent, the relationship cannot be established.
-2. **Named relations** These require the name (identifier) attribute to be specified in the relationship MO, triggering a resolving mechanism based on precedence order. This allows the relationship to form with any MO in the precedence order.
+1. **Explicit relationships** These relationships require the target Distinguished Name (DN) to be specified in the tDn attribute of the relationship MO, where only one target exists for the relationship. If the target DN is absent, the relationship cannot be established.
+2. **Named relationships** These relationships require the name (identifier) attribute to be specified in the relationship MO, triggering a resolving mechanism based on a precedence order. This allows the relationship to form with the first MO that exists in the precedence order.
 
-In non-migrated resources of the Terraform Provider ACI, the relationship types are hidden from the user by allowing a DN (resource ID) or name input. The relationship type determines which attribute (name vs tDn) is added to the payload. In SDKv2, there was no enforcement (only warnings in logs) of the final plan needing to match the applied state, which allowed us to strip the name from a provided DN for named relations and add that to the payload for named relations. However, the migration to the Plugin Framework enforces the final plan to match the applied state.
+In non-migrated resources of the Terraform Provider ACI, the relationship types are hidden from the user by allowing a DN (resource ID) or name input. The relationship type determines which attribute (name vs tDn) is added to the payload. In SDKv2, there was no enforcement (only warnings in logs) of the final plan needing to match the applied state, which allowed us to extract the name from a provided DN for named relationships and use that extracted name in the relationship payload. However, the Plugin Framework enforces that the final plan values have to match the applied state.
 
-Consequently, for the ACI Provider, using the name of the provided tDn for named relation MOs means the DN input may not match the resolved tDn, potentially causing provider errors. Due to this change, we decided to expose only configurable attributes as input for resources, requiring the name attribute instead of the DN for named relationships.
+Consequently, for the ACI Provider, using the name of the provided tDn for the named relationship MOs means that the user provided DN may not match the resolved tDn, potentially causing provider errors. Due to this change, we decided to expose only configurable attributes as input for resources, requiring the name attribute instead of the DN for named relationships.
 
-To ensure the final plan matches the applied state, legacy attributes representing a Distinguished Name (DN) of a named relation must be resolved into the correct target Distinguished Name (tDn). This requires the object to exist when establishing the relationship; failure to do so will cause the provider to panic. See provider panic exmaple below.
+To ensure the final plan matches the applied state, legacy attributes representing a Distinguished Name (DN) of a named relationship must be resolved into the correct target Distinguished Name (tDn). This requires the object to exist when establishing the relationship; the absence of the object will cause the provider to panic. See provider panic example below.
 
 ```bash
 ╷
@@ -267,7 +267,7 @@ In migrated resources, all child Managed Objects (MOs) are represented in the co
 
 ## Changed Child Objects in Payloads
 
-In non-migrated resources, child objects were managed via individual REST API requests, which could lead to a large number of REST API calls for a single resource when many children were defined. For migrated resources, the decision is made to include all children inside a single GET/POST request to limit the number of REST API calls.
+In non-migrated resources, child objects (including relationship objects) were managed via individual REST API requests, which could lead to a large number of REST API calls for a single resource containing many children. For migrated resources, a single GET/POST request that include all children objects is used to minimize the number of REST API calls made by each resource.
 
 ## Changed Annotation Behavior
 
@@ -280,30 +280,40 @@ provider "aci" {
   url        = "https://my-cisco-aci.com"
   annotation = "provider-level-annotation-overwrite"
 }
+
+resource "aci_application_epg" "example" {
+  parent_dn  = aci_application_profile.example.id
+  name       = "test_name"
+  annotation = "resource-level-annotation-overwrite"
+  relation_to_bridge_domain = {
+    annotation         = "child-level-annotation-overwrite"
+    bridge_domain_name = aci_bridge_domain.example.name
+  }
+}
 ```
 
 ## Showing ID in Plan for Create
 
-For non-migrated resources, the ID of the resource appears as "known after apply". In the case of migrated resources, the ID is calculated during the planning phase and included in the plan output.
+For non-migrated resources, the ID of the resource appears as "known after apply". In the case of migrated resources, the ID is computed during the planning phase and included in the plan output to reduce the cascading attributes displaying a "known after apply".
 
 ## Error for Existing MO on Create
 
-Migrated resources offer a provider-level option (`allow_existing_on_create`) to check during the plan if an object already exists. By default, existing MOs can be managed, but this option can be set to `false`, providing a safeguard mechanism to prevent managing the same MO by different configuration parts. The drawback of this safeguard mechanism is an additional API call per resource during the plan to verify that the object does not already exist.
+Migrated resources support the (`allow_existing_on_create`) provider-level option to check during the plan if an object already exists. By default, existing MOs will be automatically managed on apply, as (`allow_existing_on_create`) is set to `true` by default.  This option can be set to `false`, providing a mechanism to prevent the management of the same MO by separate configurations. The drawback of this mechanism is that it requires an additional API call per resource during the plan to verify that the object does not already exist.
 
 ## Allowing Empty Input for Attributes
 
-Terraform supports three states for any value: null (missing), unknown ("known after apply"), and known. Previous SDKs did not support null and unknown states, which prevented differentiating between an empty value and a non-provided value. Because of this limitation, updating a string value to an empty string was not possible before the Plugin Framework.
+Migrated resources in the Terraform ACI provider support null, unknown, and known states. Terraform supports three states for any value: null (missing), unknown ("known after apply"), and known. Previous SDKs did not support null and unknown states, which prevented differentiating between an empty value and a non-provided value. Because of this limitation, updating a string value to an empty string was not possible before the Plugin Framework.
 
 ## Include Annotations and Tags
 
-All migrated resources and data sources expose [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview) and [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview) MOs as children inside the resource when the model allows for its configuration. See the [aci doumentation](https://www.cisco.com/c/en/us/td/docs/dcn/aci/apic/5x/system-management-configuration/cisco-apic-system-management-configuration-guide-52x/m-alias-annotations-and-tags.html) for more explanation about these MOs.
+All migrated resources and data sources expose [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview) and [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview) MOs as children and children of children inside the resource when the model allows for its configuration. See the [ACI documentation](https://www.cisco.com/c/en/us/td/docs/dcn/aci/apic/5x/system-management-configuration/cisco-apic-system-management-configuration-guide-52x/m-alias-annotations-and-tags.html) for more explanation about these MOs.
 
 ## Documentation Enhancements
 
 The documentation for migrated resources and data sources is automatically generated to enhance relevancy and consistency. The following changes have been made:
 
 1. Class names have references to the [model documentation](https://developer.cisco.com/site/apic-mim-ref-api/?version=latest).
-2. Parents of the resource are provided with references to their corresponding resources at the `parent_dn` attribute.
+2. Parents of the resource are provided with references to their corresponding resources (including links to the documentation pages) at the `parent_dn` attribute.
 3. Relational children of the resource include references to both their corresponding child resource and the target resource they are associated with.
 4. Non-relational children of the resource are provided with references to their corresponding resources at the bottom of the documentation.
 5. The default behaviour of each attribute is documented individually.
@@ -313,3 +323,4 @@ The documentation for migrated resources and data sources is automatically gener
 9. Resource DN format (resource ID) is documented.
 10. Both minimal and full examples are provided, featuring up to two parent resources when applicable.
 11. Examples for importing resources using both CLI commands and HCL configuration blocks are provided.
+12. Migrated resources contain a note that specifies it has been migrated at the top of the resource documentation.
