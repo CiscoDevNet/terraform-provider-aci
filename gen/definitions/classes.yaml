@@ -57,6 +57,8 @@ fvAEPg:
   ui_locations:
     - "Tenants -> Application Profiles -> Application EPGs"
   sub_category: "Application Management"
+  exclude_children:
+    - "fvSiteAssociated"
   migration_version: 1
   migration_blocks:
     fvAEPg:
@@ -873,6 +875,8 @@ fvBD:
   children:
     - "fvRogueExceptionMac"
     - "fvAccP"
+  exclude_children:
+    - "fvSiteAssociated"
   migration_version: 1
   migration_blocks:
     fvBD:
@@ -1008,3 +1012,34 @@ commPol:
   contained_by:
       - "polUni"
   rn_prepend: "fabric"
+
+fvSiteAssociated:
+  include: true
+  dn_formats: # specified in different order to avoid mscGraphXlateCont as import example
+    - "uni/tn-{name}/ap-{name}/epg-{name}/stAsc"
+    - "uni/tn-{name}/ctx-{name}/stAsc"
+    - "uni/tn-{name}/BD-{name}/stAsc"
+    - "uni/tn-{name}/out-{name}/instP-{name}/stAsc"
+    - "uni/tn-{name}/mscGraphXlateCont/epgDefXlate-[{epgDefDn}]/stAsc"
+  children:
+    - "fvRemoteId"
+  resource_name: "associated_site"
+  ui_locations:
+    - "Not shown in UI"
+  sub_category: "Multi-Site"
+  resource_notes:
+    - "This resource should only be used to accomplish multi-site orchestration."
+
+fvRemoteId:
+  resource_name: "remote_site"
+  ui_locations:
+    - "Not shown in UI"
+  sub_category: "Multi-Site"
+  resource_notes:
+    - "This resource should only be used to accomplish multi-site orchestration."
+  dn_formats: # specified in different order to avoid mscGraphXlateCont as import example
+    - "uni/tn-{name}/ap-{name}/epg-{name}/stAsc/site-{siteId}"
+    - "uni/tn-{name}/ctx-{name}/stAsc/site-{siteId}"
+    - "uni/tn-{name}/BD-{name}/stAsc/site-{siteId}"
+    - "uni/tn-{name}/out-{name}/instP-{name}/stAsc/site-{siteId}"
+    - "uni/tn-{name}/mscGraphXlateCont/epgDefXlate-[{epgDefDn}]/stAsc/site-{siteId}"
