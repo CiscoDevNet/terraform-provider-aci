@@ -160,6 +160,7 @@ All examples for the L3Out Consumer Label resource can be found in the [examples
   #### Required ####
   
     * `direction` (direction) - (string) The connector direction.
+     - Valid Values: `export`, `import`.
     * `target_dn` (tDn) - (string) The distinguished name (DN) of the Route Control Profile object.
   #### Optional ####
     
