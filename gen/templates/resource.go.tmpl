@@ -678,6 +678,7 @@ func set{{ .ResourceClassName }}LegacyAttributes(ctx context.Context, diags *dia
 			{{- end }}
 		{{- end }}
 	{{- end }}
+	{{- if .LegacyChildren}}
 
 	_, ok := classReadInfo[0].(map[string]interface{})["children"]
 	if ok {
@@ -762,6 +763,7 @@ func set{{ .ResourceClassName }}LegacyAttributes(ctx context.Context, diags *dia
 			{{- end}}
 		{{- end}}{{- end}}
 	}
+	{{- end }}
 	{{- end }}
 }
 {{- end }}
@@ -2072,7 +2074,10 @@ func getAndSet{{.ResourceClassName}}Attributes(ctx context.Context, diags *diag.
 								}
 										{{- else}}
 								if childAttributeName == "{{.PropertyName}}" {
-									{{.PropertyName}}List := strings.Split(childAttributeValue.(string), ",")
+									{{.PropertyName}}List := make([]string, 0)
+									if childAttributeValue.(string) != "" {
+										{{.PropertyName}}List = strings.Split(childAttributeValue.(string), ",")
+									}
 									{{.PropertyName}}Set, _ := types.SetValueFrom(ctx, basetypes.StringType{},{{.PropertyName}}List)
 									{{.ResourceClassName}}{{$.ResourceClassName}}.{{.Name}} = {{.PropertyName}}Set
 									

@@ -252,7 +252,7 @@ func GetTestValue(name string, model Model) string {
 	return name
 }
 
-func GetTestTargetValue(targets []interface{}, key, value string) string {
+func GetTestTargetValue(targets []interface{}, key string, value interface{}) interface{} {
 
 	for index, target := range targets {
 
@@ -550,8 +550,11 @@ func ContainsString(s, sub string) bool {
 	return strings.Contains(s, sub)
 }
 
-func IsReference(s string) bool {
-	return strings.HasPrefix(s, "aci_") || strings.HasPrefix(s, "data.aci_")
+func IsReference(s interface{}) bool {
+	if str, ok := s.(string); ok {
+		return strings.HasPrefix(str, "aci_") || strings.HasPrefix(str, "data.aci_")
+	}
+	return false
 }
 
 // Reused from https://github.com/buxizhizhoum/inflection/blob/master/inflection.go#L8 to avoid importing the whole package
@@ -2115,7 +2118,13 @@ func (m *Model) SetClassProperties(classDetails interface{}) {
 				val, ok = propertyValue.(map[string]interface{})["default"]
 				if ok {
 					if reflect.TypeOf(val).String() == "string" {
-						property.DefaultValue = val.(string)
+						// Check if the default value not a valid value in type bitmask where the value is none
+						// In the MO this will default the attribute to an empty string
+						if property.ValueType == "bitmask" && !slices.Contains(property.ValidValues, val.(string)) && val.(string) == "none" {
+							property.DefaultValue = ""
+						} else {
+							property.DefaultValue = val.(string)
+						}
 					} else if reflect.TypeOf(val).String() == "float64" {
 						property.DefaultValue = fmt.Sprintf("%g", val.(float64))
 					} else {
