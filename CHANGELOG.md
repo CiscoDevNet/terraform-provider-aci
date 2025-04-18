@@ -1,3 +1,51 @@
+# Terraform Provider ACI - Changelog
+
+All notable changes to this project will be documented in this file.
+
+## 2.16.0 (April 18, 2025)
+
+This release is the first release that includes resources and data sources that have been migrated from SDKv2 to the Terraform Provider Framework. Those resources and data sources will continue to accept legacy attributes but deprecation warnings will be displayed. See the [migration guide](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/guides/migration) for more details on the migration and how to upgrade the provider to this release and any subsequent v2.x release that will include migrated resources and data sources.
+
+MIGRATED TO FRAMEWORK:
+- aci_tenant
+- aci_bridge_domain
+- aci_application_profile
+- aci_application_epg
+- aci_endpoint_security_group
+- aci_system
+
+TYPE CHANGE:
+-  The relation_to_netflow_record attribute in the aci_netflow_monitor_policy resource has been changed from a list of map to a single map which requires a config update. State will be migrated automatically.
+
+IMPROVEMENTS:
+- Add aci_custom_qos_policy resource and data source.
+- Add aci_netflow_exporter_policy resource and datasource.
+- Add aci_access_interface_override resource and data source.
+- Add aci_certificate_authority and aci_key_ring resources and data sources.
+- Add aci_dot1p_classifier and aci_dscp_to_priority_map resources and data sources.
+- Add aci_vrf_fallback_route and aci_vrf_fallback_route_group datasources and resources.
+- Add aci_ip_sla_track_list, aci_relation_to_ip_sla_track_member, and ip_sla_track member resources and data sources.
+- Add aci_data_plane_policing_policy, aci_management_access_policy and aci_trust_control_policy resources and data sources.
+- Add aci_relation_to_domain, aci_relation_to_fibre_channel_path, aci_relation_to_static_leaf, and aci_relation_to_static_path resources and data sources.
+- Add aci_relation_from_l3out_consumer_label_to_external_epg and aci_relation_from_l3out_consumer_label_to_route_control_profile resources and data sources.
+- Add aci_relation_to_consumed_contract, aci_relation_to_provided_contract, aci_relation_to_contract_master, aci_relation_to_imported_contract, aci_relation_to_intra_epg_contract, and aci_relation_to_taboo_contract resources and data sources.
+- Add aci_epg_useg_block_statement, aci_epg_useg_sub_block_statement, aci_epg_useg_ad_group_attribute, aci_epg_useg_dns_attribute, aci_epg_useg_ip_attribute, aci_epg_useg_mac_attribute, and aci_epg_useg_vm_attribute resources and data-sources.
+- Add aci_first_hop_security_policy, aci_igmp_snooping_policy, aci_mld_snooping_policy, aci_neighbor_discovery_interface_policy, aci_relation_from_bridge_domain_to_l3_outside, aci_relation_from_bridge_domain_to_netflow_monitor_policy, and aci_rogue_coop_exception resources and data sources.
+- Move aci_route_control_profile to Terraform Provider Framework without migration as not needed.
+- Add a provider level attribute to prevent creation of objects that are already existing in APIC.
+- Add read-only pctag attribute to aci_endpoint_security_group resource and datasource.
+- Add service_bd_routing_disable attribute to aci_bridge_domain resource and datasource.
+- Add read-only pctag, scope and segment attributes to aci_bridge_domain resource and data source.
+- Add scope attribute to aci_endpoint_security_group and aci_application_epg resources and data sources
+- Add auto to the allowed value for the speed attribute of aci_fabric_if_pol resource.
+- Add ability to commission a node (decommissioned but not removed from controller) with new commission attribute in the aci_fabric_node_member resource.
+- Set the id during the plan phase for plugin framework resources where the DN can be constructed.
+
+BUG FIXES:
+- Improved error catching for error returned by APIC
+- Resolves deletion of nodes from controller upon destroy.
+- Fix computed behaviour when configuration is not provided for relation_infra_rs_att_ent_p and relation_infra_rs_l2_inst_pol in the aci_leaf_access_bundle_policy_group resource
+
 ## 2.15.0 (July 2, 2024)
 DEPRECATIONS:
 - Deprecate the non-functional `relation_vz_rs_graph_att` attribute from `aci_contract`. Use `relation_vz_rs_subj_graph_att` on `aci_contract_subject` instead.
