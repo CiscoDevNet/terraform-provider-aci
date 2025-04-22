@@ -139,7 +139,7 @@ All examples for the Relation To Provided Contract resource can be found in the 
 
 ### Optional ###
 
-* `annotation` (annotation) - (string) The annotation of the Relation To Provided Contract object.
+* `annotation` (annotation) - (string) The annotation of the Relation To Provided Contract object. This attribute is supported in ACI versions: 3.2(1l) and later.
   - Default: `orchestrator:terraform`
 * `match_criteria` (matchT) - (string) The provider label match criteria.
   - Default: `AtleastOne`

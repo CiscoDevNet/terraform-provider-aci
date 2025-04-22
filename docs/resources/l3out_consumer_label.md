@@ -127,10 +127,10 @@ All examples for the L3Out Consumer Label resource can be found in the [examples
 
 ### Optional ###
 
-* `annotation` (annotation) - (string) The annotation of the L3Out Consumer Label object.
+* `annotation` (annotation) - (string) The annotation of the L3Out Consumer Label object. This attribute is supported in ACI versions: 3.2(1l) and later.
   - Default: `orchestrator:terraform`
 * `description` (descr) - (string) The description of the L3Out Consumer Label object.
-* `name_alias` (nameAlias) - (string) The name alias of the L3Out Consumer Label object.
+* `name_alias` (nameAlias) - (string) The name alias of the L3Out Consumer Label object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `owner` (owner) - (string) The owner of the L3Out Consumer Label object.
   - Default: `infra`
   - Valid Values: `infra`, `tenant`.

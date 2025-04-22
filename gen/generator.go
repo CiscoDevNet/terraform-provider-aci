@@ -1331,6 +1331,7 @@ type Model struct {
 	RelationshipResourceNames   []string
 	RelationshipResourceName    string
 	Versions                    string
+	RawVersions                 string
 	ChildClasses                []string
 	ContainedBy                 []string
 	Contains                    []string
@@ -1963,6 +1964,7 @@ func (m *Model) SetClassComment(classDetails interface{}) {
 func (m *Model) SetClassVersions(classDetails interface{}) {
 	versions, ok := classDetails.(map[string]interface{})["versions"]
 	if ok {
+		m.RawVersions = versions.(string)
 		m.Versions = formatVersion(versions.(string))
 	}
 }
@@ -2133,8 +2135,15 @@ func (m *Model) SetClassProperties(classDetails interface{}) {
 				}
 			}
 
-			versions, ok := classDetails.(map[string]interface{})["versions"]
+			versions, ok := propertyValue.(map[string]interface{})["versions"]
 			if ok {
+				// Check if version is smaller then parent class version if so set to parent class version
+				lowClassVersion := providerFunctions.ParseVersion(strings.Split(strings.Split(m.RawVersions, ",")[0], "-")[0]).Version
+				lowPropertyVersion := providerFunctions.ParseVersion(strings.Split(strings.Split(versions.(string), ",")[0], "-")[0]).Version
+
+				if providerFunctions.IsVersionGreaterOrEqual(*lowClassVersion, *lowPropertyVersion) {
+					versions = m.RawVersions
+				}
 				property.Versions = formatVersion(versions.(string))
 			}
 

@@ -89,16 +89,16 @@ All examples for the Relation To Static Path resource can be found in the [examp
 
 ### Optional ###
 
-* `annotation` (annotation) - (string) The annotation of the Relation To Static Path object.
+* `annotation` (annotation) - (string) The annotation of the Relation To Static Path object. This attribute is supported in ACI versions: 3.2(1l) and later.
   - Default: `orchestrator:terraform`
-* `description` (descr) - (string) The description of the Relation To Static Path object.
+* `description` (descr) - (string) The description of the Relation To Static Path object. This attribute is supported in ACI versions: 1.0(4g) and later.
 * `deployment_immediacy` (instrImedcy) - (string) The deployment immediacy of the Relation To Static Path object. Specifies when the policy is pushed into the hardware policy content-addressable memory (CAM).
   - Default: `lazy`
   - Valid Values: `immediate`, `lazy`.
 * `mode` (mode) - (string) The static association mode of the Relation To Static Path object.
   - Default: `regular`
   - Valid Values: `native`, `regular`, `untagged`.
-* `primary_encapsulation` (primaryEncap) - (string) The primary VLAN encapsulation of the Relation To Static Path object.
+* `primary_encapsulation` (primaryEncap) - (string) The primary VLAN encapsulation of the Relation To Static Path object. This attribute is supported in ACI versions: 1.2(2g) and later.
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
   

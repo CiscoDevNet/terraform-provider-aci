@@ -116,7 +116,7 @@ All examples for the Data Plane Policing Policy resource can be found in the [ex
 * `admin_state` (adminSt) - (string) The administrative state of the Data Plane Policing Policy object.
   - Default: `disabled`
   - Valid Values: `disabled`, `enabled`.
-* `annotation` (annotation) - (string) The annotation of the Data Plane Policing Policy object.
+* `annotation` (annotation) - (string) The annotation of the Data Plane Policing Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
   - Default: `orchestrator:terraform`
 * `excessive_burst` (be) - (string) The excessive burst size of the Data Plane Policing Policy object. Only applicable for 2R3C policer.
   - Default: `unspecified`
@@ -164,7 +164,7 @@ All examples for the Data Plane Policing Policy resource can be found in the [ex
 * `mode` (mode) - (string) Policer mode - bytes or packet policer.
   - Default: `bit`
   - Valid Values: `bit`, `packet`.
-* `name_alias` (nameAlias) - (string) The name alias of the Data Plane Policing Policy object.
+* `name_alias` (nameAlias) - (string) The name alias of the Data Plane Policing Policy object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `peak_rate` (pir) - (string) The peak information rate (PIR) of the Data Plane Policing Policy object. Only applicable for 2R3C policer.
@@ -177,7 +177,7 @@ All examples for the Data Plane Policing Policy resource can be found in the [ex
 * `rate_unit` (rateUnit) - (string) The rate unit of the Data Plane Policing Policy object.
   - Default: `unspecified`
   - Valid Values: `giga`, `kilo`, `mega`, `unspecified`.
-* `sharing_mode` (sharingMode) - (string) The sharing mode of the Data Plane Policing Policy object.
+* `sharing_mode` (sharingMode) - (string) The sharing mode of the Data Plane Policing Policy object. This attribute is supported in ACI versions: 3.1(1i) and later.
   - Default: `dedicated`
   - Valid Values: `dedicated`, `shared`.
 * `type` (type) - (string) The type of the Data Plane Policing Policy object.

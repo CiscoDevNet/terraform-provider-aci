@@ -59,19 +59,19 @@ data "aci_netflow_exporter_policy" "example_tenant" {
 ### Read-Only ###
 
 * `id` - (string) The distinguished name (DN) of the NetFlow Exporter Policy object.
-* `annotation` (annotation) - (string) The annotation of the NetFlow Exporter Policy object.
+* `annotation` (annotation) - (string) The annotation of the NetFlow Exporter Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
 * `description` (descr) - (string) The description of the NetFlow Exporter Policy object.
-* `qos_dscp_value` (dscp) - (string) The DSCP value of the NetFlow Exporter Policy object.
+* `qos_dscp_value` (dscp) - (string) The DSCP value of the NetFlow Exporter Policy object. This attribute is supported in ACI versions: 2.3(1e) and later.
 * `destination_ip_address` (dstAddr) - (string) The destination IP address of the remote node.
 * `destination_port` (dstPort) - (string) The destination port of the remote node.
 * `name_alias` (nameAlias) - (string) The name alias of the NetFlow Exporter Policy object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
-* `source_ip_type` (sourceIpType) - (string) The type of the source IP address for the NetFlow Exporter Policy object.
+* `source_ip_type` (sourceIpType) - (string) The type of the source IP address for the NetFlow Exporter Policy object. This attribute is supported in ACI versions: 3.0(1k) and later.
 * `source_ip_address` (srcAddr) - (string) The source IP address.
 * `version` (ver) - (string) The NetFlow Exporter Version of the NetFlow Exporter Policy object.
 * `relation_to_vrf` - (map) A map of Relation From NetFlow Exporter To VRF (ACI object [netflowRsExporterToCtx](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRsExporterToCtx/overview)) pointing to VRF (ACI Object [fvCtx](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvCtx/overview)).
-    * `annotation` (annotation) - (string) The annotation of the Relation From NetFlow Exporter To VRF object.
+    * `annotation` (annotation) - (string) The annotation of the Relation From NetFlow Exporter To VRF object. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `target_dn` (tDn) - (string) The distinguished name of the target.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
@@ -84,7 +84,7 @@ data "aci_netflow_exporter_policy" "example_tenant" {
     - [fvAEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvAEPg/overview).
     - [l3extInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extInstP/overview).
     - [l2extInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l2extInstP/overview).
-    * `annotation` (annotation) - (string) The annotation of the Relation From NetFlow Exporter To EPG object.
+    * `annotation` (annotation) - (string) The annotation of the Relation From NetFlow Exporter To EPG object. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `target_dn` (tDn) - (string) The distinguished name of the target.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
         * `key` (key) - (string) The key used to uniquely identify this configuration object.

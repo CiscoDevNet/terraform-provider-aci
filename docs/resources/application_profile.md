@@ -104,10 +104,10 @@ All examples for the Application Profile resource can be found in the [examples]
 
 ### Optional ###
 
-* `annotation` (annotation) - (string) The annotation of the Application Profile object.
+* `annotation` (annotation) - (string) The annotation of the Application Profile object. This attribute is supported in ACI versions: 3.2(1l) and later.
   - Default: `orchestrator:terraform`
 * `description` (descr) - (string) The description of the Application Profile object.
-* `name_alias` (nameAlias) - (string) The name alias of the Application Profile object.
+* `name_alias` (nameAlias) - (string) The name alias of the Application Profile object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
@@ -118,7 +118,7 @@ All examples for the Application Profile resource can be found in the [examples]
 * `relation_to_monitoring_policy` - (map) A map of Relation From Application Profile To Monitoring Policy (ACI object [fvRsApMonPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsApMonPol/overview)) pointing to Monitoring Policy (ACI Object [monEPGPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/monEPGPol/overview)) which can be configured using the [aci_monitoring_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/monitoring_policy) resource.
   #### Optional ####
     
-    * `annotation` (annotation) - (string) The annotation of the Relation From Application Profile To Monitoring Policy object.
+    * `annotation` (annotation) - (string) The annotation of the Relation From Application Profile To Monitoring Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
       - Default: `orchestrator:terraform`
     * `monitoring_policy_name` (tnMonEPGPolName) - (string) The name of the monitoring policy.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.

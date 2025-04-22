@@ -48,31 +48,31 @@ data "aci_application_epg" "example_application_profile" {
 ### Read-Only ###
 
 * `id` - (string) The distinguished name (DN) of the Application EPG object.
-* `annotation` (annotation) - (string) The annotation of the Application EPG object.
+* `annotation` (annotation) - (string) The annotation of the Application EPG object. This attribute is supported in ACI versions: 3.2(1l) and later.
 * `description` (descr) - (string) The description of the Application EPG object.
-* `contract_exception_tag` (exceptionTag) - (string) The contract exception tag of the Application EPG object.
-* `flood_in_encapsulation` (floodOnEncap) - (string) Flood L2 Multicast/Broadcast and Link Local Layer based on encapsulation.
-* `forwarding_control` (fwdCtrl) - (string) The forwarding control of the Application EPG object.
-* `has_multicast_source` (hasMcastSource) - (string) The Application EPG object has a multicast source.
-* `useg_epg` (isAttrBasedEPg) - (string) The Application EPG object is microsegmented (uSeg).
+* `contract_exception_tag` (exceptionTag) - (string) The contract exception tag of the Application EPG object. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `flood_in_encapsulation` (floodOnEncap) - (string) Flood L2 Multicast/Broadcast and Link Local Layer based on encapsulation. This attribute is supported in ACI versions: 3.1(1i) and later.
+* `forwarding_control` (fwdCtrl) - (string) The forwarding control of the Application EPG object. This attribute is supported in ACI versions: 2.0(2f) and later.
+* `has_multicast_source` (hasMcastSource) - (string) The Application EPG object has a multicast source. This attribute is supported in ACI versions: 4.0(1h) and later.
+* `useg_epg` (isAttrBasedEPg) - (string) The Application EPG object is microsegmented (uSeg). This attribute is supported in ACI versions: 1.2(1i) and later.
 * `match_criteria` (matchT) - (string) The provider label match criteria.
-* `name_alias` (nameAlias) - (string) The name alias of the Application EPG object.
-* `intra_epg_isolation` (pcEnfPref) - (string) Parameter used to determine whether communication between endpoints within the EPG is blocked.
+* `name_alias` (nameAlias) - (string) The name alias of the Application EPG object. This attribute is supported in ACI versions: 2.2(1k) and later.
+* `intra_epg_isolation` (pcEnfPref) - (string) Parameter used to determine whether communication between endpoints within the EPG is blocked. This attribute is supported in ACI versions: 1.2(2g) and later.
 * `pc_tag` (pcTag) - (string) The classification tag used for policy enforcement and zoning.
-* `preferred_group_member` (prefGrMemb) - (string) Parameter used to determine whether the EPG is part of the preferred group. Members of this group are allowed to communicate without contracts.
+* `preferred_group_member` (prefGrMemb) - (string) Parameter used to determine whether the EPG is part of the preferred group. Members of this group are allowed to communicate without contracts. This attribute is supported in ACI versions: 2.1(1h) and later.
 * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
 * `scope` (scope) - (string) The scope ID (L3-VNI) of the Application EPG object.
-* `admin_state` (shutdown) - (string) Withdraw AEPg Configuration from all Nodes in the Fabric.
+* `admin_state` (shutdown) - (string) Withdraw AEPg Configuration from all Nodes in the Fabric. This attribute is supported in ACI versions: 4.0(1h) and later.
 * `epg_useg_block_statement` - (map) A map of EPG uSeg Block Statement (ACI object [fvCrtrn](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvCrtrn/overview)). This attribute is supported in ACI versions: 1.1(1j) and later.
-    * `annotation` (annotation) - (string) The annotation of the EPG uSeg Block Statement object.
+    * `annotation` (annotation) - (string) The annotation of the EPG uSeg Block Statement object. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `description` (descr) - (string) The description of the EPG uSeg Block Statement object.
-    * `match` (match) - (string) The Matching Rule Type of the EPG uSeg Block Statement object.
+    * `match` (match) - (string) The Matching Rule Type of the EPG uSeg Block Statement object. This attribute is supported in ACI versions: 1.2(1i) and later.
     * `name` (name) - (string) The name of the EPG uSeg Block Statement object.
-    * `name_alias` (nameAlias) - (string) The name alias of the EPG uSeg Block Statement object.
+    * `name_alias` (nameAlias) - (string) The name alias of the EPG uSeg Block Statement object. This attribute is supported in ACI versions: 2.2(1k) and later.
     * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
     * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
-    * `precedence` (prec) - (string) The precedence of the EPG uSeg Block Statement object.
-    * `scope` (scope) - (string) The scope of the EPG uSeg Block Statement object.
+    * `precedence` (prec) - (string) The precedence of the EPG uSeg Block Statement object. This attribute is supported in ACI versions: 4.1(1i) and later.
+    * `scope` (scope) - (string) The scope of the EPG uSeg Block Statement object. This attribute is supported in ACI versions: 4.1(1i) and later.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
@@ -80,7 +80,7 @@ data "aci_application_epg" "example_application_profile" {
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
 * `relation_to_monitoring_policy` - (map) A map of Relation From Application EPG To Monitoring Policy (ACI object [fvRsAEPgMonPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsAEPgMonPol/overview)) pointing to Monitoring Policy (ACI Object [monEPGPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/monEPGPol/overview)).
-    * `annotation` (annotation) - (string) The annotation of the Relation From Application EPG To Monitoring Policy object.
+    * `annotation` (annotation) - (string) The annotation of the Relation From Application EPG To Monitoring Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `monitoring_policy_name` (tnMonEPGPolName) - (string) The name of the monitoring policy.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
@@ -89,7 +89,7 @@ data "aci_application_epg" "example_application_profile" {
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
 * `relation_to_bridge_domain` - (map) A map of Relation To Bridge Domain (ACI object [fvRsBd](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsBd/overview)) pointing to Bridge Domain (ACI Object [fvBD](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvBD/overview)).
-    * `annotation` (annotation) - (string) The annotation of the Relation To Bridge Domain object.
+    * `annotation` (annotation) - (string) The annotation of the Relation To Bridge Domain object. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `bridge_domain_name` (tnFvBDName) - (string) The name of the bridge domain associated with this EPG.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
@@ -98,7 +98,7 @@ data "aci_application_epg" "example_application_profile" {
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
 * `relation_to_consumed_contracts` - (list) A list of Relation To Consumed Contracts (ACI object [fvRsCons](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsCons/overview)) pointing to Contract (ACI Object [vzBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzBrCP/overview)).
-    * `annotation` (annotation) - (string) The annotation of the Relation To Consumed Contract object.
+    * `annotation` (annotation) - (string) The annotation of the Relation To Consumed Contract object. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
     * `contract_name` (tnVzBrCPName) - (string) The consumer contract name.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
@@ -108,7 +108,7 @@ data "aci_application_epg" "example_application_profile" {
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
 * `relation_to_imported_contracts` - (list) A list of Relation To Imported Contracts (ACI object [fvRsConsIf](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsConsIf/overview)) pointing to Imported Contract (ACI Object [vzCPIf](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzCPIf/overview)).
-    * `annotation` (annotation) - (string) The annotation of the Relation To Imported Contract object.
+    * `annotation` (annotation) - (string) The annotation of the Relation To Imported Contract object. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
     * `imported_contract_name` (tnVzCPIfName) - (string) The contract interface name.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
@@ -118,7 +118,7 @@ data "aci_application_epg" "example_application_profile" {
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
 * `relation_to_custom_qos_policy` - (map) A map of Relation To Custom Qos Policy (ACI object [fvRsCustQosPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsCustQosPol/overview)) pointing to Custom Qos Policy (ACI Object [qosCustomPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/qosCustomPol/overview)).
-    * `annotation` (annotation) - (string) The annotation of the Relation To Custom Qos Policy object.
+    * `annotation` (annotation) - (string) The annotation of the Relation To Custom Qos Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `custom_qos_policy_name` (tnQosCustomPolName) - (string) The Custom QoS traffic policy name.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
@@ -132,31 +132,31 @@ data "aci_application_epg" "example_application_profile" {
     - [physDomP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/physDomP/overview).
     - [fcDomP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fcDomP/overview).
     - [l2extDomP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l2extDomP/overview).
-    * `annotation` (annotation) - (string) The annotation of the Relation To Domain object.
-    * `binding_type` (bindingType) - (string) The binding type of the Relation To Domain object.
-    * `class_preference` (classPref) - (string) The class preference of the Relation To Domain object. Set 'useg' to allow microsegmentation.
-    * `custom_epg_name` (customEpgName) - (string) The display name of the user configured port-group.
-    * `delimiter` (delimiter) - (string) The delimiter of the Relation To Domain object.
-    * `encapsulation` (encap) - (string) The encapsulation of the Relation To Domain object. The encapsulation refers to the EPG VLAN when class preference is set to 'encap, or to the Secondary VLAN when class preference is set to 'useg'.
-    * `encapsulation_mode` (encapMode) - (string) The encapsulation mode of the Relation To Domain object.
-    * `epg_cos` (epgCos) - (string) The class of service (CoS) of the Relation To Domain object.
-    * `epg_cos_pref` (epgCosPref) - (string) The class of service (CoS) preference of the Relation To Domain object.
+    * `annotation` (annotation) - (string) The annotation of the Relation To Domain object. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `binding_type` (bindingType) - (string) The binding type of the Relation To Domain object. This attribute is supported in ACI versions: 4.0(1h) and later.
+    * `class_preference` (classPref) - (string) The class preference of the Relation To Domain object. Set 'useg' to allow microsegmentation. This attribute is supported in ACI versions: 1.2(2g) and later.
+    * `custom_epg_name` (customEpgName) - (string) The display name of the user configured port-group. This attribute is supported in ACI versions: 4.2(3j) and later.
+    * `delimiter` (delimiter) - (string) The delimiter of the Relation To Domain object. This attribute is supported in ACI versions: 2.0(1m) and later.
+    * `encapsulation` (encap) - (string) The encapsulation of the Relation To Domain object. The encapsulation refers to the EPG VLAN when class preference is set to 'encap, or to the Secondary VLAN when class preference is set to 'useg'. This attribute is supported in ACI versions: 1.1(1j) and later.
+    * `encapsulation_mode` (encapMode) - (string) The encapsulation mode of the Relation To Domain object. This attribute is supported in ACI versions: 2.1(1h) and later.
+    * `epg_cos` (epgCos) - (string) The class of service (CoS) of the Relation To Domain object. This attribute is supported in ACI versions: 3.0(1k) and later.
+    * `epg_cos_pref` (epgCosPref) - (string) The class of service (CoS) preference of the Relation To Domain object. This attribute is supported in ACI versions: 3.0(1k) and later.
     * `deployment_immediacy` (instrImedcy) - (string) The deployment immediacy of the Relation To Domain object. Specifies when the policy is pushed into the hardware policy content-addressable memory (CAM).
-    * `ipam_dhcp_override` (ipamDhcpOverride) - (string) The IP address management (IPAM) DHCP override of the Relation To Domain object. Only applicable for Nutanix domains.
-    * `ipam_enabled` (ipamEnabled) - (string) The IP address management (IPAM) enabled status of the Relation To Domain object. Only applicable for Nutanix domains.
-    * `ipam_gateway` (ipamGateway) - (string) The IP address management (IPAM) gateway of the Relation To Domain object. Only applicable for Nutanix domains.
-    * `lag_policy_name` (lagPolicyName) - (string) The link aggregation group (LAG) policy name of the Relation To Domain object.
-    * `netflow_direction` (netflowDir) - (string) The NetFlow monitoring direction of the Relation To Domain object.
-    * `enable_netflow` (netflowPref) - (string) The Netflow enabled status for the Relation To Domain object.
-    * `number_of_ports` (numPorts) - (string) The number of ports of the Relation To Domain object.
-    * `port_allocation` (portAllocation) - (string) Port allocation for ports.
-    * `primary_encapsulation` (primaryEncap) - (string) The primary encapsulation of the Relation To Domain object. This is used when the class preference is set to 'useg'.
-    * `primary_encapsulation_inner` (primaryEncapInner) - (string) The primary inner encapsulation of the Relation To Domain object. This is used for the portgroup at the VMWare Distributed Virtual Switch (DVS). This VLAN is internal to the DVS and is used for communication between the other VMs and the AVE VM at a host. Traffic is not forwarded to the fabric over the VLAN. Only applicable for Cisco ACI Virtual Edge (AVE) domains.
+    * `ipam_dhcp_override` (ipamDhcpOverride) - (string) The IP address management (IPAM) DHCP override of the Relation To Domain object. Only applicable for Nutanix domains. This attribute is supported in ACI versions: 6.0(3d) and later.
+    * `ipam_enabled` (ipamEnabled) - (string) The IP address management (IPAM) enabled status of the Relation To Domain object. Only applicable for Nutanix domains. This attribute is supported in ACI versions: 6.0(3d) and later.
+    * `ipam_gateway` (ipamGateway) - (string) The IP address management (IPAM) gateway of the Relation To Domain object. Only applicable for Nutanix domains. This attribute is supported in ACI versions: 6.0(3d) and later.
+    * `lag_policy_name` (lagPolicyName) - (string) The link aggregation group (LAG) policy name of the Relation To Domain object. This attribute is supported in ACI versions: 3.2(10e) to 3.2(10g), 3.2(7f) and later.
+    * `netflow_direction` (netflowDir) - (string) The NetFlow monitoring direction of the Relation To Domain object. This attribute is supported in ACI versions: 3.0(1k) and later.
+    * `enable_netflow` (netflowPref) - (string) The Netflow enabled status for the Relation To Domain object. This attribute is supported in ACI versions: 2.2(1k) and later.
+    * `number_of_ports` (numPorts) - (string) The number of ports of the Relation To Domain object. This attribute is supported in ACI versions: 4.0(1h) and later.
+    * `port_allocation` (portAllocation) - (string) Port allocation for ports. This attribute is supported in ACI versions: 4.0(1h) and later.
+    * `primary_encapsulation` (primaryEncap) - (string) The primary encapsulation of the Relation To Domain object. This is used when the class preference is set to 'useg'. This attribute is supported in ACI versions: 1.2(2g) and later.
+    * `primary_encapsulation_inner` (primaryEncapInner) - (string) The primary inner encapsulation of the Relation To Domain object. This is used for the portgroup at the VMWare Distributed Virtual Switch (DVS). This VLAN is internal to the DVS and is used for communication between the other VMs and the AVE VM at a host. Traffic is not forwarded to the fabric over the VLAN. Only applicable for Cisco ACI Virtual Edge (AVE) domains. This attribute is supported in ACI versions: 3.1(1i) and later.
     * `resolution_immediacy` (resImedcy) - (string) The resolution immediacy of the Relation To Domain object. Specifies if policies are resolved immmediately or when needed.
-    * `secondary_encapsulation_inner` (secondaryEncapInner) - (string) The secondary inner encapsulation of the Relation To Domain object. This is used for the portgroup at the VMWare Distributed Virtual Switch (DVS). This VLAN is internal to the DVS and is used for communication between the other VMs and the AVE VM at a host. Traffic is not forwarded to the fabric over the VLAN. Only applicable for Cisco ACI Virtual Edge (AVE) domains.
-    * `switching_mode` (switchingMode) - (string) The switching mode of the Relation To Domain object.
+    * `secondary_encapsulation_inner` (secondaryEncapInner) - (string) The secondary inner encapsulation of the Relation To Domain object. This is used for the portgroup at the VMWare Distributed Virtual Switch (DVS). This VLAN is internal to the DVS and is used for communication between the other VMs and the AVE VM at a host. Traffic is not forwarded to the fabric over the VLAN. Only applicable for Cisco ACI Virtual Edge (AVE) domains. This attribute is supported in ACI versions: 3.1(1i) and later.
+    * `switching_mode` (switchingMode) - (string) The switching mode of the Relation To Domain object. This attribute is supported in ACI versions: 3.1(1i) and later.
     * `target_dn` (tDn) - (string) The distinguished name of the target Domain object.
-    * `untagged` (untagged) - (string) The untagged status of the Relation To Domain object.
+    * `untagged` (untagged) - (string) The untagged status of the Relation To Domain object. This attribute is supported in ACI versions: 3.2(10e) to 3.2(10g), 3.2(7f) to 3.2(9h), 4.2(1i) and later.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
@@ -164,7 +164,7 @@ data "aci_application_epg" "example_application_profile" {
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
 * `relation_to_data_plane_policing_policy` - (map) A map of Relation To Data Plane Policing Policy (ACI object [fvRsDppPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsDppPol/overview)) pointing to Data Plane Policing Policy (ACI Object [qosDppPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/qosDppPol/overview)). This attribute is supported in ACI versions: 3.0(1k) and later.
-    * `annotation` (annotation) - (string) The annotation of the Relation To Data Plane Policing Policy object.
+    * `annotation` (annotation) - (string) The annotation of the Relation To Data Plane Policing Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `data_plane_policing_policy_name` (tnQosDppPolName) - (string) Name.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
@@ -173,7 +173,7 @@ data "aci_application_epg" "example_application_profile" {
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
 * `relation_to_fibre_channel_paths` - (list) A list of Relation To Fibre Channel Paths (ACI object [fvRsFcPathAtt](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsFcPathAtt/overview)) pointing to Fabric Path Endpoint (ACI Object [fabricPathEp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fabricPathEp/overview)). This attribute is supported in ACI versions: 2.0(1m) and later.
-    * `annotation` (annotation) - (string) The annotation of the Relation To Fibre Channel Path object.
+    * `annotation` (annotation) - (string) The annotation of the Relation To Fibre Channel Path object. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `description` (descr) - (string) The description of the Relation To Fibre Channel Path object.
     * `target_dn` (tDn) - (string) The distinguished name of the target.
     * `vsan` (vsan) - (string) The virtual storage area network (VSAN) of the Relation To Fibre Channel Path object.
@@ -185,7 +185,7 @@ data "aci_application_epg" "example_application_profile" {
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
 * `relation_to_intra_epg_contracts` - (list) A list of Relation To Intra EPG Contracts (ACI object [fvRsIntraEpg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsIntraEpg/overview)) pointing to Contract (ACI Object [vzBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzBrCP/overview)). This attribute is supported in ACI versions: 3.0(1k) and later.
-    * `annotation` (annotation) - (string) The annotation of the Relation To Intra EPG Contract object.
+    * `annotation` (annotation) - (string) The annotation of the Relation To Intra EPG Contract object. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `contract_name` (tnVzBrCPName) - (string) The contract name.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
@@ -194,8 +194,8 @@ data "aci_application_epg" "example_application_profile" {
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
 * `relation_to_static_leafs` - (list) A list of Relation To Static Leafs (ACI object [fvRsNodeAtt](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsNodeAtt/overview)) pointing to  (ACI Object [fabricNode](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fabricNode/overview)).
-    * `annotation` (annotation) - (string) The annotation of the Relation To Static Leaf object.
-    * `description` (descr) - (string) The description of the Relation To Static Leaf object.
+    * `annotation` (annotation) - (string) The annotation of the Relation To Static Leaf object. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `description` (descr) - (string) The description of the Relation To Static Leaf object. This attribute is supported in ACI versions: 1.0(4g) and later.
     * `encapsulation` (encap) - (string) The VLAN encapsulation of the Relation To Static Leaf object.
     * `deployment_immediacy` (instrImedcy) - (string) The deployment immediacy of the Relation To Static Leaf object. Specifies when the policy is pushed into the hardware policy content-addressable memory (CAM).
     * `mode` (mode) - (string) The static association mode with the path of the Relation To Static Leaf object.
@@ -207,12 +207,12 @@ data "aci_application_epg" "example_application_profile" {
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
 * `relation_to_static_paths` - (list) A list of Relation To Static Paths (ACI object [fvRsPathAtt](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsPathAtt/overview)) pointing to Fabric Path Endpoint (ACI Object [fabricPathEp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fabricPathEp/overview)).
-    * `annotation` (annotation) - (string) The annotation of the Relation To Static Path object.
-    * `description` (descr) - (string) The description of the Relation To Static Path object.
+    * `annotation` (annotation) - (string) The annotation of the Relation To Static Path object. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `description` (descr) - (string) The description of the Relation To Static Path object. This attribute is supported in ACI versions: 1.0(4g) and later.
     * `encapsulation` (encap) - (string) The VLAN encapsulation of the Relation To Static Path object.
     * `deployment_immediacy` (instrImedcy) - (string) The deployment immediacy of the Relation To Static Path object. Specifies when the policy is pushed into the hardware policy content-addressable memory (CAM).
     * `mode` (mode) - (string) The static association mode of the Relation To Static Path object.
-    * `primary_encapsulation` (primaryEncap) - (string) The primary VLAN encapsulation of the Relation To Static Path object.
+    * `primary_encapsulation` (primaryEncap) - (string) The primary VLAN encapsulation of the Relation To Static Path object. This attribute is supported in ACI versions: 1.2(2g) and later.
     * `target_dn` (tDn) - (string) null.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
@@ -221,7 +221,7 @@ data "aci_application_epg" "example_application_profile" {
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
 * `relation_to_taboo_contracts` - (list) A list of Relation To Taboo Contracts (ACI object [fvRsProtBy](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsProtBy/overview)) pointing to Taboo Contract (ACI Object [vzTaboo](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzTaboo/overview)).
-    * `annotation` (annotation) - (string) The annotation of the Relation To Taboo Contract object.
+    * `annotation` (annotation) - (string) The annotation of the Relation To Taboo Contract object. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `taboo_contract_name` (tnVzTabooName) - (string) A contract for denying specific classes of traffic. Taboo rules are applied in the hardware before applying the rules of regular contracts. Without a contract, the default forwarding policy is to not allow any communication between EPGs.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
@@ -230,7 +230,7 @@ data "aci_application_epg" "example_application_profile" {
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
 * `relation_to_provided_contracts` - (list) A list of Relation To Provided Contracts (ACI object [fvRsProv](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsProv/overview)) pointing to Contract (ACI Object [vzBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzBrCP/overview)).
-    * `annotation` (annotation) - (string) The annotation of the Relation To Provided Contract object.
+    * `annotation` (annotation) - (string) The annotation of the Relation To Provided Contract object. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `match_criteria` (matchT) - (string) The provider label match criteria.
     * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
     * `contract_name` (tnVzBrCPName) - (string) The provider contract name.
@@ -241,7 +241,7 @@ data "aci_application_epg" "example_application_profile" {
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
 * `relation_to_contract_masters` - (list) A list of Relation To Contract Masters (ACI object [fvRsSecInherited](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsSecInherited/overview)) pointing to . This attribute is supported in ACI versions: 2.3(1e) and later.
-    * `annotation` (annotation) - (string) The annotation of the Relation To Contract Master object.
+    * `annotation` (annotation) - (string) The annotation of the Relation To Contract Master object. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `target_dn` (tDn) - (string) The distinguished name of the target.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
@@ -250,7 +250,7 @@ data "aci_application_epg" "example_application_profile" {
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
 * `relation_to_trust_control_policy` - (map) A map of Relation To Trust Control Policy (ACI object [fvRsTrustCtrl](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsTrustCtrl/overview)) pointing to Trust Control Policy (ACI Object [fhsTrustCtrlPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fhsTrustCtrlPol/overview)). This attribute is supported in ACI versions: 3.0(1k) and later.
-    * `annotation` (annotation) - (string) The annotation of the Relation To Trust Control Policy object.
+    * `annotation` (annotation) - (string) The annotation of the Relation To Trust Control Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `trust_control_policy_name` (tnFhsTrustCtrlPolName) - (string) Name.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
         * `key` (key) - (string) The key used to uniquely identify this configuration object.

@@ -48,13 +48,13 @@ data "aci_epg_useg_ip_attribute" "example_epg_useg_block_statement" {
 ### Read-Only ###
 
 * `id` - (string) The distinguished name (DN) of the EPG uSeg IP Attribute object.
-* `annotation` (annotation) - (string) The annotation of the EPG uSeg IP Attribute object.
+* `annotation` (annotation) - (string) The annotation of the EPG uSeg IP Attribute object. This attribute is supported in ACI versions: 3.2(1l) and later.
 * `description` (descr) - (string) The description of the EPG uSeg IP Attribute object.
 * `ip` (ip) - (string) The device IP address of the EPG uSeg IP Attribute object.
-* `name_alias` (nameAlias) - (string) The name alias of the EPG uSeg IP Attribute object.
+* `name_alias` (nameAlias) - (string) The name alias of the EPG uSeg IP Attribute object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
-* `use_epg_subnet` (usefvSubnet) - (string) Parameter used to determine whether a previously configured subnet address should be used as the IP filter.
+* `use_epg_subnet` (usefvSubnet) - (string) Parameter used to determine whether a previously configured subnet address should be used as the IP filter. This attribute is supported in ACI versions: 2.0(1m) and later.
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.

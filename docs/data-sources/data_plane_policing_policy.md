@@ -58,7 +58,7 @@ data "aci_data_plane_policing_policy" "example_tenant" {
 
 * `id` - (string) The distinguished name (DN) of the Data Plane Policing Policy object.
 * `admin_state` (adminSt) - (string) The administrative state of the Data Plane Policing Policy object.
-* `annotation` (annotation) - (string) The annotation of the Data Plane Policing Policy object.
+* `annotation` (annotation) - (string) The annotation of the Data Plane Policing Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
 * `excessive_burst` (be) - (string) The excessive burst size of the Data Plane Policing Policy object. Only applicable for 2R3C policer.
 * `excessive_burst_unit` (beUnit) - (string) The excessive burst size unit of the Data Plane Policing Policy object. Only applicable for 2R3C policer.
 * `burst` (burst) - (string) The burst size of the Data Plane Policing Policy object.
@@ -71,14 +71,14 @@ data "aci_data_plane_policing_policy" "example_tenant" {
 * `exceed_mark_cos` (exceedMarkCos) - (string) The exceed mark class of service (CoS) of the Data Plane Policing Policy object.
 * `exceed_mark_dscp` (exceedMarkDscp) - (string) The exceed mark differentiated services code point (DSCP) of the Data Plane Policing Policy object.
 * `mode` (mode) - (string) Policer mode - bytes or packet policer.
-* `name_alias` (nameAlias) - (string) The name alias of the Data Plane Policing Policy object.
+* `name_alias` (nameAlias) - (string) The name alias of the Data Plane Policing Policy object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `peak_rate` (pir) - (string) The peak information rate (PIR) of the Data Plane Policing Policy object. Only applicable for 2R3C policer.
 * `peak_rate_unit` (pirUnit) - (string) The peak information rate (PIR) unit of the Data Plane Policing Policy object. Only applicable for 2R3C policer.
 * `rate` (rate) - (string) The rate of the Data Plane Policing Policy object.
 * `rate_unit` (rateUnit) - (string) The rate unit of the Data Plane Policing Policy object.
-* `sharing_mode` (sharingMode) - (string) The sharing mode of the Data Plane Policing Policy object.
+* `sharing_mode` (sharingMode) - (string) The sharing mode of the Data Plane Policing Policy object. This attribute is supported in ACI versions: 3.1(1i) and later.
 * `type` (type) - (string) The type of the Data Plane Policing Policy object.
 * `violate_action` (violateAction) - (string) The violate action of the Data Plane Policing Policy object.
 * `violate_mark_cos` (violateMarkCos) - (string) The violate mark class of service (CoS) of the Data Plane Policing Policy object.

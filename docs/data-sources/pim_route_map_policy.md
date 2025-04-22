@@ -48,9 +48,9 @@ data "aci_pim_route_map_policy" "example_tenant" {
 ### Read-Only ###
 
 * `id` - (string) The distinguished name (DN) of the Pim Route Map Policy object.
-* `annotation` (annotation) - (string) The annotation of the Pim Route Map Policy object.
+* `annotation` (annotation) - (string) The annotation of the Pim Route Map Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
 * `description` (descr) - (string) The description of the Pim Route Map Policy object.
-* `name_alias` (nameAlias) - (string) The name alias of the Pim Route Map Policy object.
+* `name_alias` (nameAlias) - (string) The name alias of the Pim Route Map Policy object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.

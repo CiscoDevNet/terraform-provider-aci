@@ -48,7 +48,7 @@ data "aci_epg_useg_dns_attribute" "example_epg_useg_block_statement" {
 ### Read-Only ###
 
 * `id` - (string) The distinguished name (DN) of the EPG uSeg DNS Attribute object.
-* `annotation` (annotation) - (string) The annotation of the EPG uSeg DNS Attribute object.
+* `annotation` (annotation) - (string) The annotation of the EPG uSeg DNS Attribute object. This attribute is supported in ACI versions: 3.2(1l) and later.
 * `description` (descr) - (string) The description of the EPG uSeg DNS Attribute object.
 * `filter` (filter) - (string) The domain name filter of the EPG uSeg DNS Attribute object.
 * `name_alias` (nameAlias) - (string) The name alias of the EPG uSeg DNS Attribute object.

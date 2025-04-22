@@ -136,10 +136,10 @@ All examples for the Custom Qos Policy resource can be found in the [examples](h
 
 ### Optional ###
 
-* `annotation` (annotation) - (string) The annotation of the Custom Qos Policy object.
+* `annotation` (annotation) - (string) The annotation of the Custom Qos Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
   - Default: `orchestrator:terraform`
 * `description` (descr) - (string) The description of the Custom Qos Policy object.
-* `name_alias` (nameAlias) - (string) The name alias of the Custom Qos Policy object.
+* `name_alias` (nameAlias) - (string) The name alias of the Custom Qos Policy object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `dot1p_classifiers` - (list) A list of Dot1p Classifiers (ACI object [qosDot1PClass](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/qosDot1PClass/overview)). Dot1p Classifiers can also be configured using a separate [aci_dot1p_classifier](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/dot1p_classifier) resource.
@@ -149,18 +149,18 @@ All examples for the Custom Qos Policy resource can be found in the [examples](h
     * `to` (to) - (string) The Dot1p priority range ending value.
   #### Optional ####
     
-    * `annotation` (annotation) - (string) The annotation of the Dot1p Classifier object.
+    * `annotation` (annotation) - (string) The annotation of the Dot1p Classifier object. This attribute is supported in ACI versions: 3.2(1l) and later.
       - Default: `orchestrator:terraform`
     * `description` (descr) - (string) The description of the Dot1p Classifier object.
     * `name` (name) - (string) The name of the Dot1p Classifier object.
-    * `name_alias` (nameAlias) - (string) The name alias of the Dot1p Classifier object.
+    * `name_alias` (nameAlias) - (string) The name alias of the Dot1p Classifier object. This attribute is supported in ACI versions: 2.2(1k) and later.
     * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
       - Default: `unspecified`
       - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
     * `target` (target) - (string) The target of the Dot1p Classifier object. This Fabric only supports DSCP mutation, Dot1P mutation is not supported.
       - Default: `unspecified`
       - Valid Values: `AF11`, `AF12`, `AF13`, `AF21`, `AF22`, `AF23`, `AF31`, `AF32`, `AF33`, `AF41`, `AF42`, `AF43`, `CS0`, `CS1`, `CS2`, `CS3`, `CS4`, `CS5`, `CS6`, `CS7`, `EF`, `VA`, `unspecified`.
-    * `target_cos` (targetCos) - (string) Target COS to be driven based on the range of input values of DSCP coming into the fabric.
+    * `target_cos` (targetCos) - (string) Target COS to be driven based on the range of input values of DSCP coming into the fabric. This attribute is supported in ACI versions: 2.1(1h) and later.
       - Default: `unspecified`
       - Valid Values: `0`, `1`, `2`, `3`, `4`, `5`, `6`, `7`, `unspecified`.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
@@ -180,18 +180,18 @@ All examples for the Custom Qos Policy resource can be found in the [examples](h
     * `to` (to) - (string) The DSCP range ending value.
   #### Optional ####
     
-    * `annotation` (annotation) - (string) The annotation of the DSCP to Priority Map object.
+    * `annotation` (annotation) - (string) The annotation of the DSCP to Priority Map object. This attribute is supported in ACI versions: 3.2(1l) and later.
       - Default: `orchestrator:terraform`
     * `description` (descr) - (string) The description of the DSCP to Priority Map object.
     * `name` (name) - (string) The name of the DSCP to Priority Map object.
-    * `name_alias` (nameAlias) - (string) The name alias of the DSCP to Priority Map object.
+    * `name_alias` (nameAlias) - (string) The name alias of the DSCP to Priority Map object. This attribute is supported in ACI versions: 2.2(1k) and later.
     * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
       - Default: `unspecified`
       - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
     * `target` (target) - (string) The target of the DSCP to Priority Map object. This Fabric only supports DSCP mutation, Dot1P mutation is not supported.
       - Default: `unspecified`
       - Valid Values: `AF11`, `AF12`, `AF13`, `AF21`, `AF22`, `AF23`, `AF31`, `AF32`, `AF33`, `AF41`, `AF42`, `AF43`, `CS0`, `CS1`, `CS2`, `CS3`, `CS4`, `CS5`, `CS6`, `CS7`, `EF`, `VA`, `unspecified`.
-    * `target_cos` (targetCos) - (string) Target COS to be driven based on the range of input values of DSCP coming into the fabric.
+    * `target_cos` (targetCos) - (string) Target COS to be driven based on the range of input values of DSCP coming into the fabric. This attribute is supported in ACI versions: 2.1(1h) and later.
       - Default: `unspecified`
       - Valid Values: `0`, `1`, `2`, `3`, `4`, `5`, `6`, `7`, `unspecified`.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.

@@ -96,7 +96,7 @@ All examples for the NetFlow Record Policy resource can be found in the [example
     - [infraInfra](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraInfra/overview)
 
   - Default: `uni/infra`
-* `annotation` (annotation) - (string) The annotation of the NetFlow Record Policy object.
+* `annotation` (annotation) - (string) The annotation of the NetFlow Record Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
   - Default: `orchestrator:terraform`
 * `collect_parameters` (collect) - (list) Collect parameters of the NetFlow Record Policy object.
   - Default: `src-intf`.

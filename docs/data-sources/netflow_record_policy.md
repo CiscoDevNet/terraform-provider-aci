@@ -59,7 +59,7 @@ data "aci_netflow_record_policy" "example_tenant" {
 ### Read-Only ###
 
 * `id` - (string) The distinguished name (DN) of the NetFlow Record Policy object.
-* `annotation` (annotation) - (string) The annotation of the NetFlow Record Policy object.
+* `annotation` (annotation) - (string) The annotation of the NetFlow Record Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
 * `collect_parameters` (collect) - (list) Collect parameters of the NetFlow Record Policy object.
 * `description` (descr) - (string) The description of the NetFlow Record Policy object.
 * `match_parameters` (match) - (list) Match parameters of the NetFlow Record Policy object.

@@ -45,32 +45,32 @@ data "aci_management_access_policy" "example" {
 ### Read-Only ###
 
 * `id` - (string) The distinguished name (DN) of the Management Access Policy object.
-* `annotation` (annotation) - (string) The annotation of the Management Access Policy object.
+* `annotation` (annotation) - (string) The annotation of the Management Access Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
 * `description` (descr) - (string) The description of the Management Access Policy object.
-* `name_alias` (nameAlias) - (string) The name alias of the Management Access Policy object.
+* `name_alias` (nameAlias) - (string) The name alias of the Management Access Policy object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `strict_security_on_apic_oob_subnet` (strictSecurityOnApicOOBSubnet) - (string) Removes implicit access permissions from any APIC out-of-band (OOB) subnet IP address.
 * `http_service` - (map) A map of HTTP Service (ACI object [commHttp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/commHttp/overview)).
-    * `allow_credentials` (accessControlAllowCredential) - (string) Determines if credentials are allowed in HTTP responses.
-    * `allow_origins` (accessControlAllowOrigins) - (string) Determines which origins can access the resource. For example, inputting http://127.0.0.1:8000 would allow access from a source device with that IP address and port.
+    * `allow_credentials` (accessControlAllowCredential) - (string) Determines if credentials are allowed in HTTP responses. This attribute is supported in ACI versions: 2.3(1e) and later.
+    * `allow_origins` (accessControlAllowOrigins) - (string) Determines which origins can access the resource. For example, inputting http://127.0.0.1:8000 would allow access from a source device with that IP address and port. This attribute is supported in ACI versions: 1.1(1j) and later.
     * `admin_state` (adminSt) - (string) The administrative state of the HTTP Service.
-    * `annotation` (annotation) - (string) The annotation of the HTTP Service object.
-    * `cli_only_mode` (cliOnlyMode) - (string) Determines if CLI-only mode is enabled.
+    * `annotation` (annotation) - (string) The annotation of the HTTP Service object. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `cli_only_mode` (cliOnlyMode) - (string) Determines if CLI-only mode is enabled. This attribute is supported in ACI versions: 4.1(1i) and later.
     * `description` (descr) - (string) The description of the HTTP Service object.
-    * `global_throttle_rate` (globalThrottleRate) - (string) The maximum amount of API calls allowed per unit time.
-    * `global_throttle_state` (globalThrottleSt) - (string) The throttle state for all clients without specific identifier in their headers.
-    * `global_throttle_unit` (globalThrottleUnit) - (string) The unit of measurement for rate limiting.
-    * `max_request_status_count` (maxRequestStatusCount) - (string) The maximum number of request status objects to keep.
+    * `global_throttle_rate` (globalThrottleRate) - (string) The maximum amount of API calls allowed per unit time. This attribute is supported in ACI versions: 4.2(1i) and later.
+    * `global_throttle_state` (globalThrottleSt) - (string) The throttle state for all clients without specific identifier in their headers. This attribute is supported in ACI versions: 4.2(1i) and later.
+    * `global_throttle_unit` (globalThrottleUnit) - (string) The unit of measurement for rate limiting. This attribute is supported in ACI versions: 4.2(1i) and later.
+    * `max_request_status_count` (maxRequestStatusCount) - (string) The maximum number of request status objects to keep. This attribute is supported in ACI versions: 1.1(1j) and later.
     * `name` (name) - (string) The name of the HTTP Service object.
-    * `name_alias` (nameAlias) - (string) The name alias of the HTTP Service object.
-    * `node_exporter` (nodeExporter) - (string) The node exporter service status.
+    * `name_alias` (nameAlias) - (string) The name alias of the HTTP Service object. This attribute is supported in ACI versions: 2.2(1k) and later.
+    * `node_exporter` (nodeExporter) - (string) The node exporter service status. This attribute is supported in ACI versions: 5.2(3e) and later.
     * `port` (port) - (string) The port used by the HTTP communication service.
     * `redirect_state` (redirectSt) - (string) The state of HTTP communication service.
-    * `server_header` (serverHeader) - (string) Determines if the server header is included in responses.
-    * `login_throttle_rate` (throttleRate) - (string) The maximum login/refresh allowed per second.
-    * `login_throttle_state` (throttleSt) - (string) The state of login and refresh throttling.
-    * `visore_access` (visoreAccess) - (string) Grants permissions for accessing the Visore tool, also known as Object Store Browser, in Cisco ACI.
+    * `server_header` (serverHeader) - (string) Determines if the server header is included in responses. This attribute is supported in ACI versions: 5.2(1g) and later.
+    * `login_throttle_rate` (throttleRate) - (string) The maximum login/refresh allowed per second. This attribute is supported in ACI versions: 3.1(1i) and later.
+    * `login_throttle_state` (throttleSt) - (string) The state of login and refresh throttling. This attribute is supported in ACI versions: 3.1(1i) and later.
+    * `visore_access` (visoreAccess) - (string) Grants permissions for accessing the Visore tool, also known as Object Store Browser, in Cisco ACI. This attribute is supported in ACI versions: 3.1(1i) and later.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
@@ -78,28 +78,28 @@ data "aci_management_access_policy" "example" {
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
 * `http_ssl_configuration` - (map) A map of HTTPS Service (ACI object [commHttps](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/commHttps/overview)).
-    * `allow_credentials` (accessControlAllowCredential) - (string) Determines if credentials are allowed in HTTPS responses.
-    * `allow_origins` (accessControlAllowOrigins) - (string) Determines which origins can access the resource. For example, inputting http://127.0.0.1:8000 would allow access from a source device with that IP address and port.
+    * `allow_credentials` (accessControlAllowCredential) - (string) Determines if credentials are allowed in HTTPS responses. This attribute is supported in ACI versions: 2.3(1e) and later.
+    * `allow_origins` (accessControlAllowOrigins) - (string) Determines which origins can access the resource. For example, inputting http://127.0.0.1:8000 would allow access from a source device with that IP address and port. This attribute is supported in ACI versions: 1.1(1j) and later.
     * `admin_state` (adminSt) - (string) The administrative state of the HTTPS Service.
-    * `annotation` (annotation) - (string) The annotation of the HTTPS Service object.
-    * `cli_only_mode` (cliOnlyMode) - (string) Determines if CLI-only mode is enabled.
-    * `client_certificate_authentication_state` (clientCertAuthState) - (string) The authentication state of the client certificate.
+    * `annotation` (annotation) - (string) The annotation of the HTTPS Service object. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `cli_only_mode` (cliOnlyMode) - (string) Determines if CLI-only mode is enabled. This attribute is supported in ACI versions: 4.1(1i) and later.
+    * `client_certificate_authentication_state` (clientCertAuthState) - (string) The authentication state of the client certificate. This attribute is supported in ACI versions: 4.0(1h) and later.
     * `description` (descr) - (string) The description of the HTTPS Service object.
-    * `dh_parameter` (dhParam) - (string) Determines the settings for Diffie-Hellman (DH) parameters.
-    * `global_throttle_rate` (globalThrottleRate) - (string) The maximum amount of API calls allowed per unit time.
-    * `global_throttle_state` (globalThrottleSt) - (string) The throttle state for all clients without specific identifier in their headers.
-    * `global_throttle_unit` (globalThrottleUnit) - (string) The unit of measurement for rate limiting specified with the 'global_throttle_rate' attribute.
-    * `max_request_status_count` (maxRequestStatusCount) - (string) The maximum number of request status objects to keep.
+    * `dh_parameter` (dhParam) - (string) Determines the settings for Diffie-Hellman (DH) parameters. This attribute is supported in ACI versions: 1.2(2g) and later.
+    * `global_throttle_rate` (globalThrottleRate) - (string) The maximum amount of API calls allowed per unit time. This attribute is supported in ACI versions: 4.2(1i) and later.
+    * `global_throttle_state` (globalThrottleSt) - (string) The throttle state for all clients without specific identifier in their headers. This attribute is supported in ACI versions: 4.2(1i) and later.
+    * `global_throttle_unit` (globalThrottleUnit) - (string) The unit of measurement for rate limiting specified with the 'global_throttle_rate' attribute. This attribute is supported in ACI versions: 4.2(1i) and later.
+    * `max_request_status_count` (maxRequestStatusCount) - (string) The maximum number of request status objects to keep. This attribute is supported in ACI versions: 1.1(1j) and later.
     * `name` (name) - (string) The name of the HTTPS Service object.
-    * `name_alias` (nameAlias) - (string) The name alias of the HTTPS Service object.
-    * `node_exporter` (nodeExporter) - (string) The node exporter service status.
+    * `name_alias` (nameAlias) - (string) The name alias of the HTTPS Service object. This attribute is supported in ACI versions: 2.2(1k) and later.
+    * `node_exporter` (nodeExporter) - (string) The node exporter service status. This attribute is supported in ACI versions: 5.2(3e) and later.
     * `port` (port) - (string) The port used by the HTTPS communication service.
-    * `referer` (referer) - (string) Allowed HTTP referers.
-    * `server_header` (serverHeader) - (string) Determines if the server header is included in responses.
-    * `ssl_protocols` (sslProtocols) - (list) The SSL protocols allowed by HTTPS communication service.
-    * `login_throttle_rate` (throttleRate) - (string) The maximum login/refresh allowed per second.
-    * `login_throttle_state` (throttleSt) - (string) The state of login and refresh throttling.
-    * `visore_access` (visoreAccess) - (string) Grants permissions for accessing the Visore tool, also known as Object Store Browser, in Cisco ACI.
+    * `referer` (referer) - (string) Allowed HTTP referers. This attribute is supported in ACI versions: 6.0(2h) and later.
+    * `server_header` (serverHeader) - (string) Determines if the server header is included in responses. This attribute is supported in ACI versions: 5.2(1g) and later.
+    * `ssl_protocols` (sslProtocols) - (list) The SSL protocols allowed by HTTPS communication service. This attribute is supported in ACI versions: 1.1(1j) and later.
+    * `login_throttle_rate` (throttleRate) - (string) The maximum login/refresh allowed per second. This attribute is supported in ACI versions: 3.1(1i) and later.
+    * `login_throttle_state` (throttleSt) - (string) The state of login and refresh throttling. This attribute is supported in ACI versions: 3.1(1i) and later.
+    * `visore_access` (visoreAccess) - (string) Grants permissions for accessing the Visore tool, also known as Object Store Browser, in Cisco ACI. This attribute is supported in ACI versions: 3.1(1i) and later.
     * `certificate_authority` - (map) A map of Certificate Authority (ACI object [commRsClientCertCA](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/commRsClientCertCA/overview)) pointing to Certificate Authority (ACI Object [pkiTP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/pkiTP/overview)). This attribute is supported in ACI versions: 4.0(1h) and later.
         * `annotation` (annotation) - (string) The annotation of the Certificate Authority object.
         * `target_dn` (tDn) - (string) The distinguished name of the target.
@@ -110,7 +110,7 @@ data "aci_management_access_policy" "example" {
             * `key` (key) - (string) The key used to uniquely identify this configuration object.
             * `value` (value) - (string) The value of the property.
     * `key_ring` - (map) A map of Key Ring (ACI object [commRsKeyRing](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/commRsKeyRing/overview)) pointing to Key Ring (ACI Object [pkiKeyRing](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/pkiKeyRing/overview)).
-        * `annotation` (annotation) - (string) The annotation of the Key Ring object.
+        * `annotation` (annotation) - (string) The annotation of the Key Ring object. This attribute is supported in ACI versions: 3.2(1l) and later.
         * `key_ring_name` (tnPkiKeyRingName) - (string) The HTTP connection key ring. Each PKI device holds a pair of asymmetric Rivest-Shamir-Adleman (RSA) or Elliptic Curve Cryptography (ECC) encryption keys, one kept private and one made public, stored in an internal key ring.
         * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
             * `key` (key) - (string) The key used to uniquely identify this configuration object.
@@ -126,10 +126,10 @@ data "aci_management_access_policy" "example" {
         * `value` (value) - (string) The value of the property.
 * `ssh_access_via_web` - (map) A map of SSH access via WEB (ACI object [commShellinabox](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/commShellinabox/overview)). This attribute is supported in ACI versions: 1.2(1i) and later.
     * `admin_state` (adminSt) - (string) The administrative state of the SSH access via WEB object.
-    * `annotation` (annotation) - (string) The annotation of the SSH access via WEB object.
+    * `annotation` (annotation) - (string) The annotation of the SSH access via WEB object. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `description` (descr) - (string) The description of the SSH access via WEB object.
     * `name` (name) - (string) The name of the SSH access via WEB object.
-    * `name_alias` (nameAlias) - (string) The name alias of the SSH access via WEB object.
+    * `name_alias` (nameAlias) - (string) The name alias of the SSH access via WEB object. This attribute is supported in ACI versions: 2.2(1k) and later.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
@@ -138,16 +138,16 @@ data "aci_management_access_policy" "example" {
         * `value` (value) - (string) The value of the property.
 * `ssh_service` - (map) A map of SSH Service (ACI object [commSsh](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/commSsh/overview)).
     * `admin_state` (adminSt) - (string) The administrative state of the SSH Service object.
-    * `annotation` (annotation) - (string) The annotation of the SSH Service object.
+    * `annotation` (annotation) - (string) The annotation of the SSH Service object. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `description` (descr) - (string) The description of the SSH Service object.
-    * `host_key_algorithms` (hostkeyAlgos) - (list) The supported algorithms for the host key.
-    * `kex_algorithms` (kexAlgos) - (list) The supported algorithms for key exchange.
+    * `host_key_algorithms` (hostkeyAlgos) - (list) The supported algorithms for the host key. This attribute is supported in ACI versions: 
+    * `kex_algorithms` (kexAlgos) - (list) The supported algorithms for key exchange. This attribute is supported in ACI versions: 4.2(7f) to 4.2(7w), 5.2(1g) and later.
     * `name` (name) - (string) The name of the SSH Service object.
-    * `name_alias` (nameAlias) - (string) The name alias of the SSH Service object.
-    * `password_authentication_state` (passwordAuth) - (string) Determines the state of password-based authentication to control administrator access to the management interfaces of the ACI fabric.
+    * `name_alias` (nameAlias) - (string) The name alias of the SSH Service object. This attribute is supported in ACI versions: 2.2(1k) and later.
+    * `password_authentication_state` (passwordAuth) - (string) Determines the state of password-based authentication to control administrator access to the management interfaces of the ACI fabric. This attribute is supported in ACI versions: 4.1(1i) and later.
     * `port` (port) - (string) The port used by the SSH service.
-    * `ssh_ciphers` (sshCiphers) - (list) The ciphers supported by the SSH service.
-    * `ssh_macs` (sshMacs) - (list) The message authentication codes (MACs) supported by the SSH service.
+    * `ssh_ciphers` (sshCiphers) - (list) The ciphers supported by the SSH service. This attribute is supported in ACI versions: 3.1(1i) and later.
+    * `ssh_macs` (sshMacs) - (list) The message authentication codes (MACs) supported by the SSH service. This attribute is supported in ACI versions: 3.1(1i) and later.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
@@ -156,10 +156,10 @@ data "aci_management_access_policy" "example" {
         * `value` (value) - (string) The value of the property.
 * `telnet_service` - (map) A map of Telnet Service (ACI object [commTelnet](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/commTelnet/overview)).
     * `admin_state` (adminSt) - (string) The administrative state of the Telnet Service object.
-    * `annotation` (annotation) - (string) The annotation of the Telnet Service object.
+    * `annotation` (annotation) - (string) The annotation of the Telnet Service object. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `description` (descr) - (string) The description of the Telnet Service object.
     * `name` (name) - (string) The name of the Telnet Service object.
-    * `name_alias` (nameAlias) - (string) The name alias of the Telnet Service object.
+    * `name_alias` (nameAlias) - (string) The name alias of the Telnet Service object. This attribute is supported in ACI versions: 2.2(1k) and later.
     * `port` (port) - (string) The port used by the Telnet service.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
         * `key` (key) - (string) The key used to uniquely identify this configuration object.

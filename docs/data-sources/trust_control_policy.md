@@ -48,7 +48,7 @@ data "aci_trust_control_policy" "example_tenant" {
 ### Read-Only ###
 
 * `id` - (string) The distinguished name (DN) of the Trust Control Policy object.
-* `annotation` (annotation) - (string) The annotation of the Trust Control Policy object.
+* `annotation` (annotation) - (string) The annotation of the Trust Control Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
 * `description` (descr) - (string) The description of the Trust Control Policy object.
 * `has_dhcpv4_server` (hasDhcpv4Server) - (string) The Trust Control Policy object contains DHCPv4 servers.
 * `has_dhcpv6_server` (hasDhcpv6Server) - (string) The Trust Control Policy object contains DHCPv6 servers.

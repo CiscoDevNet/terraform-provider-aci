@@ -92,7 +92,7 @@ All examples for the Trust Control Policy resource can be found in the [examples
 
 ### Optional ###
 
-* `annotation` (annotation) - (string) The annotation of the Trust Control Policy object.
+* `annotation` (annotation) - (string) The annotation of the Trust Control Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
   - Default: `orchestrator:terraform`
 * `description` (descr) - (string) The description of the Trust Control Policy object.
 * `has_dhcpv4_server` (hasDhcpv4Server) - (string) The Trust Control Policy object contains DHCPv4 servers.

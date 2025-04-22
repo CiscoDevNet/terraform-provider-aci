@@ -96,17 +96,17 @@ All examples for the IGMP Snooping Policy resource can be found in the [examples
 
 ### Optional ###
 
-* `admin_state` (adminSt) - (string) The administrative state of the IGMP Snooping Policy object.
+* `admin_state` (adminSt) - (string) The administrative state of the IGMP Snooping Policy object. This attribute is supported in ACI versions: 2.0(1m) and later.
   - Default: `enabled`
   - Valid Values: `disabled`, `enabled`.
-* `annotation` (annotation) - (string) The annotation of the IGMP Snooping Policy object.
+* `annotation` (annotation) - (string) The annotation of the IGMP Snooping Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
   - Default: `orchestrator:terraform`
 * `control` (ctrl) - (list) The controls for the IGMP Snooping Policy object.
   - Valid Values: `fast-leave`, `opt-flood`, `querier`, `routing`.
 * `description` (descr) - (string) The description of the IGMP Snooping Policy object.
 * `last_member_interval` (lastMbrIntvl) - (string) The last member interval (seconds) of the IGMP Snooping Policy object. The group state is removed when no host responds before the timeout.
   - Default: `1`
-* `name_alias` (nameAlias) - (string) The name alias of the IGMP Snooping Policy object.
+* `name_alias` (nameAlias) - (string) The name alias of the IGMP Snooping Policy object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `query_interval` (queryIntvl) - (string) The query interval (seconds) of the IGMP Snooping Policy object.
@@ -117,7 +117,7 @@ All examples for the IGMP Snooping Policy resource can be found in the [examples
   - Default: `2`
 * `start_query_interval` (startQueryIntvl) - (string) The query interval (seconds) of the IGMP Snooping Policy object at start-up.
   - Default: `31`
-* `querier_version` (ver) - (string) The version of the IGMP querier.
+* `querier_version` (ver) - (string) The version of the IGMP querier. This attribute is supported in ACI versions: 5.1(1h) and later.
   - Default: `v3`
   - Valid Values: `unspecified`, `v1`, `v2`, `v3`.
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.

@@ -62,7 +62,7 @@ data "aci_mld_snooping_policy" "example_tenant" {
 * `response_interval` (rspIntvl) - (string) The response interval (seconds) of the MLD Snooping Policy object.
 * `start_query_count` (startQueryCnt) - (string) The start query count of the MLD Snooping Policy object.
 * `start_query_interval` (startQueryIntvl) - (string) The query interval (seconds) of the MLD Snooping Policy object at start-up.
-* `version` (ver) - (string) The MLD version.
+* `version` (ver) - (string) The MLD version. This attribute is supported in ACI versions: 5.1(1h) and later.
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
