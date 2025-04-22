@@ -48,7 +48,7 @@ data "aci_first_hop_security_policy" "example_tenant" {
 ### Read-Only ###
 
 * `id` - (string) The distinguished name (DN) of the First Hop Security Policy object.
-* `annotation` (annotation) - (string) The annotation of the First Hop Security Policy object.
+* `annotation` (annotation) - (string) The annotation of the First Hop Security Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
 * `description` (descr) - (string) The description of the First Hop Security Policy object.
 * `ip_inspection` (ipInspectAdminSt) - (string) The Inspection Status for IPv4 and IPv6 traffic of the First Hop Security Policy object.
 * `name_alias` (nameAlias) - (string) The name alias of the First Hop Security Policy object.
@@ -57,7 +57,7 @@ data "aci_first_hop_security_policy" "example_tenant" {
 * `router_advertisement` (raGuardAdminSt) - (string) Enable Router Advertisement Guard for the First Hop Security Policy object.
 * `source_guard` (srcGuardAdminSt) - (string) The Source Guard Status for IPv4 and IPv6 traffic of the First Hop Security Policy object.
 * `route_advertisement_guard_policy` - (map) A map of Route Advertisement Guard Policy (ACI object [fhsRaGuardPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fhsRaGuardPol/overview)).
-    * `annotation` (annotation) - (string) The annotation of the Route Advertisement Guard Policy object.
+    * `annotation` (annotation) - (string) The annotation of the Route Advertisement Guard Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `description` (descr) - (string) The description of the Route Advertisement Guard Policy object.
     * `managed_config_check` (managedConfigCheck) - (string) Perform a managed configuration check for the Route Advertisement Guard Policy object.
     * `managed_config_flag` (managedConfigFlag) - (string) The managed configuration flag setting for the Route Advertisement Guard Policy object.

@@ -48,10 +48,10 @@ data "aci_external_management_network_subnet" "example_external_management_netwo
 ### Read-Only ###
 
 * `id` - (string) The distinguished name (DN) of the External Management Network Subnet object.
-* `annotation` (annotation) - (string) The annotation of the External Management Network Subnet object.
+* `annotation` (annotation) - (string) The annotation of the External Management Network Subnet object. This attribute is supported in ACI versions: 3.2(1l) and later.
 * `description` (descr) - (string) The description of the External Management Network Subnet object.
 * `name` (name) - (string) The name of the External Management Network Subnet object.
-* `name_alias` (nameAlias) - (string) The name alias of the External Management Network Subnet object.
+* `name_alias` (nameAlias) - (string) The name alias of the External Management Network Subnet object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.

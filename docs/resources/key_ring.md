@@ -249,20 +249,20 @@ All examples for the Key Ring resource can be found in the [examples](https://gi
 * `admin_state` (adminState) - (string) The current administrative state of the certificate request process.
   - Default: `started`
   - Valid Values: `completed`, `created`, `reqCreated`, `started`, `tpSet`.
-* `annotation` (annotation) - (string) The annotation of the Key Ring object.
+* `annotation` (annotation) - (string) The annotation of the Key Ring object. This attribute is supported in ACI versions: 3.2(1l) and later.
   - Default: `orchestrator:terraform`
 * `certificate` (cert) - (string) A certificate contains a device's public key along with signed information verifying the identity of the device.
 * `description` (descr) - (string) The description of the Key Ring object.
-* `elliptic_curve` (eccCurve) - (string) The elliptic curve used by the provided key.
+* `elliptic_curve` (eccCurve) - (string) The elliptic curve used by the provided key. This attribute is supported in ACI versions: 6.0(2h) and later.
   - Valid Values: `none`, `prime256v1`, `secp384r1`, `secp521r1`.
 * `key` (key) - (string) The private key of the certificate. This sensitive value is excluded from the resource's lifecycle configuration and is not tracked by Terraform.
-* `key_type` (keyType) - (string) The type used by the provided key.
+* `key_type` (keyType) - (string) The type used by the provided key. This attribute is supported in ACI versions: 6.0(2h) and later.
   - Default: `RSA`
   - Valid Values: `ECC`, `RSA`, `indeterminate`.
 * `modulus` (modulus) - (string) The length of the encryption keys. A longer key length increases the difficulty of breaking the key.
   - Default: `mod2048`
   - Valid Values: `mod1024`, `mod1536`, `mod2048`, `mod3072`, `mod4096`, `mod512`, `none`.
-* `name_alias` (nameAlias) - (string) The name alias of the Key Ring object.
+* `name_alias` (nameAlias) - (string) The name alias of the Key Ring object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `regenerate` (regen) - (string) Forces regeneration of the keypair. Each PKI device holds a pair of asymmetric Rivest-Shamir-Adleman (RSA) or Elliptic Curve Cryptography (ECC) encryption keys, one kept private and one made public, stored in an internal key ring.

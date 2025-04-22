@@ -48,8 +48,8 @@ data "aci_relation_to_static_leaf" "example_application_epg" {
 ### Read-Only ###
 
 * `id` - (string) The distinguished name (DN) of the Relation To Static Leaf object.
-* `annotation` (annotation) - (string) The annotation of the Relation To Static Leaf object.
-* `description` (descr) - (string) The description of the Relation To Static Leaf object.
+* `annotation` (annotation) - (string) The annotation of the Relation To Static Leaf object. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `description` (descr) - (string) The description of the Relation To Static Leaf object. This attribute is supported in ACI versions: 1.0(4g) and later.
 * `encapsulation` (encap) - (string) The VLAN encapsulation of the Relation To Static Leaf object.
 * `deployment_immediacy` (instrImedcy) - (string) The deployment immediacy of the Relation To Static Leaf object. Specifies when the policy is pushed into the hardware policy content-addressable memory (CAM).
 * `mode` (mode) - (string) The static association mode with the path of the Relation To Static Leaf object.

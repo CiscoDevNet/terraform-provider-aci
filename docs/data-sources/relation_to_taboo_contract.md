@@ -76,7 +76,7 @@ data "aci_relation_to_taboo_contract" "example_application_epg" {
 ### Read-Only ###
 
 * `id` - (string) The distinguished name (DN) of the Relation To Taboo Contract object.
-* `annotation` (annotation) - (string) The annotation of the Relation To Taboo Contract object.
+* `annotation` (annotation) - (string) The annotation of the Relation To Taboo Contract object. This attribute is supported in ACI versions: 3.2(1l) and later.
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.

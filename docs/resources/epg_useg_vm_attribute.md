@@ -129,12 +129,12 @@ All examples for the EPG uSeg VM Attribute resource can be found in the [example
 
 ### Optional ###
 
-* `annotation` (annotation) - (string) The annotation of the EPG uSeg VM Attribute object.
+* `annotation` (annotation) - (string) The annotation of the EPG uSeg VM Attribute object. This attribute is supported in ACI versions: 3.2(1l) and later.
   - Default: `orchestrator:terraform`
-* `category` (category) - (string) The category of the EPG uSeg VM Attribute object.
+* `category` (category) - (string) The category of the EPG uSeg VM Attribute object. This attribute is supported in ACI versions: 2.3(1e) and later.
 * `description` (descr) - (string) The description of the EPG uSeg VM Attribute object.
 * `label_name` (labelName) - (string) The label name of the EPG uSeg VM Attribute object.
-* `name_alias` (nameAlias) - (string) The name alias of the EPG uSeg VM Attribute object.
+* `name_alias` (nameAlias) - (string) The name alias of the EPG uSeg VM Attribute object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `operator` (operator) - (string) The operator of the EPG uSeg VM Attribute object.
   - Default: `equals`
   - Valid Values: `contains`, `endsWith`, `equals`, `notEquals`, `startsWith`.

@@ -86,7 +86,7 @@ All examples for the Relation To NetFlow Exporter resource can be found in the [
 
 ### Optional ###
 
-* `annotation` (annotation) - (string) The annotation of the Relation To NetFlow Exporter object.
+* `annotation` (annotation) - (string) The annotation of the Relation To NetFlow Exporter object. This attribute is supported in ACI versions: 3.2(1l) and later.
   - Default: `orchestrator:terraform`
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####

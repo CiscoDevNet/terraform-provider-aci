@@ -117,7 +117,7 @@ All examples for the MLD Snooping Policy resource can be found in the [examples]
   - Default: `2`
 * `start_query_interval` (startQueryIntvl) - (string) The query interval (seconds) of the MLD Snooping Policy object at start-up.
   - Default: `31`
-* `version` (ver) - (string) The MLD version.
+* `version` (ver) - (string) The MLD version. This attribute is supported in ACI versions: 5.1(1h) and later.
   - Default: `v2`
   - Valid Values: `unspecified`, `v1`, `v2`.
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.

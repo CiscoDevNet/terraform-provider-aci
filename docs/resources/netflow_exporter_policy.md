@@ -139,10 +139,10 @@ All examples for the NetFlow Exporter Policy resource can be found in the [examp
     - [infraInfra](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraInfra/overview)
 
   - Default: `uni/infra`
-* `annotation` (annotation) - (string) The annotation of the NetFlow Exporter Policy object.
+* `annotation` (annotation) - (string) The annotation of the NetFlow Exporter Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
   - Default: `orchestrator:terraform`
 * `description` (descr) - (string) The description of the NetFlow Exporter Policy object.
-* `qos_dscp_value` (dscp) - (string) The DSCP value of the NetFlow Exporter Policy object.
+* `qos_dscp_value` (dscp) - (string) The DSCP value of the NetFlow Exporter Policy object. This attribute is supported in ACI versions: 2.3(1e) and later.
   - Default: `CS2`
   - Valid Values:
     * `AF11`, `AF12`, `AF13`, `AF21`, `AF22`, `AF23`, `AF31`, `AF32`, `AF33`, `AF41`, `AF42`, `AF43`, `CS0`, `CS1`, `CS2`, `CS3`, `CS4`, `CS5`, `CS6`, `CS7`, `EF`, `VA`.
@@ -150,7 +150,7 @@ All examples for the NetFlow Exporter Policy resource can be found in the [examp
 * `name_alias` (nameAlias) - (string) The name alias of the NetFlow Exporter Policy object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
-* `source_ip_type` (sourceIpType) - (string) The type of the source IP address for the NetFlow Exporter Policy object.
+* `source_ip_type` (sourceIpType) - (string) The type of the source IP address for the NetFlow Exporter Policy object. This attribute is supported in ACI versions: 3.0(1k) and later.
   - Default: `custom-src-ip`
   - Valid Values: `custom-src-ip`, `inband-mgmt-ip`, `oob-mgmt-ip`, `ptep`.
 * `source_ip_address` (srcAddr) - (string) The source IP address.
@@ -160,7 +160,7 @@ All examples for the NetFlow Exporter Policy resource can be found in the [examp
 * `relation_to_vrf` - (map) A map of Relation From NetFlow Exporter To VRF (ACI object [netflowRsExporterToCtx](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRsExporterToCtx/overview)) pointing to VRF (ACI Object [fvCtx](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvCtx/overview)) which can be configured using the [aci_vrf](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vrf) resource.
   #### Optional ####
     
-    * `annotation` (annotation) - (string) The annotation of the Relation From NetFlow Exporter To VRF object.
+    * `annotation` (annotation) - (string) The annotation of the Relation From NetFlow Exporter To VRF object. This attribute is supported in ACI versions: 3.2(1l) and later.
       - Default: `orchestrator:terraform`
     * `target_dn` (tDn) - (string) The distinguished name of the target.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
@@ -180,7 +180,7 @@ All examples for the NetFlow Exporter Policy resource can be found in the [examp
     - [l2extInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l2extInstP/overview) which can be configured using the [aci_l2out_extepg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l2out_extepg) resource.
   #### Optional ####
     
-    * `annotation` (annotation) - (string) The annotation of the Relation From NetFlow Exporter To EPG object.
+    * `annotation` (annotation) - (string) The annotation of the Relation From NetFlow Exporter To EPG object. This attribute is supported in ACI versions: 3.2(1l) and later.
       - Default: `orchestrator:terraform`
     * `target_dn` (tDn) - (string) The distinguished name of the target.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.

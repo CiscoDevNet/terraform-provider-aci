@@ -48,9 +48,9 @@ data "aci_l3out_provider_label" "example_l3_outside" {
 ### Read-Only ###
 
 * `id` - (string) The distinguished name (DN) of the L3Out Provider Label object.
-* `annotation` (annotation) - (string) The annotation of the L3Out Provider Label object.
+* `annotation` (annotation) - (string) The annotation of the L3Out Provider Label object. This attribute is supported in ACI versions: 3.2(1l) and later.
 * `description` (descr) - (string) The description of the L3Out Provider Label object.
-* `name_alias` (nameAlias) - (string) The name alias of the L3Out Provider Label object.
+* `name_alias` (nameAlias) - (string) The name alias of the L3Out Provider Label object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `tag` (tag) - (string) Specifies the color of a policy label.

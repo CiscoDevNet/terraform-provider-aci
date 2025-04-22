@@ -61,11 +61,11 @@ data "aci_certificate_authority" "example_tenant" {
 ### Read-Only ###
 
 * `id` - (string) The distinguished name (DN) of the Certificate Authority object.
-* `annotation` (annotation) - (string) The annotation of the Certificate Authority object.
+* `annotation` (annotation) - (string) The annotation of the Certificate Authority object. This attribute is supported in ACI versions: 3.2(1l) and later.
 * `certificate_chain` (certChain) - (string) The PEM-encoded chain of trust from the trustpoint to a trusted root authority.
 * `certificate_usage` (certUsage) - (list) The usage of the Certificate Authority object which can be Web Service/Authentication (WebSvcOrAuth), Platform Experience Grid (pxGrid), or both.
 * `description` (descr) - (string) The description of the Certificate Authority object.
-* `name_alias` (nameAlias) - (string) The name alias of the Certificate Authority object.
+* `name_alias` (nameAlias) - (string) The name alias of the Certificate Authority object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.

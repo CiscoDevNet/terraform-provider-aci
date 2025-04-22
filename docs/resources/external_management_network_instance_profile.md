@@ -100,10 +100,10 @@ All examples for the External Management Network Instance Profile resource can b
 
 ### Optional ###
 
-* `annotation` (annotation) - (string) The annotation of the External Management Network Instance Profile object.
+* `annotation` (annotation) - (string) The annotation of the External Management Network Instance Profile object. This attribute is supported in ACI versions: 3.2(1l) and later.
   - Default: `orchestrator:terraform`
 * `description` (descr) - (string) The description of the External Management Network Instance Profile object.
-* `name_alias` (nameAlias) - (string) The name alias of the External Management Network Instance Profile object.
+* `name_alias` (nameAlias) - (string) The name alias of the External Management Network Instance Profile object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
   - Default: `unspecified`
   - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
@@ -113,7 +113,7 @@ All examples for the External Management Network Instance Profile resource can b
     * `out_of_band_contract_name` (tnVzOOBBrCPName) - (string) The name of the Out Of Band Contract object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/out_of_band_contract) with `aci_out_of_band_contract.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/out_of_band_contract) with `data.aci_out_of_band_contract.example.name`.
   #### Optional ####
     
-    * `annotation` (annotation) - (string) The annotation of the Relation To Consumed Out Of Band Contract object.
+    * `annotation` (annotation) - (string) The annotation of the Relation To Consumed Out Of Band Contract object. This attribute is supported in ACI versions: 3.2(1l) and later.
       - Default: `orchestrator:terraform`
     * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
       - Default: `unspecified`

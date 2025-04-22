@@ -85,7 +85,7 @@ All examples for the Relation To Fibre Channel Path resource can be found in the
 
 ### Optional ###
 
-* `annotation` (annotation) - (string) The annotation of the Relation To Fibre Channel Path object.
+* `annotation` (annotation) - (string) The annotation of the Relation To Fibre Channel Path object. This attribute is supported in ACI versions: 3.2(1l) and later.
   - Default: `orchestrator:terraform`
 * `description` (descr) - (string) The description of the Relation To Fibre Channel Path object.
 * `vsan` (vsan) - (string) The virtual storage area network (VSAN) of the Relation To Fibre Channel Path object.

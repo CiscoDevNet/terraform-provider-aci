@@ -49,11 +49,11 @@ data "aci_pim_route_map_entry" "example_pim_route_map_policy" {
 
 * `id` - (string) The distinguished name (DN) of the Pim Route Map Entry object.
 * `action` (action) - (string) The route action of the Pim Route Map Entry object.
-* `annotation` (annotation) - (string) The annotation of the Pim Route Map Entry object.
+* `annotation` (annotation) - (string) The annotation of the Pim Route Map Entry object. This attribute is supported in ACI versions: 3.2(1l) and later.
 * `description` (descr) - (string) The description of the Pim Route Map Entry object.
 * `group_ip` (grp) - (string) The group ip of the Pim Route Map Entry object.
 * `name` (name) - (string) The name of the Pim Route Map Entry object.
-* `name_alias` (nameAlias) - (string) The name alias of the Pim Route Map Entry object.
+* `name_alias` (nameAlias) - (string) The name alias of the Pim Route Map Entry object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `rendezvous_point_ip` (rp) - (string) The rendezvous point ip of the Pim Route Map Entry object.
 * `source_ip` (src) - (string) The source ip of the Pim Route Map Entry object.
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.

@@ -50,19 +50,19 @@ data "aci_igmp_snooping_policy" "example_tenant" {
 ### Read-Only ###
 
 * `id` - (string) The distinguished name (DN) of the IGMP Snooping Policy object.
-* `admin_state` (adminSt) - (string) The administrative state of the IGMP Snooping Policy object.
-* `annotation` (annotation) - (string) The annotation of the IGMP Snooping Policy object.
+* `admin_state` (adminSt) - (string) The administrative state of the IGMP Snooping Policy object. This attribute is supported in ACI versions: 2.0(1m) and later.
+* `annotation` (annotation) - (string) The annotation of the IGMP Snooping Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
 * `control` (ctrl) - (list) The controls for the IGMP Snooping Policy object.
 * `description` (descr) - (string) The description of the IGMP Snooping Policy object.
 * `last_member_interval` (lastMbrIntvl) - (string) The last member interval (seconds) of the IGMP Snooping Policy object. The group state is removed when no host responds before the timeout.
-* `name_alias` (nameAlias) - (string) The name alias of the IGMP Snooping Policy object.
+* `name_alias` (nameAlias) - (string) The name alias of the IGMP Snooping Policy object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `query_interval` (queryIntvl) - (string) The query interval (seconds) of the IGMP Snooping Policy object.
 * `response_interval` (rspIntvl) - (string) The response interval (seconds) of the IGMP Snooping Policy object.
 * `start_query_count` (startQueryCnt) - (string) The start query count of the IGMP Snooping Policy object.
 * `start_query_interval` (startQueryIntvl) - (string) The query interval (seconds) of the IGMP Snooping Policy object at start-up.
-* `querier_version` (ver) - (string) The version of the IGMP querier.
+* `querier_version` (ver) - (string) The version of the IGMP querier. This attribute is supported in ACI versions: 5.1(1h) and later.
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.

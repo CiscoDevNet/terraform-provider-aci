@@ -128,7 +128,7 @@ All examples for the NetFlow Monitor Policy resource can be found in the [exampl
     - [infraInfra](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraInfra/overview)
 
   - Default: `uni/infra`
-* `annotation` (annotation) - (string) The annotation of the NetFlow Monitor Policy object.
+* `annotation` (annotation) - (string) The annotation of the NetFlow Monitor Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
   - Default: `orchestrator:terraform`
 * `description` (descr) - (string) The description of the NetFlow Monitor Policy object.
 * `name_alias` (nameAlias) - (string) The name alias of the NetFlow Monitor Policy object.
@@ -140,7 +140,7 @@ All examples for the NetFlow Monitor Policy resource can be found in the [exampl
     * `netflow_exporter_policy_name` (tnNetflowExporterPolName) - (string) Name. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/netflow_exporter_policy) with `aci_netflow_exporter_policy.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/netflow_exporter_policy) with `data.aci_netflow_exporter_policy.example.name`.
   #### Optional ####
     
-    * `annotation` (annotation) - (string) The annotation of the Relation To NetFlow Exporter object.
+    * `annotation` (annotation) - (string) The annotation of the Relation To NetFlow Exporter object. This attribute is supported in ACI versions: 3.2(1l) and later.
       - Default: `orchestrator:terraform`
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
@@ -155,7 +155,7 @@ All examples for the NetFlow Monitor Policy resource can be found in the [exampl
 * `relation_to_netflow_record` - (map) A map of Relation To NetFlow Record (ACI object [netflowRsMonitorToRecord](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRsMonitorToRecord/overview)) pointing to NetFlow Record Policy (ACI Object [netflowRecordPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRecordPol/overview)) which can be configured using the [aci_netflow_record_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/netflow_record_policy) resource.
   #### Optional ####
     
-    * `annotation` (annotation) - (string) The annotation of the Relation To NetFlow Record object.
+    * `annotation` (annotation) - (string) The annotation of the Relation To NetFlow Record object. This attribute is supported in ACI versions: 3.2(1l) and later.
       - Default: `orchestrator:terraform`
     * `netflow_record_policy_name` (tnNetflowRecordPolName) - (string) Name.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.

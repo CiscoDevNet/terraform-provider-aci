@@ -58,10 +58,10 @@ data "aci_route_control_profile" "example_l3_outside" {
 ### Read-Only ###
 
 * `id` - (string) The distinguished name (DN) of the Route Control Profile object.
-* `annotation` (annotation) - (string) The annotation of the Route Control Profile object.
-* `route_map_continue` (autoContinue) - (string) The route_map_continue applies a continue statement for all user-configured sequences (contexts) in a given BGP route profile so that switches will continue to find matches with subsequent user-configured sequences in the route map. Without the continue statement, after a route matches one of the sequences in a route map, switches will not continue to check other sequences.
+* `annotation` (annotation) - (string) The annotation of the Route Control Profile object. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `route_map_continue` (autoContinue) - (string) The route_map_continue applies a continue statement for all user-configured sequences (contexts) in a given BGP route profile so that switches will continue to find matches with subsequent user-configured sequences in the route map. Without the continue statement, after a route matches one of the sequences in a route map, switches will not continue to check other sequences. This attribute is supported in ACI versions: 4.2(6d) to 4.2(7w), 5.1(3e) and later.
 * `description` (descr) - (string) The description of the Route Control Profile object.
-* `name_alias` (nameAlias) - (string) The name alias of the Route Control Profile object.
+* `name_alias` (nameAlias) - (string) The name alias of the Route Control Profile object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `route_control_profile_type` (type) - (string) The type of the Route Control Profile object. Use combinable when pervasive subnets (fvSubnet) and external subnets (l3extSubnet) should be combined with a route profile and merged into a single route map or route map entry. Use global when the route profile is the only source of information to generate a route map, this will overwrite other policy attributes.

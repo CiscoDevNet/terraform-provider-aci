@@ -56,11 +56,11 @@ data "aci_epg_useg_vm_attribute" "example_epg_useg_sub_block_statement" {
 ### Read-Only ###
 
 * `id` - (string) The distinguished name (DN) of the EPG uSeg VM Attribute object.
-* `annotation` (annotation) - (string) The annotation of the EPG uSeg VM Attribute object.
-* `category` (category) - (string) The category of the EPG uSeg VM Attribute object.
+* `annotation` (annotation) - (string) The annotation of the EPG uSeg VM Attribute object. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `category` (category) - (string) The category of the EPG uSeg VM Attribute object. This attribute is supported in ACI versions: 2.3(1e) and later.
 * `description` (descr) - (string) The description of the EPG uSeg VM Attribute object.
 * `label_name` (labelName) - (string) The label name of the EPG uSeg VM Attribute object.
-* `name_alias` (nameAlias) - (string) The name alias of the EPG uSeg VM Attribute object.
+* `name_alias` (nameAlias) - (string) The name alias of the EPG uSeg VM Attribute object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `operator` (operator) - (string) The operator of the EPG uSeg VM Attribute object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.

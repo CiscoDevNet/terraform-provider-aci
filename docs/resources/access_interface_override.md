@@ -121,10 +121,10 @@ All examples for the Access Interface Override resource can be found in the [exa
     - [infraInfra](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraInfra/overview)
 
   - Default: `uni/infra`
-* `annotation` (annotation) - (string) The annotation of the Access Interface Override object.
+* `annotation` (annotation) - (string) The annotation of the Access Interface Override object. This attribute is supported in ACI versions: 3.2(1l) and later.
   - Default: `orchestrator:terraform`
 * `description` (descr) - (string) The description of the Access Interface Override object.
-* `name_alias` (nameAlias) - (string) The name alias of the Access Interface Override object.
+* `name_alias` (nameAlias) - (string) The name alias of the Access Interface Override object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `relation_to_host_path` - (map) A map of Relation To Host Path (ACI object [infraRsHPathAtt](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraRsHPathAtt/overview)) pointing to Fabric Path Endpoint (ACI Object [fabricPathEp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fabricPathEp/overview)).
@@ -133,7 +133,7 @@ All examples for the Access Interface Override resource can be found in the [exa
     * `target_dn` (tDn) - (string) The distinguished name of the target.
   #### Optional ####
     
-    * `annotation` (annotation) - (string) The annotation of the Relation To Host Path object.
+    * `annotation` (annotation) - (string) The annotation of the Relation To Host Path object. This attribute is supported in ACI versions: 3.2(1l) and later.
       - Default: `orchestrator:terraform`
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
@@ -148,7 +148,7 @@ All examples for the Access Interface Override resource can be found in the [exa
 * `relation_to_access_interface_policy_group` - (map) A map of Relation To Access Interface Policy Group (ACI object [infraRsPathToAccBaseGrp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraRsPathToAccBaseGrp/overview)) pointing to Access Interface Policy Group (ACI Object [infraAccBaseGrp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraAccBaseGrp/overview)) which can be configured using the [aci_access_interface_policy_group](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/access_interface_policy_group) resource.
   #### Optional ####
     
-    * `annotation` (annotation) - (string) The annotation of the Relation To Access Interface Policy Group object.
+    * `annotation` (annotation) - (string) The annotation of the Relation To Access Interface Policy Group object. This attribute is supported in ACI versions: 3.2(1l) and later.
       - Default: `orchestrator:terraform`
     * `target_dn` (tDn) - (string) The distinguished name of the target.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.

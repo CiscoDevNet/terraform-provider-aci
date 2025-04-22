@@ -48,12 +48,12 @@ data "aci_relation_to_static_path" "example_application_epg" {
 ### Read-Only ###
 
 * `id` - (string) The distinguished name (DN) of the Relation To Static Path object.
-* `annotation` (annotation) - (string) The annotation of the Relation To Static Path object.
-* `description` (descr) - (string) The description of the Relation To Static Path object.
+* `annotation` (annotation) - (string) The annotation of the Relation To Static Path object. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `description` (descr) - (string) The description of the Relation To Static Path object. This attribute is supported in ACI versions: 1.0(4g) and later.
 * `encapsulation` (encap) - (string) The VLAN encapsulation of the Relation To Static Path object.
 * `deployment_immediacy` (instrImedcy) - (string) The deployment immediacy of the Relation To Static Path object. Specifies when the policy is pushed into the hardware policy content-addressable memory (CAM).
 * `mode` (mode) - (string) The static association mode of the Relation To Static Path object.
-* `primary_encapsulation` (primaryEncap) - (string) The primary VLAN encapsulation of the Relation To Static Path object.
+* `primary_encapsulation` (primaryEncap) - (string) The primary VLAN encapsulation of the Relation To Static Path object. This attribute is supported in ACI versions: 1.2(2g) and later.
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.

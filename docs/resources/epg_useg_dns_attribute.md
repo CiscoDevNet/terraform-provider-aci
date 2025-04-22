@@ -87,7 +87,7 @@ All examples for the EPG uSeg DNS Attribute resource can be found in the [exampl
 
 ### Optional ###
 
-* `annotation` (annotation) - (string) The annotation of the EPG uSeg DNS Attribute object.
+* `annotation` (annotation) - (string) The annotation of the EPG uSeg DNS Attribute object. This attribute is supported in ACI versions: 3.2(1l) and later.
   - Default: `orchestrator:terraform`
 * `description` (descr) - (string) The description of the EPG uSeg DNS Attribute object.
 * `filter` (filter) - (string) The domain name filter of the EPG uSeg DNS Attribute object.

@@ -48,17 +48,17 @@ data "aci_neighbor_discovery_interface_policy" "example_tenant" {
 ### Read-Only ###
 
 * `id` - (string) The distinguished name (DN) of the Neighbor Discovery Interface Policy object.
-* `annotation` (annotation) - (string) The annotation of the Neighbor Discovery Interface Policy object.
+* `annotation` (annotation) - (string) The annotation of the Neighbor Discovery Interface Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
 * `controller_state` (ctrl) - (list) The controls for the Neighbor Discovery Interface Policy object.
 * `description` (descr) - (string) The description of the Neighbor Discovery Interface Policy object.
 * `hop_limit` (hopLimit) - (string) The hop limit of the Neighbor Discovery Interface Policy object.
 * `mtu` (mtu) - (string) The maximum transmission unit (MTU) of the Neighbor Discovery Interface Policy object.
-* `name_alias` (nameAlias) - (string) The name alias of the Neighbor Discovery Interface Policy object.
+* `name_alias` (nameAlias) - (string) The name alias of the Neighbor Discovery Interface Policy object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `neighbor_solicitation_interval` (nsIntvl) - (string) The interval (milliseconds) for sending neighbor solicitation (NS) messages.
 * `neighbor_solicitation_retries` (nsRetries) - (string) The retransmission count for sending neighbor solicitation (NS) messages.
-* `nud_retry_base` (nudRetryBase) - (string) The retransmission base value for neighbor unreachability detection (NUD).
-* `nud_retry_interval` (nudRetryInterval) - (string) The retransmission interval (milliseconds) for neighbor unreachability detection (NUD).
-* `nud_retry_max_attempts` (nudRetryMaxAttempts) - (string) The maximum number of retransmission attempts for neighbor unreachability detection (NUD).
+* `nud_retry_base` (nudRetryBase) - (string) The retransmission base value for neighbor unreachability detection (NUD). This attribute is supported in ACI versions: 5.1(1h) and later.
+* `nud_retry_interval` (nudRetryInterval) - (string) The retransmission interval (milliseconds) for neighbor unreachability detection (NUD). This attribute is supported in ACI versions: 5.1(1h) and later.
+* `nud_retry_max_attempts` (nudRetryMaxAttempts) - (string) The maximum number of retransmission attempts for neighbor unreachability detection (NUD). This attribute is supported in ACI versions: 5.1(1h) and later.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `router_advertisement_interval` (raIntvl) - (string) The interval (seconds) for sending route advertisement messages.
