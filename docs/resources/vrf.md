@@ -247,7 +247,7 @@ All examples for the VRF resource can be found in the [examples](https://github.
 * `annotation` (annotation) - (string) The annotation of the VRF object.
   - Default: `orchestrator:terraform`
 * `bd_enforcement` (bdEnforcedEnable) - (string) The Bridge Domain (BD) enforcement status of the VRF. BD enforcement will restrict a host from sending ping requests to subnets outside the Bridge Domain (BD). The feature blocks ICMP, TCP and UDP traffic between BDs.
-  - Default: `false`
+  - Default: `no`
   - Valid Values: `no`, `yes`.
 * `description` (descr) - (string) The description of the VRF object.
 * `ip_data_plane_learning` (ipDataPlaneLearning) - (string) The IP data plane status of the VRF object. The process known as IP data plane learning involves acquiring the endpoint's IPv4 or IPv6 address through data plane routing of traffic from the endpoint.
