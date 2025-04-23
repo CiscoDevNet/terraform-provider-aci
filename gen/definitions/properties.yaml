@@ -2243,6 +2243,8 @@ fvCtx:
     bd_enforced_enable : bd_enforcement
     pc_enf_dir: policy_control_enforcement_direction
     pc_enf_pref: policy_control_enforcement_mode
+  default_values:
+    bdEnforcedEnable: "no"
   test_values:
     default:
       bd_enforcement: "no"
