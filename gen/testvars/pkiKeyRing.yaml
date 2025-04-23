@@ -16,7 +16,7 @@ default:
   regenerate: "no"
   certificate_authority: ""
   version_mismatch:
-    6.0(2h):
+    6.0(2h)-:
       elliptic_curve: "none"
       key_type: "RSA"
 
@@ -42,7 +42,7 @@ all:
   regenerate: "no"
   certificate_authority: "test_name"
   version_mismatch:
-    6.0(2h):
+    6.0(2h)-:
       elliptic_curve: "none"
       key_type: "RSA"
 

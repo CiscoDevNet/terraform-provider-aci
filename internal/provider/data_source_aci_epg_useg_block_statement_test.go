@@ -28,7 +28,7 @@ func TestAccDataSourceFvCrtrnWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("data.aci_epg_useg_block_statement.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("data.aci_epg_useg_block_statement.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("data.aci_epg_useg_block_statement.test", "owner_tag", ""),
-					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
 						resource.TestCheckResourceAttr("data.aci_epg_useg_block_statement.test", "precedence", "0"),
 						resource.TestCheckResourceAttr("data.aci_epg_useg_block_statement.test", "scope", "scope-bd")),
 				),

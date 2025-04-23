@@ -17,7 +17,7 @@ default:
   start_query_count: "2"
   start_query_interval: "31"
   version_mismatch:
-    5.1(1h):
+    5.1(1h)-:
       version: "v2"
 
 datasource_non_existing:
@@ -45,7 +45,7 @@ all:
   start_query_count: "9"
   start_query_interval: "2"
   version_mismatch:
-    5.1(1h):
+    5.1(1h)-:
       version: "unspecified"
 
 children:

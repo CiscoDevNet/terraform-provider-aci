@@ -39,7 +39,7 @@ func TestAccResourceVzOOBBrCP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.allow_test_2", "scope", "context"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.allow_test", "target_dscp", "unspecified"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.allow_test_2", "target_dscp", "unspecified"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
 						resource.TestCheckResourceAttr("aci_out_of_band_contract.allow_test", "intent", "install"),
 						resource.TestCheckResourceAttr("aci_out_of_band_contract.allow_test_2", "intent", "install")),
 				),
@@ -87,7 +87,7 @@ func TestAccResourceVzOOBBrCP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.allow_test_2", "scope", "context"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.allow_test", "target_dscp", "unspecified"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.allow_test_2", "target_dscp", "unspecified"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
 						resource.TestCheckResourceAttr("aci_out_of_band_contract.allow_test", "intent", "install"),
 						resource.TestCheckResourceAttr("aci_out_of_band_contract.allow_test_2", "intent", "install")),
 				),
@@ -112,7 +112,7 @@ func TestAccResourceVzOOBBrCP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "priority", "unspecified"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "scope", "context"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "target_dscp", "unspecified"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
 						resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "intent", "install")),
 				),
 			},
@@ -129,7 +129,7 @@ func TestAccResourceVzOOBBrCP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "priority", "level1"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "scope", "application-profile"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "target_dscp", "AF11"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
 						resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "intent", "estimate_add")),
 				),
 			},
@@ -146,7 +146,7 @@ func TestAccResourceVzOOBBrCP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "priority", "level1"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "scope", "application-profile"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "target_dscp", "AF11"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
 						resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "intent", "estimate_add")),
 				),
 			},
@@ -163,7 +163,7 @@ func TestAccResourceVzOOBBrCP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "priority", "unspecified"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "scope", "context"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "target_dscp", "unspecified"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
 						resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "intent", "install")),
 				),
 			},
@@ -185,7 +185,7 @@ func TestAccResourceVzOOBBrCP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "priority", "unspecified"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "scope", "context"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "target_dscp", "unspecified"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
 						resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "intent", "install")),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotations.0.value", "value_1"),
@@ -211,7 +211,7 @@ func TestAccResourceVzOOBBrCP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "priority", "unspecified"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "scope", "context"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "target_dscp", "unspecified"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
 						resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "intent", "install")),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotations.0.value", "value_1"),
@@ -237,7 +237,7 @@ func TestAccResourceVzOOBBrCP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "priority", "unspecified"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "scope", "context"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "target_dscp", "unspecified"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
 						resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "intent", "install")),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotations.0.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotations.0.value", "test_value"),
@@ -259,7 +259,7 @@ func TestAccResourceVzOOBBrCP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "priority", "unspecified"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "scope", "context"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "target_dscp", "unspecified"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
 						resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "intent", "install")),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotations.#", "0"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "tags.#", "0"),
@@ -306,7 +306,7 @@ resource "aci_out_of_band_contract" "test" {
   priority = "level1"
   scope = "application-profile"
   target_dscp = "AF11"
-  intent = provider::aci::compare_versions(data.aci_system.version.version,">=","4.2(1i)") ? "estimate_add" : null
+  intent = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.2(1i)-") ? "estimate_add" : null
 }
 `
 
@@ -321,7 +321,7 @@ resource "aci_out_of_band_contract" "test" {
   priority = "unspecified"
   scope = "context"
   target_dscp = "unspecified"
-  intent = provider::aci::compare_versions(data.aci_system.version.version,">=","4.2(1i)") ? "install" : null
+  intent = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.2(1i)-") ? "install" : null
 }
 `
 const testConfigVzOOBBrCPChildren = `

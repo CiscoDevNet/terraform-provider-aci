@@ -174,15 +174,15 @@ func TestAccResourceCommPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_service.name_alias", "name_alias_1"),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_service.port", "80"),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_service.redirect_state", "disabled"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_service.cli_only_mode", "disabled")),
-					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_service.global_throttle_rate", "10000"),
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_service.global_throttle_state", "disabled"),
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_service.global_throttle_unit", "r/s")),
-					composeAggregateTestCheckFuncWithVersion(t, "5.2(1g)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "5.2(1g)-", "inside",
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_service.server_header", "disabled")),
-					composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_service.node_exporter", "disabled")),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_service.visore_access", "disabled"),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.admin_state", "enabled"),
@@ -233,19 +233,19 @@ func TestAccResourceCommPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.port", "443"),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.ssl_protocols.#", "1"),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.ssl_protocols.0", "TLSv1"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)-", "inside",
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.client_certificate_authentication_state", "disabled")),
-					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.cli_only_mode", "disabled")),
-					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.global_throttle_rate", "10000"),
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.global_throttle_state", "disabled"),
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.global_throttle_unit", "r/s")),
-					composeAggregateTestCheckFuncWithVersion(t, "5.2(1g)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "5.2(1g)-", "inside",
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.server_header", "disabled")),
-					composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.node_exporter", "disabled")),
-					composeAggregateTestCheckFuncWithVersion(t, "6.0(2h)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "6.0(2h)-", "inside",
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.referer", "referer_1")),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.visore_access", "disabled"),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "ssh_access_via_web.admin_state", "disabled"),
@@ -283,8 +283,11 @@ func TestAccResourceCommPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "ssh_service.ssh_ciphers.0", "aes192-ctr"),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "ssh_service.ssh_macs.#", "1"),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "ssh_service.ssh_macs.0", "hmac-sha1"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "ssh_service.password_authentication_state", "disabled")),
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(7f)-4.2(7w),5.2(1g)-", "inside",
+						resource.TestCheckResourceAttr("aci_management_access_policy.test", "ssh_service.kex_algorithms.#", "1"),
+						resource.TestCheckResourceAttr("aci_management_access_policy.test", "ssh_service.kex_algorithms.0", "curve25519-sha256")),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "tags.1.key", "key_1"),
@@ -344,15 +347,15 @@ func TestAccResourceCommPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_service.name_alias", "name_alias_1"),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_service.port", "80"),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_service.redirect_state", "disabled"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_service.cli_only_mode", "disabled")),
-					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_service.global_throttle_rate", "10000"),
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_service.global_throttle_state", "disabled"),
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_service.global_throttle_unit", "r/s")),
-					composeAggregateTestCheckFuncWithVersion(t, "5.2(1g)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "5.2(1g)-", "inside",
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_service.server_header", "disabled")),
-					composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_service.node_exporter", "disabled")),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_service.visore_access", "disabled"),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.admin_state", "enabled"),
@@ -403,19 +406,19 @@ func TestAccResourceCommPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.port", "443"),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.ssl_protocols.#", "1"),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.ssl_protocols.0", "TLSv1"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)-", "inside",
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.client_certificate_authentication_state", "disabled")),
-					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.cli_only_mode", "disabled")),
-					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.global_throttle_rate", "10000"),
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.global_throttle_state", "disabled"),
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.global_throttle_unit", "r/s")),
-					composeAggregateTestCheckFuncWithVersion(t, "5.2(1g)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "5.2(1g)-", "inside",
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.server_header", "disabled")),
-					composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.node_exporter", "disabled")),
-					composeAggregateTestCheckFuncWithVersion(t, "6.0(2h)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "6.0(2h)-", "inside",
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.referer", "referer_1")),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.visore_access", "disabled"),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "ssh_access_via_web.admin_state", "disabled"),
@@ -453,8 +456,11 @@ func TestAccResourceCommPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "ssh_service.ssh_ciphers.0", "aes192-ctr"),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "ssh_service.ssh_macs.#", "1"),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "ssh_service.ssh_macs.0", "hmac-sha1"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "ssh_service.password_authentication_state", "disabled")),
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(7f)-4.2(7w),5.2(1g)-", "inside",
+						resource.TestCheckResourceAttr("aci_management_access_policy.test", "ssh_service.kex_algorithms.#", "1"),
+						resource.TestCheckResourceAttr("aci_management_access_policy.test", "ssh_service.kex_algorithms.0", "curve25519-sha256")),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "tags.1.key", "key_1"),
@@ -508,15 +514,15 @@ func TestAccResourceCommPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_service.name_alias", "name_alias_1"),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_service.port", "80"),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_service.redirect_state", "disabled"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_service.cli_only_mode", "disabled")),
-					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_service.global_throttle_rate", "10000"),
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_service.global_throttle_state", "disabled"),
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_service.global_throttle_unit", "r/s")),
-					composeAggregateTestCheckFuncWithVersion(t, "5.2(1g)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "5.2(1g)-", "inside",
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_service.server_header", "disabled")),
-					composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_service.node_exporter", "disabled")),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_service.visore_access", "disabled"),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.admin_state", "enabled"),
@@ -547,19 +553,19 @@ func TestAccResourceCommPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.port", "443"),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.ssl_protocols.#", "1"),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.ssl_protocols.0", "TLSv1"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)-", "inside",
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.client_certificate_authentication_state", "disabled")),
-					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.cli_only_mode", "disabled")),
-					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.global_throttle_rate", "10000"),
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.global_throttle_state", "disabled"),
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.global_throttle_unit", "r/s")),
-					composeAggregateTestCheckFuncWithVersion(t, "5.2(1g)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "5.2(1g)-", "inside",
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.server_header", "disabled")),
-					composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.node_exporter", "disabled")),
-					composeAggregateTestCheckFuncWithVersion(t, "6.0(2h)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "6.0(2h)-", "inside",
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.referer", "referer_1")),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.visore_access", "disabled"),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "ssh_access_via_web.admin_state", "disabled"),
@@ -589,8 +595,11 @@ func TestAccResourceCommPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "ssh_service.ssh_ciphers.0", "aes192-ctr"),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "ssh_service.ssh_macs.#", "1"),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "ssh_service.ssh_macs.0", "hmac-sha1"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "ssh_service.password_authentication_state", "disabled")),
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(7f)-4.2(7w),5.2(1g)-", "inside",
+						resource.TestCheckResourceAttr("aci_management_access_policy.test", "ssh_service.kex_algorithms.#", "1"),
+						resource.TestCheckResourceAttr("aci_management_access_policy.test", "ssh_service.kex_algorithms.0", "curve25519-sha256")),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "tags.0.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "tags.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "tags.#", "1"),
@@ -645,15 +654,15 @@ func TestAccResourceCommPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_service.name_alias", "name_alias_1"),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_service.port", "80"),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_service.redirect_state", "disabled"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_service.cli_only_mode", "disabled")),
-					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_service.global_throttle_rate", "10000"),
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_service.global_throttle_state", "disabled"),
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_service.global_throttle_unit", "r/s")),
-					composeAggregateTestCheckFuncWithVersion(t, "5.2(1g)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "5.2(1g)-", "inside",
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_service.server_header", "disabled")),
-					composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_service.node_exporter", "disabled")),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_service.visore_access", "disabled"),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.admin_state", "enabled"),
@@ -676,19 +685,19 @@ func TestAccResourceCommPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.port", "443"),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.ssl_protocols.#", "1"),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.ssl_protocols.0", "TLSv1"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)-", "inside",
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.client_certificate_authentication_state", "disabled")),
-					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.cli_only_mode", "disabled")),
-					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.global_throttle_rate", "10000"),
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.global_throttle_state", "disabled"),
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.global_throttle_unit", "r/s")),
-					composeAggregateTestCheckFuncWithVersion(t, "5.2(1g)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "5.2(1g)-", "inside",
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.server_header", "disabled")),
-					composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.node_exporter", "disabled")),
-					composeAggregateTestCheckFuncWithVersion(t, "6.0(2h)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "6.0(2h)-", "inside",
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.referer", "referer_1")),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "http_ssl_configuration.visore_access", "disabled"),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "ssh_access_via_web.admin_state", "disabled"),
@@ -710,8 +719,11 @@ func TestAccResourceCommPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "ssh_service.ssh_ciphers.0", "aes192-ctr"),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "ssh_service.ssh_macs.#", "1"),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "ssh_service.ssh_macs.0", "hmac-sha1"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
 						resource.TestCheckResourceAttr("aci_management_access_policy.test", "ssh_service.password_authentication_state", "disabled")),
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(7f)-4.2(7w),5.2(1g)-", "inside",
+						resource.TestCheckResourceAttr("aci_management_access_policy.test", "ssh_service.kex_algorithms.#", "1"),
+						resource.TestCheckResourceAttr("aci_management_access_policy.test", "ssh_service.kex_algorithms.0", "curve25519-sha256")),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "tags.#", "0"),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "telnet_service.admin_state", "disabled"),
 					resource.TestCheckResourceAttr("aci_management_access_policy.test", "telnet_service.annotation", "annotation_1"),
@@ -831,12 +843,12 @@ resource "aci_management_access_policy" "test" {
     name_alias = "name_alias_1"
     port = "80"
     redirect_state = "disabled"
-  	cli_only_mode = provider::aci::compare_versions(data.aci_system.version.version,">=","4.1(1i)") ? "disabled" : null
-  	global_throttle_rate = provider::aci::compare_versions(data.aci_system.version.version,">=","4.2(1i)") ? "10000" : null
-  	global_throttle_state = provider::aci::compare_versions(data.aci_system.version.version,">=","4.2(1i)") ? "disabled" : null
-  	global_throttle_unit = provider::aci::compare_versions(data.aci_system.version.version,">=","4.2(1i)") ? "r/s" : null
-  	server_header = provider::aci::compare_versions(data.aci_system.version.version,">=","5.2(1g)") ? "disabled" : null
-  	node_exporter = provider::aci::compare_versions(data.aci_system.version.version,">=","5.2(3e)") ? "disabled" : null
+  	cli_only_mode = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.1(1i)-") ? "disabled" : null
+  	global_throttle_rate = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.2(1i)-") ? "10000" : null
+  	global_throttle_state = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.2(1i)-") ? "disabled" : null
+  	global_throttle_unit = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.2(1i)-") ? "r/s" : null
+  	server_header = provider::aci::compare_versions(data.aci_system.version.version,"inside","5.2(1g)-") ? "disabled" : null
+  	node_exporter = provider::aci::compare_versions(data.aci_system.version.version,"inside","5.2(3e)-") ? "disabled" : null
     visore_access = "disabled"
   }
   http_ssl_configuration = {
@@ -921,14 +933,14 @@ resource "aci_management_access_policy" "test" {
     name_alias = "name_alias_1"
     port = "443"
     ssl_protocols = ["TLSv1"]
-  	client_certificate_authentication_state = provider::aci::compare_versions(data.aci_system.version.version,">=","4.0(1h)") ? "disabled" : null
-  	cli_only_mode = provider::aci::compare_versions(data.aci_system.version.version,">=","4.1(1i)") ? "disabled" : null
-  	global_throttle_rate = provider::aci::compare_versions(data.aci_system.version.version,">=","4.2(1i)") ? "10000" : null
-  	global_throttle_state = provider::aci::compare_versions(data.aci_system.version.version,">=","4.2(1i)") ? "disabled" : null
-  	global_throttle_unit = provider::aci::compare_versions(data.aci_system.version.version,">=","4.2(1i)") ? "r/s" : null
-  	server_header = provider::aci::compare_versions(data.aci_system.version.version,">=","5.2(1g)") ? "disabled" : null
-  	node_exporter = provider::aci::compare_versions(data.aci_system.version.version,">=","5.2(3e)") ? "disabled" : null
-  	referer = provider::aci::compare_versions(data.aci_system.version.version,">=","6.0(2h)") ? "referer_1" : null
+  	client_certificate_authentication_state = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.0(1h)-") ? "disabled" : null
+  	cli_only_mode = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.1(1i)-") ? "disabled" : null
+  	global_throttle_rate = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.2(1i)-") ? "10000" : null
+  	global_throttle_state = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.2(1i)-") ? "disabled" : null
+  	global_throttle_unit = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.2(1i)-") ? "r/s" : null
+  	server_header = provider::aci::compare_versions(data.aci_system.version.version,"inside","5.2(1g)-") ? "disabled" : null
+  	node_exporter = provider::aci::compare_versions(data.aci_system.version.version,"inside","5.2(3e)-") ? "disabled" : null
+  	referer = provider::aci::compare_versions(data.aci_system.version.version,"inside","6.0(2h)-") ? "referer_1" : null
     visore_access = "disabled"
   }
   ssh_access_via_web = {
@@ -987,7 +999,8 @@ resource "aci_management_access_policy" "test" {
     port = "22"
     ssh_ciphers = ["aes192-ctr"]
     ssh_macs = ["hmac-sha1"]
-  	password_authentication_state = provider::aci::compare_versions(data.aci_system.version.version,">=","4.1(1i)") ? "disabled" : null
+  	password_authentication_state = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.1(1i)-") ? "disabled" : null
+	kex_algorithms = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.2(7f)-4.2(7w),5.2(1g)-") ? ["curve25519-sha256"] : null
   }
   tags = [
 	{
@@ -1072,12 +1085,12 @@ resource "aci_management_access_policy" "test" {
     name_alias = "name_alias_1"
     port = "80"
     redirect_state = "disabled"
-  	cli_only_mode = provider::aci::compare_versions(data.aci_system.version.version,">=","4.1(1i)") ? "disabled" : null
-  	global_throttle_rate = provider::aci::compare_versions(data.aci_system.version.version,">=","4.2(1i)") ? "10000" : null
-  	global_throttle_state = provider::aci::compare_versions(data.aci_system.version.version,">=","4.2(1i)") ? "disabled" : null
-  	global_throttle_unit = provider::aci::compare_versions(data.aci_system.version.version,">=","4.2(1i)") ? "r/s" : null
-  	server_header = provider::aci::compare_versions(data.aci_system.version.version,">=","5.2(1g)") ? "disabled" : null
-  	node_exporter = provider::aci::compare_versions(data.aci_system.version.version,">=","5.2(3e)") ? "disabled" : null
+  	cli_only_mode = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.1(1i)-") ? "disabled" : null
+  	global_throttle_rate = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.2(1i)-") ? "10000" : null
+  	global_throttle_state = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.2(1i)-") ? "disabled" : null
+  	global_throttle_unit = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.2(1i)-") ? "r/s" : null
+  	server_header = provider::aci::compare_versions(data.aci_system.version.version,"inside","5.2(1g)-") ? "disabled" : null
+  	node_exporter = provider::aci::compare_versions(data.aci_system.version.version,"inside","5.2(3e)-") ? "disabled" : null
     visore_access = "disabled"
   }
   http_ssl_configuration = {
@@ -1123,14 +1136,14 @@ resource "aci_management_access_policy" "test" {
     name_alias = "name_alias_1"
     port = "443"
     ssl_protocols = ["TLSv1"]
-  	client_certificate_authentication_state = provider::aci::compare_versions(data.aci_system.version.version,">=","4.0(1h)") ? "disabled" : null
-  	cli_only_mode = provider::aci::compare_versions(data.aci_system.version.version,">=","4.1(1i)") ? "disabled" : null
-  	global_throttle_rate = provider::aci::compare_versions(data.aci_system.version.version,">=","4.2(1i)") ? "10000" : null
-  	global_throttle_state = provider::aci::compare_versions(data.aci_system.version.version,">=","4.2(1i)") ? "disabled" : null
-  	global_throttle_unit = provider::aci::compare_versions(data.aci_system.version.version,">=","4.2(1i)") ? "r/s" : null
-  	server_header = provider::aci::compare_versions(data.aci_system.version.version,">=","5.2(1g)") ? "disabled" : null
-  	node_exporter = provider::aci::compare_versions(data.aci_system.version.version,">=","5.2(3e)") ? "disabled" : null
-  	referer = provider::aci::compare_versions(data.aci_system.version.version,">=","6.0(2h)") ? "referer_1" : null
+  	client_certificate_authentication_state = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.0(1h)-") ? "disabled" : null
+  	cli_only_mode = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.1(1i)-") ? "disabled" : null
+  	global_throttle_rate = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.2(1i)-") ? "10000" : null
+  	global_throttle_state = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.2(1i)-") ? "disabled" : null
+  	global_throttle_unit = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.2(1i)-") ? "r/s" : null
+  	server_header = provider::aci::compare_versions(data.aci_system.version.version,"inside","5.2(1g)-") ? "disabled" : null
+  	node_exporter = provider::aci::compare_versions(data.aci_system.version.version,"inside","5.2(3e)-") ? "disabled" : null
+  	referer = provider::aci::compare_versions(data.aci_system.version.version,"inside","6.0(2h)-") ? "referer_1" : null
     visore_access = "disabled"
   }
   ssh_access_via_web = {
@@ -1173,7 +1186,8 @@ resource "aci_management_access_policy" "test" {
     port = "22"
     ssh_ciphers = ["aes192-ctr"]
     ssh_macs = ["hmac-sha1"]
-  	password_authentication_state = provider::aci::compare_versions(data.aci_system.version.version,">=","4.1(1i)") ? "disabled" : null
+  	password_authentication_state = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.1(1i)-") ? "disabled" : null
+	kex_algorithms = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.2(7f)-4.2(7w),5.2(1g)-") ? ["curve25519-sha256"] : null
   }
   tags = [ 
 	{
@@ -1223,12 +1237,12 @@ resource "aci_management_access_policy" "test" {
     name_alias = "name_alias_1"
     port = "80"
     redirect_state = "disabled"
-  	cli_only_mode = provider::aci::compare_versions(data.aci_system.version.version,">=","4.1(1i)") ? "disabled" : null
-  	global_throttle_rate = provider::aci::compare_versions(data.aci_system.version.version,">=","4.2(1i)") ? "10000" : null
-  	global_throttle_state = provider::aci::compare_versions(data.aci_system.version.version,">=","4.2(1i)") ? "disabled" : null
-  	global_throttle_unit = provider::aci::compare_versions(data.aci_system.version.version,">=","4.2(1i)") ? "r/s" : null
-  	server_header = provider::aci::compare_versions(data.aci_system.version.version,">=","5.2(1g)") ? "disabled" : null
-  	node_exporter = provider::aci::compare_versions(data.aci_system.version.version,">=","5.2(3e)") ? "disabled" : null
+  	cli_only_mode = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.1(1i)-") ? "disabled" : null
+  	global_throttle_rate = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.2(1i)-") ? "10000" : null
+  	global_throttle_state = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.2(1i)-") ? "disabled" : null
+  	global_throttle_unit = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.2(1i)-") ? "r/s" : null
+  	server_header = provider::aci::compare_versions(data.aci_system.version.version,"inside","5.2(1g)-") ? "disabled" : null
+  	node_exporter = provider::aci::compare_versions(data.aci_system.version.version,"inside","5.2(3e)-") ? "disabled" : null
     visore_access = "disabled"
   }
   http_ssl_configuration = {
@@ -1254,14 +1268,14 @@ resource "aci_management_access_policy" "test" {
     name_alias = "name_alias_1"
     port = "443"
     ssl_protocols = ["TLSv1"]
-  	client_certificate_authentication_state = provider::aci::compare_versions(data.aci_system.version.version,">=","4.0(1h)") ? "disabled" : null
-  	cli_only_mode = provider::aci::compare_versions(data.aci_system.version.version,">=","4.1(1i)") ? "disabled" : null
-  	global_throttle_rate = provider::aci::compare_versions(data.aci_system.version.version,">=","4.2(1i)") ? "10000" : null
-  	global_throttle_state = provider::aci::compare_versions(data.aci_system.version.version,">=","4.2(1i)") ? "disabled" : null
-  	global_throttle_unit = provider::aci::compare_versions(data.aci_system.version.version,">=","4.2(1i)") ? "r/s" : null
-  	server_header = provider::aci::compare_versions(data.aci_system.version.version,">=","5.2(1g)") ? "disabled" : null
-  	node_exporter = provider::aci::compare_versions(data.aci_system.version.version,">=","5.2(3e)") ? "disabled" : null
-  	referer = provider::aci::compare_versions(data.aci_system.version.version,">=","6.0(2h)") ? "referer_1" : null
+  	client_certificate_authentication_state = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.0(1h)-") ? "disabled" : null
+  	cli_only_mode = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.1(1i)-") ? "disabled" : null
+  	global_throttle_rate = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.2(1i)-") ? "10000" : null
+  	global_throttle_state = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.2(1i)-") ? "disabled" : null
+  	global_throttle_unit = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.2(1i)-") ? "r/s" : null
+  	server_header = provider::aci::compare_versions(data.aci_system.version.version,"inside","5.2(1g)-") ? "disabled" : null
+  	node_exporter = provider::aci::compare_versions(data.aci_system.version.version,"inside","5.2(3e)-") ? "disabled" : null
+  	referer = provider::aci::compare_versions(data.aci_system.version.version,"inside","6.0(2h)-") ? "referer_1" : null
     visore_access = "disabled"
   }
   ssh_access_via_web = {
@@ -1284,7 +1298,8 @@ resource "aci_management_access_policy" "test" {
     port = "22"
     ssh_ciphers = ["aes192-ctr"]
     ssh_macs = ["hmac-sha1"]
-  	password_authentication_state = provider::aci::compare_versions(data.aci_system.version.version,">=","4.1(1i)") ? "disabled" : null
+  	password_authentication_state = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.1(1i)-") ? "disabled" : null
+	kex_algorithms = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.2(7f)-4.2(7w),5.2(1g)-") ? ["curve25519-sha256"] : null
   }
   tags = []
   telnet_service = {

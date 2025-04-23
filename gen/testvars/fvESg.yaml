@@ -32,7 +32,7 @@ default:
   intra_esg_isolation: "unenforced"
   preferred_group_member: "exclude"
   version_mismatch:
-    5.2(1g):
+    5.2(1g)-:
       admin_state: "no"
 
 datasource_non_existing:
@@ -57,7 +57,7 @@ all:
   intra_esg_isolation: "enforced"
   preferred_group_member: "exclude"
   version_mismatch:
-    5.2(1g):
+    5.2(1g)-:
       admin_state: "no"
 
 children:

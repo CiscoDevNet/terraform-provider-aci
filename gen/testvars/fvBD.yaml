@@ -58,15 +58,15 @@ default:
   l3_unknown_multicast_flooding: "flood"
   virtual_mac_address: "not-applicable"
   version_mismatch:
-    4.0(1h):
+    4.0(1h)-:
       advertise_host_routes: "no"
-    4.1(1i):
+    4.1(1i)-:
       ipv6_l3_unknown_multicast_flooding: "flood"
-    4.2(1i):
+    4.2(1i)-:
       pim_ipv6: "no"
-    5.2(5c):
+    5.2(5c)-:
       drop_arp_with_multicast_smac: "yes"
-    6.0(4c):
+    6.0(4c)-:
       service_bd_routing_disable: "no"
 
 datasource_non_existing:
@@ -107,15 +107,15 @@ all:
   l3_unknown_multicast_flooding: "flood"
   virtual_mac_address: "00:22:BD:F8:19:FB"
   version_mismatch:
-    4.0(1h):
+    4.0(1h)-:
       advertise_host_routes: "no"
-    4.1(1i):
+    4.1(1i)-:
       ipv6_l3_unknown_multicast_flooding: "flood"
-    4.2(1i):
+    4.2(1i)-:
       pim_ipv6: "no"
-    5.2(5c):
+    5.2(5c)-:
       drop_arp_with_multicast_smac: "no"
-    6.0(4c):
+    6.0(4c)-:
       service_bd_routing_disable: "no"
 
 children:

@@ -44,15 +44,15 @@ children:
       deletable_child: false
       child_required: false
       version_mismatch:
-        4.1(1i):
+        4.1(1i)-:
           cli_only_mode: "disabled"
-        4.2(1i):
+        4.2(1i)-:
           global_throttle_rate: "10000"
           global_throttle_state: "disabled"
           global_throttle_unit: "r/s"
-        5.2(1g):
+        5.2(1g)-:
           server_header: "disabled"
-        5.2(3e):
+        5.2(3e)-:
           node_exporter: "disabled"
       children:
         annotations:
@@ -87,19 +87,19 @@ children:
       deletable_child: false
       child_required: false
       version_mismatch:
-        4.0(1h):
+        4.0(1h)-:
           client_certificate_authentication_state: "disabled"
-        4.1(1i):
+        4.1(1i)-:
           cli_only_mode: "disabled"
-        4.2(1i):
+        4.2(1i)-:
           global_throttle_rate: "10000"
           global_throttle_state: "disabled"
           global_throttle_unit: "r/s"
-        5.2(1g):
+        5.2(1g)-:
           server_header: "disabled"
-        5.2(3e):
+        5.2(3e)-:
           node_exporter: "disabled"
-        6.0(2h):
+        6.0(2h)-:
           referer: "referer_1"
       children:
         certificate_authority:
@@ -191,8 +191,10 @@ children:
       deletable_child: false
       child_required: false
       version_mismatch:
-        4.1(1i):
+        4.1(1i)-:
           password_authentication_state: "disabled"
+        4.2(7f)-4.2(7w),5.2(1g)-:
+          kex_algorithms: ["curve25519-sha256"]
       children:
         annotations:
           - key: "key_0"

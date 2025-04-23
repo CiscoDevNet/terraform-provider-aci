@@ -11,7 +11,7 @@ default:
   owner_tag: ""
   route_control_profile_type: "combinable"
   version_mismatch:
-    4.2(6d)-4.2(7w),5.1(3e):
+    4.2(6d)-4.2(7w),5.1(3e)-:
       route_map_continue: "no"
 
 datasource_non_existing:
@@ -31,7 +31,7 @@ all:
   owner_tag: "owner_tag_1"
   route_control_profile_type: "combinable"
   version_mismatch:
-    4.2(6d)-4.2(7w),5.1(3e):
+    4.2(6d)-4.2(7w),5.1(3e)-:
       route_map_continue: "no"
 
 children:

@@ -38,7 +38,7 @@ func TestAccResourceFvESgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test_2", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test", "preferred_group_member", "exclude"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test_2", "preferred_group_member", "exclude"),
-					composeAggregateTestCheckFuncWithVersion(t, "5.2(1g)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "5.2(1g)-", "inside",
 						resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test", "admin_state", "no"),
 						resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test_2", "admin_state", "no")),
 					resource.TestCheckResourceAttrSet("aci_endpoint_security_group.allow_test", "pc_tag"),
@@ -87,7 +87,7 @@ func TestAccResourceFvESgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test_2", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test", "preferred_group_member", "exclude"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test_2", "preferred_group_member", "exclude"),
-					composeAggregateTestCheckFuncWithVersion(t, "5.2(1g)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "5.2(1g)-", "inside",
 						resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test", "admin_state", "no"),
 						resource.TestCheckResourceAttr("aci_endpoint_security_group.allow_test_2", "admin_state", "no")),
 					resource.TestCheckResourceAttrSet("aci_endpoint_security_group.allow_test", "pc_tag"),
@@ -116,7 +116,7 @@ func TestAccResourceFvESgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "match_criteria", "AtleastOne"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "preferred_group_member", "exclude"),
-					composeAggregateTestCheckFuncWithVersion(t, "5.2(1g)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "5.2(1g)-", "inside",
 						resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "admin_state", "no")),
 					resource.TestCheckResourceAttrSet("aci_endpoint_security_group.test", "pc_tag"),
 					resource.TestCheckResourceAttrSet("aci_endpoint_security_group.test", "scope"),
@@ -135,7 +135,7 @@ func TestAccResourceFvESgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "match_criteria", "All"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "name_alias", "name_alias_1"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "preferred_group_member", "exclude"),
-					composeAggregateTestCheckFuncWithVersion(t, "5.2(1g)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "5.2(1g)-", "inside",
 						resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "admin_state", "no")),
 					resource.TestCheckResourceAttrSet("aci_endpoint_security_group.test", "pc_tag"),
 					resource.TestCheckResourceAttrSet("aci_endpoint_security_group.test", "scope"),
@@ -164,7 +164,7 @@ func TestAccResourceFvESgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "match_criteria", "AtleastOne"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "preferred_group_member", "exclude"),
-					composeAggregateTestCheckFuncWithVersion(t, "5.2(1g)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "5.2(1g)-", "inside",
 						resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "admin_state", "no")),
 					resource.TestCheckResourceAttrSet("aci_endpoint_security_group.test", "pc_tag"),
 					resource.TestCheckResourceAttrSet("aci_endpoint_security_group.test", "scope"),
@@ -189,7 +189,7 @@ func TestAccResourceFvESgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "match_criteria", "AtleastOne"),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "preferred_group_member", "exclude"),
-					composeAggregateTestCheckFuncWithVersion(t, "5.2(1g)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "5.2(1g)-", "inside",
 						resource.TestCheckResourceAttr("aci_endpoint_security_group.test", "admin_state", "no")),
 					resource.TestCheckResourceAttrSet("aci_endpoint_security_group.test", "pc_tag"),
 					resource.TestCheckResourceAttrSet("aci_endpoint_security_group.test", "scope"),
@@ -587,7 +587,7 @@ resource "aci_endpoint_security_group" "test" {
   match_criteria = "All"
   name_alias = "name_alias_1"
   preferred_group_member = "exclude"
-  admin_state = provider::aci::compare_versions(data.aci_system.version.version,">=","5.2(1g)") ? "no" : null
+  admin_state = provider::aci::compare_versions(data.aci_system.version.version,"inside","5.2(1g)-") ? "no" : null
 }
 `
 
@@ -602,7 +602,7 @@ resource "aci_endpoint_security_group" "test" {
   match_criteria = "AtleastOne"
   name_alias = ""
   preferred_group_member = "exclude"
-  admin_state = provider::aci::compare_versions(data.aci_system.version.version,">=","5.2(1g)") ? "no" : null
+  admin_state = provider::aci::compare_versions(data.aci_system.version.version,"inside","5.2(1g)-") ? "no" : null
 }
 `
 const testConfigFvESgChildrenDependencyWithFvAp = testChildDependencyConfigFvESg + testConfigFvApMinDependencyWithFvTenant + `

@@ -37,7 +37,7 @@ func TestAccDataSource{{$.resourceClassName}}{{if .class_name}}With{{capitalize 
 						{{- if not (definedInMap $key $.datasource_required)}}
 							{{- if eq $key "version_mismatch" }}
         						{{- range $version, $attributes := $value }}
-					composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", ">=",{{- range $attributeName, $attributeValue := $attributes}}
+					composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
 									{{- if not (definedInList $.exclude_attributes $attributeName) }}
 										{{- if (isInterfaceSlice $attributeValue)}}
 					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}", "{{$attributeName}}.#", "{{len $attributeValue}}"),
@@ -95,7 +95,7 @@ func TestAccDataSource{{.resourceClassName}}(t *testing.T) {
 					{{- range $key, $value := .all}}
 						{{- if eq $key "version_mismatch" }}
         					{{- range $version, $attributes := $value }}
-					composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", ">=",{{- range $attributeName, $attributeValue := $attributes}}
+					composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
 																{{- if not (definedInList $.exclude_attributes $attributeName) }}
 								{{- if (isInterfaceSlice $attributeValue)}}
 							resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$attributeName}}.#", "{{len $attributeValue}}"),

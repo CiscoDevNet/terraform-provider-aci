@@ -58,14 +58,14 @@ func TestAccResourceFvRsDomAttWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test_2", "switching_mode", "native"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test", "untagged", "no"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test_2", "untagged", "no"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)-", "inside",
 						resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test", "binding_type", "none"),
 						resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test_2", "binding_type", "none"),
 						resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test", "number_of_ports", "0"),
 						resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test_2", "number_of_ports", "0"),
 						resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test", "port_allocation", "none"),
 						resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test_2", "port_allocation", "none")),
-					composeAggregateTestCheckFuncWithVersion(t, "4.2(3j)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(3j)-", "inside",
 						resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test", "custom_epg_name", ""),
 						resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test_2", "custom_epg_name", "")),
 				),
@@ -132,14 +132,14 @@ func TestAccResourceFvRsDomAttWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test_2", "switching_mode", "native"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test", "untagged", "no"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test_2", "untagged", "no"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)-", "inside",
 						resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test", "binding_type", "none"),
 						resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test_2", "binding_type", "none"),
 						resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test", "number_of_ports", "0"),
 						resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test_2", "number_of_ports", "0"),
 						resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test", "port_allocation", "none"),
 						resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test_2", "port_allocation", "none")),
-					composeAggregateTestCheckFuncWithVersion(t, "4.2(3j)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(3j)-", "inside",
 						resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test", "custom_epg_name", ""),
 						resource.TestCheckResourceAttr("aci_relation_to_domain.allow_test_2", "custom_epg_name", "")),
 				),
@@ -174,11 +174,11 @@ func TestAccResourceFvRsDomAttWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "secondary_encapsulation_inner", "unknown"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "switching_mode", "native"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "untagged", "no"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)-", "inside",
 						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "binding_type", "none"),
 						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "number_of_ports", "0"),
 						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "port_allocation", "none")),
-					composeAggregateTestCheckFuncWithVersion(t, "4.2(3j)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(3j)-", "inside",
 						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "custom_epg_name", "")),
 				),
 			},
@@ -205,11 +205,11 @@ func TestAccResourceFvRsDomAttWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "secondary_encapsulation_inner", "vlan-400"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "switching_mode", "AVE"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "untagged", "no"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)-", "inside",
 						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "binding_type", "dynamicBinding"),
 						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "number_of_ports", "1"),
 						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "port_allocation", "elastic")),
-					composeAggregateTestCheckFuncWithVersion(t, "4.2(3j)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(3j)-", "inside",
 						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "custom_epg_name", "custom_epg_name_1")),
 				),
 			},
@@ -244,11 +244,11 @@ func TestAccResourceFvRsDomAttWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "secondary_encapsulation_inner", "unknown"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "switching_mode", "native"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "untagged", "no"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)-", "inside",
 						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "binding_type", "none"),
 						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "number_of_ports", "0"),
 						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "port_allocation", "none")),
-					composeAggregateTestCheckFuncWithVersion(t, "4.2(3j)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(3j)-", "inside",
 						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "custom_epg_name", "")),
 				),
 			},
@@ -281,11 +281,11 @@ func TestAccResourceFvRsDomAttWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "secondary_encapsulation_inner", "unknown"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "switching_mode", "native"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "untagged", "no"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)-", "inside",
 						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "binding_type", "none"),
 						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "number_of_ports", "0"),
 						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "port_allocation", "none")),
-					composeAggregateTestCheckFuncWithVersion(t, "4.2(3j)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(3j)-", "inside",
 						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "custom_epg_name", "")),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "annotations.0.value", "value_1"),
@@ -395,10 +395,10 @@ resource "aci_relation_to_domain" "test" {
   secondary_encapsulation_inner = "vlan-400"
   switching_mode = "AVE"
   untagged = "no"
-  binding_type = provider::aci::compare_versions(data.aci_system.version.version,">=","4.0(1h)") ? "dynamicBinding" : null
-  number_of_ports = provider::aci::compare_versions(data.aci_system.version.version,">=","4.0(1h)") ? "1" : null
-  port_allocation = provider::aci::compare_versions(data.aci_system.version.version,">=","4.0(1h)") ? "elastic" : null
-  custom_epg_name = provider::aci::compare_versions(data.aci_system.version.version,">=","4.2(3j)") ? "custom_epg_name_1" : null
+  binding_type = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.0(1h)-") ? "dynamicBinding" : null
+  number_of_ports = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.0(1h)-") ? "1" : null
+  port_allocation = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.0(1h)-") ? "elastic" : null
+  custom_epg_name = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.2(3j)-") ? "custom_epg_name_1" : null
 }
 `
 
@@ -423,10 +423,10 @@ resource "aci_relation_to_domain" "test" {
   secondary_encapsulation_inner = "unknown"
   switching_mode = "native"
   untagged = "no"
-  binding_type = provider::aci::compare_versions(data.aci_system.version.version,">=","4.0(1h)") ? "none" : null
-  number_of_ports = provider::aci::compare_versions(data.aci_system.version.version,">=","4.0(1h)") ? "0" : null
-  port_allocation = provider::aci::compare_versions(data.aci_system.version.version,">=","4.0(1h)") ? "none" : null
-  custom_epg_name = provider::aci::compare_versions(data.aci_system.version.version,">=","4.2(3j)") ? "" : null
+  binding_type = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.0(1h)-") ? "none" : null
+  number_of_ports = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.0(1h)-") ? "0" : null
+  port_allocation = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.0(1h)-") ? "none" : null
+  custom_epg_name = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.2(3j)-") ? "" : null
 }
 `
 const testConfigFvRsDomAttChildrenDependencyWithFvAEPg = testDependencyConfigFvRsDomAtt + testConfigFvAEPgMinDependencyWithFvAp + `

@@ -2058,7 +2058,6 @@ commSsh:
     port: "The port used by the SSH service."
   ignore_properties_in_test:
     "hostkeyAlgos": ["rsa-sha2-256"]
-    "kexAlgos": ["curve25519-sha256"]
   overwrites:
     admin_st: "admin_state"
     kex_algos: "kex_algorithms"
@@ -2069,6 +2068,7 @@ commSsh:
       ssh_ciphers: ["aes192-ctr"]
       ssh_macs: ["hmac-sha1"]
       port: "22"
+      kex_algorithms: ["curve25519-sha256"]
 
 commShellinabox:
   overwrites:

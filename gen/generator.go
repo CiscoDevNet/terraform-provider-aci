@@ -2168,7 +2168,7 @@ func (m *Model) SetClassProperties(classDetails interface{}) {
 			// }
 
 			if propertyValue.(map[string]interface{})["versions"] != nil {
-				property.RawVersion = strings.TrimSuffix(propertyValue.(map[string]interface{})["versions"].(string), "-")
+				property.RawVersion = propertyValue.(map[string]interface{})["versions"].(string)
 			}
 
 			if !property.IgnoreInTest {
