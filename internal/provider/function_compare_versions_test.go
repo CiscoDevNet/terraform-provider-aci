@@ -136,6 +136,42 @@ func TestCompareVersionsFunction(t *testing.T) {
                 output "test_inside_single_first_range_second_above_false" {
                     value = provider::aci::compare_versions("5.2(1z)", "inside", "4.2(7f),5.2(1g)-5.2(1k)")
                 }
+                output "test_inside_misordered_true" {
+                    value = provider::aci::compare_versions("5.2(1g)", "inside", "5.3(1a)-5.3(1b),5.2(1g)-5.2(1k)")
+                }
+                output "test_inside_misordered_false" {
+                    value = provider::aci::compare_versions("5.3(1d)", "inside", "5.3(1a)-5.3(1b),5.2(1g)-5.2(1k)")
+                }
+                output "test_inside_open_bound_end_true" {
+                    value = provider::aci::compare_versions("5.3(1d)", "inside", "4.2(7f)-4.2(7w),5.2(1g)-")
+                }
+                output "test_inside_open_bound_end_false" {
+                    value = provider::aci::compare_versions("4.3(7w)", "inside", "4.2(7f)-4.2(7w),5.2(1g)-")
+                }
+                output "test_inside_open_bound_misordered_true" {
+                    value = provider::aci::compare_versions("5.3(1d)", "inside", "5.2(1g)-,4.2(7f)-4.2(7w)")
+                }
+                output "test_inside_open_bound_misordered_false" {
+                    value = provider::aci::compare_versions("4.3(7w)", "inside", "5.2(1g)-,4.2(7f)-4.2(7w)")
+                }
+                output "test_inside_misordered_open_bound_two_ranges_range_one_true" {
+                    value = provider::aci::compare_versions("3.2(10f)", "inside", "3.2(10e)-3.2(10g),3.2(7f)-3.2(9h),4.2(1i)-")
+                }
+                output "test_inside_misordered_open_bound_two_ranges_range_two_true" {
+                    value = provider::aci::compare_versions("3.2(8f)", "inside", "3.2(10e)-3.2(10g),3.2(7f)-3.2(9h),4.2(1i)-")
+                }
+                 output "test_inside_misordered_open_bound_two_ranges_open_true" {
+                    value = provider::aci::compare_versions("4.3(1i)", "inside", "3.2(10e)-3.2(10g),3.2(7f)-3.2(9h),4.2(1i)-")
+                }
+                output "test_inside_misordered_open_bound_two_ranges_range_one_false" {
+                    value = provider::aci::compare_versions("3.1(9a)", "inside", "3.2(10e)-3.2(10g),3.2(7f)-3.2(9h),4.2(1i)-")
+                }
+                output "test_inside_misordered_open_bound_two_ranges_range_two_false" {
+                    value = provider::aci::compare_versions("3.3(9a)", "inside", "3.2(10e)-3.2(10g),3.2(7f)-3.2(9h),4.2(1i)-")
+                }
+                output "test_inside_misordered_open_bound_two_ranges_open_false" {
+                    value = provider::aci::compare_versions("4.1(1i)", "inside", "3.2(10e)-3.2(10g),3.2(7f)-3.2(9h),4.2(1i)-")
+                }
                 output "test_outside_single_range_below_true" {
                     value = provider::aci::compare_versions("4.1(7g)", "outside", "4.2(7f)-4.2(7w)")
                 }
@@ -202,6 +238,42 @@ func TestCompareVersionsFunction(t *testing.T) {
                 output "test_outside_single_first_range_second_above_true" {
                     value = provider::aci::compare_versions("5.2(1z)", "outside", "4.2(7f),5.2(1g)-5.2(1k)")
                 }
+                output "test_outside_misordered_false" {
+                    value = provider::aci::compare_versions("5.2(1g)", "outside", "5.3(1a)-5.3(1b),5.2(1g)-5.2(1k)")
+                }
+                output "test_outside_misordered_true" {
+                    value = provider::aci::compare_versions("5.3(1d)", "outside", "5.3(1a)-5.3(1b),5.2(1g)-5.2(1k)")
+                }
+                output "test_outside_open_bound_end_false" {
+                    value = provider::aci::compare_versions("5.3(1d)", "outside", "4.2(7f)-4.2(7w),5.2(1g)-")
+                }
+                output "test_outside_open_bound_end_true" {
+                    value = provider::aci::compare_versions("4.3(7w)", "outside", "4.2(7f)-4.2(7w),5.2(1g)-")
+                }
+                output "test_outside_open_bound_misordered_false" {
+                    value = provider::aci::compare_versions("5.3(1d)", "outside", "5.2(1g)-,4.2(7f)-4.2(7w)")
+                }
+                output "test_outside_open_bound_misordered_true" {
+                    value = provider::aci::compare_versions("4.3(7w)", "outside", "5.2(1g)-,4.2(7f)-4.2(7w)")
+                }
+                output "test_outside_misordered_open_bound_two_ranges_range_one_false" {
+                    value = provider::aci::compare_versions("3.2(10f)", "outside", "3.2(10e)-3.2(10g),3.2(7f)-3.2(9h),4.2(1i)-")
+                }
+                output "test_outside_misordered_open_bound_two_ranges_range_two_false" {
+                    value = provider::aci::compare_versions("3.2(8f)", "outside", "3.2(10e)-3.2(10g),3.2(7f)-3.2(9h),4.2(1i)-")
+                }
+                 output "test_outside_misordered_open_bound_two_ranges_open_false" {
+                    value = provider::aci::compare_versions("4.3(1i)", "outside", "3.2(10e)-3.2(10g),3.2(7f)-3.2(9h),4.2(1i)-")
+                }
+                output "test_outside_misordered_open_bound_two_ranges_range_one_true" {
+                    value = provider::aci::compare_versions("3.1(9a)", "outside", "3.2(10e)-3.2(10g),3.2(7f)-3.2(9h),4.2(1i)-")
+                }
+                output "test_outside_misordered_open_bound_two_ranges_range_two_true" {
+                    value = provider::aci::compare_versions("3.3(9a)", "outside", "3.2(10e)-3.2(10g),3.2(7f)-3.2(9h),4.2(1i)-")
+                }
+                output "test_outside_misordered_open_bound_two_ranges_open_true" {
+                    value = provider::aci::compare_versions("4.1(1i)", "outside", "3.2(10e)-3.2(10g),3.2(7f)-3.2(9h),4.2(1i)-")
+                }
                 `,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					CheckOutputBool("test_equal", true),
@@ -243,6 +315,18 @@ func TestCompareVersionsFunction(t *testing.T) {
 					CheckOutputBool("test_inside_single_first_range_second_true", true),
 					CheckOutputBool("test_inside_single_first_range_second_upper_boundary_true", true),
 					CheckOutputBool("test_inside_single_first_range_second_above_false", false),
+					CheckOutputBool("test_inside_misordered_true", true),
+					CheckOutputBool("test_inside_misordered_false", false),
+					CheckOutputBool("test_inside_open_bound_end_true", true),
+					CheckOutputBool("test_inside_open_bound_end_false", false),
+					CheckOutputBool("test_inside_open_bound_misordered_true", true),
+					CheckOutputBool("test_inside_open_bound_misordered_false", false),
+					CheckOutputBool("test_inside_misordered_open_bound_two_ranges_range_one_true", true),
+					CheckOutputBool("test_inside_misordered_open_bound_two_ranges_range_two_true", true),
+					CheckOutputBool("test_inside_misordered_open_bound_two_ranges_open_true", true),
+					CheckOutputBool("test_inside_misordered_open_bound_two_ranges_range_one_false", false),
+					CheckOutputBool("test_inside_misordered_open_bound_two_ranges_range_two_false", false),
+					CheckOutputBool("test_inside_misordered_open_bound_two_ranges_open_false", false),
 					CheckOutputBool("test_outside_single_range_below_true", true),
 					CheckOutputBool("test_outside_single_range_lower_boundary_false", false),
 					CheckOutputBool("test_outside_single_range_false", false),
@@ -265,6 +349,18 @@ func TestCompareVersionsFunction(t *testing.T) {
 					CheckOutputBool("test_outside_single_first_range_second_false", false),
 					CheckOutputBool("test_outside_single_first_range_second_upper_boundary_false", false),
 					CheckOutputBool("test_outside_single_first_range_second_above_true", true),
+					CheckOutputBool("test_outside_misordered_false", false),
+					CheckOutputBool("test_outside_misordered_true", true),
+					CheckOutputBool("test_outside_open_bound_end_false", false),
+					CheckOutputBool("test_outside_open_bound_end_true", true),
+					CheckOutputBool("test_outside_open_bound_misordered_false", false),
+					CheckOutputBool("test_outside_open_bound_misordered_true", true),
+					CheckOutputBool("test_outside_misordered_open_bound_two_ranges_range_one_false", false),
+					CheckOutputBool("test_outside_misordered_open_bound_two_ranges_range_two_false", false),
+					CheckOutputBool("test_outside_misordered_open_bound_two_ranges_open_false", false),
+					CheckOutputBool("test_outside_misordered_open_bound_two_ranges_range_one_true", true),
+					CheckOutputBool("test_outside_misordered_open_bound_two_ranges_range_two_true", true),
+					CheckOutputBool("test_outside_misordered_open_bound_two_ranges_open_true", true),
 				),
 			},
 		},
