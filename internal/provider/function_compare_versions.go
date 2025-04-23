@@ -49,7 +49,6 @@ func (f CompareVersionsFunction) Definition(ctx context.Context, req function.De
 }
 
 func (f CompareVersionsFunction) Run(ctx context.Context, req function.RunRequest, resp *function.RunResponse) {
-
 	var version1, version2, operator string
 
 	resp.Error = function.ConcatFuncErrors(req.Arguments.Get(ctx, &version1, &operator, &version2))
@@ -72,7 +71,7 @@ func CompareVersionsRange(version, versionRanges, operator string) (bool, error)
 
 	if operator == "inside" || operator == "outside" {
 
-		comparisons, err := GetVersionComparisonsFromVersionRanges(versionRanges)
+		comparisons, err := GetVersionRangesListFromVersionRangesString(versionRanges)
 		if err != nil {
 			return false, err
 		}
@@ -90,7 +89,6 @@ func CompareVersionsRange(version, versionRanges, operator string) (bool, error)
 				// If the version is inside the range, the comparison must be true for result to be true
 				// If the version is outside the range, the comparison must be false for result to be true
 				if result {
-					result = true
 					break
 				}
 
@@ -113,13 +111,18 @@ func CompareVersionsRange(version, versionRanges, operator string) (bool, error)
 					}
 				}
 
-				// If the version is inside the range, one comparison must be true for result to be true
-				// If the version is outside the range, all comparison must be true for result to be true
+				// If the version is inside the range, both comparison must be true
+				// If the version is outside the range, one comparison must be false
 				if resultMin && resultMax {
 					result = true
 					break
 				}
 			}
+		}
+
+		// If the operator is "outside", invert the result of the comparison that checks inside the range
+		if operator == "outside" {
+			result = !result
 		}
 
 	} else { // If the operator is "==", "!=", ">", "<", ">=", "<=", we assume no range is provided and use the CompareVersions function directly
@@ -131,46 +134,35 @@ func CompareVersionsRange(version, versionRanges, operator string) (bool, error)
 
 	}
 
-	// If the operator is "outside", invert the result of the comparison that checks inside the range
-	if operator == "outside" {
-		if result {
-			result = false
-		} else {
-			result = true
-		}
-	}
-
 	return result, nil
 }
 
-type VersionComparison struct {
+type VersionRange struct {
 	Min string
 	Max string
 }
 
-func GetVersionComparisonsFromVersionRanges(versionRanges string) ([]VersionComparison, error) {
+func GetVersionRangesListFromVersionRangesString(versionRanges string) ([]VersionRange, error) {
 
-	var comparisons []VersionComparison
+	var comparisons []VersionRange
 
 	// Split the ranges string  into list of ranges "4.2(7f)-4.2(7w),5.2(1g)-5.2(1t)" -> ["4.2(7f)-4.2(7w)", "5.2(1g)-5.2(1t)"]
 	for _, versionRange := range strings.Split(versionRanges, ",") {
 		// Split the range into min and max versions "4.2(7f)-4.2(7w)" -> ["4.2(7f)", "4.2(7w)"]
 		versions := strings.Split(versionRange, "-")
-		if len(versions) == 2 && versions[1] != "" {
+		if len(versions) == 2 {
+			if versions[1] == "" {
+				versions[1] = "unlimited"
+			}
 			comparisons = append(
 				comparisons,
-				VersionComparison{
+				VersionRange{
 					Min: versions[0],
 					Max: versions[1],
 				},
 			)
-		} else if len(versions) == 2 {
-			comparisons = append(comparisons, VersionComparison{
-				Min: versions[0],
-				Max: "unlimited",
-			})
 		} else if len(versions) == 1 {
-			comparisons = append(comparisons, VersionComparison{
+			comparisons = append(comparisons, VersionRange{
 				Min: versions[0],
 				Max: versions[0],
 			})
