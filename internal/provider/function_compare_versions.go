@@ -70,16 +70,13 @@ func CompareVersionsRange(version, versionRanges, operator string) (bool, error)
 	var err error
 
 	if operator == "inside" || operator == "outside" {
-
 		comparisons, err := GetVersionRangesListFromVersionRangesString(versionRanges)
 		if err != nil {
 			return false, err
 		}
 
 		for _, comparison := range comparisons {
-
 			if comparison.Min == comparison.Max {
-
 				// When the min and max are the same, the version is singular which requires single comparison
 				result, err = CompareVersions(version, comparison.Min, "==")
 				if err != nil {
@@ -91,9 +88,7 @@ func CompareVersionsRange(version, versionRanges, operator string) (bool, error)
 				if result {
 					break
 				}
-
 			} else {
-
 				// When the min and max are different, the version is a range
 				// This requires two comparisons, one for each side of the range
 				// Higher or equal than min and lower or equal than max
@@ -124,14 +119,11 @@ func CompareVersionsRange(version, versionRanges, operator string) (bool, error)
 		if operator == "outside" {
 			result = !result
 		}
-
 	} else { // If the operator is "==", "!=", ">", "<", ">=", "<=", we assume no range is provided and use the CompareVersions function directly
-
 		result, err = CompareVersions(version, versionRanges, operator)
 		if err != nil {
 			return false, err
 		}
-
 	}
 
 	return result, nil
@@ -143,7 +135,6 @@ type VersionRange struct {
 }
 
 func GetVersionRangesListFromVersionRangesString(versionRanges string) ([]VersionRange, error) {
-
 	var comparisons []VersionRange
 
 	// Split the ranges string  into list of ranges "4.2(7f)-4.2(7w),5.2(1g)-5.2(1t)" -> ["4.2(7f)-4.2(7w)", "5.2(1g)-5.2(1t)"]
@@ -167,7 +158,7 @@ func GetVersionRangesListFromVersionRangesString(versionRanges string) ([]Versio
 				Max: versions[0],
 			})
 		} else {
-			return nil, fmt.Errorf("Invalid Range Format: %s", versionRange)
+			return nil, fmt.Errorf("invalid range format: %s", versionRange)
 		}
 	}
 
