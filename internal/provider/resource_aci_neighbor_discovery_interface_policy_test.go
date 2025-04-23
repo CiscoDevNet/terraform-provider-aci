@@ -52,7 +52,7 @@ func TestAccResourceNdIfPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.allow_test_2", "router_advertisement_interval", "600"),
 					resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.allow_test", "router_advertisement_lifetime", "1800"),
 					resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.allow_test_2", "router_advertisement_lifetime", "1800"),
-					composeAggregateTestCheckFuncWithVersion(t, "5.1(1h)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "5.1(1h)-", "inside",
 						resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.allow_test", "nud_retry_base", "1"),
 						resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.allow_test_2", "nud_retry_base", "1"),
 						resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.allow_test", "nud_retry_interval", "1000"),
@@ -117,7 +117,7 @@ func TestAccResourceNdIfPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.allow_test_2", "router_advertisement_interval", "600"),
 					resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.allow_test", "router_advertisement_lifetime", "1800"),
 					resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.allow_test_2", "router_advertisement_lifetime", "1800"),
-					composeAggregateTestCheckFuncWithVersion(t, "5.1(1h)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "5.1(1h)-", "inside",
 						resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.allow_test", "nud_retry_base", "1"),
 						resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.allow_test_2", "nud_retry_base", "1"),
 						resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.allow_test", "nud_retry_interval", "1000"),
@@ -153,7 +153,7 @@ func TestAccResourceNdIfPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "retransmit_timer", "0"),
 					resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "router_advertisement_interval", "600"),
 					resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "router_advertisement_lifetime", "1800"),
-					composeAggregateTestCheckFuncWithVersion(t, "5.1(1h)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "5.1(1h)-", "inside",
 						resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "nud_retry_base", "1"),
 						resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "nud_retry_interval", "1000"),
 						resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "nud_retry_max_attempts", "3")),
@@ -180,7 +180,7 @@ func TestAccResourceNdIfPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "retransmit_timer", "2"),
 					resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "router_advertisement_interval", "500"),
 					resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "router_advertisement_lifetime", "1500"),
-					composeAggregateTestCheckFuncWithVersion(t, "5.1(1h)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "5.1(1h)-", "inside",
 						resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "nud_retry_base", "2"),
 						resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "nud_retry_interval", "1300"),
 						resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "nud_retry_max_attempts", "5")),
@@ -214,7 +214,7 @@ func TestAccResourceNdIfPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "retransmit_timer", "0"),
 					resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "router_advertisement_interval", "600"),
 					resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "router_advertisement_lifetime", "1800"),
-					composeAggregateTestCheckFuncWithVersion(t, "5.1(1h)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "5.1(1h)-", "inside",
 						resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "nud_retry_base", "1"),
 						resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "nud_retry_interval", "1000"),
 						resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "nud_retry_max_attempts", "3")),
@@ -246,7 +246,7 @@ func TestAccResourceNdIfPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "retransmit_timer", "0"),
 					resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "router_advertisement_interval", "600"),
 					resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "router_advertisement_lifetime", "1800"),
-					composeAggregateTestCheckFuncWithVersion(t, "5.1(1h)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "5.1(1h)-", "inside",
 						resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "nud_retry_base", "1"),
 						resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "nud_retry_interval", "1000"),
 						resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "nud_retry_max_attempts", "3")),
@@ -352,9 +352,9 @@ resource "aci_neighbor_discovery_interface_policy" "test" {
   retransmit_timer = "2"
   router_advertisement_interval = "500"
   router_advertisement_lifetime = "1500"
-  nud_retry_base = provider::aci::compare_versions(data.aci_system.version.version,">=","5.1(1h)") ? "2" : null
-  nud_retry_interval = provider::aci::compare_versions(data.aci_system.version.version,">=","5.1(1h)") ? "1300" : null
-  nud_retry_max_attempts = provider::aci::compare_versions(data.aci_system.version.version,">=","5.1(1h)") ? "5" : null
+  nud_retry_base = provider::aci::compare_versions(data.aci_system.version.version,"inside","5.1(1h)-") ? "2" : null
+  nud_retry_interval = provider::aci::compare_versions(data.aci_system.version.version,"inside","5.1(1h)-") ? "1300" : null
+  nud_retry_max_attempts = provider::aci::compare_versions(data.aci_system.version.version,"inside","5.1(1h)-") ? "5" : null
 }
 `
 
@@ -376,9 +376,9 @@ resource "aci_neighbor_discovery_interface_policy" "test" {
   retransmit_timer = "0"
   router_advertisement_interval = "600"
   router_advertisement_lifetime = "1800"
-  nud_retry_base = provider::aci::compare_versions(data.aci_system.version.version,">=","5.1(1h)") ? "1" : null
-  nud_retry_interval = provider::aci::compare_versions(data.aci_system.version.version,">=","5.1(1h)") ? "1000" : null
-  nud_retry_max_attempts = provider::aci::compare_versions(data.aci_system.version.version,">=","5.1(1h)") ? "3" : null
+  nud_retry_base = provider::aci::compare_versions(data.aci_system.version.version,"inside","5.1(1h)-") ? "1" : null
+  nud_retry_interval = provider::aci::compare_versions(data.aci_system.version.version,"inside","5.1(1h)-") ? "1000" : null
+  nud_retry_max_attempts = provider::aci::compare_versions(data.aci_system.version.version,"inside","5.1(1h)-") ? "3" : null
 }
 `
 const testConfigNdIfPolChildrenDependencyWithFvTenant = testConfigFvTenantMin + `

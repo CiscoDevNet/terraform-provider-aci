@@ -42,7 +42,7 @@ PreCheck: func() { testAccPreCheck(t, "{{.test_type}}", "{{$.class_version}}") }
 		{{- range $key, $value := $.default}}
 			{{- if eq $key "version_mismatch" }}
         		{{- range $version, $attributes := $value }}
-						composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", ">=",{{- range $attributeName, $attributeValue := $attributes}}
+						composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
 						{{- if not (definedInList $.exclude_attributes $attributeName) }}
 							{{- if (isInterfaceSlice $attributeValue)}}
 						resource.TestCheckResourceAttr("aci_{{$.resourceName}}.allow_test", "{{$attributeName}}.#", "{{len $attributeValue}}"),
@@ -121,7 +121,7 @@ PreCheck: func() { testAccPreCheck(t, "{{.test_type}}", "{{$.class_version}}") }
 		{{- range $key, $value := $.default}}
 			{{- if eq $key "version_mismatch" }}
         		{{- range $version, $attributes := $value }}
-						composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", ">=",{{- range $attributeName, $attributeValue := $attributes}}
+						composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
 						{{- if not (definedInList $.exclude_attributes $attributeName) }}
 							{{- if (isInterfaceSlice $attributeValue)}}
 						resource.TestCheckResourceAttr("aci_{{$.resourceName}}.allow_test", "{{$attributeName}}.#", "{{len $attributeValue}}"),
@@ -185,7 +185,7 @@ PreCheck: func() { testAccPreCheck(t, "{{.test_type}}", "{{$.class_version}}") }
 		{{- range $key, $value := $.default}}
 			{{- if eq $key "version_mismatch" }}
         		{{- range $version, $attributes := $value }}
-						composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", ">=",{{- range $attributeName, $attributeValue := $attributes}}
+						composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
 						{{- if not (definedInList $.exclude_attributes $attributeName) }}
 				{{- if (isInterfaceSlice $attributeValue)}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}", "{{$attributeName}}.#", "{{len $attributeValue}}"),
@@ -235,7 +235,7 @@ PreCheck: func() { testAccPreCheck(t, "{{.test_type}}", "{{$.class_version}}") }
 		{{- range $key, $value := $.all}}
 		{{- if eq $key "version_mismatch" }}
         		{{- range $version, $attributes := $value }}
-						composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", ">=",{{- range $attributeName, $attributeValue := $attributes}}
+						composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
 																{{- if not (definedInList $.exclude_attributes $attributeName) }}
 			{{- if (isInterfaceSlice $attributeValue)}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}", "{{$attributeName}}.#", "{{len $attributeValue}}"),
@@ -316,7 +316,7 @@ PreCheck: func() { testAccPreCheck(t, "{{.test_type}}", "{{$.class_version}}") }
 		{{- range $key, $value := $.default}}
 			{{- if eq $key "version_mismatch" }}
         		{{- range $version, $attributes := $value }}
-						composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", ">=",{{- range $attributeName, $attributeValue := $attributes}}
+						composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
 						{{- $contains := definedInMap $attributeName $.resource_required}}
 						{{- if not $contains}}
 						{{- if not (definedInList $.exclude_attributes $attributeName) }}
@@ -383,7 +383,7 @@ PreCheck: func() { testAccPreCheck(t, "{{.test_type}}", "{{$.class_version}}") }
 			{{- range $key, $value := $.default}}
 				{{- if eq $key "version_mismatch" }}
         		{{- range $version, $attributes := $value }}
-						composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", ">=",{{- range $attributeName, $attributeValue := $attributes}}
+						composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
 						{{- $contains := definedInMap $attributeName $.resource_required}}
 						{{- if not $contains}}
 						{{- if not (definedInList $.exclude_attributes  $attributeName) }}
@@ -427,7 +427,7 @@ PreCheck: func() { testAccPreCheck(t, "{{.test_type}}", "{{$.class_version}}") }
 								{{- template "testNestedChildren" $newCtx }}
 							{{- else if eq $child_key "version_mismatch" }}
 								{{- range $version, $attributes := $child_value }}
-					composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", ">=",{{- range $attributeName, $attributeValue := $attributes}}
+					composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
 					{{- if (isInterfaceSlice $attributeValue)}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}", "{{$attributeName}}.#", "{{len $attributeValue}}"),
 					{{- range $index, $subvalue := $attributeValue}}
@@ -459,7 +459,7 @@ PreCheck: func() { testAccPreCheck(t, "{{.test_type}}", "{{$.class_version}}") }
 								{{- template "testNestedChildren" $newCtx }}
 							{{- else if eq $child_key "version_mismatch" }}
 								{{- range $version, $attributes := $child_value }}
-					composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", ">=",{{- range $attributeName, $attributeValue := $attributes}}
+					composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}", "{{$key}}.{{$child_index}}.{{$attributeName}}", "{{$attributeValue}}"),						
 										{{- end }}),
 									{{- end }}
@@ -511,7 +511,7 @@ PreCheck: func() { testAccPreCheck(t, "{{.test_type}}", "{{$.class_version}}") }
 		{{- range $key, $value := .default}}
 				{{- if eq $key "version_mismatch" }}
         		{{- range $version, $attributes := $value }}
-						composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", ">=",{{- range $attributeName, $attributeValue := $attributes}}
+						composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
 						{{- $contains := definedInMap $attributeName $.resource_required}}
 						{{- if not $contains}}
 						{{- if (isInterfaceSlice $attributeValue)}}
@@ -552,7 +552,7 @@ PreCheck: func() { testAccPreCheck(t, "{{.test_type}}", "{{$.class_version}}") }
 							{{- template "testNestedChildrenRemovedFromConfig" $newCtx }}
 						{{- else if eq $child_key "version_mismatch" }}
 							{{- range $version, $attributes := $child_value }}
-					composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", ">=",{{- range $attributeName, $attributeValue := $attributes}}
+					composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
 					{{- if (isInterfaceSlice $attributeValue)}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}", "{{$attributeName}}.#", "{{len $attributeValue}}"),
 					{{- range $index, $subvalue := $attributeValue}}
@@ -584,7 +584,7 @@ PreCheck: func() { testAccPreCheck(t, "{{.test_type}}", "{{$.class_version}}") }
 						{{- template "testNestedChildrenRemovedFromConfig" $newCtx }}
 						{{- else if eq $child_key "version_mismatch" }}
 							{{- range $version, $attributes := $child_value }}
-					composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", ">=",{{- range $attributeName, $attributeValue := $attributes}}
+					composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}", "{{$key}}.{{$child_index}}.{{$attributeName}}", "{{$attributeValue}}"),						
 								{{- end }}),
 							{{- end }}
@@ -620,7 +620,7 @@ PreCheck: func() { testAccPreCheck(t, "{{.test_type}}", "{{$.class_version}}") }
 		{{- range $key, $value := .default}}
 				{{- if eq $key "version_mismatch" }}
         		{{- range $version, $attributes := $value }}
-						composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", ">=",{{- range $attributeName, $attributeValue := $attributes}}
+						composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
 						{{- $contains := definedInMap $attributeName $.resource_required}}
 						{{- if not $contains}}
 						resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}", "{{$attributeName}}", "{{$attributeValue}}"),
@@ -646,7 +646,7 @@ PreCheck: func() { testAccPreCheck(t, "{{.test_type}}", "{{$.class_version}}") }
 							{{- template "testNestedChildrenWithFirstChilRemoved" $newCtx }}
 						{{- else if eq $child_key "version_mismatch" }}
 							{{- range $version, $attributes := $child_value }}
-					composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", ">=",{{- range $attributeName, $attributeValue := $attributes}}
+					composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
 					{{- if (isInterfaceSlice $attributeValue)}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}", "{{$attributeName}}.#", "{{len $attributeValue}}"),
 					{{- range $index, $subvalue := $attributeValue}}
@@ -676,9 +676,9 @@ PreCheck: func() { testAccPreCheck(t, "{{.test_type}}", "{{$.class_version}}") }
 					{{- if eq $child_key "children"}}
 						{{- $newCtx := addToChild $child_value "ResourceName" (print "aci_" $.resourceName ".test") "InheritedKey" (print $key "." 0) "ResourceClassName" $.resourceClassName "ParentClassName" $parentClassName -}}
 						{{- template "testNestedChildrenWithFirstChilRemoved" $newCtx }}
-					{{- else if eq $child_key "version_mismatch" }}
-						{{- range $version, $attributes := $child_value }}
-					composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", ">=",{{- range $attributeName, $attributeValue := $attributes}}
+						{{- else if eq $child_key "version_mismatch" }}
+							{{- range $version, $attributes := $child_value }}
+					composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}", "{{$key}}.0.{{$attributeName}}", "{{$attributeValue}}"),						
 							{{- end }}),
 						{{- end }}
@@ -755,7 +755,7 @@ PreCheck: func() { testAccPreCheck(t, "{{.test_type}}", "{{$.class_version}}") }
 		{{- range $key, $value := .default}}
 				{{- if eq $key "version_mismatch" }}
         		{{- range $version, $attributes := $value }}
-						composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", ">=",{{- range $attributeName, $attributeValue := $attributes}}
+						composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
 						{{- $contains := definedInMap $attributeName $.resource_required}}
 						{{- if not $contains}}
 						resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$attributeName}}", "{{$attributeValue}}"),
@@ -781,7 +781,7 @@ PreCheck: func() { testAccPreCheck(t, "{{.test_type}}", "{{$.class_version}}") }
 							{{- template "testNestedChildrenAllChildrenRemoved" $newCtx }}
 						{{- else if eq $child_key "version_mismatch" }}
 							{{- range $version, $attributes := $child_value }}
-					composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", ">=",{{- range $attributeName, $attributeValue := $attributes}}
+					composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
 					{{- if (isInterfaceSlice $attributeValue)}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}", "{{$attributeName}}.#", "{{len $attributeValue}}"),
 					{{- range $index, $subvalue := $attributeValue}}
@@ -920,7 +920,7 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 		{{- range $key, $value := $.default}}
 					{{- if eq $key "version_mismatch" }}
         				{{- range $version, $attributes := $value }}
-					composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", ">=",{{- range $attributeName, $attributeValue := $attributes}}
+					composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.allow_test", "{{$attributeName}}", "{{$attributeValue}}"),
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.allow_test_2", "{{$attributeName}}", "{{$attributeValue}}"),
 							{{- end}}),
@@ -974,7 +974,7 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 		{{- range $key, $value := $.default}}
 					{{- if eq $key "version_mismatch" }}
         				{{- range $version, $attributes := $value }}
-					composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", ">=",{{- range $attributeName, $attributeValue := $attributes}}
+					composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.allow_test", "{{$attributeName}}", "{{$attributeValue}}"),
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.allow_test_2", "{{$attributeName}}", "{{$attributeValue}}"),
 							{{- end}}),
@@ -1012,7 +1012,7 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 	{{- range $key, $value := .default}}
 		{{- if eq $key "version_mismatch" }}
         		{{- range $version, $attributes := $value }}
-					composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", ">=",{{- range $attributeName, $attributeValue := $attributes}}
+					composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
 					{{- if (isInterfaceSlice $attributeValue)}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$attributeName}}.#", "{{len $attributeValue}}"),
 						{{- range $index, $subvalue := $attributeValue}}
@@ -1055,7 +1055,7 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 	{{- range $key, $value := .all}}
 		{{- if eq $key "version_mismatch" }}
         		{{- range $version, $attributes := $value }}
-					composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", ">=",{{- range $attributeName, $attributeValue := $attributes}}
+					composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
 																{{- if not (definedInList $.exclude_attributes $attributeName) }}
 			{{- if (isInterfaceSlice $attributeValue)}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$attributeName}}.#", "{{len $attributeValue}}"),
@@ -1101,7 +1101,7 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 		{{- if ne $key "annotation"}}
 			{{- if eq $key "version_mismatch" }}
         		{{- range $version, $attributes := $value }}
-					composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", ">=",{{- range $attributeName, $attributeValue := $attributes}}
+					composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
 																{{- if not (definedInList $.exclude_attributes $attributeName) }}
 			{{- if (isInterfaceSlice $attributeValue)}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$attributeName}}.#", "{{len $attributeValue}}"),
@@ -1151,7 +1151,7 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 	{{- range $key, $value := $.default}}
 			{{- if eq $key "version_mismatch" }}
         		{{- range $version, $attributes := $value }}
-					composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", ">=",{{- range $attributeName, $attributeValue := $attributes}}
+					composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
 					{{- $contains := definedInMap $attributeName $.resource_required}}
 					{{- if not $contains}}
 					{{- if (isInterfaceSlice $attributeValue)}}
@@ -1205,7 +1205,7 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 		{{- range $key, $value := .default}}
 				{{- if eq $key "version_mismatch" }}
         			{{- range $version, $attributes := $value }}
-					composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", ">=",{{- range $attributeName, $attributeValue := $attributes}}
+					composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
 							{{- $contains := definedInMap $attributeName $.resource_required}}
 							{{- if not $contains}}
 							{{- if (isInterfaceSlice $attributeValue)}}
@@ -1245,11 +1245,11 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 							{{- template "testNestedChildrenWithNoParent" $newCtx }}
 						{{- else if eq $child_key "version_mismatch" }}
 							{{- range $version, $attributes := $child_value }}
-						composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", ">=",{{- range $attributeName, $attributeValue := $attributes}}
+						composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
 							{{- if (isInterfaceSlice $attributeValue)}}
-						resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$attributeName}}.#", "{{len $attributeValue}}"),
+						resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$attributeName}}.#", "{{len $attributeValue}}"),
 								{{- range $index, $subvalue := $attributeValue}}
-						resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$attributeName}}.{{$index}}", "{{$subvalue}}"),
+						resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$attributeName}}.{{$index}}", "{{$subvalue}}"),
 								{{- end}}
 							{{- else}}
 						resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$attributeName}}", "{{$attributeValue}}"),						
@@ -1277,7 +1277,7 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 							{{- template "testNestedChildrenWithNoParent" $newCtx }}
 						{{- else if eq $child_key "version_mismatch" }}
 							{{- range $version, $attributes := $child_value }}
-					composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", ">=",{{- range $attributeName, $attributeValue := $attributes}}
+					composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
 					{{- if (isInterfaceSlice $attributeValue)}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$attributeName}}.#", "{{len $attributeValue}}"),
 					{{- range $index, $subvalue := $attributeValue}}
@@ -1315,7 +1315,7 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 		{{- range $key, $value := .default}}
 				{{- if eq $key "version_mismatch" }}
         			{{- range $version, $attributes := $value }}
-					composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", ">=",{{- range $attributeName, $attributeValue := $attributes}}
+					composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
 					        {{- $contains := definedInMap $attributeName $.resource_required}}
 							{{- if not $contains}}
 						{{- if (isInterfaceSlice $attributeValue)}}
@@ -1355,11 +1355,11 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 							{{- template "testNestedChildrenWithNoParentAndChildrenRemovedFromConfig" $newCtx }}
 						{{- else if eq $child_key "version_mismatch" }}
 							{{- range $version, $attributes := $child_value }}
-						composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", ">=",{{- range $attributeName, $attributeValue := $attributes}}
+						composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
 								{{- if (isInterfaceSlice $attributeValue)}}
-						resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$attributeName}}.#", "{{len $attributeValue}}"),
+						resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$attributeName}}.#", "{{len $attributeValue}}"),
 						{{- range $index, $subvalue := $attributeValue}}
-							resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$attributeName}}.{{$index}}", "{{$subvalue}}"),
+							resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$attributeName}}.{{$index}}", "{{$subvalue}}"),
 						{{- end}}
 						{{- else}}
 							resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$attributeName}}", "{{$attributeValue}}"),						
@@ -1387,7 +1387,7 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 						{{- template "testNestedChildrenWithNoParentAndChildrenRemovedFromConfig" $newCtx }}
 					{{- else if eq $child_key "version_mismatch" }}
 							{{- range $version, $attributes := $child_value }}
-					composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", ">=",{{- range $attributeName, $attributeValue := $attributes}}
+					composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
 							resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$child_index}}.{{$attributeName}}", "{{$attributeValue}}"),						
 									{{- end }}),
 								{{- end }}
@@ -1419,7 +1419,7 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 		{{- range $key, $value := .default}}
 				{{- if eq $key "version_mismatch" }}
         			{{- range $version, $attributes := $value }}
-					composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", ">=",{{- range $attributeName, $attributeValue := $attributes}}
+					composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
 					    {{- $contains := definedInMap $attributeName $.resource_required}}
 						{{- if not $contains}}
 						{{- if (isInterfaceSlice $attributeValue)}}
@@ -1459,11 +1459,11 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 							{{- template "testNestedChildrenWithNoParentAndFirstChildRemoved" $newCtx }}
 						{{- else if eq $child_key "version_mismatch" }}
 							{{- range $version, $attributes := $child_value }}
-					composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", ">=",{{- range $attributeName, $attributeValue := $attributes}}
+					composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
 							{{- if (isInterfaceSlice $attributeValue)}}
-							resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$attributeName}}.#", "{{len $attributeValue}}"),
+							resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$attributeName}}.#", "{{len $attributeValue}}"),
 							{{- range $index, $subvalue := $attributeValue}}
-								resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$attributeName}}.{{$index}}", "{{$subvalue}}"),
+								resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$attributeName}}.{{$index}}", "{{$subvalue}}"),
 							{{- end}}
 							{{- else}}
 							resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$attributeName}}", "{{$attributeValue}}"),						
@@ -1491,7 +1491,7 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 						{{- template "testNestedChildrenWithNoParentAndFirstChildRemoved" $newCtx }}
 					{{- else if eq $child_key "version_mismatch" }}
 							{{- range $version, $attributes := $child_value }}
-					composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", ">=",{{- range $attributeName, $attributeValue := $attributes}}
+					composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
 							resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.0.{{$attributeName}}", "{{$attributeValue}}"),						
 									{{- end }}),
 								{{- end }}
@@ -1568,7 +1568,7 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 		{{- range $key, $value := .default}}
 				{{- if eq $key "version_mismatch" }}
         			{{- range $version, $attributes := $value }}
-					composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", ">=",{{- range $attributeName, $attributeValue := $attributes}}
+					composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
 						{{- $contains := definedInMap $attributeName $.resource_required}}
 						{{- if not $contains}}
 						{{- if (isInterfaceSlice $attributeValue)}}
@@ -1608,11 +1608,11 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 							{{- template "testNestedChildrenWithNoParentAndAllChildrenRemoved" $newCtx }}
 						{{- else if eq $child_key "version_mismatch" }}
 							{{- range $version, $attributes := $child_value }}
-					composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", ">=",{{- range $attributeName, $attributeValue := $attributes}}
+					composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
 							{{- if (isInterfaceSlice $attributeValue)}}
-							resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$attributeName}}.#", "{{len $attributeValue}}"),
+							resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$attributeName}}.#", "{{len $attributeValue}}"),
 							{{- range $index, $subvalue := $attributeValue}}
-								resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$attributeName}}.{{$index}}", "{{$subvalue}}"),
+								resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$attributeName}}.{{$index}}", "{{$subvalue}}"),
 							{{- end}}
 							{{- else}}
 							resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$attributeName}}", "{{$attributeValue}}"),						
@@ -1788,7 +1788,7 @@ resource "aci_{{$.resourceName}}" "allow_test" {
 							{{- if eq $child_key "version_mismatch" }}
         						{{- range $version, $attributes := $child_value }}
 									{{- range $attributeName, $attributeValue := $attributes}}
-  	{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? "{{$attributeValue}}" : null
+  	{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{ $version }}") ? "{{$attributeValue}}" : null
 									{{- end }}
 								{{- end }}
 							{{- else if ne $child_key "children"}}
@@ -1832,7 +1832,7 @@ resource "aci_{{$.resourceName}}" "allow_test_2" {
 							{{- if eq $child_key "version_mismatch" }}
         						{{- range $version, $attributes := $child_value }}
 									{{- range $attributeName, $attributeValue := $attributes}}
-  	{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? "{{$attributeValue}}" : null
+  	{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{ $version }}") ? "{{$attributeValue}}" : null
 									{{- end }}
 								{{- end }}
 							{{- else if ne $child_key "children"}}
@@ -1880,7 +1880,7 @@ resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClas
 							{{- if eq $child_key "version_mismatch" }}
         						{{- range $version, $attributes := $child_value }}
 									{{- range $attributeName, $attributeValue := $attributes}}
-  	{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? "{{$attributeValue}}" : null
+  	{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{ $version }}") ? "{{$attributeValue}}" : null
 									{{- end }}
 								{{- end }}
 							{{- else if ne $child_key "children"}}
@@ -1925,12 +1925,12 @@ resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClas
 					{{- range $attributeName, $attributeValue := $attributes}}
 					{{- if (isInterfaceSlice $attributeValue) }}
                     {{- if lt 0 (len $attributeValue) }}
-  {{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? [{{range $index, $subvalue := $attributeValue}}{{if lt $index (subtract (len $attributeValue) 1)}}"{{$subvalue}}", {{else}}"{{$subvalue}}"{{end}}{{end}}] : null
+  {{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{ $version }}") ? [{{range $index, $subvalue := $attributeValue}}{{if lt $index (subtract (len $attributeValue) 1)}}"{{$subvalue}}", {{else}}"{{$subvalue}}"{{end}}{{end}}] : null
 							{{- else}}
-  {{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? [] : null
+  {{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{ $version }}") ? [] : null
 							{{- end}}
 						{{- else}}
-  {{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? "{{$attributeValue}}" : null
+  {{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{ $version }}") ? "{{$attributeValue}}" : null
                 {{- end}}
             {{- end }}
         {{- end }}
@@ -1956,7 +1956,7 @@ resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClas
 							{{- if eq $child_key "version_mismatch" }}
         						{{- range $version, $attributes := $child_value }}
 									{{- range $attributeName, $attributeValue := $attributes}}
-  	{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? "{{$attributeValue}}" : null
+  	{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{ $version }}") ? "{{$attributeValue}}" : null
 									{{- end }}
 								{{- end }}
 							{{- else if ne $child_key "children"}}
@@ -2001,12 +2001,12 @@ resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClas
 					{{- range $attributeName, $attributeValue := $attributes}}
 						{{- if (isInterfaceSlice $attributeValue) }}
 						{{- if lt 0 (len $attributeValue) }}
-  {{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? [{{range $index, $subvalue := $attributeValue}}{{if lt $index (subtract (len $attributeValue) 1)}}"{{$subvalue}}", {{else}}"{{$subvalue}}"{{end}}{{end}}] : null
+  {{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{ $version }}") ? [{{range $index, $subvalue := $attributeValue}}{{if lt $index (subtract (len $attributeValue) 1)}}"{{$subvalue}}", {{else}}"{{$subvalue}}"{{end}}{{end}}] : null
 							{{- else}}
-  {{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? [] : null
+  {{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{ $version }}") ? [] : null
 							{{- end}}
 						{{- else}}
-  {{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? "{{$attributeValue}}" : null
+  {{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{ $version }}") ? "{{$attributeValue}}" : null
                 {{- end}}
             {{- end }}
         {{- end }}
@@ -2032,7 +2032,7 @@ resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClas
 							{{- if eq $child_key "version_mismatch" }}
         						{{- range $version, $attributes := $child_value }}
 									{{- range $attributeName, $attributeValue := $attributes}}
-  	{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? "{{$attributeValue}}" : null
+  	{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{ $version }}") ? "{{$attributeValue}}" : null
 									{{- end }}
 								{{- end }}
 							{{- else if ne $child_key "children"}}
@@ -2081,7 +2081,7 @@ resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClas
 						{{- else if eq $child_key "version_mismatch" }}
         					{{- range $version, $attributes := $child_value }}
 								{{- range $attributeName, $attributeValue := $attributes}}
-  	{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? "{{$attributeValue}}" : null
+  	{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{ $version }}") ? "{{$attributeValue}}" : null
         						{{- end }}
 							{{- end }}
 						{{- else }}
@@ -2110,7 +2110,7 @@ resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClas
 							{{- else if eq $child_key "version_mismatch" }}
         						{{- range $version, $attributes := $child_value }}
 									{{- range $attributeName, $attributeValue := $attributes}}
-      {{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? "{{$attributeValue}}" : null
+      {{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{ $version }}") ? "{{$attributeValue}}" : null
         							{{- end }}
 								{{- end }}
 							{{- else }}
@@ -2151,7 +2151,7 @@ resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClas
 							{{- if eq $child_key "version_mismatch" }}
         						{{- range $version, $attributes := $child_value }}
 									{{- range $attributeName, $attributeValue := $attributes}}
-  	{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? "{{$attributeValue}}" : null
+  	{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{ $version }}") ? "{{$attributeValue}}" : null
 									{{- end }}
 								{{- end }}
 							{{- else if ne $child_key "children"}}
@@ -2202,7 +2202,7 @@ resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClas
 						{{- else if eq $child_key "version_mismatch" }}
         					{{- range $version, $attributes := $child_value }}
 								{{- range $attributeName, $attributeValue := $attributes}}
-  	{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? "{{$attributeValue}}" : null
+  	{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{ $version }}") ? "{{$attributeValue}}" : null
         						{{- end }}
 							{{- end }}
 						{{- else }}
@@ -2231,7 +2231,7 @@ resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClas
 					{{- else if eq $child_key "version_mismatch" }}
         					{{- range $version, $attributes := $child_value }}
 								{{- range $attributeName, $attributeValue := $attributes}}
-  	  {{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? "{{$attributeValue}}" : null
+  	  {{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{ $version }}") ? "{{$attributeValue}}" : null
         						{{- end }}
 							{{- end }}
 					{{- else }}
@@ -2275,7 +2275,7 @@ resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClas
 					{{- else if eq $child_key "version_mismatch" }}
         					{{- range $version, $attributes := $child_value }}
 								{{- range $attributeName, $attributeValue := $attributes}}
-  	{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? "{{$attributeValue}}" : null
+  	{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{ $version }}") ? "{{$attributeValue}}" : null
         						{{- end }}
 							{{- end }}
 					{{- else }}
@@ -2377,12 +2377,12 @@ resource "aci_{{$.resourceName}}" "test" {
 					{{- range $attributeName, $attributeValue := $attributes}}
 					{{- if (isInterfaceSlice $attributeValue) }}
                     {{- if lt 0 (len $attributeValue) }}
-  {{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? [{{range $index, $subvalue := $attributeValue}}{{if lt $index (subtract (len $attributeValue) 1)}}"{{$subvalue}}", {{else}}"{{$subvalue}}"{{end}}{{end}}] : null
+  {{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{ $version }}") ? [{{range $index, $subvalue := $attributeValue}}{{if lt $index (subtract (len $attributeValue) 1)}}"{{$subvalue}}", {{else}}"{{$subvalue}}"{{end}}{{end}}] : null
 							{{- else}}
-  {{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? [] : null
+  {{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{ $version }}") ? [] : null
 							{{- end}}
 						{{- else}}
-  {{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? "{{$attributeValue}}" : null
+  {{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{ $version }}") ? "{{$attributeValue}}" : null
                 {{- end}}
             {{- end }}
         {{- end }}
@@ -2414,12 +2414,12 @@ resource "aci_{{$.resourceName}}" "test" {
 					{{- range $attributeName, $attributeValue := $attributes}}
 					{{- if (isInterfaceSlice $attributeValue) }}
                     {{- if lt 0 (len $attributeValue) }}
-  {{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? [{{range $index, $subvalue := $attributeValue}}{{if lt $index (subtract (len $attributeValue) 1)}}"{{$subvalue}}", {{else}}"{{$subvalue}}"{{end}}{{end}}] : null
+  {{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{ $version }}") ? [{{range $index, $subvalue := $attributeValue}}{{if lt $index (subtract (len $attributeValue) 1)}}"{{$subvalue}}", {{else}}"{{$subvalue}}"{{end}}{{end}}] : null
 							{{- else}}
-  {{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? [] : null
+  {{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{ $version }}") ? [] : null
 							{{- end}}
 						{{- else}}
-  {{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? "{{$attributeValue}}" : null
+  {{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{ $version }}") ? "{{$attributeValue}}" : null
                 {{- end}}
             {{- end }}
         {{- end }}
@@ -2461,12 +2461,12 @@ resource "aci_{{$.resourceName}}" "test" {
 								{{- range $attributeName, $attributeValue := $attributes}}
 		{{- if (isInterfaceSlice $attributeValue) }}
 						{{- if lt 0 (len $attributeValue) }}
-	{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? [{{range $index, $subvalue := $attributeValue}}{{if lt $index (subtract (len $attributeValue) 1)}}"{{$subvalue}}", {{else}}"{{$subvalue}}"{{end}}{{end}}] : null
+	{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{ $version }}") ? [{{range $index, $subvalue := $attributeValue}}{{if lt $index (subtract (len $attributeValue) 1)}}"{{$subvalue}}", {{else}}"{{$subvalue}}"{{end}}{{end}}] : null
 								{{- else}}
-	{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? [] : null
+	{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{ $version }}") ? [] : null
 								{{- end}}
 							{{- else}}
-  	{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? "{{$attributeValue}}" : null
+  	{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{ $version }}") ? "{{$attributeValue}}" : null
         						{{- end }}
 							{{- end }}
 						{{- end }}
@@ -2496,7 +2496,7 @@ resource "aci_{{$.resourceName}}" "test" {
 					{{- else if eq $child_key "version_mismatch" }}
         					{{- range $version, $attributes := $child_value }}
 								{{- range $attributeName, $attributeValue := $attributes}}
-  	  {{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? "{{$attributeValue}}" : null
+  	  {{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{ $version }}") ? "{{$attributeValue}}" : null
         						{{- end }}
 							{{- end }}
 					{{- else }}
@@ -2559,12 +2559,12 @@ resource "aci_{{$.resourceName}}" "test" {
 								{{- range $attributeName, $attributeValue := $attributes}}
 	{{- if (isInterfaceSlice $attributeValue) }}
 						{{- if lt 0 (len $attributeValue) }}
-	{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? [{{range $index, $subvalue := $attributeValue}}{{if lt $index (subtract (len $attributeValue) 1)}}"{{$subvalue}}", {{else}}"{{$subvalue}}"{{end}}{{end}}] : null
+	{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{ $version }}") ? [{{range $index, $subvalue := $attributeValue}}{{if lt $index (subtract (len $attributeValue) 1)}}"{{$subvalue}}", {{else}}"{{$subvalue}}"{{end}}{{end}}] : null
 								{{- else}}
-	{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? [] : null
+	{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{ $version }}") ? [] : null
 								{{- end}}
 							{{- else}}
-  	{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? "{{$attributeValue}}" : null
+  	{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{ $version }}") ? "{{$attributeValue}}" : null
         						{{- end }}
 							{{- end }}
 						{{- end }}
@@ -2594,7 +2594,7 @@ resource "aci_{{$.resourceName}}" "test" {
 					{{- else if eq $child_key "version_mismatch" }}
         					{{- range $version, $attributes := $child_value }}
 								{{- range $attributeName, $attributeValue := $attributes}}
-  	  {{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? "{{$attributeValue}}" : null
+  	  {{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{ $version }}") ? "{{$attributeValue}}" : null
         						{{- end }}
 							{{- end }}
 					{{- else }}
@@ -2637,12 +2637,12 @@ resource "aci_{{$.resourceName}}" "test" {
 								{{- range $attributeName, $attributeValue := $attributes}}
 	{{- if (isInterfaceSlice $attributeValue) }}
 						{{- if lt 0 (len $attributeValue) }}
-	{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? [{{range $index, $subvalue := $attributeValue}}{{if lt $index (subtract (len $attributeValue) 1)}}"{{$subvalue}}", {{else}}"{{$subvalue}}"{{end}}{{end}}] : null
+	{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{ $version }}") ? [{{range $index, $subvalue := $attributeValue}}{{if lt $index (subtract (len $attributeValue) 1)}}"{{$subvalue}}", {{else}}"{{$subvalue}}"{{end}}{{end}}] : null
 								{{- else}}
-	{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? [] : null
+	{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{ $version }}") ? [] : null
 								{{- end}}
 							{{- else}}
-  	{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? "{{$attributeValue}}" : null
+  	{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{ $version }}") ? "{{$attributeValue}}" : null
         						{{- end }}
 							{{- end }}
 						{{- end }}
@@ -2723,12 +2723,12 @@ resource "aci_{{$.resourceName}}" "test" {
 								{{- range $attributeName, $attributeValue := $attributes}}
 	 		{{- if (isInterfaceSlice $attributeValue) }}
 						{{- if lt 0 (len $attributeValue) }}
-    {{$indent}}{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? [{{range $index, $subvalue := $attributeValue}}{{if lt $index (subtract (len $attributeValue) 1)}}"{{$subvalue}}", {{else}}"{{$subvalue}}"{{end}}{{end}}] : null
+    {{$indent}}{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{ $version }}") ? [{{range $index, $subvalue := $attributeValue}}{{if lt $index (subtract (len $attributeValue) 1)}}"{{$subvalue}}", {{else}}"{{$subvalue}}"{{end}}{{end}}] : null
 								{{- else}}
-    {{$indent}}{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? [] : null
+    {{$indent}}{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{ $version }}") ? [] : null
 								{{- end}}
 							{{- else}}
-    {{$indent}}{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? "{{$attributeValue}}" : null
+    {{$indent}}{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{ $version }}") ? "{{$attributeValue}}" : null
         						{{- end }}
 							{{- end }}
 						{{- end }}
@@ -2758,7 +2758,7 @@ resource "aci_{{$.resourceName}}" "test" {
 						{{- else if eq $child_key "version_mismatch" }}
         					{{- range $version, $attributes := $child_value }}
 								{{- range $attributeName, $attributeValue := $attributes}}
-      {{$indent}}{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? "{{$attributeValue}}" : null
+      {{$indent}}{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{ $version }}") ? "{{$attributeValue}}" : null
         						{{- end }}
 							{{- end }}
 					{{- else }}
@@ -2796,12 +2796,12 @@ resource "aci_{{$.resourceName}}" "test" {
 								{{- range $attributeName, $attributeValue := $attributes}}
 	 {{- if (isInterfaceSlice $attributeValue) }}
 						{{- if lt 0 (len $attributeValue) }}
-    {{$indent}}{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? [{{range $index, $subvalue := $attributeValue}}{{if lt $index (subtract (len $attributeValue) 1)}}"{{$subvalue}}", {{else}}"{{$subvalue}}"{{end}}{{end}}] : null
+    {{$indent}}{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{ $version }}") ? [{{range $index, $subvalue := $attributeValue}}{{if lt $index (subtract (len $attributeValue) 1)}}"{{$subvalue}}", {{else}}"{{$subvalue}}"{{end}}{{end}}] : null
 								{{- else}}
-    {{$indent}}{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? [] : null
+    {{$indent}}{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{ $version }}") ? [] : null
 								{{- end}}
 							{{- else}}					
-    {{$indent}}{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? "{{$attributeValue}}" : null
+    {{$indent}}{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{ $version }}") ? "{{$attributeValue}}" : null
         						{{- end }}
 							{{- end }}
 						{{- end }}
@@ -2831,7 +2831,7 @@ resource "aci_{{$.resourceName}}" "test" {
 					{{- else if eq $child_key "version_mismatch" }}
         					{{- range $version, $attributes := $child_value }}
 								{{- range $attributeName, $attributeValue := $attributes}}
-      {{$indent}}{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? "{{$attributeValue}}" : null
+      {{$indent}}{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{ $version }}") ? "{{$attributeValue}}" : null
         						{{- end }}
 							{{- end }}
 					{{- else }}
@@ -2867,12 +2867,12 @@ resource "aci_{{$.resourceName}}" "test" {
 								{{- range $attributeName, $attributeValue := $attributes}}
 	 {{- if (isInterfaceSlice $attributeValue) }}
 						{{- if lt 0 (len $attributeValue) }}
-    {{$indent}}{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? [{{range $index, $subvalue := $attributeValue}}{{if lt $index (subtract (len $attributeValue) 1)}}"{{$subvalue}}", {{else}}"{{$subvalue}}"{{end}}{{end}}] : null
+    {{$indent}}{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{ $version }}") ? [{{range $index, $subvalue := $attributeValue}}{{if lt $index (subtract (len $attributeValue) 1)}}"{{$subvalue}}", {{else}}"{{$subvalue}}"{{end}}{{end}}] : null
 								{{- else}}
-    {{$indent}}{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? [] : null
+    {{$indent}}{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{ $version }}") ? [] : null
 								{{- end}}
 							{{- else}}				
-    {{$indent}}{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,">=","{{ $version }}") ? "{{$attributeValue}}" : null
+    {{$indent}}{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{ $version }}") ? "{{$attributeValue}}" : null
         						{{- end }}
 							{{- end }}
 						{{- end }}
@@ -2913,7 +2913,7 @@ resource "aci_{{$.resourceName}}" "test" {
 							{{- template "testNestedChildren" $newCtx }}
 						{{- else if eq $child_key "version_mismatch" }}
 							{{- range $version, $attributes := $child_value }}
-						composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", ">=",{{- range $attributeName, $attributeValue := $attributes}}
+						composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
 						{{- if (isInterfaceSlice $attributeValue)}}
 						resource.TestCheckResourceAttr("{{$resourceName}}", "{{$inheritedKey}}.{{$key}}.{{$attributeName}}.#", "{{len $attributeValue}}"),
 						{{- range $index, $subvalue := $attributeValue}}
@@ -2946,7 +2946,7 @@ resource "aci_{{$.resourceName}}" "test" {
 							{{- template "testNestedChildren" $newCtx }}
 						{{- else if eq $child_key "version_mismatch" }}
 							{{- range $version, $attributes := $child_value }}
-					composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", ">=",{{- range $attributeName, $attributeValue := $attributes}}
+					composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
 					resource.TestCheckResourceAttr("{{$resourceName}}{{- if eq $resourceClassName $parentClassName }}_1{{- end }}", "{{$inheritedKey}}.{{$key}}.{{$child_index}}.{{$attributeName}}", "{{$attributeValue}}"),						
 									{{- end }}),
 								{{- end }}
@@ -2976,7 +2976,7 @@ resource "aci_{{$.resourceName}}" "test" {
 							{{- template "testNestedChildrenRemovedFromConfig" $newCtx }}
 						{{- else if eq $child_key "version_mismatch" }}
 							{{- range $version, $attributes := $child_value }}
-						composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", ">=",{{- range $attributeName, $attributeValue := $attributes}}
+						composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
 						{{- if (isInterfaceSlice $attributeValue)}}
 						resource.TestCheckResourceAttr("{{$resourceName}}{{- if eq $resourceClassName $parentClassName }}_1{{- end }}", "{{$inheritedKey}}.{{$key}}.{{$attributeName}}.#", "{{len $attributeValue}}"),
 						{{- range $index, $subvalue := $attributeValue}}
@@ -3008,7 +3008,7 @@ resource "aci_{{$.resourceName}}" "test" {
 							{{- template "testNestedChildrenRemovedFromConfig" $newCtx }}
 						{{- else if eq $child_key "version_mismatch" }}
 							{{- range $version, $attributes := $child_value }}
-					composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", ">=",{{- range $attributeName, $attributeValue := $attributes}}
+					composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
 					resource.TestCheckResourceAttr("{{$resourceName}}{{- if eq $resourceClassName $parentClassName }}_1{{- end }}", "{{$inheritedKey}}.{{$key}}.{{$child_index}}.{{$attributeName}}", "{{$attributeValue}}"),						
 									{{- end }}),
 								{{- end }}
@@ -3040,7 +3040,7 @@ resource "aci_{{$.resourceName}}" "test" {
 							{{- template "testNestedChildrenWithFirstChilRemoved" $newCtx }}
 						{{- else if eq $child_key "version_mismatch" }}
 							{{- range $version, $attributes := $child_value }}
-					composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", ">=",{{- range $attributeName, $attributeValue := $attributes}}
+					composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
 					{{- if (isInterfaceSlice $attributeValue)}}
 						resource.TestCheckResourceAttr("{{$resourceName}}{{- if eq $resourceClassName $parentClassName }}_1{{- end }}", "{{$inheritedKey}}.{{$key}}.{{$attributeName}}.#", "{{len $attributeValue}}"),
 						{{- range $index, $subvalue := $attributeValue}}
@@ -3072,7 +3072,7 @@ resource "aci_{{$.resourceName}}" "test" {
                     	{{- template "testNestedChildrenWithFirstChilRemoved" $newCtx }}
 					{{- else if eq $child_key "version_mismatch" }}
 							{{- range $version, $attributes := $child_value }}
-					composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", ">=",{{- range $attributeName, $attributeValue := $attributes}}
+					composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
 					resource.TestCheckResourceAttr("{{$resourceName}}{{- if eq $resourceClassName $parentClassName }}_1{{- end }}", "{{$inheritedKey}}.{{$key}}.0.{{$attributeName}}", "{{$attributeValue}}"),						
 									{{- end }}),
 								{{- end }}
@@ -3103,7 +3103,7 @@ resource "aci_{{$.resourceName}}" "test" {
 							{{- template "testNestedChildrenAllChildrenRemoved" $newCtx }}
 						{{- else if eq $child_key "version_mismatch" }}
 							{{- range $version, $attributes := $child_value }}
-					composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", ">=",{{- range $attributeName, $attributeValue := $attributes}}
+					composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
 					{{- if (isInterfaceSlice $attributeValue)}}
 						resource.TestCheckResourceAttr("{{$resourceName}}{{- if eq $resourceClassName $parentClassName }}_1{{- end }}", "{{$inheritedKey}}.{{$key}}.{{$attributeName}}.#", "{{len $attributeValue}}"),
 						{{- range $index, $subvalue := $attributeValue}}
@@ -3143,7 +3143,7 @@ resource "aci_{{$.resourceName}}" "test" {
 							{{- template "testNestedChildrenWithNoParent" $newCtx }}
 						{{- else if eq $child_key "version_mismatch" }}
 							{{- range $version, $attributes := $child_value }}
-						composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", ">=",{{- range $attributeName, $attributeValue := $attributes}}
+						composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
 						{{- if (isInterfaceSlice $attributeValue)}}
 						resource.TestCheckResourceAttr("{{$resourceName}}", "{{$inheritedKey}}.{{$key}}.{{$attributeName}}.#", "{{len $attributeValue}}"),
 						{{- range $index, $subvalue := $attributeValue}}
@@ -3175,7 +3175,7 @@ resource "aci_{{$.resourceName}}" "test" {
 							{{- template "testNestedChildrenWithNoParent" $newCtx }}
 						{{- else if eq $child_key "version_mismatch" }}
 							{{- range $version, $attributes := $child_value }}
-					composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", ">=",{{- range $attributeName, $attributeValue := $attributes}}
+					composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
 					resource.TestCheckResourceAttr("{{$resourceName}}", "{{$inheritedKey}}.{{$key}}.{{$child_index}}.{{$attributeName}}", "{{$attributeValue}}"),						
 									{{- end }}),
 								{{- end }}
@@ -3205,7 +3205,7 @@ resource "aci_{{$.resourceName}}" "test" {
                         	{{- template "testNestedChildrenWithNoParentAndChildrenRemovedFromConfig" $newCtx }}
                         {{- else if eq $child_key "version_mismatch" }}
 							{{- range $version, $attributes := $child_value }}
-					composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", ">=",{{- range $attributeName, $attributeValue := $attributes}}
+					composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
 							{{- if (isInterfaceSlice $attributeValue)}}
 							resource.TestCheckResourceAttr("{{$resourceName}}", "{{$inheritedKey}}.{{$key}}.{{$attributeName}}.#", "{{len $attributeValue}}"),
 							{{- range $index, $subvalue := $attributeValue}}
@@ -3237,7 +3237,7 @@ resource "aci_{{$.resourceName}}" "test" {
                     	{{- template "testNestedChildrenWithNoParentAndChildrenRemovedFromConfig" $newCtx }}
 					{{- else if eq $child_key "version_mismatch" }}
 							{{- range $version, $attributes := $child_value }}
-					composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", ">=",{{- range $attributeName, $attributeValue := $attributes}}
+					composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
 							resource.TestCheckResourceAttr("{{$resourceName}}", "{{$inheritedKey}}.{{$key}}.{{$child_index}}.{{$attributeName}}", "{{$attributeValue}}"),						
 									{{- end }}),
 								{{- end }}
@@ -3267,7 +3267,7 @@ resource "aci_{{$.resourceName}}" "test" {
                         	{{- template "testNestedChildrenWithNoParentAndFirstChildRemoved" $newCtx }}
                         {{- else if eq $child_key "version_mismatch" }}
 							{{- range $version, $attributes := $child_value }}
-					composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", ">=",{{- range $attributeName, $attributeValue := $attributes}}
+					composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
 							{{- if (isInterfaceSlice $attributeValue)}}
 							resource.TestCheckResourceAttr("{{$resourceName}}", "{{$inheritedKey}}.{{$key}}.{{$attributeName}}.#", "{{len $attributeValue}}"),
 							{{- range $index, $subvalue := $attributeValue}}
@@ -3299,7 +3299,7 @@ resource "aci_{{$.resourceName}}" "test" {
                         {{- template "testNestedChildrenWithNoParentAndFirstChildRemoved" $newCtx }}
                     {{- else if eq $child_key "version_mismatch" }}
 						{{- range $version, $attributes := $child_value }}
-					composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", ">=",{{- range $attributeName, $attributeValue := $attributes}}
+					composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
 					resource.TestCheckResourceAttr("{{$resourceName}}", "{{$inheritedKey}}.{{$key}}.0.{{$attributeName}}", "{{$attributeValue}}"),						
 									{{- end }}),
 								{{- end }}
@@ -3328,7 +3328,7 @@ resource "aci_{{$.resourceName}}" "test" {
 							{{- template "testNestedChildrenWithNoParentAndAllChildrenRemoved" $newCtx }}
 						{{- else if eq $child_key "version_mismatch" }}
 							{{- range $version, $attributes := $child_value }}
-					composeAggregateTestCheckFuncWithVersion(t,"{{$version}}", ">=",{{- range $attributeName, $attributeValue := $attributes}}
+					composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
 							{{- if (isInterfaceSlice $attributeValue)}}
 							resource.TestCheckResourceAttr("{{$resourceName}}", "{{$inheritedKey}}.{{$key}}.{{$attributeName}}.#", "{{len $attributeValue}}"),
 							{{- range $index, $subvalue := $attributeValue}}

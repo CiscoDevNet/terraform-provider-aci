@@ -33,7 +33,7 @@ func TestAccDataSourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("data.aci_application_epg.test", "preferred_group_member", "exclude"),
 					resource.TestCheckResourceAttr("data.aci_application_epg.test", "priority", "unspecified"),
 					resource.TestCheckResourceAttr("data.aci_application_epg.test", "useg_epg", "no"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)-", "inside",
 						resource.TestCheckResourceAttr("data.aci_application_epg.test", "admin_state", "no"),
 						resource.TestCheckResourceAttr("data.aci_application_epg.test", "has_multicast_source", "no")),
 					resource.TestCheckResourceAttrSet("data.aci_application_epg.test", "pc_tag"),

@@ -69,19 +69,19 @@ func TestAccResourceFvBDWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_bridge_domain.allow_test_2", "pim", "no"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.allow_test", "unicast_routing", "yes"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.allow_test_2", "unicast_routing", "yes"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)-", "inside",
 						resource.TestCheckResourceAttr("aci_bridge_domain.allow_test", "advertise_host_routes", "no"),
 						resource.TestCheckResourceAttr("aci_bridge_domain.allow_test_2", "advertise_host_routes", "no")),
-					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
 						resource.TestCheckResourceAttr("aci_bridge_domain.allow_test", "ipv6_l3_unknown_multicast_flooding", "flood"),
 						resource.TestCheckResourceAttr("aci_bridge_domain.allow_test_2", "ipv6_l3_unknown_multicast_flooding", "flood")),
-					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
 						resource.TestCheckResourceAttr("aci_bridge_domain.allow_test", "pim_ipv6", "no"),
 						resource.TestCheckResourceAttr("aci_bridge_domain.allow_test_2", "pim_ipv6", "no")),
-					composeAggregateTestCheckFuncWithVersion(t, "5.2(5c)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "5.2(5c)-", "inside",
 						resource.TestCheckResourceAttr("aci_bridge_domain.allow_test", "drop_arp_with_multicast_smac", "yes"),
 						resource.TestCheckResourceAttr("aci_bridge_domain.allow_test_2", "drop_arp_with_multicast_smac", "yes")),
-					composeAggregateTestCheckFuncWithVersion(t, "6.0(4c)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "6.0(4c)-", "inside",
 						resource.TestCheckResourceAttr("aci_bridge_domain.allow_test", "service_bd_routing_disable", "no"),
 						resource.TestCheckResourceAttr("aci_bridge_domain.allow_test_2", "service_bd_routing_disable", "no")),
 					resource.TestCheckResourceAttr("aci_bridge_domain.allow_test", "virtual_mac_address", "not-applicable"),
@@ -161,19 +161,19 @@ func TestAccResourceFvBDWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_bridge_domain.allow_test_2", "pim", "no"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.allow_test", "unicast_routing", "yes"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.allow_test_2", "unicast_routing", "yes"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)-", "inside",
 						resource.TestCheckResourceAttr("aci_bridge_domain.allow_test", "advertise_host_routes", "no"),
 						resource.TestCheckResourceAttr("aci_bridge_domain.allow_test_2", "advertise_host_routes", "no")),
-					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
 						resource.TestCheckResourceAttr("aci_bridge_domain.allow_test", "ipv6_l3_unknown_multicast_flooding", "flood"),
 						resource.TestCheckResourceAttr("aci_bridge_domain.allow_test_2", "ipv6_l3_unknown_multicast_flooding", "flood")),
-					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
 						resource.TestCheckResourceAttr("aci_bridge_domain.allow_test", "pim_ipv6", "no"),
 						resource.TestCheckResourceAttr("aci_bridge_domain.allow_test_2", "pim_ipv6", "no")),
-					composeAggregateTestCheckFuncWithVersion(t, "5.2(5c)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "5.2(5c)-", "inside",
 						resource.TestCheckResourceAttr("aci_bridge_domain.allow_test", "drop_arp_with_multicast_smac", "yes"),
 						resource.TestCheckResourceAttr("aci_bridge_domain.allow_test_2", "drop_arp_with_multicast_smac", "yes")),
-					composeAggregateTestCheckFuncWithVersion(t, "6.0(4c)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "6.0(4c)-", "inside",
 						resource.TestCheckResourceAttr("aci_bridge_domain.allow_test", "service_bd_routing_disable", "no"),
 						resource.TestCheckResourceAttr("aci_bridge_domain.allow_test_2", "service_bd_routing_disable", "no")),
 					resource.TestCheckResourceAttr("aci_bridge_domain.allow_test", "virtual_mac_address", "not-applicable"),
@@ -220,15 +220,15 @@ func TestAccResourceFvBDWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "pim", "no"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "unicast_routing", "yes"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)-", "inside",
 						resource.TestCheckResourceAttr("aci_bridge_domain.test", "advertise_host_routes", "no")),
-					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
 						resource.TestCheckResourceAttr("aci_bridge_domain.test", "ipv6_l3_unknown_multicast_flooding", "flood")),
-					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
 						resource.TestCheckResourceAttr("aci_bridge_domain.test", "pim_ipv6", "no")),
-					composeAggregateTestCheckFuncWithVersion(t, "5.2(5c)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "5.2(5c)-", "inside",
 						resource.TestCheckResourceAttr("aci_bridge_domain.test", "drop_arp_with_multicast_smac", "yes")),
-					composeAggregateTestCheckFuncWithVersion(t, "6.0(4c)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "6.0(4c)-", "inside",
 						resource.TestCheckResourceAttr("aci_bridge_domain.test", "service_bd_routing_disable", "no")),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "virtual_mac_address", "not-applicable"),
 					resource.TestCheckResourceAttrSet("aci_bridge_domain.test", "pc_tag"),
@@ -263,15 +263,15 @@ func TestAccResourceFvBDWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "owner_tag", "owner_tag_1"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "pim", "no"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "unicast_routing", "no"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)-", "inside",
 						resource.TestCheckResourceAttr("aci_bridge_domain.test", "advertise_host_routes", "no")),
-					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
 						resource.TestCheckResourceAttr("aci_bridge_domain.test", "ipv6_l3_unknown_multicast_flooding", "flood")),
-					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
 						resource.TestCheckResourceAttr("aci_bridge_domain.test", "pim_ipv6", "no")),
-					composeAggregateTestCheckFuncWithVersion(t, "5.2(5c)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "5.2(5c)-", "inside",
 						resource.TestCheckResourceAttr("aci_bridge_domain.test", "drop_arp_with_multicast_smac", "no")),
-					composeAggregateTestCheckFuncWithVersion(t, "6.0(4c)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "6.0(4c)-", "inside",
 						resource.TestCheckResourceAttr("aci_bridge_domain.test", "service_bd_routing_disable", "no")),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "virtual_mac_address", "00:22:BD:F8:19:FB"),
 					resource.TestCheckResourceAttrSet("aci_bridge_domain.test", "pc_tag"),
@@ -317,15 +317,15 @@ func TestAccResourceFvBDWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "pim", "no"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "unicast_routing", "yes"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)-", "inside",
 						resource.TestCheckResourceAttr("aci_bridge_domain.test", "advertise_host_routes", "no")),
-					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
 						resource.TestCheckResourceAttr("aci_bridge_domain.test", "ipv6_l3_unknown_multicast_flooding", "flood")),
-					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
 						resource.TestCheckResourceAttr("aci_bridge_domain.test", "pim_ipv6", "no")),
-					composeAggregateTestCheckFuncWithVersion(t, "5.2(5c)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "5.2(5c)-", "inside",
 						resource.TestCheckResourceAttr("aci_bridge_domain.test", "drop_arp_with_multicast_smac", "yes")),
-					composeAggregateTestCheckFuncWithVersion(t, "6.0(4c)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "6.0(4c)-", "inside",
 						resource.TestCheckResourceAttr("aci_bridge_domain.test", "service_bd_routing_disable", "no")),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "virtual_mac_address", "not-applicable"),
 					resource.TestCheckResourceAttrSet("aci_bridge_domain.test", "pc_tag"),
@@ -366,15 +366,15 @@ func TestAccResourceFvBDWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "pim", "no"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "unicast_routing", "yes"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)-", "inside",
 						resource.TestCheckResourceAttr("aci_bridge_domain.test", "advertise_host_routes", "no")),
-					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
 						resource.TestCheckResourceAttr("aci_bridge_domain.test", "ipv6_l3_unknown_multicast_flooding", "flood")),
-					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
 						resource.TestCheckResourceAttr("aci_bridge_domain.test", "pim_ipv6", "no")),
-					composeAggregateTestCheckFuncWithVersion(t, "5.2(5c)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "5.2(5c)-", "inside",
 						resource.TestCheckResourceAttr("aci_bridge_domain.test", "drop_arp_with_multicast_smac", "yes")),
-					composeAggregateTestCheckFuncWithVersion(t, "6.0(4c)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "6.0(4c)-", "inside",
 						resource.TestCheckResourceAttr("aci_bridge_domain.test", "service_bd_routing_disable", "no")),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "virtual_mac_address", "not-applicable"),
 					resource.TestCheckResourceAttrSet("aci_bridge_domain.test", "pc_tag"),
@@ -1047,11 +1047,11 @@ resource "aci_bridge_domain" "test" {
   owner_tag = "owner_tag_1"
   pim = "no"
   unicast_routing = "no"
-  advertise_host_routes = provider::aci::compare_versions(data.aci_system.version.version,">=","4.0(1h)") ? "no" : null
-  ipv6_l3_unknown_multicast_flooding = provider::aci::compare_versions(data.aci_system.version.version,">=","4.1(1i)") ? "flood" : null
-  pim_ipv6 = provider::aci::compare_versions(data.aci_system.version.version,">=","4.2(1i)") ? "no" : null
-  drop_arp_with_multicast_smac = provider::aci::compare_versions(data.aci_system.version.version,">=","5.2(5c)") ? "no" : null
-  service_bd_routing_disable = provider::aci::compare_versions(data.aci_system.version.version,">=","6.0(4c)") ? "no" : null
+  advertise_host_routes = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.0(1h)-") ? "no" : null
+  ipv6_l3_unknown_multicast_flooding = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.1(1i)-") ? "flood" : null
+  pim_ipv6 = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.2(1i)-") ? "no" : null
+  drop_arp_with_multicast_smac = provider::aci::compare_versions(data.aci_system.version.version,"inside","5.2(5c)-") ? "no" : null
+  service_bd_routing_disable = provider::aci::compare_versions(data.aci_system.version.version,"inside","6.0(4c)-") ? "no" : null
   virtual_mac_address = "00:22:BD:F8:19:FB"
 }
 `
@@ -1081,11 +1081,11 @@ resource "aci_bridge_domain" "test" {
   owner_tag = ""
   pim = "no"
   unicast_routing = "yes"
-  advertise_host_routes = provider::aci::compare_versions(data.aci_system.version.version,">=","4.0(1h)") ? "no" : null
-  ipv6_l3_unknown_multicast_flooding = provider::aci::compare_versions(data.aci_system.version.version,">=","4.1(1i)") ? "flood" : null
-  pim_ipv6 = provider::aci::compare_versions(data.aci_system.version.version,">=","4.2(1i)") ? "no" : null
-  drop_arp_with_multicast_smac = provider::aci::compare_versions(data.aci_system.version.version,">=","5.2(5c)") ? "yes" : null
-  service_bd_routing_disable = provider::aci::compare_versions(data.aci_system.version.version,">=","6.0(4c)") ? "no" : null
+  advertise_host_routes = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.0(1h)-") ? "no" : null
+  ipv6_l3_unknown_multicast_flooding = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.1(1i)-") ? "flood" : null
+  pim_ipv6 = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.2(1i)-") ? "no" : null
+  drop_arp_with_multicast_smac = provider::aci::compare_versions(data.aci_system.version.version,"inside","5.2(5c)-") ? "yes" : null
+  service_bd_routing_disable = provider::aci::compare_versions(data.aci_system.version.version,"inside","6.0(4c)-") ? "no" : null
   virtual_mac_address = "not-applicable"
 }
 `

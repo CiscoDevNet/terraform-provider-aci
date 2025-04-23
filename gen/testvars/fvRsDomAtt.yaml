@@ -22,11 +22,11 @@ default:
   switching_mode: "native"
   untagged: "no"
   version_mismatch:
-    4.0(1h):
+    4.0(1h)-:
       binding_type: "none"
       number_of_ports: "0"
       port_allocation: "none"
-    4.2(3j):
+    4.2(3j)-:
       custom_epg_name: ""
 
 datasource_non_existing:
@@ -57,11 +57,11 @@ all:
   switching_mode: "AVE"
   untagged: "no"
   version_mismatch:
-    4.0(1h):
+    4.0(1h)-:
       binding_type: "dynamicBinding"
       number_of_ports: "1"
       port_allocation: "elastic"
-    4.2(3j):
+    4.2(3j)-:
       custom_epg_name: "custom_epg_name_1"
 
 children:

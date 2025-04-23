@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"regexp"
 	"strconv"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-framework/function"
 )
@@ -36,7 +37,7 @@ func (f CompareVersionsFunction) Definition(ctx context.Context, req function.De
 			function.StringParameter{
 				Name:        "operator",
 				Description: "Comparison operator",
-				Validators:  []function.StringParameterValidator{oneOf("==", "!=", ">", "<", ">=", "<=")},
+				Validators:  []function.StringParameterValidator{oneOf("==", "!=", ">", "<", ">=", "<=", "inside", "outside")},
 			},
 			function.StringParameter{
 				Name:        "version2",
@@ -48,6 +49,7 @@ func (f CompareVersionsFunction) Definition(ctx context.Context, req function.De
 }
 
 func (f CompareVersionsFunction) Run(ctx context.Context, req function.RunRequest, resp *function.RunResponse) {
+
 	var version1, version2, operator string
 
 	resp.Error = function.ConcatFuncErrors(req.Arguments.Get(ctx, &version1, &operator, &version2))
@@ -55,13 +57,129 @@ func (f CompareVersionsFunction) Run(ctx context.Context, req function.RunReques
 		return
 	}
 
-	result, err := CompareVersions(version1, version2, operator)
+	result, err := CompareVersionsRange(version1, version2, operator)
 	if err != nil {
 		resp.Error = function.NewFuncError(err.Error())
 		return
 	}
 
 	resp.Error = function.ConcatFuncErrors(resp.Result.Set(ctx, result))
+}
+
+func CompareVersionsRange(version, versionRanges, operator string) (bool, error) {
+	var result bool
+	var err error
+
+	if operator == "inside" || operator == "outside" {
+
+		comparisons, err := GetVersionComparisonsFromVersionRanges(versionRanges)
+		if err != nil {
+			return false, err
+		}
+
+		for _, comparison := range comparisons {
+
+			if comparison.Min == comparison.Max {
+
+				// When the min and max are the same, the version is singular which requires single comparison
+				result, err = CompareVersions(version, comparison.Min, "==")
+				if err != nil {
+					return false, err
+				}
+
+				// If the version is inside the range, the comparison must be true for result to be true
+				// If the version is outside the range, the comparison must be false for result to be true
+				if result {
+					result = true
+					break
+				}
+
+			} else {
+
+				// When the min and max are different, the version is a range
+				// This requires two comparisons, one for each side of the range
+				// Higher or equal than min and lower or equal than max
+				resultMin, err := CompareVersions(version, comparison.Min, ">=")
+				if err != nil {
+					return false, err
+				}
+
+				resultMax := true
+				// If max is "unlimited", we don't need to check the upper bound
+				if comparison.Max != "unlimited" {
+					resultMax, err = CompareVersions(version, comparison.Max, "<=")
+					if err != nil {
+						return false, err
+					}
+				}
+
+				// If the version is inside the range, one comparison must be true for result to be true
+				// If the version is outside the range, all comparison must be true for result to be true
+				if resultMin && resultMax {
+					result = true
+					break
+				}
+			}
+		}
+
+	} else { // If the operator is "==", "!=", ">", "<", ">=", "<=", we assume no range is provided and use the CompareVersions function directly
+
+		result, err = CompareVersions(version, versionRanges, operator)
+		if err != nil {
+			return false, err
+		}
+
+	}
+
+	// If the operator is "outside", invert the result of the comparison that checks inside the range
+	if operator == "outside" {
+		if result {
+			result = false
+		} else {
+			result = true
+		}
+	}
+
+	return result, nil
+}
+
+type VersionComparison struct {
+	Min string
+	Max string
+}
+
+func GetVersionComparisonsFromVersionRanges(versionRanges string) ([]VersionComparison, error) {
+
+	var comparisons []VersionComparison
+
+	// Split the ranges string  into list of ranges "4.2(7f)-4.2(7w),5.2(1g)-5.2(1t)" -> ["4.2(7f)-4.2(7w)", "5.2(1g)-5.2(1t)"]
+	for _, versionRange := range strings.Split(versionRanges, ",") {
+		// Split the range into min and max versions "4.2(7f)-4.2(7w)" -> ["4.2(7f)", "4.2(7w)"]
+		versions := strings.Split(versionRange, "-")
+		if len(versions) == 2 && versions[1] != "" {
+			comparisons = append(
+				comparisons,
+				VersionComparison{
+					Min: versions[0],
+					Max: versions[1],
+				},
+			)
+		} else if len(versions) == 2 {
+			comparisons = append(comparisons, VersionComparison{
+				Min: versions[0],
+				Max: "unlimited",
+			})
+		} else if len(versions) == 1 {
+			comparisons = append(comparisons, VersionComparison{
+				Min: versions[0],
+				Max: versions[0],
+			})
+		} else {
+			return nil, fmt.Errorf("Invalid Range Format: %s", versionRange)
+		}
+	}
+
+	return comparisons, nil
 }
 
 type Version struct {

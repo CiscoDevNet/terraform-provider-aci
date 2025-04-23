@@ -19,7 +19,7 @@ default:
   reachable_time: "0"
   retransmit_timer: "0"
   version_mismatch:
-    5.1(1h):
+    5.1(1h)-:
       nud_retry_base: "1"
       nud_retry_interval: "1000"
       nud_retry_max_attempts: "3"
@@ -50,7 +50,7 @@ all:
   reachable_time: "2"
   retransmit_timer: "2"
   version_mismatch:
-    5.1(1h):
+    5.1(1h)-:
       nud_retry_base: "2"
       nud_retry_interval: "1300"
       nud_retry_max_attempts: "5"

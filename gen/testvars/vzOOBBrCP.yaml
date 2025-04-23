@@ -13,7 +13,7 @@ default:
   scope: "context"
   target_dscp: "unspecified"
   version_mismatch:
-    4.2(1i):
+    4.2(1i)-:
       intent: "install"
 
 datasource_non_existing:
@@ -40,7 +40,7 @@ all:
   scope: "application-profile"
   target_dscp: "AF11"
   version_mismatch:
-    4.2(1i):
+    4.2(1i)-:
       intent: "estimate_add"
 
 children:

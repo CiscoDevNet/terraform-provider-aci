@@ -49,7 +49,7 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.allow_test_2", "priority", "unspecified"),
 					resource.TestCheckResourceAttr("aci_application_epg.allow_test", "useg_epg", "no"),
 					resource.TestCheckResourceAttr("aci_application_epg.allow_test_2", "useg_epg", "no"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)-", "inside",
 						resource.TestCheckResourceAttr("aci_application_epg.allow_test", "admin_state", "no"),
 						resource.TestCheckResourceAttr("aci_application_epg.allow_test_2", "admin_state", "no"),
 						resource.TestCheckResourceAttr("aci_application_epg.allow_test", "has_multicast_source", "no"),
@@ -108,7 +108,7 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.allow_test_2", "priority", "unspecified"),
 					resource.TestCheckResourceAttr("aci_application_epg.allow_test", "useg_epg", "no"),
 					resource.TestCheckResourceAttr("aci_application_epg.allow_test_2", "useg_epg", "no"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)-", "inside",
 						resource.TestCheckResourceAttr("aci_application_epg.allow_test", "admin_state", "no"),
 						resource.TestCheckResourceAttr("aci_application_epg.allow_test_2", "admin_state", "no"),
 						resource.TestCheckResourceAttr("aci_application_epg.allow_test", "has_multicast_source", "no"),
@@ -143,7 +143,7 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "preferred_group_member", "exclude"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "priority", "unspecified"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "useg_epg", "no"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)-", "inside",
 						resource.TestCheckResourceAttr("aci_application_epg.test", "admin_state", "no"),
 						resource.TestCheckResourceAttr("aci_application_epg.test", "has_multicast_source", "no")),
 					resource.TestCheckResourceAttrSet("aci_application_epg.test", "pc_tag"),
@@ -167,7 +167,7 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "preferred_group_member", "exclude"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "priority", "level1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "useg_epg", "no"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)-", "inside",
 						resource.TestCheckResourceAttr("aci_application_epg.test", "admin_state", "no"),
 						resource.TestCheckResourceAttr("aci_application_epg.test", "has_multicast_source", "no")),
 					resource.TestCheckResourceAttrSet("aci_application_epg.test", "pc_tag"),
@@ -201,7 +201,7 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "preferred_group_member", "exclude"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "priority", "unspecified"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "useg_epg", "no"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)-", "inside",
 						resource.TestCheckResourceAttr("aci_application_epg.test", "admin_state", "no"),
 						resource.TestCheckResourceAttr("aci_application_epg.test", "has_multicast_source", "no")),
 					resource.TestCheckResourceAttrSet("aci_application_epg.test", "pc_tag"),
@@ -231,7 +231,7 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "preferred_group_member", "exclude"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "priority", "unspecified"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "useg_epg", "no"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)-", "inside",
 						resource.TestCheckResourceAttr("aci_application_epg.test", "admin_state", "no"),
 						resource.TestCheckResourceAttr("aci_application_epg.test", "has_multicast_source", "no")),
 					resource.TestCheckResourceAttrSet("aci_application_epg.test", "pc_tag"),
@@ -247,7 +247,7 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.name_alias", "name_alias_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.owner_key", "owner_key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.owner_tag", "owner_tag_1"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
 						resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.precedence", "1"),
 						resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.scope", "scope-bd")),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_bridge_domain.annotation", "annotation_1"),
@@ -284,11 +284,11 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.switching_mode", "AVE"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.target_dn", "uni/vmmp-VMware/dom-domain_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.untagged", "no"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)-", "inside",
 						resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.binding_type", "dynamicBinding"),
 						resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.number_of_ports", "1"),
 						resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.port_allocation", "elastic")),
-					composeAggregateTestCheckFuncWithVersion(t, "4.2(3j)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(3j)-", "inside",
 						resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.custom_epg_name", "custom_epg_name_1")),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.annotation", "annotation_2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.class_preference", "useg"),
@@ -308,11 +308,11 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.switching_mode", "native"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.target_dn", "uni/vmmp-VMware/dom-domain_2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.untagged", "yes"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)-", "inside",
 						resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.binding_type", "ephemeral"),
 						resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.number_of_ports", "0"),
 						resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.port_allocation", "fixed")),
-					composeAggregateTestCheckFuncWithVersion(t, "4.2(3j)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(3j)-", "inside",
 						resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.custom_epg_name", "custom_epg_name_2")),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_fibre_channel_paths.0.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_fibre_channel_paths.0.description", "description_1"),
@@ -422,7 +422,7 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.name_alias", "name_alias_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.owner_key", "owner_key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.owner_tag", "owner_tag_1"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
 						resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.precedence", "1"),
 						resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.scope", "scope-bd")),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_bridge_domain.annotation", "annotation_1"),
@@ -541,11 +541,11 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.switching_mode", "AVE"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.target_dn", "uni/vmmp-VMware/dom-domain_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.untagged", "no"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)-", "inside",
 						resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.binding_type", "dynamicBinding"),
 						resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.number_of_ports", "1"),
 						resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.port_allocation", "elastic")),
-					composeAggregateTestCheckFuncWithVersion(t, "4.2(3j)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(3j)-", "inside",
 						resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.custom_epg_name", "custom_epg_name_1")),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.annotation", "annotation_2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.annotations.0.key", "key_0"),
@@ -575,11 +575,11 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.switching_mode", "native"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.target_dn", "uni/vmmp-VMware/dom-domain_2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.untagged", "yes"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)-", "inside",
 						resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.binding_type", "ephemeral"),
 						resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.number_of_ports", "0"),
 						resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.port_allocation", "fixed")),
-					composeAggregateTestCheckFuncWithVersion(t, "4.2(3j)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(3j)-", "inside",
 						resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.custom_epg_name", "custom_epg_name_2")),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_fibre_channel_paths.0.annotation", "annotation_1"),
@@ -887,11 +887,11 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.switching_mode", "native"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.target_dn", "uni/vmmp-VMware/dom-domain_2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.untagged", "yes"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)-", "inside",
 						resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.binding_type", "ephemeral"),
 						resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.number_of_ports", "0"),
 						resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.port_allocation", "fixed")),
-					composeAggregateTestCheckFuncWithVersion(t, "4.2(3j)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(3j)-", "inside",
 						resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.custom_epg_name", "custom_epg_name_2")),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.#", "1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_fibre_channel_paths.0.annotation", "annotation_2"),
@@ -1232,8 +1232,8 @@ resource "aci_application_epg" "test" {
   preferred_group_member = "exclude"
   priority = "level1"
   useg_epg = "no"
-  admin_state = provider::aci::compare_versions(data.aci_system.version.version,">=","4.0(1h)") ? "no" : null
-  has_multicast_source = provider::aci::compare_versions(data.aci_system.version.version,">=","4.0(1h)") ? "no" : null
+  admin_state = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.0(1h)-") ? "no" : null
+  has_multicast_source = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.0(1h)-") ? "no" : null
 }
 `
 
@@ -1252,8 +1252,8 @@ resource "aci_application_epg" "test" {
   preferred_group_member = "exclude"
   priority = "unspecified"
   useg_epg = "no"
-  admin_state = provider::aci::compare_versions(data.aci_system.version.version,">=","4.0(1h)") ? "no" : null
-  has_multicast_source = provider::aci::compare_versions(data.aci_system.version.version,">=","4.0(1h)") ? "no" : null
+  admin_state = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.0(1h)-") ? "no" : null
+  has_multicast_source = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.0(1h)-") ? "no" : null
 }
 `
 const testConfigFvAEPgChildrenDependencyWithFvAp = testChildDependencyConfigFvAEPg + testConfigFvApMinDependencyWithFvTenant + `
@@ -1298,8 +1298,8 @@ resource "aci_application_epg" "test" {
     name_alias = "name_alias_1"
     owner_key = "owner_key_1"
     owner_tag = "owner_tag_1"
-  	precedence = provider::aci::compare_versions(data.aci_system.version.version,">=","4.1(1i)") ? "1" : null
-  	scope = provider::aci::compare_versions(data.aci_system.version.version,">=","4.1(1i)") ? "scope-bd" : null
+  	precedence = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.1(1i)-") ? "1" : null
+  	scope = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.1(1i)-") ? "scope-bd" : null
   }
   relation_to_bridge_domain = {
     annotation = "annotation_1"
@@ -1515,10 +1515,10 @@ resource "aci_application_epg" "test" {
       switching_mode = "AVE"
       target_dn = "uni/vmmp-VMware/dom-domain_1"
       untagged = "no"
-      binding_type = provider::aci::compare_versions(data.aci_system.version.version,">=","4.0(1h)") ? "dynamicBinding" : null
-      number_of_ports = provider::aci::compare_versions(data.aci_system.version.version,">=","4.0(1h)") ? "1" : null
-      port_allocation = provider::aci::compare_versions(data.aci_system.version.version,">=","4.0(1h)") ? "elastic" : null
-      custom_epg_name = provider::aci::compare_versions(data.aci_system.version.version,">=","4.2(3j)") ? "custom_epg_name_1" : null
+      binding_type = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.0(1h)-") ? "dynamicBinding" : null
+      number_of_ports = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.0(1h)-") ? "1" : null
+      port_allocation = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.0(1h)-") ? "elastic" : null
+      custom_epg_name = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.2(3j)-") ? "custom_epg_name_1" : null
     },
     {
       annotation = "annotation_2"
@@ -1559,10 +1559,10 @@ resource "aci_application_epg" "test" {
       switching_mode = "native"
       target_dn = "uni/vmmp-VMware/dom-domain_2"
       untagged = "yes"
-      binding_type = provider::aci::compare_versions(data.aci_system.version.version,">=","4.0(1h)") ? "ephemeral" : null
-      number_of_ports = provider::aci::compare_versions(data.aci_system.version.version,">=","4.0(1h)") ? "0" : null
-      port_allocation = provider::aci::compare_versions(data.aci_system.version.version,">=","4.0(1h)") ? "fixed" : null
-      custom_epg_name = provider::aci::compare_versions(data.aci_system.version.version,">=","4.2(3j)") ? "custom_epg_name_2" : null
+      binding_type = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.0(1h)-") ? "ephemeral" : null
+      number_of_ports = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.0(1h)-") ? "0" : null
+      port_allocation = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.0(1h)-") ? "fixed" : null
+      custom_epg_name = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.2(3j)-") ? "custom_epg_name_2" : null
     },
   ]
   relation_to_fibre_channel_paths = [
@@ -2126,10 +2126,10 @@ resource "aci_application_epg" "test" {
 	  switching_mode = "native"
 	  target_dn = "uni/vmmp-VMware/dom-domain_2"
 	  untagged = "yes"
-  	  binding_type = provider::aci::compare_versions(data.aci_system.version.version,">=","4.0(1h)") ? "ephemeral" : null
-  	  number_of_ports = provider::aci::compare_versions(data.aci_system.version.version,">=","4.0(1h)") ? "0" : null
-  	  port_allocation = provider::aci::compare_versions(data.aci_system.version.version,">=","4.0(1h)") ? "fixed" : null
-  	  custom_epg_name = provider::aci::compare_versions(data.aci_system.version.version,">=","4.2(3j)") ? "custom_epg_name_2" : null
+  	  binding_type = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.0(1h)-") ? "ephemeral" : null
+  	  number_of_ports = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.0(1h)-") ? "0" : null
+  	  port_allocation = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.0(1h)-") ? "fixed" : null
+  	  custom_epg_name = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.2(3j)-") ? "custom_epg_name_2" : null
 	},
   ]
   relation_to_fibre_channel_paths = [ 

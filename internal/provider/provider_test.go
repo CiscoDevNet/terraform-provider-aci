@@ -126,7 +126,7 @@ func composeAggregateTestCheckFuncWithVersion(t *testing.T, propertyVersion stri
 
 		var result []error
 
-		comparisonResult, err := CompareVersions(apicVersion, propertyVersion, operator)
+		comparisonResult, err := CompareVersionsRange(apicVersion, propertyVersion, operator)
 		if err != nil {
 			return fmt.Errorf("Failed to compare versions in the test check function: %w", err)
 		}

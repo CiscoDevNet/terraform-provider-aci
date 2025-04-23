@@ -48,7 +48,7 @@ default:
   preferred_group_member: "exclude"
   priority: "unspecified"
   version_mismatch:
-    4.0(1h):
+    4.0(1h)-:
       has_multicast_source: "no"
       admin_state: "no"
 
@@ -82,7 +82,7 @@ all:
   preferred_group_member: "exclude"
   priority: "level1"
   version_mismatch:
-    4.0(1h):
+    4.0(1h)-:
       has_multicast_source: "no"
       admin_state: "no"
 
@@ -98,7 +98,7 @@ children:
       deletable_child: true
       child_required: false
       version_mismatch:
-        4.1(1i):
+        4.1(1i)-:
           precedence: "1"
           scope: "scope-bd"
       children:
@@ -275,11 +275,11 @@ children:
       untagged: "no"
       
       version_mismatch:
-        4.0(1h):
+        4.0(1h)-:
           binding_type: "dynamicBinding"
           number_of_ports: "1"
           port_allocation: "elastic"
-        4.2(3j):
+        4.2(3j)-:
           custom_epg_name: "custom_epg_name_1"
       children:
         annotations:
@@ -316,11 +316,11 @@ children:
       untagged: "yes"
       
       version_mismatch:
-        4.0(1h):
+        4.0(1h)-:
           binding_type: "ephemeral"
           number_of_ports: "0"
           port_allocation: "fixed"
-        4.2(3j):
+        4.2(3j)-:
           custom_epg_name: "custom_epg_name_2"
       children:
         annotations:

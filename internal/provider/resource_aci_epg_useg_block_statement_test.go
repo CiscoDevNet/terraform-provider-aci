@@ -36,7 +36,7 @@ func TestAccResourceFvCrtrnWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.allow_test_2", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.allow_test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.allow_test_2", "owner_tag", ""),
-					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
 						resource.TestCheckResourceAttr("aci_epg_useg_block_statement.allow_test", "precedence", "0"),
 						resource.TestCheckResourceAttr("aci_epg_useg_block_statement.allow_test_2", "precedence", "0"),
 						resource.TestCheckResourceAttr("aci_epg_useg_block_statement.allow_test", "scope", "scope-bd"),
@@ -83,7 +83,7 @@ func TestAccResourceFvCrtrnWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.allow_test_2", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.allow_test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.allow_test_2", "owner_tag", ""),
-					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
 						resource.TestCheckResourceAttr("aci_epg_useg_block_statement.allow_test", "precedence", "0"),
 						resource.TestCheckResourceAttr("aci_epg_useg_block_statement.allow_test_2", "precedence", "0"),
 						resource.TestCheckResourceAttr("aci_epg_useg_block_statement.allow_test", "scope", "scope-bd"),
@@ -109,7 +109,7 @@ func TestAccResourceFvCrtrnWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "owner_tag", ""),
-					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
 						resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "precedence", "0"),
 						resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "scope", "scope-bd")),
 				),
@@ -126,7 +126,7 @@ func TestAccResourceFvCrtrnWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "name_alias", "name_alias_1"),
 					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "owner_key", "owner_key_1"),
 					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "owner_tag", "owner_tag_1"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
 						resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "precedence", "1"),
 						resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "scope", "scope-bd")),
 				),
@@ -161,7 +161,7 @@ func TestAccResourceFvCrtrnWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "owner_tag", ""),
-					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
 						resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "precedence", "0"),
 						resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "scope", "scope-bd")),
 					resource.TestCheckResourceAttr("aci_epg_useg_block_statement.test", "annotations.0.key", "key_0"),
@@ -255,8 +255,8 @@ resource "aci_epg_useg_block_statement" "test" {
   name_alias = "name_alias_1"
   owner_key = "owner_key_1"
   owner_tag = "owner_tag_1"
-  precedence = provider::aci::compare_versions(data.aci_system.version.version,">=","4.1(1i)") ? "1" : null
-  scope = provider::aci::compare_versions(data.aci_system.version.version,">=","4.1(1i)") ? "scope-bd" : null
+  precedence = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.1(1i)-") ? "1" : null
+  scope = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.1(1i)-") ? "scope-bd" : null
 }
 `
 
@@ -270,8 +270,8 @@ resource "aci_epg_useg_block_statement" "test" {
   name_alias = ""
   owner_key = ""
   owner_tag = ""
-  precedence = provider::aci::compare_versions(data.aci_system.version.version,">=","4.1(1i)") ? "0" : null
-  scope = provider::aci::compare_versions(data.aci_system.version.version,">=","4.1(1i)") ? "scope-bd" : null
+  precedence = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.1(1i)-") ? "0" : null
+  scope = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.1(1i)-") ? "scope-bd" : null
 }
 `
 const testConfigFvCrtrnChildrenDependencyWithFvAEPg = testConfigFvAEPgMin + `

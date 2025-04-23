@@ -36,7 +36,7 @@ func TestAccResourceRtctrlProfileWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "route_control_profile_type", "combinable"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "route_control_profile_type", "combinable"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.2(6d)-4.2(7w),5.1(3e)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(6d)-4.2(7w),5.1(3e)-", "inside",
 						resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "route_map_continue", "no"),
 						resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "route_map_continue", "no")),
 				),
@@ -81,7 +81,7 @@ func TestAccResourceRtctrlProfileWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "route_control_profile_type", "combinable"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "route_control_profile_type", "combinable"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.2(6d)-4.2(7w),5.1(3e)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(6d)-4.2(7w),5.1(3e)-", "inside",
 						resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "route_map_continue", "no"),
 						resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "route_map_continue", "no")),
 				),
@@ -105,7 +105,7 @@ func TestAccResourceRtctrlProfileWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_control_profile_type", "combinable"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.2(6d)-4.2(7w),5.1(3e)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(6d)-4.2(7w),5.1(3e)-", "inside",
 						resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_map_continue", "no")),
 				),
 			},
@@ -121,7 +121,7 @@ func TestAccResourceRtctrlProfileWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "owner_key", "owner_key_1"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "owner_tag", "owner_tag_1"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_control_profile_type", "combinable"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.2(6d)-4.2(7w),5.1(3e)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(6d)-4.2(7w),5.1(3e)-", "inside",
 						resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_map_continue", "no")),
 				),
 			},
@@ -145,7 +145,7 @@ func TestAccResourceRtctrlProfileWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_control_profile_type", "combinable"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.2(6d)-4.2(7w),5.1(3e)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(6d)-4.2(7w),5.1(3e)-", "inside",
 						resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_map_continue", "no")),
 				),
 			},
@@ -167,7 +167,7 @@ func TestAccResourceRtctrlProfileWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_control_profile_type", "combinable"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.2(6d)-4.2(7w),5.1(3e)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(6d)-4.2(7w),5.1(3e)-", "inside",
 						resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_map_continue", "no")),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotations.0.value", "value_1"),
@@ -258,7 +258,7 @@ func TestAccResourceRtctrlProfileWithL3extOut(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "route_control_profile_type", "combinable"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "route_control_profile_type", "combinable"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.2(6d)-4.2(7w),5.1(3e)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(6d)-4.2(7w),5.1(3e)-", "inside",
 						resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "route_map_continue", "no"),
 						resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "route_map_continue", "no")),
 				),
@@ -303,7 +303,7 @@ func TestAccResourceRtctrlProfileWithL3extOut(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "route_control_profile_type", "combinable"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "route_control_profile_type", "combinable"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.2(6d)-4.2(7w),5.1(3e)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(6d)-4.2(7w),5.1(3e)-", "inside",
 						resource.TestCheckResourceAttr("aci_route_control_profile.allow_test", "route_map_continue", "no"),
 						resource.TestCheckResourceAttr("aci_route_control_profile.allow_test_2", "route_map_continue", "no")),
 				),
@@ -327,7 +327,7 @@ func TestAccResourceRtctrlProfileWithL3extOut(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_control_profile_type", "combinable"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.2(6d)-4.2(7w),5.1(3e)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(6d)-4.2(7w),5.1(3e)-", "inside",
 						resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_map_continue", "no")),
 				),
 			},
@@ -343,7 +343,7 @@ func TestAccResourceRtctrlProfileWithL3extOut(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "owner_key", "owner_key_1"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "owner_tag", "owner_tag_1"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_control_profile_type", "combinable"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.2(6d)-4.2(7w),5.1(3e)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(6d)-4.2(7w),5.1(3e)-", "inside",
 						resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_map_continue", "no")),
 				),
 			},
@@ -367,7 +367,7 @@ func TestAccResourceRtctrlProfileWithL3extOut(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_control_profile_type", "combinable"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.2(6d)-4.2(7w),5.1(3e)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(6d)-4.2(7w),5.1(3e)-", "inside",
 						resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_map_continue", "no")),
 				),
 			},
@@ -389,7 +389,7 @@ func TestAccResourceRtctrlProfileWithL3extOut(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_control_profile_type", "combinable"),
-					composeAggregateTestCheckFuncWithVersion(t, "4.2(6d)-4.2(7w),5.1(3e)", ">=",
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(6d)-4.2(7w),5.1(3e)-", "inside",
 						resource.TestCheckResourceAttr("aci_route_control_profile.test", "route_map_continue", "no")),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_route_control_profile.test", "annotations.0.value", "value_1"),
@@ -485,7 +485,7 @@ resource "aci_route_control_profile" "test" {
   owner_key = "owner_key_1"
   owner_tag = "owner_tag_1"
   route_control_profile_type = "combinable"
-  route_map_continue = provider::aci::compare_versions(data.aci_system.version.version,">=","4.2(6d)-4.2(7w),5.1(3e)") ? "no" : null
+  route_map_continue = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.2(6d)-4.2(7w),5.1(3e)-") ? "no" : null
 }
 `
 
@@ -499,7 +499,7 @@ resource "aci_route_control_profile" "test" {
   owner_key = ""
   owner_tag = ""
   route_control_profile_type = "combinable"
-  route_map_continue = provider::aci::compare_versions(data.aci_system.version.version,">=","4.2(6d)-4.2(7w),5.1(3e)") ? "no" : null
+  route_map_continue = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.2(6d)-4.2(7w),5.1(3e)-") ? "no" : null
 }
 `
 const testConfigRtctrlProfileChildrenDependencyWithFvTenant = testConfigFvTenantMin + `
@@ -593,7 +593,7 @@ resource "aci_route_control_profile" "test" {
   owner_key = "owner_key_1"
   owner_tag = "owner_tag_1"
   route_control_profile_type = "combinable"
-  route_map_continue = provider::aci::compare_versions(data.aci_system.version.version,">=","4.2(6d)-4.2(7w),5.1(3e)") ? "no" : null
+  route_map_continue = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.2(6d)-4.2(7w),5.1(3e)-") ? "no" : null
 }
 `
 
@@ -607,7 +607,7 @@ resource "aci_route_control_profile" "test" {
   owner_key = ""
   owner_tag = ""
   route_control_profile_type = "combinable"
-  route_map_continue = provider::aci::compare_versions(data.aci_system.version.version,">=","4.2(6d)-4.2(7w),5.1(3e)") ? "no" : null
+  route_map_continue = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.2(6d)-4.2(7w),5.1(3e)-") ? "no" : null
 }
 `
 const testConfigRtctrlProfileChildrenDependencyWithL3extOut = testConfigL3extOutMin + `
