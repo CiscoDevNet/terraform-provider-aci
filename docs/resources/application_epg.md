@@ -553,10 +553,10 @@ All examples for the Application EPG resource can be found in the [examples](htt
   
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-* `relation_to_custom_qos_policy` - (map) A map of Relation To Custom Qos Policy (ACI object [fvRsCustQosPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsCustQosPol/overview)) pointing to Custom Qos Policy (ACI Object [qosCustomPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/qosCustomPol/overview)) which can be configured using the [aci_custom_qos_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/custom_qos_policy) resource.
+* `relation_to_custom_qos_policy` - (map) A map of Relation To Custom QoS Policy (ACI object [fvRsCustQosPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsCustQosPol/overview)) pointing to Custom QoS Policy (ACI Object [qosCustomPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/qosCustomPol/overview)) which can be configured using the [aci_custom_qos_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/custom_qos_policy) resource.
   #### Optional ####
     
-    * `annotation` (annotation) - (string) The annotation of the Relation To Custom Qos Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `annotation` (annotation) - (string) The annotation of the Relation To Custom QoS Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
       - Default: `orchestrator:terraform`
     * `custom_qos_policy_name` (tnQosCustomPolName) - (string) The Custom QoS traffic policy name.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
@@ -612,7 +612,7 @@ All examples for the Application EPG resource can be found in the [examples](htt
     * `netflow_direction` (netflowDir) - (string) The NetFlow monitoring direction of the Relation To Domain object. This attribute is supported in ACI versions: 3.0(1k) and later.
       - Default: `both`
       - Valid Values: `both`, `egress`, `ingress`.
-    * `enable_netflow` (netflowPref) - (string) The Netflow enabled status for the Relation To Domain object. This attribute is supported in ACI versions: 2.2(1k) and later.
+    * `enable_netflow` (netflowPref) - (string) The NetFlow enabled status for the Relation To Domain object. This attribute is supported in ACI versions: 2.2(1k) and later.
       - Default: `disabled`
       - Valid Values: `disabled`, `enabled`.
     * `number_of_ports` (numPorts) - (string) The number of ports of the Relation To Domain object. This attribute is supported in ACI versions: 4.0(1h) and later.

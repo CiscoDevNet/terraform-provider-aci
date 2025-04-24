@@ -42,7 +42,7 @@ func (d *PimRouteMapPolDataSource) Schema(ctx context.Context, req datasource.Sc
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Pim Route Map Policy object.",
+				MarkdownDescription: "The distinguished name (DN) of the PIM Route Map Policy object.",
 			},
 			"parent_dn": schema.StringAttribute{
 				Required:            true,
@@ -50,19 +50,19 @@ func (d *PimRouteMapPolDataSource) Schema(ctx context.Context, req datasource.Sc
 			},
 			"annotation": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The annotation of the Pim Route Map Policy object.`,
+				MarkdownDescription: `The annotation of the PIM Route Map Policy object.`,
 			},
 			"description": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The description of the Pim Route Map Policy object.`,
+				MarkdownDescription: `The description of the PIM Route Map Policy object.`,
 			},
 			"name": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: `The name of the Pim Route Map Policy object.`,
+				MarkdownDescription: `The name of the PIM Route Map Policy object.`,
 			},
 			"name_alias": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The name alias of the Pim Route Map Policy object.`,
+				MarkdownDescription: `The name alias of the PIM Route Map Policy object.`,
 			},
 			"owner_key": schema.StringAttribute{
 				Computed:            true,

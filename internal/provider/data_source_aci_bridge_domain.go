@@ -709,7 +709,7 @@ func (d *FvBDDataSource) Schema(ctx context.Context, req datasource.SchemaReques
 				Attributes: map[string]schema.Attribute{
 					"annotation": schema.StringAttribute{
 						Computed:            true,
-						MarkdownDescription: `The annotation of the Relation From Bridge Domain To Dhcp Relay Policy object.`,
+						MarkdownDescription: `The annotation of the Relation From Bridge Domain To DHCP Relay Policy object.`,
 					},
 					"dhcp_relay_policy_name": schema.StringAttribute{
 						Computed:            true,

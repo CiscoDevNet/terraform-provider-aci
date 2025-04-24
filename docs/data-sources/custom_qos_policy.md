@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_custom_qos_policy"
 sidebar_current: "docs-aci-data-source-aci_custom_qos_policy"
 description: |-
-  Data source for ACI Custom Qos Policy
+  Data source for ACI Custom QoS Policy
 ---
 
 # aci_custom_qos_policy #
 
-Data source for ACI Custom Qos Policy
+Data source for ACI Custom QoS Policy
 
 ## API Information ##
 
@@ -43,14 +43,14 @@ data "aci_custom_qos_policy" "example_tenant" {
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
-* `name` (name) - (string) The name of the Custom Qos Policy object.
+* `name` (name) - (string) The name of the Custom QoS Policy object.
 
 ### Read-Only ###
 
-* `id` - (string) The distinguished name (DN) of the Custom Qos Policy object.
-* `annotation` (annotation) - (string) The annotation of the Custom Qos Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
-* `description` (descr) - (string) The description of the Custom Qos Policy object.
-* `name_alias` (nameAlias) - (string) The name alias of the Custom Qos Policy object. This attribute is supported in ACI versions: 2.2(1k) and later.
+* `id` - (string) The distinguished name (DN) of the Custom QoS Policy object.
+* `annotation` (annotation) - (string) The annotation of the Custom QoS Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `description` (descr) - (string) The description of the Custom QoS Policy object.
+* `name_alias` (nameAlias) - (string) The name alias of the Custom QoS Policy object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `dot1p_classifiers` - (list) A list of Dot1p Classifiers (ACI object [qosDot1PClass](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/qosDot1PClass/overview)).
@@ -61,7 +61,7 @@ data "aci_custom_qos_policy" "example_tenant" {
     * `name_alias` (nameAlias) - (string) The name alias of the Dot1p Classifier object. This attribute is supported in ACI versions: 2.2(1k) and later.
     * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
     * `target` (target) - (string) The target of the Dot1p Classifier object. This Fabric only supports DSCP mutation, Dot1P mutation is not supported.
-    * `target_cos` (targetCos) - (string) Target COS to be driven based on the range of input values of DSCP coming into the fabric. This attribute is supported in ACI versions: 2.1(1h) and later.
+    * `target_cos` (targetCos) - (string) The target Class of Service (CoS) to be driven based on the range of DSCP input values coming into the fabric. This attribute is supported in ACI versions: 2.1(1h) and later.
     * `to` (to) - (string) The Dot1p priority range ending value.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
         * `key` (key) - (string) The key used to uniquely identify this configuration object.

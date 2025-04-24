@@ -42,7 +42,7 @@ func (d *PimRouteMapEntryDataSource) Schema(ctx context.Context, req datasource.
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Pim Route Map Entry object.",
+				MarkdownDescription: "The distinguished name (DN) of the PIM Route Map Entry object.",
 			},
 			"parent_dn": schema.StringAttribute{
 				Required:            true,
@@ -50,27 +50,27 @@ func (d *PimRouteMapEntryDataSource) Schema(ctx context.Context, req datasource.
 			},
 			"action": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The route action of the Pim Route Map Entry object.`,
+				MarkdownDescription: `The route action of the PIM Route Map Entry object.`,
 			},
 			"annotation": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The annotation of the Pim Route Map Entry object.`,
+				MarkdownDescription: `The annotation of the PIM Route Map Entry object.`,
 			},
 			"description": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The description of the Pim Route Map Entry object.`,
+				MarkdownDescription: `The description of the PIM Route Map Entry object.`,
 			},
 			"group_ip": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The group ip of the Pim Route Map Entry object.`,
+				MarkdownDescription: `The group ip of the PIM Route Map Entry object.`,
 			},
 			"name": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The name of the Pim Route Map Entry object.`,
+				MarkdownDescription: `The name of the PIM Route Map Entry object.`,
 			},
 			"name_alias": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The name alias of the Pim Route Map Entry object.`,
+				MarkdownDescription: `The name alias of the PIM Route Map Entry object.`,
 			},
 			"order": schema.StringAttribute{
 				Required:            true,
@@ -78,11 +78,11 @@ func (d *PimRouteMapEntryDataSource) Schema(ctx context.Context, req datasource.
 			},
 			"rendezvous_point_ip": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The rendezvous point ip of the Pim Route Map Entry object.`,
+				MarkdownDescription: `The rendezvous point ip of the PIM Route Map Entry object.`,
 			},
 			"source_ip": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The source ip of the Pim Route Map Entry object.`,
+				MarkdownDescription: `The source ip of the PIM Route Map Entry object.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,

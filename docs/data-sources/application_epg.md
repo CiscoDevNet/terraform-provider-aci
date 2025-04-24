@@ -117,8 +117,8 @@ data "aci_application_epg" "example_application_profile" {
     * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-* `relation_to_custom_qos_policy` - (map) A map of Relation To Custom Qos Policy (ACI object [fvRsCustQosPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsCustQosPol/overview)) pointing to Custom Qos Policy (ACI Object [qosCustomPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/qosCustomPol/overview)).
-    * `annotation` (annotation) - (string) The annotation of the Relation To Custom Qos Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `relation_to_custom_qos_policy` - (map) A map of Relation To Custom QoS Policy (ACI object [fvRsCustQosPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsCustQosPol/overview)) pointing to Custom QoS Policy (ACI Object [qosCustomPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/qosCustomPol/overview)).
+    * `annotation` (annotation) - (string) The annotation of the Relation To Custom QoS Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `custom_qos_policy_name` (tnQosCustomPolName) - (string) The Custom QoS traffic policy name.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
@@ -147,7 +147,7 @@ data "aci_application_epg" "example_application_profile" {
     * `ipam_gateway` (ipamGateway) - (string) The IP address management (IPAM) gateway of the Relation To Domain object. Only applicable for Nutanix domains. This attribute is supported in ACI versions: 6.0(3d) and later.
     * `lag_policy_name` (lagPolicyName) - (string) The link aggregation group (LAG) policy name of the Relation To Domain object. This attribute is supported in ACI versions: 3.2(10e) to 3.2(10g), 3.2(7f) and later.
     * `netflow_direction` (netflowDir) - (string) The NetFlow monitoring direction of the Relation To Domain object. This attribute is supported in ACI versions: 3.0(1k) and later.
-    * `enable_netflow` (netflowPref) - (string) The Netflow enabled status for the Relation To Domain object. This attribute is supported in ACI versions: 2.2(1k) and later.
+    * `enable_netflow` (netflowPref) - (string) The NetFlow enabled status for the Relation To Domain object. This attribute is supported in ACI versions: 2.2(1k) and later.
     * `number_of_ports` (numPorts) - (string) The number of ports of the Relation To Domain object. This attribute is supported in ACI versions: 4.0(1h) and later.
     * `port_allocation` (portAllocation) - (string) Port allocation for ports. This attribute is supported in ACI versions: 4.0(1h) and later.
     * `primary_encapsulation` (primaryEncap) - (string) The primary encapsulation of the Relation To Domain object. This is used when the class preference is set to 'useg'. This attribute is supported in ACI versions: 1.2(2g) and later.

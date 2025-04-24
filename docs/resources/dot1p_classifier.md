@@ -112,7 +112,7 @@ All examples for the Dot1p Classifier resource can be found in the [examples](ht
   - Valid Values:
     * `AF11`, `AF12`, `AF13`, `AF21`, `AF22`, `AF23`, `AF31`, `AF32`, `AF33`, `AF41`, `AF42`, `AF43`, `CS0`, `CS1`, `CS2`, `CS3`, `CS4`, `CS5`, `CS6`, `CS7`, `EF`, `VA`, `unspecified`.
     * Or a value in the range of `0` to `64`.
-* `target_cos` (targetCos) - (string) Target COS to be driven based on the range of input values of DSCP coming into the fabric. This attribute is supported in ACI versions: 2.1(1h) and later.
+* `target_cos` (targetCos) - (string) The target Class of Service (CoS) to be driven based on the range of DSCP input values coming into the fabric. This attribute is supported in ACI versions: 2.1(1h) and later.
   - Default: `unspecified`
   - Valid Values:
     * `0`, `1`, `2`, `3`, `4`, `5`, `6`, `7`, `unspecified`.

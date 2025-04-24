@@ -43,7 +43,7 @@ func (d *QosCustomPolDataSource) Schema(ctx context.Context, req datasource.Sche
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Custom Qos Policy object.",
+				MarkdownDescription: "The distinguished name (DN) of the Custom QoS Policy object.",
 			},
 			"parent_dn": schema.StringAttribute{
 				Required:            true,
@@ -51,19 +51,19 @@ func (d *QosCustomPolDataSource) Schema(ctx context.Context, req datasource.Sche
 			},
 			"annotation": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The annotation of the Custom Qos Policy object.`,
+				MarkdownDescription: `The annotation of the Custom QoS Policy object.`,
 			},
 			"description": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The description of the Custom Qos Policy object.`,
+				MarkdownDescription: `The description of the Custom QoS Policy object.`,
 			},
 			"name": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: `The name of the Custom Qos Policy object.`,
+				MarkdownDescription: `The name of the Custom QoS Policy object.`,
 			},
 			"name_alias": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The name alias of the Custom Qos Policy object.`,
+				MarkdownDescription: `The name alias of the Custom QoS Policy object.`,
 			},
 			"owner_key": schema.StringAttribute{
 				Computed:            true,
@@ -112,7 +112,7 @@ func (d *QosCustomPolDataSource) Schema(ctx context.Context, req datasource.Sche
 						"target_cos": schema.StringAttribute{
 							CustomType:          customTypes.QosDot1PClassTargetCosStringType{},
 							Computed:            true,
-							MarkdownDescription: `Target COS to be driven based on the range of input values of DSCP coming into the fabric.`,
+							MarkdownDescription: `The target Class of Service (CoS) to be driven based on the range of DSCP input values coming into the fabric.`,
 						},
 						"to": schema.StringAttribute{
 							CustomType:          customTypes.QosDot1PClassToStringType{},

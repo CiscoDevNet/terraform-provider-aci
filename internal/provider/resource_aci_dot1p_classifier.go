@@ -284,7 +284,7 @@ func (r *QosDot1PClassResource) Schema(ctx context.Context, req resource.SchemaR
 						validators.InBetweenFromString(0, 8),
 					),
 				},
-				MarkdownDescription: `Target COS to be driven based on the range of input values of DSCP coming into the fabric.`,
+				MarkdownDescription: `The target Class of Service (CoS) to be driven based on the range of DSCP input values coming into the fabric.`,
 			},
 			"to": schema.StringAttribute{
 				CustomType: customTypes.QosDot1PClassToStringType{},

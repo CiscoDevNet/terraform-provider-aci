@@ -73,6 +73,9 @@ global:
     Http Service: "HTTP Service"
     Dscp To: "DSCP to"
     Sla: "SLA"
+    Dhcp: "DHCP"
+    Pim: "PIM"
+    Qos: "QoS"
   ignores:
     - "userdom"
 
@@ -975,7 +978,7 @@ fvRsDomAtt:
     ipamDhcpOverride: "The IP address management (IPAM) DHCP override of the %s object. Only applicable for Nutanix domains."
     lagPolicyName: "The link aggregation group (LAG) policy name of the %s object."
     netflowDir: "The NetFlow monitoring direction of the %s object."
-    netflowPref: "The Netflow enabled status for the %s object."
+    netflowPref: "The NetFlow enabled status for the %s object."
     numPorts: "The number of ports of the %s object."
     primaryEncap: "The primary encapsulation of the %s object. This is used when the class preference is set to 'useg'."
     primaryEncapInner: "The primary inner encapsulation of the %s object. This is used for the portgroup at the VMWare Distributed Virtual Switch (DVS). This VLAN is internal to the DVS and is used for communication between the other VMs and the AVE VM at a host. Traffic is not forwarded to the fabric over the VLAN. Only applicable for Cisco ACI Virtual Edge (AVE) domains."
@@ -1085,6 +1088,7 @@ qosDot1PClass:
       parent_dn: "aci_custom_qos_policy.test.id"
   documentation:
     target: "The target of the %s object. This Fabric only supports DSCP mutation, Dot1P mutation is not supported."
+    targetCos: "The target Class of Service (CoS) to be driven based on the range of DSCP input values coming into the fabric."
   test_values:
     default:
       from: "1"

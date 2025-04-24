@@ -63,7 +63,7 @@ data "aci_relation_to_domain" "example_application_epg" {
 * `ipam_gateway` (ipamGateway) - (string) The IP address management (IPAM) gateway of the Relation To Domain object. Only applicable for Nutanix domains. This attribute is supported in ACI versions: 6.0(3d) and later.
 * `lag_policy_name` (lagPolicyName) - (string) The link aggregation group (LAG) policy name of the Relation To Domain object. This attribute is supported in ACI versions: 3.2(10e) to 3.2(10g), 3.2(7f) and later.
 * `netflow_direction` (netflowDir) - (string) The NetFlow monitoring direction of the Relation To Domain object. This attribute is supported in ACI versions: 3.0(1k) and later.
-* `enable_netflow` (netflowPref) - (string) The Netflow enabled status for the Relation To Domain object. This attribute is supported in ACI versions: 2.2(1k) and later.
+* `enable_netflow` (netflowPref) - (string) The NetFlow enabled status for the Relation To Domain object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `number_of_ports` (numPorts) - (string) The number of ports of the Relation To Domain object. This attribute is supported in ACI versions: 4.0(1h) and later.
 * `port_allocation` (portAllocation) - (string) Port allocation for ports. This attribute is supported in ACI versions: 4.0(1h) and later.
 * `primary_encapsulation` (primaryEncap) - (string) The primary encapsulation of the Relation To Domain object. This is used when the class preference is set to 'useg'. This attribute is supported in ACI versions: 1.2(2g) and later.

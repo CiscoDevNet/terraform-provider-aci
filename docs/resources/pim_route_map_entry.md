@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_pim_route_map_entry"
 sidebar_current: "docs-aci-resource-aci_pim_route_map_entry"
 description: |-
-  Manages ACI Pim Route Map Entry
+  Manages ACI PIM Route Map Entry
 ---
 
 # aci_pim_route_map_entry #
 
-Manages ACI Pim Route Map Entry
+Manages ACI PIM Route Map Entry
 
 
 
@@ -30,7 +30,7 @@ Manages ACI Pim Route Map Entry
 
 ## Example Usage ##
 
-The configuration snippet below creates a Pim Route Map Entry with only required attributes.
+The configuration snippet below creates a PIM Route Map Entry with only required attributes.
 
 ```hcl
 
@@ -40,7 +40,7 @@ resource "aci_pim_route_map_entry" "example_pim_route_map_policy" {
 }
 
 ```
-The configuration snippet below shows all possible attributes of the Pim Route Map Entry.
+The configuration snippet below shows all possible attributes of the PIM Route Map Entry.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
@@ -73,7 +73,7 @@ resource "aci_pim_route_map_entry" "full_example_pim_route_map_policy" {
 
 ```
 
-All examples for the Pim Route Map Entry resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/resources/aci_pim_route_map_entry) folder.
+All examples for the PIM Route Map Entry resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/resources/aci_pim_route_map_entry) folder.
 
 ## Schema ##
 
@@ -85,21 +85,21 @@ All examples for the Pim Route Map Entry resource can be found in the [examples]
 
 ### Read-Only ###
 
-* `id` - (string) The distinguished name (DN) of the Pim Route Map Entry object.
+* `id` - (string) The distinguished name (DN) of the PIM Route Map Entry object.
 
 ### Optional ###
 
-* `action` (action) - (string) The route action of the Pim Route Map Entry object.
+* `action` (action) - (string) The route action of the PIM Route Map Entry object.
   - Default: `permit`
   - Valid Values: `deny`, `permit`.
-* `annotation` (annotation) - (string) The annotation of the Pim Route Map Entry object. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotation` (annotation) - (string) The annotation of the PIM Route Map Entry object. This attribute is supported in ACI versions: 3.2(1l) and later.
   - Default: `orchestrator:terraform`
-* `description` (descr) - (string) The description of the Pim Route Map Entry object.
-* `group_ip` (grp) - (string) The group ip of the Pim Route Map Entry object.
-* `name` (name) - (string) The name of the Pim Route Map Entry object.
-* `name_alias` (nameAlias) - (string) The name alias of the Pim Route Map Entry object. This attribute is supported in ACI versions: 2.2(1k) and later.
-* `rendezvous_point_ip` (rp) - (string) The rendezvous point ip of the Pim Route Map Entry object.
-* `source_ip` (src) - (string) The source ip of the Pim Route Map Entry object.
+* `description` (descr) - (string) The description of the PIM Route Map Entry object.
+* `group_ip` (grp) - (string) The group ip of the PIM Route Map Entry object.
+* `name` (name) - (string) The name of the PIM Route Map Entry object.
+* `name_alias` (nameAlias) - (string) The name alias of the PIM Route Map Entry object. This attribute is supported in ACI versions: 2.2(1k) and later.
+* `rendezvous_point_ip` (rp) - (string) The rendezvous point ip of the PIM Route Map Entry object.
+* `source_ip` (src) - (string) The source ip of the PIM Route Map Entry object.
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
   
@@ -113,13 +113,13 @@ All examples for the Pim Route Map Entry resource can be found in the [examples]
 
 ## Importing
 
-An existing Pim Route Map Entry can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
+An existing PIM Route Map Entry can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
 terraform import aci_pim_route_map_entry.example_pim_route_map_policy uni/tn-{name}/rtmap-{name}/rtmapentry-{order}
 ```
 
-Starting in Terraform version 1.5, an existing Pim Route Map Entry can be imported
+Starting in Terraform version 1.5, an existing PIM Route Map Entry can be imported
 using [import blocks](https://developer.hashicorp.com/terraform/language/import) via the following configuration:
 
 ```

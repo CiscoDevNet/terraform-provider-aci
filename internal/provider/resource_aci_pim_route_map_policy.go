@@ -161,7 +161,7 @@ func (r *PimRouteMapPolResource) Schema(ctx context.Context, req resource.Schema
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Pim Route Map Policy object.",
+				MarkdownDescription: "The distinguished name (DN) of the PIM Route Map Policy object.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
@@ -182,7 +182,7 @@ func (r *PimRouteMapPolResource) Schema(ctx context.Context, req resource.Schema
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
-				MarkdownDescription: `The annotation of the Pim Route Map Policy object.`,
+				MarkdownDescription: `The annotation of the PIM Route Map Policy object.`,
 			},
 			"description": schema.StringAttribute{
 				Optional: true,
@@ -191,7 +191,7 @@ func (r *PimRouteMapPolResource) Schema(ctx context.Context, req resource.Schema
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The description of the Pim Route Map Policy object.`,
+				MarkdownDescription: `The description of the PIM Route Map Policy object.`,
 			},
 			"name": schema.StringAttribute{
 				Required: true,
@@ -200,7 +200,7 @@ func (r *PimRouteMapPolResource) Schema(ctx context.Context, req resource.Schema
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
-				MarkdownDescription: `The name of the Pim Route Map Policy object.`,
+				MarkdownDescription: `The name of the PIM Route Map Policy object.`,
 			},
 			"name_alias": schema.StringAttribute{
 				Optional: true,
@@ -209,7 +209,7 @@ func (r *PimRouteMapPolResource) Schema(ctx context.Context, req resource.Schema
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The name alias of the Pim Route Map Policy object.`,
+				MarkdownDescription: `The name alias of the PIM Route Map Policy object.`,
 			},
 			"owner_key": schema.StringAttribute{
 				Optional: true,
