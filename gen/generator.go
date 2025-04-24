@@ -1,9 +1,14 @@
 package main
 
 import (
-	"log"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/logger"
 )
 
+// Initialize a logger instance for the generator.
+var genLogger = logger.InitalizeLogger()
+
 func main() {
-	log.Printf("Implement Generator")
+	// Ensure that the log file is closed at the end of the main().
+	defer genLogger.CloseLogFile()
+	genLogger.Info("Implement Generator")
 }
