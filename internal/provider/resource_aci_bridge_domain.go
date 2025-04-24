@@ -4353,7 +4353,7 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						MarkdownDescription: `The annotation of the Relation From Bridge Domain To Dhcp Relay Policy object.`,
+						MarkdownDescription: `The annotation of the Relation From Bridge Domain To DHCP Relay Policy object.`,
 					},
 					"dhcp_relay_policy_name": schema.StringAttribute{
 						Optional: true,

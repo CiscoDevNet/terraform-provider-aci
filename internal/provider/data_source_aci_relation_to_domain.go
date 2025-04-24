@@ -110,7 +110,7 @@ func (d *FvRsDomAttDataSource) Schema(ctx context.Context, req datasource.Schema
 			},
 			"enable_netflow": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The Netflow enabled status for the Relation To Domain object.`,
+				MarkdownDescription: `The NetFlow enabled status for the Relation To Domain object.`,
 			},
 			"number_of_ports": schema.StringAttribute{
 				Computed:            true,

@@ -137,7 +137,7 @@ All examples for the Relation To Domain resource can be found in the [examples](
 * `netflow_direction` (netflowDir) - (string) The NetFlow monitoring direction of the Relation To Domain object. This attribute is supported in ACI versions: 3.0(1k) and later.
   - Default: `both`
   - Valid Values: `both`, `egress`, `ingress`.
-* `enable_netflow` (netflowPref) - (string) The Netflow enabled status for the Relation To Domain object. This attribute is supported in ACI versions: 2.2(1k) and later.
+* `enable_netflow` (netflowPref) - (string) The NetFlow enabled status for the Relation To Domain object. This attribute is supported in ACI versions: 2.2(1k) and later.
   - Default: `disabled`
   - Valid Values: `disabled`, `enabled`.
 * `number_of_ports` (numPorts) - (string) The number of ports of the Relation To Domain object. This attribute is supported in ACI versions: 4.0(1h) and later.

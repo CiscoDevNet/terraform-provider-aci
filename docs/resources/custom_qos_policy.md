@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_custom_qos_policy"
 sidebar_current: "docs-aci-resource-aci_custom_qos_policy"
 description: |-
-  Manages ACI Custom Qos Policy
+  Manages ACI Custom QoS Policy
 ---
 
 # aci_custom_qos_policy #
 
-Manages ACI Custom Qos Policy
+Manages ACI Custom QoS Policy
 
 
 
@@ -30,7 +30,7 @@ Manages ACI Custom Qos Policy
 
 ## Example Usage ##
 
-The configuration snippet below creates a Custom Qos Policy with only required attributes.
+The configuration snippet below creates a Custom QoS Policy with only required attributes.
 
 ```hcl
 
@@ -40,7 +40,7 @@ resource "aci_custom_qos_policy" "example_tenant" {
 }
 
 ```
-The configuration snippet below shows all possible attributes of the Custom Qos Policy.
+The configuration snippet below shows all possible attributes of the Custom QoS Policy.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
@@ -120,7 +120,7 @@ resource "aci_custom_qos_policy" "full_example_tenant" {
 
 ```
 
-All examples for the Custom Qos Policy resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/resources/aci_custom_qos_policy) folder.
+All examples for the Custom QoS Policy resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/resources/aci_custom_qos_policy) folder.
 
 ## Schema ##
 
@@ -128,18 +128,18 @@ All examples for the Custom Qos Policy resource can be found in the [examples](h
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
-* `name` (name) - (string) The name of the Custom Qos Policy object.
+* `name` (name) - (string) The name of the Custom QoS Policy object.
 
 ### Read-Only ###
 
-* `id` - (string) The distinguished name (DN) of the Custom Qos Policy object.
+* `id` - (string) The distinguished name (DN) of the Custom QoS Policy object.
 
 ### Optional ###
 
-* `annotation` (annotation) - (string) The annotation of the Custom Qos Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotation` (annotation) - (string) The annotation of the Custom QoS Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
   - Default: `orchestrator:terraform`
-* `description` (descr) - (string) The description of the Custom Qos Policy object.
-* `name_alias` (nameAlias) - (string) The name alias of the Custom Qos Policy object. This attribute is supported in ACI versions: 2.2(1k) and later.
+* `description` (descr) - (string) The description of the Custom QoS Policy object.
+* `name_alias` (nameAlias) - (string) The name alias of the Custom QoS Policy object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `dot1p_classifiers` - (list) A list of Dot1p Classifiers (ACI object [qosDot1PClass](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/qosDot1PClass/overview)). Dot1p Classifiers can also be configured using a separate [aci_dot1p_classifier](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/dot1p_classifier) resource.
@@ -160,7 +160,7 @@ All examples for the Custom Qos Policy resource can be found in the [examples](h
     * `target` (target) - (string) The target of the Dot1p Classifier object. This Fabric only supports DSCP mutation, Dot1P mutation is not supported.
       - Default: `unspecified`
       - Valid Values: `AF11`, `AF12`, `AF13`, `AF21`, `AF22`, `AF23`, `AF31`, `AF32`, `AF33`, `AF41`, `AF42`, `AF43`, `CS0`, `CS1`, `CS2`, `CS3`, `CS4`, `CS5`, `CS6`, `CS7`, `EF`, `VA`, `unspecified`.
-    * `target_cos` (targetCos) - (string) Target COS to be driven based on the range of input values of DSCP coming into the fabric. This attribute is supported in ACI versions: 2.1(1h) and later.
+    * `target_cos` (targetCos) - (string) The target Class of Service (CoS) to be driven based on the range of DSCP input values coming into the fabric. This attribute is supported in ACI versions: 2.1(1h) and later.
       - Default: `unspecified`
       - Valid Values: `0`, `1`, `2`, `3`, `4`, `5`, `6`, `7`, `unspecified`.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
@@ -217,13 +217,13 @@ All examples for the Custom Qos Policy resource can be found in the [examples](h
 
 ## Importing
 
-An existing Custom Qos Policy can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
+An existing Custom QoS Policy can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
 terraform import aci_custom_qos_policy.example_tenant uni/tn-{name}/qoscustom-{name}
 ```
 
-Starting in Terraform version 1.5, an existing Custom Qos Policy can be imported
+Starting in Terraform version 1.5, an existing Custom QoS Policy can be imported
 using [import blocks](https://developer.hashicorp.com/terraform/language/import) via the following configuration:
 
 ```

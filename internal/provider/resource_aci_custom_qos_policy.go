@@ -505,7 +505,7 @@ func (r *QosCustomPolResource) Schema(ctx context.Context, req resource.SchemaRe
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Custom Qos Policy object.",
+				MarkdownDescription: "The distinguished name (DN) of the Custom QoS Policy object.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
@@ -526,7 +526,7 @@ func (r *QosCustomPolResource) Schema(ctx context.Context, req resource.SchemaRe
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
-				MarkdownDescription: `The annotation of the Custom Qos Policy object.`,
+				MarkdownDescription: `The annotation of the Custom QoS Policy object.`,
 			},
 			"description": schema.StringAttribute{
 				Optional: true,
@@ -535,7 +535,7 @@ func (r *QosCustomPolResource) Schema(ctx context.Context, req resource.SchemaRe
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The description of the Custom Qos Policy object.`,
+				MarkdownDescription: `The description of the Custom QoS Policy object.`,
 			},
 			"name": schema.StringAttribute{
 				Required: true,
@@ -544,7 +544,7 @@ func (r *QosCustomPolResource) Schema(ctx context.Context, req resource.SchemaRe
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
-				MarkdownDescription: `The name of the Custom Qos Policy object.`,
+				MarkdownDescription: `The name of the Custom QoS Policy object.`,
 			},
 			"name_alias": schema.StringAttribute{
 				Optional: true,
@@ -553,7 +553,7 @@ func (r *QosCustomPolResource) Schema(ctx context.Context, req resource.SchemaRe
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The name alias of the Custom Qos Policy object.`,
+				MarkdownDescription: `The name alias of the Custom QoS Policy object.`,
 			},
 			"owner_key": schema.StringAttribute{
 				Optional: true,
@@ -672,7 +672,7 @@ func (r *QosCustomPolResource) Schema(ctx context.Context, req resource.SchemaRe
 									validators.InBetweenFromString(0, 8),
 								),
 							},
-							MarkdownDescription: `Target COS to be driven based on the range of input values of DSCP coming into the fabric.`,
+							MarkdownDescription: `The target Class of Service (CoS) to be driven based on the range of DSCP input values coming into the fabric.`,
 						},
 						"to": schema.StringAttribute{
 							CustomType: customTypes.QosDot1PClassToStringType{},

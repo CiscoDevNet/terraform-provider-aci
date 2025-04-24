@@ -169,7 +169,7 @@ func (r *PimRouteMapEntryResource) Schema(ctx context.Context, req resource.Sche
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Pim Route Map Entry object.",
+				MarkdownDescription: "The distinguished name (DN) of the PIM Route Map Entry object.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
@@ -192,7 +192,7 @@ func (r *PimRouteMapEntryResource) Schema(ctx context.Context, req resource.Sche
 				Validators: []validator.String{
 					stringvalidator.OneOf("deny", "permit"),
 				},
-				MarkdownDescription: `The route action of the Pim Route Map Entry object.`,
+				MarkdownDescription: `The route action of the PIM Route Map Entry object.`,
 			},
 			"annotation": schema.StringAttribute{
 				Optional: true,
@@ -202,7 +202,7 @@ func (r *PimRouteMapEntryResource) Schema(ctx context.Context, req resource.Sche
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
-				MarkdownDescription: `The annotation of the Pim Route Map Entry object.`,
+				MarkdownDescription: `The annotation of the PIM Route Map Entry object.`,
 			},
 			"description": schema.StringAttribute{
 				Optional: true,
@@ -211,7 +211,7 @@ func (r *PimRouteMapEntryResource) Schema(ctx context.Context, req resource.Sche
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The description of the Pim Route Map Entry object.`,
+				MarkdownDescription: `The description of the PIM Route Map Entry object.`,
 			},
 			"group_ip": schema.StringAttribute{
 				Optional: true,
@@ -220,7 +220,7 @@ func (r *PimRouteMapEntryResource) Schema(ctx context.Context, req resource.Sche
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The group ip of the Pim Route Map Entry object.`,
+				MarkdownDescription: `The group ip of the PIM Route Map Entry object.`,
 			},
 			"name": schema.StringAttribute{
 				Optional: true,
@@ -229,7 +229,7 @@ func (r *PimRouteMapEntryResource) Schema(ctx context.Context, req resource.Sche
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The name of the Pim Route Map Entry object.`,
+				MarkdownDescription: `The name of the PIM Route Map Entry object.`,
 			},
 			"name_alias": schema.StringAttribute{
 				Optional: true,
@@ -238,7 +238,7 @@ func (r *PimRouteMapEntryResource) Schema(ctx context.Context, req resource.Sche
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The name alias of the Pim Route Map Entry object.`,
+				MarkdownDescription: `The name alias of the PIM Route Map Entry object.`,
 			},
 			"order": schema.StringAttribute{
 				Required: true,
@@ -256,7 +256,7 @@ func (r *PimRouteMapEntryResource) Schema(ctx context.Context, req resource.Sche
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The rendezvous point ip of the Pim Route Map Entry object.`,
+				MarkdownDescription: `The rendezvous point ip of the PIM Route Map Entry object.`,
 			},
 			"source_ip": schema.StringAttribute{
 				Optional: true,
@@ -265,7 +265,7 @@ func (r *PimRouteMapEntryResource) Schema(ctx context.Context, req resource.Sche
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The source ip of the Pim Route Map Entry object.`,
+				MarkdownDescription: `The source ip of the PIM Route Map Entry object.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,

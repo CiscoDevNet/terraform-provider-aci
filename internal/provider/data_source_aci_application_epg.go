@@ -504,7 +504,7 @@ func (d *FvAEPgDataSource) Schema(ctx context.Context, req datasource.SchemaRequ
 				Attributes: map[string]schema.Attribute{
 					"annotation": schema.StringAttribute{
 						Computed:            true,
-						MarkdownDescription: `The annotation of the Relation To Custom Qos Policy object.`,
+						MarkdownDescription: `The annotation of the Relation To Custom QoS Policy object.`,
 					},
 					"custom_qos_policy_name": schema.StringAttribute{
 						Computed:            true,
@@ -611,7 +611,7 @@ func (d *FvAEPgDataSource) Schema(ctx context.Context, req datasource.SchemaRequ
 						},
 						"enable_netflow": schema.StringAttribute{
 							Computed:            true,
-							MarkdownDescription: `The Netflow enabled status for the Relation To Domain object.`,
+							MarkdownDescription: `The NetFlow enabled status for the Relation To Domain object.`,
 						},
 						"number_of_ports": schema.StringAttribute{
 							Computed:            true,

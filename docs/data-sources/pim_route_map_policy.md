@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_pim_route_map_policy"
 sidebar_current: "docs-aci-data-source-aci_pim_route_map_policy"
 description: |-
-  Data source for ACI Pim Route Map Policy
+  Data source for ACI PIM Route Map Policy
 ---
 
 # aci_pim_route_map_policy #
 
-Data source for ACI Pim Route Map Policy
+Data source for ACI PIM Route Map Policy
 
 ## API Information ##
 
@@ -43,14 +43,14 @@ data "aci_pim_route_map_policy" "example_tenant" {
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
-* `name` (name) - (string) The name of the Pim Route Map Policy object.
+* `name` (name) - (string) The name of the PIM Route Map Policy object.
 
 ### Read-Only ###
 
-* `id` - (string) The distinguished name (DN) of the Pim Route Map Policy object.
-* `annotation` (annotation) - (string) The annotation of the Pim Route Map Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
-* `description` (descr) - (string) The description of the Pim Route Map Policy object.
-* `name_alias` (nameAlias) - (string) The name alias of the Pim Route Map Policy object. This attribute is supported in ACI versions: 2.2(1k) and later.
+* `id` - (string) The distinguished name (DN) of the PIM Route Map Policy object.
+* `annotation` (annotation) - (string) The annotation of the PIM Route Map Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `description` (descr) - (string) The description of the PIM Route Map Policy object.
+* `name_alias` (nameAlias) - (string) The name alias of the PIM Route Map Policy object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.

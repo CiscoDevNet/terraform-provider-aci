@@ -83,7 +83,7 @@ func (d *QosDot1PClassDataSource) Schema(ctx context.Context, req datasource.Sch
 			"target_cos": schema.StringAttribute{
 				CustomType:          customTypes.QosDot1PClassTargetCosStringType{},
 				Computed:            true,
-				MarkdownDescription: `Target COS to be driven based on the range of input values of DSCP coming into the fabric.`,
+				MarkdownDescription: `The target Class of Service (CoS) to be driven based on the range of DSCP input values coming into the fabric.`,
 			},
 			"to": schema.StringAttribute{
 				CustomType:          customTypes.QosDot1PClassToStringType{},

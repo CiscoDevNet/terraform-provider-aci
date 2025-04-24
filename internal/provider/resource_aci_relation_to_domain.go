@@ -385,7 +385,7 @@ func (r *FvRsDomAttResource) Schema(ctx context.Context, req resource.SchemaRequ
 				Validators: []validator.String{
 					stringvalidator.OneOf("disabled", "enabled"),
 				},
-				MarkdownDescription: `The Netflow enabled status for the Relation To Domain object.`,
+				MarkdownDescription: `The NetFlow enabled status for the Relation To Domain object.`,
 			},
 			"number_of_ports": schema.StringAttribute{
 				Optional: true,

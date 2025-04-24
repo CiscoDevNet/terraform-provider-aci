@@ -555,10 +555,10 @@ All examples for the Bridge Domain resource can be found in the [examples](https
   
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-* `relation_to_dhcp_relay_policy` - (map) A map of Relation From Bridge Domain To Dhcp Relay Policy (ACI object [fvRsBDToRelayP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsBDToRelayP/overview)) pointing to Dhcp Relay Policy (ACI Object [dhcpRelayP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/dhcpRelayP/overview)) which can be configured using the [aci_dhcp_relay_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/dhcp_relay_policy) resource.
+* `relation_to_dhcp_relay_policy` - (map) A map of Relation From Bridge Domain To DHCP Relay Policy (ACI object [fvRsBDToRelayP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsBDToRelayP/overview)) pointing to DHCP Relay Policy (ACI Object [dhcpRelayP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/dhcpRelayP/overview)) which can be configured using the [aci_dhcp_relay_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/dhcp_relay_policy) resource.
   #### Optional ####
     
-    * `annotation` (annotation) - (string) The annotation of the Relation From Bridge Domain To Dhcp Relay Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `annotation` (annotation) - (string) The annotation of the Relation From Bridge Domain To DHCP Relay Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
       - Default: `orchestrator:terraform`
     * `dhcp_relay_policy_name` (tnDhcpRelayPName) - (string) The name of the DHCP Relay Policy object.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
