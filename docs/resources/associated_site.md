@@ -174,7 +174,7 @@ All examples for the Associated Site resource can be found in the [examples](htt
 
 ### Optional ###
 
-* `annotation` (annotation) - (string) The annotation of the Associated Site object.
+* `annotation` (annotation) - (string) The annotation of the Associated Site object. This attribute is supported in ACI versions: 3.2(1l) and later.
   - Default: `orchestrator:terraform`
 * `description` (descr) - (string) The description of the Associated Site object.
 * `name` (name) - (string) The name of the Associated Site object.
@@ -189,7 +189,7 @@ All examples for the Associated Site resource can be found in the [examples](htt
     * `site_id` (siteId) - (string) The remote site identifier that is associated with the object of the primary/local site as an integer.
   #### Optional ####
     
-    * `annotation` (annotation) - (string) The annotation of the Remote Site object.
+    * `annotation` (annotation) - (string) The annotation of the Remote Site object. This attribute is supported in ACI versions: 3.2(1l) and later.
       - Default: `orchestrator:terraform`
     * `description` (descr) - (string) The description of the Remote Site object.
     * `name` (name) - (string) The name of the Remote Site object.

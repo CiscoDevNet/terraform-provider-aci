@@ -95,7 +95,7 @@ All examples for the Remote Site resource can be found in the [examples](https:/
 
 ### Optional ###
 
-* `annotation` (annotation) - (string) The annotation of the Remote Site object.
+* `annotation` (annotation) - (string) The annotation of the Remote Site object. This attribute is supported in ACI versions: 3.2(1l) and later.
   - Default: `orchestrator:terraform`
 * `description` (descr) - (string) The description of the Remote Site object.
 * `name` (name) - (string) The name of the Remote Site object.

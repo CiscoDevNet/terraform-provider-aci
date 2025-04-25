@@ -61,7 +61,7 @@ data "aci_associated_site" "example_bridge_domain" {
 ### Read-Only ###
 
 * `id` - (string) The distinguished name (DN) of the Associated Site object.
-* `annotation` (annotation) - (string) The annotation of the Associated Site object.
+* `annotation` (annotation) - (string) The annotation of the Associated Site object. This attribute is supported in ACI versions: 3.2(1l) and later.
 * `description` (descr) - (string) The description of the Associated Site object.
 * `name` (name) - (string) The name of the Associated Site object.
 * `name_alias` (nameAlias) - (string) The name alias of the Associated Site object.
@@ -69,7 +69,7 @@ data "aci_associated_site" "example_bridge_domain" {
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `site_id` (siteId) - (string) The primary/local site identifier associated with the object as an integer.
 * `remote_sites` - (list) A list of Remote Sites (ACI object [fvRemoteId](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRemoteId/overview)).
-    * `annotation` (annotation) - (string) The annotation of the Remote Site object.
+    * `annotation` (annotation) - (string) The annotation of the Remote Site object. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `description` (descr) - (string) The description of the Remote Site object.
     * `name` (name) - (string) The name of the Remote Site object.
     * `name_alias` (nameAlias) - (string) The name alias of the Remote Site object.
