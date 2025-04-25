@@ -103,10 +103,10 @@ All examples for the Taboo Contract Subject resource can be found in the [exampl
 
 ### Optional ###
 
-* `annotation` (annotation) - (string) The annotation of the Taboo Contract Subject object.
+* `annotation` (annotation) - (string) The annotation of the Taboo Contract Subject object. This attribute is supported in ACI versions: 3.2(1l) and later.
   - Default: `orchestrator:terraform`
 * `description` (descr) - (string) The description of the Taboo Contract Subject object.
-* `name_alias` (nameAlias) - (string) The name alias of the Taboo Contract Subject object.
+* `name_alias` (nameAlias) - (string) The name alias of the Taboo Contract Subject object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
   
@@ -123,7 +123,7 @@ All examples for the Taboo Contract Subject resource can be found in the [exampl
     * `filter_name` (tnVzFilterName) - (string) The name of the filter object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/filter) with `aci_filter.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/filter) with `data.aci_filter.example.name`.
   #### Optional ####
     
-    * `annotation` (annotation) - (string) The annotation of the Relation From Taboo Contract Subject To Filter object.
+    * `annotation` (annotation) - (string) The annotation of the Relation From Taboo Contract Subject To Filter object. This attribute is supported in ACI versions: 3.2(1l) and later.
       - Default: `orchestrator:terraform`
     * `directives` (directives) - (list) The directives of the Relation From Taboo Contract Subject To Filter object. Use the 'no_stats' option for Policy Compression, which allows for the utilization of fewer TCAM resources. Use the 'log' option to log packets and provide information about traffic that is hitting the rule of interest. See the [contract configuration options](https://www.cisco.com/c/en/us/solutions/collateral/data-center-virtualization/application-centric-infrastructure/white-paper-c11-743951.html#Contractconfigurationoptions) in the Cisco ACI Contract Guide White Paper for more information.
       - Valid Values: `log`, `no_stats`.
