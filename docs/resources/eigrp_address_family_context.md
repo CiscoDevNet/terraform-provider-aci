@@ -93,7 +93,7 @@ All examples for the EIGRP Address Family Context resource can be found in the [
 
 * `active_interval` (actIntvl) - (string) The active timer interval, which specifies the length of time an EIGRP route can stay in the Active state without a best path. When the time ends, the route is moved to the Stuck-In-Active state.
   - Default: `3`
-* `annotation` (annotation) - (string) The annotation of the EIGRP Address Family Context object.
+* `annotation` (annotation) - (string) The annotation of the EIGRP Address Family Context object. This attribute is supported in ACI versions: 3.2(1l) and later.
   - Default: `orchestrator:terraform`
 * `description` (descr) - (string) The description of the EIGRP Address Family Context object.
 * `external_distance` (extDist) - (string) The administrative distance preference for external routes.
@@ -105,7 +105,7 @@ All examples for the EIGRP Address Family Context resource can be found in the [
 * `metric_style` (metricStyle) - (string) The metric style used for metric calculations.
   - Default: `narrow`
   - Valid Values: `narrow`, `wide`.
-* `name_alias` (nameAlias) - (string) The name alias of the EIGRP Address Family Context object.
+* `name_alias` (nameAlias) - (string) The name alias of the EIGRP Address Family Context object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.

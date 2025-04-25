@@ -82,6 +82,7 @@ global:
     Vpn: "VPN"
     Eigrp: "EIGRP"
     Bgp: "BGP"
+    Ospf: "OSPF"
   ignores:
     - "userdom"
 
@@ -2394,9 +2395,10 @@ fvRsCtxToSDWanVpn:
 
 eigrpCtxAfPol:
   overwrites:
-    act_intvl: active_interval
-    ext_dist: external_distance
-    int_dist: internal_distance
-    max_paths: maximum_path_limit
+    act_intvl: "active_interval"
+    ext_dist: "external_distance"
+    int_dist: "internal_distance"
+    max_paths: "maximum_path_limit"
   documentation:
-    metricStyle: The metric style used for metric calculations.
+    metricStyle: "The metric style used for metric calculations."
+    maxPaths: "The maximum number of different equal cost paths to install in the routing table."
