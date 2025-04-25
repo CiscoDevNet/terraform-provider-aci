@@ -48,17 +48,17 @@ data "aci_vrf" "example_tenant" {
 ### Read-Only ###
 
 * `id` - (string) The distinguished name (DN) of the VRF object.
-* `annotation` (annotation) - (string) The annotation of the VRF object.
-* `bd_enforcement` (bdEnforcedEnable) - (string) The Bridge Domain (BD) enforcement status of the VRF. BD enforcement will restrict a host from sending ping requests to subnets outside the Bridge Domain (BD). The feature blocks ICMP, TCP and UDP traffic between BDs.
+* `annotation` (annotation) - (string) The annotation of the VRF object. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `bd_enforcement` (bdEnforcedEnable) - (string) The Bridge Domain (BD) enforcement status of the VRF. BD enforcement will restrict a host from sending ping requests to subnets outside the Bridge Domain (BD). The feature blocks ICMP, TCP and UDP traffic between BDs. This attribute is supported in ACI versions: 3.0(1k) and later.
 * `description` (descr) - (string) The description of the VRF object.
-* `ip_data_plane_learning` (ipDataPlaneLearning) - (string) The IP data plane status of the VRF object. The process known as IP data plane learning involves acquiring the endpoint's IPv4 or IPv6 address through data plane routing of traffic from the endpoint.
-* `name_alias` (nameAlias) - (string) The name alias of the VRF object.
+* `ip_data_plane_learning` (ipDataPlaneLearning) - (string) The IP data plane status of the VRF object. The process known as IP data plane learning involves acquiring the endpoint's IPv4 or IPv6 address through data plane routing of traffic from the endpoint. This attribute is supported in ACI versions: 4.0(1h) and later.
+* `name_alias` (nameAlias) - (string) The name alias of the VRF object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
-* `policy_control_enforcement_direction` (pcEnfDir) - (string) The policy control enforcement direction of the VRF object. VRF ingress policy enforcement involves ACL filtering on the leaf switch where the endpoint is located, reducing the policy CAM usage on the border leaf switch by confining the filtering to 'compute' leaf switches. VRF egress policy enforcement extends ACL filtering to the border leaf switch, increasing its policy CAM usage. The border leaf switch handles filtering for traffic from L3Out to EPG after the endpoint is learned, unless the endpoint-to-destination class mapping is unknown, in which case the compute leaf switch handles the filtering.
+* `policy_control_enforcement_direction` (pcEnfDir) - (string) The policy control enforcement direction of the VRF object. VRF ingress policy enforcement involves ACL filtering on the leaf switch where the endpoint is located, reducing the policy CAM usage on the border leaf switch by confining the filtering to 'compute' leaf switches. VRF egress policy enforcement extends ACL filtering to the border leaf switch, increasing its policy CAM usage. The border leaf switch handles filtering for traffic from L3Out to EPG after the endpoint is learned, unless the endpoint-to-destination class mapping is unknown, in which case the compute leaf switch handles the filtering. This attribute is supported in ACI versions: 1.2(1i) and later.
 * `policy_control_enforcement_mode` (pcEnfPref) - (string) The policy control enforcement mode of the VRF object. VRFs in unenforced mode do not restrict traffic between EPGs that are member of the VRF. VRFs in enforced mode restrict traffic not allowed by contracts between EPGs that are member of the VRF. The policy control enforcement direction is used to determine the preferred enforcement method.
 * `relation_to_bgp_timers` - (map) A map of Relation To BGP Timers (ACI object [fvRsBgpCtxPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsBgpCtxPol/overview)) pointing to BGP Timers (ACI Object [bgpCtxPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/bgpCtxPol/overview)).
-    * `annotation` (annotation) - (string) The annotation of the Relation To BGP Timers object.
+    * `annotation` (annotation) - (string) The annotation of the Relation To BGP Timers object. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `bgp_timers_name` (tnBgpCtxPolName) - (string) The name of the BGP timers policy associated with this context.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
@@ -67,7 +67,7 @@ data "aci_vrf" "example_tenant" {
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
 * `relation_to_monitoring_policy` - (map) A map of Relation From VRF To Monitoring Policy (ACI object [fvRsCtxMonPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsCtxMonPol/overview)) pointing to Monitoring Policy (ACI Object [monEPGPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/monEPGPol/overview)).
-    * `annotation` (annotation) - (string) The annotation of the Relation From VRF To Monitoring Policy object.
+    * `annotation` (annotation) - (string) The annotation of the Relation From VRF To Monitoring Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `monitoring_policy_name` (tnMonEPGPolName) - (string) The name of the monitoring policy associated with this context.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
@@ -77,7 +77,7 @@ data "aci_vrf" "example_tenant" {
         * `value` (value) - (string) The value of the property.
 * `relation_to_bgp_address_family_contexts` - (list) A list of Relation From VRF To BGP Address Family Contexts (ACI object [fvRsCtxToBgpCtxAfPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsCtxToBgpCtxAfPol/overview)) pointing to BGP Address Family Context (ACI Object [bgpCtxAfPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/bgpCtxAfPol/overview)). This attribute is supported in ACI versions: 1.1(1j) and later.
     * `address_family` (af) - (string) The type of address family for the Relation From VRF To BGP Address Family Context.
-    * `annotation` (annotation) - (string) The annotation of the Relation From VRF To BGP Address Family Context object.
+    * `annotation` (annotation) - (string) The annotation of the Relation From VRF To BGP Address Family Context object. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `bgp_address_family_context_name` (tnBgpCtxAfPolName) - (string) The name of the BGP Address Family Context.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
@@ -87,7 +87,7 @@ data "aci_vrf" "example_tenant" {
         * `value` (value) - (string) The value of the property.
 * `relation_to_eigrp_address_family_contexts` - (list) A list of Relation From VRF To EIGRP Address Family Contexts (ACI object [fvRsCtxToEigrpCtxAfPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsCtxToEigrpCtxAfPol/overview)) pointing to EIGRP Address Family Context (ACI Object [eigrpCtxAfPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/eigrpCtxAfPol/overview)). This attribute is supported in ACI versions: 1.1(1j) and later.
     * `address_family` (af) - (string) The type of address family for the Relation From VRF To EIGRP Address Family Context.
-    * `annotation` (annotation) - (string) The annotation of the Relation From VRF To EIGRP Address Family Context object.
+    * `annotation` (annotation) - (string) The annotation of the Relation From VRF To EIGRP Address Family Context object. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `eigrp_address_family_context_name` (tnEigrpCtxAfPolName) - (string) The name of the EIGRP Address Family Context.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
@@ -96,7 +96,7 @@ data "aci_vrf" "example_tenant" {
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
 * `relation_to_end_point_retention_policy` - (map) A map of Relation From VRF To End Point Retention Policy (ACI object [fvRsCtxToEpRet](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsCtxToEpRet/overview)) pointing to End Point Retention Policy (ACI Object [fvEpRetPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvEpRetPol/overview)).
-    * `annotation` (annotation) - (string) The annotation of the Relation From VRF To End Point Retention Policy object.
+    * `annotation` (annotation) - (string) The annotation of the Relation From VRF To End Point Retention Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `end_point_retention_policy_name` (tnFvEpRetPolName) - (string) The end point retention policy name.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
@@ -105,7 +105,7 @@ data "aci_vrf" "example_tenant" {
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
 * `relation_to_l3out_route_tag_policy` - (map) A map of Relation From VRF To L3Out Route Tag Policy (ACI object [fvRsCtxToExtRouteTagPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsCtxToExtRouteTagPol/overview)) pointing to L3Out Route Tag Policy (ACI Object [l3extRouteTagPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extRouteTagPol/overview)). This attribute is supported in ACI versions: 1.1(1j) and later.
-    * `annotation` (annotation) - (string) The annotation of the Relation From VRF To L3Out Route Tag Policy object.
+    * `annotation` (annotation) - (string) The annotation of the Relation From VRF To L3Out Route Tag Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `l3out_route_tag_policy_name` (tnL3extRouteTagPolName) - (string) The name of the External Route Tag policy associated with this context.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
@@ -115,7 +115,7 @@ data "aci_vrf" "example_tenant" {
         * `value` (value) - (string) The value of the property.
 * `relation_to_address_family_ospf_timers` - (list) A list of Relation From VRF To Address Family OSPF Timers (ACI object [fvRsCtxToOspfCtxPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsCtxToOspfCtxPol/overview)) pointing to OSPF Timers (ACI Object [ospfCtxPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/ospfCtxPol/overview)). This attribute is supported in ACI versions: 1.1(1j) and later.
     * `address_family` (af) - (string) The type of address family for the Relation From VRF To Address Family OSPF Timers.
-    * `annotation` (annotation) - (string) The annotation of the Relation From VRF To Address Family OSPF Timers object.
+    * `annotation` (annotation) - (string) The annotation of the Relation From VRF To Address Family OSPF Timers object. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `ospf_timers_name` (tnOspfCtxPolName) - (string) The name of the OSPF timers policy associated with this object.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
@@ -133,7 +133,7 @@ data "aci_vrf" "example_tenant" {
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
 * `relation_to_ospf_timers` - (map) A map of Relation To OSPF Timers (ACI object [fvRsOspfCtxPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsOspfCtxPol/overview)) pointing to OSPF Timers (ACI Object [ospfCtxPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/ospfCtxPol/overview)).
-    * `annotation` (annotation) - (string) The annotation of the Relation To OSPF Timers object.
+    * `annotation` (annotation) - (string) The annotation of the Relation To OSPF Timers object. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `ospf_timers_name` (tnOspfCtxPolName) - (string) The name of the OSPF timers policy associated with this context.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
         * `key` (key) - (string) The key used to uniquely identify this configuration object.

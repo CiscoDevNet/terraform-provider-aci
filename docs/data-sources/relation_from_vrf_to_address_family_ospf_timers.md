@@ -51,7 +51,7 @@ data "aci_relation_from_vrf_to_address_family_ospf_timers" "example_vrf" {
 ### Read-Only ###
 
 * `id` - (string) The distinguished name (DN) of the Relation From VRF To Address Family OSPF Timers object.
-* `annotation` (annotation) - (string) The annotation of the Relation From VRF To Address Family OSPF Timers object.
+* `annotation` (annotation) - (string) The annotation of the Relation From VRF To Address Family OSPF Timers object. This attribute is supported in ACI versions: 3.2(1l) and later.
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
