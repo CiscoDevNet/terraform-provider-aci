@@ -82,7 +82,7 @@ func (l *Logger) SetLogFile(logPath string) {
 	if err != nil {
 		logger.Fatal(fmt.Sprintf("Failed to open log file: %s", err.Error()))
 	}
-	logger.Info(fmt.Sprintf("Logging to file: %s", logPath))
+	logger.Trace(fmt.Sprintf("Logging to file: %s", logPath))
 	logger.log.SetOutput(file)
 	logger.logFile = file
 }
@@ -93,7 +93,7 @@ func (l *Logger) CloseLogFile() {
 		l.logFile.Close()
 		l.logFile = nil
 		l.log.SetOutput(os.Stdout)
-		l.Info("Log file closed, logging to stdout")
+		l.Trace("Log file closed, logging to stdout")
 	}
 }
 
@@ -102,7 +102,7 @@ func (l *Logger) CloseLogFile() {
 func (l *Logger) SetLogLevel(logLevel string) {
 	if level, ok := logLevels[logLevel]; ok {
 		l.logLevel = level
-		logger.Info(fmt.Sprintf("Log level set to: %s", logLevel))
+		logger.Trace(fmt.Sprintf("Log level set to: %s", logLevel))
 		return
 	}
 

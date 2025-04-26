@@ -88,5 +88,6 @@ func TestSetLogLevel(t *testing.T) {
 		}
 	}
 
+	genLogger.SetLogLevel("INFO")
 	cleanLogTest()
 }
