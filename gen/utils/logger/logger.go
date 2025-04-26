@@ -9,13 +9,16 @@ import (
 const (
 	// Environment variables for logging configuration.
 	// The log path can be set to a file path, if none is provided it defaults to "stdout".
-	envLogPath = "GEN_LOG_PATH"
+	envLogPath = "GEN_ACI_TF_LOG_PATH"
 	// The log level can be set to TRACE, DEBUG, INFO, WARN, ERROR, or FATAL.
-	envLogLevel = "GEN_LOG_LEVEL"
+	envLogLevel = "GEN_ACI_TF_LOG_LEVEL"
 	// The log flags for the formatting of the log messages.
 	logFlags = log.Ldate | log.Ltime | log.Lmicroseconds | log.Llongfile
 	// The log file flags for writing to the log file.
-	logFileFlags       = os.O_CREATE | os.O_WRONLY | os.O_APPEND
+	// The log file is created if it does not exist, and it is opened in append mode.
+	logFileFlags = os.O_CREATE | os.O_WRONLY | os.O_APPEND
+	// The log file permissions for the log file.
+	// This is set to 0666 to allow all users to read and write to the log file.
 	logFilePermissions = 0666
 )
 
@@ -56,15 +59,15 @@ func InitalizeLogger() *Logger {
 
 	// Check if the log path is set in the environment variables.
 	// If it is set, open the file and set it as the output for the logger.
-	if logPath := os.Getenv(envLogPath); logPath != "" {
-		logger.SetLogFile(logPath)
+	if eLogPath := os.Getenv(envLogPath); eLogPath != "" {
+		logger.SetLogFile(eLogPath)
 	}
 
 	// Check if the log level is set in the environment variables.
 	// If it is set, set the log level for the logger.
 	// If it is not set, use the default log level.
-	if envLogLevel := os.Getenv(envLogLevel); envLogLevel != "" {
-		logLevel = envLogLevel
+	if eLogLevel := os.Getenv(envLogLevel); eLogLevel != "" {
+		logLevel = eLogLevel
 	}
 
 	// Set the log level for the logger.
