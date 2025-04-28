@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/data"
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/logger"
 )
 
@@ -8,7 +9,11 @@ import (
 var genLogger = logger.InitalizeLogger()
 
 func main() {
+	genLogger.Trace("Starting Generator")
 	// Ensure that the log file is closed at the end of the main().
 	defer genLogger.CloseLogFile()
-	genLogger.Info("Implement Generator")
+
+	genLogger.Trace("Initializing Data Store")
+	dataStore := data.NewDataStore()
+	dataStore.LoadMetaFiles()
 }
