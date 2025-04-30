@@ -18,6 +18,7 @@ type Property struct {
 	// Documentation specific information for the property.
 	Documentation PropertyDocumentation
 	// Migration specific information for the property.
+	// This is a map that contains the migration value details of the attribute for a specific schema version.
 	MigrationValues map[int]MigrationValue
 	// Indicates if a property is optional in the resource and datasource schemas.
 	Optional bool
