@@ -9,17 +9,17 @@ import (
 const (
 	// Environment variables for logging configuration.
 	// The log path can be set to a file path, if none is provided it defaults to "stdout".
-	envLogPath = "GEN_ACI_TF_LOG_PATH"
+	constEnvLogPath = "GEN_ACI_TF_LOG_PATH"
 	// The log level can be set to TRACE, DEBUG, INFO, WARN, ERROR, or FATAL.
-	envLogLevel = "GEN_ACI_TF_LOG_LEVEL"
+	constEnvLogLevel = "GEN_ACI_TF_LOG_LEVEL"
 	// The log flags for the formatting of the log messages.
-	logFlags = log.Ldate | log.Ltime | log.Lmicroseconds | log.Llongfile
+	constLogFlags = log.Ldate | log.Ltime | log.Lmicroseconds | log.Llongfile
 	// The log file flags for writing to the log file.
 	// The log file is created if it does not exist, and it is opened in append mode.
-	logFileFlags = os.O_CREATE | os.O_WRONLY | os.O_APPEND
+	constLogFileFlags = os.O_CREATE | os.O_WRONLY | os.O_APPEND
 	// The log file permissions for the log file.
 	// This is set to 0666 to allow all users to read and write to the log file.
-	logFilePermissions = 0666
+	constLogFilePermissions = 0666
 )
 
 // The logger variable is a singleton instance of the Logger struct.
@@ -54,20 +54,20 @@ type Logger struct {
 func InitalizeLogger() *Logger {
 	if logger == nil {
 		// Create a new logger instance with default settings.
-		logger = &Logger{log: log.New(os.Stdout, "", logFlags)}
+		logger = &Logger{log: log.New(os.Stdout, "", constLogFlags)}
 	}
 
 	// Check if the log path is set in the environment variables.
 	// If it is set, open the file and set it as the output for the logger.
-	if eLogPath := os.Getenv(envLogPath); eLogPath != "" {
-		logger.SetLogFile(eLogPath)
+	if envLogPath := os.Getenv(constEnvLogPath); envLogPath != "" {
+		logger.SetLogFile(envLogPath)
 	}
 
 	// Check if the log level is set in the environment variables.
 	// If it is set, set the log level for the logger.
 	// If it is not set, use the default log level.
-	if eLogLevel := os.Getenv(envLogLevel); eLogLevel != "" {
-		logLevel = eLogLevel
+	if envLogLevel := os.Getenv(constEnvLogLevel); envLogLevel != "" {
+		logLevel = envLogLevel
 	}
 
 	// Set the log level for the logger.
@@ -78,7 +78,7 @@ func InitalizeLogger() *Logger {
 
 // Sets the log file for the logger from a path.
 func (l *Logger) SetLogFile(logPath string) {
-	file, err := os.OpenFile(logPath, logFileFlags, logFilePermissions)
+	file, err := os.OpenFile(logPath, constLogFileFlags, constLogFilePermissions)
 	if err != nil {
 		logger.Fatal(fmt.Sprintf("Failed to open log file: %s", err.Error()))
 	}
