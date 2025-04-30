@@ -26,14 +26,15 @@ type Class struct {
 	Children []Child
 	// List of all possible parent classes.
 	ContainedBy []string
+	// The APIC versions in which the class is deprecated.
+	DeprecatedVersions []VersionRange
 	// Documentation specific information for the class.
 	Documentation ClassDocumentation
 	// List of all identifying properties of the class.
-	// These are properties that are part if the relative name (RN) format, ex 'tn-{name}' where name is the identifying property.
+	// These are properties that are part of the relative name (RN) format, ex 'tn-{name}' where name is the identifying property.
 	IdentifiedBy []string
 	// Indicates that the class is migrated from previous version of the provider.
-	// This is used to determine if legacy attributes to be exposed in the resource.
-	// This is used to determine if the plan modification logic.
+	// This is used to determine if legacy attributes have to be exposed in the resource.
 	IsMigration bool
 	// Indicates that the class is a relationship class.
 	IsRelational bool
@@ -55,11 +56,11 @@ type Class struct {
 	// Storing the raw data proactively in case we need to access the data at a later stage.
 	RawMetaData map[string]interface{}
 	// Indicates if the class is required when defined as a child in a parent resource.
-	Required bool
+	RequiredAsChild bool
 	// The resource name is the name of the resource in the provider, ex "aci_tenant".
 	ResourceName string
 	// The nested attribute name when part of a parent resource.
-	// ex. "aci_relation_from_bridge_domain_to_netflow_monitor_policy" would translate to "aci_relation_to_netflow_monitor_policy".
+	// ex. "relation_from_bridge_domain_to_netflow_monitor_policy" would translate to "relation_to_netflow_monitor_policy".
 	ResourceNameNested string
 	// The relative name (RN) format of the class, ex "tn-{name}".
 	RnFormat string
@@ -67,7 +68,7 @@ type Class struct {
 	// Each version range is separated by a comma, ex "4.2(7f)-4.2(7w),5.2(1g)-".
 	// The first version is the minimum version and the second version is the maximum version.
 	// A dash at the end of a range (ex. 4.2(7f)-) indicates that the class is supported from the first version to the latest version.
-	Versions string
+	Versions []VersionRange
 }
 
 type Child struct {
@@ -79,6 +80,7 @@ type Child struct {
 }
 
 type ClassDocumentation struct {
+	// The description of the class, which is used at the top of the documentation.
 	Description string
 	// List of all child classes which are not included inside the resource but have a separate resource
 	// Used to reference child resource in documentation
@@ -89,6 +91,18 @@ type ClassDocumentation struct {
 	Warnings []string
 	// List of DN formats
 	DnFormats []string
+}
+
+type VersionRange struct {
+	// The minimum version of the range.
+	// This is the first version of the range.
+	// The version is in the format "4.2(7f)".
+	Min string
+	// The maximum version of the range.
+	// This is the second version of the range.
+	// The version is in the format "4.2(7w)".
+	// A dash at the end of a range (ex. 4.2(7f)-) indicates that the class is supported from the first version to the latest version.
+	Max string
 }
 
 func NewClass(className string) *Class {
@@ -106,6 +120,7 @@ func NewClass(className string) *Class {
 		}
 	}
 	if shortName == "" || packageName == "" {
+		genLogger.Trace(fmt.Sprintf("Class name '%s' got split into package name '%s' and short name '%s'.", className, packageName, shortName))
 		genLogger.Fatal(fmt.Sprintf("Failed to split class name '%s' for name space separation.", className))
 	}
 
@@ -119,7 +134,7 @@ func NewClass(className string) *Class {
 }
 
 func (c *Class) LoadMetaFile() {
-	genLogger.Trace(fmt.Sprintf("Loading meta file for class '%s'.", c.ClassName))
+	genLogger.Debug(fmt.Sprintf("Loading meta file for class '%s'.", c.ClassName))
 
 	fileContent, err := os.ReadFile(fmt.Sprintf("%s/%s.json", metaPath, c.ClassName))
 	if err != nil {
@@ -138,10 +153,12 @@ func (c *Class) LoadMetaFile() {
 
 	c.RawMetaData = classDetails[fmt.Sprintf("%s:%s", c.ClassNamePackage, c.ClassNameShort)].(map[string]interface{})
 	c.setClassData()
+
+	genLogger.Debug(fmt.Sprintf("Succesfully loaded meta file for class '%s'.", c.ClassName))
 }
 
 func (c *Class) setClassData() {
-	genLogger.Trace(fmt.Sprintf("Setting class data for class '%s'.", c.ClassName))
+	genLogger.Debug(fmt.Sprintf("Setting class data for class '%s'.", c.ClassName))
 
 	c.setResourceName()
 
@@ -151,7 +168,7 @@ func (c *Class) setClassData() {
 		c.setProperties(properties.(map[string]interface{}))
 	}
 
-	genLogger.Trace(fmt.Sprintf("Succesfully set class data for class '%s'.", c.ClassName))
+	genLogger.Debug(fmt.Sprintf("Succesfully set class data for class '%s'.", c.ClassName))
 }
 
 func (c *Class) setResourceName() {
@@ -159,7 +176,7 @@ func (c *Class) setResourceName() {
 }
 
 func (c *Class) setProperties(properties map[string]interface{}) {
-	genLogger.Trace(fmt.Sprintf("Setting properties for class '%s'.", c.ClassName))
+	genLogger.Debug(fmt.Sprintf("Setting properties for class '%s'.", c.ClassName))
 	for name, propertyDetails := range properties {
 		details := propertyDetails.(map[string]interface{})
 		// TODO: add logic to set the property data based on ignore/include/exclude overwrites (read-only) from definition files.
@@ -170,6 +187,6 @@ func (c *Class) setProperties(properties map[string]interface{}) {
 		}
 	}
 
-	genLogger.Trace(fmt.Sprintf("Succesfully set properties for class '%s'.", c.ClassName))
+	genLogger.Debug(fmt.Sprintf("Succesfully set properties for class '%s'.", c.ClassName))
 	// TODO: add sorting logic for the properties
 }

@@ -8,18 +8,20 @@ type Property struct {
 	// Indicates if the property is computed in the resource schemas.
 	Computed bool
 	// Indicates if the property has a custom type.
-	// Custom types are used for valid values that have a string and an interger value pointing to the same value. (ex. ssh and 22)
+	// Custom types are used for valid values that have a string and an integer value pointing to the same value. (ex. ssh and 22)
 	CustomType bool
 	// Indicates if the property is deprecated in the resource and datasource schemas.
 	// Deprecated properties include a warning the resource and datasource schemas.
 	Deprecated bool
+	// The APIC versions in which the property is deprecated.
+	DeprecatedVersions []VersionRange
 	// Documentation specific information for the property.
 	Documentation PropertyDocumentation
 	// Migration specific information for the property.
 	MigrationValues map[int]MigrationValue
 	// Indicates if a property is optional in the resource and datasource schemas.
 	Optional bool
-	// When a property that points to another class, this is the class to which the property points.
+	// When a property that points to another class, this is the class to which the property points to.
 	PointsToClass string
 	// The name of the property in the APIC class.
 	PropertyName string
@@ -28,7 +30,7 @@ type Property struct {
 	// Indicates if the property is required in the resource and datasource schemas.
 	Required bool
 	// Test specific information for the property.
-	// This is used to generate the test cases and exmaples for the property.
+	// This is used to generate the test cases and examples for the property.
 	// TODO: re-evaluate the structure when creating example and test templates.
 	TestValues []TestValue
 	// Validation specific information for the property.
@@ -36,7 +38,7 @@ type Property struct {
 	// TODO: re-evaluate the structure when creating resource templates. We might want to create a separate struc type for each type of validation.
 	Validators []Validator
 	// Specifies the valid values for the property when only certain values are allowed as input.
-	ValidValues []string
+	ValidValues []ValidValue
 	// The type of the property in the resource and datasource schemas.
 	// The following types are supported:
 	// - string: when the property is a single value
@@ -47,7 +49,7 @@ type Property struct {
 	// Each version range is separated by a comma, ex "4.2(7f)-4.2(7w),5.2(1g)-".
 	// The first version is the minimum version and the second version is the maximum version.
 	// A dash at the end of a range (ex. 4.2(7f)-) indicates that the class is supported from the first version to the latest version.
-	Versions string
+	Versions []VersionRange
 }
 
 type MigrationValue struct {
@@ -71,6 +73,11 @@ type TestValue struct {
 	Changed []string
 }
 
+type ValidValue struct {
+	// The valid value of the property.
+	Value string
+}
+
 type Validator struct {
 	// If the property has a range of values, these are the minimum and maximum values of the range.
 	Min float64
@@ -92,7 +99,7 @@ type RegexStatement struct {
 
 type PropertyDocumentation struct {
 	// A generic explanation of the property and its usage.
-	// When applicable, a reference to classes the property points to and which resources/datasources are used for this in included.
+	// When applicable, a reference to classes the property points to and which resources/datasources are used for this is included.
 	// When version is higher than the class version, a property specific version is included.
 	Description string
 	// The default value of the property in APIC.

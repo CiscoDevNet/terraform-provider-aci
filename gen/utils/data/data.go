@@ -13,21 +13,6 @@ import (
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/logger"
 )
 
-const (
-	// Environment variables for logging configuration.
-	// Determine if the meta data should be refreshed from remote location, the default is to not refresh the meta data.
-	envMetaRefresh = "GEN_ACI_TF_META_REFRESH"
-	// The from which the meta data is retrieved, when not set, the default is the devnet base URL.
-	envMetaHost = "GEN_ACI_TF_META_HOST"
-	// The environment variable that contains the list of classes to be retrieved.
-	// The classes are separated by a comma, ex "fvTenant,fvAp".
-	envMetaClasses   = "GEN_ACI_TF_META_CLASSES"
-	pubhupDevnetHost = "pubhub.devnetcloud.com/media/model-doc-latest/docs"
-	metaFileUrl      = "https://%s/doc/jsonmeta/%s/%s.json"
-	// The path to the meta data files.
-	metaPath = "./gen/meta"
-)
-
 // Initialize a logger instance for the generator.
 var genLogger = logger.InitalizeLogger()
 
@@ -54,7 +39,7 @@ func (ds *DataStore) setMetaHost() {
 	// If it is not set, use the default devnet host.
 	host := os.Getenv(envMetaHost)
 	if host == "" {
-		host = pubhupDevnetHost
+		host = pubhubDevnetHost
 	}
 	ds.metaHost = host
 	genLogger.Info(fmt.Sprintf("Meta data host set to: %s.", host))
@@ -70,20 +55,20 @@ func (ds *DataStore) retrieveEnvClassesMetaFromRemote() {
 }
 
 func (ds *DataStore) initializeMeta() {
-	var retrieve bool
+	var refresh bool
 	var err error
 	// Check if the meta data should be refreshed from remote location as specified in the environment variable.
-	retrieveEnv := os.Getenv(envMetaRefresh)
+	metaRefreshEnv := os.Getenv(envMetaRefresh)
 	// If the environment variable is not set, the default is to not refresh the meta data.
-	if retrieveEnv != "" {
+	if metaRefreshEnv != "" {
 		// If the environment variable is set, parse it to a boolean value.
 		// If the parsing fails, log a warning and skip retrieval of meta data.
-		retrieve, err = strconv.ParseBool(os.Getenv(envMetaRefresh))
+		refresh, err = strconv.ParseBool(metaRefreshEnv)
 		if err != nil {
 			genLogger.Warn(fmt.Sprintf("Refreshing of meta is skipped due to error: %s.", err.Error()))
 		}
 	}
-	ds.setClasses(utils.GetFileNamesFromDirectory(metaPath), retrieve)
+	ds.setClasses(utils.GetFileNamesFromDirectory(metaPath), refresh)
 }
 
 func (ds *DataStore) setClasses(classNames []string, retrieve bool) {
@@ -94,7 +79,7 @@ func (ds *DataStore) setClasses(classNames []string, retrieve bool) {
 			className = strings.Replace(className, ".json", "", 1)
 		}
 
-		// When the the class is already set, skip the process because it was retrieved during retrieveEnvClassesFromRemote.
+		// When the class is already set, skip the process because it was retrieved during retrieveEnvClassesFromRemote.
 		if _, ok := ds.Classes[className]; ok {
 			genLogger.Trace(fmt.Sprintf("Meta data for class '%s' already set. Skipping...", className))
 			continue
