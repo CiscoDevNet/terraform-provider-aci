@@ -63,7 +63,10 @@ func (ds *DataStore) retrieveEnvMetaClassesFromRemote() {
 		for _, className := range classNames {
 			// ENHANCEMENT: Concurrently retrieve/write the meta data.
 			// Retrieve the meta file for the class from the remote location.
-			ds.retrieveMetaFileFromRemote(className)
+			// Only retrieve the meta file if it is not already retrieved.
+			if !slices.Contains(ds.retrievedClasses, className) {
+				ds.retrieveMetaFileFromRemote(className)
+			}
 		}
 	}
 }
@@ -99,7 +102,7 @@ func (ds *DataStore) refreshMetaFiles() {
 }
 
 func (ds *DataStore) retrieveMetaFileFromRemote(className string) {
-	shortName, packageName := splitClassNameToPackageNameAndShortName(className)
+	packageName, shortName := splitClassNameToPackageNameAndShortName(className)
 	url := fmt.Sprintf(constMetaFileUrl, ds.metaHost, packageName, shortName)
 	genLogger.Debug(fmt.Sprintf("Retrieving meta data for class '%s' from: %s.", className, url))
 
