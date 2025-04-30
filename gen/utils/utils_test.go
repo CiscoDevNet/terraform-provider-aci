@@ -9,20 +9,33 @@ import (
 )
 
 const (
-	testDirectoryForGetFileNamesFromDirectory = "./test_data/test_get_file_names_from_directory"
-	testFile1                                 = "file1.json"
-	testFile2                                 = "file2.json"
-	testDir1                                  = "dir1"
+	constTestDirectoryForGetFileNamesFromDirectory = "./test_data/test_get_file_names_from_directory"
+	constTestFile1WithoutExtension                 = "file1"
+	constTestFile1WithExtension                    = "file1.json"
+	constTestFile2WithoutExtension                 = "file2"
+	constTestFile2WithExtension                    = "file2.json"
+	constTestFile3                                 = "file3"
+	constTestDir1                                  = "dir1"
 )
 
-func TestGetFileNamesFromDirectory(t *testing.T) {
+func TestGetFileNamesFromDirectoryWithExtension(t *testing.T) {
 	test.InitializeTest(t, 0)
-
-	filenames := GetFileNamesFromDirectory(testDirectoryForGetFileNamesFromDirectory)
+	filenames := GetFileNamesFromDirectory(constTestDirectoryForGetFileNamesFromDirectory, false)
 	assert.NotEmpty(t, filenames, "Expected to get file names from directory, but got empty list")
-	assert.Equal(t, len(filenames), 2, fmt.Sprintf("Expected to get 2 file names from directory, but got %d", len(filenames)))
-	assert.Contains(t, filenames, testFile1, fmt.Sprintf("Expected to find file name '%s' in the list, but it was not found", testFile1))
-	assert.Contains(t, filenames, testFile2, fmt.Sprintf("Expected to find file name '%s' in the list, but it was not found", testFile2))
-	assert.NotContains(t, filenames, testDir1, fmt.Sprintf("Expected to not find directory name '%s' in the list, but it was found", testDir1))
+	assert.Equal(t, len(filenames), 3, fmt.Sprintf("Expected to get 2 file names from directory, but got %d", len(filenames)))
+	assert.Contains(t, filenames, constTestFile1WithExtension, fmt.Sprintf("Expected to find file name '%s' in the list, but it was not found", constTestFile1WithExtension))
+	assert.Contains(t, filenames, constTestFile2WithExtension, fmt.Sprintf("Expected to find file name '%s' in the list, but it was not found", constTestFile2WithExtension))
+	assert.Contains(t, filenames, constTestFile3, fmt.Sprintf("Expected to find file name '%s' in the list, but it was not found", constTestFile3))
+	assert.NotContains(t, filenames, constTestDir1, fmt.Sprintf("Expected to not find directory name '%s' in the list, but it was found", constTestDir1))
+}
 
+func TestGetFileNamesFromDirectoryWithoutExtension(t *testing.T) {
+	test.InitializeTest(t, 0)
+	filenames := GetFileNamesFromDirectory(constTestDirectoryForGetFileNamesFromDirectory, true)
+	assert.NotEmpty(t, filenames, "Expected to get file names from directory, but got empty list")
+	assert.Equal(t, len(filenames), 3, fmt.Sprintf("Expected to get 2 file names from directory, but got %d", len(filenames)))
+	assert.Contains(t, filenames, constTestFile1WithoutExtension, fmt.Sprintf("Expected to find file name '%s' in the list, but it was not found", constTestFile1WithoutExtension))
+	assert.Contains(t, filenames, constTestFile2WithoutExtension, fmt.Sprintf("Expected to find file name '%s' in the list, but it was not found", constTestFile2WithoutExtension))
+	assert.Contains(t, filenames, constTestFile3, fmt.Sprintf("Expected to find file name '%s' in the list, but it was not found", constTestFile3))
+	assert.NotContains(t, filenames, constTestDir1, fmt.Sprintf("Expected to not find directory name '%s' in the list, but it was found", constTestDir1))
 }
