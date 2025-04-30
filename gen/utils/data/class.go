@@ -52,9 +52,9 @@ type Class struct {
 	PropertiesRequired []string
 	PropertiesOptional []string
 	PropertiesReadOnly []string
-	// The raw data from the meta file.
-	// Storing the raw data proactively in case we need to access the data at a later stage.
-	RawMetaData map[string]interface{}
+	// The full content from the meta file.
+	// Storing the content proactively in case we need to access the data at a later stage.
+	MetaFileContent map[string]interface{}
 	// Indicates if the class is required when defined as a child in a parent resource.
 	RequiredAsChild bool
 	// The resource name is the name of the resource in the provider, ex "aci_tenant".
@@ -106,53 +106,41 @@ type VersionRange struct {
 }
 
 func NewClass(className string) *Class {
-	genLogger.Trace(fmt.Sprintf("Creating new class struct for class: %s.", className))
-
+	genLogger.Trace(fmt.Sprintf("Creating new class struct with class name: %s.", className))
 	// Splitting the class name into the package and short name.
-	// The package and short names are used for the meta file download, documentation links and lookup in the raw data.
-	var shortName, packageName string
-	genLogger.Trace(fmt.Sprintf("Splitting class name '%s' for name space separation.", className))
-	for index, character := range className {
-		if unicode.IsUpper(character) {
-			shortName = className[index:]
-			packageName = className[:index]
-			break
-		}
-	}
-	if shortName == "" || packageName == "" {
-		genLogger.Trace(fmt.Sprintf("Class name '%s' got split into package name '%s' and short name '%s'.", className, packageName, shortName))
-		genLogger.Fatal(fmt.Sprintf("Failed to split class name '%s' for name space separation.", className))
-	}
-
-	return &Class{
+	packageName, shortName := splitClassNameToPackageNameAndShortName(className)
+	class := Class{
 		ClassName:             className,
 		ClassNameShort:        shortName,
 		ClassNameForFunctions: cases.Title(language.Und, cases.NoLower).String(className),
 		ClassNamePackage:      packageName,
 		Properties:            make(map[string]*Property),
 	}
+	genLogger.Trace(fmt.Sprintf("Succesfully created new class struct with class name: %s.", className))
+	class.loadMetaFile()
+	class.setClassData()
+	return &class
 }
 
-func (c *Class) LoadMetaFile() {
+func (c *Class) loadMetaFile() {
 	genLogger.Debug(fmt.Sprintf("Loading meta file for class '%s'.", c.ClassName))
 
-	fileContent, err := os.ReadFile(fmt.Sprintf("%s/%s.json", metaPath, c.ClassName))
+	fileContent, err := os.ReadFile(fmt.Sprintf("%s/%s.json", constMetaPath, c.ClassName))
 	if err != nil {
 		genLogger.Fatal(fmt.Sprintf("Error during reading of file: %s.", err.Error()))
 	}
 
 	genLogger.Trace(fmt.Sprintf("Parsing meta file for class '%s'.", c.ClassName))
-	// For now, the raw data is unmarshalled into a map[string]interface{} and then set the class data.
-	// This is done because we add logic on top of the raw data to set the class data.
-	// ENHANCEMENT: investigate if we can unmarshal the raw data directly into a class struct specific for meta.
-	var classDetails map[string]interface{}
-	err = json.Unmarshal(fileContent, &classDetails)
+	// For now, the file content is unmarshalled into a map[string]interface{} and then set the class data.
+	// This is done because we add logic on top of the file content to set the class data.
+	// ENHANCEMENT: investigate if we can unmarshal the file content directly into a class struct specific for meta.
+	var metaFileContent map[string]interface{}
+	err = json.Unmarshal(fileContent, &metaFileContent)
 	if err != nil {
 		genLogger.Fatal(fmt.Sprintf("Error during Unmarshal(): %s.", err.Error()))
 	}
 
-	c.RawMetaData = classDetails[fmt.Sprintf("%s:%s", c.ClassNamePackage, c.ClassNameShort)].(map[string]interface{})
-	c.setClassData()
+	c.MetaFileContent = metaFileContent[fmt.Sprintf("%s:%s", c.ClassNamePackage, c.ClassNameShort)].(map[string]interface{})
 
 	genLogger.Debug(fmt.Sprintf("Succesfully loaded meta file for class '%s'.", c.ClassName))
 }
@@ -164,7 +152,7 @@ func (c *Class) setClassData() {
 
 	// TODO: add functions to set the other class data
 
-	if properties, ok := c.RawMetaData["properties"]; ok {
+	if properties, ok := c.MetaFileContent["properties"]; ok {
 		c.setProperties(properties.(map[string]interface{}))
 	}
 
@@ -189,4 +177,26 @@ func (c *Class) setProperties(properties map[string]interface{}) {
 
 	genLogger.Debug(fmt.Sprintf("Succesfully set properties for class '%s'.", c.ClassName))
 	// TODO: add sorting logic for the properties
+}
+
+func splitClassNameToPackageNameAndShortName(className string) (string, string) {
+	// Splitting the class name into the package and short name.
+	// The package and short names are used for the meta file download, documentation links and lookup in the raw data.
+	var shortName, packageName string
+	genLogger.Trace(fmt.Sprintf("Splitting class name '%s' for name space separation.", className))
+	for index, character := range className {
+		if unicode.IsUpper(character) {
+			shortName = className[index:]
+			packageName = className[:index]
+			break
+		}
+	}
+
+	if packageName == "" || shortName == "" {
+		genLogger.Trace(fmt.Sprintf("Class name '%s' got split into package name '%s' and short name '%s'.", className, packageName, shortName))
+		genLogger.Fatal(fmt.Sprintf("Failed to split class name '%s' for name space separation.", className))
+	}
+
+	return packageName, shortName
+
 }
