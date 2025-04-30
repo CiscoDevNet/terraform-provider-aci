@@ -38,7 +38,7 @@ func TestInitalizeLogger(t *testing.T) {
 }
 
 func TestLogFile(t *testing.T) {
-	t.Setenv(envLogPath, logFilePath)
+	t.Setenv(constEnvLogPath, logFilePath)
 	genLogger := initializeLogTest(t)
 
 	assert.Equal(t, genLogger.logFile.Name(), logFilePath, fmt.Sprintf("Expected log file to be %s, but got %v", logFilePath, genLogger.logFile.Name()))
@@ -48,8 +48,8 @@ func TestLogFile(t *testing.T) {
 }
 
 func TestSetLogLevel(t *testing.T) {
-	t.Setenv(envLogPath, logFilePath)
-	t.Setenv(envLogLevel, "TRACE")
+	t.Setenv(constEnvLogPath, logFilePath)
+	t.Setenv(constEnvLogLevel, "TRACE")
 	genLogger := initializeLogTest(t)
 	defer genLogger.CloseLogFile()
 
