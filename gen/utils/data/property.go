@@ -36,7 +36,7 @@ type Property struct {
 	TestValues []TestValue
 	// Validation specific information for the property.
 	// In the meta file for the class this is a regex statement that is used to validate the property.
-	// TODO: re-evaluate the structure when creating resource templates. We might want to create a separate struc type for each type of validation.
+	// TODO: re-evaluate the structure when creating resource templates. We might want to create a separate struct type for each type of validation.
 	Validators []Validator
 	// Specifies the valid values for the property when only certain values are allowed as input.
 	ValidValues []ValidValue
