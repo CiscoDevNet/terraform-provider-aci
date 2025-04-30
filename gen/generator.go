@@ -14,6 +14,6 @@ func main() {
 	defer genLogger.CloseLogFile()
 
 	genLogger.Trace("Initializing Data Store")
-	dataStore := data.NewDataStore()
-	dataStore.LoadMetaFiles()
+	data.NewDataStore()
+	genLogger.Trace("Initializing Data Store complete")
 }
