@@ -241,6 +241,9 @@ All examples for the VRF resource can be found in the [examples](https://github.
 ### Read-Only ###
 
 * `id` - (string) The distinguished name (DN) of the VRF object.
+* `pc_tag` (pcTag) - (string) The classification tag used for policy enforcement and zoning.
+* `scope` (scope) - (string) The scope ID (L3-VNI) of the VRF object.
+  - Default: `0`
 
 ### Optional ###
 
