@@ -208,6 +208,8 @@ fvCtx:
   ui_locations:
     - "Tenants -> Networking -> VRFs"
   sub_category: "Networking"
+  exclude_children:
+    - "fvSiteAssociated"
   migration_version: 1
   migration_blocks:
     fvCtx:
