@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	constTestDirectoryForGetFileNamesFromDirectory = "./test_data/test_get_file_names_from_directory"
+	constTestDirectoryForGetFileNamesFromDirectory = "./test/data/test_get_file_names_from_directory"
 	constTestFile1WithoutExtension                 = "file1"
 	constTestFile1WithExtension                    = "file1.json"
 	constTestFile2WithoutExtension                 = "file2"
