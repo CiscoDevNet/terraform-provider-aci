@@ -54,24 +54,24 @@ type Property struct {
 }
 
 type MigrationValue struct {
-	// The type of the legacy attribute.
-	Type string
-	// Indicates if a property is required in the legacy resource schema.
-	Required bool
-	// Indicates if a property is optional in the legacy resource schema.
-	Optional bool
 	// Indicates if a property is computed in the legacy resource schema.
 	Computed bool
-	// The name of the attribute in the legacy resource schema.
-	LegacyAttributeName string
+	// The name of the property in the legacy resource schema.
+	AttributeName string
+	// Indicates if a property is optional in the legacy resource schema.
+	Optional bool
+	// Indicates if a property is required in the legacy resource schema.
+	Required bool
+	// The type of the legacy attribute.
+	Type string
 }
 
 type TestValue struct {
+	// The changed value of the property to be used in the test when a property is allowed to be changed without destruction of the resource.
+	Changed []string
 	// The inital value of the property to be used in the test.
 	// This is set to the default value of the property in APIC when it is not a required value.
 	Initial []string
-	// The changed value of the property to be used in the test when a property is allowed to be changed without destruction of the resource.
-	Changed []string
 }
 
 type ValidValue struct {
@@ -81,8 +81,8 @@ type ValidValue struct {
 
 type Validator struct {
 	// If the property has a range of values, these are the minimum and maximum values of the range.
-	Min float64
 	Max float64
+	Min float64
 	// If the property has one or more regex statements it requires to match.
 	RegexList []RegexStatement
 }
@@ -99,12 +99,12 @@ type RegexStatement struct {
 }
 
 type PropertyDocumentation struct {
+	// The default value of the property in APIC.
+	DefaultValue string
 	// A generic explanation of the property and its usage.
 	// When applicable, a reference to classes the property points to and which resources/datasources are used for this is included.
 	// When version is higher than the class version, a property specific version is included.
 	Description string
-	// The default value of the property in APIC.
-	DefaultValue string
 }
 
 func NewProperty(name string, details map[string]interface{}) *Property {
