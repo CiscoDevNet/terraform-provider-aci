@@ -192,8 +192,9 @@ func splitClassNameToPackageNameAndShortName(className string) (string, string) 
 		}
 	}
 
+	genLogger.Debug(fmt.Sprintf("Class name '%s' got split into package name '%s' and short name '%s'.", className, packageName, shortName))
+
 	if packageName == "" || shortName == "" {
-		genLogger.Trace(fmt.Sprintf("Class name '%s' got split into package name '%s' and short name '%s'.", className, packageName, shortName))
 		genLogger.Fatal(fmt.Sprintf("Failed to split class name '%s' for name space separation.", className))
 	}
 
