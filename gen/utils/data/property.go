@@ -40,18 +40,26 @@ type Property struct {
 	Validators []Validator
 	// Specifies the valid values for the property when only certain values are allowed as input.
 	ValidValues []ValidValue
-	// The type of the property in the resource and datasource schemas.
-	// The following types are supported:
-	// - string: when the property is a single value
-	// - set: when the property is bitmask and alleows multiple values
-	// TODO: investigate enum type for this
-	ValueType string
+	// The ValueTypeEnum type is used to indicate the type of the property in the resource and datasource schemas.
+	ValueType ValueTypeEnum
 	// The supported APIC versions for the property.
 	// Each version range is separated by a comma, ex "4.2(7f)-4.2(7w),5.2(1g)-".
 	// The first version is the minimum version and the second version is the maximum version.
 	// A dash at the end of a range (ex. 4.2(7f)-) indicates that the class is supported from the first version to the latest version.
 	Versions []VersionRange
 }
+
+type ValueTypeEnum int
+
+// The enumeration options of the ValueType.
+const (
+	// String indicates that the property is a string value.
+	String ValueTypeEnum = iota + 1
+	// Set indicates that the property is a set value.
+	Set
+	// List indicates that the property is a list value.
+	List
+)
 
 type MigrationValue struct {
 	// Indicates if a property is computed in the legacy resource schema.
@@ -63,7 +71,7 @@ type MigrationValue struct {
 	// Indicates if a property is required in the legacy resource schema.
 	Required bool
 	// The type of the legacy attribute.
-	Type string
+	Type ValueTypeEnum
 }
 
 type TestValue struct {
@@ -87,15 +95,20 @@ type Validator struct {
 	RegexList []RegexStatement
 }
 
+type RegexStatementTypeEnum int
+
+// The enumeration options of the RegexStatement Type.
+const (
+	// Include indicates that the value must match the regex statement.
+	Include RegexStatementTypeEnum = iota + 1
+	// TODO: re-evaluate the possible regex statements type options.
+)
+
 type RegexStatement struct {
 	// The regex string.
 	Regex string
 	// The type of the regex statement.
-	// The following types are supported:
-	// - include: the value must match the regex statement
-	// TODO: re-evaluate the types of the regex statements possible.
-	// TODO: investigate enum type for this
-	Type string
+	Type RegexStatementTypeEnum
 }
 
 type PropertyDocumentation struct {

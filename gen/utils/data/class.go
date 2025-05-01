@@ -41,9 +41,8 @@ type Class struct {
 	// Indicates that when the class is included in a resource as a child it can only be configured once.
 	// This is used to determine the type of the nested attribute to be a map or list.
 	IsSingleNested bool
-	// Indicates for which APIC platform the class is available, cloud vs onprem.
-	// TODO: investigate enum type for this.
-	Platform string
+	// The platform type is used to indicate on which APIC platform the class is available.
+	PlatformType PlatformTypeEnum
 	// A map containing all the properties of the class.
 	Properties map[string]*Property
 	// Each property is categorised in all, required, optional, or read-only.
@@ -70,6 +69,18 @@ type Class struct {
 	// A dash at the end of a range (ex. 4.2(7f)-) indicates that the class is supported from the first version to the latest version.
 	Versions []VersionRange
 }
+
+type PlatformTypeEnum int
+
+// The enumeration options of the Platform type.
+const (
+	// Apic indicates that the class is available on the on-premises version of APIC.
+	Apic PlatformTypeEnum = iota + 1
+	// Cloud indicates that the class is available on the cloud version of APIC.
+	Both
+	// Both indicates that the class is available on both the on-premises and cloud versions of APIC.
+	Cloud
+)
 
 type Child struct {
 	// The name of the child class, ex "fvTenant".
