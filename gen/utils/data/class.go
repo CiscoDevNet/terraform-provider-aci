@@ -6,6 +6,7 @@ import (
 	"os"
 	"unicode"
 
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )
@@ -109,11 +110,11 @@ type VersionRange struct {
 	// This is the second version of the range.
 	// The version is in the format "4.2(7w)".
 	// A dash at the end of a range (ex. 4.2(7f)-) indicates that the class is supported from the first version to the latest version.
-	Max string
+	Max provider.Version
 	// The minimum version of the range.
 	// This is the first version of the range.
 	// The version is in the format "4.2(7f)".
-	Min string
+	Min provider.Version
 }
 
 func NewClass(className string) *Class {
