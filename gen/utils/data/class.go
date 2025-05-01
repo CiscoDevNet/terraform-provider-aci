@@ -80,29 +80,29 @@ type Child struct {
 }
 
 type ClassDocumentation struct {
-	// The description of the class, which is used at the top of the documentation.
-	Description string
 	// List of all child classes which are not included inside the resource but have a separate resource
 	// Used to reference child resource in documentation
 	Children []string
+	// The description of the class, which is used at the top of the documentation.
+	Description string
+	// List of DN formats
+	DnFormats []string
 	// List of notes to be added to the top of the documentation
 	Notes []string
 	// List of warnings to be added to the top of the documentation
 	Warnings []string
-	// List of DN formats
-	DnFormats []string
 }
 
 type VersionRange struct {
-	// The minimum version of the range.
-	// This is the first version of the range.
-	// The version is in the format "4.2(7f)".
-	Min string
 	// The maximum version of the range.
 	// This is the second version of the range.
 	// The version is in the format "4.2(7w)".
 	// A dash at the end of a range (ex. 4.2(7f)-) indicates that the class is supported from the first version to the latest version.
 	Max string
+	// The minimum version of the range.
+	// This is the first version of the range.
+	// The version is in the format "4.2(7f)".
+	Min string
 }
 
 func NewClass(className string) *Class {
