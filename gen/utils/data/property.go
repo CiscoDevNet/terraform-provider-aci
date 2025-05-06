@@ -77,7 +77,7 @@ type MigrationValue struct {
 type TestValue struct {
 	// The changed value of the property to be used in the test when a property is allowed to be changed without destruction of the resource.
 	Changed []string
-	// The inital value of the property to be used in the test.
+	// The initial value of the property to be used in the test.
 	// This is set to the default value of the property in APIC when it is not a required value.
 	Initial []string
 }
