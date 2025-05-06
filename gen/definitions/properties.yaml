@@ -1762,7 +1762,7 @@ fvRsMldsn:
 fvRogueExceptionMac:
   test_values:
     default:
-      mac: "00:00:00:00:00:00"
+      mac: "00:00:00:00:00:01"
     resource_required:
       mac: "00:00:00:00:00:01"
     datasource_required:
@@ -1770,7 +1770,7 @@ fvRogueExceptionMac:
     all:
       mac: "00:00:00:00:00:01"
     test_values_for_parent:
-      - mac: "00:00:00:00:00:00"
+      - mac: "00:00:00:00:00:03"
       - mac: "00:00:00:00:00:01"
     datasource_non_existing:
       mac: "00:00:00:00:00:02"

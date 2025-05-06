@@ -103,7 +103,7 @@ resource "aci_bridge_domain" "full_example_tenant" {
     {
       annotation  = "annotation_1"
       description = "description_1"
-      mac         = "00:00:00:00:00:00"
+      mac         = "00:00:00:00:00:03"
       name        = "name_1"
       name_alias  = "name_alias_1"
       annotations = [

@@ -423,7 +423,7 @@ func TestAccResourceFvBDWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_vrf.vrf_name", "vrf_name_1"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.description", "description_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.mac", "00:00:00:00:00:00"),
+					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.mac", "00:00:00:00:00:03"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.name", "name_1"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.name_alias", "name_alias_1"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.1.annotation", "annotation_2"),
@@ -652,7 +652,7 @@ func TestAccResourceFvBDWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.tags.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "tags.#", "2"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.description", "description_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.mac", "00:00:00:00:00:00"),
+					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.mac", "00:00:00:00:00:03"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.name", "name_1"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.name_alias", "name_alias_1"),
 					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.1.annotation", "annotation_2"),
@@ -1476,7 +1476,7 @@ resource "aci_bridge_domain" "test" {
 	    },
       ]
       description = "description_1"
-      mac = "00:00:00:00:00:00"
+      mac = "00:00:00:00:00:03"
       name = "name_1"
       name_alias = "name_alias_1"
     },
