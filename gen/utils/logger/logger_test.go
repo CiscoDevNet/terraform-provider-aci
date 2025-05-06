@@ -15,7 +15,7 @@ const (
 
 func initializeLogTest(t *testing.T) *Logger {
 	test.InitializeTest(t, 1)
-	genLogger := InitalizeLogger()
+	genLogger := InitializeLogger()
 
 	if genLogger == nil {
 		t.Errorf("Expected logger instance to be initialized, but got nil")
@@ -28,7 +28,7 @@ func cleanLogTest() {
 	os.Remove(logFilePath)
 }
 
-func TestInitalizeLogger(t *testing.T) {
+func TestInitializeLogger(t *testing.T) {
 	genLogger := initializeLogTest(t)
 
 	assert.Nil(t, genLogger.logFile, fmt.Sprintf("Expected log file to be nil, but got %v", genLogger.logFile))

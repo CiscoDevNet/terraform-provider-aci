@@ -10,7 +10,7 @@ import (
 )
 
 // Initialize a logger instance for the generator.
-var genLogger = logger.InitalizeLogger()
+var genLogger = logger.InitializeLogger()
 
 func GetFileNamesFromDirectory(path string, removeExtension bool) []string {
 	genLogger.Debug(fmt.Sprintf("Getting file names from directory: %s.", path))
