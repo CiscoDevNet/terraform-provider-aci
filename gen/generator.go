@@ -6,7 +6,7 @@ import (
 )
 
 // Initialize a logger instance for the generator.
-var genLogger = logger.InitalizeLogger()
+var genLogger = logger.InitializeLogger()
 
 func main() {
 	genLogger.Trace("Starting Generator")
