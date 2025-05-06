@@ -128,7 +128,7 @@ func NewClass(className string) *Class {
 		ClassNamePackage:      packageName,
 		Properties:            make(map[string]*Property),
 	}
-	genLogger.Trace(fmt.Sprintf("Succesfully created new class struct with class name: %s.", className))
+	genLogger.Trace(fmt.Sprintf("Successfully created new class struct with class name: %s.", className))
 	class.loadMetaFile()
 	class.setClassData()
 	return &class
@@ -154,7 +154,7 @@ func (c *Class) loadMetaFile() {
 
 	c.MetaFileContent = metaFileContent[fmt.Sprintf("%s:%s", c.ClassNamePackage, c.ClassNameShort)].(map[string]interface{})
 
-	genLogger.Debug(fmt.Sprintf("Succesfully loaded meta file for class '%s'.", c.ClassName))
+	genLogger.Debug(fmt.Sprintf("Successfully loaded meta file for class '%s'.", c.ClassName))
 }
 
 func (c *Class) setClassData() {
@@ -168,7 +168,7 @@ func (c *Class) setClassData() {
 		c.setProperties(properties.(map[string]interface{}))
 	}
 
-	genLogger.Debug(fmt.Sprintf("Succesfully set class data for class '%s'.", c.ClassName))
+	genLogger.Debug(fmt.Sprintf("Successfully set class data for class '%s'.", c.ClassName))
 }
 
 func (c *Class) setResourceName() {
@@ -187,7 +187,7 @@ func (c *Class) setProperties(properties map[string]interface{}) {
 		}
 	}
 
-	genLogger.Debug(fmt.Sprintf("Succesfully set properties for class '%s'.", c.ClassName))
+	genLogger.Debug(fmt.Sprintf("Successfully set properties for class '%s'.", c.ClassName))
 	// TODO: add sorting logic for the properties
 }
 
