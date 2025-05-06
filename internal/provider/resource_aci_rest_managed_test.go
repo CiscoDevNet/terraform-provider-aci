@@ -85,8 +85,28 @@ func TestAccAciRestManaged_escapeHtml(t *testing.T) {
 			{
 				Config: testAccAciRestManagedConfig_escapeHtml(),
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_rest_managed.aaaPreLoginBanner", "content.message", "<<< WARNING >>>  VERIFYING THE CONVERSION OF HTML CHARACTERS."),
+					resource.TestCheckResourceAttr("aci_rest_managed.aaaPreLoginBanner", "content.message", "&&& WARNING &&& VERIFYING THE CONVERSION OF HTML CHARACTERS."),
 					resource.TestCheckResourceAttr("aci_rest_managed.aaaPreLoginBanner", "escape_html", "false"),
+					resource.TestCheckResourceAttr("aci_rest_managed.aaaPreLoginBanner", "dn", "uni/userext/preloginbanner"),
+					resource.TestCheckResourceAttr("aci_rest_managed.aaaPreLoginBanner", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_rest_managed.aaaPreLoginBanner", "class_name", "aaaPreLoginBanner"),
+				),
+			},
+		},
+	})
+}
+
+func TestAccAciRestManaged_escapeHtmlTrue(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(7g)") },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				ExpectNonEmptyPlan: true,
+				Config:             testAccAciRestManagedConfig_escapeHtmlTrue(),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_rest_managed.aaaPreLoginBanner", "content.message", "&&& WARNING &&& VERIFYING THE CONVERSION OF HTML CHARACTERS."),
+					resource.TestCheckResourceAttr("aci_rest_managed.aaaPreLoginBanner", "escape_html", "true"),
 					resource.TestCheckResourceAttr("aci_rest_managed.aaaPreLoginBanner", "dn", "uni/userext/preloginbanner"),
 					resource.TestCheckResourceAttr("aci_rest_managed.aaaPreLoginBanner", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_rest_managed.aaaPreLoginBanner", "class_name", "aaaPreLoginBanner"),
@@ -1191,7 +1211,20 @@ func testAccAciRestManagedConfig_escapeHtml() string {
 		class_name  = "aaaPreLoginBanner"
 		escape_html = false
 		content = {
-			message = "<<< WARNING >>>  VERIFYING THE CONVERSION OF HTML CHARACTERS."
+			message = "&&& WARNING &&& VERIFYING THE CONVERSION OF HTML CHARACTERS."
+		}
+	}
+	`
+}
+
+func testAccAciRestManagedConfig_escapeHtmlTrue() string {
+	return `
+	resource "aci_rest_managed" "aaaPreLoginBanner" {
+		dn          = "uni/userext/preloginbanner"
+		class_name  = "aaaPreLoginBanner"
+		escape_html = true
+		content = {
+			message = "&&& WARNING &&& VERIFYING THE CONVERSION OF HTML CHARACTERS."
 		}
 	}
 	`
