@@ -15,7 +15,7 @@ import (
 )
 
 // Initialize a logger instance for the generator.
-var genLogger = logger.InitalizeLogger()
+var genLogger = logger.InitializeLogger()
 
 type DataStore struct {
 	// A map containing all the information about the classes required to render the templates.
@@ -95,7 +95,7 @@ func (ds *DataStore) refreshMetaFiles() {
 					ds.retrieveMetaFileFromRemote(className)
 				}
 			}
-			genLogger.Debug(fmt.Sprintf("Succesfully refreshed meta data from remote location: %s.", ds.metaHost))
+			genLogger.Debug(fmt.Sprintf("Successfully refreshed meta data from remote location: %s.", ds.metaHost))
 		}
 
 	}
@@ -130,7 +130,7 @@ func (ds *DataStore) retrieveMetaFileFromRemote(className string) {
 
 	ds.retrievedClasses = append(ds.retrievedClasses, className)
 
-	genLogger.Debug(fmt.Sprintf("Succesfully wrote meta data for class '%s' to: %s.", className, outputFile.Name()))
+	genLogger.Debug(fmt.Sprintf("Successfully wrote meta data for class '%s' to: %s.", className, outputFile.Name()))
 }
 
 func (ds *DataStore) loadClasses() {
@@ -140,5 +140,5 @@ func (ds *DataStore) loadClasses() {
 		// Create a new class object and add it to the data store.
 		ds.Classes[className] = *NewClass(className)
 	}
-	genLogger.Debug(fmt.Sprintf("Succesfully loaded classes from: %s.", constMetaPath))
+	genLogger.Debug(fmt.Sprintf("Successfully loaded classes from: %s.", constMetaPath))
 }

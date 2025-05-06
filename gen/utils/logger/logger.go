@@ -51,7 +51,7 @@ type Logger struct {
 }
 
 // Initialize a singleton logger instance if one does not exist yet else return existing logger.
-func InitalizeLogger() *Logger {
+func InitializeLogger() *Logger {
 	if logger == nil {
 		// Create a new logger instance with default settings.
 		logger = &Logger{log: log.New(os.Stdout, "", constLogFlags)}
