@@ -117,10 +117,14 @@ type VersionRange struct {
 	Min provider.Version
 }
 
-func NewClass(className string) *Class {
+func NewClass(className string) (*Class, error) {
 	genLogger.Trace(fmt.Sprintf("Creating new class struct with class name: %s.", className))
 	// Splitting the class name into the package and short name.
-	packageName, shortName := splitClassNameToPackageNameAndShortName(className)
+	packageName, shortName, err := splitClassNameToPackageNameAndShortName(className)
+	if err != nil {
+		return nil, err
+	}
+
 	class := Class{
 		ClassName:             className,
 		ClassNameShort:        shortName,
@@ -128,18 +132,29 @@ func NewClass(className string) *Class {
 		ClassNamePackage:      packageName,
 		Properties:            make(map[string]*Property),
 	}
+
 	genLogger.Trace(fmt.Sprintf("Successfully created new class struct with class name: %s.", className))
-	class.loadMetaFile()
-	class.setClassData()
-	return &class
+
+	err = class.loadMetaFile()
+	if err != nil {
+		return nil, err
+	}
+
+	err = class.setClassData()
+	if err != nil {
+		return nil, err
+	}
+
+	return &class, nil
 }
 
-func (c *Class) loadMetaFile() {
+func (c *Class) loadMetaFile() error {
 	genLogger.Debug(fmt.Sprintf("Loading meta file for class '%s'.", c.ClassName))
 
 	fileContent, err := os.ReadFile(fmt.Sprintf("%s/%s.json", constMetaPath, c.ClassName))
 	if err != nil {
-		genLogger.Fatal(fmt.Sprintf("Error during reading of file: %s.", err.Error()))
+		genLogger.Error(fmt.Sprintf("Error during loading of meta file: %s", err.Error()))
+		return err
 	}
 
 	genLogger.Trace(fmt.Sprintf("Parsing meta file for class '%s'.", c.ClassName))
@@ -149,15 +164,18 @@ func (c *Class) loadMetaFile() {
 	var metaFileContent map[string]interface{}
 	err = json.Unmarshal(fileContent, &metaFileContent)
 	if err != nil {
-		genLogger.Fatal(fmt.Sprintf("Error during Unmarshal(): %s.", err.Error()))
+		genLogger.Error(fmt.Sprintf("Error during parsing of meta file: %s", err.Error()))
+		return err
 	}
 
 	c.MetaFileContent = metaFileContent[fmt.Sprintf("%s:%s", c.ClassNamePackage, c.ClassNameShort)].(map[string]interface{})
 
 	genLogger.Debug(fmt.Sprintf("Successfully loaded meta file for class '%s'.", c.ClassName))
+
+	return nil
 }
 
-func (c *Class) setClassData() {
+func (c *Class) setClassData() error {
 	genLogger.Debug(fmt.Sprintf("Setting class data for class '%s'.", c.ClassName))
 
 	c.setResourceName()
@@ -169,6 +187,7 @@ func (c *Class) setClassData() {
 	}
 
 	genLogger.Debug(fmt.Sprintf("Successfully set class data for class '%s'.", c.ClassName))
+	return nil
 }
 
 func (c *Class) setResourceName() {
@@ -191,7 +210,7 @@ func (c *Class) setProperties(properties map[string]interface{}) {
 	// TODO: add sorting logic for the properties
 }
 
-func splitClassNameToPackageNameAndShortName(className string) (string, string) {
+func splitClassNameToPackageNameAndShortName(className string) (string, string, error) {
 	// Splitting the class name into the package and short name.
 	// The package and short names are used for the meta file download, documentation links and lookup in the raw data.
 	var shortName, packageName string
@@ -207,9 +226,10 @@ func splitClassNameToPackageNameAndShortName(className string) (string, string) 
 	genLogger.Debug(fmt.Sprintf("Class name '%s' got split into package name '%s' and short name '%s'.", className, packageName, shortName))
 
 	if packageName == "" || shortName == "" {
-		genLogger.Fatal(fmt.Sprintf("Failed to split class name '%s' for name space separation.", className))
+		genLogger.Error(fmt.Sprintf("Failed to split class name '%s' for name space separation.", className))
+		return "", "", fmt.Errorf("failed to split class name '%s' for name space separation", className)
 	}
 
-	return packageName, shortName
+	return packageName, shortName, nil
 
 }
