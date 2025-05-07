@@ -15,5 +15,5 @@ func main() {
 
 	genLogger.Trace("Initializing Data Store")
 	data.NewDataStore()
-	genLogger.Trace("Initializing Data Store complete")
+	genLogger.Trace("Initialization of Data Store complete")
 }
