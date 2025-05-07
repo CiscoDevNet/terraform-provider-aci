@@ -1,6 +1,7 @@
 package data
 
 import (
+	"bytes"
 	"crypto/tls"
 	"fmt"
 	"io"
@@ -116,7 +117,8 @@ func (ds *DataStore) retrieveMetaFileFromRemote(className string) {
 		genLogger.Fatal(fmt.Sprintf("Error during retrieval of meta file for class '%s': %s.", className, err.Error()))
 	}
 
-	resBody, err := io.ReadAll(res.Body)
+	var buffer bytes.Buffer
+	_, err = io.Copy(&buffer, res.Body)
 	if err != nil {
 		genLogger.Fatal(fmt.Sprintf("Error during reading of file for class '%s': %s.", className, err.Error()))
 	}
@@ -127,7 +129,7 @@ func (ds *DataStore) retrieveMetaFileFromRemote(className string) {
 	}
 
 	defer outputFile.Close()
-	_, err = outputFile.Write(resBody)
+	_, err = outputFile.Write(buffer.Bytes())
 	if err != nil {
 		genLogger.Fatal(fmt.Sprintf("Error during writing to file for class '%s': %s.", className, err.Error()))
 	}
