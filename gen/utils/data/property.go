@@ -84,7 +84,8 @@ type TestValue struct {
 
 type ValidValue struct {
 	// The valid value of the property.
-	Value string
+	Value    string
+	Versions []VersionRange
 }
 
 type Validator struct {
@@ -112,8 +113,9 @@ type RegexStatement struct {
 }
 
 type PropertyDocumentation struct {
-	// The default value of the property in APIC.
-	DefaultValue string
+	// The default values of the property in APIC.
+	// Defauls values is a list of valid to be able to determine if the default value is changed in versions of APIC.
+	DefaultValues []ValidValue
 	// A generic explanation of the property and its usage.
 	// When applicable, a reference to classes the property points to and which resources/datasources are used for this is included.
 	// When version is higher than the class version, a property specific version is included.
