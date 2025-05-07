@@ -77,9 +77,9 @@ type PlatformTypeEnum int
 const (
 	// Apic indicates that the class is available on the on-premises version of APIC.
 	Apic PlatformTypeEnum = iota + 1
-	// Cloud indicates that the class is available on the cloud version of APIC.
-	Both
 	// Both indicates that the class is available on both the on-premises and cloud versions of APIC.
+	Both
+	// Cloud indicates that the class is available on the cloud version of APIC.
 	Cloud
 )
 
