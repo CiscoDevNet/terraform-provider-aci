@@ -20,6 +20,8 @@ var genLogger = logger.InitializeLogger()
 type DataStore struct {
 	// A map containing all the information about the classes required to render the templates.
 	Classes map[string]Class
+	// The client used to retrieve the meta data from the remote location.
+	client *http.Client
 	// The host from which the meta data is retrieved.
 	metaHost string
 	// A list of all the classes that have been retrieved from the remote location.
@@ -28,7 +30,10 @@ type DataStore struct {
 }
 
 func NewDataStore() *DataStore {
-	dataStore := &DataStore{Classes: make(map[string]Class)}
+	dataStore := &DataStore{
+		Classes: make(map[string]Class),
+		client:  &http.Client{Transport: &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}},
+	}
 	// Set the meta data host for retrieval of meta files.
 	dataStore.setMetaHost()
 	// Check if classes are set in the environment variable 'GEN_ACI_TF_META_CLASSES' and retrieve the meta files for those classes.
@@ -106,8 +111,7 @@ func (ds *DataStore) retrieveMetaFileFromRemote(className string) {
 	url := fmt.Sprintf(constMetaFileUrl, ds.metaHost, packageName, shortName)
 	genLogger.Debug(fmt.Sprintf("Retrieving meta data for class '%s' from: %s.", className, url))
 
-	client := &http.Client{Transport: &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}}
-	res, err := client.Get(url)
+	res, err := ds.client.Get(url)
 	if err != nil {
 		genLogger.Fatal(fmt.Sprintf("Error during retrieval of meta file for class '%s': %s.", className, err.Error()))
 	}
