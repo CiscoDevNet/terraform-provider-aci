@@ -30,7 +30,7 @@ type DataStore struct {
 	retrievedClasses []string
 }
 
-func NewDataStore() *DataStore {
+func NewDataStore() (*DataStore, error) {
 	dataStore := &DataStore{
 		Classes: make(map[string]Class),
 		client:  &http.Client{Transport: &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}},
@@ -38,13 +38,22 @@ func NewDataStore() *DataStore {
 	// Set the meta data host for retrieval of meta files.
 	dataStore.setMetaHost()
 	// Check if classes are set in the environment variable 'GEN_ACI_TF_META_CLASSES' and retrieve the meta files for those classes.
-	dataStore.retrieveEnvMetaClassesFromRemote()
+	err := dataStore.retrieveEnvMetaClassesFromRemote()
+	if err != nil {
+		return nil, err
+	}
 	// Refresh the meta files from the remote location if specified in the environment variable 'GEN_ACI_TF_META_REFRESH'.
 	// If the environment variable is not set, the default is to not refresh the meta data.
-	dataStore.refreshMetaFiles()
+	err = dataStore.refreshMetaFiles()
+	if err != nil {
+		return nil, err
+	}
 	// Load classes into the data store for all meta files in the constMetaPath directory.
-	dataStore.loadClasses()
-	return dataStore
+	err = dataStore.loadClasses()
+	if err != nil {
+		return nil, err
+	}
+	return dataStore, nil
 }
 
 func (ds *DataStore) setMetaHost() {
@@ -59,7 +68,7 @@ func (ds *DataStore) setMetaHost() {
 	genLogger.Info(fmt.Sprintf("Meta data host set to: %s.", host))
 }
 
-func (ds *DataStore) retrieveEnvMetaClassesFromRemote() {
+func (ds *DataStore) retrieveEnvMetaClassesFromRemote() error {
 	// Retrieve the meta data for the classes specified in the constEnvMetaClasses environment variable.
 	classNames := strings.Split(os.Getenv(constEnvMetaClasses), ",")
 
@@ -71,13 +80,18 @@ func (ds *DataStore) retrieveEnvMetaClassesFromRemote() {
 			// Retrieve the meta file for the class from the remote location.
 			// Only retrieve the meta file if it is not already retrieved.
 			if !slices.Contains(ds.retrievedClasses, className) {
-				ds.retrieveMetaFileFromRemote(className)
+				err := ds.retrieveMetaFileFromRemote(className)
+				if err != nil {
+					return err
+				}
 			}
 		}
 	}
+
+	return nil
 }
 
-func (ds *DataStore) refreshMetaFiles() {
+func (ds *DataStore) refreshMetaFiles() error {
 	// Check if the meta data should be refreshed from remote location as specified in the environment variable.
 	metaRefresh := os.Getenv(constEnvMetaRefresh)
 	// If the environment variable is not set, the default is to not refresh the meta data.
@@ -98,53 +112,70 @@ func (ds *DataStore) refreshMetaFiles() {
 				// Retrieve the meta file for the class from the remote location.
 				// Only retrieve the meta file if it is not already retrieved.
 				if !slices.Contains(ds.retrievedClasses, className) {
-					ds.retrieveMetaFileFromRemote(className)
+					err = ds.retrieveMetaFileFromRemote(className)
+					if err != nil {
+						return err
+					}
 				}
 			}
 			genLogger.Debug(fmt.Sprintf("Successfully refreshed meta data from remote location: %s.", ds.metaHost))
 		}
-
 	}
+	return nil
 }
 
-func (ds *DataStore) retrieveMetaFileFromRemote(className string) {
-	packageName, shortName := splitClassNameToPackageNameAndShortName(className)
+func (ds *DataStore) retrieveMetaFileFromRemote(className string) error {
+	packageName, shortName, err := splitClassNameToPackageNameAndShortName(className)
+	if err != nil {
+		return err
+	}
 	url := fmt.Sprintf(constMetaFileUrl, ds.metaHost, packageName, shortName)
 	genLogger.Debug(fmt.Sprintf("Retrieving meta data for class '%s' from: %s.", className, url))
 
 	res, err := ds.client.Get(url)
 	if err != nil {
-		genLogger.Fatal(fmt.Sprintf("Error during retrieval of meta file for class '%s': %s.", className, err.Error()))
+		genLogger.Error(fmt.Sprintf("Error during retrieval of meta file for class '%s': %s.", className, err.Error()))
+		return err
 	}
 
 	var buffer bytes.Buffer
 	_, err = io.Copy(&buffer, res.Body)
 	if err != nil {
-		genLogger.Fatal(fmt.Sprintf("Error during reading of file for class '%s': %s.", className, err.Error()))
+		genLogger.Error(fmt.Sprintf("Error during reading of file for class '%s': %s.", className, err.Error()))
+		return err
 	}
 
 	outputFile, err := os.Create(fmt.Sprintf("%s/%s.json", constMetaPath, className))
 	if err != nil {
-		genLogger.Fatal(fmt.Sprintf("Error during creation of file for class '%s': %s.", className, err.Error()))
+		genLogger.Error(fmt.Sprintf("Error during creation of file for class '%s': %s.", className, err.Error()))
+		return err
 	}
 
 	defer outputFile.Close()
 	_, err = outputFile.Write(buffer.Bytes())
 	if err != nil {
-		genLogger.Fatal(fmt.Sprintf("Error during writing to file for class '%s': %s.", className, err.Error()))
+		genLogger.Error(fmt.Sprintf("Error during writing to file for class '%s': %s.", className, err.Error()))
+		return err
 	}
 
 	ds.retrievedClasses = append(ds.retrievedClasses, className)
 
 	genLogger.Debug(fmt.Sprintf("Successfully wrote meta data for class '%s' to: %s.", className, outputFile.Name()))
+
+	return nil
 }
 
-func (ds *DataStore) loadClasses() {
+func (ds *DataStore) loadClasses() error {
 	// Load the meta data for all classes in the meta directory.
 	genLogger.Debug(fmt.Sprintf("Loading classes from: %s.", constMetaPath))
 	for _, className := range utils.GetFileNamesFromDirectory(constMetaPath, true) {
 		// Create a new class object and add it to the data store.
-		ds.Classes[className] = *NewClass(className)
+		classDetails, err := NewClass(className)
+		if err != nil {
+			return err
+		}
+		ds.Classes[className] = *classDetails
 	}
 	genLogger.Debug(fmt.Sprintf("Successfully loaded classes from: %s.", constMetaPath))
+	return nil
 }
