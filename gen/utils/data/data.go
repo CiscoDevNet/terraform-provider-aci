@@ -77,12 +77,9 @@ func (ds *DataStore) retrieveEnvMetaClassesFromRemote() error {
 		for _, className := range classNames {
 			// ENHANCEMENT: Concurrently retrieve/write the meta data.
 			// Retrieve the meta file for the class from the remote location.
-			// Only retrieve the meta file if it is not already retrieved.
-			if !slices.Contains(ds.retrievedClasses, className) {
-				err := ds.retrieveMetaFileFromRemote(className)
-				if err != nil {
-					return err
-				}
+			err := ds.retrieveMetaFileFromRemote(className)
+			if err != nil {
+				return err
 			}
 		}
 	}
@@ -109,12 +106,9 @@ func (ds *DataStore) refreshMetaFiles() error {
 			for _, className := range utils.GetFileNamesFromDirectory(constMetaPath, true) {
 				// ENHANCEMENT: Concurrently retrieve/write the meta data.
 				// Retrieve the meta file for the class from the remote location.
-				// Only retrieve the meta file if it is not already retrieved.
-				if !slices.Contains(ds.retrievedClasses, className) {
-					err = ds.retrieveMetaFileFromRemote(className)
-					if err != nil {
-						return err
-					}
+				err = ds.retrieveMetaFileFromRemote(className)
+				if err != nil {
+					return err
 				}
 			}
 			genLogger.Debug(fmt.Sprintf("Successfully refreshed meta data from remote location: %s.", ds.metaHost))
@@ -124,35 +118,38 @@ func (ds *DataStore) refreshMetaFiles() error {
 }
 
 func (ds *DataStore) retrieveMetaFileFromRemote(className string) error {
-	packageName, shortName, err := splitClassNameToPackageNameAndShortName(className)
-	if err != nil {
-		return err
+	// Only retrieve the meta file if it is not already retrieved.
+	if !slices.Contains(ds.retrievedClasses, className) {
+		packageName, shortName, err := splitClassNameToPackageNameAndShortName(className)
+		if err != nil {
+			return err
+		}
+		url := fmt.Sprintf(constMetaFileUrl, ds.metaHost, packageName, shortName)
+		genLogger.Debug(fmt.Sprintf("Retrieving meta data for class '%s' from: %s.", className, url))
+
+		res, err := ds.client.Get(url)
+		if err != nil {
+			genLogger.Error(fmt.Sprintf("Error during retrieval of meta file for class '%s': %s.", className, err.Error()))
+			return err
+		}
+
+		outputFile, err := os.Create(fmt.Sprintf("%s/%s.json", constMetaPath, className))
+		if err != nil {
+			genLogger.Error(fmt.Sprintf("Error during creation of file for class '%s': %s.", className, err.Error()))
+			return err
+		}
+
+		defer outputFile.Close()
+		_, err = io.Copy(outputFile, res.Body)
+		if err != nil {
+			genLogger.Error(fmt.Sprintf("Error during writing to file for class '%s': %s.", className, err.Error()))
+			return err
+		}
+
+		ds.retrievedClasses = append(ds.retrievedClasses, className)
+
+		genLogger.Debug(fmt.Sprintf("Successfully wrote meta data for class '%s' to: %s.", className, outputFile.Name()))
 	}
-	url := fmt.Sprintf(constMetaFileUrl, ds.metaHost, packageName, shortName)
-	genLogger.Debug(fmt.Sprintf("Retrieving meta data for class '%s' from: %s.", className, url))
-
-	res, err := ds.client.Get(url)
-	if err != nil {
-		genLogger.Error(fmt.Sprintf("Error during retrieval of meta file for class '%s': %s.", className, err.Error()))
-		return err
-	}
-
-	outputFile, err := os.Create(fmt.Sprintf("%s/%s.json", constMetaPath, className))
-	if err != nil {
-		genLogger.Error(fmt.Sprintf("Error during creation of file for class '%s': %s.", className, err.Error()))
-		return err
-	}
-
-	defer outputFile.Close()
-	_, err = io.Copy(outputFile, res.Body)
-	if err != nil {
-		genLogger.Error(fmt.Sprintf("Error during writing to file for class '%s': %s.", className, err.Error()))
-		return err
-	}
-
-	ds.retrievedClasses = append(ds.retrievedClasses, className)
-
-	genLogger.Debug(fmt.Sprintf("Successfully wrote meta data for class '%s' to: %s.", className, outputFile.Name()))
 
 	return nil
 }
