@@ -193,6 +193,10 @@ func resourceAciVMMDomain() *schema.Resource {
 					"rhev",
 					"cf",
 					"openshift",
+					"nsx",
+					"nutanix_pe",
+					"nutanix_pc",
+					"rancher",
 				}, false),
 			},
 

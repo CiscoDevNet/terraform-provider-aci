@@ -52,6 +52,7 @@ Manages ACI VMM Domain
 		| VMware         |  uni/vmmp-VMware        |
 		| Kubernetes     |  uni/vmmp-Kubernetes    |
 		| Redhat         |  uni/vmmp-Redhat        |
+		| Nutanix        |  uni/vmmp-Nutanix       |
 
 - `name` - (Required) Name of Object vmm domain.
 - `access_mode` - (Optional) Access mode for object vmm domain. Allowed values are "read-write" and "read-only". Default is "read-write".
@@ -70,7 +71,7 @@ Manages ACI VMM Domain
 - `ep_ret_time` - (Optional) End point retention time for object vmm domain. Allowed value range is "0" - "600". Default value is "0".
 - `hv_avail_monitor` - (Optional) Flag to enable host availability monitor for object VMM domain. Allowed values are "yes" and "no". Default is "no".
 - `mcast_addr` - (Optional) The multicast address of the VMM domain profile.
-- `mode` - (Optional) The switch to be used for the domain profile. Allowed values are "default", "n1kv", "unknown", "ovs", "k8s", "rhev", "cf" and "openshift". Default is "default".
+- `mode` - (Optional) The switch to be used for the domain profile. Allowed values are "default", "n1kv", "unknown", "ovs", "k8s", "rhev", "cf", "openshift", "nsx", "nutanix_pc", "nutanix_pe", and "rancher". Default is "default".
 - `name_alias` - (Optional) Name alias for object VMM domain.
 - `pref_encap_mode` - (Optional) The preferred encapsulation mode for object VMM domain. Allowed values are "unspecified", "vlan" and "vxlan". Default is "unspecified".
 
