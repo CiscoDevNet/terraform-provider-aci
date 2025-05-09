@@ -32,13 +32,9 @@ data "aci_vmm_domain" "dev_vmmdom" {
         | VMware         |  uni/vmmp-VMware        |
         | Kubernetes     |  uni/vmmp-Kubernetes    |
         | Redhat         |  uni/vmmp-Redhat        |
+        | Nutanix        |  uni/vmmp-Nutanix       |
 
 * `name` - (Required) name of Object vmm_domain.
-
-## Argument Reference
-
-- `provider_profile_dn` - (Required) Distinguished name of parent ProviderProfile object.
-- `name` - (Required) name of Object vmm_domain.
 
 ## Attribute Reference
 
