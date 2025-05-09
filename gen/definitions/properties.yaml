@@ -2408,3 +2408,64 @@ eigrpCtxAfPol:
   documentation:
     metricStyle: "The metric style used for metric calculations."
     maxPaths: "The maximum number of different equal cost paths to install in the routing table."
+
+fvSiteAssociated:
+  overwrites:
+    siteId: "site_id"
+  documentation:
+    siteId: "The primary/local site identifier associated with the object as an integer."
+  ignores:
+    - "siteStretched" # no version provided in the documentation for this property ( cdets raised to solve this issue )
+  default_values:
+    siteId: "0"
+  test_values:
+    all:
+      site_id: "0"
+  parents:
+    - class_name: "fvAEPg"
+      parent_dependency: "fvAp"
+      parent_dn: "aci_application_epg.test.id"  
+    - class_name: "fvBD"
+      parent_dependency: "fvTenant"
+      parent_dn: "aci_bridge_domain.test.id"  
+
+fvRemoteId:
+  overwrites:
+    siteId: "site_id"
+    remote_ctx_pc_tag: "remote_vrf_pc_tag"
+  documentation:
+    siteId: "The remote site identifier that is associated with the object of the primary/local site as an integer."
+    remotePcTag: "The policy class tag (pcTag) of the remote object."
+    remoteCtxPcTag: "The policy class tag (pcTag) of the remote VRF. This attribute can only be present when the object for site association is a VRF."
+  remove_valid_values:
+    remoteCtxPcTag:
+      - "any"
+    remotePcTag:
+      - "any"
+  default_values:
+    siteId: "0"
+  test_values:
+    all:
+      site_id: "1"
+      remote_pc_tag: "16386"
+      remote_vrf_pc_tag: "any" # can only be any since it is not a valid value for non vrf configuration
+    default:
+      remote_pc_tag: "16387"
+      remote_vrf_pc_tag: "any" # can only be any since it is not a valid value for non vrf configuration
+    resource_required:
+      site_id: "0"
+      remote_pc_tag: "16387"
+    test_values_for_parent:
+      - site_id: "0"
+      - site_id: "1"
+    datasource_non_existing:
+      site_id: "2"
+    datasource_required:
+      site_id: "0"
+  parents:
+    - class_name: "fvSiteAssociated"
+      parent_dependency: "fvBD"
+      parent_dn: "aci_associated_site.test.id"
+    - class_name: "fvSiteAssociated"
+      parent_dependency: "fvAEPg"
+      parent_dn: "aci_associated_site.test.id"

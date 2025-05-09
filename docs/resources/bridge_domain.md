@@ -667,3 +667,7 @@ import {
   to = aci_bridge_domain.example_tenant
 }
 ```
+
+## Child Resources
+  
+  - [aci_associated_site](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/associated_site)

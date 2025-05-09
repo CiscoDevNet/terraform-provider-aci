@@ -856,3 +856,7 @@ import {
   to = aci_application_epg.example_application_profile
 }
 ```
+
+## Child Resources
+  
+  - [aci_associated_site](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/associated_site)
