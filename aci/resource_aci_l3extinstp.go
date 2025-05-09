@@ -642,6 +642,11 @@ func resourceAciExternalNetworkInstanceProfileUpdate(ctx context.Context, d *sch
 	}
 	l3extInstP := models.NewExternalNetworkInstanceProfile(fmt.Sprintf(models.Rnl3extinstp, name), L3OutsideDn, desc, l3extInstPAttr)
 
+	// Workaround for the issue with the client where status is set to "created, modified"
+	// This cause an error 103 {"imdata":[{"error":{"attributes":{"code":"103","text":"Cannot create External Network Instance Profile (l3extInstP); object uni/tn-terraform_tenant/out-l3_outside/instP-external_epg_1 already exists."}}}],"totalCount":"1"}
+	// Changing the status to "modified" to avoid this error
+	l3extInstP.BaseAttributes.Status = "modified"
+
 	err := aciClient.Save(l3extInstP)
 
 	if err != nil {
