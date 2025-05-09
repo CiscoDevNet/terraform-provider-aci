@@ -1,7 +1,6 @@
 package data
 
 import (
-	"bytes"
 	"crypto/tls"
 	"fmt"
 	"io"
@@ -138,13 +137,6 @@ func (ds *DataStore) retrieveMetaFileFromRemote(className string) error {
 		return err
 	}
 
-	var buffer bytes.Buffer
-	_, err = io.Copy(&buffer, res.Body)
-	if err != nil {
-		genLogger.Error(fmt.Sprintf("Error during reading of file for class '%s': %s.", className, err.Error()))
-		return err
-	}
-
 	outputFile, err := os.Create(fmt.Sprintf("%s/%s.json", constMetaPath, className))
 	if err != nil {
 		genLogger.Error(fmt.Sprintf("Error during creation of file for class '%s': %s.", className, err.Error()))
@@ -152,7 +144,7 @@ func (ds *DataStore) retrieveMetaFileFromRemote(className string) error {
 	}
 
 	defer outputFile.Close()
-	_, err = outputFile.Write(buffer.Bytes())
+	_, err = io.Copy(outputFile, res.Body)
 	if err != nil {
 		genLogger.Error(fmt.Sprintf("Error during writing to file for class '%s': %s.", className, err.Error()))
 		return err
