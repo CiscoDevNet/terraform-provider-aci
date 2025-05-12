@@ -19,7 +19,7 @@ const (
 )
 
 func TestGetFileNamesFromDirectoryWithExtension(t *testing.T) {
-	test.InitializeTest(t, 0)
+	test.InitializeTest(t)
 	filenames := GetFileNamesFromDirectory(constTestDirectoryForGetFileNamesFromDirectory, false)
 	assert.NotEmpty(t, filenames, "Expected to get file names from directory, but got empty list")
 	assert.Equal(t, len(filenames), 3, fmt.Sprintf("Expected to get 2 file names from directory, but got %d", len(filenames)))
@@ -30,7 +30,7 @@ func TestGetFileNamesFromDirectoryWithExtension(t *testing.T) {
 }
 
 func TestGetFileNamesFromDirectoryWithoutExtension(t *testing.T) {
-	test.InitializeTest(t, 0)
+	test.InitializeTest(t)
 	filenames := GetFileNamesFromDirectory(constTestDirectoryForGetFileNamesFromDirectory, true)
 	assert.NotEmpty(t, filenames, "Expected to get file names from directory, but got empty list")
 	assert.Equal(t, len(filenames), 3, fmt.Sprintf("Expected to get 2 file names from directory, but got %d", len(filenames)))
