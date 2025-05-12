@@ -39,3 +39,22 @@ func TestGetFileNamesFromDirectoryWithoutExtension(t *testing.T) {
 	assert.Contains(t, filenames, constTestFile3, fmt.Sprintf("Expected to find file name '%s' in the list, but it was not found", constTestFile3))
 	assert.NotContains(t, filenames, constTestDir1, fmt.Sprintf("Expected to not find directory name '%s' in the list, but it was found", constTestDir1))
 }
+
+func TestUnderscore(t *testing.T) {
+	test.InitializeTest(t)
+
+	tests := []map[string]string{
+		{"input": "tenant", "expected": "tenant"},
+		{"input": "Tenant", "expected": "tenant"},
+		{"input": "Tenant1", "expected": "tenant1"},
+		{"input": "ApplicationEndpointGroup", "expected": "application_endpoint_group"},
+		{"input": "Application Endpoint Group", "expected": "application_endpoint_group"},
+	}
+
+	for _, test := range tests {
+		genLogger.Info(fmt.Sprintf("Executing: %s' with input '%s' and expected output '%s'", t.Name(), test["input"], test["expected"]))
+		result := Underscore(test["input"])
+		assert.Equal(t, test["expected"], result, fmt.Sprintf("Expected '%s', but got '%s'", test["expected"], result))
+	}
+
+}
