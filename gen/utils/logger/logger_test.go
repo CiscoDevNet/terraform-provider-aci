@@ -14,7 +14,7 @@ const (
 )
 
 func initializeLogTest(t *testing.T) *Logger {
-	test.InitializeTest(t, 1)
+	test.InitializeTest(t)
 	genLogger := InitializeLogger()
 
 	if genLogger == nil {
