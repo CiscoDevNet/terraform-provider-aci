@@ -126,7 +126,37 @@ func NewProperty(name string, details map[string]interface{}) *Property {
 	genLogger.Trace(fmt.Sprintf("Creating new property struct for property: %s.", name))
 	property := &Property{PropertyName: name}
 
-	// TODO: add functions to set the values of the property.
+	// TODO: add function to set AttributeName
+
+	// TODO: add function to set Computed
+
+	// TODO: add function to set CustomType
+
+	// TODO: add placeholder function for Deprecated
+
+	// TODO: add placeholder function for DeprecatedVersions
+
+	// TODO: add function to set Documentation
+
+	// TODO: add function to set MigrationValues
+
+	// TODO: add function to set Optional
+
+	// TODO: add function to set PointsToClass
+
+	// TODO: add function to set ReadOnly
+
+	// TODO: add function to set Required
+
+	// TODO: add function to set TestValues
+
+	// TODO: add function to set Validators
+
+	// TODO: add function to set ValidValues
+
+	// TODO: add function to set ValueType
+
+	// TODO: add function to set Versions
 
 	return property
 }
