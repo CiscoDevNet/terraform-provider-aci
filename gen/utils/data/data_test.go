@@ -12,7 +12,7 @@ const (
 )
 
 func initializeDataStoreTest(t *testing.T) *DataStore {
-	test.InitializeTest(t, 1)
+	test.InitializeTest(t)
 	return &DataStore{}
 }
 
