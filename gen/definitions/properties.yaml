@@ -464,6 +464,7 @@ fvESg:
       parent_dependency: "fvTenant"
   exclude_targets:
     - "fvAEPg"
+    - "l3extInstP"
   ignores:
     - "floodOnEncap"
     - "prio"
@@ -597,6 +598,10 @@ fvRsSecInherited:
       parent_dependency: "fvAp"
       target_classes:
         - "fvESg"
+    - class_name: "l3extInstP"
+      parent_dependency: "l3extOut"
+      target_classes:
+        - "l3extInstP"
   targets:
     - class_name: "fvESg"
       parent_dependency: "fvAp"
@@ -626,6 +631,18 @@ fvRsSecInherited:
       relation_resource_name: "contract_master"
       properties:
         name: "epg_1"
+    - class_name: "l3extInstP"
+      parent_dependency: "l3extOut"
+      target_dn: "uni/tn-test_name/out-test_l3_outside/instP-ext_epg_1"
+      relation_resource_name: "contract_master"
+      properties:
+        name: "ext_epg_0"
+    - class_name: "l3extInstP"
+      parent_dependency: "l3extOut"
+      target_dn: "uni/tn-test_name/out-test_l3_outside/instP-ext_epg_0"
+      relation_resource_name: "contract_master"
+      properties:
+        name: "ext_epg_1"
 
 fvCrtrn:
   overwrites:
@@ -832,6 +849,7 @@ fvAEPg:
       forwarding_control: "proxy-arp"
   exclude_targets:
     - "fvESg"
+    - "l3extInstP"
   parents:
     - class_name: "fvAp"
       parent_dependency: "fvTenant"
@@ -2469,3 +2487,35 @@ fvRemoteId:
     - class_name: "fvSiteAssociated"
       parent_dependency: "fvAEPg"
       parent_dn: "aci_associated_site.test.id"
+
+l3extInstP:
+  read_only_properties:
+    - "pcTag"
+    - "scope"
+  exclude_targets:
+    - "fvAEPg"
+    - "fvESg"
+  overwrites:
+    pref_gr_memb: "preferred_group_member"
+    pc_enf_pref: "intra_epg_isolation"
+    shutdown: "admin_state"
+    exception_tag: "contract_exception_tag"
+    flood_on_encap: "flood_in_encapsulation"
+  documentation:
+    exceptionTag: "The contract exception tag of the %s object."
+    floodOnEncap: "Flood L2 Multicast/Broadcast and Link Local Layer based on encapsulation."
+    pcEnfPref: "Parameter used to determine whether communication between endpoints within the EPG is blocked."
+    prefGrMemb: "Parameter used to determine whether the EPG is part of the preferred group. Members of this group are allowed to communicate without contracts."
+    scope: "The scope ID (L3-VNI) of the %s object."
+    targetDscp: "The target DSCP value of the %s object."
+
+l3extRsInstPToProfile:
+  test_values:
+    resource_required:
+      direction: "import"
+  overwrites:
+    relation_from_external_epg_to_route_control_profiles: "relation_to_route_control_profiles"
+  documentation:
+    direction: "The direction on which to apply the Route Map associated with the Route Control Profile."
+  parents:
+    - parent_dependency: "l3extOut"

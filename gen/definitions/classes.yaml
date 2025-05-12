@@ -386,7 +386,18 @@ l2extInstP:
   resource_name: "l2out_extepg"
 
 l3extInstP:
-  resource_name: "external_network_instance_profile"
+  resource_name: "external_epg"
+  ui_locations:
+    - "Tenants -> Networking -> L3Outs -> External EPGs"
+  sub_category: "L3Out"
+  exclude_children:
+    - "fvSiteAssociated"
+
+l3extRsInstPToProfile:
+  resource_name: "relation_from_external_epg_to_route_control_profile"
+  ui_locations:
+    - "Tenants -> Networking -> L3Outs -> External EPGs -> Route Control Profile"
+  sub_category: "L3Out"
 
 l3extOut:
   resource_name: "l3_outside"
