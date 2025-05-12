@@ -12,6 +12,7 @@ const (
 	constTestClassNameSingleWordInShortName    = "fvTenant"
 	constTestClassNameMultipleWordsInShortName = "fvRsIpslaMonPol"
 	constTestClassNameErrorInShortName         = "error"
+	constTestMetaFileContentForLabel           = "tenant"
 )
 
 func TestSplitClassNameToPackageNameAndShortNameSingle(t *testing.T) {
@@ -35,5 +36,30 @@ func TestSplitClassNameToPackageNameAndShortNameError(t *testing.T) {
 	packageName, shortName, err := splitClassNameToPackageNameAndShortName(constTestClassNameErrorInShortName)
 	assert.Equal(t, packageName, "", fmt.Sprintf("Expected package name to be '', but got '%s'", packageName))
 	assert.Equal(t, shortName, "", fmt.Sprintf("Expected short name to be '', but got '%s'", shortName))
+	assert.Error(t, err, fmt.Sprintf("Expected error, but got '%s'", err))
+}
+
+func TestSetResourceNameFromLabel(t *testing.T) {
+	test.InitializeTest(t)
+	class := Class{ClassName: constTestClassNameSingleWordInShortName}
+	class.MetaFileContent = map[string]interface{}{"label": constTestMetaFileContentForLabel}
+	err := class.setResourceName()
+	assert.NoError(t, err, fmt.Sprintf("Expected no error, but got '%s'", err))
+	assert.Equal(t, class.ResourceName, constTestMetaFileContentForLabel, fmt.Sprintf("Expected resource name to be 'tenant', but got '%s'", class.ResourceName))
+}
+
+func TestSetResourceNameFromEmptyLabelError(t *testing.T) {
+	test.InitializeTest(t)
+	class := Class{ClassName: constTestClassNameSingleWordInShortName}
+	class.MetaFileContent = map[string]interface{}{"label": ""}
+	err := class.setResourceName()
+	assert.Error(t, err, fmt.Sprintf("Expected error, but got '%s'", err))
+}
+
+func TestSetResourceNameFromNoLabelError(t *testing.T) {
+	test.InitializeTest(t)
+	class := Class{ClassName: constTestClassNameSingleWordInShortName}
+	class.MetaFileContent = map[string]interface{}{"no_label": ""}
+	err := class.setResourceName()
 	assert.Error(t, err, fmt.Sprintf("Expected error, but got '%s'", err))
 }
