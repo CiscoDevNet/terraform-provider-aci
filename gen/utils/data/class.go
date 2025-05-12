@@ -28,6 +28,8 @@ type Class struct {
 	Children []Child
 	// List of all possible parent classes.
 	ContainedBy []string
+	// Deprecated resources include a warning the resource and datasource schemas.
+	Deprecated bool
 	// The APIC versions in which the class is deprecated.
 	DeprecatedVersions []VersionRange
 	// Documentation specific information for the class.
@@ -179,16 +181,44 @@ func (c *Class) loadMetaFile() error {
 func (c *Class) setClassData() error {
 	genLogger.Debug(fmt.Sprintf("Setting class data for class '%s'.", c.ClassName))
 
+	// TODO: add function to set AllowDelete
+
+	// TODO: add function to set Children
+
+	// TODO: add function to set ContainedBy
+
+	// TODO: add placeholder function for Deprecated
+
+	// TODO: add placeholder function for DeprecatedVersions
+
+	// TODO: add function to set Documentation
+
+	// TODO: add function to set IdentifiedBy
+
+	// TODO: add function to set IsMigration
+
+	// TODO: add function to set IsRelational
+
+	// TODO: add function to set IsSingleNested
+
+	// TODO: add function to set PlatformType
+
+	if properties, ok := c.MetaFileContent["properties"]; ok {
+		c.setProperties(properties.(map[string]interface{}))
+	}
+
+	// TODO: add function to set RequiredAsChild
+
 	err := c.setResourceName()
 	if err != nil {
 		return err
 	}
 
-	// TODO: add functions to set the other class data
+	// TODO: add function to set ResourceNameNested
 
-	if properties, ok := c.MetaFileContent["properties"]; ok {
-		c.setProperties(properties.(map[string]interface{}))
-	}
+	// TODO: add function to set RnFormat
+
+	// TODO: add function to set Versions
 
 	genLogger.Debug(fmt.Sprintf("Successfully set class data for class '%s'.", c.ClassName))
 	return nil
