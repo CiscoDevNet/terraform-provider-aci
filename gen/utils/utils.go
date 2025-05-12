@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/logger"
@@ -32,4 +33,13 @@ func GetFileNamesFromDirectory(path string, removeExtension bool) []string {
 	}
 	genLogger.Debug(fmt.Sprintf("The directory '%s' contains the file names: %s.", path, names))
 	return names
+}
+
+// Reused from https://github.com/buxizhizhoum/inflection/blob/master/inflection.go#L8 to avoid importing the whole package
+func Underscore(s string) string {
+	for _, reStr := range []string{`([A-Z]+)([A-Z][a-z])`, `([a-z\d])([A-Z])`} {
+		re := regexp.MustCompile(reStr)
+		s = re.ReplaceAllString(s, "${1}_${2}")
+	}
+	return strings.ReplaceAll(strings.ToLower(s), " ", "_")
 }
