@@ -6,6 +6,7 @@ import (
 	"os"
 	"unicode"
 
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils"
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
@@ -178,7 +179,10 @@ func (c *Class) loadMetaFile() error {
 func (c *Class) setClassData() error {
 	genLogger.Debug(fmt.Sprintf("Setting class data for class '%s'.", c.ClassName))
 
-	c.setResourceName()
+	err := c.setResourceName()
+	if err != nil {
+		return err
+	}
 
 	// TODO: add functions to set the other class data
 
@@ -190,8 +194,17 @@ func (c *Class) setClassData() error {
 	return nil
 }
 
-func (c *Class) setResourceName() {
-	genLogger.Trace(fmt.Sprintf("Implement setting resourceName for class '%s'.", c.ClassName))
+func (c *Class) setResourceName() error {
+	genLogger.Debug(fmt.Sprintf("Setting resource name for class '%s'.", c.ClassName))
+
+	if label, ok := c.MetaFileContent["label"]; ok && label != "" {
+		c.ResourceName = utils.Underscore(label.(string))
+	} else {
+		return fmt.Errorf("failed to set resource name for class '%s': label not found", c.ClassName)
+	}
+
+	genLogger.Debug(fmt.Sprintf("Successfully set resource name '%s' for class '%s'.", c.ResourceName, c.ClassName))
+	return nil
 }
 
 func (c *Class) setProperties(properties map[string]interface{}) {
