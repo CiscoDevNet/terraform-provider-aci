@@ -15,7 +15,7 @@ const (
 )
 
 func TestSplitClassNameToPackageNameAndShortNameSingle(t *testing.T) {
-	test.InitializeTest(t, 0)
+	test.InitializeTest(t)
 	packageName, shortName, err := splitClassNameToPackageNameAndShortName(constTestClassNameSingleWordInShortName)
 	assert.Equal(t, packageName, "fv", fmt.Sprintf("Expected package name to be 'fv', but got '%s'", packageName))
 	assert.Equal(t, shortName, "Tenant", fmt.Sprintf("Expected short name to be 'Tenant', but got '%s'", shortName))
@@ -23,7 +23,7 @@ func TestSplitClassNameToPackageNameAndShortNameSingle(t *testing.T) {
 }
 
 func TestSplitClassNameToPackageNameAndShortNameMultiple(t *testing.T) {
-	test.InitializeTest(t, 0)
+	test.InitializeTest(t)
 	packageName, shortName, err := splitClassNameToPackageNameAndShortName(constTestClassNameMultipleWordsInShortName)
 	assert.Equal(t, packageName, "fv", fmt.Sprintf("Expected package name to be 'fv', but got '%s'", packageName))
 	assert.Equal(t, shortName, "RsIpslaMonPol", fmt.Sprintf("Expected short name to be 'RsIpslaMonPol', but got '%s'", shortName))
@@ -31,7 +31,7 @@ func TestSplitClassNameToPackageNameAndShortNameMultiple(t *testing.T) {
 }
 
 func TestSplitClassNameToPackageNameAndShortNameError(t *testing.T) {
-	test.InitializeTest(t, 0)
+	test.InitializeTest(t)
 	packageName, shortName, err := splitClassNameToPackageNameAndShortName(constTestClassNameErrorInShortName)
 	assert.Equal(t, packageName, "", fmt.Sprintf("Expected package name to be '', but got '%s'", packageName))
 	assert.Equal(t, shortName, "", fmt.Sprintf("Expected short name to be '', but got '%s'", shortName))
