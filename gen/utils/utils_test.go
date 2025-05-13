@@ -58,3 +58,25 @@ func TestUnderscore(t *testing.T) {
 	}
 
 }
+
+func TestPlural(t *testing.T) {
+	test.InitializeTest(t)
+
+	tests := []map[string]string{
+		{"input": "monitor_policy", "expected": "monitor_policies"},
+		{"input": "annotation", "expected": "annotations"},
+	}
+
+	for _, test := range tests {
+		genLogger.Info(fmt.Sprintf("Executing: %s' with input '%s' and expected output '%s'", t.Name(), test["input"], test["expected"]))
+		result, err := Plural(test["input"])
+		assert.NoError(t, err, fmt.Sprintf("Expected no error, but got '%s'", err))
+		assert.Equal(t, test["expected"], result, fmt.Sprintf("Expected '%s', but got '%s'", test["expected"], result))
+	}
+}
+
+func TestPluralError(t *testing.T) {
+	test.InitializeTest(t)
+	_, err := Plural("contracts")
+	assert.Error(t, err, fmt.Sprintf("Expected error, but got '%s'", err))
+}
