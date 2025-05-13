@@ -365,14 +365,6 @@ resource "aci_application_epg" "test_application_epg_1" {
   application_profile_dn = aci_application_profile.test.id
   name = "epg_1"
 }
-resource "aci_external_epg" "test_external_epg_0" {
-  parent_dn = aci_l3_outside.test.id
-  name = "ext_epg_0"
-}
-resource "aci_external_epg" "test_external_epg_1" {
-  parent_dn = aci_l3_outside.test.id
-  name = "ext_epg_1"
-}
 `
 
 const testConfigFvRsSecInheritedMinDependencyWithFvAEPgAllowExisting = testDependencyConfigFvRsSecInherited + testConfigFvAEPgMinDependencyWithFvAp + `
