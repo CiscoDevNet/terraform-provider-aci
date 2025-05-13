@@ -21,7 +21,7 @@ func TestAccDataSourceL3extRsInstPToProfileWithL3extInstP(t *testing.T) {
 				Config:             testConfigL3extRsInstPToProfileDataSourceDependencyWithL3extInstP,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.aci_relation_from_external_epg_to_route_control_profile.test", "direction", "test_direction"),
+					resource.TestCheckResourceAttr("data.aci_relation_from_external_epg_to_route_control_profile.test", "direction", "import"),
 					resource.TestCheckResourceAttr("data.aci_relation_from_external_epg_to_route_control_profile.test", "route_control_profile_name", "test_tn_rtctrl_profile_name"),
 					resource.TestCheckResourceAttr("data.aci_relation_from_external_epg_to_route_control_profile.test", "annotation", "orchestrator:terraform"),
 				),
@@ -37,7 +37,7 @@ func TestAccDataSourceL3extRsInstPToProfileWithL3extInstP(t *testing.T) {
 const testConfigL3extRsInstPToProfileDataSourceDependencyWithL3extInstP = testConfigL3extRsInstPToProfileMinDependencyWithL3extInstP + `
 data "aci_relation_from_external_epg_to_route_control_profile" "test" {
   parent_dn = aci_external_epg.test.id
-  direction = "test_direction"
+  direction = "import"
   route_control_profile_name = "test_tn_rtctrl_profile_name"
   depends_on = [aci_relation_from_external_epg_to_route_control_profile.test]
 }
@@ -46,7 +46,7 @@ data "aci_relation_from_external_epg_to_route_control_profile" "test" {
 const testConfigL3extRsInstPToProfileNotExistingL3extInstP = testConfigL3extInstPMinDependencyWithL3extOut + `
 data "aci_relation_from_external_epg_to_route_control_profile" "test_non_existing" {
   parent_dn = aci_external_epg.test.id
-  direction = "non_existing_direction"
+  direction = "import"
   route_control_profile_name = "non_existing_tn_rtctrl_profile_name"
 }
 `
