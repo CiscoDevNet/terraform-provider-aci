@@ -10,8 +10,10 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
@@ -53,7 +55,10 @@ func (d *L3extRsRedistributePolDataSource) Schema(ctx context.Context, req datas
 				MarkdownDescription: `The annotation of the L3Out Redistribute Policy object.`,
 			},
 			"source": schema.StringAttribute{
-				Required:            true,
+				Required: true,
+				Validators: []validator.String{
+					stringvalidator.OneOf("attached-host", "direct", "static"),
+				},
 				MarkdownDescription: `The source of the L3Out Redistribute Policy object.`,
 			},
 			"route_control_profile_name": schema.StringAttribute{
