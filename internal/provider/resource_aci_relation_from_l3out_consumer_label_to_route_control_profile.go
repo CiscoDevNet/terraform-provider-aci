@@ -191,7 +191,7 @@ func (r *L3extRsLblToProfileResource) Schema(ctx context.Context, req resource.S
 				Validators: []validator.String{
 					stringvalidator.OneOf("export", "import"),
 				},
-				MarkdownDescription: `The connector direction.`,
+				MarkdownDescription: `The direction on which to apply the Route Map associated with the Route Control Profile.`,
 			},
 			"target_dn": schema.StringAttribute{
 				Required: true,

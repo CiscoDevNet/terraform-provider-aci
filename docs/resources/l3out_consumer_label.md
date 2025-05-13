@@ -159,7 +159,7 @@ All examples for the L3Out Consumer Label resource can be found in the [examples
 * `relation_to_route_control_profiles` - (list) A list of Relation From L3Out Consumer Label To Route Control Profiles (ACI object [l3extRsLblToProfile](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extRsLblToProfile/overview)) pointing to Route Control Profile (ACI Object [rtctrlProfile](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/rtctrlProfile/overview)) which can be configured using the [aci_route_control_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/route_control_profile) resource. This attribute is supported in ACI versions: 5.0(1k) and later.
   #### Required ####
   
-    * `direction` (direction) - (string) The connector direction.
+    * `direction` (direction) - (string) The direction on which to apply the Route Map associated with the Route Control Profile.
      - Valid Values: `export`, `import`.
     * `target_dn` (tDn) - (string) The distinguished name (DN) of the Route Control Profile object.
   #### Optional ####

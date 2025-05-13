@@ -54,7 +54,7 @@ func (d *L3extRsLblToProfileDataSource) Schema(ctx context.Context, req datasour
 			},
 			"direction": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: `The connector direction.`,
+				MarkdownDescription: `The direction on which to apply the Route Map associated with the Route Control Profile.`,
 			},
 			"target_dn": schema.StringAttribute{
 				Required:            true,

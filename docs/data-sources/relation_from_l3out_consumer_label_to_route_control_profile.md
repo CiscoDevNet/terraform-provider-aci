@@ -47,7 +47,7 @@ data "aci_relation_from_l3out_consumer_label_to_route_control_profile" "example_
   - The distinguished name (DN) of classes below can be used but currently there is no available resource for it:
     - [l3extConsLblDef](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extConsLblDef/overview)
 
-* `direction` (direction) - (string) The connector direction.
+* `direction` (direction) - (string) The direction on which to apply the Route Map associated with the Route Control Profile.
   - Valid Values: `export`, `import`.
 * `target_dn` (tDn) - (string) The distinguished name (DN) of the Route Control Profile object.
 

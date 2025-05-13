@@ -68,7 +68,7 @@ data "aci_l3out_consumer_label" "example_l3_outside" {
         * `value` (value) - (string) The value of the property.
 * `relation_to_route_control_profiles` - (list) A list of Relation From L3Out Consumer Label To Route Control Profiles (ACI object [l3extRsLblToProfile](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extRsLblToProfile/overview)) pointing to Route Control Profile (ACI Object [rtctrlProfile](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/rtctrlProfile/overview)). This attribute is supported in ACI versions: 5.0(1k) and later.
     * `annotation` (annotation) - (string) The annotation of the Relation From L3Out Consumer Label To Route Control Profile object.
-    * `direction` (direction) - (string) The connector direction.
+    * `direction` (direction) - (string) The direction on which to apply the Route Map associated with the Route Control Profile.
     * `target_dn` (tDn) - (string) The distinguished name (DN) of the Route Control Profile object.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
