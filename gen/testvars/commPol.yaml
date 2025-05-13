@@ -263,5 +263,5 @@ child_targets:
         name: "test_name"
 
 test_type: both
-class_version: 6.0(2h)
+class_version: 6.0(2h)-6.0(8g),6.1(3f)-
 version_mismatch: true
