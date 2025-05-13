@@ -1341,6 +1341,7 @@ l3extRsLblToProfile:
     relation_from_l3out_consumer_label_to_route_control_profiles: "relation_to_route_control_profiles"
   documentation:
     tDn: "The distinguished name (DN) of the Route Control Profile object."
+    direction: "The direction on which to apply the Route Map associated with the Route Control Profile."
   test_values:
     default:
       direction: "import"
