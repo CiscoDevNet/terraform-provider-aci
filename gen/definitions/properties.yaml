@@ -602,6 +602,8 @@ fvRsSecInherited:
       parent_dependency: "l3extOut"
       target_classes:
         - "l3extInstP"
+  exclude_targets:
+    - "l3extInstP"
   targets:
     - class_name: "fvESg"
       parent_dependency: "fvAp"

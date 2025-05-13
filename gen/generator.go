@@ -2908,7 +2908,7 @@ func (m *Model) SetModelTestDependencies(classModels map[string]Model, definitio
 			if key.(string) == "targets" {
 				for index, v := range value.([]interface{}) {
 					targetMap := v.(map[interface{}]interface{})
-					if className, ok := targetMap["class_name"]; ok {
+					if className, ok := targetMap["class_name"]; ok && !slices.Contains(m.getExcludeTargets(), className.(string)) {
 						testDependencies = append(testDependencies, getTestDependency(m.PkgName, className.(string), targetMap, definitions, index))
 					}
 				}

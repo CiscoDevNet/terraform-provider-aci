@@ -93,26 +93,4 @@ targets:
     static: false
     properties:
         name: "epg_1"
-  - class_name: "l3extInstP"
-    target_dn: "uni/tn-test_name/out-test_l3_outside/instP-ext_epg_1"
-    target_dn_ref: "aci_external_epg.test_external_epg_0.id"
-    parent_dependency: "l3extOut"
-    parent_dependency_dn_ref: "aci_l3_outside.test.id"
-    target_resource_name: "external_epg"
-    relation_resource_name: "contract_master"
-    parent_dn_key: "parent_dn"
-    static: false
-    properties:
-        name: "ext_epg_0"
-  - class_name: "l3extInstP"
-    target_dn: "uni/tn-test_name/out-test_l3_outside/instP-ext_epg_0"
-    target_dn_ref: "aci_external_epg.test_external_epg_1.id"
-    parent_dependency: "l3extOut"
-    parent_dependency_dn_ref: "aci_l3_outside.test.id"
-    target_resource_name: "external_epg"
-    relation_resource_name: "contract_master"
-    parent_dn_key: "parent_dn"
-    static: false
-    properties:
-        name: "ext_epg_1"
 class_version: 2.3(1e)-
