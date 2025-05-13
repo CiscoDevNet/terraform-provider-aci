@@ -8,11 +8,11 @@ default:
   direction: "import"
 
 datasource_non_existing:
-  direction: "non_existing_direction"
+  direction: "import"
   route_control_profile_name: "non_existing_tn_rtctrl_profile_name"
 
 datasource_required:
-  direction: "test_direction"
+  direction: "import"
   route_control_profile_name: "test_tn_rtctrl_profile_name"
 
 resource_required:
