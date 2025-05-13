@@ -11,8 +11,10 @@ import (
 	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
@@ -58,8 +60,11 @@ func (d *QosDscpClassDataSource) Schema(ctx context.Context, req datasource.Sche
 				MarkdownDescription: `The description of the DSCP to Priority Map object.`,
 			},
 			"from": schema.StringAttribute{
-				CustomType:          customTypes.QosDscpClassFromStringType{},
-				Required:            true,
+				CustomType: customTypes.QosDscpClassFromStringType{},
+				Required:   true,
+				Validators: []validator.String{
+					stringvalidator.OneOf("AF11", "AF12", "AF13", "AF21", "AF22", "AF23", "AF31", "AF32", "AF33", "AF41", "AF42", "AF43", "CS0", "CS1", "CS2", "CS3", "CS4", "CS5", "CS6", "CS7", "EF", "VA"),
+				},
 				MarkdownDescription: `The DSCP range starting value.`,
 			},
 			"name": schema.StringAttribute{
@@ -86,8 +91,11 @@ func (d *QosDscpClassDataSource) Schema(ctx context.Context, req datasource.Sche
 				MarkdownDescription: `Target COS to be driven based on the range of input values of DSCP coming into the fabric.`,
 			},
 			"to": schema.StringAttribute{
-				CustomType:          customTypes.QosDscpClassToStringType{},
-				Required:            true,
+				CustomType: customTypes.QosDscpClassToStringType{},
+				Required:   true,
+				Validators: []validator.String{
+					stringvalidator.OneOf("AF11", "AF12", "AF13", "AF21", "AF22", "AF23", "AF31", "AF32", "AF33", "AF41", "AF42", "AF43", "CS0", "CS1", "CS2", "CS3", "CS4", "CS5", "CS6", "CS7", "EF", "VA"),
+				},
 				MarkdownDescription: `The DSCP range ending value.`,
 			},
 			"annotations": schema.SetNestedAttribute{

@@ -10,8 +10,10 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
@@ -53,7 +55,10 @@ func (d *FvRsBDToNetflowMonitorPolDataSource) Schema(ctx context.Context, req da
 				MarkdownDescription: `The annotation of the Relation From Bridge Domain To NetFlow Monitor Policy object.`,
 			},
 			"filter_type": schema.StringAttribute{
-				Required:            true,
+				Required: true,
+				Validators: []validator.String{
+					stringvalidator.OneOf("ce", "ipv4", "ipv6", "unspecified"),
+				},
 				MarkdownDescription: `The filter type of the NetFlow Monitor Policy object.`,
 			},
 			"netflow_monitor_policy_name": schema.StringAttribute{

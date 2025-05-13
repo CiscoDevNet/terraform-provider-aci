@@ -10,8 +10,10 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
@@ -53,7 +55,10 @@ func (d *L3extRsInstPToProfileDataSource) Schema(ctx context.Context, req dataso
 				MarkdownDescription: `The annotation of the Relation From External EPG To Route Control Profile object.`,
 			},
 			"direction": schema.StringAttribute{
-				Required:            true,
+				Required: true,
+				Validators: []validator.String{
+					stringvalidator.OneOf("export", "import"),
+				},
 				MarkdownDescription: `The direction on which to apply the Route Map associated with the Route Control Profile.`,
 			},
 			"route_control_profile_name": schema.StringAttribute{

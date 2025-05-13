@@ -11,8 +11,10 @@ import (
 	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
@@ -58,8 +60,11 @@ func (d *QosDot1PClassDataSource) Schema(ctx context.Context, req datasource.Sch
 				MarkdownDescription: `The description of the Dot1p Classifier object.`,
 			},
 			"from": schema.StringAttribute{
-				CustomType:          customTypes.QosDot1PClassFromStringType{},
-				Required:            true,
+				CustomType: customTypes.QosDot1PClassFromStringType{},
+				Required:   true,
+				Validators: []validator.String{
+					stringvalidator.OneOf("0", "1", "2", "3", "4", "5", "6", "7", "unspecified"),
+				},
 				MarkdownDescription: `The Dot1p priority range starting value.`,
 			},
 			"name": schema.StringAttribute{
@@ -86,8 +91,11 @@ func (d *QosDot1PClassDataSource) Schema(ctx context.Context, req datasource.Sch
 				MarkdownDescription: `The target Class of Service (CoS) to be driven based on the range of DSCP input values coming into the fabric.`,
 			},
 			"to": schema.StringAttribute{
-				CustomType:          customTypes.QosDot1PClassToStringType{},
-				Required:            true,
+				CustomType: customTypes.QosDot1PClassToStringType{},
+				Required:   true,
+				Validators: []validator.String{
+					stringvalidator.OneOf("0", "1", "2", "3", "4", "5", "6", "7", "unspecified"),
+				},
 				MarkdownDescription: `The Dot1p priority range ending value.`,
 			},
 			"annotations": schema.SetNestedAttribute{
