@@ -14,7 +14,7 @@ import (
 func TestAccDataSourceCommPol(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t, "both", "6.0(2h)") },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "6.0(2h)-6.0(8g),6.1(3f)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{

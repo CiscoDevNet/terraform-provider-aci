@@ -104,12 +104,14 @@ func testAccPreCheck(t *testing.T, testType string, testApplicableFromVersion st
 	if err != nil {
 		t.Fatalf("Error fetching APIC controller information: %v", err)
 	}
+
 	apicVersion := extractControllerVersion(infoController)
-	// TODO process the version when it has ranges associated with it
-	if apicVersion != strings.TrimSuffix(testApplicableFromVersion, "-") {
-		if IsVersionGreater(*ParseVersion(testApplicableFromVersion).Version, *ParseVersion(apicVersion).Version) {
-			t.Skip("[WARNING] Test skipped because it is not supported on APIC version:", apicVersion)
-		}
+
+	comparisonResult, err := CompareVersionsRange(apicVersion, testApplicableFromVersion, "inside")
+	if err != nil {
+		t.Skipf("[ERROR] Test skipped because the version '%s' couldn't be checked, error: %s", testApplicableFromVersion, err)
+	} else if !comparisonResult {
+		t.Skipf("[WARNING] Test skipped because the version '%s' is not supported on APIC version: %s", testApplicableFromVersion, apicVersion)
 	}
 
 }
