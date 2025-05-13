@@ -63,3 +63,25 @@ func TestSetResourceNameFromNoLabelError(t *testing.T) {
 	err := class.setResourceName()
 	assert.Error(t, err, fmt.Sprintf("Expected error, but got '%s'", err))
 }
+
+func TestSetResourceNameNested(t *testing.T) {
+	test.InitializeTest(t)
+	class := Class{ClassName: constTestClassNameSingleWordInShortName}
+
+	tests := []map[string]interface{}{
+		{"resource_name": "relation_from_bridge_domain_to_netflow_monitor_policy", "identifiers": []string{"tnNetflowMonitorPolName", "fltType"}, "expected": "relation_to_netflow_monitor_policies"},
+		{"resource_name": "annotation", "identifiers": []string{"key"}, "expected": "annotations"},
+		{"resource_name": "relation_to_consumed_contract", "identifiers": []string{"tnVzBrCPName"}, "expected": "relation_to_consumed_contracts"},
+		{"resource_name": "associated_site", "identifiers": []string{}, "expected": "associated_site"},
+		{"resource_name": "relation_from_netflow_exporter_to_vrf", "identifiers": []string{}, "expected": "relation_to_vrf"},
+	}
+
+	for _, test := range tests {
+		genLogger.Info(fmt.Sprintf("Executing: %s' with input '%s' and expected output '%s'", t.Name(), test["resource_name"], test["expected"]))
+		class.ResourceName = test["resource_name"].(string)
+		class.IdentifiedBy = test["identifiers"].([]string)
+		class.setResourceNameNested()
+		assert.Equal(t, test["expected"], class.ResourceNameNested, fmt.Sprintf("Expected '%s', but got '%s'", test["expected"], class.ResourceNameNested))
+	}
+
+}
