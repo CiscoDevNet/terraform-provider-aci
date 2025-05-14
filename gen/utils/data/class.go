@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"regexp"
 	"unicode"
 
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils"
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
@@ -27,6 +29,8 @@ type Class struct {
 	Children []Child
 	// List of all possible parent classes.
 	ContainedBy []string
+	// Deprecated resources include a warning the resource and datasource schemas.
+	Deprecated bool
 	// The APIC versions in which the class is deprecated.
 	DeprecatedVersions []VersionRange
 	// Documentation specific information for the class.
@@ -178,20 +182,92 @@ func (c *Class) loadMetaFile() error {
 func (c *Class) setClassData() error {
 	genLogger.Debug(fmt.Sprintf("Setting class data for class '%s'.", c.ClassName))
 
-	c.setResourceName()
+	// TODO: add function to set AllowDelete
 
-	// TODO: add functions to set the other class data
+	// TODO: add function to set Children
+
+	// TODO: add function to set ContainedBy
+
+	// TODO: add placeholder function for Deprecated
+
+	// TODO: add placeholder function for DeprecatedVersions
+
+	// TODO: add function to set Documentation
+
+	// TODO: add function to set IdentifiedBy
+
+	// TODO: add function to set IsMigration
+
+	// TODO: add function to set IsRelational
+
+	// TODO: add function to set IsSingleNested
+
+	// TODO: add function to set PlatformType
 
 	if properties, ok := c.MetaFileContent["properties"]; ok {
 		c.setProperties(properties.(map[string]interface{}))
 	}
 
+	// TODO: add function to set RequiredAsChild
+
+	err := c.setResourceName()
+	if err != nil {
+		return err
+	}
+
+	err = c.setResourceNameNested()
+	if err != nil {
+		return err
+	}
+
+	// TODO: add function to set RnFormat
+
+	// TODO: add function to set Versions
+
 	genLogger.Debug(fmt.Sprintf("Successfully set class data for class '%s'.", c.ClassName))
 	return nil
 }
 
-func (c *Class) setResourceName() {
-	genLogger.Trace(fmt.Sprintf("Implement setting resourceName for class '%s'.", c.ClassName))
+func (c *Class) setResourceName() error {
+	genLogger.Debug(fmt.Sprintf("Setting resource name for class '%s'.", c.ClassName))
+
+	// TODO: add logic to override the resource name from a definition file.
+	if label, ok := c.MetaFileContent["label"]; ok && label != "" {
+		c.ResourceName = utils.Underscore(label.(string))
+	} else {
+		return fmt.Errorf("failed to set resource name for class '%s': label not found", c.ClassName)
+	}
+
+	genLogger.Debug(fmt.Sprintf("Successfully set resource name '%s' for class '%s'.", c.ResourceName, c.ClassName))
+	return nil
+}
+
+func (c *Class) setResourceNameNested() error {
+	genLogger.Debug(fmt.Sprintf("Setting resource name when used as nested attribute for class '%s'.", c.ClassName))
+
+	// The assumption is made that when a resource name has no identifying properties, there will be only one configurable item.
+	// This means that the resource name will not be in plural form when exposed as an nested attribute in it's parent.
+	if len(c.IdentifiedBy) == 0 {
+		c.ResourceNameNested = c.ResourceName
+	} else {
+		// ex. 'relation_to_consumed_contract' would be pluralized to 'relation_to_consumed_contracts'.
+		// ex. 'relation_from_bridge_domain_to_netflow_monitor_policy' would be pluralized to 'relation_from_bridge_domain_to_netflow_monitor_policies'.
+		pluralForm, err := utils.Plural(c.ResourceName)
+		if err != nil {
+			return err
+		}
+		c.ResourceNameNested = pluralForm
+	}
+
+	// For relational class nested attributes the name is changed to 'to_resource_name' when the resource name includes 'from_resource_name'.
+	//  ex. 'relation_from_bridge_domain_to_netflow_monitor_policy' would translate to 'relation_to_netflow_monitor_policy'.
+	m := regexp.MustCompile("from_(.*)_to_")
+	if m.MatchString(c.ResourceNameNested) {
+		c.ResourceNameNested = m.ReplaceAllString(c.ResourceNameNested, "to_")
+	}
+
+	genLogger.Debug(fmt.Sprintf("Successfully set resource name when used as nested attribute '%s' for class '%s'.", c.ResourceNameNested, c.ClassName))
+	return nil
 }
 
 func (c *Class) setProperties(properties map[string]interface{}) {
