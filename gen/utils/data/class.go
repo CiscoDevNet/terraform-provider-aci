@@ -231,7 +231,7 @@ func (c *Class) setClassData() error {
 func (c *Class) setResourceName() error {
 	genLogger.Debug(fmt.Sprintf("Setting resource name for class '%s'.", c.ClassName))
 
-	// TODO: add logic to override the resource name from an definition file.
+	// TODO: add logic to override the resource name from a definition file.
 	if label, ok := c.MetaFileContent["label"]; ok && label != "" {
 		c.ResourceName = utils.Underscore(label.(string))
 	} else {
