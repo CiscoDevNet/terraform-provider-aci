@@ -119,6 +119,11 @@ func (d *{{.ResourceClassName}}DataSource) Schema(ctx context.Context, req datas
 				CustomType: customTypes.{{.ResourceClassName}}{{.Name}}StringType{},
 					{{- end}}
 				Required:            true,
+					{{- if .ValidValues}}
+				Validators: []validator.String{
+					stringvalidator.OneOf({{- validatorString .ValidValues}}),
+				},
+					{{- end}}
 				MarkdownDescription: `{{.Comment}}`,
 			},{{else if eq .ValueType "bitmask"}}
 			"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": schema.SetAttribute{

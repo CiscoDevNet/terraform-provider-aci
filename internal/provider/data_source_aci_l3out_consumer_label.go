@@ -139,7 +139,7 @@ func (d *L3extConsLblDataSource) Schema(ctx context.Context, req datasource.Sche
 						},
 						"direction": schema.StringAttribute{
 							Computed:            true,
-							MarkdownDescription: `The connector direction.`,
+							MarkdownDescription: `The direction on which to apply the Route Map associated with the Route Control Profile.`,
 						},
 						"target_dn": schema.StringAttribute{
 							Computed:            true,

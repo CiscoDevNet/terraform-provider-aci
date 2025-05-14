@@ -602,7 +602,7 @@ func (r *L3extConsLblResource) Schema(ctx context.Context, req resource.SchemaRe
 								stringvalidator.OneOf("export", "import"),
 								MakeStringRequired(),
 							},
-							MarkdownDescription: `The connector direction.`,
+							MarkdownDescription: `The direction on which to apply the Route Map associated with the Route Control Profile.`,
 						},
 						"target_dn": schema.StringAttribute{
 							Required: true,

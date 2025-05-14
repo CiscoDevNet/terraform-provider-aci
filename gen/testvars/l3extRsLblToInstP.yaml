@@ -44,11 +44,11 @@ parents:
 targets:
   - class_name: "l3extInstP"
     target_dn: "uni/tn-test_name/out-test_l3_outside/instP-inst_profile_1"
-    target_dn_ref: "aci_external_network_instance_profile.test_external_network_instance_profile_0.id"
+    target_dn_ref: "aci_external_epg.test_external_epg_0.id"
     target_dn_overwrite_docs: "aci_external_network_instance_profile.example.id"
     parent_dependency: "l3extOut"
     parent_dependency_dn_ref: "aci_l3_outside.test.id"
-    target_resource_name: "external_network_instance_profile"
+    target_resource_name: "external_epg"
     relation_resource_name: "external_network_instance_profile"
     parent_dn_key: "parent_dn"
     static: true

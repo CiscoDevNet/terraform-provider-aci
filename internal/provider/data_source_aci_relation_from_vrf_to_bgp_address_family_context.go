@@ -10,8 +10,10 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
@@ -49,7 +51,10 @@ func (d *FvRsCtxToBgpCtxAfPolDataSource) Schema(ctx context.Context, req datasou
 				MarkdownDescription: "The distinguished name (DN) of the parent object.",
 			},
 			"address_family": schema.StringAttribute{
-				Required:            true,
+				Required: true,
+				Validators: []validator.String{
+					stringvalidator.OneOf("ipv4-ucast", "ipv6-ucast"),
+				},
 				MarkdownDescription: `The type of address family for the Relation From VRF To BGP Address Family Context.`,
 			},
 			"annotation": schema.StringAttribute{
