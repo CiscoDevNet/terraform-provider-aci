@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.17.0 (May 21, 2025)
+
+IMPROVEMENTS:
+- Migrate aci_taboo_contract and add support for taboo contract subjects vztsubj
+- Add versions for properties in documentation
+- Migration of vrf into plugin framework and addition of aci_eigrp_address_family_context resource and datasource
+- Add aci_remote_site and aci_associated_site resources and datasources for multisite translation mapping classes fvsiteassociated and fvremoteid
+- Add support for nutanix in the aci_vmm_domain resource
+- Add resources and datasources for external epg (l3extinstp) and its relation to route profile (l3extrsinstptoprofile)
+
+BUG FIXES:
+- Fix to allow updating of attributes in the aci_external_network_instance_profile resource
+
 ## 2.16.0 (April 18, 2025)
 
 This release is the first release that includes resources and data sources that have been migrated from SDKv2 to the Terraform Provider Framework. Those resources and data sources will continue to accept legacy attributes but deprecation warnings will be displayed. See the [migration guide](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/guides/migration) for more details on the migration and how to upgrade the provider to this release and any subsequent v2.x release that will include migrated resources and data sources.
