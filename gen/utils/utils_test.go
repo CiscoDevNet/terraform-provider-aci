@@ -19,7 +19,7 @@ const (
 )
 
 func TestGetFileNamesFromDirectoryWithExtension(t *testing.T) {
-	test.InitializeTest(t, 0)
+	test.InitializeTest(t)
 	filenames := GetFileNamesFromDirectory(constTestDirectoryForGetFileNamesFromDirectory, false)
 	assert.NotEmpty(t, filenames, "Expected to get file names from directory, but got empty list")
 	assert.Equal(t, len(filenames), 3, fmt.Sprintf("Expected to get 2 file names from directory, but got %d", len(filenames)))
@@ -30,7 +30,7 @@ func TestGetFileNamesFromDirectoryWithExtension(t *testing.T) {
 }
 
 func TestGetFileNamesFromDirectoryWithoutExtension(t *testing.T) {
-	test.InitializeTest(t, 0)
+	test.InitializeTest(t)
 	filenames := GetFileNamesFromDirectory(constTestDirectoryForGetFileNamesFromDirectory, true)
 	assert.NotEmpty(t, filenames, "Expected to get file names from directory, but got empty list")
 	assert.Equal(t, len(filenames), 3, fmt.Sprintf("Expected to get 2 file names from directory, but got %d", len(filenames)))
@@ -38,4 +38,45 @@ func TestGetFileNamesFromDirectoryWithoutExtension(t *testing.T) {
 	assert.Contains(t, filenames, constTestFile2WithoutExtension, fmt.Sprintf("Expected to find file name '%s' in the list, but it was not found", constTestFile2WithoutExtension))
 	assert.Contains(t, filenames, constTestFile3, fmt.Sprintf("Expected to find file name '%s' in the list, but it was not found", constTestFile3))
 	assert.NotContains(t, filenames, constTestDir1, fmt.Sprintf("Expected to not find directory name '%s' in the list, but it was found", constTestDir1))
+}
+
+func TestUnderscore(t *testing.T) {
+	test.InitializeTest(t)
+
+	tests := []map[string]string{
+		{"input": "tenant", "expected": "tenant"},
+		{"input": "Tenant", "expected": "tenant"},
+		{"input": "Tenant1", "expected": "tenant1"},
+		{"input": "ApplicationEndpointGroup", "expected": "application_endpoint_group"},
+		{"input": "Application Endpoint Group", "expected": "application_endpoint_group"},
+	}
+
+	for _, test := range tests {
+		genLogger.Info(fmt.Sprintf("Executing: %s' with input '%s' and expected output '%s'", t.Name(), test["input"], test["expected"]))
+		result := Underscore(test["input"])
+		assert.Equal(t, test["expected"], result, fmt.Sprintf("Expected '%s', but got '%s'", test["expected"], result))
+	}
+
+}
+
+func TestPlural(t *testing.T) {
+	test.InitializeTest(t)
+
+	tests := []map[string]string{
+		{"input": "monitor_policy", "expected": "monitor_policies"},
+		{"input": "annotation", "expected": "annotations"},
+	}
+
+	for _, test := range tests {
+		genLogger.Info(fmt.Sprintf("Executing: %s' with input '%s' and expected output '%s'", t.Name(), test["input"], test["expected"]))
+		result, err := Plural(test["input"])
+		assert.NoError(t, err, fmt.Sprintf("Expected no error, but got '%s'", err))
+		assert.Equal(t, test["expected"], result, fmt.Sprintf("Expected '%s', but got '%s'", test["expected"], result))
+	}
+}
+
+func TestPluralError(t *testing.T) {
+	test.InitializeTest(t)
+	_, err := Plural("contracts")
+	assert.Error(t, err, fmt.Sprintf("Expected error, but got '%s'", err))
 }
