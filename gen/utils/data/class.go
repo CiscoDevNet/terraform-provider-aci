@@ -246,7 +246,7 @@ func (c *Class) setResourceNameNested() error {
 	genLogger.Debug(fmt.Sprintf("Setting resource name when used as nested attribute for class '%s'.", c.ClassName))
 
 	// The assumption is made that when a resource name has no identifying properties, there will be only one configurable item.
-	// This means that the resource name will not be in plural form when exposed as an nested attribute in it's parent.
+	// This means that the resource name will not be in plural form when exposed as a nested attribute in its parent.
 	if len(c.IdentifiedBy) == 0 {
 		c.ResourceNameNested = c.ResourceName
 	} else {
