@@ -13,7 +13,7 @@ func TestAccAciRestManaged_tenant(t *testing.T) {
 	name := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(7g)") },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(7g)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -52,7 +52,7 @@ func TestAccAciRestManaged_tenant(t *testing.T) {
 
 func TestAccAciRestManaged_connPref(t *testing.T) {
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(7g)") },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(7g)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -79,7 +79,7 @@ func TestAccAciRestManaged_connPref(t *testing.T) {
 
 func TestAccAciRestManaged_escapeHtml(t *testing.T) {
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(7g)") },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(7g)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -98,7 +98,7 @@ func TestAccAciRestManaged_escapeHtml(t *testing.T) {
 
 func TestAccAciRestManaged_escapeHtmlTrue(t *testing.T) {
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(7g)") },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(7g)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -118,7 +118,7 @@ func TestAccAciRestManaged_escapeHtmlTrue(t *testing.T) {
 
 func TestAccAciRestManaged_noContent(t *testing.T) {
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(7g)") },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(7g)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -136,7 +136,7 @@ func TestAccAciRestManaged_tenantVrf(t *testing.T) {
 	name := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(7g)") },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(7g)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -159,7 +159,7 @@ func TestAccAciRestManaged_import(t *testing.T) {
 	name := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(7g)") },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(7g)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -339,7 +339,7 @@ func TestAccAciRestManaged_importWithIpv6(t *testing.T) {
 	name := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(7g)") },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(7g)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -427,7 +427,7 @@ func TestAccAciRestManaged_importWithBracket(t *testing.T) {
 	name := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(7g)") },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(7g)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -504,7 +504,7 @@ func TestAccAciRestManaged_tagTag(t *testing.T) {
 	name := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(7g)") },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(7g)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -527,7 +527,7 @@ func TestAccAciRestManaged_tenantChildren(t *testing.T) {
 	name := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(7g)") },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(7g)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -568,7 +568,7 @@ func TestAccAciRestManaged_globalAllowExistingOnCreate(t *testing.T) {
 	name := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(7g)") },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(7g)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -584,7 +584,7 @@ func TestAccAciRestManaged_globalAllowExistingOnCreate(t *testing.T) {
 
 	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(7g)") },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(7g)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -596,7 +596,7 @@ func TestAccAciRestManaged_globalAllowExistingOnCreate(t *testing.T) {
 
 	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(7g)") },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(7g)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -615,7 +615,7 @@ func TestAccAciRestManaged_globalAnnotation(t *testing.T) {
 	name := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(7g)") },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(7g)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -633,7 +633,7 @@ func TestAccAciRestManaged_globalAnnotation(t *testing.T) {
 
 	setEnvVariable(t, "ACI_ANNOTATION", "orchestrator:from_env")
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(7g)") },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(7g)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -698,7 +698,7 @@ func TestAccAciRestManaged_globalAnnotation(t *testing.T) {
 	})
 	setEnvVariable(t, "ACI_ANNOTATION", "")
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(7g)") },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(7g)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -718,7 +718,7 @@ func TestAccAciRestManaged_globalAnnotation(t *testing.T) {
 
 func TestAccAciRestManaged_undeletableClass(t *testing.T) {
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(7g)") },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(7g)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -752,7 +752,7 @@ func TestAccAciRestManaged_explicitNull(t *testing.T) {
 	name := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(7g)") },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(7g)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -802,6 +802,35 @@ func TestAccAciRestManaged_explicitNull(t *testing.T) {
 		},
 	})
 
+}
+
+func TestAccAciRestManaged_undeletableObject(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t, "both", "2.0(1m)-") },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config:             testAccAciRestManagedConfig_undeletableObject(),
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeTestCheckFunc(
+					// Validate the attributes for fvFabricExtConnP
+					resource.TestCheckResourceAttr("aci_rest_managed.fvFabricExtConnP", "dn", "uni/tn-infra/fabricExtConnP-1"),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvFabricExtConnP", "class_name", "fvFabricExtConnP"),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvFabricExtConnP", "content.id", "1"),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvFabricExtConnP", "content.name", "IPN"),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvFabricExtConnP", "content.rt", "extended:as2-nn4:5:16"),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvFabricExtConnP", "content.siteId", "1"),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvFabricExtConnP", "content.%", "4"),
+
+					// Validate the attributes for fvPeeringP
+					resource.TestCheckResourceAttr("aci_rest_managed.fvPeeringP", "dn", "uni/tn-infra/fabricExtConnP-1/peeringP"),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvPeeringP", "class_name", "fvPeeringP"),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvPeeringP", "content.type", "automatic_with_rr"),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvPeeringP", "content.%", "1"),
+				),
+			},
+		},
+	})
 }
 
 func testAccAciRestManagedConfig_tenant(name string, description string) string {
@@ -1227,5 +1256,28 @@ func testAccAciRestManagedConfig_escapeHtmlTrue() string {
 			message = "&&& WARNING &&& VERIFYING THE CONVERSION OF HTML CHARACTERS."
 		}
 	}
+	`
+}
+
+func testAccAciRestManagedConfig_undeletableObject() string {
+	return `
+	resource "aci_rest_managed" "fvFabricExtConnP" {
+		dn         = "uni/tn-infra/fabricExtConnP-1"
+		class_name = "fvFabricExtConnP"
+		content = {
+		  id     = "1"
+		  name   = "IPN"
+		  rt     = "extended:as2-nn4:5:16"
+		  siteId = "1"
+		}
+	  }
+	  resource "aci_rest_managed" "fvPeeringP" {
+		dn          = "${aci_rest_managed.fvFabricExtConnP.dn}/peeringP"
+		class_name  = "fvPeeringP"
+		escape_html = false
+		content = {
+		  type     = "automatic_with_rr"
+		}
+	  }
 	`
 }
