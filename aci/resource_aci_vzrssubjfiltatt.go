@@ -103,6 +103,16 @@ func setSubjectFilterAttributes(vzRsSubjFiltAtt *models.SubjectFilter, d *schema
 	for _, val := range strings.Split(vzRsSubjFiltAttMap["directives"], ",") {
 		directivesGet = append(directivesGet, strings.Trim(val, " "))
 	}
+	// The "none" value in directives does not get returned by APIC.
+	// Add "none" if the user has defined the value in the directives attributes.
+	if userDirectives, ok := d.GetOk("directives"); ok {
+		for _, val := range userDirectives.([]interface{}) {
+			if val.(string) == "none" {
+				directivesGet = append(directivesGet, "none")
+				break
+			}
+		}
+	}
 	d.Set("directives", directivesGet)
 	d.Set("priority_override", vzRsSubjFiltAttMap["priorityOverride"])
 	d.Set("filter_dn", vzRsSubjFiltAttMap["tDn"])
