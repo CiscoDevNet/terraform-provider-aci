@@ -4,8 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"slices"
+	"strings"
 	"unicode"
 
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils"
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
@@ -24,9 +27,11 @@ type Class struct {
 	ClassNameShort string
 	// List of all child classes which are included inside the resource.
 	// When looping over maps in golang the order of the returned elements is random, thus list is used for order consistency.
-	Children []Child
+	Children []string
 	// List of all possible parent classes.
 	ContainedBy []string
+	// Deprecated resources include a warning the resource and datasource schemas.
+	Deprecated bool
 	// The APIC versions in which the class is deprecated.
 	DeprecatedVersions []VersionRange
 	// Documentation specific information for the class.
@@ -37,8 +42,6 @@ type Class struct {
 	// Indicates that the class is migrated from previous version of the provider.
 	// This is used to determine if legacy attributes have to be exposed in the resource.
 	IsMigration bool
-	// Indicates that the class is a relationship class.
-	IsRelational bool
 	// Indicates that when the class is included in a resource as a child it can only be configured once.
 	// This is used to determine the type of the nested attribute to be a map or list.
 	IsSingleNested bool
@@ -55,6 +58,9 @@ type Class struct {
 	// The full content from the meta file.
 	// Storing the content proactively in case we need to access the data at a later stage.
 	MetaFileContent map[string]interface{}
+	// The relationship information of the class.
+	// If the class is a relationship class, it will contain the information about the relationship.
+	Relation Relation
 	// Indicates if the class is required when defined as a child in a parent resource.
 	RequiredAsChild bool
 	// The resource name is the name of the resource in the provider, ex "aci_tenant".
@@ -83,12 +89,41 @@ const (
 	Cloud
 )
 
-type Child struct {
-	// The name of the child class, ex "fvTenant".
-	// This is used as the key for the map of all classes.
-	ClassName string
-	// When it is a relationship class, this is the class to which the relationship points.
-	PointsToClass string
+type Relation struct {
+	// The class from which the relationship is defined.
+	FromClass string
+	// Indicates if _from_ should be included in the resource name.
+	//  ex. "fvRsBdToOut" would be "data_source_aci_relation_from_bridge_domain_to_l3_outside".
+	IncludeFrom bool
+	// Indicates if the class is a relational class.
+	RelationalClass bool
+	// The class to which the relationship points.
+	ToClass string
+	// The type of the relationship.
+	Type RelationShipTypeEnum
+}
+
+// The enumeration options of the relationship type.
+type RelationShipTypeEnum int
+
+const (
+	// Named indicates that the relationship is a named relation.
+	Named RelationShipTypeEnum = iota + 1
+	// Explicit indicates that the relationship is an explicit relation.
+	Explicit
+	// Undefined indicates that the relationship type is unknown.
+	Undefined RelationShipTypeEnum = iota
+)
+
+func setRelationShipTypeEnum(relationType string) (RelationShipTypeEnum, error) {
+	switch relationType {
+	case "named":
+		return Named, nil
+	case "explicit":
+		return Explicit, nil
+	default:
+		return Undefined, fmt.Errorf("undefined relationship type '%s'", relationType)
+	}
 }
 
 type ClassDocumentation struct {
@@ -117,7 +152,7 @@ type VersionRange struct {
 	Min provider.Version
 }
 
-func NewClass(className string) (*Class, error) {
+func NewClass(className string, ds *DataStore) (*Class, error) {
 	genLogger.Trace(fmt.Sprintf("Creating new class struct with class name: %s.", className))
 	// Splitting the class name into the package and short name.
 	packageName, shortName, err := splitClassNameToPackageNameAndShortName(className)
@@ -140,7 +175,7 @@ func NewClass(className string) (*Class, error) {
 		return nil, err
 	}
 
-	err = class.setClassData()
+	err = class.setClassData(ds)
 	if err != nil {
 		return nil, err
 	}
@@ -153,8 +188,7 @@ func (c *Class) loadMetaFile() error {
 
 	fileContent, err := os.ReadFile(fmt.Sprintf("%s/%s.json", constMetaPath, c.ClassName))
 	if err != nil {
-		genLogger.Error(fmt.Sprintf("Error during loading of meta file: %s", err.Error()))
-		return err
+		return fmt.Errorf("failed to load meta file for class '%s': %s", c.ClassName, err.Error())
 	}
 
 	genLogger.Trace(fmt.Sprintf("Parsing meta file for class '%s'.", c.ClassName))
@@ -164,8 +198,7 @@ func (c *Class) loadMetaFile() error {
 	var metaFileContent map[string]interface{}
 	err = json.Unmarshal(fileContent, &metaFileContent)
 	if err != nil {
-		genLogger.Error(fmt.Sprintf("Error during parsing of meta file: %s", err.Error()))
-		return err
+		return fmt.Errorf("failed to parse meta file for class '%s': %s", c.ClassName, err.Error())
 	}
 
 	c.MetaFileContent = metaFileContent[fmt.Sprintf("%s:%s", c.ClassNamePackage, c.ClassNameShort)].(map[string]interface{})
@@ -175,39 +208,231 @@ func (c *Class) loadMetaFile() error {
 	return nil
 }
 
-func (c *Class) setClassData() error {
+func (c *Class) setClassData(ds *DataStore) error {
 	genLogger.Debug(fmt.Sprintf("Setting class data for class '%s'.", c.ClassName))
 
-	c.setResourceName()
+	var err error
 
-	// TODO: add functions to set the other class data
+	// TODO: add function to set AllowDelete
+	c.setAllowDelete()
 
-	if properties, ok := c.MetaFileContent["properties"]; ok {
-		c.setProperties(properties.(map[string]interface{}))
+	// TODO: add function to set Children
+	c.setChildren()
+
+	// TODO: add function to set ContainedBy
+	c.setContainedBy()
+
+	// TODO: add placeholder function for Deprecated
+	c.setDeprecated()
+
+	// TODO: add placeholder function for DeprecatedVersions
+	c.setDeprecatedVersions()
+
+	// TODO: add function to set Documentation
+	c.setDocumentation()
+
+	// TODO: add function to set IdentifiedBy
+	c.setIdentifiedBy()
+
+	// TODO: add function to set IsMigration
+	c.setIsMigration()
+
+	err = c.setRelation()
+	if err != nil {
+		return err
 	}
+
+	// TODO: add function to set IsSingleNested
+	c.setIsSingleNested()
+
+	// TODO: add function to set PlatformType
+	c.setPlatformType()
+
+	// TODO: add function to set Properties
+	c.setProperties()
+
+	// TODO: add function to set RequiredAsChild
+	c.setRequiredAsChild()
+
+	err = c.setResourceName(ds)
+	if err != nil {
+		return err
+	}
+
+	// TODO: add function to set RnFormat
+	c.setRnFormat()
+
+	// TODO: add function to set Versions
+	c.setVersions()
 
 	genLogger.Debug(fmt.Sprintf("Successfully set class data for class '%s'.", c.ClassName))
 	return nil
 }
 
-func (c *Class) setResourceName() {
-	genLogger.Trace(fmt.Sprintf("Implement setting resourceName for class '%s'.", c.ClassName))
+func (c *Class) setAllowDelete() {
+	// Determine if the class can be deleted.
+	genLogger.Debug(fmt.Sprintf("Setting AllowDelete for class '%s'.", c.ClassName))
+	genLogger.Debug(fmt.Sprintf("Successfully set AllowDelete for class '%s'.", c.ClassName))
 }
 
-func (c *Class) setProperties(properties map[string]interface{}) {
+func (c *Class) setChildren() {
+	// Determine the child classes for the class.
+	genLogger.Debug(fmt.Sprintf("Setting Children for class '%s'.", c.ClassName))
+	genLogger.Debug(fmt.Sprintf("Successfully set Children for class '%s'.", c.ClassName))
+}
+
+func (c *Class) setContainedBy() {
+	// Determine the parent classes for the class.
+	genLogger.Debug(fmt.Sprintf("Setting ContainedBy for class '%s'.", c.ClassName))
+	genLogger.Debug(fmt.Sprintf("Successfully set ContainedBy for class '%s'.", c.ClassName))
+}
+
+func (c *Class) setDeprecated() {
+	// Determine if the class is deprecated.
+	genLogger.Debug(fmt.Sprintf("Setting Deprecated for class '%s'.", c.ClassName))
+	genLogger.Debug(fmt.Sprintf("Successfully set Deprecated for class '%s'.", c.ClassName))
+}
+
+func (c *Class) setDeprecatedVersions() {
+	// Determine the APIC versions in which the class is deprecated.
+	genLogger.Debug(fmt.Sprintf("Setting DeprecatedVersions for class '%s'.", c.ClassName))
+	genLogger.Debug(fmt.Sprintf("Successfully set DeprecatedVersions for class '%s'.", c.ClassName))
+}
+
+func (c *Class) setDocumentation() {
+	// Determine the documentation specific information for the class.
+	genLogger.Debug(fmt.Sprintf("Setting Documentation for class '%s'.", c.ClassName))
+	genLogger.Debug(fmt.Sprintf("Successfully set Documentation for class '%s'.", c.ClassName))
+}
+
+func (c *Class) setIdentifiedBy() {
+	// Determine the identifying properties of the class.
+	genLogger.Debug(fmt.Sprintf("Setting IdentifiedBy for class '%s'.", c.ClassName))
+	genLogger.Debug(fmt.Sprintf("Successfully set IdentifiedBy for class '%s'.", c.ClassName))
+}
+
+func (c *Class) setIsMigration() {
+	// Determine if the class is migrated from previous version of the provider.
+	genLogger.Debug(fmt.Sprintf("Setting IsMigration for class '%s'.", c.ClassName))
+	genLogger.Debug(fmt.Sprintf("Successfully set IsMigration for class '%s'.", c.ClassName))
+}
+
+func (c *Class) setIsSingleNested() {
+	// Determine if the class can only be configured once when used as a nested attribute in a parent resource.
+	genLogger.Debug(fmt.Sprintf("Setting IsSingleNested for class '%s'.", c.ClassName))
+	genLogger.Debug(fmt.Sprintf("Successfully set IsSingleNested for class '%s'.", c.ClassName))
+}
+
+func (c *Class) setPlatformType() {
+	// Determine the platform type of the class.
+	genLogger.Debug(fmt.Sprintf("Setting PlatformType for class '%s'.", c.ClassName))
+	genLogger.Debug(fmt.Sprintf("Successfully set PlatformType for class '%s'.", c.ClassName))
+}
+
+func (c *Class) setProperties() {
 	genLogger.Debug(fmt.Sprintf("Setting properties for class '%s'.", c.ClassName))
-	for name, propertyDetails := range properties {
-		details := propertyDetails.(map[string]interface{})
-		// TODO: add logic to set the property data based on ignore/include/exclude overwrites (read-only) from definition files.
-		if details["isConfigurable"] == true {
-			c.Properties[name] = NewProperty(name, details)
-			c.PropertiesAll = append(c.PropertiesAll, name)
-			// TODO: add logic to set the required/optional/read-only list logic
+
+	if properties, ok := c.MetaFileContent["properties"]; ok {
+		for name, propertyDetails := range properties.(map[string]interface{}) {
+			details := propertyDetails.(map[string]interface{})
+			// TODO: add logic to set the property data based on ignore/include/exclude overwrites (read-only) from definition files.
+			if details["isConfigurable"] == true {
+				c.Properties[name] = NewProperty(name, details)
+				c.PropertiesAll = append(c.PropertiesAll, name)
+				// TODO: add logic to set the required/optional/read-only list logic
+			}
 		}
 	}
 
 	genLogger.Debug(fmt.Sprintf("Successfully set properties for class '%s'.", c.ClassName))
 	// TODO: add sorting logic for the properties
+}
+
+func (c *Class) setRelation() error {
+	// Determine if the class is a relational class.
+	genLogger.Debug(fmt.Sprintf("Setting Relation details for class '%s'.", c.ClassName))
+
+	// TODO: add logic to override the relational status from a definition file.
+	if relationInfo, ok := c.MetaFileContent["relationInfo"]; ok {
+		relationType, err := setRelationShipTypeEnum(relationInfo.(map[string]interface{})["type"].(string))
+		if err != nil {
+			return err
+		}
+
+		c.Relation.FromClass = strings.Replace(relationInfo.(map[string]interface{})["fromMo"].(string), ":", "", -1)
+		if strings.Contains(c.ClassName, "To") {
+			c.Relation.IncludeFrom = true
+		}
+		c.Relation.RelationalClass = true
+		c.Relation.ToClass = strings.Replace(relationInfo.(map[string]interface{})["toMo"].(string), ":", "", -1)
+		c.Relation.Type = RelationShipTypeEnum(relationType)
+
+	}
+	genLogger.Debug(fmt.Sprintf("Successfully set Relation details for class '%s'.", c.ClassName))
+
+	return nil
+}
+
+func (c *Class) setRequiredAsChild() {
+	// Determine if the class is required when defined as a child in a parent resource.
+	genLogger.Debug(fmt.Sprintf("Setting RequiredAsChild for class '%s'.", c.ClassName))
+	genLogger.Debug(fmt.Sprintf("Successfully set RequiredAsChild for class '%s'.", c.ClassName))
+}
+
+func (c *Class) setResourceName(ds *DataStore) error {
+	genLogger.Debug(fmt.Sprintf("Setting resource name for class '%s'.", c.ClassName))
+
+	// TODO: add logic to override the resource name from a definition file.
+	// TODO: add logic to override the label from a definition file.
+	// TODO: add logic to override the class the nested resource name from the parent
+	// 	ex. is fvRsSecInherited with fvESg and fvAEPg.
+	// 		fvESg: relation_to_end_point_security_groups
+	// 		fvAEPg: relation_to_application_epgs
+	if label, ok := c.MetaFileContent["label"]; ok && label != "" {
+		if c.Relation.RelationalClass {
+			// If the relation includes 'To' in the classname, the resource name will be in the format 'relation_from_{from_class}_to_{to_class}'.
+			// If the relation does not include 'To' in the classname, the resource name will be in the format 'relation_to_{to_class}'.
+			toClass := getRelationshipResourceName(ds, c.Relation.ToClass)
+			if c.Relation.IncludeFrom {
+				// If the class is a relational class and the relation includes 'from', the resource name will be in the format 'relation_from_{from_class}_to_{to_class}'.
+				c.ResourceName = fmt.Sprintf("relation_from_%s_to_%s", getRelationshipResourceName(ds, c.Relation.FromClass), toClass)
+				c.ResourceNameNested = fmt.Sprintf("relation_to_%s", toClass)
+			} else {
+				// If the class is a relational class and the relation does not include 'from', the resource name will be in the format 'relation_to_{to_class}'.
+				c.ResourceName = fmt.Sprintf("relation_to_%s", toClass)
+				c.ResourceNameNested = fmt.Sprintf("relation_to_%s", toClass)
+			}
+		} else {
+			c.ResourceName = utils.Underscore(label.(string))
+			c.ResourceNameNested = c.ResourceName
+		}
+
+		// If the class is a relational class and the relation has identifiers, the plural form of the resource name will be set.
+		if len(c.IdentifiedBy) != 0 {
+			pluralForm, err := utils.Plural(c.ResourceName)
+			if err != nil {
+				return err
+			}
+			c.ResourceNameNested = pluralForm
+		}
+	} else {
+		return fmt.Errorf("failed to set resource name for class '%s': label not found", c.ClassName)
+	}
+
+	genLogger.Debug(fmt.Sprintf("Successfully set resource name '%s' for class '%s'.", c.ResourceName, c.ClassName))
+	return nil
+}
+
+func (c *Class) setRnFormat() {
+	// Determine the relative name (RN) format of the class.
+	genLogger.Debug(fmt.Sprintf("Setting RnFormat for class '%s'.", c.ClassName))
+	genLogger.Debug(fmt.Sprintf("Successfully set RnFormat for class '%s'.", c.ClassName))
+}
+
+func (c *Class) setVersions() {
+	// Determine the supported APIC versions for the class.
+	genLogger.Debug(fmt.Sprintf("Setting Versions for class '%s'.", c.ClassName))
+	genLogger.Debug(fmt.Sprintf("Successfully set Versions for class '%s'.", c.ClassName))
 }
 
 func splitClassNameToPackageNameAndShortName(className string) (string, string, error) {
@@ -232,4 +457,22 @@ func splitClassNameToPackageNameAndShortName(className string) (string, string, 
 
 	return packageName, shortName, nil
 
+}
+
+func getRelationshipResourceName(ds *DataStore, toClass string) string {
+	err := ds.loadClass(toClass)
+	if err != nil {
+		// If the class is not found, try returning the resource name of the class from global definition file.
+		if resourceName, ok := ds.GlobalMetaDefinition.NoMetaFile[toClass]; ok {
+			genLogger.Debug(fmt.Sprintf("Failed to load class '%s'. Using resource name from global definition file: %s.", toClass, resourceName))
+			return resourceName
+		}
+		if !slices.Contains(failedToLoadClasses, toClass) {
+			// If the class is not found and it is not already in the failed to load classes, add it to the list to be errored.
+			failedToLoadClasses = append(failedToLoadClasses, toClass)
+		}
+		return toClass
+	}
+	// If the class is found, return the resource name of the class.
+	return ds.Classes[toClass].ResourceName
 }

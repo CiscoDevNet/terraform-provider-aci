@@ -12,7 +12,7 @@ const (
 )
 
 func initializeDataStoreTest(t *testing.T) *DataStore {
-	test.InitializeTest(t, 1)
+	test.InitializeTest(t)
 	return &DataStore{}
 }
 
@@ -28,3 +28,10 @@ func TestSetHostFromEnvironmentVariable(t *testing.T) {
 	ds.setMetaHost()
 	assert.Equal(t, ds.metaHost, metaHost, "Expected meta host to be set to the custom value %s, but got %s", metaHost, ds.metaHost)
 }
+
+// TODO: determine if tests are needed for ds methods
+//   ds.retrieveEnvMetaClassesFromRemote()
+//   ds.refreshMetaFiles()
+//   ds.retrieveMetaFileFromRemote()
+//   ds.loadClasses()
+//   ds.loadClass()
