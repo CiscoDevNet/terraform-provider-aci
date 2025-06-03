@@ -55,5 +55,7 @@ func Underscore(s string) string {
 		re := regexp.MustCompile(reStr)
 		s = re.ReplaceAllString(s, "${1}_${2}")
 	}
-	return strings.ReplaceAll(strings.ToLower(s), " ", "_")
+	s = strings.ReplaceAll(strings.ToLower(s), " ", "_")
+	s = strings.ReplaceAll(s, "-", "_")
+	return s
 }
