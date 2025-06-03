@@ -1,0 +1,23 @@
+nometafile:
+  bgpCtxAfPol: bgp_address_family_context
+  bgpCtxPol: bgp_timers
+  dhcpRelayP: dhcp_relay_policy
+  extdevSDWanVpnEntry: wan_vpn
+  fabricNode: fabric_node
+  fabricPathEp: fabric_path_endpoint
+  fvABDPol: bridge_domain
+  fvEPg: epg
+  fvEpRetPol: endpoint_retention_policy
+  fvIPSLAMonitoringPol: ip_sla_monitoring_policy
+  infraAccBaseGrp: infra_access_base_group
+  infraDomP: infra_domain_policy
+  l3extAConsLbl: l3out_consumer_label
+  l3extInstP: external_network_instance_profile
+  l3extOut: l3_outside
+  l3extRouteTagPol: route_tag_policy
+  monEPGPol: monitoring_policy
+  netflowAExporterPol: netflow_exporter_policy
+  ospfCtxPol: ospf_timers
+  vzBrCP: contract
+  vzCPIf: imported_contract
+  vzFilter: filter
