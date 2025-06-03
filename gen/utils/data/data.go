@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"slices"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -16,12 +17,14 @@ import (
 
 // Initialize a logger instance for the generator.
 var genLogger = logger.InitializeLogger()
+var failedToLoadClasses = []string{}
 
 type DataStore struct {
 	// A map containing all the information about the classes required to render the templates.
 	Classes map[string]Class
 	// The client used to retrieve the meta data from the remote location.
-	client *http.Client
+	client               *http.Client
+	GlobalMetaDefinition GlobalMetaDefinition
 	// The host from which the meta data is retrieved.
 	metaHost string
 	// A list of all the classes that have been retrieved from the remote location.
@@ -31,8 +34,9 @@ type DataStore struct {
 
 func NewDataStore() (*DataStore, error) {
 	dataStore := &DataStore{
-		Classes: make(map[string]Class),
-		client:  &http.Client{Transport: &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}},
+		Classes:              make(map[string]Class),
+		client:               &http.Client{Transport: &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}},
+		GlobalMetaDefinition: loadGlobalMetaDefinition(),
 	}
 	// Set the meta data host for retrieval of meta files.
 	dataStore.setMetaHost()
@@ -158,13 +162,34 @@ func (ds *DataStore) loadClasses() error {
 	// Load the meta data for all classes in the meta directory.
 	genLogger.Debug(fmt.Sprintf("Loading classes from: %s.", constMetaPath))
 	for _, className := range utils.GetFileNamesFromDirectory(constMetaPath, true) {
-		// Create a new class object and add it to the data store.
-		classDetails, err := NewClass(className)
+		err := ds.loadClass(className)
+		if err != nil {
+			return err
+		}
+	}
+
+	// If there are any classes that failed to load, log a Error.
+	// The resource names for these classes require to be defined in global definition file
+	if len(failedToLoadClasses) > 0 {
+		sort.Strings(failedToLoadClasses)
+		return fmt.Errorf("failed to load classes: %s", failedToLoadClasses)
+	}
+
+	genLogger.Debug(fmt.Sprintf("Successfully loaded classes from: %s.", constMetaPath))
+	return nil
+}
+
+func (ds *DataStore) loadClass(className string) error {
+	// Load the meta data for a class to the data store if it is not already loaded.
+	if _, ok := ds.Classes[className]; !ok {
+		genLogger.Debug(fmt.Sprintf("Loading class: %s.", className))
+		classDetails, err := NewClass(className, ds)
 		if err != nil {
 			return err
 		}
 		ds.Classes[className] = *classDetails
+	} else {
+		genLogger.Debug(fmt.Sprintf("Class '%s' already loaded, skipping.", className))
 	}
-	genLogger.Debug(fmt.Sprintf("Successfully loaded classes from: %s.", constMetaPath))
 	return nil
 }
