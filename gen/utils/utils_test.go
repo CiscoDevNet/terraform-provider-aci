@@ -49,6 +49,8 @@ func TestUnderscore(t *testing.T) {
 		{"input": "Tenant1", "expected": "tenant1"},
 		{"input": "ApplicationEndpointGroup", "expected": "application_endpoint_group"},
 		{"input": "Application Endpoint Group", "expected": "application_endpoint_group"},
+		{"input": "Application-Endpoint-Group", "expected": "application_endpoint_group"},
+		{"input": "Application Endpoint-Group", "expected": "application_endpoint_group"},
 	}
 
 	for _, test := range tests {
