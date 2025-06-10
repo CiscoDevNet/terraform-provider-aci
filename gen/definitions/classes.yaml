@@ -1056,3 +1056,9 @@ fvRemoteId:
     - "uni/tn-{name}/BD-{name}/stAsc/site-{siteId}"
     - "uni/tn-{name}/out-{name}/instP-{name}/stAsc/site-{siteId}"
     - "uni/tn-{name}/mscGraphXlateCont/epgDefXlate-[{epgDefDn}]/stAsc/site-{siteId}"
+
+fvFabricExtConnP:
+  resource_name: "fabric_external_connection_policies"
+
+fvPeeringP:
+  allow_delete: false

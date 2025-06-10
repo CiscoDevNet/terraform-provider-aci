@@ -2526,3 +2526,27 @@ l3extRsInstPToProfile:
     direction: "The direction on which to apply the Route Map associated with the Route Control Profile."
   parents:
     - parent_dependency: "l3extOut"
+
+fvFabricExtConnP:
+  default_values:
+    parent_dn: "uni/tn-infra"
+  overwrites:
+    rt: "community"
+  resource_required:
+    - "rt"
+  test_values:
+    default:
+      community: "extended:as2-nn4:5:16"
+    all:
+      community: "extended:as2-nn4:5:16"
+    resource_required:
+      id_attribute: "1"
+      community: "extended:as2-nn4:5:16"
+    datasource_non_existing:
+      id_attribute: "2"
+    datasource_required:
+      id_attribute: "1"
+
+fvPeeringP:
+  overwrites:
+    bgp_evpn_peering_profile: "peering_profile"
