@@ -237,7 +237,7 @@ children:
     {{- template "nestedChildren" $newCtx }}
   {{- end}}
 {{- end}}
-{{- if and .ContainedBy (not .MultiParentFormats)}}
+{{- if and .ContainedBy (not .MultiParentFormats) (not .ContainsDefaultParentDn)}}
 parents:
     {{- $index := 0}}
     {{- range $key := .DocumentationExamples}}{{$parentDependency := getParentTestDependencies $.PkgName $index $.Definitions}}{{$index = add $index 1}}

@@ -1418,6 +1418,7 @@ type Model struct {
 	VersionMismatched         map[string][]string
 	TemplateProperties        map[string]interface{}
 	RequiredAsChild           bool
+	ContainsDefaultParentDn   bool
 }
 
 type TypeChange struct {
@@ -2210,6 +2211,10 @@ func (m *Model) SetClassProperties(classDetails interface{}) {
 	if requiredCount == len(properties) {
 		m.HasOnlyRequiredProperties = true
 	}
+	defaultParentEntry := GetDefaultValues(m.PkgName, "parent_dn", m.Definitions)
+	if defaultParentEntry != "" && len(m.ContainedBy) == 1 {
+		m.ContainsDefaultParentDn = true
+	}
 }
 
 func ignoreTestProperty(propertyName, classPkgName string, definitions Definitions) (bool, interface{}) {
@@ -2799,14 +2804,14 @@ func GetMultiParentFormats(classPkgName string, definitions Definitions) map[str
 				}
 			}
 		}
-	}
-	defaultParentEntry := GetDefaultValues(classPkgName, "parent_dn", definitions)
-	if defaultParentEntry != "" {
-		defaultMultiParentFormat := MultiParentFormat{
-			ContainedBy: "",
-			RnPrepend:   defaultParentEntry,
+		defaultParentEntry := GetDefaultValues(classPkgName, "parent_dn", definitions)
+		if defaultParentEntry != "" {
+			defaultMultiParentFormat := MultiParentFormat{
+				ContainedBy: "",
+				RnPrepend:   defaultParentEntry,
+			}
+			multiParentFormats["default"] = defaultMultiParentFormat
 		}
-		multiParentFormats["default"] = defaultMultiParentFormat
 	}
 	return multiParentFormats
 }

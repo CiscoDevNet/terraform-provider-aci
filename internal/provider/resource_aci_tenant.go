@@ -1026,6 +1026,8 @@ func getFvTenantFvRsTenantMonPolChildPayloads(ctx context.Context, diags *diag.D
 			if !fvRsTenantMonPolFvTenantPlan.TnMonEPGPolName.IsUnknown() && !fvRsTenantMonPolFvTenantPlan.TnMonEPGPolName.IsNull() {
 				childMap.Attributes["tnMonEPGPolName"] = fvRsTenantMonPolFvTenantPlan.TnMonEPGPolName.ValueString()
 			}
+		} else {
+			return childPayloads
 		}
 
 		var tagAnnotationFvRsTenantMonPolFvTenantPlan, tagAnnotationFvRsTenantMonPolFvTenantState []TagAnnotationFvRsTenantMonPolFvTenantResourceModel

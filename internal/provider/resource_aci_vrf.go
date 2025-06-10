@@ -4352,6 +4352,8 @@ func getFvCtxFvRsBgpCtxPolChildPayloads(ctx context.Context, diags *diag.Diagnos
 			if !fvRsBgpCtxPolFvCtxPlan.TnBgpCtxPolName.IsUnknown() && !fvRsBgpCtxPolFvCtxPlan.TnBgpCtxPolName.IsNull() {
 				childMap.Attributes["tnBgpCtxPolName"] = fvRsBgpCtxPolFvCtxPlan.TnBgpCtxPolName.ValueString()
 			}
+		} else {
+			return childPayloads
 		}
 
 		var tagAnnotationFvRsBgpCtxPolFvCtxPlan, tagAnnotationFvRsBgpCtxPolFvCtxState []TagAnnotationFvRsBgpCtxPolFvCtxResourceModel
@@ -4798,6 +4800,8 @@ func getFvCtxFvRsCtxToEpRetChildPayloads(ctx context.Context, diags *diag.Diagno
 			if !fvRsCtxToEpRetFvCtxPlan.TnFvEpRetPolName.IsUnknown() && !fvRsCtxToEpRetFvCtxPlan.TnFvEpRetPolName.IsNull() {
 				childMap.Attributes["tnFvEpRetPolName"] = fvRsCtxToEpRetFvCtxPlan.TnFvEpRetPolName.ValueString()
 			}
+		} else {
+			return childPayloads
 		}
 
 		var tagAnnotationFvRsCtxToEpRetFvCtxPlan, tagAnnotationFvRsCtxToEpRetFvCtxState []TagAnnotationFvRsCtxToEpRetFvCtxResourceModel
@@ -4897,6 +4901,8 @@ func getFvCtxFvRsCtxToExtRouteTagPolChildPayloads(ctx context.Context, diags *di
 			if !fvRsCtxToExtRouteTagPolFvCtxPlan.TnL3extRouteTagPolName.IsUnknown() && !fvRsCtxToExtRouteTagPolFvCtxPlan.TnL3extRouteTagPolName.IsNull() {
 				childMap.Attributes["tnL3extRouteTagPolName"] = fvRsCtxToExtRouteTagPolFvCtxPlan.TnL3extRouteTagPolName.ValueString()
 			}
+		} else {
+			return childPayloads
 		}
 
 		var tagAnnotationFvRsCtxToExtRouteTagPolFvCtxPlan, tagAnnotationFvRsCtxToExtRouteTagPolFvCtxState []TagAnnotationFvRsCtxToExtRouteTagPolFvCtxResourceModel
@@ -5220,6 +5226,8 @@ func getFvCtxFvRsOspfCtxPolChildPayloads(ctx context.Context, diags *diag.Diagno
 			if !fvRsOspfCtxPolFvCtxPlan.TnOspfCtxPolName.IsUnknown() && !fvRsOspfCtxPolFvCtxPlan.TnOspfCtxPolName.IsNull() {
 				childMap.Attributes["tnOspfCtxPolName"] = fvRsOspfCtxPolFvCtxPlan.TnOspfCtxPolName.ValueString()
 			}
+		} else {
+			return childPayloads
 		}
 
 		var tagAnnotationFvRsOspfCtxPolFvCtxPlan, tagAnnotationFvRsOspfCtxPolFvCtxState []TagAnnotationFvRsOspfCtxPolFvCtxResourceModel

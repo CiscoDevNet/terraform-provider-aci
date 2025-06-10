@@ -2083,6 +2083,16 @@ func getAndSet{{.ResourceClassName}}Attributes(ctx context.Context, diags *diag.
 									
 								}
 										{{- end}}
+									{{- else if eq .ValueType "password"}}
+								// Sensitive attributes are not returned by the APIC, so they are explicitly set to their current state values.
+										{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+								var {{ .ResourceClassName }}Data {{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel
+								data.{{ .ResourceClassName }}.As(ctx, &{{ .ResourceClassName }}Data, basetypes.ObjectAsOptions{})
+										{{- else}}
+								var {{ .ResourceClassName }}Data []{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel
+								data.{{ .ResourceClassName }}.ElementsAs(ctx, &{{ .ResourceClassName }}Data, false)
+										{{- end}}
+								{{.ResourceClassName}}{{$.ResourceClassName}}.{{.Name}} = {{ .ResourceClassName }}Data.{{.Name}}
 									{{- else}}
 										{{- if containsNoneAttributeValue .ValidValues}}
 								if childAttributeName == "{{.PropertyName}}" && childAttributeValue.(string) == "" {
@@ -2176,7 +2186,7 @@ func getAndSet{{.ResourceClassName}}Attributes(ctx context.Context, diags *diag.
 }
 
 func get{{.ResourceClassName}}Rn(ctx context.Context, data *{{.ResourceClassName}}ResourceModel) string {
-	return fmt.Sprintf("{{getRnFormat .RnFormat .IdentifiedBy}}", {{$i := 1}}{{$length := len .IdentifiedBy}}{{ range .IdentifiedBy}}data.{{capitalize .}}{{- if identifierIsCustomType . $.Properties}}.NamedValueString(){{else}}.ValueString(){{end}}{{ if ne $length $i}}{{$i = add $i 1}}, {{end}}{{- end}})
+	return fmt.Sprintf("{{getRnFormat .RnFormat .IdentifiedBy}}", {{$i := 1}}{{$length := len .IdentifiedBy}}{{ range .IdentifiedBy}}data.{{- if eq . "id"}}{{$.ResourceClassName}}{{capitalize .}}{{- else}}{{capitalize .}}{{- end}}{{- if identifierIsCustomType . $.Properties}}.NamedValueString(){{else}}.ValueString(){{end}}{{ if ne $length $i}}{{$i = add $i 1}}, {{end}}{{- end}})
 }
 
 {{ if .HasParent}}
@@ -2287,6 +2297,8 @@ func get{{$.ResourceClassName}}{{ .ResourceClassName }}ChildPayloads(ctx context
 				{{- end}}
 			{{- end}}
 			childMap.Attributes["status"] = "deleted"
+		}{{- else}} else {
+			return childPayloads
 		}{{- end}}
 		{{- $enteredGrandChildPayloadZone := false }}
 			{{- range .Children}}
@@ -2686,7 +2698,11 @@ func {{.ResourceClassName}}{{.ParentHierarchy}}SetToSetNullWhenStateIsNullPlanIs
             {{- if not .ReadOnly }}
             Optional:            true,
             {{- end }}
-            Computed:            true,
+            {{- if ne .ValueType "password"}}
+			Computed:            true,
+			{{- else}}
+			Sensitive:            true,
+			{{- end}}
 			{{- if not .ReadOnly }}
             PlanModifiers: []planmodifier.Set{
                 setplanmodifier.UseStateForUnknown(),
@@ -2708,7 +2724,11 @@ func {{.ResourceClassName}}{{.ParentHierarchy}}SetToSetNullWhenStateIsNullPlanIs
 			Required:            true,
 			{{- else }}
 			Optional:            true,
-            Computed:            true,
+            {{- if ne .ValueType "password"}}
+			Computed:            true,
+			{{- else}}
+			Sensitive:            true,
+			{{- end}}
 			{{- end }}
 			{{- if not .ReadOnly }}
             PlanModifiers: []planmodifier.String{

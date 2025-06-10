@@ -1384,6 +1384,8 @@ func getNetflowMonitorPolNetflowRsMonitorToRecordChildPayloads(ctx context.Conte
 			if !netflowRsMonitorToRecordNetflowMonitorPolPlan.TnNetflowRecordPolName.IsUnknown() && !netflowRsMonitorToRecordNetflowMonitorPolPlan.TnNetflowRecordPolName.IsNull() {
 				childMap.Attributes["tnNetflowRecordPolName"] = netflowRsMonitorToRecordNetflowMonitorPolPlan.TnNetflowRecordPolName.ValueString()
 			}
+		} else {
+			return childPayloads
 		}
 
 		var tagAnnotationNetflowRsMonitorToRecordNetflowMonitorPolPlan, tagAnnotationNetflowRsMonitorToRecordNetflowMonitorPolState []TagAnnotationNetflowRsMonitorToRecordNetflowMonitorPolResourceModel
