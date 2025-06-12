@@ -6664,6 +6664,8 @@ func getFvBDFvRsBDToNdPChildPayloads(ctx context.Context, diags *diag.Diagnostic
 			if !fvRsBDToNdPFvBDPlan.TnNdIfPolName.IsUnknown() && !fvRsBDToNdPFvBDPlan.TnNdIfPolName.IsNull() {
 				childMap.Attributes["tnNdIfPolName"] = fvRsBDToNdPFvBDPlan.TnNdIfPolName.ValueString()
 			}
+		} else {
+			return childPayloads
 		}
 
 		var tagAnnotationFvRsBDToNdPFvBDPlan, tagAnnotationFvRsBDToNdPFvBDState []TagAnnotationFvRsBDToNdPFvBDResourceModel
@@ -7211,6 +7213,8 @@ func getFvBDFvRsBdToEpRetChildPayloads(ctx context.Context, diags *diag.Diagnost
 			if !fvRsBdToEpRetFvBDPlan.TnFvEpRetPolName.IsUnknown() && !fvRsBdToEpRetFvBDPlan.TnFvEpRetPolName.IsNull() {
 				childMap.Attributes["tnFvEpRetPolName"] = fvRsBdToEpRetFvBDPlan.TnFvEpRetPolName.ValueString()
 			}
+		} else {
+			return childPayloads
 		}
 
 		var tagAnnotationFvRsBdToEpRetFvBDPlan, tagAnnotationFvRsBdToEpRetFvBDState []TagAnnotationFvRsBdToEpRetFvBDResourceModel
@@ -7310,6 +7314,8 @@ func getFvBDFvRsCtxChildPayloads(ctx context.Context, diags *diag.Diagnostics, d
 			if !fvRsCtxFvBDPlan.TnFvCtxName.IsUnknown() && !fvRsCtxFvBDPlan.TnFvCtxName.IsNull() {
 				childMap.Attributes["tnFvCtxName"] = fvRsCtxFvBDPlan.TnFvCtxName.ValueString()
 			}
+		} else {
+			return childPayloads
 		}
 
 		var tagAnnotationFvRsCtxFvBDPlan, tagAnnotationFvRsCtxFvBDState []TagAnnotationFvRsCtxFvBDResourceModel
@@ -7409,6 +7415,8 @@ func getFvBDFvRsIgmpsnChildPayloads(ctx context.Context, diags *diag.Diagnostics
 			if !fvRsIgmpsnFvBDPlan.TnIgmpSnoopPolName.IsUnknown() && !fvRsIgmpsnFvBDPlan.TnIgmpSnoopPolName.IsNull() {
 				childMap.Attributes["tnIgmpSnoopPolName"] = fvRsIgmpsnFvBDPlan.TnIgmpSnoopPolName.ValueString()
 			}
+		} else {
+			return childPayloads
 		}
 
 		var tagAnnotationFvRsIgmpsnFvBDPlan, tagAnnotationFvRsIgmpsnFvBDState []TagAnnotationFvRsIgmpsnFvBDResourceModel
@@ -7508,6 +7516,8 @@ func getFvBDFvRsMldsnChildPayloads(ctx context.Context, diags *diag.Diagnostics,
 			if !fvRsMldsnFvBDPlan.TnMldSnoopPolName.IsUnknown() && !fvRsMldsnFvBDPlan.TnMldSnoopPolName.IsNull() {
 				childMap.Attributes["tnMldSnoopPolName"] = fvRsMldsnFvBDPlan.TnMldSnoopPolName.ValueString()
 			}
+		} else {
+			return childPayloads
 		}
 
 		var tagAnnotationFvRsMldsnFvBDPlan, tagAnnotationFvRsMldsnFvBDState []TagAnnotationFvRsMldsnFvBDResourceModel

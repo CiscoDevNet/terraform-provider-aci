@@ -4068,6 +4068,8 @@ func getFvESgFvRsScopeChildPayloads(ctx context.Context, diags *diag.Diagnostics
 			if !fvRsScopeFvESgPlan.TnFvCtxName.IsUnknown() && !fvRsScopeFvESgPlan.TnFvCtxName.IsNull() {
 				childMap.Attributes["tnFvCtxName"] = fvRsScopeFvESgPlan.TnFvCtxName.ValueString()
 			}
+		} else {
+			return childPayloads
 		}
 
 		var tagAnnotationFvRsScopeFvESgPlan, tagAnnotationFvRsScopeFvESgState []TagAnnotationFvRsScopeFvESgResourceModel

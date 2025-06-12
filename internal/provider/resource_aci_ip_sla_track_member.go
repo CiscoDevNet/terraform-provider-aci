@@ -857,6 +857,8 @@ func getFvTrackMemberFvRsIpslaMonPolChildPayloads(ctx context.Context, diags *di
 			if !fvRsIpslaMonPolFvTrackMemberPlan.TDn.IsUnknown() && !fvRsIpslaMonPolFvTrackMemberPlan.TDn.IsNull() {
 				childMap.Attributes["tDn"] = fvRsIpslaMonPolFvTrackMemberPlan.TDn.ValueString()
 			}
+		} else {
+			return childPayloads
 		}
 
 		var tagAnnotationFvRsIpslaMonPolFvTrackMemberPlan, tagAnnotationFvRsIpslaMonPolFvTrackMemberState []TagAnnotationFvRsIpslaMonPolFvTrackMemberResourceModel

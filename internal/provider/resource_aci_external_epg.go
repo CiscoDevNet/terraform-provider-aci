@@ -3289,6 +3289,8 @@ func getL3extInstPFvRsCustQosPolChildPayloads(ctx context.Context, diags *diag.D
 			if !fvRsCustQosPolL3extInstPPlan.TnQosCustomPolName.IsUnknown() && !fvRsCustQosPolL3extInstPPlan.TnQosCustomPolName.IsNull() {
 				childMap.Attributes["tnQosCustomPolName"] = fvRsCustQosPolL3extInstPPlan.TnQosCustomPolName.ValueString()
 			}
+		} else {
+			return childPayloads
 		}
 
 		var tagAnnotationFvRsCustQosPolL3extInstPPlan, tagAnnotationFvRsCustQosPolL3extInstPState []TagAnnotationFvRsCustQosPolL3extInstPResourceModel

@@ -3332,6 +3332,8 @@ func getCommPolCommHttpChildPayloads(ctx context.Context, diags *diag.Diagnostic
 			if !commHttpCommPolPlan.VisoreAccess.IsUnknown() && !commHttpCommPolPlan.VisoreAccess.IsNull() {
 				childMap.Attributes["visoreAccess"] = commHttpCommPolPlan.VisoreAccess.ValueString()
 			}
+		} else {
+			return childPayloads
 		}
 
 		var tagAnnotationCommHttpCommPolPlan, tagAnnotationCommHttpCommPolState []TagAnnotationCommHttpCommPolResourceModel
@@ -3495,6 +3497,8 @@ func getCommPolCommHttpsChildPayloads(ctx context.Context, diags *diag.Diagnosti
 			if !commHttpsCommPolPlan.VisoreAccess.IsUnknown() && !commHttpsCommPolPlan.VisoreAccess.IsNull() {
 				childMap.Attributes["visoreAccess"] = commHttpsCommPolPlan.VisoreAccess.ValueString()
 			}
+		} else {
+			return childPayloads
 		}
 
 		var commRsClientCertCACommHttpsCommPolPlan, commRsClientCertCACommHttpsCommPolState CommRsClientCertCACommHttpsCommPolResourceModel
@@ -3795,6 +3799,8 @@ func getCommPolCommShellinaboxChildPayloads(ctx context.Context, diags *diag.Dia
 			if !commShellinaboxCommPolPlan.NameAlias.IsUnknown() && !commShellinaboxCommPolPlan.NameAlias.IsNull() {
 				childMap.Attributes["nameAlias"] = commShellinaboxCommPolPlan.NameAlias.ValueString()
 			}
+		} else {
+			return childPayloads
 		}
 
 		var tagAnnotationCommShellinaboxCommPolPlan, tagAnnotationCommShellinaboxCommPolState []TagAnnotationCommShellinaboxCommPolResourceModel
@@ -3929,6 +3935,8 @@ func getCommPolCommSshChildPayloads(ctx context.Context, diags *diag.Diagnostics
 				commSshCommPolPlan.SshMacs.ElementsAs(ctx, &tmpSshMacs, false)
 				childMap.Attributes["sshMacs"] = strings.Join(tmpSshMacs, ",")
 			}
+		} else {
+			return childPayloads
 		}
 
 		var tagAnnotationCommSshCommPolPlan, tagAnnotationCommSshCommPolState []TagAnnotationCommSshCommPolResourceModel
@@ -4040,6 +4048,8 @@ func getCommPolCommTelnetChildPayloads(ctx context.Context, diags *diag.Diagnost
 			if !commTelnetCommPolPlan.Port.IsUnknown() && !commTelnetCommPolPlan.Port.IsNull() {
 				childMap.Attributes["port"] = commTelnetCommPolPlan.Port.ValueString()
 			}
+		} else {
+			return childPayloads
 		}
 
 		var tagAnnotationCommTelnetCommPolPlan, tagAnnotationCommTelnetCommPolState []TagAnnotationCommTelnetCommPolResourceModel

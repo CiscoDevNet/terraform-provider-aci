@@ -6,51 +6,44 @@
 default:
   annotation: "orchestrator:terraform"
   description: ""
+  name: ""
   name_alias: ""
   owner_key: ""
   owner_tag: ""
+  community: "extended:as2-nn4:5:16"
+  site_id: "0"
 
 datasource_non_existing:
-  name: "host_path_selector_non_existing"
+  id_attribute: "2"
 
 datasource_required:
-  name: "host_path_selector"
+  id_attribute: "1"
 
 resource_required:
-  name: "host_path_selector"
+  id_attribute: "1"
+  community: "extended:as2-nn4:5:16"
 
 all:
   annotation: "annotation"
   description: "description_1"
+  name: "name_1"
   name_alias: "name_alias_1"
   owner_key: "owner_key_1"
   owner_tag: "owner_tag_1"
+  community: "extended:as2-nn4:5:16"
+  site_id: "0"
 
 children:
-  relation_to_host_path:
+  peering_profile:
     - annotation: "annotation_1"
-      target_dn: "target_dn_0"
-      deletable_child: true
-      child_required: false
-      children:
-        annotations:
-          - key: "key_0"
-            value: "value_1"
-      
-          - key: "key_1"
-            value: "test_value"
-      
-        tags:
-          - key: "key_0"
-            value: "value_1"
-      
-          - key: "key_1"
-            value: "test_value"
-      
-  relation_to_access_interface_policy_group:
-    - annotation: "annotation_1"
-      target_dn: "target_dn_1"
-      deletable_child: true
+      description: "description_1"
+      name: "name_1"
+      name_alias: "name_alias_1"
+      owner_key: "owner_key_1"
+      owner_tag: "owner_tag_1"
+      password: "password_1"
+      type: "automatic_with_full_mesh"
+      deletable_child: false
       child_required: false
       children:
         annotations:
@@ -81,15 +74,4 @@ children:
     - key: "key_1"
       value: "test_value"
       
-child_targets:
-  - class_name: "fabricPathEp"
-    target_dn: "topology/pod-1/paths-101/pathep-[eth1/1]"
-    relation_resource_name: "host_path"
-    static: true
-  - class_name: "infraAccPortGrp"
-    target_dn: "uni/infra/funcprof/accportgrp-access_interface_policy_group"
-    relation_resource_name: "access_interface_policy_group"
-    static: true
-
-test_type: apic
-class_version: 1.1(1j)-
+class_version: 2.0(1m)-

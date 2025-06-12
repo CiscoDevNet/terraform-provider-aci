@@ -8228,6 +8228,8 @@ func getFvAEPgFvRsBdChildPayloads(ctx context.Context, diags *diag.Diagnostics, 
 			if !fvRsBdFvAEPgPlan.TnFvBDName.IsUnknown() && !fvRsBdFvAEPgPlan.TnFvBDName.IsNull() {
 				childMap.Attributes["tnFvBDName"] = fvRsBdFvAEPgPlan.TnFvBDName.ValueString()
 			}
+		} else {
+			return childPayloads
 		}
 
 		var tagAnnotationFvRsBdFvAEPgPlan, tagAnnotationFvRsBdFvAEPgState []TagAnnotationFvRsBdFvAEPgResourceModel
@@ -8567,6 +8569,8 @@ func getFvAEPgFvRsCustQosPolChildPayloads(ctx context.Context, diags *diag.Diagn
 			if !fvRsCustQosPolFvAEPgPlan.TnQosCustomPolName.IsUnknown() && !fvRsCustQosPolFvAEPgPlan.TnQosCustomPolName.IsNull() {
 				childMap.Attributes["tnQosCustomPolName"] = fvRsCustQosPolFvAEPgPlan.TnQosCustomPolName.ValueString()
 			}
+		} else {
+			return childPayloads
 		}
 
 		var tagAnnotationFvRsCustQosPolFvAEPgPlan, tagAnnotationFvRsCustQosPolFvAEPgState []TagAnnotationFvRsCustQosPolFvAEPgResourceModel
