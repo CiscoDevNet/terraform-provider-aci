@@ -161,7 +161,7 @@ import {
   - [aci_dhcp_relay_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/dhcp_relay_policy)
   - [aci_eigrp_address_family_context](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/eigrp_address_family_context)
   - [aci_end_point_retention_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/end_point_retention_policy)
-  - [aci_fabric_external_connection_policies](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/fabric_external_connection_policies)
+  - [aci_fabric_external_connection_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/fabric_external_connection_policy)
   - [aci_filter](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/filter)
   - [aci_igmp_snooping_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/igmp_snooping_policy)
   - [aci_imported_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/imported_contract)

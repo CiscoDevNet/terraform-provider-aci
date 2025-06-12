@@ -29,21 +29,21 @@ type FvFabricExtConnPDataSource struct {
 }
 
 func (d *FvFabricExtConnPDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
-	tflog.Debug(ctx, "Start metadata of datasource: aci_fabric_external_connection_policies")
-	resp.TypeName = req.ProviderTypeName + "_fabric_external_connection_policies"
-	tflog.Debug(ctx, "End metadata of datasource: aci_fabric_external_connection_policies")
+	tflog.Debug(ctx, "Start metadata of datasource: aci_fabric_external_connection_policy")
+	resp.TypeName = req.ProviderTypeName + "_fabric_external_connection_policy"
+	tflog.Debug(ctx, "End metadata of datasource: aci_fabric_external_connection_policy")
 }
 
 func (d *FvFabricExtConnPDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
-	tflog.Debug(ctx, "Start schema of datasource: aci_fabric_external_connection_policies")
+	tflog.Debug(ctx, "Start schema of datasource: aci_fabric_external_connection_policy")
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "The fabric_external_connection_policies datasource for the 'fvFabricExtConnP' class",
+		MarkdownDescription: "The fabric_external_connection_policy datasource for the 'fvFabricExtConnP' class",
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Fabric External Connection Policies object.",
+				MarkdownDescription: "The distinguished name (DN) of the Fabric External Connection Policy object.",
 			},
 			"parent_dn": schema.StringAttribute{
 				Optional:            true,
@@ -51,23 +51,23 @@ func (d *FvFabricExtConnPDataSource) Schema(ctx context.Context, req datasource.
 			},
 			"annotation": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The annotation of the Fabric External Connection Policies object.`,
+				MarkdownDescription: `The annotation of the Fabric External Connection Policy object.`,
 			},
 			"description": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The description of the Fabric External Connection Policies object.`,
+				MarkdownDescription: `The description of the Fabric External Connection Policy object.`,
 			},
 			"id_attribute": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: `The identifier of the Fabric External Connection Policies object.`,
+				MarkdownDescription: `The identifier of the Fabric External Connection Policy object.`,
 			},
 			"name": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The name of the Fabric External Connection Policies object.`,
+				MarkdownDescription: `The name of the Fabric External Connection Policy object.`,
 			},
 			"name_alias": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The name alias of the Fabric External Connection Policies object.`,
+				MarkdownDescription: `The name alias of the Fabric External Connection Policy object.`,
 			},
 			"owner_key": schema.StringAttribute{
 				Computed:            true,
@@ -79,11 +79,11 @@ func (d *FvFabricExtConnPDataSource) Schema(ctx context.Context, req datasource.
 			},
 			"community": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `Global Route target.`,
+				MarkdownDescription: `A global route target that is used to define the communities for route leaking or redistribution. It can be used in a multi-site deployment to manage routing policies across fabrics.`,
 			},
 			"site_id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `Site Identifier.`,
+				MarkdownDescription: `A unique identifier for the site associated with the Fabric External Connection Policies object.`,
 			},
 			"peering_profile": schema.SingleNestedAttribute{
 				MarkdownDescription: `Peering Profile`,
@@ -91,19 +91,19 @@ func (d *FvFabricExtConnPDataSource) Schema(ctx context.Context, req datasource.
 				Attributes: map[string]schema.Attribute{
 					"annotation": schema.StringAttribute{
 						Computed:            true,
-						MarkdownDescription: `The annotation of the BGP Evpn Peering Profile object.`,
+						MarkdownDescription: `The annotation of the BGP EVPN Peering Profile object.`,
 					},
 					"description": schema.StringAttribute{
 						Computed:            true,
-						MarkdownDescription: `The description of the BGP Evpn Peering Profile object.`,
+						MarkdownDescription: `The description of the BGP EVPN Peering Profile object.`,
 					},
 					"name": schema.StringAttribute{
 						Computed:            true,
-						MarkdownDescription: `The name of the BGP Evpn Peering Profile object.`,
+						MarkdownDescription: `The name of the BGP EVPN Peering Profile object.`,
 					},
 					"name_alias": schema.StringAttribute{
 						Computed:            true,
-						MarkdownDescription: `The name alias of the BGP Evpn Peering Profile object.`,
+						MarkdownDescription: `The name alias of the BGP EVPN Peering Profile object.`,
 					},
 					"owner_key": schema.StringAttribute{
 						Computed:            true,
@@ -115,11 +115,11 @@ func (d *FvFabricExtConnPDataSource) Schema(ctx context.Context, req datasource.
 					},
 					"password": schema.StringAttribute{
 						Computed:            true,
-						MarkdownDescription: `Peering Password Used for setting automatic peering sessions. Its not used when peering type is set to manual. In manual mode, password is given with the bgp::InfraPeerP.`,
+						MarkdownDescription: `The password used for establishing automatic BGP peering sessions. Note that this is not used when the peering type is set to manual mode, where the password is defined in the bgp::InfraPeerP object.`,
 					},
 					"type": schema.StringAttribute{
 						Computed:            true,
-						MarkdownDescription: `The specific type of the object or component.`,
+						MarkdownDescription: `Specifies the type of BGP EVPN Peering Profile object or component. This helps define how the profile will be applied within the fabric.`,
 					},
 					"annotations": schema.SetNestedAttribute{
 						MarkdownDescription: ``,
@@ -189,11 +189,11 @@ func (d *FvFabricExtConnPDataSource) Schema(ctx context.Context, req datasource.
 			},
 		},
 	}
-	tflog.Debug(ctx, "End schema of datasource: aci_fabric_external_connection_policies")
+	tflog.Debug(ctx, "End schema of datasource: aci_fabric_external_connection_policy")
 }
 
 func (d *FvFabricExtConnPDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	tflog.Debug(ctx, "Start configure of datasource: aci_fabric_external_connection_policies")
+	tflog.Debug(ctx, "Start configure of datasource: aci_fabric_external_connection_policy")
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
 		return
@@ -211,11 +211,11 @@ func (d *FvFabricExtConnPDataSource) Configure(ctx context.Context, req datasour
 	}
 
 	d.client = client
-	tflog.Debug(ctx, "End configure of datasource: aci_fabric_external_connection_policies")
+	tflog.Debug(ctx, "End configure of datasource: aci_fabric_external_connection_policy")
 }
 
 func (d *FvFabricExtConnPDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	tflog.Debug(ctx, "Start read of datasource: aci_fabric_external_connection_policies")
+	tflog.Debug(ctx, "Start read of datasource: aci_fabric_external_connection_policy")
 	var data *FvFabricExtConnPResourceModel
 
 	// Read Terraform configuration data into the model
@@ -234,19 +234,19 @@ func (d *FvFabricExtConnPDataSource) Read(ctx context.Context, req datasource.Re
 	// Create a copy of the Id for when not found during getAndSetFvFabricExtConnPAttributes
 	cachedId := data.Id.ValueString()
 
-	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_fabric_external_connection_policies with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_fabric_external_connection_policy with id '%s'", data.Id.ValueString()))
 
 	getAndSetFvFabricExtConnPAttributes(ctx, &resp.Diagnostics, d.client, data)
 
 	if data.Id.IsNull() {
 		resp.Diagnostics.AddError(
-			"Failed to read aci_fabric_external_connection_policies data source",
-			fmt.Sprintf("The aci_fabric_external_connection_policies data source with id '%s' has not been found", cachedId),
+			"Failed to read aci_fabric_external_connection_policy data source",
+			fmt.Sprintf("The aci_fabric_external_connection_policy data source with id '%s' has not been found", cachedId),
 		)
 		return
 	}
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_fabric_external_connection_policies with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_fabric_external_connection_policy with id '%s'", data.Id.ValueString()))
 }
