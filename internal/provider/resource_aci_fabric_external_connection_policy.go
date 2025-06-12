@@ -268,21 +268,21 @@ func (r *FvFabricExtConnPResource) ModifyPlan(ctx context.Context, req resource.
 }
 
 func (r *FvFabricExtConnPResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	tflog.Debug(ctx, "Start metadata of resource: aci_fabric_external_connection_policies")
-	resp.TypeName = req.ProviderTypeName + "_fabric_external_connection_policies"
-	tflog.Debug(ctx, "End metadata of resource: aci_fabric_external_connection_policies")
+	tflog.Debug(ctx, "Start metadata of resource: aci_fabric_external_connection_policy")
+	resp.TypeName = req.ProviderTypeName + "_fabric_external_connection_policy"
+	tflog.Debug(ctx, "End metadata of resource: aci_fabric_external_connection_policy")
 }
 
 func (r *FvFabricExtConnPResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
-	tflog.Debug(ctx, "Start schema of resource: aci_fabric_external_connection_policies")
+	tflog.Debug(ctx, "Start schema of resource: aci_fabric_external_connection_policy")
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "The fabric_external_connection_policies resource for the 'fvFabricExtConnP' class",
+		MarkdownDescription: "The fabric_external_connection_policy resource for the 'fvFabricExtConnP' class",
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Fabric External Connection Policies object.",
+				MarkdownDescription: "The distinguished name (DN) of the Fabric External Connection Policy object.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
@@ -305,7 +305,7 @@ func (r *FvFabricExtConnPResource) Schema(ctx context.Context, req resource.Sche
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
-				MarkdownDescription: `The annotation of the Fabric External Connection Policies object.`,
+				MarkdownDescription: `The annotation of the Fabric External Connection Policy object.`,
 			},
 			"description": schema.StringAttribute{
 				Optional: true,
@@ -314,7 +314,7 @@ func (r *FvFabricExtConnPResource) Schema(ctx context.Context, req resource.Sche
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The description of the Fabric External Connection Policies object.`,
+				MarkdownDescription: `The description of the Fabric External Connection Policy object.`,
 			},
 			"id_attribute": schema.StringAttribute{
 				Required: true,
@@ -323,7 +323,7 @@ func (r *FvFabricExtConnPResource) Schema(ctx context.Context, req resource.Sche
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
-				MarkdownDescription: `The identifier of the Fabric External Connection Policies object.`,
+				MarkdownDescription: `The identifier of the Fabric External Connection Policy object.`,
 			},
 			"name": schema.StringAttribute{
 				Optional: true,
@@ -332,7 +332,7 @@ func (r *FvFabricExtConnPResource) Schema(ctx context.Context, req resource.Sche
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The name of the Fabric External Connection Policies object.`,
+				MarkdownDescription: `The name of the Fabric External Connection Policy object.`,
 			},
 			"name_alias": schema.StringAttribute{
 				Optional: true,
@@ -341,7 +341,7 @@ func (r *FvFabricExtConnPResource) Schema(ctx context.Context, req resource.Sche
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The name alias of the Fabric External Connection Policies object.`,
+				MarkdownDescription: `The name alias of the Fabric External Connection Policy object.`,
 			},
 			"owner_key": schema.StringAttribute{
 				Optional: true,
@@ -368,7 +368,7 @@ func (r *FvFabricExtConnPResource) Schema(ctx context.Context, req resource.Sche
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `Global Route target.`,
+				MarkdownDescription: `A global route target that is used to define the communities for route leaking or redistribution. It can be used in a multi-site deployment to manage routing policies across fabrics.`,
 			},
 			"site_id": schema.StringAttribute{
 				Optional: true,
@@ -377,7 +377,7 @@ func (r *FvFabricExtConnPResource) Schema(ctx context.Context, req resource.Sche
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `Site Identifier.`,
+				MarkdownDescription: `A unique identifier for the site associated with the Fabric External Connection Policies object.`,
 			},
 			"peering_profile": schema.SingleNestedAttribute{
 				MarkdownDescription: `Peering Profile`,
@@ -393,7 +393,7 @@ func (r *FvFabricExtConnPResource) Schema(ctx context.Context, req resource.Sche
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						MarkdownDescription: `The annotation of the BGP Evpn Peering Profile object.`,
+						MarkdownDescription: `The annotation of the BGP EVPN Peering Profile object.`,
 					},
 					"description": schema.StringAttribute{
 						Optional: true,
@@ -401,7 +401,7 @@ func (r *FvFabricExtConnPResource) Schema(ctx context.Context, req resource.Sche
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						MarkdownDescription: `The description of the BGP Evpn Peering Profile object.`,
+						MarkdownDescription: `The description of the BGP EVPN Peering Profile object.`,
 					},
 					"name": schema.StringAttribute{
 						Optional: true,
@@ -409,7 +409,7 @@ func (r *FvFabricExtConnPResource) Schema(ctx context.Context, req resource.Sche
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						MarkdownDescription: `The name of the BGP Evpn Peering Profile object.`,
+						MarkdownDescription: `The name of the BGP EVPN Peering Profile object.`,
 					},
 					"name_alias": schema.StringAttribute{
 						Optional: true,
@@ -417,7 +417,7 @@ func (r *FvFabricExtConnPResource) Schema(ctx context.Context, req resource.Sche
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						MarkdownDescription: `The name alias of the BGP Evpn Peering Profile object.`,
+						MarkdownDescription: `The name alias of the BGP EVPN Peering Profile object.`,
 					},
 					"owner_key": schema.StringAttribute{
 						Optional: true,
@@ -441,7 +441,7 @@ func (r *FvFabricExtConnPResource) Schema(ctx context.Context, req resource.Sche
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						MarkdownDescription: `Peering Password Used for setting automatic peering sessions. Its not used when peering type is set to manual. In manual mode, password is given with the bgp::InfraPeerP.`,
+						MarkdownDescription: `The password used for establishing automatic BGP peering sessions. Note that this is not used when the peering type is set to manual mode, where the password is defined in the bgp::InfraPeerP object.`,
 					},
 					"type": schema.StringAttribute{
 						Optional: true,
@@ -452,7 +452,7 @@ func (r *FvFabricExtConnPResource) Schema(ctx context.Context, req resource.Sche
 						Validators: []validator.String{
 							stringvalidator.OneOf("automatic_with_full_mesh", "automatic_with_rr"),
 						},
-						MarkdownDescription: `The specific type of the object or component.`,
+						MarkdownDescription: `Specifies the type of BGP EVPN Peering Profile object or component. This helps define how the profile will be applied within the fabric.`,
 					},
 					"annotations": schema.SetNestedAttribute{
 						MarkdownDescription: ``,
@@ -562,11 +562,11 @@ func (r *FvFabricExtConnPResource) Schema(ctx context.Context, req resource.Sche
 			},
 		},
 	}
-	tflog.Debug(ctx, "End schema of resource: aci_fabric_external_connection_policies")
+	tflog.Debug(ctx, "End schema of resource: aci_fabric_external_connection_policy")
 }
 
 func (r *FvFabricExtConnPResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	tflog.Debug(ctx, "Start configure of resource: aci_fabric_external_connection_policies")
+	tflog.Debug(ctx, "Start configure of resource: aci_fabric_external_connection_policy")
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
 		return
@@ -584,11 +584,11 @@ func (r *FvFabricExtConnPResource) Configure(ctx context.Context, req resource.C
 	}
 
 	r.client = client
-	tflog.Debug(ctx, "End configure of resource: aci_fabric_external_connection_policies")
+	tflog.Debug(ctx, "End configure of resource: aci_fabric_external_connection_policy")
 }
 
 func (r *FvFabricExtConnPResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	tflog.Debug(ctx, "Start create of resource: aci_fabric_external_connection_policies")
+	tflog.Debug(ctx, "Start create of resource: aci_fabric_external_connection_policy")
 	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
 	var stateData *FvFabricExtConnPResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
@@ -617,7 +617,7 @@ func (r *FvFabricExtConnPResource) Create(ctx context.Context, req resource.Crea
 		setFvFabricExtConnPId(ctx, data)
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_fabric_external_connection_policies with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_fabric_external_connection_policy with id '%s'", data.Id.ValueString()))
 
 	var fvPeeringPPlan, fvPeeringPState FvPeeringPFvFabricExtConnPResourceModel
 	data.FvPeeringP.As(ctx, &fvPeeringPPlan, basetypes.ObjectAsOptions{})
@@ -644,11 +644,11 @@ func (r *FvFabricExtConnPResource) Create(ctx context.Context, req resource.Crea
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_fabric_external_connection_policies with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_fabric_external_connection_policy with id '%s'", data.Id.ValueString()))
 }
 
 func (r *FvFabricExtConnPResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
-	tflog.Debug(ctx, "Start read of resource: aci_fabric_external_connection_policies")
+	tflog.Debug(ctx, "Start read of resource: aci_fabric_external_connection_policy")
 	var data *FvFabricExtConnPResourceModel
 
 	// Read Terraform prior state data into the model
@@ -658,7 +658,7 @@ func (r *FvFabricExtConnPResource) Read(ctx context.Context, req resource.ReadRe
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Read of resource aci_fabric_external_connection_policies with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Read of resource aci_fabric_external_connection_policy with id '%s'", data.Id.ValueString()))
 
 	getAndSetFvFabricExtConnPAttributes(ctx, &resp.Diagnostics, r.client, data)
 
@@ -670,11 +670,11 @@ func (r *FvFabricExtConnPResource) Read(ctx context.Context, req resource.ReadRe
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_fabric_external_connection_policies with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_fabric_external_connection_policy with id '%s'", data.Id.ValueString()))
 }
 
 func (r *FvFabricExtConnPResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	tflog.Debug(ctx, "Start update of resource: aci_fabric_external_connection_policies")
+	tflog.Debug(ctx, "Start update of resource: aci_fabric_external_connection_policy")
 	var data *FvFabricExtConnPResourceModel
 	var stateData *FvFabricExtConnPResourceModel
 
@@ -693,7 +693,7 @@ func (r *FvFabricExtConnPResource) Update(ctx context.Context, req resource.Upda
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_fabric_external_connection_policies with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_fabric_external_connection_policy with id '%s'", data.Id.ValueString()))
 
 	var fvPeeringPPlan, fvPeeringPState FvPeeringPFvFabricExtConnPResourceModel
 	data.FvPeeringP.As(ctx, &fvPeeringPPlan, basetypes.ObjectAsOptions{})
@@ -720,11 +720,11 @@ func (r *FvFabricExtConnPResource) Update(ctx context.Context, req resource.Upda
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_fabric_external_connection_policies with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_fabric_external_connection_policy with id '%s'", data.Id.ValueString()))
 }
 
 func (r *FvFabricExtConnPResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	tflog.Debug(ctx, "Start delete of resource: aci_fabric_external_connection_policies")
+	tflog.Debug(ctx, "Start delete of resource: aci_fabric_external_connection_policy")
 	var data *FvFabricExtConnPResourceModel
 
 	// Read Terraform prior state data into the model
@@ -734,7 +734,7 @@ func (r *FvFabricExtConnPResource) Delete(ctx context.Context, req resource.Dele
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Delete of resource aci_fabric_external_connection_policies with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Delete of resource aci_fabric_external_connection_policy with id '%s'", data.Id.ValueString()))
 	jsonPayload := GetDeleteJsonPayload(ctx, &resp.Diagnostics, "fvFabricExtConnP", data.Id.ValueString())
 	if resp.Diagnostics.HasError() {
 		return
@@ -743,18 +743,18 @@ func (r *FvFabricExtConnPResource) Delete(ctx context.Context, req resource.Dele
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_fabric_external_connection_policies with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_fabric_external_connection_policy with id '%s'", data.Id.ValueString()))
 }
 
 func (r *FvFabricExtConnPResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	tflog.Debug(ctx, "Start import state of resource: aci_fabric_external_connection_policies")
+	tflog.Debug(ctx, "Start import state of resource: aci_fabric_external_connection_policy")
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 
 	var stateData *FvFabricExtConnPResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
-	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_fabric_external_connection_policies with id '%s'", stateData.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_fabric_external_connection_policy with id '%s'", stateData.Id.ValueString()))
 
-	tflog.Debug(ctx, "End import of state resource: aci_fabric_external_connection_policies")
+	tflog.Debug(ctx, "End import of state resource: aci_fabric_external_connection_policy")
 }
 
 func getAndSetFvFabricExtConnPAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvFabricExtConnPResourceModel) {

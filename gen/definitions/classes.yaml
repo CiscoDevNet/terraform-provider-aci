@@ -1058,7 +1058,10 @@ fvRemoteId:
     - "uni/tn-{name}/mscGraphXlateCont/epgDefXlate-[{epgDefDn}]/stAsc/site-{siteId}"
 
 fvFabricExtConnP:
-  resource_name: "fabric_external_connection_policies"
-
+  resource_name: "fabric_external_connection_policy"
+  sub_category: "Tenant Infra Policies"
+  ui_locations:
+    - Tenant (infra) -> Policies -> Protocol -> Fabric Ext Connection Policy
+  
 fvPeeringP:
   allow_delete: false

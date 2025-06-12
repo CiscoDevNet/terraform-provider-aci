@@ -1,5 +1,5 @@
 
-resource "aci_fabric_external_connection_policies" "full_example_tenant" {
+resource "aci_fabric_external_connection_policy" "full_example_tenant" {
   parent_dn    = aci_tenant.example.id
   annotation   = "annotation"
   description  = "description_1"
