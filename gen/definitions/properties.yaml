@@ -83,7 +83,7 @@ global:
     Eigrp: "EIGRP"
     Bgp: "BGP"
     Ospf: "OSPF"
-    BGP Evpn Peering Profile: "BGP EVPN Peering Profile"
+    Evpn: "EVPN"
   ignores:
     - "userdom"
 
