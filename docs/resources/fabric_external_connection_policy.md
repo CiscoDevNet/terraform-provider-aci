@@ -120,7 +120,7 @@ All examples for the Fabric External Connection Policy resource can be found in 
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `community` (rt) - (string) A global route target that is used to define the communities for route leaking or redistribution. It can be used in a multi-site deployment to manage routing policies across fabrics.
-* `site_id` (siteId) - (string) A unique identifier for the site associated with the Fabric External Connection Policies object. This attribute is supported in ACI versions: 3.0(1k) and later.
+* `site_id` (siteId) - (string) A unique identifier for the site associated with the Fabric External Connection Policy object. This attribute is supported in ACI versions: 3.0(1k) and later.
   - Default: `0`
 * `peering_profile` - (map) A map of BGP EVPN Peering Profile (ACI object [fvPeeringP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvPeeringP/overview)).
   #### Optional ####
@@ -132,7 +132,7 @@ All examples for the Fabric External Connection Policy resource can be found in 
     * `name_alias` (nameAlias) - (string) The name alias of the BGP EVPN Peering Profile object. This attribute is supported in ACI versions: 2.2(1k) and later.
     * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
     * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
-    * `password` (password) - (string) The password used for establishing automatic BGP peering sessions. Note that this is not used when the peering type is set to manual mode, where the password is defined in the bgp::InfraPeerP object.
+    * `password` (password) - (string) The password used for establishing automatic BGP peering sessions. Note that this is not used when the peering type is set to manual mode.
     * `type` (type) - (string) Specifies the type of BGP EVPN Peering Profile object or component. This helps define how the profile will be applied within the fabric.
       - Default: `automatic_with_full_mesh`
       - Valid Values: `automatic_with_full_mesh`, `automatic_with_rr`.

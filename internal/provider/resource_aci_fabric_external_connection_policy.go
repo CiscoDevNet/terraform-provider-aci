@@ -377,7 +377,7 @@ func (r *FvFabricExtConnPResource) Schema(ctx context.Context, req resource.Sche
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `A unique identifier for the site associated with the Fabric External Connection Policies object.`,
+				MarkdownDescription: `A unique identifier for the site associated with the Fabric External Connection Policy object.`,
 			},
 			"peering_profile": schema.SingleNestedAttribute{
 				MarkdownDescription: `Peering Profile`,
@@ -441,7 +441,7 @@ func (r *FvFabricExtConnPResource) Schema(ctx context.Context, req resource.Sche
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						MarkdownDescription: `The password used for establishing automatic BGP peering sessions. Note that this is not used when the peering type is set to manual mode, where the password is defined in the bgp::InfraPeerP object.`,
+						MarkdownDescription: `The password used for establishing automatic BGP peering sessions. Note that this is not used when the peering type is set to manual mode.`,
 					},
 					"type": schema.StringAttribute{
 						Optional: true,
