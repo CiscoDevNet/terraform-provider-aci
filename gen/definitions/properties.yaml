@@ -2531,7 +2531,7 @@ l3extRsInstPToProfile:
 fvFabricExtConnP:
   documentation:
     rt: "A global route target that is used to define the communities for route leaking or redistribution. It can be used in a multi-site deployment to manage routing policies across fabrics."
-    siteId: "A unique identifier for the site associated with the Fabric External Connection Policies object."
+    siteId: "A unique identifier for the site associated with the Fabric External Connection Policy object."
   default_values:
     parent_dn: "uni/tn-infra"
   overwrites:
@@ -2553,7 +2553,7 @@ fvFabricExtConnP:
 
 fvPeeringP:
   documentation:
-    password: "The password used for establishing automatic BGP peering sessions. Note that this is not used when the peering type is set to manual mode, where the password is defined in the bgp::InfraPeerP object."
+    password: "The password used for establishing automatic BGP peering sessions. Note that this is not used when the peering type is set to manual mode."
     type: "Specifies the type of BGP EVPN Peering Profile object or component. This helps define how the profile will be applied within the fabric."
   overwrites:
     bgp_evpn_peering_profile: "peering_profile"
