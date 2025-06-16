@@ -631,24 +631,26 @@ func resourceAciL3OutsideCreate(ctx context.Context, d *schema.ResourceData, m i
 
 	if defaultRouteLeakPolicy, ok := d.GetOk("default_route_leak_policy"); ok {
 
-		newObj := defaultRouteLeakPolicy.(*schema.Set).List()[0].(map[string]interface{})
+		if len(defaultRouteLeakPolicy.(*schema.Set).List()) == 1 {
+			newObj := defaultRouteLeakPolicy.(*schema.Set).List()[0].(map[string]interface{})
 
-		l3extDefaultRouteLeakPAttr := models.DefaultRouteLeakPolicyAttributes{}
-		l3extDefaultRouteLeakPAttr.Annotation = newObj["annotation"].(string)
-		l3extDefaultRouteLeakPAttr.Always = newObj["always"].(string)
-		l3extDefaultRouteLeakPAttr.Criteria = newObj["criteria"].(string)
+			l3extDefaultRouteLeakPAttr := models.DefaultRouteLeakPolicyAttributes{}
+			l3extDefaultRouteLeakPAttr.Annotation = newObj["annotation"].(string)
+			l3extDefaultRouteLeakPAttr.Always = newObj["always"].(string)
+			l3extDefaultRouteLeakPAttr.Criteria = newObj["criteria"].(string)
 
-		scopeList := make([]string, 0, 1)
-		for _, val := range newObj["scope"].(*schema.Set).List() {
-			scopeList = append(scopeList, val.(string))
-		}
-		l3extDefaultRouteLeakPAttr.Scope = strings.Join(scopeList, ",")
+			scopeList := make([]string, 0, 1)
+			for _, val := range newObj["scope"].(*schema.Set).List() {
+				scopeList = append(scopeList, val.(string))
+			}
+			l3extDefaultRouteLeakPAttr.Scope = strings.Join(scopeList, ",")
 
-		l3extDefaultRouteLeakP := models.NewDefaultRouteLeakPolicy(fmt.Sprintf(models.RnL3extDefaultRouteLeakP), l3extOut.DistinguishedName, l3extDefaultRouteLeakPAttr)
+			l3extDefaultRouteLeakP := models.NewDefaultRouteLeakPolicy(fmt.Sprintf(models.RnL3extDefaultRouteLeakP), l3extOut.DistinguishedName, l3extDefaultRouteLeakPAttr)
 
-		err := aciClient.Save(l3extDefaultRouteLeakP)
-		if err != nil {
-			return diag.FromErr(err)
+			err := aciClient.Save(l3extDefaultRouteLeakP)
+			if err != nil {
+				return diag.FromErr(err)
+			}
 		}
 	}
 
@@ -841,26 +843,28 @@ func resourceAciL3OutsideUpdate(ctx context.Context, d *schema.ResourceData, m i
 
 	if d.HasChange("default_route_leak_policy") || d.HasChange("annotation") {
 		_, newRel := d.GetChange("default_route_leak_policy")
-		newObj := newRel.(*schema.Set).List()[0].(map[string]interface{})
+		if len(newRel.(*schema.Set).List()) == 1 {
+			newObj := newRel.(*schema.Set).List()[0].(map[string]interface{})
 
-		l3extDefaultRouteLeakPAttr := models.DefaultRouteLeakPolicyAttributes{}
-		l3extDefaultRouteLeakPAttr.Annotation = newObj["annotation"].(string)
-		l3extDefaultRouteLeakPAttr.Always = newObj["always"].(string)
-		l3extDefaultRouteLeakPAttr.Criteria = newObj["criteria"].(string)
+			l3extDefaultRouteLeakPAttr := models.DefaultRouteLeakPolicyAttributes{}
+			l3extDefaultRouteLeakPAttr.Annotation = newObj["annotation"].(string)
+			l3extDefaultRouteLeakPAttr.Always = newObj["always"].(string)
+			l3extDefaultRouteLeakPAttr.Criteria = newObj["criteria"].(string)
 
-		scopeList := make([]string, 0, 1)
-		for _, val := range newObj["scope"].(*schema.Set).List() {
-			scopeList = append(scopeList, val.(string))
-		}
-		l3extDefaultRouteLeakPAttr.Scope = strings.Join(scopeList, ",")
+			scopeList := make([]string, 0, 1)
+			for _, val := range newObj["scope"].(*schema.Set).List() {
+				scopeList = append(scopeList, val.(string))
+			}
+			l3extDefaultRouteLeakPAttr.Scope = strings.Join(scopeList, ",")
 
-		l3extDefaultRouteLeakP := models.NewDefaultRouteLeakPolicy(fmt.Sprintf(models.RnL3extDefaultRouteLeakP), l3extOut.DistinguishedName, l3extDefaultRouteLeakPAttr)
+			l3extDefaultRouteLeakP := models.NewDefaultRouteLeakPolicy(fmt.Sprintf(models.RnL3extDefaultRouteLeakP), l3extOut.DistinguishedName, l3extDefaultRouteLeakPAttr)
 
-		l3extDefaultRouteLeakP.Status = "modified"
+			l3extDefaultRouteLeakP.Status = "modified"
 
-		err = aciClient.Save(l3extDefaultRouteLeakP)
-		if err != nil {
-			return diag.FromErr(err)
+			err = aciClient.Save(l3extDefaultRouteLeakP)
+			if err != nil {
+				return diag.FromErr(err)
+			}
 		}
 	}
 
