@@ -119,7 +119,7 @@ All examples for the Fabric External Connection Policy resource can be found in 
 * `name_alias` (nameAlias) - (string) The name alias of the Fabric External Connection Policy object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
-* `community` (rt) - (string) A global route target that is used to define the communities for route leaking or redistribution. It can be used in a multi-site deployment to manage routing policies across fabrics.
+* `community` (rt) - (string) A global route target used to define communities for route leaking or redistribution in multi-pod or multi-site deployments to manage routing policies across fabrics.
 * `site_id` (siteId) - (string) A unique identifier for the site associated with the Fabric External Connection Policy object. This attribute is supported in ACI versions: 3.0(1k) and later.
   - Default: `0`
 * `peering_profile` - (map) A map of BGP EVPN Peering Profile (ACI object [fvPeeringP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvPeeringP/overview)).
@@ -132,8 +132,8 @@ All examples for the Fabric External Connection Policy resource can be found in 
     * `name_alias` (nameAlias) - (string) The name alias of the BGP EVPN Peering Profile object. This attribute is supported in ACI versions: 2.2(1k) and later.
     * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
     * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
-    * `password` (password) - (string) The password used for establishing automatic BGP peering sessions. Note that this is not used when the peering type is set to manual mode.
-    * `type` (type) - (string) Specifies the type of BGP EVPN Peering Profile object or component. This helps define how the profile will be applied within the fabric.
+    * `password` (password) - (string) The password used for establishing automatic BGP peering sessions.
+    * `type` (type) - (string) The type of BGP EVPN Peering Profile object.
       - Default: `automatic_with_full_mesh`
       - Valid Values: `automatic_with_full_mesh`, `automatic_with_rr`.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
