@@ -368,7 +368,7 @@ func (r *FvFabricExtConnPResource) Schema(ctx context.Context, req resource.Sche
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `A global route target that is used to define the communities for route leaking or redistribution. It can be used in a multi-site deployment to manage routing policies across fabrics.`,
+				MarkdownDescription: `A global route target used to define communities for route leaking or redistribution in multi-pod or multi-site deployments to manage routing policies across fabrics.`,
 			},
 			"site_id": schema.StringAttribute{
 				Optional: true,
@@ -441,7 +441,7 @@ func (r *FvFabricExtConnPResource) Schema(ctx context.Context, req resource.Sche
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						MarkdownDescription: `The password used for establishing automatic BGP peering sessions. Note that this is not used when the peering type is set to manual mode.`,
+						MarkdownDescription: `The password used for establishing automatic BGP peering sessions.`,
 					},
 					"type": schema.StringAttribute{
 						Optional: true,
@@ -452,7 +452,7 @@ func (r *FvFabricExtConnPResource) Schema(ctx context.Context, req resource.Sche
 						Validators: []validator.String{
 							stringvalidator.OneOf("automatic_with_full_mesh", "automatic_with_rr"),
 						},
-						MarkdownDescription: `Specifies the type of BGP EVPN Peering Profile object or component. This helps define how the profile will be applied within the fabric.`,
+						MarkdownDescription: `The type of BGP EVPN Peering Profile object.`,
 					},
 					"annotations": schema.SetNestedAttribute{
 						MarkdownDescription: ``,
