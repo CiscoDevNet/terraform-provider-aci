@@ -210,6 +210,7 @@ fvCtx:
   sub_category: "Networking"
   exclude_children:
     - "fvSiteAssociated"
+    - "vzAny"
   migration_version: 1
   migration_blocks:
     fvCtx:
@@ -1074,3 +1075,38 @@ lacpEnhancedLagPol:
 
 vmmVSwitchPolicyCont:
   resource_name: "vswitch_policy"
+
+vzAny:
+  resource_name: "any"
+  data_source_has_no_name_identifier: true
+  include: true
+  ui_locations:
+    - "Tenants -> Networking -> VRFs -> Any"
+  sub_category: "Networking"
+  migration_version: 1
+  migration_blocks:
+    vzAny:
+        vrf_dn: parent_dn
+        match_t: match_criteria
+        pref_gr_memb: preferred_group_member
+    vzRsAnyToConsIf:
+        relation_vz_rs_any_to_cons_if: relation_from_any_to_contract_interfaces.imported_contract_name
+    vzRsAnyToCons:
+        relation_vz_rs_any_to_cons: relation_from_any_to_consumer_contracts.contract_name
+    vzRsAnyToProv:
+        relation_vz_rs_any_to_prov: relation_from_any_to_provider_contracts.contract_name
+
+vzRsAnyToConsIf:
+  resource_name: "relation_from_any_to_contract_interface"
+  ui_locations:
+    - "Tenants -> Networking -> VRFs -> Any -> Contract Interface"
+
+vzRsAnyToCons:
+  resource_name: "relation_from_any_to_consumer_contract"
+  ui_locations:
+    - "Tenants -> Networking -> VRFs -> Any -> Consumer Contract"
+
+vzRsAnyToProv:
+  resource_name: "relation_from_any_to_provider_contract"
+  ui_locations:
+    - "Tenants -> Networking -> VRFs -> Any -> Provider Contract"

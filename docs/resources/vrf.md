@@ -452,4 +452,5 @@ import {
 
 ## Child Resources
   
+  - [aci_any](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/any)
   - [aci_associated_site](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/associated_site)
