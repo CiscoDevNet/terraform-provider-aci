@@ -71,7 +71,9 @@ func TestAccDataSource{{$.resourceClassName}}{{if .class_name}}With{{capitalize 
 			},
 			{
 				Config:      testConfig{{$.resourceClassName}}NotExisting{{if .class_name}}{{capitalize .class_name}}{{end}}{{if $.version_mismatch}} + testConfigDataSourceSystem{{end}},
+					{{- if not $.data_source_has_no_name_identifier}}
 				ExpectError: regexp.MustCompile("Failed to read aci_{{$.resourceName}} data source"),
+					{{- end}}
 			},
 		},
 	})
@@ -125,7 +127,9 @@ func TestAccDataSource{{.resourceClassName}}(t *testing.T) {
 			},
 			{
 				Config:      testConfig{{.resourceClassName}}NotExisting{{if $.version_mismatch}} + testConfigDataSourceSystem{{end}},
+					{{- if not $.data_source_has_no_name_identifier}}
 				ExpectError: regexp.MustCompile("Failed to read aci_{{$.resourceName}} data source"),
+					{{- end}}
 			},
 		},
 	})

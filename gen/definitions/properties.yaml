@@ -2574,3 +2574,76 @@ lacpEnhancedLagPol:
     - class_name: "vmmVSwitchPolicyCont"
       parent_dependency: "vmmDomP"
       parent_dn: "aci_vswitch_policy.test.id"
+
+vzAny:
+  overwrites:
+    pref_gr_memb: "preferred_group_member"
+  documentation:
+    prefGrMemb: "Parameter used to determine whether the EPG is part of the preferred group. Members of this group are allowed to communicate without contracts."
+  parents:
+    - class_name: "fvCtx"
+      parent_dependency: "fvTenant"
+      parent_dn: "aci_vrf.test.id"
+
+vzRsAnyToConsIf:
+  documentation:
+    tnVzCPIfName: "The name of the imported Contract object."
+  parents:
+    - class_name: "vzAny"
+      parent_dependency: "fvCtx"
+      parent_dn: "aci_any.test.id"
+  targets:
+    - class_name: "vzCPIf"
+      parent_dependency: "fvTenant"
+      overwrite_parent_dn_key: "tenant_dn"
+      target_dn: "uni/tn-test_name/cif-imported_contract_name_0"
+      relation_resource_name: "imported_contract"
+      properties:
+        name: "imported_contract_name_0"
+    - class_name: "vzCPIf"
+      parent_dependency: "fvTenant"
+      overwrite_parent_dn_key: "tenant_dn"
+      target_dn: "uni/tn-test_name/cif-imported_contract_name_1"
+      relation_resource_name: "imported_contract"
+      properties:
+        name: "imported_contract_name_1"
+
+vzRsAnyToCons:
+  ignores:
+    - "intent"
+  documentation:
+    tnVzBrCPName: "The name of the Contract object."
+  parents:
+    - class_name: "vzAny"
+      parent_dependency: "fvCtx"
+      parent_dn: "aci_any.test.id"
+  targets:
+    - class_name: "vzBrCP"
+      shared_classes:
+        - "vzRsAnyToProv"
+      parent_dependency: "fvTenant"
+      overwrite_parent_dn_key: "tenant_dn"
+      target_dn: "uni/tn-test_name/brc-contract_name_0"
+      relation_resource_name: "contract"
+      properties:
+        name: "contract_name_0"
+
+vzRsAnyToProv:
+  ignores:
+    - "intent"
+  documentation:
+    tnVzBrCPName: "The name of the Contract object."
+  parents:
+    - class_name: "vzAny"
+      parent_dependency: "fvCtx"
+      parent_dn: "aci_any.test.id"
+  targets:
+    - class_name: "vzBrCP"
+      shared_classes:
+        - "vzRsAnyToCons"
+      parent_dependency: "fvTenant"
+      overwrite_parent_dn_key: "tenant_dn"
+      target_dn: "uni/tn-test_name/brc-contract_name_1"
+      relation_resource_name: "contract"
+      properties:
+        name: "contract_name_1"

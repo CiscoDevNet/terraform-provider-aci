@@ -515,7 +515,11 @@ func (r *{{.ResourceClassName}}Resource) UpgradeState(ctx context.Context) map[i
 							{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
 							{{- $AttributeName := getLegacyChildAttribute $PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
 									{{- if eq $AttributeName ""}}
+										{{- if .HasCustomType}}
+						{{ .Name }}: customTypes.New{{.ResourceClassName}}{{.Name}}StringNull(),
+										{{- else}}
 						{{ .Name }}: basetypes.NewStringNull(),
+										{{- end}}
 									{{- else}}
 										{{- if isNewNamedClassAttribute $Overwrite }}
 						{{ .Name }}: basetypes.NewStringValue(GetMOName(priorStateData{{ .ResourceClassName }})),

@@ -518,3 +518,7 @@ version_mismatch: true
       {{- end}}
     {{- end}}
       {{- end}}
+
+{{- if .DataSourceHasNoNameIdentifier }}
+data_source_has_no_name_identifier: {{ .DataSourceHasNoNameIdentifier }}
+{{- end}}
