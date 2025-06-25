@@ -1,4 +1,4 @@
-nometafile:
+no_meta_file:
   bgpCtxAfPol: bgp_address_family_context
   bgpCtxPol: bgp_timers
   dhcpRelayP: dhcp_relay_policy
