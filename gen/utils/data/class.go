@@ -100,22 +100,22 @@ type Relation struct {
 	// The class to which the relationship points.
 	ToClass string
 	// The type of the relationship.
-	Type RelationShipTypeEnum
+	Type RelationhipTypeEnum
 }
 
 // The enumeration options of the relationship type.
-type RelationShipTypeEnum int
+type RelationhipTypeEnum int
 
 const (
 	// Named indicates that the relationship is a named relation.
-	Named RelationShipTypeEnum = iota + 1
+	Named RelationhipTypeEnum = iota + 1
 	// Explicit indicates that the relationship is an explicit relation.
 	Explicit
 	// Undefined indicates that the relationship type is unknown.
-	Undefined RelationShipTypeEnum = iota
+	Undefined RelationhipTypeEnum = iota
 )
 
-func setRelationShipTypeEnum(relationType string) (RelationShipTypeEnum, error) {
+func setRelationhipTypeEnum(relationType string) (RelationhipTypeEnum, error) {
 	switch relationType {
 	case "named":
 		return Named, nil
@@ -354,7 +354,7 @@ func (c *Class) setRelation() error {
 
 	// TODO: add logic to override the relational status from a definition file.
 	if relationInfo, ok := c.MetaFileContent["relationInfo"]; ok {
-		relationType, err := setRelationShipTypeEnum(relationInfo.(map[string]interface{})["type"].(string))
+		relationType, err := setRelationhipTypeEnum(relationInfo.(map[string]interface{})["type"].(string))
 		if err != nil {
 			return err
 		}
@@ -365,7 +365,7 @@ func (c *Class) setRelation() error {
 		}
 		c.Relation.RelationalClass = true
 		c.Relation.ToClass = strings.Replace(relationInfo.(map[string]interface{})["toMo"].(string), ":", "", -1)
-		c.Relation.Type = RelationShipTypeEnum(relationType)
+		c.Relation.Type = RelationhipTypeEnum(relationType)
 
 	}
 	genLogger.Debug(fmt.Sprintf("Successfully set Relation details for class '%s'.", c.ClassName))
