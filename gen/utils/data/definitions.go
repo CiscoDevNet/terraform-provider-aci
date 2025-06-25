@@ -8,8 +8,8 @@ import (
 
 type GlobalMetaDefinition struct {
 	// A map containing class names as keys and their corresponding resource names as values.
-	// This is used search for the resource name of a class when it is not defined in meta directory.
-	NoMetaFile map[string]string
+	// This is to used search for the resource name of a class when it is not defined in meta directory.
+	NoMetaFile map[string]string `yaml:"no_meta_file"`
 }
 
 func loadGlobalMetaDefinition() GlobalMetaDefinition {
