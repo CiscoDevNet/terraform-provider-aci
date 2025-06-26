@@ -991,85 +991,83 @@ func getFvFabricExtConnPFvPeeringPChildPayloads(ctx context.Context, diags *diag
 			if !fvPeeringPFvFabricExtConnPPlan.Type.IsUnknown() && !fvPeeringPFvFabricExtConnPPlan.Type.IsNull() {
 				childMap.Attributes["type"] = fvPeeringPFvFabricExtConnPPlan.Type.ValueString()
 			}
-		} else {
-			return childPayloads
-		}
 
-		var tagAnnotationFvPeeringPFvFabricExtConnPPlan, tagAnnotationFvPeeringPFvFabricExtConnPState []TagAnnotationFvPeeringPFvFabricExtConnPResourceModel
-		fvPeeringPFvFabricExtConnPPlan.TagAnnotation.ElementsAs(ctx, &tagAnnotationFvPeeringPFvFabricExtConnPPlan, false)
-		if !fvPeeringPFvFabricExtConnPState.TagAnnotation.IsNull() {
-			fvPeeringPFvFabricExtConnPState.TagAnnotation.ElementsAs(ctx, &tagAnnotationFvPeeringPFvFabricExtConnPState, false)
-		}
-		if !fvPeeringPFvFabricExtConnPPlan.TagAnnotation.IsNull() && !fvPeeringPFvFabricExtConnPPlan.TagAnnotation.IsUnknown() {
-			tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
-			for _, tagAnnotationFvPeeringPFvFabricExtConnP := range tagAnnotationFvPeeringPFvFabricExtConnPPlan {
-				tagAnnotationFvPeeringPFvFabricExtConnPChildMap := NewAciObject()
-				if !tagAnnotationFvPeeringPFvFabricExtConnP.Key.IsNull() && !tagAnnotationFvPeeringPFvFabricExtConnP.Key.IsUnknown() {
-					tagAnnotationFvPeeringPFvFabricExtConnPChildMap.Attributes["key"] = tagAnnotationFvPeeringPFvFabricExtConnP.Key.ValueString()
-				}
-				if !tagAnnotationFvPeeringPFvFabricExtConnP.Value.IsNull() && !tagAnnotationFvPeeringPFvFabricExtConnP.Value.IsUnknown() {
-					tagAnnotationFvPeeringPFvFabricExtConnPChildMap.Attributes["value"] = tagAnnotationFvPeeringPFvFabricExtConnP.Value.ValueString()
-				}
-				FvPeeringPFvFabricExtConnPChildren = append(FvPeeringPFvFabricExtConnPChildren, map[string]interface{}{"tagAnnotation": tagAnnotationFvPeeringPFvFabricExtConnPChildMap})
-				tagAnnotationIdentifier := TagAnnotationIdentifier{}
-				tagAnnotationIdentifier.Key = tagAnnotationFvPeeringPFvFabricExtConnP.Key
-				tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
+			var tagAnnotationFvPeeringPFvFabricExtConnPPlan, tagAnnotationFvPeeringPFvFabricExtConnPState []TagAnnotationFvPeeringPFvFabricExtConnPResourceModel
+			fvPeeringPFvFabricExtConnPPlan.TagAnnotation.ElementsAs(ctx, &tagAnnotationFvPeeringPFvFabricExtConnPPlan, false)
+			if !fvPeeringPFvFabricExtConnPState.TagAnnotation.IsNull() {
+				fvPeeringPFvFabricExtConnPState.TagAnnotation.ElementsAs(ctx, &tagAnnotationFvPeeringPFvFabricExtConnPState, false)
 			}
-			for _, tagAnnotationFvPeeringPFvFabricExtConnP := range tagAnnotationFvPeeringPFvFabricExtConnPState {
-				delete := true
-				for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
-					if tagAnnotationIdentifier.Key == tagAnnotationFvPeeringPFvFabricExtConnP.Key {
-						delete = false
-						break
+			if !fvPeeringPFvFabricExtConnPPlan.TagAnnotation.IsNull() && !fvPeeringPFvFabricExtConnPPlan.TagAnnotation.IsUnknown() {
+				tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
+				for _, tagAnnotationFvPeeringPFvFabricExtConnP := range tagAnnotationFvPeeringPFvFabricExtConnPPlan {
+					tagAnnotationFvPeeringPFvFabricExtConnPChildMap := NewAciObject()
+					if !tagAnnotationFvPeeringPFvFabricExtConnP.Key.IsNull() && !tagAnnotationFvPeeringPFvFabricExtConnP.Key.IsUnknown() {
+						tagAnnotationFvPeeringPFvFabricExtConnPChildMap.Attributes["key"] = tagAnnotationFvPeeringPFvFabricExtConnP.Key.ValueString()
+					}
+					if !tagAnnotationFvPeeringPFvFabricExtConnP.Value.IsNull() && !tagAnnotationFvPeeringPFvFabricExtConnP.Value.IsUnknown() {
+						tagAnnotationFvPeeringPFvFabricExtConnPChildMap.Attributes["value"] = tagAnnotationFvPeeringPFvFabricExtConnP.Value.ValueString()
+					}
+					FvPeeringPFvFabricExtConnPChildren = append(FvPeeringPFvFabricExtConnPChildren, map[string]interface{}{"tagAnnotation": tagAnnotationFvPeeringPFvFabricExtConnPChildMap})
+					tagAnnotationIdentifier := TagAnnotationIdentifier{}
+					tagAnnotationIdentifier.Key = tagAnnotationFvPeeringPFvFabricExtConnP.Key
+					tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
+				}
+				for _, tagAnnotationFvPeeringPFvFabricExtConnP := range tagAnnotationFvPeeringPFvFabricExtConnPState {
+					delete := true
+					for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
+						if tagAnnotationIdentifier.Key == tagAnnotationFvPeeringPFvFabricExtConnP.Key {
+							delete = false
+							break
+						}
+					}
+					if delete {
+						tagAnnotationFvPeeringPFvFabricExtConnPChildMapForDelete := NewAciObject()
+						tagAnnotationFvPeeringPFvFabricExtConnPChildMapForDelete.Attributes["status"] = "deleted"
+						tagAnnotationFvPeeringPFvFabricExtConnPChildMapForDelete.Attributes["key"] = tagAnnotationFvPeeringPFvFabricExtConnP.Key.ValueString()
+						FvPeeringPFvFabricExtConnPChildren = append(FvPeeringPFvFabricExtConnPChildren, map[string]interface{}{"tagAnnotation": tagAnnotationFvPeeringPFvFabricExtConnPChildMapForDelete})
 					}
 				}
-				if delete {
-					tagAnnotationFvPeeringPFvFabricExtConnPChildMapForDelete := NewAciObject()
-					tagAnnotationFvPeeringPFvFabricExtConnPChildMapForDelete.Attributes["status"] = "deleted"
-					tagAnnotationFvPeeringPFvFabricExtConnPChildMapForDelete.Attributes["key"] = tagAnnotationFvPeeringPFvFabricExtConnP.Key.ValueString()
-					FvPeeringPFvFabricExtConnPChildren = append(FvPeeringPFvFabricExtConnPChildren, map[string]interface{}{"tagAnnotation": tagAnnotationFvPeeringPFvFabricExtConnPChildMapForDelete})
-				}
 			}
-		}
 
-		var tagTagFvPeeringPFvFabricExtConnPPlan, tagTagFvPeeringPFvFabricExtConnPState []TagTagFvPeeringPFvFabricExtConnPResourceModel
-		fvPeeringPFvFabricExtConnPPlan.TagTag.ElementsAs(ctx, &tagTagFvPeeringPFvFabricExtConnPPlan, false)
-		if !fvPeeringPFvFabricExtConnPState.TagTag.IsNull() {
-			fvPeeringPFvFabricExtConnPState.TagTag.ElementsAs(ctx, &tagTagFvPeeringPFvFabricExtConnPState, false)
-		}
-		if !fvPeeringPFvFabricExtConnPPlan.TagTag.IsNull() && !fvPeeringPFvFabricExtConnPPlan.TagTag.IsUnknown() {
-			tagTagIdentifiers := []TagTagIdentifier{}
-			for _, tagTagFvPeeringPFvFabricExtConnP := range tagTagFvPeeringPFvFabricExtConnPPlan {
-				tagTagFvPeeringPFvFabricExtConnPChildMap := NewAciObject()
-				if !tagTagFvPeeringPFvFabricExtConnP.Key.IsNull() && !tagTagFvPeeringPFvFabricExtConnP.Key.IsUnknown() {
-					tagTagFvPeeringPFvFabricExtConnPChildMap.Attributes["key"] = tagTagFvPeeringPFvFabricExtConnP.Key.ValueString()
-				}
-				if !tagTagFvPeeringPFvFabricExtConnP.Value.IsNull() && !tagTagFvPeeringPFvFabricExtConnP.Value.IsUnknown() {
-					tagTagFvPeeringPFvFabricExtConnPChildMap.Attributes["value"] = tagTagFvPeeringPFvFabricExtConnP.Value.ValueString()
-				}
-				FvPeeringPFvFabricExtConnPChildren = append(FvPeeringPFvFabricExtConnPChildren, map[string]interface{}{"tagTag": tagTagFvPeeringPFvFabricExtConnPChildMap})
-				tagTagIdentifier := TagTagIdentifier{}
-				tagTagIdentifier.Key = tagTagFvPeeringPFvFabricExtConnP.Key
-				tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
+			var tagTagFvPeeringPFvFabricExtConnPPlan, tagTagFvPeeringPFvFabricExtConnPState []TagTagFvPeeringPFvFabricExtConnPResourceModel
+			fvPeeringPFvFabricExtConnPPlan.TagTag.ElementsAs(ctx, &tagTagFvPeeringPFvFabricExtConnPPlan, false)
+			if !fvPeeringPFvFabricExtConnPState.TagTag.IsNull() {
+				fvPeeringPFvFabricExtConnPState.TagTag.ElementsAs(ctx, &tagTagFvPeeringPFvFabricExtConnPState, false)
 			}
-			for _, tagTagFvPeeringPFvFabricExtConnP := range tagTagFvPeeringPFvFabricExtConnPState {
-				delete := true
-				for _, tagTagIdentifier := range tagTagIdentifiers {
-					if tagTagIdentifier.Key == tagTagFvPeeringPFvFabricExtConnP.Key {
-						delete = false
-						break
+			if !fvPeeringPFvFabricExtConnPPlan.TagTag.IsNull() && !fvPeeringPFvFabricExtConnPPlan.TagTag.IsUnknown() {
+				tagTagIdentifiers := []TagTagIdentifier{}
+				for _, tagTagFvPeeringPFvFabricExtConnP := range tagTagFvPeeringPFvFabricExtConnPPlan {
+					tagTagFvPeeringPFvFabricExtConnPChildMap := NewAciObject()
+					if !tagTagFvPeeringPFvFabricExtConnP.Key.IsNull() && !tagTagFvPeeringPFvFabricExtConnP.Key.IsUnknown() {
+						tagTagFvPeeringPFvFabricExtConnPChildMap.Attributes["key"] = tagTagFvPeeringPFvFabricExtConnP.Key.ValueString()
+					}
+					if !tagTagFvPeeringPFvFabricExtConnP.Value.IsNull() && !tagTagFvPeeringPFvFabricExtConnP.Value.IsUnknown() {
+						tagTagFvPeeringPFvFabricExtConnPChildMap.Attributes["value"] = tagTagFvPeeringPFvFabricExtConnP.Value.ValueString()
+					}
+					FvPeeringPFvFabricExtConnPChildren = append(FvPeeringPFvFabricExtConnPChildren, map[string]interface{}{"tagTag": tagTagFvPeeringPFvFabricExtConnPChildMap})
+					tagTagIdentifier := TagTagIdentifier{}
+					tagTagIdentifier.Key = tagTagFvPeeringPFvFabricExtConnP.Key
+					tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
+				}
+				for _, tagTagFvPeeringPFvFabricExtConnP := range tagTagFvPeeringPFvFabricExtConnPState {
+					delete := true
+					for _, tagTagIdentifier := range tagTagIdentifiers {
+						if tagTagIdentifier.Key == tagTagFvPeeringPFvFabricExtConnP.Key {
+							delete = false
+							break
+						}
+					}
+					if delete {
+						tagTagFvPeeringPFvFabricExtConnPChildMapForDelete := NewAciObject()
+						tagTagFvPeeringPFvFabricExtConnPChildMapForDelete.Attributes["status"] = "deleted"
+						tagTagFvPeeringPFvFabricExtConnPChildMapForDelete.Attributes["key"] = tagTagFvPeeringPFvFabricExtConnP.Key.ValueString()
+						FvPeeringPFvFabricExtConnPChildren = append(FvPeeringPFvFabricExtConnPChildren, map[string]interface{}{"tagTag": tagTagFvPeeringPFvFabricExtConnPChildMapForDelete})
 					}
 				}
-				if delete {
-					tagTagFvPeeringPFvFabricExtConnPChildMapForDelete := NewAciObject()
-					tagTagFvPeeringPFvFabricExtConnPChildMapForDelete.Attributes["status"] = "deleted"
-					tagTagFvPeeringPFvFabricExtConnPChildMapForDelete.Attributes["key"] = tagTagFvPeeringPFvFabricExtConnP.Key.ValueString()
-					FvPeeringPFvFabricExtConnPChildren = append(FvPeeringPFvFabricExtConnPChildren, map[string]interface{}{"tagTag": tagTagFvPeeringPFvFabricExtConnPChildMapForDelete})
-				}
 			}
+			childMap.Children = FvPeeringPFvFabricExtConnPChildren
+			childPayloads = append(childPayloads, map[string]interface{}{"fvPeeringP": childMap})
 		}
-		childMap.Children = FvPeeringPFvFabricExtConnPChildren
-		childPayloads = append(childPayloads, map[string]interface{}{"fvPeeringP": childMap})
 	} else {
 		FvPeeringPObject, _ := types.ObjectValueFrom(ctx, FvPeeringPFvFabricExtConnPType, getEmptyFvPeeringPFvFabricExtConnPResourceModel())
 		data.FvPeeringP = FvPeeringPObject

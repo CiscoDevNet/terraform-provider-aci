@@ -4068,85 +4068,83 @@ func getFvESgFvRsScopeChildPayloads(ctx context.Context, diags *diag.Diagnostics
 			if !fvRsScopeFvESgPlan.TnFvCtxName.IsUnknown() && !fvRsScopeFvESgPlan.TnFvCtxName.IsNull() {
 				childMap.Attributes["tnFvCtxName"] = fvRsScopeFvESgPlan.TnFvCtxName.ValueString()
 			}
-		} else {
-			return childPayloads
-		}
 
-		var tagAnnotationFvRsScopeFvESgPlan, tagAnnotationFvRsScopeFvESgState []TagAnnotationFvRsScopeFvESgResourceModel
-		fvRsScopeFvESgPlan.TagAnnotation.ElementsAs(ctx, &tagAnnotationFvRsScopeFvESgPlan, false)
-		if !fvRsScopeFvESgState.TagAnnotation.IsNull() {
-			fvRsScopeFvESgState.TagAnnotation.ElementsAs(ctx, &tagAnnotationFvRsScopeFvESgState, false)
-		}
-		if !fvRsScopeFvESgPlan.TagAnnotation.IsNull() && !fvRsScopeFvESgPlan.TagAnnotation.IsUnknown() {
-			tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
-			for _, tagAnnotationFvRsScopeFvESg := range tagAnnotationFvRsScopeFvESgPlan {
-				tagAnnotationFvRsScopeFvESgChildMap := NewAciObject()
-				if !tagAnnotationFvRsScopeFvESg.Key.IsNull() && !tagAnnotationFvRsScopeFvESg.Key.IsUnknown() {
-					tagAnnotationFvRsScopeFvESgChildMap.Attributes["key"] = tagAnnotationFvRsScopeFvESg.Key.ValueString()
-				}
-				if !tagAnnotationFvRsScopeFvESg.Value.IsNull() && !tagAnnotationFvRsScopeFvESg.Value.IsUnknown() {
-					tagAnnotationFvRsScopeFvESgChildMap.Attributes["value"] = tagAnnotationFvRsScopeFvESg.Value.ValueString()
-				}
-				FvRsScopeFvESgChildren = append(FvRsScopeFvESgChildren, map[string]interface{}{"tagAnnotation": tagAnnotationFvRsScopeFvESgChildMap})
-				tagAnnotationIdentifier := TagAnnotationIdentifier{}
-				tagAnnotationIdentifier.Key = tagAnnotationFvRsScopeFvESg.Key
-				tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
+			var tagAnnotationFvRsScopeFvESgPlan, tagAnnotationFvRsScopeFvESgState []TagAnnotationFvRsScopeFvESgResourceModel
+			fvRsScopeFvESgPlan.TagAnnotation.ElementsAs(ctx, &tagAnnotationFvRsScopeFvESgPlan, false)
+			if !fvRsScopeFvESgState.TagAnnotation.IsNull() {
+				fvRsScopeFvESgState.TagAnnotation.ElementsAs(ctx, &tagAnnotationFvRsScopeFvESgState, false)
 			}
-			for _, tagAnnotationFvRsScopeFvESg := range tagAnnotationFvRsScopeFvESgState {
-				delete := true
-				for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
-					if tagAnnotationIdentifier.Key == tagAnnotationFvRsScopeFvESg.Key {
-						delete = false
-						break
+			if !fvRsScopeFvESgPlan.TagAnnotation.IsNull() && !fvRsScopeFvESgPlan.TagAnnotation.IsUnknown() {
+				tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
+				for _, tagAnnotationFvRsScopeFvESg := range tagAnnotationFvRsScopeFvESgPlan {
+					tagAnnotationFvRsScopeFvESgChildMap := NewAciObject()
+					if !tagAnnotationFvRsScopeFvESg.Key.IsNull() && !tagAnnotationFvRsScopeFvESg.Key.IsUnknown() {
+						tagAnnotationFvRsScopeFvESgChildMap.Attributes["key"] = tagAnnotationFvRsScopeFvESg.Key.ValueString()
+					}
+					if !tagAnnotationFvRsScopeFvESg.Value.IsNull() && !tagAnnotationFvRsScopeFvESg.Value.IsUnknown() {
+						tagAnnotationFvRsScopeFvESgChildMap.Attributes["value"] = tagAnnotationFvRsScopeFvESg.Value.ValueString()
+					}
+					FvRsScopeFvESgChildren = append(FvRsScopeFvESgChildren, map[string]interface{}{"tagAnnotation": tagAnnotationFvRsScopeFvESgChildMap})
+					tagAnnotationIdentifier := TagAnnotationIdentifier{}
+					tagAnnotationIdentifier.Key = tagAnnotationFvRsScopeFvESg.Key
+					tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
+				}
+				for _, tagAnnotationFvRsScopeFvESg := range tagAnnotationFvRsScopeFvESgState {
+					delete := true
+					for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
+						if tagAnnotationIdentifier.Key == tagAnnotationFvRsScopeFvESg.Key {
+							delete = false
+							break
+						}
+					}
+					if delete {
+						tagAnnotationFvRsScopeFvESgChildMapForDelete := NewAciObject()
+						tagAnnotationFvRsScopeFvESgChildMapForDelete.Attributes["status"] = "deleted"
+						tagAnnotationFvRsScopeFvESgChildMapForDelete.Attributes["key"] = tagAnnotationFvRsScopeFvESg.Key.ValueString()
+						FvRsScopeFvESgChildren = append(FvRsScopeFvESgChildren, map[string]interface{}{"tagAnnotation": tagAnnotationFvRsScopeFvESgChildMapForDelete})
 					}
 				}
-				if delete {
-					tagAnnotationFvRsScopeFvESgChildMapForDelete := NewAciObject()
-					tagAnnotationFvRsScopeFvESgChildMapForDelete.Attributes["status"] = "deleted"
-					tagAnnotationFvRsScopeFvESgChildMapForDelete.Attributes["key"] = tagAnnotationFvRsScopeFvESg.Key.ValueString()
-					FvRsScopeFvESgChildren = append(FvRsScopeFvESgChildren, map[string]interface{}{"tagAnnotation": tagAnnotationFvRsScopeFvESgChildMapForDelete})
-				}
 			}
-		}
 
-		var tagTagFvRsScopeFvESgPlan, tagTagFvRsScopeFvESgState []TagTagFvRsScopeFvESgResourceModel
-		fvRsScopeFvESgPlan.TagTag.ElementsAs(ctx, &tagTagFvRsScopeFvESgPlan, false)
-		if !fvRsScopeFvESgState.TagTag.IsNull() {
-			fvRsScopeFvESgState.TagTag.ElementsAs(ctx, &tagTagFvRsScopeFvESgState, false)
-		}
-		if !fvRsScopeFvESgPlan.TagTag.IsNull() && !fvRsScopeFvESgPlan.TagTag.IsUnknown() {
-			tagTagIdentifiers := []TagTagIdentifier{}
-			for _, tagTagFvRsScopeFvESg := range tagTagFvRsScopeFvESgPlan {
-				tagTagFvRsScopeFvESgChildMap := NewAciObject()
-				if !tagTagFvRsScopeFvESg.Key.IsNull() && !tagTagFvRsScopeFvESg.Key.IsUnknown() {
-					tagTagFvRsScopeFvESgChildMap.Attributes["key"] = tagTagFvRsScopeFvESg.Key.ValueString()
-				}
-				if !tagTagFvRsScopeFvESg.Value.IsNull() && !tagTagFvRsScopeFvESg.Value.IsUnknown() {
-					tagTagFvRsScopeFvESgChildMap.Attributes["value"] = tagTagFvRsScopeFvESg.Value.ValueString()
-				}
-				FvRsScopeFvESgChildren = append(FvRsScopeFvESgChildren, map[string]interface{}{"tagTag": tagTagFvRsScopeFvESgChildMap})
-				tagTagIdentifier := TagTagIdentifier{}
-				tagTagIdentifier.Key = tagTagFvRsScopeFvESg.Key
-				tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
+			var tagTagFvRsScopeFvESgPlan, tagTagFvRsScopeFvESgState []TagTagFvRsScopeFvESgResourceModel
+			fvRsScopeFvESgPlan.TagTag.ElementsAs(ctx, &tagTagFvRsScopeFvESgPlan, false)
+			if !fvRsScopeFvESgState.TagTag.IsNull() {
+				fvRsScopeFvESgState.TagTag.ElementsAs(ctx, &tagTagFvRsScopeFvESgState, false)
 			}
-			for _, tagTagFvRsScopeFvESg := range tagTagFvRsScopeFvESgState {
-				delete := true
-				for _, tagTagIdentifier := range tagTagIdentifiers {
-					if tagTagIdentifier.Key == tagTagFvRsScopeFvESg.Key {
-						delete = false
-						break
+			if !fvRsScopeFvESgPlan.TagTag.IsNull() && !fvRsScopeFvESgPlan.TagTag.IsUnknown() {
+				tagTagIdentifiers := []TagTagIdentifier{}
+				for _, tagTagFvRsScopeFvESg := range tagTagFvRsScopeFvESgPlan {
+					tagTagFvRsScopeFvESgChildMap := NewAciObject()
+					if !tagTagFvRsScopeFvESg.Key.IsNull() && !tagTagFvRsScopeFvESg.Key.IsUnknown() {
+						tagTagFvRsScopeFvESgChildMap.Attributes["key"] = tagTagFvRsScopeFvESg.Key.ValueString()
+					}
+					if !tagTagFvRsScopeFvESg.Value.IsNull() && !tagTagFvRsScopeFvESg.Value.IsUnknown() {
+						tagTagFvRsScopeFvESgChildMap.Attributes["value"] = tagTagFvRsScopeFvESg.Value.ValueString()
+					}
+					FvRsScopeFvESgChildren = append(FvRsScopeFvESgChildren, map[string]interface{}{"tagTag": tagTagFvRsScopeFvESgChildMap})
+					tagTagIdentifier := TagTagIdentifier{}
+					tagTagIdentifier.Key = tagTagFvRsScopeFvESg.Key
+					tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
+				}
+				for _, tagTagFvRsScopeFvESg := range tagTagFvRsScopeFvESgState {
+					delete := true
+					for _, tagTagIdentifier := range tagTagIdentifiers {
+						if tagTagIdentifier.Key == tagTagFvRsScopeFvESg.Key {
+							delete = false
+							break
+						}
+					}
+					if delete {
+						tagTagFvRsScopeFvESgChildMapForDelete := NewAciObject()
+						tagTagFvRsScopeFvESgChildMapForDelete.Attributes["status"] = "deleted"
+						tagTagFvRsScopeFvESgChildMapForDelete.Attributes["key"] = tagTagFvRsScopeFvESg.Key.ValueString()
+						FvRsScopeFvESgChildren = append(FvRsScopeFvESgChildren, map[string]interface{}{"tagTag": tagTagFvRsScopeFvESgChildMapForDelete})
 					}
 				}
-				if delete {
-					tagTagFvRsScopeFvESgChildMapForDelete := NewAciObject()
-					tagTagFvRsScopeFvESgChildMapForDelete.Attributes["status"] = "deleted"
-					tagTagFvRsScopeFvESgChildMapForDelete.Attributes["key"] = tagTagFvRsScopeFvESg.Key.ValueString()
-					FvRsScopeFvESgChildren = append(FvRsScopeFvESgChildren, map[string]interface{}{"tagTag": tagTagFvRsScopeFvESgChildMapForDelete})
-				}
 			}
+			childMap.Children = FvRsScopeFvESgChildren
+			childPayloads = append(childPayloads, map[string]interface{}{"fvRsScope": childMap})
 		}
-		childMap.Children = FvRsScopeFvESgChildren
-		childPayloads = append(childPayloads, map[string]interface{}{"fvRsScope": childMap})
 	} else {
 		FvRsScopeObject, _ := types.ObjectValueFrom(ctx, FvRsScopeFvESgType, getEmptyFvRsScopeFvESgResourceModel())
 		data.FvRsScope = FvRsScopeObject

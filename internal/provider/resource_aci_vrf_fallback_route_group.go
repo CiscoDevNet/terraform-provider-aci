@@ -1294,85 +1294,85 @@ func getFvFBRGroupFvFBRouteChildPayloads(ctx context.Context, diags *diag.Diagno
 			if !fvFBRouteFvFBRGroupPlan.NameAlias.IsUnknown() && !fvFBRouteFvFBRGroupPlan.NameAlias.IsNull() {
 				childMap.Attributes["nameAlias"] = fvFBRouteFvFBRGroupPlan.NameAlias.ValueString()
 			}
+
+			var tagAnnotationFvFBRouteFvFBRGroupPlan, tagAnnotationFvFBRouteFvFBRGroupState []TagAnnotationFvFBRouteFvFBRGroupResourceModel
+			fvFBRouteFvFBRGroupPlan.TagAnnotation.ElementsAs(ctx, &tagAnnotationFvFBRouteFvFBRGroupPlan, false)
+			if !fvFBRouteFvFBRGroupState.TagAnnotation.IsNull() {
+				fvFBRouteFvFBRGroupState.TagAnnotation.ElementsAs(ctx, &tagAnnotationFvFBRouteFvFBRGroupState, false)
+			}
+			if !fvFBRouteFvFBRGroupPlan.TagAnnotation.IsNull() && !fvFBRouteFvFBRGroupPlan.TagAnnotation.IsUnknown() {
+				tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
+				for _, tagAnnotationFvFBRouteFvFBRGroup := range tagAnnotationFvFBRouteFvFBRGroupPlan {
+					tagAnnotationFvFBRouteFvFBRGroupChildMap := NewAciObject()
+					if !tagAnnotationFvFBRouteFvFBRGroup.Key.IsNull() && !tagAnnotationFvFBRouteFvFBRGroup.Key.IsUnknown() {
+						tagAnnotationFvFBRouteFvFBRGroupChildMap.Attributes["key"] = tagAnnotationFvFBRouteFvFBRGroup.Key.ValueString()
+					}
+					if !tagAnnotationFvFBRouteFvFBRGroup.Value.IsNull() && !tagAnnotationFvFBRouteFvFBRGroup.Value.IsUnknown() {
+						tagAnnotationFvFBRouteFvFBRGroupChildMap.Attributes["value"] = tagAnnotationFvFBRouteFvFBRGroup.Value.ValueString()
+					}
+					FvFBRouteFvFBRGroupChildren = append(FvFBRouteFvFBRGroupChildren, map[string]interface{}{"tagAnnotation": tagAnnotationFvFBRouteFvFBRGroupChildMap})
+					tagAnnotationIdentifier := TagAnnotationIdentifier{}
+					tagAnnotationIdentifier.Key = tagAnnotationFvFBRouteFvFBRGroup.Key
+					tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
+				}
+				for _, tagAnnotationFvFBRouteFvFBRGroup := range tagAnnotationFvFBRouteFvFBRGroupState {
+					delete := true
+					for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
+						if tagAnnotationIdentifier.Key == tagAnnotationFvFBRouteFvFBRGroup.Key {
+							delete = false
+							break
+						}
+					}
+					if delete {
+						tagAnnotationFvFBRouteFvFBRGroupChildMapForDelete := NewAciObject()
+						tagAnnotationFvFBRouteFvFBRGroupChildMapForDelete.Attributes["status"] = "deleted"
+						tagAnnotationFvFBRouteFvFBRGroupChildMapForDelete.Attributes["key"] = tagAnnotationFvFBRouteFvFBRGroup.Key.ValueString()
+						FvFBRouteFvFBRGroupChildren = append(FvFBRouteFvFBRGroupChildren, map[string]interface{}{"tagAnnotation": tagAnnotationFvFBRouteFvFBRGroupChildMapForDelete})
+					}
+				}
+			}
+
+			var tagTagFvFBRouteFvFBRGroupPlan, tagTagFvFBRouteFvFBRGroupState []TagTagFvFBRouteFvFBRGroupResourceModel
+			fvFBRouteFvFBRGroupPlan.TagTag.ElementsAs(ctx, &tagTagFvFBRouteFvFBRGroupPlan, false)
+			if !fvFBRouteFvFBRGroupState.TagTag.IsNull() {
+				fvFBRouteFvFBRGroupState.TagTag.ElementsAs(ctx, &tagTagFvFBRouteFvFBRGroupState, false)
+			}
+			if !fvFBRouteFvFBRGroupPlan.TagTag.IsNull() && !fvFBRouteFvFBRGroupPlan.TagTag.IsUnknown() {
+				tagTagIdentifiers := []TagTagIdentifier{}
+				for _, tagTagFvFBRouteFvFBRGroup := range tagTagFvFBRouteFvFBRGroupPlan {
+					tagTagFvFBRouteFvFBRGroupChildMap := NewAciObject()
+					if !tagTagFvFBRouteFvFBRGroup.Key.IsNull() && !tagTagFvFBRouteFvFBRGroup.Key.IsUnknown() {
+						tagTagFvFBRouteFvFBRGroupChildMap.Attributes["key"] = tagTagFvFBRouteFvFBRGroup.Key.ValueString()
+					}
+					if !tagTagFvFBRouteFvFBRGroup.Value.IsNull() && !tagTagFvFBRouteFvFBRGroup.Value.IsUnknown() {
+						tagTagFvFBRouteFvFBRGroupChildMap.Attributes["value"] = tagTagFvFBRouteFvFBRGroup.Value.ValueString()
+					}
+					FvFBRouteFvFBRGroupChildren = append(FvFBRouteFvFBRGroupChildren, map[string]interface{}{"tagTag": tagTagFvFBRouteFvFBRGroupChildMap})
+					tagTagIdentifier := TagTagIdentifier{}
+					tagTagIdentifier.Key = tagTagFvFBRouteFvFBRGroup.Key
+					tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
+				}
+				for _, tagTagFvFBRouteFvFBRGroup := range tagTagFvFBRouteFvFBRGroupState {
+					delete := true
+					for _, tagTagIdentifier := range tagTagIdentifiers {
+						if tagTagIdentifier.Key == tagTagFvFBRouteFvFBRGroup.Key {
+							delete = false
+							break
+						}
+					}
+					if delete {
+						tagTagFvFBRouteFvFBRGroupChildMapForDelete := NewAciObject()
+						tagTagFvFBRouteFvFBRGroupChildMapForDelete.Attributes["status"] = "deleted"
+						tagTagFvFBRouteFvFBRGroupChildMapForDelete.Attributes["key"] = tagTagFvFBRouteFvFBRGroup.Key.ValueString()
+						FvFBRouteFvFBRGroupChildren = append(FvFBRouteFvFBRGroupChildren, map[string]interface{}{"tagTag": tagTagFvFBRouteFvFBRGroupChildMapForDelete})
+					}
+				}
+			}
+			childMap.Children = FvFBRouteFvFBRGroupChildren
 		} else {
 			childMap.Attributes["fbrPrefix"] = fvFBRouteFvFBRGroupState.FbrPrefix.ValueString()
 			childMap.Attributes["status"] = "deleted"
 		}
-
-		var tagAnnotationFvFBRouteFvFBRGroupPlan, tagAnnotationFvFBRouteFvFBRGroupState []TagAnnotationFvFBRouteFvFBRGroupResourceModel
-		fvFBRouteFvFBRGroupPlan.TagAnnotation.ElementsAs(ctx, &tagAnnotationFvFBRouteFvFBRGroupPlan, false)
-		if !fvFBRouteFvFBRGroupState.TagAnnotation.IsNull() {
-			fvFBRouteFvFBRGroupState.TagAnnotation.ElementsAs(ctx, &tagAnnotationFvFBRouteFvFBRGroupState, false)
-		}
-		if !fvFBRouteFvFBRGroupPlan.TagAnnotation.IsNull() && !fvFBRouteFvFBRGroupPlan.TagAnnotation.IsUnknown() {
-			tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
-			for _, tagAnnotationFvFBRouteFvFBRGroup := range tagAnnotationFvFBRouteFvFBRGroupPlan {
-				tagAnnotationFvFBRouteFvFBRGroupChildMap := NewAciObject()
-				if !tagAnnotationFvFBRouteFvFBRGroup.Key.IsNull() && !tagAnnotationFvFBRouteFvFBRGroup.Key.IsUnknown() {
-					tagAnnotationFvFBRouteFvFBRGroupChildMap.Attributes["key"] = tagAnnotationFvFBRouteFvFBRGroup.Key.ValueString()
-				}
-				if !tagAnnotationFvFBRouteFvFBRGroup.Value.IsNull() && !tagAnnotationFvFBRouteFvFBRGroup.Value.IsUnknown() {
-					tagAnnotationFvFBRouteFvFBRGroupChildMap.Attributes["value"] = tagAnnotationFvFBRouteFvFBRGroup.Value.ValueString()
-				}
-				FvFBRouteFvFBRGroupChildren = append(FvFBRouteFvFBRGroupChildren, map[string]interface{}{"tagAnnotation": tagAnnotationFvFBRouteFvFBRGroupChildMap})
-				tagAnnotationIdentifier := TagAnnotationIdentifier{}
-				tagAnnotationIdentifier.Key = tagAnnotationFvFBRouteFvFBRGroup.Key
-				tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
-			}
-			for _, tagAnnotationFvFBRouteFvFBRGroup := range tagAnnotationFvFBRouteFvFBRGroupState {
-				delete := true
-				for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
-					if tagAnnotationIdentifier.Key == tagAnnotationFvFBRouteFvFBRGroup.Key {
-						delete = false
-						break
-					}
-				}
-				if delete {
-					tagAnnotationFvFBRouteFvFBRGroupChildMapForDelete := NewAciObject()
-					tagAnnotationFvFBRouteFvFBRGroupChildMapForDelete.Attributes["status"] = "deleted"
-					tagAnnotationFvFBRouteFvFBRGroupChildMapForDelete.Attributes["key"] = tagAnnotationFvFBRouteFvFBRGroup.Key.ValueString()
-					FvFBRouteFvFBRGroupChildren = append(FvFBRouteFvFBRGroupChildren, map[string]interface{}{"tagAnnotation": tagAnnotationFvFBRouteFvFBRGroupChildMapForDelete})
-				}
-			}
-		}
-
-		var tagTagFvFBRouteFvFBRGroupPlan, tagTagFvFBRouteFvFBRGroupState []TagTagFvFBRouteFvFBRGroupResourceModel
-		fvFBRouteFvFBRGroupPlan.TagTag.ElementsAs(ctx, &tagTagFvFBRouteFvFBRGroupPlan, false)
-		if !fvFBRouteFvFBRGroupState.TagTag.IsNull() {
-			fvFBRouteFvFBRGroupState.TagTag.ElementsAs(ctx, &tagTagFvFBRouteFvFBRGroupState, false)
-		}
-		if !fvFBRouteFvFBRGroupPlan.TagTag.IsNull() && !fvFBRouteFvFBRGroupPlan.TagTag.IsUnknown() {
-			tagTagIdentifiers := []TagTagIdentifier{}
-			for _, tagTagFvFBRouteFvFBRGroup := range tagTagFvFBRouteFvFBRGroupPlan {
-				tagTagFvFBRouteFvFBRGroupChildMap := NewAciObject()
-				if !tagTagFvFBRouteFvFBRGroup.Key.IsNull() && !tagTagFvFBRouteFvFBRGroup.Key.IsUnknown() {
-					tagTagFvFBRouteFvFBRGroupChildMap.Attributes["key"] = tagTagFvFBRouteFvFBRGroup.Key.ValueString()
-				}
-				if !tagTagFvFBRouteFvFBRGroup.Value.IsNull() && !tagTagFvFBRouteFvFBRGroup.Value.IsUnknown() {
-					tagTagFvFBRouteFvFBRGroupChildMap.Attributes["value"] = tagTagFvFBRouteFvFBRGroup.Value.ValueString()
-				}
-				FvFBRouteFvFBRGroupChildren = append(FvFBRouteFvFBRGroupChildren, map[string]interface{}{"tagTag": tagTagFvFBRouteFvFBRGroupChildMap})
-				tagTagIdentifier := TagTagIdentifier{}
-				tagTagIdentifier.Key = tagTagFvFBRouteFvFBRGroup.Key
-				tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
-			}
-			for _, tagTagFvFBRouteFvFBRGroup := range tagTagFvFBRouteFvFBRGroupState {
-				delete := true
-				for _, tagTagIdentifier := range tagTagIdentifiers {
-					if tagTagIdentifier.Key == tagTagFvFBRouteFvFBRGroup.Key {
-						delete = false
-						break
-					}
-				}
-				if delete {
-					tagTagFvFBRouteFvFBRGroupChildMapForDelete := NewAciObject()
-					tagTagFvFBRouteFvFBRGroupChildMapForDelete.Attributes["status"] = "deleted"
-					tagTagFvFBRouteFvFBRGroupChildMapForDelete.Attributes["key"] = tagTagFvFBRouteFvFBRGroup.Key.ValueString()
-					FvFBRouteFvFBRGroupChildren = append(FvFBRouteFvFBRGroupChildren, map[string]interface{}{"tagTag": tagTagFvFBRouteFvFBRGroupChildMapForDelete})
-				}
-			}
-		}
-		childMap.Children = FvFBRouteFvFBRGroupChildren
 		childPayloads = append(childPayloads, map[string]interface{}{"fvFBRoute": childMap})
 	} else {
 		FvFBRouteObject, _ := types.ObjectValueFrom(ctx, FvFBRouteFvFBRGroupType, getEmptyFvFBRouteFvFBRGroupResourceModel())

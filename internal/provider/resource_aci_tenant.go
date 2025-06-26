@@ -1026,85 +1026,83 @@ func getFvTenantFvRsTenantMonPolChildPayloads(ctx context.Context, diags *diag.D
 			if !fvRsTenantMonPolFvTenantPlan.TnMonEPGPolName.IsUnknown() && !fvRsTenantMonPolFvTenantPlan.TnMonEPGPolName.IsNull() {
 				childMap.Attributes["tnMonEPGPolName"] = fvRsTenantMonPolFvTenantPlan.TnMonEPGPolName.ValueString()
 			}
-		} else {
-			return childPayloads
-		}
 
-		var tagAnnotationFvRsTenantMonPolFvTenantPlan, tagAnnotationFvRsTenantMonPolFvTenantState []TagAnnotationFvRsTenantMonPolFvTenantResourceModel
-		fvRsTenantMonPolFvTenantPlan.TagAnnotation.ElementsAs(ctx, &tagAnnotationFvRsTenantMonPolFvTenantPlan, false)
-		if !fvRsTenantMonPolFvTenantState.TagAnnotation.IsNull() {
-			fvRsTenantMonPolFvTenantState.TagAnnotation.ElementsAs(ctx, &tagAnnotationFvRsTenantMonPolFvTenantState, false)
-		}
-		if !fvRsTenantMonPolFvTenantPlan.TagAnnotation.IsNull() && !fvRsTenantMonPolFvTenantPlan.TagAnnotation.IsUnknown() {
-			tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
-			for _, tagAnnotationFvRsTenantMonPolFvTenant := range tagAnnotationFvRsTenantMonPolFvTenantPlan {
-				tagAnnotationFvRsTenantMonPolFvTenantChildMap := NewAciObject()
-				if !tagAnnotationFvRsTenantMonPolFvTenant.Key.IsNull() && !tagAnnotationFvRsTenantMonPolFvTenant.Key.IsUnknown() {
-					tagAnnotationFvRsTenantMonPolFvTenantChildMap.Attributes["key"] = tagAnnotationFvRsTenantMonPolFvTenant.Key.ValueString()
-				}
-				if !tagAnnotationFvRsTenantMonPolFvTenant.Value.IsNull() && !tagAnnotationFvRsTenantMonPolFvTenant.Value.IsUnknown() {
-					tagAnnotationFvRsTenantMonPolFvTenantChildMap.Attributes["value"] = tagAnnotationFvRsTenantMonPolFvTenant.Value.ValueString()
-				}
-				FvRsTenantMonPolFvTenantChildren = append(FvRsTenantMonPolFvTenantChildren, map[string]interface{}{"tagAnnotation": tagAnnotationFvRsTenantMonPolFvTenantChildMap})
-				tagAnnotationIdentifier := TagAnnotationIdentifier{}
-				tagAnnotationIdentifier.Key = tagAnnotationFvRsTenantMonPolFvTenant.Key
-				tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
+			var tagAnnotationFvRsTenantMonPolFvTenantPlan, tagAnnotationFvRsTenantMonPolFvTenantState []TagAnnotationFvRsTenantMonPolFvTenantResourceModel
+			fvRsTenantMonPolFvTenantPlan.TagAnnotation.ElementsAs(ctx, &tagAnnotationFvRsTenantMonPolFvTenantPlan, false)
+			if !fvRsTenantMonPolFvTenantState.TagAnnotation.IsNull() {
+				fvRsTenantMonPolFvTenantState.TagAnnotation.ElementsAs(ctx, &tagAnnotationFvRsTenantMonPolFvTenantState, false)
 			}
-			for _, tagAnnotationFvRsTenantMonPolFvTenant := range tagAnnotationFvRsTenantMonPolFvTenantState {
-				delete := true
-				for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
-					if tagAnnotationIdentifier.Key == tagAnnotationFvRsTenantMonPolFvTenant.Key {
-						delete = false
-						break
+			if !fvRsTenantMonPolFvTenantPlan.TagAnnotation.IsNull() && !fvRsTenantMonPolFvTenantPlan.TagAnnotation.IsUnknown() {
+				tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
+				for _, tagAnnotationFvRsTenantMonPolFvTenant := range tagAnnotationFvRsTenantMonPolFvTenantPlan {
+					tagAnnotationFvRsTenantMonPolFvTenantChildMap := NewAciObject()
+					if !tagAnnotationFvRsTenantMonPolFvTenant.Key.IsNull() && !tagAnnotationFvRsTenantMonPolFvTenant.Key.IsUnknown() {
+						tagAnnotationFvRsTenantMonPolFvTenantChildMap.Attributes["key"] = tagAnnotationFvRsTenantMonPolFvTenant.Key.ValueString()
+					}
+					if !tagAnnotationFvRsTenantMonPolFvTenant.Value.IsNull() && !tagAnnotationFvRsTenantMonPolFvTenant.Value.IsUnknown() {
+						tagAnnotationFvRsTenantMonPolFvTenantChildMap.Attributes["value"] = tagAnnotationFvRsTenantMonPolFvTenant.Value.ValueString()
+					}
+					FvRsTenantMonPolFvTenantChildren = append(FvRsTenantMonPolFvTenantChildren, map[string]interface{}{"tagAnnotation": tagAnnotationFvRsTenantMonPolFvTenantChildMap})
+					tagAnnotationIdentifier := TagAnnotationIdentifier{}
+					tagAnnotationIdentifier.Key = tagAnnotationFvRsTenantMonPolFvTenant.Key
+					tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
+				}
+				for _, tagAnnotationFvRsTenantMonPolFvTenant := range tagAnnotationFvRsTenantMonPolFvTenantState {
+					delete := true
+					for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
+						if tagAnnotationIdentifier.Key == tagAnnotationFvRsTenantMonPolFvTenant.Key {
+							delete = false
+							break
+						}
+					}
+					if delete {
+						tagAnnotationFvRsTenantMonPolFvTenantChildMapForDelete := NewAciObject()
+						tagAnnotationFvRsTenantMonPolFvTenantChildMapForDelete.Attributes["status"] = "deleted"
+						tagAnnotationFvRsTenantMonPolFvTenantChildMapForDelete.Attributes["key"] = tagAnnotationFvRsTenantMonPolFvTenant.Key.ValueString()
+						FvRsTenantMonPolFvTenantChildren = append(FvRsTenantMonPolFvTenantChildren, map[string]interface{}{"tagAnnotation": tagAnnotationFvRsTenantMonPolFvTenantChildMapForDelete})
 					}
 				}
-				if delete {
-					tagAnnotationFvRsTenantMonPolFvTenantChildMapForDelete := NewAciObject()
-					tagAnnotationFvRsTenantMonPolFvTenantChildMapForDelete.Attributes["status"] = "deleted"
-					tagAnnotationFvRsTenantMonPolFvTenantChildMapForDelete.Attributes["key"] = tagAnnotationFvRsTenantMonPolFvTenant.Key.ValueString()
-					FvRsTenantMonPolFvTenantChildren = append(FvRsTenantMonPolFvTenantChildren, map[string]interface{}{"tagAnnotation": tagAnnotationFvRsTenantMonPolFvTenantChildMapForDelete})
-				}
 			}
-		}
 
-		var tagTagFvRsTenantMonPolFvTenantPlan, tagTagFvRsTenantMonPolFvTenantState []TagTagFvRsTenantMonPolFvTenantResourceModel
-		fvRsTenantMonPolFvTenantPlan.TagTag.ElementsAs(ctx, &tagTagFvRsTenantMonPolFvTenantPlan, false)
-		if !fvRsTenantMonPolFvTenantState.TagTag.IsNull() {
-			fvRsTenantMonPolFvTenantState.TagTag.ElementsAs(ctx, &tagTagFvRsTenantMonPolFvTenantState, false)
-		}
-		if !fvRsTenantMonPolFvTenantPlan.TagTag.IsNull() && !fvRsTenantMonPolFvTenantPlan.TagTag.IsUnknown() {
-			tagTagIdentifiers := []TagTagIdentifier{}
-			for _, tagTagFvRsTenantMonPolFvTenant := range tagTagFvRsTenantMonPolFvTenantPlan {
-				tagTagFvRsTenantMonPolFvTenantChildMap := NewAciObject()
-				if !tagTagFvRsTenantMonPolFvTenant.Key.IsNull() && !tagTagFvRsTenantMonPolFvTenant.Key.IsUnknown() {
-					tagTagFvRsTenantMonPolFvTenantChildMap.Attributes["key"] = tagTagFvRsTenantMonPolFvTenant.Key.ValueString()
-				}
-				if !tagTagFvRsTenantMonPolFvTenant.Value.IsNull() && !tagTagFvRsTenantMonPolFvTenant.Value.IsUnknown() {
-					tagTagFvRsTenantMonPolFvTenantChildMap.Attributes["value"] = tagTagFvRsTenantMonPolFvTenant.Value.ValueString()
-				}
-				FvRsTenantMonPolFvTenantChildren = append(FvRsTenantMonPolFvTenantChildren, map[string]interface{}{"tagTag": tagTagFvRsTenantMonPolFvTenantChildMap})
-				tagTagIdentifier := TagTagIdentifier{}
-				tagTagIdentifier.Key = tagTagFvRsTenantMonPolFvTenant.Key
-				tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
+			var tagTagFvRsTenantMonPolFvTenantPlan, tagTagFvRsTenantMonPolFvTenantState []TagTagFvRsTenantMonPolFvTenantResourceModel
+			fvRsTenantMonPolFvTenantPlan.TagTag.ElementsAs(ctx, &tagTagFvRsTenantMonPolFvTenantPlan, false)
+			if !fvRsTenantMonPolFvTenantState.TagTag.IsNull() {
+				fvRsTenantMonPolFvTenantState.TagTag.ElementsAs(ctx, &tagTagFvRsTenantMonPolFvTenantState, false)
 			}
-			for _, tagTagFvRsTenantMonPolFvTenant := range tagTagFvRsTenantMonPolFvTenantState {
-				delete := true
-				for _, tagTagIdentifier := range tagTagIdentifiers {
-					if tagTagIdentifier.Key == tagTagFvRsTenantMonPolFvTenant.Key {
-						delete = false
-						break
+			if !fvRsTenantMonPolFvTenantPlan.TagTag.IsNull() && !fvRsTenantMonPolFvTenantPlan.TagTag.IsUnknown() {
+				tagTagIdentifiers := []TagTagIdentifier{}
+				for _, tagTagFvRsTenantMonPolFvTenant := range tagTagFvRsTenantMonPolFvTenantPlan {
+					tagTagFvRsTenantMonPolFvTenantChildMap := NewAciObject()
+					if !tagTagFvRsTenantMonPolFvTenant.Key.IsNull() && !tagTagFvRsTenantMonPolFvTenant.Key.IsUnknown() {
+						tagTagFvRsTenantMonPolFvTenantChildMap.Attributes["key"] = tagTagFvRsTenantMonPolFvTenant.Key.ValueString()
+					}
+					if !tagTagFvRsTenantMonPolFvTenant.Value.IsNull() && !tagTagFvRsTenantMonPolFvTenant.Value.IsUnknown() {
+						tagTagFvRsTenantMonPolFvTenantChildMap.Attributes["value"] = tagTagFvRsTenantMonPolFvTenant.Value.ValueString()
+					}
+					FvRsTenantMonPolFvTenantChildren = append(FvRsTenantMonPolFvTenantChildren, map[string]interface{}{"tagTag": tagTagFvRsTenantMonPolFvTenantChildMap})
+					tagTagIdentifier := TagTagIdentifier{}
+					tagTagIdentifier.Key = tagTagFvRsTenantMonPolFvTenant.Key
+					tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
+				}
+				for _, tagTagFvRsTenantMonPolFvTenant := range tagTagFvRsTenantMonPolFvTenantState {
+					delete := true
+					for _, tagTagIdentifier := range tagTagIdentifiers {
+						if tagTagIdentifier.Key == tagTagFvRsTenantMonPolFvTenant.Key {
+							delete = false
+							break
+						}
+					}
+					if delete {
+						tagTagFvRsTenantMonPolFvTenantChildMapForDelete := NewAciObject()
+						tagTagFvRsTenantMonPolFvTenantChildMapForDelete.Attributes["status"] = "deleted"
+						tagTagFvRsTenantMonPolFvTenantChildMapForDelete.Attributes["key"] = tagTagFvRsTenantMonPolFvTenant.Key.ValueString()
+						FvRsTenantMonPolFvTenantChildren = append(FvRsTenantMonPolFvTenantChildren, map[string]interface{}{"tagTag": tagTagFvRsTenantMonPolFvTenantChildMapForDelete})
 					}
 				}
-				if delete {
-					tagTagFvRsTenantMonPolFvTenantChildMapForDelete := NewAciObject()
-					tagTagFvRsTenantMonPolFvTenantChildMapForDelete.Attributes["status"] = "deleted"
-					tagTagFvRsTenantMonPolFvTenantChildMapForDelete.Attributes["key"] = tagTagFvRsTenantMonPolFvTenant.Key.ValueString()
-					FvRsTenantMonPolFvTenantChildren = append(FvRsTenantMonPolFvTenantChildren, map[string]interface{}{"tagTag": tagTagFvRsTenantMonPolFvTenantChildMapForDelete})
-				}
 			}
+			childMap.Children = FvRsTenantMonPolFvTenantChildren
+			childPayloads = append(childPayloads, map[string]interface{}{"fvRsTenantMonPol": childMap})
 		}
-		childMap.Children = FvRsTenantMonPolFvTenantChildren
-		childPayloads = append(childPayloads, map[string]interface{}{"fvRsTenantMonPol": childMap})
 	} else {
 		FvRsTenantMonPolObject, _ := types.ObjectValueFrom(ctx, FvRsTenantMonPolFvTenantType, getEmptyFvRsTenantMonPolFvTenantResourceModel())
 		data.FvRsTenantMonPol = FvRsTenantMonPolObject
