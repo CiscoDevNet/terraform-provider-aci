@@ -3289,85 +3289,83 @@ func getL3extInstPFvRsCustQosPolChildPayloads(ctx context.Context, diags *diag.D
 			if !fvRsCustQosPolL3extInstPPlan.TnQosCustomPolName.IsUnknown() && !fvRsCustQosPolL3extInstPPlan.TnQosCustomPolName.IsNull() {
 				childMap.Attributes["tnQosCustomPolName"] = fvRsCustQosPolL3extInstPPlan.TnQosCustomPolName.ValueString()
 			}
-		} else {
-			return childPayloads
-		}
 
-		var tagAnnotationFvRsCustQosPolL3extInstPPlan, tagAnnotationFvRsCustQosPolL3extInstPState []TagAnnotationFvRsCustQosPolL3extInstPResourceModel
-		fvRsCustQosPolL3extInstPPlan.TagAnnotation.ElementsAs(ctx, &tagAnnotationFvRsCustQosPolL3extInstPPlan, false)
-		if !fvRsCustQosPolL3extInstPState.TagAnnotation.IsNull() {
-			fvRsCustQosPolL3extInstPState.TagAnnotation.ElementsAs(ctx, &tagAnnotationFvRsCustQosPolL3extInstPState, false)
-		}
-		if !fvRsCustQosPolL3extInstPPlan.TagAnnotation.IsNull() && !fvRsCustQosPolL3extInstPPlan.TagAnnotation.IsUnknown() {
-			tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
-			for _, tagAnnotationFvRsCustQosPolL3extInstP := range tagAnnotationFvRsCustQosPolL3extInstPPlan {
-				tagAnnotationFvRsCustQosPolL3extInstPChildMap := NewAciObject()
-				if !tagAnnotationFvRsCustQosPolL3extInstP.Key.IsNull() && !tagAnnotationFvRsCustQosPolL3extInstP.Key.IsUnknown() {
-					tagAnnotationFvRsCustQosPolL3extInstPChildMap.Attributes["key"] = tagAnnotationFvRsCustQosPolL3extInstP.Key.ValueString()
-				}
-				if !tagAnnotationFvRsCustQosPolL3extInstP.Value.IsNull() && !tagAnnotationFvRsCustQosPolL3extInstP.Value.IsUnknown() {
-					tagAnnotationFvRsCustQosPolL3extInstPChildMap.Attributes["value"] = tagAnnotationFvRsCustQosPolL3extInstP.Value.ValueString()
-				}
-				FvRsCustQosPolL3extInstPChildren = append(FvRsCustQosPolL3extInstPChildren, map[string]interface{}{"tagAnnotation": tagAnnotationFvRsCustQosPolL3extInstPChildMap})
-				tagAnnotationIdentifier := TagAnnotationIdentifier{}
-				tagAnnotationIdentifier.Key = tagAnnotationFvRsCustQosPolL3extInstP.Key
-				tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
+			var tagAnnotationFvRsCustQosPolL3extInstPPlan, tagAnnotationFvRsCustQosPolL3extInstPState []TagAnnotationFvRsCustQosPolL3extInstPResourceModel
+			fvRsCustQosPolL3extInstPPlan.TagAnnotation.ElementsAs(ctx, &tagAnnotationFvRsCustQosPolL3extInstPPlan, false)
+			if !fvRsCustQosPolL3extInstPState.TagAnnotation.IsNull() {
+				fvRsCustQosPolL3extInstPState.TagAnnotation.ElementsAs(ctx, &tagAnnotationFvRsCustQosPolL3extInstPState, false)
 			}
-			for _, tagAnnotationFvRsCustQosPolL3extInstP := range tagAnnotationFvRsCustQosPolL3extInstPState {
-				delete := true
-				for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
-					if tagAnnotationIdentifier.Key == tagAnnotationFvRsCustQosPolL3extInstP.Key {
-						delete = false
-						break
+			if !fvRsCustQosPolL3extInstPPlan.TagAnnotation.IsNull() && !fvRsCustQosPolL3extInstPPlan.TagAnnotation.IsUnknown() {
+				tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
+				for _, tagAnnotationFvRsCustQosPolL3extInstP := range tagAnnotationFvRsCustQosPolL3extInstPPlan {
+					tagAnnotationFvRsCustQosPolL3extInstPChildMap := NewAciObject()
+					if !tagAnnotationFvRsCustQosPolL3extInstP.Key.IsNull() && !tagAnnotationFvRsCustQosPolL3extInstP.Key.IsUnknown() {
+						tagAnnotationFvRsCustQosPolL3extInstPChildMap.Attributes["key"] = tagAnnotationFvRsCustQosPolL3extInstP.Key.ValueString()
+					}
+					if !tagAnnotationFvRsCustQosPolL3extInstP.Value.IsNull() && !tagAnnotationFvRsCustQosPolL3extInstP.Value.IsUnknown() {
+						tagAnnotationFvRsCustQosPolL3extInstPChildMap.Attributes["value"] = tagAnnotationFvRsCustQosPolL3extInstP.Value.ValueString()
+					}
+					FvRsCustQosPolL3extInstPChildren = append(FvRsCustQosPolL3extInstPChildren, map[string]interface{}{"tagAnnotation": tagAnnotationFvRsCustQosPolL3extInstPChildMap})
+					tagAnnotationIdentifier := TagAnnotationIdentifier{}
+					tagAnnotationIdentifier.Key = tagAnnotationFvRsCustQosPolL3extInstP.Key
+					tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
+				}
+				for _, tagAnnotationFvRsCustQosPolL3extInstP := range tagAnnotationFvRsCustQosPolL3extInstPState {
+					delete := true
+					for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
+						if tagAnnotationIdentifier.Key == tagAnnotationFvRsCustQosPolL3extInstP.Key {
+							delete = false
+							break
+						}
+					}
+					if delete {
+						tagAnnotationFvRsCustQosPolL3extInstPChildMapForDelete := NewAciObject()
+						tagAnnotationFvRsCustQosPolL3extInstPChildMapForDelete.Attributes["status"] = "deleted"
+						tagAnnotationFvRsCustQosPolL3extInstPChildMapForDelete.Attributes["key"] = tagAnnotationFvRsCustQosPolL3extInstP.Key.ValueString()
+						FvRsCustQosPolL3extInstPChildren = append(FvRsCustQosPolL3extInstPChildren, map[string]interface{}{"tagAnnotation": tagAnnotationFvRsCustQosPolL3extInstPChildMapForDelete})
 					}
 				}
-				if delete {
-					tagAnnotationFvRsCustQosPolL3extInstPChildMapForDelete := NewAciObject()
-					tagAnnotationFvRsCustQosPolL3extInstPChildMapForDelete.Attributes["status"] = "deleted"
-					tagAnnotationFvRsCustQosPolL3extInstPChildMapForDelete.Attributes["key"] = tagAnnotationFvRsCustQosPolL3extInstP.Key.ValueString()
-					FvRsCustQosPolL3extInstPChildren = append(FvRsCustQosPolL3extInstPChildren, map[string]interface{}{"tagAnnotation": tagAnnotationFvRsCustQosPolL3extInstPChildMapForDelete})
-				}
 			}
-		}
 
-		var tagTagFvRsCustQosPolL3extInstPPlan, tagTagFvRsCustQosPolL3extInstPState []TagTagFvRsCustQosPolL3extInstPResourceModel
-		fvRsCustQosPolL3extInstPPlan.TagTag.ElementsAs(ctx, &tagTagFvRsCustQosPolL3extInstPPlan, false)
-		if !fvRsCustQosPolL3extInstPState.TagTag.IsNull() {
-			fvRsCustQosPolL3extInstPState.TagTag.ElementsAs(ctx, &tagTagFvRsCustQosPolL3extInstPState, false)
-		}
-		if !fvRsCustQosPolL3extInstPPlan.TagTag.IsNull() && !fvRsCustQosPolL3extInstPPlan.TagTag.IsUnknown() {
-			tagTagIdentifiers := []TagTagIdentifier{}
-			for _, tagTagFvRsCustQosPolL3extInstP := range tagTagFvRsCustQosPolL3extInstPPlan {
-				tagTagFvRsCustQosPolL3extInstPChildMap := NewAciObject()
-				if !tagTagFvRsCustQosPolL3extInstP.Key.IsNull() && !tagTagFvRsCustQosPolL3extInstP.Key.IsUnknown() {
-					tagTagFvRsCustQosPolL3extInstPChildMap.Attributes["key"] = tagTagFvRsCustQosPolL3extInstP.Key.ValueString()
-				}
-				if !tagTagFvRsCustQosPolL3extInstP.Value.IsNull() && !tagTagFvRsCustQosPolL3extInstP.Value.IsUnknown() {
-					tagTagFvRsCustQosPolL3extInstPChildMap.Attributes["value"] = tagTagFvRsCustQosPolL3extInstP.Value.ValueString()
-				}
-				FvRsCustQosPolL3extInstPChildren = append(FvRsCustQosPolL3extInstPChildren, map[string]interface{}{"tagTag": tagTagFvRsCustQosPolL3extInstPChildMap})
-				tagTagIdentifier := TagTagIdentifier{}
-				tagTagIdentifier.Key = tagTagFvRsCustQosPolL3extInstP.Key
-				tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
+			var tagTagFvRsCustQosPolL3extInstPPlan, tagTagFvRsCustQosPolL3extInstPState []TagTagFvRsCustQosPolL3extInstPResourceModel
+			fvRsCustQosPolL3extInstPPlan.TagTag.ElementsAs(ctx, &tagTagFvRsCustQosPolL3extInstPPlan, false)
+			if !fvRsCustQosPolL3extInstPState.TagTag.IsNull() {
+				fvRsCustQosPolL3extInstPState.TagTag.ElementsAs(ctx, &tagTagFvRsCustQosPolL3extInstPState, false)
 			}
-			for _, tagTagFvRsCustQosPolL3extInstP := range tagTagFvRsCustQosPolL3extInstPState {
-				delete := true
-				for _, tagTagIdentifier := range tagTagIdentifiers {
-					if tagTagIdentifier.Key == tagTagFvRsCustQosPolL3extInstP.Key {
-						delete = false
-						break
+			if !fvRsCustQosPolL3extInstPPlan.TagTag.IsNull() && !fvRsCustQosPolL3extInstPPlan.TagTag.IsUnknown() {
+				tagTagIdentifiers := []TagTagIdentifier{}
+				for _, tagTagFvRsCustQosPolL3extInstP := range tagTagFvRsCustQosPolL3extInstPPlan {
+					tagTagFvRsCustQosPolL3extInstPChildMap := NewAciObject()
+					if !tagTagFvRsCustQosPolL3extInstP.Key.IsNull() && !tagTagFvRsCustQosPolL3extInstP.Key.IsUnknown() {
+						tagTagFvRsCustQosPolL3extInstPChildMap.Attributes["key"] = tagTagFvRsCustQosPolL3extInstP.Key.ValueString()
+					}
+					if !tagTagFvRsCustQosPolL3extInstP.Value.IsNull() && !tagTagFvRsCustQosPolL3extInstP.Value.IsUnknown() {
+						tagTagFvRsCustQosPolL3extInstPChildMap.Attributes["value"] = tagTagFvRsCustQosPolL3extInstP.Value.ValueString()
+					}
+					FvRsCustQosPolL3extInstPChildren = append(FvRsCustQosPolL3extInstPChildren, map[string]interface{}{"tagTag": tagTagFvRsCustQosPolL3extInstPChildMap})
+					tagTagIdentifier := TagTagIdentifier{}
+					tagTagIdentifier.Key = tagTagFvRsCustQosPolL3extInstP.Key
+					tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
+				}
+				for _, tagTagFvRsCustQosPolL3extInstP := range tagTagFvRsCustQosPolL3extInstPState {
+					delete := true
+					for _, tagTagIdentifier := range tagTagIdentifiers {
+						if tagTagIdentifier.Key == tagTagFvRsCustQosPolL3extInstP.Key {
+							delete = false
+							break
+						}
+					}
+					if delete {
+						tagTagFvRsCustQosPolL3extInstPChildMapForDelete := NewAciObject()
+						tagTagFvRsCustQosPolL3extInstPChildMapForDelete.Attributes["status"] = "deleted"
+						tagTagFvRsCustQosPolL3extInstPChildMapForDelete.Attributes["key"] = tagTagFvRsCustQosPolL3extInstP.Key.ValueString()
+						FvRsCustQosPolL3extInstPChildren = append(FvRsCustQosPolL3extInstPChildren, map[string]interface{}{"tagTag": tagTagFvRsCustQosPolL3extInstPChildMapForDelete})
 					}
 				}
-				if delete {
-					tagTagFvRsCustQosPolL3extInstPChildMapForDelete := NewAciObject()
-					tagTagFvRsCustQosPolL3extInstPChildMapForDelete.Attributes["status"] = "deleted"
-					tagTagFvRsCustQosPolL3extInstPChildMapForDelete.Attributes["key"] = tagTagFvRsCustQosPolL3extInstP.Key.ValueString()
-					FvRsCustQosPolL3extInstPChildren = append(FvRsCustQosPolL3extInstPChildren, map[string]interface{}{"tagTag": tagTagFvRsCustQosPolL3extInstPChildMapForDelete})
-				}
 			}
+			childMap.Children = FvRsCustQosPolL3extInstPChildren
+			childPayloads = append(childPayloads, map[string]interface{}{"fvRsCustQosPol": childMap})
 		}
-		childMap.Children = FvRsCustQosPolL3extInstPChildren
-		childPayloads = append(childPayloads, map[string]interface{}{"fvRsCustQosPol": childMap})
 	} else {
 		FvRsCustQosPolObject, _ := types.ObjectValueFrom(ctx, FvRsCustQosPolL3extInstPType, getEmptyFvRsCustQosPolL3extInstPResourceModel())
 		data.FvRsCustQosPol = FvRsCustQosPolObject

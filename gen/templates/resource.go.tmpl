@@ -2290,16 +2290,6 @@ func get{{$.ResourceClassName}}{{ .ResourceClassName }}ChildPayloads(ctx context
 					childMap.Attributes["annotation"] = globalAnnotation
 				} {{- end}}
 			{{- end}}
-		}{{- if .AllowDelete}} else {
-			{{- range .Properties}}
-				{{- if .IsNaming }}
-			childMap.Attributes["{{.PropertyName}}"] = {{.PkgName}}{{$child.ParentHierarchy}}State.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}.ValueString()
-				{{- end}}
-			{{- end}}
-			childMap.Attributes["status"] = "deleted"
-		}{{- else}} else {
-			return childPayloads
-		}{{- end}}
 		{{- $enteredGrandChildPayloadZone := false }}
 			{{- range .Children}}
 				{{- $enteredGrandChildPayloadZone = true }}
@@ -2311,7 +2301,19 @@ func get{{$.ResourceClassName}}{{ .ResourceClassName }}ChildPayloads(ctx context
 		childMap.Children = {{.ParentHierarchy}}Children
 		{{- end}}
 		{{- end}}
+			{{- if not .AllowDelete}}
 		childPayloads = append(childPayloads, map[string]interface{}{"{{ .PkgName }}": childMap})
+			{{- end}}
+		}{{- if .AllowDelete}} else {
+			{{- range .Properties}}
+				{{- if .IsNaming }}
+			childMap.Attributes["{{.PropertyName}}"] = {{.PkgName}}{{$child.ParentHierarchy}}State.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}.ValueString()
+				{{- end}}
+			{{- end}}
+			childMap.Attributes["status"] = "deleted"
+		}
+		childPayloads = append(childPayloads, map[string]interface{}{"{{ .PkgName }}": childMap})
+		{{- end}}
 		{{- else}}
 	for _, {{ .PkgName }}{{.ParentHierarchy}} := range {{ .PkgName }}{{.ParentHierarchy}}Plan {
 			{{- if $enteredGrandChildDeclarationZone }}
