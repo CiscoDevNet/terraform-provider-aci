@@ -27,7 +27,7 @@ Manages ACI Any
 
 ## GUI Information ##
 
-* Location: `Tenants -> Networking -> VRFs -> Any`
+* Location: `Tenants -> Networking -> VRFs -> EPG|ESG Collection for VRF`
 
 ## Example Usage ##
 
@@ -66,7 +66,7 @@ resource "aci_any" "full_example_vrf" {
       value = "value_1"
     }
   ]
-  relation_from_any_to_consumer_contracts = [
+  relation_to_consumer_contracts = [
     {
       annotation    = "annotation_1"
       priority      = "level1"
@@ -85,7 +85,7 @@ resource "aci_any" "full_example_vrf" {
       ]
     }
   ]
-  relation_from_any_to_contract_interfaces = [
+  relation_to_contract_interfaces = [
     {
       annotation             = "annotation_1"
       priority               = "level1"
@@ -104,7 +104,7 @@ resource "aci_any" "full_example_vrf" {
       ]
     }
   ]
-  relation_from_any_to_provider_contracts = [
+  relation_to_provider_contracts = [
     {
       annotation     = "annotation_1"
       match_criteria = "All"
@@ -164,7 +164,7 @@ All examples for the Any resource can be found in the [examples](https://github.
   
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `relation_from_any_to_consumer_contracts` - (list) A list of Relation From Any To Consumer Contracts (ACI object [vzRsAnyToCons](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzRsAnyToCons/overview)) pointing to Contract (ACI Object [vzBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzBrCP/overview)) which can be configured using the [aci_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/contract) resource.
+* `relation_to_consumer_contracts` - (list) A list of Relation From Any To Consumer Contracts (ACI object [vzRsAnyToCons](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzRsAnyToCons/overview)) pointing to Contract (ACI Object [vzBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzBrCP/overview)) which can be configured using the [aci_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/contract) resource.
   #### Required ####
   
     * `contract_name` (tnVzBrCPName) - (string) The name of the Contract object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/contract) with `aci_contract.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/contract) with `data.aci_contract.example.name`.
@@ -185,7 +185,7 @@ All examples for the Any resource can be found in the [examples](https://github.
   
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-* `relation_from_any_to_contract_interfaces` - (list) A list of Relation From Any To Contract Interfaces (ACI object [vzRsAnyToConsIf](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzRsAnyToConsIf/overview)) pointing to Imported Contract (ACI Object [vzCPIf](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzCPIf/overview)) which can be configured using the [aci_imported_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/imported_contract) resource.
+* `relation_to_contract_interfaces` - (list) A list of Relation From Any To Contract Interfaces (ACI object [vzRsAnyToConsIf](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzRsAnyToConsIf/overview)) pointing to Imported Contract (ACI Object [vzCPIf](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzCPIf/overview)) which can be configured using the [aci_imported_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/imported_contract) resource.
   #### Required ####
   
     * `imported_contract_name` (tnVzCPIfName) - (string) The name of the imported Contract object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/imported_contract) with `aci_imported_contract.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/imported_contract) with `data.aci_imported_contract.example.name`.
@@ -206,7 +206,7 @@ All examples for the Any resource can be found in the [examples](https://github.
   
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-* `relation_from_any_to_provider_contracts` - (list) A list of Relation From Any To Provider Contracts (ACI object [vzRsAnyToProv](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzRsAnyToProv/overview)) pointing to Contract (ACI Object [vzBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzBrCP/overview)) which can be configured using the [aci_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/contract) resource.
+* `relation_to_provider_contracts` - (list) A list of Relation From Any To Provider Contracts (ACI object [vzRsAnyToProv](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzRsAnyToProv/overview)) pointing to Contract (ACI Object [vzBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzBrCP/overview)) which can be configured using the [aci_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/contract) resource.
   #### Required ####
   
     * `contract_name` (tnVzBrCPName) - (string) The name of the Contract object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/contract) with `aci_contract.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/contract) with `data.aci_contract.example.name`.

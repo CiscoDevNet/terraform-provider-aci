@@ -55,9 +55,9 @@ type VzAnyResourceModel struct {
 	PrefGrMemb                types.String `tfsdk:"preferred_group_member"`
 	TagAnnotation             types.Set    `tfsdk:"annotations"`
 	TagTag                    types.Set    `tfsdk:"tags"`
-	VzRsAnyToCons             types.Set    `tfsdk:"relation_from_any_to_consumer_contracts"`
-	VzRsAnyToConsIf           types.Set    `tfsdk:"relation_from_any_to_contract_interfaces"`
-	VzRsAnyToProv             types.Set    `tfsdk:"relation_from_any_to_provider_contracts"`
+	VzRsAnyToCons             types.Set    `tfsdk:"relation_to_consumer_contracts"`
+	VzRsAnyToConsIf           types.Set    `tfsdk:"relation_to_contract_interfaces"`
+	VzRsAnyToProv             types.Set    `tfsdk:"relation_to_provider_contracts"`
 	DeprecatedMatchT          types.String `tfsdk:"match_t"`
 	DeprecatedParentDn        types.String `tfsdk:"vrf_dn"`
 	DeprecatedPrefGrMemb      types.String `tfsdk:"pref_gr_memb"`
@@ -1042,10 +1042,10 @@ func (r *VzAnyResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Optional:           true,
 				Computed:           true,
 				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute 'relation_vz_rs_any_to_cons' is deprecated, please refer to 'relation_from_any_to_consumer_contracts' instead. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "Attribute 'relation_vz_rs_any_to_cons' is deprecated, please refer to 'relation_to_consumer_contracts' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.Set{
 					setvalidator.ConflictsWith(path.Expressions{
-						path.MatchRoot("relation_from_any_to_consumer_contracts"),
+						path.MatchRoot("relation_to_consumer_contracts"),
 					}...),
 				},
 			},
@@ -1053,10 +1053,10 @@ func (r *VzAnyResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Optional:           true,
 				Computed:           true,
 				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute 'relation_vz_rs_any_to_cons_if' is deprecated, please refer to 'relation_from_any_to_contract_interfaces' instead. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "Attribute 'relation_vz_rs_any_to_cons_if' is deprecated, please refer to 'relation_to_contract_interfaces' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.Set{
 					setvalidator.ConflictsWith(path.Expressions{
-						path.MatchRoot("relation_from_any_to_contract_interfaces"),
+						path.MatchRoot("relation_to_contract_interfaces"),
 					}...),
 				},
 			},
@@ -1064,10 +1064,10 @@ func (r *VzAnyResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Optional:           true,
 				Computed:           true,
 				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute 'relation_vz_rs_any_to_prov' is deprecated, please refer to 'relation_from_any_to_provider_contracts' instead. The attribute will be removed in the next major version of the provider.",
+				DeprecationMessage: "Attribute 'relation_vz_rs_any_to_prov' is deprecated, please refer to 'relation_to_provider_contracts' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.Set{
 					setvalidator.ConflictsWith(path.Expressions{
-						path.MatchRoot("relation_from_any_to_provider_contracts"),
+						path.MatchRoot("relation_to_provider_contracts"),
 					}...),
 				},
 			},
@@ -1206,7 +1206,7 @@ func (r *VzAnyResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 					},
 				},
 			},
-			"relation_from_any_to_consumer_contracts": schema.SetNestedAttribute{
+			"relation_to_consumer_contracts": schema.SetNestedAttribute{
 				MarkdownDescription: `A source relation to the binary contract profile.`,
 				Optional:            true,
 				Computed:            true,
@@ -1301,7 +1301,7 @@ func (r *VzAnyResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 					},
 				},
 			},
-			"relation_from_any_to_contract_interfaces": schema.SetNestedAttribute{
+			"relation_to_contract_interfaces": schema.SetNestedAttribute{
 				MarkdownDescription: `A source relation to a contract interface. A contract interface can be used as a contract consumption interface when a consumer consumes the contract by associating it to a consumption interface provided by the provider in the consumer's domain. A consumer can associate with the contract consumption interface when it is provided by the provider in the consumer's domain. Note that a contract consumption interface represents one or more subjects defined under the contract. By associating to an interface, an endpoint group starts consuming all the subjects represented by the interface. Also note that a contract can be defined under one tenant, but its interfaces can be defined in other tenants. A contract's interface will be used by the entities (endpoint groups) present in other tenants to participate in that contract. By this flexibility, tenants we will be able to participate in a single contract, which is defined at some third place. A contract interface is parented by a tenant. Note that this relation is an internal object.`,
 				Optional:            true,
 				Computed:            true,
@@ -1396,7 +1396,7 @@ func (r *VzAnyResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 					},
 				},
 			},
-			"relation_from_any_to_provider_contracts": schema.SetNestedAttribute{
+			"relation_to_provider_contracts": schema.SetNestedAttribute{
 				MarkdownDescription: `A source relation to a binary contract profile.`,
 				Optional:            true,
 				Computed:            true,
