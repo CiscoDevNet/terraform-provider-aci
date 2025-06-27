@@ -19,7 +19,7 @@ resource "aci_any" "full_example_vrf" {
       value = "value_1"
     }
   ]
-  relation_from_any_to_consumer_contracts = [
+  relation_to_consumer_contracts = [
     {
       annotation    = "annotation_1"
       priority      = "level1"
@@ -38,7 +38,7 @@ resource "aci_any" "full_example_vrf" {
       ]
     }
   ]
-  relation_from_any_to_contract_interfaces = [
+  relation_to_contract_interfaces = [
     {
       annotation             = "annotation_1"
       priority               = "level1"
@@ -57,7 +57,7 @@ resource "aci_any" "full_example_vrf" {
       ]
     }
   ]
-  relation_from_any_to_provider_contracts = [
+  relation_to_provider_contracts = [
     {
       annotation     = "annotation_1"
       match_criteria = "All"

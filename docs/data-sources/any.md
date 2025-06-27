@@ -24,7 +24,7 @@ Data source for ACI Any
 
 ## GUI Information ##
 
-* Location: `Tenants -> Networking -> VRFs -> Any`
+* Location: `Tenants -> Networking -> VRFs -> EPG|ESG Collection for VRF`
 
 ## Example Usage ##
 
@@ -58,7 +58,7 @@ data "aci_any" "example_vrf" {
 * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `relation_from_any_to_consumer_contracts` - (list) A list of Relation From Any To Consumer Contracts (ACI object [vzRsAnyToCons](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzRsAnyToCons/overview)) pointing to Contract (ACI Object [vzBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzBrCP/overview)).
+* `relation_to_consumer_contracts` - (list) A list of Relation From Any To Consumer Contracts (ACI object [vzRsAnyToCons](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzRsAnyToCons/overview)) pointing to Contract (ACI Object [vzBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzBrCP/overview)).
     * `annotation` (annotation) - (string) The annotation of the Relation From Any To Consumer Contract object. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
     * `contract_name` (tnVzBrCPName) - (string) The name of the Contract object.
@@ -68,7 +68,7 @@ data "aci_any" "example_vrf" {
     * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-* `relation_from_any_to_contract_interfaces` - (list) A list of Relation From Any To Contract Interfaces (ACI object [vzRsAnyToConsIf](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzRsAnyToConsIf/overview)) pointing to Imported Contract (ACI Object [vzCPIf](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzCPIf/overview)).
+* `relation_to_contract_interfaces` - (list) A list of Relation From Any To Contract Interfaces (ACI object [vzRsAnyToConsIf](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzRsAnyToConsIf/overview)) pointing to Imported Contract (ACI Object [vzCPIf](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzCPIf/overview)).
     * `annotation` (annotation) - (string) The annotation of the Relation From Any To Contract Interface object. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
     * `imported_contract_name` (tnVzCPIfName) - (string) The name of the imported Contract object.
@@ -78,7 +78,7 @@ data "aci_any" "example_vrf" {
     * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-* `relation_from_any_to_provider_contracts` - (list) A list of Relation From Any To Provider Contracts (ACI object [vzRsAnyToProv](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzRsAnyToProv/overview)) pointing to Contract (ACI Object [vzBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzBrCP/overview)).
+* `relation_to_provider_contracts` - (list) A list of Relation From Any To Provider Contracts (ACI object [vzRsAnyToProv](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzRsAnyToProv/overview)) pointing to Contract (ACI Object [vzBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzBrCP/overview)).
     * `annotation` (annotation) - (string) The annotation of the Relation From Any To Provider Contract object. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `match_criteria` (matchT) - (string) The provider label match criteria.
     * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.

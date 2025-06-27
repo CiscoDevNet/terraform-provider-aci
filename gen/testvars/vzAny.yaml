@@ -42,7 +42,7 @@ children:
     - key: "key_1"
       value: "test_value"
       
-  relation_from_any_to_consumer_contracts:
+  relation_to_consumer_contracts:
     - annotation: "annotation_1"
       priority: "level1"
       contract_name: "contract_name_0"
@@ -81,7 +81,7 @@ children:
           - key: "key_1"
             value: "test_value"
       
-  relation_from_any_to_contract_interfaces:
+  relation_to_contract_interfaces:
     - annotation: "annotation_1"
       priority: "level1"
       imported_contract_name: "imported_contract_name_0"
@@ -120,7 +120,7 @@ children:
           - key: "key_1"
             value: "test_value"
       
-  relation_from_any_to_provider_contracts:
+  relation_to_provider_contracts:
     - annotation: "annotation_1"
       match_criteria: "All"
       priority: "level1"

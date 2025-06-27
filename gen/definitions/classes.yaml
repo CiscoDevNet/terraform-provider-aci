@@ -1081,7 +1081,7 @@ vzAny:
   data_source_has_no_name_identifier: true
   include: true
   ui_locations:
-    - "Tenants -> Networking -> VRFs -> Any"
+    - "Tenants -> Networking -> VRFs -> EPG|ESG Collection for VRF"
   sub_category: "Networking"
   migration_version: 1
   migration_blocks:
@@ -1098,15 +1098,18 @@ vzAny:
 
 vzRsAnyToConsIf:
   resource_name: "relation_from_any_to_contract_interface"
+  sub_category: "Networking"
   ui_locations:
-    - "Tenants -> Networking -> VRFs -> Any -> Contract Interface"
+    - "Tenants -> Networking -> VRFs -> EPG|ESG Collection for VRF -> Contract Interfaces"
 
 vzRsAnyToCons:
   resource_name: "relation_from_any_to_consumer_contract"
+  sub_category: "Networking"
   ui_locations:
-    - "Tenants -> Networking -> VRFs -> Any -> Consumer Contract"
+    - "Tenants -> Networking -> VRFs -> EPG|ESG Collection for VRF -> Consumed Contracts"
 
 vzRsAnyToProv:
   resource_name: "relation_from_any_to_provider_contract"
+  sub_category: "Networking"
   ui_locations:
-    - "Tenants -> Networking -> VRFs -> Any -> Provider Contract"
+    - "Tenants -> Networking -> VRFs -> EPG|ESG Collection for VRF -> Provided Contracts"

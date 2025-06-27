@@ -2586,6 +2586,8 @@ vzAny:
       parent_dn: "aci_vrf.test.id"
 
 vzRsAnyToConsIf:
+  overwrites:
+    relation_from_any_to_contract_interfaces: "relation_to_contract_interfaces"
   documentation:
     tnVzCPIfName: "The name of the imported Contract object."
   parents:
@@ -2609,6 +2611,8 @@ vzRsAnyToConsIf:
         name: "imported_contract_name_1"
 
 vzRsAnyToCons:
+  overwrites:
+    relation_from_any_to_consumer_contracts: "relation_to_consumer_contracts"
   ignores:
     - "intent"
   documentation:
@@ -2629,6 +2633,8 @@ vzRsAnyToCons:
         name: "contract_name_0"
 
 vzRsAnyToProv:
+  overwrites:
+    relation_from_any_to_provider_contracts: "relation_to_provider_contracts"
   ignores:
     - "intent"
   documentation:
