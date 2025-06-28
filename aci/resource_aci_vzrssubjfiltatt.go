@@ -25,6 +25,30 @@ func resourceAciSubjectFilter() *schema.Resource {
 		},
 
 		SchemaVersion: 1,
+
+		CustomizeDiff: func(ctx context.Context, diff *schema.ResourceDiff, v interface{}) error {
+			// The "none" value in directives does not get returned by APIC.
+			// 1. Ignore "none" option when set with other options.
+			// 2. State is empty when configured only with "none" option.
+			if diff.HasChange("directives") {
+				old, new := diff.GetChange("directives")
+				state := old.([]interface{})
+				config := new.([]interface{})
+				if len(config) > 1 {
+					directives := make([]string, 0)
+					for _, val := range config {
+						if val != "none" {
+							directives = append(directives, val.(string))
+						}
+					}
+					diff.SetNew("directives", directives)
+				} else if len(state) == 0 && len(config) == 1 && config[0] == "none" {
+					diff.SetNew("directives", []string{})
+				}
+			}
+			return nil
+		},
+
 		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
 			"contract_subject_dn": {
 				Type:     schema.TypeString,
@@ -99,23 +123,11 @@ func setSubjectFilterAttributes(vzRsSubjFiltAtt *models.SubjectFilter, d *schema
 	d.Set("contract_subject_dn", GetParentDn(vzRsSubjFiltAtt.DistinguishedName, fmt.Sprintf("/"+models.RnvzRsSubjFiltAtt, vzRsSubjFiltAttMap["name"])))
 	d.Set("annotation", vzRsSubjFiltAttMap["annotation"])
 	d.Set("action", vzRsSubjFiltAttMap["action"])
-	directivesGet := make([]string, 0, 1)
-	for _, val := range strings.Split(vzRsSubjFiltAttMap["directives"], ",") {
-		if val != "" {
-			directivesGet = append(directivesGet, strings.Trim(val, " "))
-		}
+	directives := []string{}
+	if vzRsSubjFiltAttMap["directives"] != "" {
+		directives = strings.Split(vzRsSubjFiltAttMap["directives"], ",")
 	}
-	// The "none" value in directives does not get returned by APIC.
-	// Add "none" if the user has defined the value in the directives attributes.
-	if userDirectives, ok := d.GetOk("directives"); ok {
-		for _, val := range userDirectives.([]interface{}) {
-			if val.(string) == "none" {
-				directivesGet = append(directivesGet, "none")
-				break
-			}
-		}
-	}
-	d.Set("directives", directivesGet)
+	d.Set("directives", directives)
 	d.Set("priority_override", vzRsSubjFiltAttMap["priorityOverride"])
 	d.Set("filter_dn", vzRsSubjFiltAttMap["tDn"])
 	return d, nil
