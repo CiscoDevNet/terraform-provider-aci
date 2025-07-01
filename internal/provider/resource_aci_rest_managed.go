@@ -709,10 +709,13 @@ func getAciRestManagedChildPayloads(ctx context.Context, diags *diag.Diagnostics
 				childPayloads = append(childPayloads, getAciRestManagedRemoveChildPayload(child.ClassName.ValueString(), child.Rn.ValueString()))
 			}
 		}
-	} else {
+	} else if data.Child.IsNull() {
 		for _, child := range childState {
 			childPayloads = append(childPayloads, getAciRestManagedRemoveChildPayload(child.ClassName.ValueString(), child.Rn.ValueString()))
 		}
+	} else {
+		tflog.Debug(ctx, fmt.Sprintf("Child with null state set to '%v', and unknown state set to '%v'", data.Child.IsNull(), data.Child.IsUnknown()))
+		data.Child = types.SetNull(data.Child.ElementType(ctx))
 	}
 
 	return childPayloads
