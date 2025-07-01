@@ -559,6 +559,10 @@ func TestAccAciRestManaged_tenantChildren(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "content.descr", "Removed children"),
 				),
 			},
+			{
+				Config:      testAccAciRestManagedData_vrf(name),
+				ExpectError: regexp.MustCompile("Failed to read aci_rest_managed data source"),
+			},
 		},
 	})
 
@@ -888,6 +892,14 @@ func testAccAciRestManagedConfig_tenantVrf(name string, resource string) string 
 		}
 	}
 	`, name, resource)
+}
+
+func testAccAciRestManagedData_vrf(name string) string {
+	return fmt.Sprintf(`
+	data "aci_rest_managed" "%[1]s" {
+		dn = "uni/tn-%[1]s/ctx-%[1]s"
+	}
+	`, name)
 }
 
 func testAccAciRestManagedConfig_import(name string, resource string) string {
