@@ -681,7 +681,7 @@ func getAciRestManagedChildPayloads(ctx context.Context, diags *diag.Diagnostics
 			if !child.Rn.IsUnknown() {
 				childMap["attributes"]["rn"] = child.Rn.ValueString()
 			}
-			if !data.Annotation.IsNull() && !data.Annotation.IsUnknown() {
+			if !data.Annotation.IsNull() && !data.Annotation.IsUnknown() && !ContainsString(NoAnnotationClasses, child.ClassName.ValueString()) {
 				childMap["attributes"]["annotation"] = data.Annotation.ValueString()
 			}
 			if !child.Content.IsNull() && !child.Content.IsUnknown() {
