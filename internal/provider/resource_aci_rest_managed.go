@@ -706,17 +706,20 @@ func getAciRestManagedChildPayloads(ctx context.Context, diags *diag.Diagnostics
 				}
 			}
 			if delete {
-				childMap := map[string]map[string]interface{}{"attributes": {}}
-				childMap["attributes"]["status"] = "deleted"
-				childMap["attributes"]["rn"] = child.Rn.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{child.ClassName.ValueString(): childMap})
+				childPayloads = append(childPayloads, getAciRestManagedRemoveChildPayload(child.ClassName.ValueString(), child.Rn.ValueString()))
 			}
 		}
 	} else {
-		data.Child = types.SetNull(data.Child.ElementType(ctx))
+		for _, child := range childState {
+			childPayloads = append(childPayloads, getAciRestManagedRemoveChildPayload(child.ClassName.ValueString(), child.Rn.ValueString()))
+		}
 	}
 
 	return childPayloads
+}
+
+func getAciRestManagedRemoveChildPayload(className, rn string) map[string]map[string]map[string]interface{} {
+	return map[string]map[string]map[string]interface{}{className: {"attributes": {"status": "deleted", "rn": rn}}}
 }
 
 func getAciRestManagedCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *AciRestManagedResourceModel, childPlan, childState []ChildAciRestManagedResourceModel) *container.Container {
