@@ -2560,3 +2560,16 @@ fvPeeringP:
     type: "The type of BGP EVPN Peering Profile object."
   overwrites:
     bgp_evpn_peering_profile: "peering_profile"
+
+lacpEnhancedLagPol:
+  overwrites:
+    lbmode: "load_balancing_mode"
+    num_links: "number_of_links"
+  documentation:
+    mode: "The Lacp mode of the %s object."
+    lbmode: "The load balancing mode of the %s object."
+    numLinks: "The number of links of the %s object."
+  parents:
+    - class_name: "vmmVSwitchPolicyCont"
+      parent_dependency: "vmmDomP"
+      parent_dn: "aci_vswitch_policy.test.id"
