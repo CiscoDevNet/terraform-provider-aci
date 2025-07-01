@@ -132,3 +132,16 @@ data "aci_system" "version" {
   system_id = "1"
 }
 `
+
+const testConfigVmmDomPMin = `
+resource "aci_vmm_domain" "test" {
+  provider_profile_dn = "uni/vmmp-VMware"
+  name                = "test_vmm_domain"
+}
+`
+
+const testConfigVmmVSwitchPolicyContMinDependencyWithVmmDomP = testConfigVmmDomPMin + `
+resource "aci_vswitch_policy" "test" {
+  vmm_domain_dn = aci_vmm_domain.test.id
+}
+`

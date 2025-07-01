@@ -1065,3 +1065,12 @@ fvFabricExtConnP:
   
 fvPeeringP:
   allow_delete: false
+
+lacpEnhancedLagPol:
+  resource_name: "lacp_enhanced_lag_policy"
+  ui_locations:
+    - "Virtual Networking -> any vendor -> Domains -> VSwitch Policy -> Enhanced Lag Policy"
+  sub_category: "Virtual Networking"
+
+vmmVSwitchPolicyCont:
+  resource_name: "vswitch_policy"
