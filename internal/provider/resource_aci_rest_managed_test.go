@@ -565,7 +565,31 @@ func TestAccAciRestManaged_tenantChildren(t *testing.T) {
 			},
 		},
 	})
+}
 
+func TestAccAciRestManaged_ignoreChildAnnotation(t *testing.T) {
+	name := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(7g)-") },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config:             testAccAciRestManagedConfig_ignoreChildAnnotation(name),
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_rest_managed.ignore_child_annotation", "child.#", "1"),
+					resource.TestCheckResourceAttr("aci_rest_managed.ignore_child_annotation", "dn", "uni/tn-"+name),
+					resource.TestCheckResourceAttr("aci_rest_managed.ignore_child_annotation", "content.name", name),
+					resource.TestCheckResourceAttr("aci_rest_managed.ignore_child_annotation", "child.0.class_name", "tagAnnotation"),
+					resource.TestCheckResourceAttr("aci_rest_managed.ignore_child_annotation", "child.0.rn", "annotationKey-["+name+"]"),
+					resource.TestCheckResourceAttr("aci_rest_managed.ignore_child_annotation", "child.0.content.key", name),
+					resource.TestCheckResourceAttr("aci_rest_managed.ignore_child_annotation", "child.0.content.value", "value"),
+					resource.TestCheckNoResourceAttr("aci_rest_managed.ignore_child_annotation", "child.0.content.annotation"),
+				),
+			},
+		},
+	})
 }
 
 func TestAccAciRestManaged_globalAllowExistingOnCreate(t *testing.T) {
@@ -898,6 +922,26 @@ func testAccAciRestManagedData_vrf(name string) string {
 	return fmt.Sprintf(`
 	data "aci_rest_managed" "%[1]s" {
 		dn = "uni/tn-%[1]s/ctx-%[1]s"
+	}
+	`, name)
+}
+
+func testAccAciRestManagedConfig_ignoreChildAnnotation(name string) string {
+	return fmt.Sprintf(`
+	resource "aci_rest_managed" "ignore_child_annotation" {
+		dn = "uni/tn-%[1]s"
+		class_name = "fvTenant"
+		content = {
+			name = "%[1]s"
+		}
+		child {
+			rn         = "annotationKey-[%[1]s]"
+			class_name = "tagAnnotation"
+			content = {
+				key = "%[1]s"
+				value = "value"
+			}
+		}
 	}
 	`, name)
 }
