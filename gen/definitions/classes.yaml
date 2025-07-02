@@ -1056,3 +1056,12 @@ fvRemoteId:
     - "uni/tn-{name}/BD-{name}/stAsc/site-{siteId}"
     - "uni/tn-{name}/out-{name}/instP-{name}/stAsc/site-{siteId}"
     - "uni/tn-{name}/mscGraphXlateCont/epgDefXlate-[{epgDefDn}]/stAsc/site-{siteId}"
+
+lacpEnhancedLagPol:
+  resource_name: "lacp_enhanced_lag_policy"
+  ui_locations:
+    - "Virtual Networking -> VMM -> Domains -> VSwitch Policy -> Enhanced Lag Policy"
+  sub_category: "Virtual Networking"
+
+vmmVSwitchPolicyCont:
+  resource_name: "vswitch_policy"

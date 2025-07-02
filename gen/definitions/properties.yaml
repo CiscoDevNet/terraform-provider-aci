@@ -83,6 +83,7 @@ global:
     Eigrp: "EIGRP"
     Bgp: "BGP"
     Ospf: "OSPF"
+    Lacp Enhanced Lag Policy: "LACP Enhanced Lag Policy"
   ignores:
     - "userdom"
 
@@ -2526,3 +2527,16 @@ l3extRsInstPToProfile:
     direction: "The direction on which to apply the Route Map associated with the Route Control Profile."
   parents:
     - parent_dependency: "l3extOut"
+
+lacpEnhancedLagPol:
+  overwrites:
+    lbmode: "load_balancing_mode"
+    num_links: "number_of_links"
+  documentation:
+    mode: "The LACP mode of the %s object."
+    lbmode: "The load balancing mode of the %s object."
+    numLinks: "The number of links of the %s object."
+  parents:
+    - class_name: "vmmVSwitchPolicyCont"
+      parent_dependency: "vmmDomP"
+      parent_dn: "aci_vswitch_policy.test.id"
