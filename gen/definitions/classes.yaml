@@ -1069,7 +1069,7 @@ fvPeeringP:
 lacpEnhancedLagPol:
   resource_name: "lacp_enhanced_lag_policy"
   ui_locations:
-    - "Virtual Networking -> any vendor -> Domains -> VSwitch Policy -> Enhanced Lag Policy"
+    - "Virtual Networking -> VMM -> Domains -> VSwitch Policy -> Enhanced Lag Policy"
   sub_category: "Virtual Networking"
 
 vmmVSwitchPolicyCont:

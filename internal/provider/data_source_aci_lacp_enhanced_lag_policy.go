@@ -42,7 +42,7 @@ func (d *LacpEnhancedLagPolDataSource) Schema(ctx context.Context, req datasourc
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Lacp Enhanced Lag Policy object.",
+				MarkdownDescription: "The distinguished name (DN) of the LACP Enhanced Lag Policy object.",
 			},
 			"parent_dn": schema.StringAttribute{
 				Required:            true,
@@ -50,27 +50,27 @@ func (d *LacpEnhancedLagPolDataSource) Schema(ctx context.Context, req datasourc
 			},
 			"annotation": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The annotation of the Lacp Enhanced Lag Policy object.`,
+				MarkdownDescription: `The annotation of the LACP Enhanced Lag Policy object.`,
 			},
 			"load_balancing_mode": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The load balancing mode of the Lacp Enhanced Lag Policy object.`,
+				MarkdownDescription: `The load balancing mode of the LACP Enhanced Lag Policy object.`,
 			},
 			"mode": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The Lacp mode of the Lacp Enhanced Lag Policy object.`,
+				MarkdownDescription: `The LACP mode of the LACP Enhanced Lag Policy object.`,
 			},
 			"name": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: `The name of the Lacp Enhanced Lag Policy object.`,
+				MarkdownDescription: `The name of the LACP Enhanced Lag Policy object.`,
 			},
 			"name_alias": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The name alias of the Lacp Enhanced Lag Policy object.`,
+				MarkdownDescription: `The name alias of the LACP Enhanced Lag Policy object.`,
 			},
 			"number_of_links": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The number of links of the Lacp Enhanced Lag Policy object.`,
+				MarkdownDescription: `The number of links of the LACP Enhanced Lag Policy object.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,

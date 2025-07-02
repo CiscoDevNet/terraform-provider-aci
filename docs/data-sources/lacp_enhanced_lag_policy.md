@@ -7,12 +7,12 @@ layout: "aci"
 page_title: "ACI: aci_lacp_enhanced_lag_policy"
 sidebar_current: "docs-aci-data-source-aci_lacp_enhanced_lag_policy"
 description: |-
-  Data source for ACI Lacp Enhanced Lag Policy
+  Data source for ACI LACP Enhanced Lag Policy
 ---
 
 # aci_lacp_enhanced_lag_policy #
 
-Data source for ACI Lacp Enhanced Lag Policy
+Data source for ACI LACP Enhanced Lag Policy
 
 ## API Information ##
 
@@ -24,7 +24,7 @@ Data source for ACI Lacp Enhanced Lag Policy
 
 ## GUI Information ##
 
-* Location: `Virtual Networking -> any vendor -> Domains -> VSwitch Policy -> Enhanced Lag Policy`
+* Location: `Virtual Networking -> VMM -> Domains -> VSwitch Policy -> Enhanced Lag Policy`
 
 ## Example Usage ##
 
@@ -43,16 +43,16 @@ data "aci_lacp_enhanced_lag_policy" "example_vswitch_policy" {
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_vswitch_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vswitch_policy) ([vmmVSwitchPolicyCont](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vmmVSwitchPolicyCont/overview))
-* `name` (name) - (string) The name of the Lacp Enhanced Lag Policy object.
+* `name` (name) - (string) The name of the LACP Enhanced Lag Policy object.
 
 ### Read-Only ###
 
-* `id` - (string) The distinguished name (DN) of the Lacp Enhanced Lag Policy object.
-* `annotation` (annotation) - (string) The annotation of the Lacp Enhanced Lag Policy object.
-* `load_balancing_mode` (lbmode) - (string) The load balancing mode of the Lacp Enhanced Lag Policy object.
-* `mode` (mode) - (string) The Lacp mode of the Lacp Enhanced Lag Policy object.
-* `name_alias` (nameAlias) - (string) The name alias of the Lacp Enhanced Lag Policy object.
-* `number_of_links` (numLinks) - (string) The number of links of the Lacp Enhanced Lag Policy object.
+* `id` - (string) The distinguished name (DN) of the LACP Enhanced Lag Policy object.
+* `annotation` (annotation) - (string) The annotation of the LACP Enhanced Lag Policy object.
+* `load_balancing_mode` (lbmode) - (string) The load balancing mode of the LACP Enhanced Lag Policy object.
+* `mode` (mode) - (string) The LACP mode of the LACP Enhanced Lag Policy object.
+* `name_alias` (nameAlias) - (string) The name alias of the LACP Enhanced Lag Policy object.
+* `number_of_links` (numLinks) - (string) The number of links of the LACP Enhanced Lag Policy object.
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.

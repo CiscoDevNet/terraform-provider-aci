@@ -84,6 +84,7 @@ global:
     Bgp: "BGP"
     Ospf: "OSPF"
     Evpn: "EVPN"
+    Lacp Enhanced Lag Policy: "LACP Enhanced Lag Policy"
   ignores:
     - "userdom"
 
@@ -2566,7 +2567,7 @@ lacpEnhancedLagPol:
     lbmode: "load_balancing_mode"
     num_links: "number_of_links"
   documentation:
-    mode: "The Lacp mode of the %s object."
+    mode: "The LACP mode of the %s object."
     lbmode: "The load balancing mode of the %s object."
     numLinks: "The number of links of the %s object."
   parents:
