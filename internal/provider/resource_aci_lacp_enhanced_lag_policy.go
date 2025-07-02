@@ -163,7 +163,7 @@ func (r *LacpEnhancedLagPolResource) Schema(ctx context.Context, req resource.Sc
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Lacp Enhanced Lag Policy object.",
+				MarkdownDescription: "The distinguished name (DN) of the LACP Enhanced Lag Policy object.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
@@ -184,7 +184,7 @@ func (r *LacpEnhancedLagPolResource) Schema(ctx context.Context, req resource.Sc
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
-				MarkdownDescription: `The annotation of the Lacp Enhanced Lag Policy object.`,
+				MarkdownDescription: `The annotation of the LACP Enhanced Lag Policy object.`,
 			},
 			"load_balancing_mode": schema.StringAttribute{
 				Optional: true,
@@ -196,7 +196,7 @@ func (r *LacpEnhancedLagPolResource) Schema(ctx context.Context, req resource.Sc
 				Validators: []validator.String{
 					stringvalidator.OneOf("dst-ip", "dst-ip-l4port", "dst-ip-l4port-vlan", "dst-ip-vlan", "dst-l4port", "dst-mac", "src-dst-ip", "src-dst-ip-l4port", "src-dst-ip-l4port-vlan", "src-dst-ip-vlan", "src-dst-l4port", "src-dst-mac", "src-ip", "src-ip-l4port", "src-ip-l4port-vlan", "src-ip-vlan", "src-l4port", "src-mac", "src-port-id", "vlan"),
 				},
-				MarkdownDescription: `The load balancing mode of the Lacp Enhanced Lag Policy object.`,
+				MarkdownDescription: `The load balancing mode of the LACP Enhanced Lag Policy object.`,
 			},
 			"mode": schema.StringAttribute{
 				Optional: true,
@@ -208,7 +208,7 @@ func (r *LacpEnhancedLagPolResource) Schema(ctx context.Context, req resource.Sc
 				Validators: []validator.String{
 					stringvalidator.OneOf("active", "passive"),
 				},
-				MarkdownDescription: `The Lacp mode of the Lacp Enhanced Lag Policy object.`,
+				MarkdownDescription: `The LACP mode of the LACP Enhanced Lag Policy object.`,
 			},
 			"name": schema.StringAttribute{
 				Required: true,
@@ -217,7 +217,7 @@ func (r *LacpEnhancedLagPolResource) Schema(ctx context.Context, req resource.Sc
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
-				MarkdownDescription: `The name of the Lacp Enhanced Lag Policy object.`,
+				MarkdownDescription: `The name of the LACP Enhanced Lag Policy object.`,
 			},
 			"name_alias": schema.StringAttribute{
 				Optional: true,
@@ -226,7 +226,7 @@ func (r *LacpEnhancedLagPolResource) Schema(ctx context.Context, req resource.Sc
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The name alias of the Lacp Enhanced Lag Policy object.`,
+				MarkdownDescription: `The name alias of the LACP Enhanced Lag Policy object.`,
 			},
 			"number_of_links": schema.StringAttribute{
 				Optional: true,
@@ -235,7 +235,7 @@ func (r *LacpEnhancedLagPolResource) Schema(ctx context.Context, req resource.Sc
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The number of links of the Lacp Enhanced Lag Policy object.`,
+				MarkdownDescription: `The number of links of the LACP Enhanced Lag Policy object.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,
