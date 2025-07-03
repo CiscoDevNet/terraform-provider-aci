@@ -681,7 +681,7 @@ func getAciRestManagedChildPayloads(ctx context.Context, diags *diag.Diagnostics
 			if !child.Rn.IsUnknown() {
 				childMap["attributes"]["rn"] = child.Rn.ValueString()
 			}
-			if !data.Annotation.IsNull() && !data.Annotation.IsUnknown() {
+			if !data.Annotation.IsNull() && !data.Annotation.IsUnknown() && !ContainsString(NoAnnotationClasses, child.ClassName.ValueString()) {
 				childMap["attributes"]["annotation"] = data.Annotation.ValueString()
 			}
 			if !child.Content.IsNull() && !child.Content.IsUnknown() {
@@ -706,17 +706,23 @@ func getAciRestManagedChildPayloads(ctx context.Context, diags *diag.Diagnostics
 				}
 			}
 			if delete {
-				childMap := map[string]map[string]interface{}{"attributes": {}}
-				childMap["attributes"]["status"] = "deleted"
-				childMap["attributes"]["rn"] = child.Rn.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{child.ClassName.ValueString(): childMap})
+				childPayloads = append(childPayloads, getAciRestManagedRemoveChildPayload(child.ClassName.ValueString(), child.Rn.ValueString()))
 			}
 		}
+	} else if data.Child.IsNull() {
+		for _, child := range childState {
+			childPayloads = append(childPayloads, getAciRestManagedRemoveChildPayload(child.ClassName.ValueString(), child.Rn.ValueString()))
+		}
 	} else {
+		tflog.Debug(ctx, fmt.Sprintf("Child with null state set to '%v', and unknown state set to '%v'", data.Child.IsNull(), data.Child.IsUnknown()))
 		data.Child = types.SetNull(data.Child.ElementType(ctx))
 	}
 
 	return childPayloads
+}
+
+func getAciRestManagedRemoveChildPayload(className, rn string) map[string]map[string]map[string]interface{} {
+	return map[string]map[string]map[string]interface{}{className: {"attributes": {"status": "deleted", "rn": rn}}}
 }
 
 func getAciRestManagedCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *AciRestManagedResourceModel, childPlan, childState []ChildAciRestManagedResourceModel) *container.Container {
