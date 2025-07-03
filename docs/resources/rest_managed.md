@@ -85,10 +85,12 @@ resource "aci_rest_managed" "example_tenant_with_child" {
 
   !> The annotation property is not allowed to be set in the content map of the resource.
 
-* `escape_html` - (Boolean) Enable escaping of HTML characters when encoding the JSON payload.
+* `escape_html` - (boolean) Enable escaping of HTML characters when encoding the JSON payload.
   - Default: `true`
 
-* `child` - (list) A list of child objects.
+* `child` - (block) A nested block representing a child object. Multiple child blocks can be specified.
+
+  ~> Omitting child blocks from the configuration causes any existing child blocks present in the state to be removed.
 
   #### Required ####
 
