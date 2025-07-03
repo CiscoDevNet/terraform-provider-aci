@@ -144,7 +144,7 @@ func TestSetRelationNoRelation(t *testing.T) {
 	assert.NoError(t, err, fmt.Sprintf("Expected no error, but got '%s'", err))
 	assert.Equal(t, class.Relation.FromClass, "", fmt.Sprintf("Expected FromClass to be 'fvEPg', but got '%s'", class.Relation.FromClass))
 	assert.Equal(t, class.Relation.ToClass, "", fmt.Sprintf("Expected ToClass to be 'vzBrCP', but got '%s'", class.Relation.ToClass))
-	assert.Equal(t, class.Relation.Type, RelationhipTypeEnum(0), fmt.Sprintf("Expected Type to be 'Undefined', but got '%v'", class.Relation.Type))
+	assert.Equal(t, class.Relation.Type, RelationshipTypeEnum(0), fmt.Sprintf("Expected Type to be 'Undefined', but got '%v'", class.Relation.Type))
 	assert.Equal(t, class.Relation.IncludeFrom, false, fmt.Sprintf("Expected IncludeFrom to be 'false', but got '%v'", class.Relation.IncludeFrom))
 	assert.Equal(t, class.Relation.RelationalClass, false, fmt.Sprintf("Expected RelationalClass to be 'false', but got '%v'", class.Relation.RelationalClass))
 }
