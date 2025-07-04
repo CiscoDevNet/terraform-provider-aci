@@ -57,9 +57,9 @@ func (d *FvFabricExtConnPDataSource) Schema(ctx context.Context, req datasource.
 				Computed:            true,
 				MarkdownDescription: `The description of the Fabric External Connection Policy object.`,
 			},
-			"id_attribute": schema.StringAttribute{
+			"fabric_id": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: `The identifier of the Fabric External Connection Policy object.`,
+				MarkdownDescription: `A unique identifier of the fabric, associated with the Fabric External Connection Policy object.`,
 			},
 			"name": schema.StringAttribute{
 				Computed:            true,

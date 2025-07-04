@@ -47,7 +47,7 @@ type FvFabricExtConnPResourceModel struct {
 	ParentDn           types.String `tfsdk:"parent_dn"`
 	Annotation         types.String `tfsdk:"annotation"`
 	Descr              types.String `tfsdk:"description"`
-	FvFabricExtConnPId types.String `tfsdk:"id_attribute"`
+	FvFabricExtConnPId types.String `tfsdk:"fabric_id"`
 	Name               types.String `tfsdk:"name"`
 	NameAlias          types.String `tfsdk:"name_alias"`
 	OwnerKey           types.String `tfsdk:"owner_key"`
@@ -316,14 +316,14 @@ func (r *FvFabricExtConnPResource) Schema(ctx context.Context, req resource.Sche
 				},
 				MarkdownDescription: `The description of the Fabric External Connection Policy object.`,
 			},
-			"id_attribute": schema.StringAttribute{
+			"fabric_id": schema.StringAttribute{
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
-				MarkdownDescription: `The identifier of the Fabric External Connection Policy object.`,
+				MarkdownDescription: `A unique identifier of the fabric, associated with the Fabric External Connection Policy object.`,
 			},
 			"name": schema.StringAttribute{
 				Optional: true,
