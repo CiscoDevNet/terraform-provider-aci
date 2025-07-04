@@ -1165,84 +1165,84 @@ func getNetflowExporterPolNetflowRsExporterToCtxChildPayloads(ctx context.Contex
 			if !netflowRsExporterToCtxNetflowExporterPolPlan.TDn.IsUnknown() && !netflowRsExporterToCtxNetflowExporterPolPlan.TDn.IsNull() {
 				childMap.Attributes["tDn"] = netflowRsExporterToCtxNetflowExporterPolPlan.TDn.ValueString()
 			}
+
+			var tagAnnotationNetflowRsExporterToCtxNetflowExporterPolPlan, tagAnnotationNetflowRsExporterToCtxNetflowExporterPolState []TagAnnotationNetflowRsExporterToCtxNetflowExporterPolResourceModel
+			netflowRsExporterToCtxNetflowExporterPolPlan.TagAnnotation.ElementsAs(ctx, &tagAnnotationNetflowRsExporterToCtxNetflowExporterPolPlan, false)
+			if !netflowRsExporterToCtxNetflowExporterPolState.TagAnnotation.IsNull() {
+				netflowRsExporterToCtxNetflowExporterPolState.TagAnnotation.ElementsAs(ctx, &tagAnnotationNetflowRsExporterToCtxNetflowExporterPolState, false)
+			}
+			if !netflowRsExporterToCtxNetflowExporterPolPlan.TagAnnotation.IsNull() && !netflowRsExporterToCtxNetflowExporterPolPlan.TagAnnotation.IsUnknown() {
+				tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
+				for _, tagAnnotationNetflowRsExporterToCtxNetflowExporterPol := range tagAnnotationNetflowRsExporterToCtxNetflowExporterPolPlan {
+					tagAnnotationNetflowRsExporterToCtxNetflowExporterPolChildMap := NewAciObject()
+					if !tagAnnotationNetflowRsExporterToCtxNetflowExporterPol.Key.IsNull() && !tagAnnotationNetflowRsExporterToCtxNetflowExporterPol.Key.IsUnknown() {
+						tagAnnotationNetflowRsExporterToCtxNetflowExporterPolChildMap.Attributes["key"] = tagAnnotationNetflowRsExporterToCtxNetflowExporterPol.Key.ValueString()
+					}
+					if !tagAnnotationNetflowRsExporterToCtxNetflowExporterPol.Value.IsNull() && !tagAnnotationNetflowRsExporterToCtxNetflowExporterPol.Value.IsUnknown() {
+						tagAnnotationNetflowRsExporterToCtxNetflowExporterPolChildMap.Attributes["value"] = tagAnnotationNetflowRsExporterToCtxNetflowExporterPol.Value.ValueString()
+					}
+					NetflowRsExporterToCtxNetflowExporterPolChildren = append(NetflowRsExporterToCtxNetflowExporterPolChildren, map[string]interface{}{"tagAnnotation": tagAnnotationNetflowRsExporterToCtxNetflowExporterPolChildMap})
+					tagAnnotationIdentifier := TagAnnotationIdentifier{}
+					tagAnnotationIdentifier.Key = tagAnnotationNetflowRsExporterToCtxNetflowExporterPol.Key
+					tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
+				}
+				for _, tagAnnotationNetflowRsExporterToCtxNetflowExporterPol := range tagAnnotationNetflowRsExporterToCtxNetflowExporterPolState {
+					delete := true
+					for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
+						if tagAnnotationIdentifier.Key == tagAnnotationNetflowRsExporterToCtxNetflowExporterPol.Key {
+							delete = false
+							break
+						}
+					}
+					if delete {
+						tagAnnotationNetflowRsExporterToCtxNetflowExporterPolChildMapForDelete := NewAciObject()
+						tagAnnotationNetflowRsExporterToCtxNetflowExporterPolChildMapForDelete.Attributes["status"] = "deleted"
+						tagAnnotationNetflowRsExporterToCtxNetflowExporterPolChildMapForDelete.Attributes["key"] = tagAnnotationNetflowRsExporterToCtxNetflowExporterPol.Key.ValueString()
+						NetflowRsExporterToCtxNetflowExporterPolChildren = append(NetflowRsExporterToCtxNetflowExporterPolChildren, map[string]interface{}{"tagAnnotation": tagAnnotationNetflowRsExporterToCtxNetflowExporterPolChildMapForDelete})
+					}
+				}
+			}
+
+			var tagTagNetflowRsExporterToCtxNetflowExporterPolPlan, tagTagNetflowRsExporterToCtxNetflowExporterPolState []TagTagNetflowRsExporterToCtxNetflowExporterPolResourceModel
+			netflowRsExporterToCtxNetflowExporterPolPlan.TagTag.ElementsAs(ctx, &tagTagNetflowRsExporterToCtxNetflowExporterPolPlan, false)
+			if !netflowRsExporterToCtxNetflowExporterPolState.TagTag.IsNull() {
+				netflowRsExporterToCtxNetflowExporterPolState.TagTag.ElementsAs(ctx, &tagTagNetflowRsExporterToCtxNetflowExporterPolState, false)
+			}
+			if !netflowRsExporterToCtxNetflowExporterPolPlan.TagTag.IsNull() && !netflowRsExporterToCtxNetflowExporterPolPlan.TagTag.IsUnknown() {
+				tagTagIdentifiers := []TagTagIdentifier{}
+				for _, tagTagNetflowRsExporterToCtxNetflowExporterPol := range tagTagNetflowRsExporterToCtxNetflowExporterPolPlan {
+					tagTagNetflowRsExporterToCtxNetflowExporterPolChildMap := NewAciObject()
+					if !tagTagNetflowRsExporterToCtxNetflowExporterPol.Key.IsNull() && !tagTagNetflowRsExporterToCtxNetflowExporterPol.Key.IsUnknown() {
+						tagTagNetflowRsExporterToCtxNetflowExporterPolChildMap.Attributes["key"] = tagTagNetflowRsExporterToCtxNetflowExporterPol.Key.ValueString()
+					}
+					if !tagTagNetflowRsExporterToCtxNetflowExporterPol.Value.IsNull() && !tagTagNetflowRsExporterToCtxNetflowExporterPol.Value.IsUnknown() {
+						tagTagNetflowRsExporterToCtxNetflowExporterPolChildMap.Attributes["value"] = tagTagNetflowRsExporterToCtxNetflowExporterPol.Value.ValueString()
+					}
+					NetflowRsExporterToCtxNetflowExporterPolChildren = append(NetflowRsExporterToCtxNetflowExporterPolChildren, map[string]interface{}{"tagTag": tagTagNetflowRsExporterToCtxNetflowExporterPolChildMap})
+					tagTagIdentifier := TagTagIdentifier{}
+					tagTagIdentifier.Key = tagTagNetflowRsExporterToCtxNetflowExporterPol.Key
+					tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
+				}
+				for _, tagTagNetflowRsExporterToCtxNetflowExporterPol := range tagTagNetflowRsExporterToCtxNetflowExporterPolState {
+					delete := true
+					for _, tagTagIdentifier := range tagTagIdentifiers {
+						if tagTagIdentifier.Key == tagTagNetflowRsExporterToCtxNetflowExporterPol.Key {
+							delete = false
+							break
+						}
+					}
+					if delete {
+						tagTagNetflowRsExporterToCtxNetflowExporterPolChildMapForDelete := NewAciObject()
+						tagTagNetflowRsExporterToCtxNetflowExporterPolChildMapForDelete.Attributes["status"] = "deleted"
+						tagTagNetflowRsExporterToCtxNetflowExporterPolChildMapForDelete.Attributes["key"] = tagTagNetflowRsExporterToCtxNetflowExporterPol.Key.ValueString()
+						NetflowRsExporterToCtxNetflowExporterPolChildren = append(NetflowRsExporterToCtxNetflowExporterPolChildren, map[string]interface{}{"tagTag": tagTagNetflowRsExporterToCtxNetflowExporterPolChildMapForDelete})
+					}
+				}
+			}
+			childMap.Children = NetflowRsExporterToCtxNetflowExporterPolChildren
 		} else {
 			childMap.Attributes["status"] = "deleted"
 		}
-
-		var tagAnnotationNetflowRsExporterToCtxNetflowExporterPolPlan, tagAnnotationNetflowRsExporterToCtxNetflowExporterPolState []TagAnnotationNetflowRsExporterToCtxNetflowExporterPolResourceModel
-		netflowRsExporterToCtxNetflowExporterPolPlan.TagAnnotation.ElementsAs(ctx, &tagAnnotationNetflowRsExporterToCtxNetflowExporterPolPlan, false)
-		if !netflowRsExporterToCtxNetflowExporterPolState.TagAnnotation.IsNull() {
-			netflowRsExporterToCtxNetflowExporterPolState.TagAnnotation.ElementsAs(ctx, &tagAnnotationNetflowRsExporterToCtxNetflowExporterPolState, false)
-		}
-		if !netflowRsExporterToCtxNetflowExporterPolPlan.TagAnnotation.IsNull() && !netflowRsExporterToCtxNetflowExporterPolPlan.TagAnnotation.IsUnknown() {
-			tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
-			for _, tagAnnotationNetflowRsExporterToCtxNetflowExporterPol := range tagAnnotationNetflowRsExporterToCtxNetflowExporterPolPlan {
-				tagAnnotationNetflowRsExporterToCtxNetflowExporterPolChildMap := NewAciObject()
-				if !tagAnnotationNetflowRsExporterToCtxNetflowExporterPol.Key.IsNull() && !tagAnnotationNetflowRsExporterToCtxNetflowExporterPol.Key.IsUnknown() {
-					tagAnnotationNetflowRsExporterToCtxNetflowExporterPolChildMap.Attributes["key"] = tagAnnotationNetflowRsExporterToCtxNetflowExporterPol.Key.ValueString()
-				}
-				if !tagAnnotationNetflowRsExporterToCtxNetflowExporterPol.Value.IsNull() && !tagAnnotationNetflowRsExporterToCtxNetflowExporterPol.Value.IsUnknown() {
-					tagAnnotationNetflowRsExporterToCtxNetflowExporterPolChildMap.Attributes["value"] = tagAnnotationNetflowRsExporterToCtxNetflowExporterPol.Value.ValueString()
-				}
-				NetflowRsExporterToCtxNetflowExporterPolChildren = append(NetflowRsExporterToCtxNetflowExporterPolChildren, map[string]interface{}{"tagAnnotation": tagAnnotationNetflowRsExporterToCtxNetflowExporterPolChildMap})
-				tagAnnotationIdentifier := TagAnnotationIdentifier{}
-				tagAnnotationIdentifier.Key = tagAnnotationNetflowRsExporterToCtxNetflowExporterPol.Key
-				tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
-			}
-			for _, tagAnnotationNetflowRsExporterToCtxNetflowExporterPol := range tagAnnotationNetflowRsExporterToCtxNetflowExporterPolState {
-				delete := true
-				for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
-					if tagAnnotationIdentifier.Key == tagAnnotationNetflowRsExporterToCtxNetflowExporterPol.Key {
-						delete = false
-						break
-					}
-				}
-				if delete {
-					tagAnnotationNetflowRsExporterToCtxNetflowExporterPolChildMapForDelete := NewAciObject()
-					tagAnnotationNetflowRsExporterToCtxNetflowExporterPolChildMapForDelete.Attributes["status"] = "deleted"
-					tagAnnotationNetflowRsExporterToCtxNetflowExporterPolChildMapForDelete.Attributes["key"] = tagAnnotationNetflowRsExporterToCtxNetflowExporterPol.Key.ValueString()
-					NetflowRsExporterToCtxNetflowExporterPolChildren = append(NetflowRsExporterToCtxNetflowExporterPolChildren, map[string]interface{}{"tagAnnotation": tagAnnotationNetflowRsExporterToCtxNetflowExporterPolChildMapForDelete})
-				}
-			}
-		}
-
-		var tagTagNetflowRsExporterToCtxNetflowExporterPolPlan, tagTagNetflowRsExporterToCtxNetflowExporterPolState []TagTagNetflowRsExporterToCtxNetflowExporterPolResourceModel
-		netflowRsExporterToCtxNetflowExporterPolPlan.TagTag.ElementsAs(ctx, &tagTagNetflowRsExporterToCtxNetflowExporterPolPlan, false)
-		if !netflowRsExporterToCtxNetflowExporterPolState.TagTag.IsNull() {
-			netflowRsExporterToCtxNetflowExporterPolState.TagTag.ElementsAs(ctx, &tagTagNetflowRsExporterToCtxNetflowExporterPolState, false)
-		}
-		if !netflowRsExporterToCtxNetflowExporterPolPlan.TagTag.IsNull() && !netflowRsExporterToCtxNetflowExporterPolPlan.TagTag.IsUnknown() {
-			tagTagIdentifiers := []TagTagIdentifier{}
-			for _, tagTagNetflowRsExporterToCtxNetflowExporterPol := range tagTagNetflowRsExporterToCtxNetflowExporterPolPlan {
-				tagTagNetflowRsExporterToCtxNetflowExporterPolChildMap := NewAciObject()
-				if !tagTagNetflowRsExporterToCtxNetflowExporterPol.Key.IsNull() && !tagTagNetflowRsExporterToCtxNetflowExporterPol.Key.IsUnknown() {
-					tagTagNetflowRsExporterToCtxNetflowExporterPolChildMap.Attributes["key"] = tagTagNetflowRsExporterToCtxNetflowExporterPol.Key.ValueString()
-				}
-				if !tagTagNetflowRsExporterToCtxNetflowExporterPol.Value.IsNull() && !tagTagNetflowRsExporterToCtxNetflowExporterPol.Value.IsUnknown() {
-					tagTagNetflowRsExporterToCtxNetflowExporterPolChildMap.Attributes["value"] = tagTagNetflowRsExporterToCtxNetflowExporterPol.Value.ValueString()
-				}
-				NetflowRsExporterToCtxNetflowExporterPolChildren = append(NetflowRsExporterToCtxNetflowExporterPolChildren, map[string]interface{}{"tagTag": tagTagNetflowRsExporterToCtxNetflowExporterPolChildMap})
-				tagTagIdentifier := TagTagIdentifier{}
-				tagTagIdentifier.Key = tagTagNetflowRsExporterToCtxNetflowExporterPol.Key
-				tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
-			}
-			for _, tagTagNetflowRsExporterToCtxNetflowExporterPol := range tagTagNetflowRsExporterToCtxNetflowExporterPolState {
-				delete := true
-				for _, tagTagIdentifier := range tagTagIdentifiers {
-					if tagTagIdentifier.Key == tagTagNetflowRsExporterToCtxNetflowExporterPol.Key {
-						delete = false
-						break
-					}
-				}
-				if delete {
-					tagTagNetflowRsExporterToCtxNetflowExporterPolChildMapForDelete := NewAciObject()
-					tagTagNetflowRsExporterToCtxNetflowExporterPolChildMapForDelete.Attributes["status"] = "deleted"
-					tagTagNetflowRsExporterToCtxNetflowExporterPolChildMapForDelete.Attributes["key"] = tagTagNetflowRsExporterToCtxNetflowExporterPol.Key.ValueString()
-					NetflowRsExporterToCtxNetflowExporterPolChildren = append(NetflowRsExporterToCtxNetflowExporterPolChildren, map[string]interface{}{"tagTag": tagTagNetflowRsExporterToCtxNetflowExporterPolChildMapForDelete})
-				}
-			}
-		}
-		childMap.Children = NetflowRsExporterToCtxNetflowExporterPolChildren
 		childPayloads = append(childPayloads, map[string]interface{}{"netflowRsExporterToCtx": childMap})
 	} else {
 		NetflowRsExporterToCtxObject, _ := types.ObjectValueFrom(ctx, NetflowRsExporterToCtxNetflowExporterPolType, getEmptyNetflowRsExporterToCtxNetflowExporterPolResourceModel())
@@ -1266,84 +1266,84 @@ func getNetflowExporterPolNetflowRsExporterToEPgChildPayloads(ctx context.Contex
 			if !netflowRsExporterToEPgNetflowExporterPolPlan.TDn.IsUnknown() && !netflowRsExporterToEPgNetflowExporterPolPlan.TDn.IsNull() {
 				childMap.Attributes["tDn"] = netflowRsExporterToEPgNetflowExporterPolPlan.TDn.ValueString()
 			}
+
+			var tagAnnotationNetflowRsExporterToEPgNetflowExporterPolPlan, tagAnnotationNetflowRsExporterToEPgNetflowExporterPolState []TagAnnotationNetflowRsExporterToEPgNetflowExporterPolResourceModel
+			netflowRsExporterToEPgNetflowExporterPolPlan.TagAnnotation.ElementsAs(ctx, &tagAnnotationNetflowRsExporterToEPgNetflowExporterPolPlan, false)
+			if !netflowRsExporterToEPgNetflowExporterPolState.TagAnnotation.IsNull() {
+				netflowRsExporterToEPgNetflowExporterPolState.TagAnnotation.ElementsAs(ctx, &tagAnnotationNetflowRsExporterToEPgNetflowExporterPolState, false)
+			}
+			if !netflowRsExporterToEPgNetflowExporterPolPlan.TagAnnotation.IsNull() && !netflowRsExporterToEPgNetflowExporterPolPlan.TagAnnotation.IsUnknown() {
+				tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
+				for _, tagAnnotationNetflowRsExporterToEPgNetflowExporterPol := range tagAnnotationNetflowRsExporterToEPgNetflowExporterPolPlan {
+					tagAnnotationNetflowRsExporterToEPgNetflowExporterPolChildMap := NewAciObject()
+					if !tagAnnotationNetflowRsExporterToEPgNetflowExporterPol.Key.IsNull() && !tagAnnotationNetflowRsExporterToEPgNetflowExporterPol.Key.IsUnknown() {
+						tagAnnotationNetflowRsExporterToEPgNetflowExporterPolChildMap.Attributes["key"] = tagAnnotationNetflowRsExporterToEPgNetflowExporterPol.Key.ValueString()
+					}
+					if !tagAnnotationNetflowRsExporterToEPgNetflowExporterPol.Value.IsNull() && !tagAnnotationNetflowRsExporterToEPgNetflowExporterPol.Value.IsUnknown() {
+						tagAnnotationNetflowRsExporterToEPgNetflowExporterPolChildMap.Attributes["value"] = tagAnnotationNetflowRsExporterToEPgNetflowExporterPol.Value.ValueString()
+					}
+					NetflowRsExporterToEPgNetflowExporterPolChildren = append(NetflowRsExporterToEPgNetflowExporterPolChildren, map[string]interface{}{"tagAnnotation": tagAnnotationNetflowRsExporterToEPgNetflowExporterPolChildMap})
+					tagAnnotationIdentifier := TagAnnotationIdentifier{}
+					tagAnnotationIdentifier.Key = tagAnnotationNetflowRsExporterToEPgNetflowExporterPol.Key
+					tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
+				}
+				for _, tagAnnotationNetflowRsExporterToEPgNetflowExporterPol := range tagAnnotationNetflowRsExporterToEPgNetflowExporterPolState {
+					delete := true
+					for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
+						if tagAnnotationIdentifier.Key == tagAnnotationNetflowRsExporterToEPgNetflowExporterPol.Key {
+							delete = false
+							break
+						}
+					}
+					if delete {
+						tagAnnotationNetflowRsExporterToEPgNetflowExporterPolChildMapForDelete := NewAciObject()
+						tagAnnotationNetflowRsExporterToEPgNetflowExporterPolChildMapForDelete.Attributes["status"] = "deleted"
+						tagAnnotationNetflowRsExporterToEPgNetflowExporterPolChildMapForDelete.Attributes["key"] = tagAnnotationNetflowRsExporterToEPgNetflowExporterPol.Key.ValueString()
+						NetflowRsExporterToEPgNetflowExporterPolChildren = append(NetflowRsExporterToEPgNetflowExporterPolChildren, map[string]interface{}{"tagAnnotation": tagAnnotationNetflowRsExporterToEPgNetflowExporterPolChildMapForDelete})
+					}
+				}
+			}
+
+			var tagTagNetflowRsExporterToEPgNetflowExporterPolPlan, tagTagNetflowRsExporterToEPgNetflowExporterPolState []TagTagNetflowRsExporterToEPgNetflowExporterPolResourceModel
+			netflowRsExporterToEPgNetflowExporterPolPlan.TagTag.ElementsAs(ctx, &tagTagNetflowRsExporterToEPgNetflowExporterPolPlan, false)
+			if !netflowRsExporterToEPgNetflowExporterPolState.TagTag.IsNull() {
+				netflowRsExporterToEPgNetflowExporterPolState.TagTag.ElementsAs(ctx, &tagTagNetflowRsExporterToEPgNetflowExporterPolState, false)
+			}
+			if !netflowRsExporterToEPgNetflowExporterPolPlan.TagTag.IsNull() && !netflowRsExporterToEPgNetflowExporterPolPlan.TagTag.IsUnknown() {
+				tagTagIdentifiers := []TagTagIdentifier{}
+				for _, tagTagNetflowRsExporterToEPgNetflowExporterPol := range tagTagNetflowRsExporterToEPgNetflowExporterPolPlan {
+					tagTagNetflowRsExporterToEPgNetflowExporterPolChildMap := NewAciObject()
+					if !tagTagNetflowRsExporterToEPgNetflowExporterPol.Key.IsNull() && !tagTagNetflowRsExporterToEPgNetflowExporterPol.Key.IsUnknown() {
+						tagTagNetflowRsExporterToEPgNetflowExporterPolChildMap.Attributes["key"] = tagTagNetflowRsExporterToEPgNetflowExporterPol.Key.ValueString()
+					}
+					if !tagTagNetflowRsExporterToEPgNetflowExporterPol.Value.IsNull() && !tagTagNetflowRsExporterToEPgNetflowExporterPol.Value.IsUnknown() {
+						tagTagNetflowRsExporterToEPgNetflowExporterPolChildMap.Attributes["value"] = tagTagNetflowRsExporterToEPgNetflowExporterPol.Value.ValueString()
+					}
+					NetflowRsExporterToEPgNetflowExporterPolChildren = append(NetflowRsExporterToEPgNetflowExporterPolChildren, map[string]interface{}{"tagTag": tagTagNetflowRsExporterToEPgNetflowExporterPolChildMap})
+					tagTagIdentifier := TagTagIdentifier{}
+					tagTagIdentifier.Key = tagTagNetflowRsExporterToEPgNetflowExporterPol.Key
+					tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
+				}
+				for _, tagTagNetflowRsExporterToEPgNetflowExporterPol := range tagTagNetflowRsExporterToEPgNetflowExporterPolState {
+					delete := true
+					for _, tagTagIdentifier := range tagTagIdentifiers {
+						if tagTagIdentifier.Key == tagTagNetflowRsExporterToEPgNetflowExporterPol.Key {
+							delete = false
+							break
+						}
+					}
+					if delete {
+						tagTagNetflowRsExporterToEPgNetflowExporterPolChildMapForDelete := NewAciObject()
+						tagTagNetflowRsExporterToEPgNetflowExporterPolChildMapForDelete.Attributes["status"] = "deleted"
+						tagTagNetflowRsExporterToEPgNetflowExporterPolChildMapForDelete.Attributes["key"] = tagTagNetflowRsExporterToEPgNetflowExporterPol.Key.ValueString()
+						NetflowRsExporterToEPgNetflowExporterPolChildren = append(NetflowRsExporterToEPgNetflowExporterPolChildren, map[string]interface{}{"tagTag": tagTagNetflowRsExporterToEPgNetflowExporterPolChildMapForDelete})
+					}
+				}
+			}
+			childMap.Children = NetflowRsExporterToEPgNetflowExporterPolChildren
 		} else {
 			childMap.Attributes["status"] = "deleted"
 		}
-
-		var tagAnnotationNetflowRsExporterToEPgNetflowExporterPolPlan, tagAnnotationNetflowRsExporterToEPgNetflowExporterPolState []TagAnnotationNetflowRsExporterToEPgNetflowExporterPolResourceModel
-		netflowRsExporterToEPgNetflowExporterPolPlan.TagAnnotation.ElementsAs(ctx, &tagAnnotationNetflowRsExporterToEPgNetflowExporterPolPlan, false)
-		if !netflowRsExporterToEPgNetflowExporterPolState.TagAnnotation.IsNull() {
-			netflowRsExporterToEPgNetflowExporterPolState.TagAnnotation.ElementsAs(ctx, &tagAnnotationNetflowRsExporterToEPgNetflowExporterPolState, false)
-		}
-		if !netflowRsExporterToEPgNetflowExporterPolPlan.TagAnnotation.IsNull() && !netflowRsExporterToEPgNetflowExporterPolPlan.TagAnnotation.IsUnknown() {
-			tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
-			for _, tagAnnotationNetflowRsExporterToEPgNetflowExporterPol := range tagAnnotationNetflowRsExporterToEPgNetflowExporterPolPlan {
-				tagAnnotationNetflowRsExporterToEPgNetflowExporterPolChildMap := NewAciObject()
-				if !tagAnnotationNetflowRsExporterToEPgNetflowExporterPol.Key.IsNull() && !tagAnnotationNetflowRsExporterToEPgNetflowExporterPol.Key.IsUnknown() {
-					tagAnnotationNetflowRsExporterToEPgNetflowExporterPolChildMap.Attributes["key"] = tagAnnotationNetflowRsExporterToEPgNetflowExporterPol.Key.ValueString()
-				}
-				if !tagAnnotationNetflowRsExporterToEPgNetflowExporterPol.Value.IsNull() && !tagAnnotationNetflowRsExporterToEPgNetflowExporterPol.Value.IsUnknown() {
-					tagAnnotationNetflowRsExporterToEPgNetflowExporterPolChildMap.Attributes["value"] = tagAnnotationNetflowRsExporterToEPgNetflowExporterPol.Value.ValueString()
-				}
-				NetflowRsExporterToEPgNetflowExporterPolChildren = append(NetflowRsExporterToEPgNetflowExporterPolChildren, map[string]interface{}{"tagAnnotation": tagAnnotationNetflowRsExporterToEPgNetflowExporterPolChildMap})
-				tagAnnotationIdentifier := TagAnnotationIdentifier{}
-				tagAnnotationIdentifier.Key = tagAnnotationNetflowRsExporterToEPgNetflowExporterPol.Key
-				tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
-			}
-			for _, tagAnnotationNetflowRsExporterToEPgNetflowExporterPol := range tagAnnotationNetflowRsExporterToEPgNetflowExporterPolState {
-				delete := true
-				for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
-					if tagAnnotationIdentifier.Key == tagAnnotationNetflowRsExporterToEPgNetflowExporterPol.Key {
-						delete = false
-						break
-					}
-				}
-				if delete {
-					tagAnnotationNetflowRsExporterToEPgNetflowExporterPolChildMapForDelete := NewAciObject()
-					tagAnnotationNetflowRsExporterToEPgNetflowExporterPolChildMapForDelete.Attributes["status"] = "deleted"
-					tagAnnotationNetflowRsExporterToEPgNetflowExporterPolChildMapForDelete.Attributes["key"] = tagAnnotationNetflowRsExporterToEPgNetflowExporterPol.Key.ValueString()
-					NetflowRsExporterToEPgNetflowExporterPolChildren = append(NetflowRsExporterToEPgNetflowExporterPolChildren, map[string]interface{}{"tagAnnotation": tagAnnotationNetflowRsExporterToEPgNetflowExporterPolChildMapForDelete})
-				}
-			}
-		}
-
-		var tagTagNetflowRsExporterToEPgNetflowExporterPolPlan, tagTagNetflowRsExporterToEPgNetflowExporterPolState []TagTagNetflowRsExporterToEPgNetflowExporterPolResourceModel
-		netflowRsExporterToEPgNetflowExporterPolPlan.TagTag.ElementsAs(ctx, &tagTagNetflowRsExporterToEPgNetflowExporterPolPlan, false)
-		if !netflowRsExporterToEPgNetflowExporterPolState.TagTag.IsNull() {
-			netflowRsExporterToEPgNetflowExporterPolState.TagTag.ElementsAs(ctx, &tagTagNetflowRsExporterToEPgNetflowExporterPolState, false)
-		}
-		if !netflowRsExporterToEPgNetflowExporterPolPlan.TagTag.IsNull() && !netflowRsExporterToEPgNetflowExporterPolPlan.TagTag.IsUnknown() {
-			tagTagIdentifiers := []TagTagIdentifier{}
-			for _, tagTagNetflowRsExporterToEPgNetflowExporterPol := range tagTagNetflowRsExporterToEPgNetflowExporterPolPlan {
-				tagTagNetflowRsExporterToEPgNetflowExporterPolChildMap := NewAciObject()
-				if !tagTagNetflowRsExporterToEPgNetflowExporterPol.Key.IsNull() && !tagTagNetflowRsExporterToEPgNetflowExporterPol.Key.IsUnknown() {
-					tagTagNetflowRsExporterToEPgNetflowExporterPolChildMap.Attributes["key"] = tagTagNetflowRsExporterToEPgNetflowExporterPol.Key.ValueString()
-				}
-				if !tagTagNetflowRsExporterToEPgNetflowExporterPol.Value.IsNull() && !tagTagNetflowRsExporterToEPgNetflowExporterPol.Value.IsUnknown() {
-					tagTagNetflowRsExporterToEPgNetflowExporterPolChildMap.Attributes["value"] = tagTagNetflowRsExporterToEPgNetflowExporterPol.Value.ValueString()
-				}
-				NetflowRsExporterToEPgNetflowExporterPolChildren = append(NetflowRsExporterToEPgNetflowExporterPolChildren, map[string]interface{}{"tagTag": tagTagNetflowRsExporterToEPgNetflowExporterPolChildMap})
-				tagTagIdentifier := TagTagIdentifier{}
-				tagTagIdentifier.Key = tagTagNetflowRsExporterToEPgNetflowExporterPol.Key
-				tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
-			}
-			for _, tagTagNetflowRsExporterToEPgNetflowExporterPol := range tagTagNetflowRsExporterToEPgNetflowExporterPolState {
-				delete := true
-				for _, tagTagIdentifier := range tagTagIdentifiers {
-					if tagTagIdentifier.Key == tagTagNetflowRsExporterToEPgNetflowExporterPol.Key {
-						delete = false
-						break
-					}
-				}
-				if delete {
-					tagTagNetflowRsExporterToEPgNetflowExporterPolChildMapForDelete := NewAciObject()
-					tagTagNetflowRsExporterToEPgNetflowExporterPolChildMapForDelete.Attributes["status"] = "deleted"
-					tagTagNetflowRsExporterToEPgNetflowExporterPolChildMapForDelete.Attributes["key"] = tagTagNetflowRsExporterToEPgNetflowExporterPol.Key.ValueString()
-					NetflowRsExporterToEPgNetflowExporterPolChildren = append(NetflowRsExporterToEPgNetflowExporterPolChildren, map[string]interface{}{"tagTag": tagTagNetflowRsExporterToEPgNetflowExporterPolChildMapForDelete})
-				}
-			}
-		}
-		childMap.Children = NetflowRsExporterToEPgNetflowExporterPolChildren
 		childPayloads = append(childPayloads, map[string]interface{}{"netflowRsExporterToEPg": childMap})
 	} else {
 		NetflowRsExporterToEPgObject, _ := types.ObjectValueFrom(ctx, NetflowRsExporterToEPgNetflowExporterPolType, getEmptyNetflowRsExporterToEPgNetflowExporterPolResourceModel())
