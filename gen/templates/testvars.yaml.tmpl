@@ -368,6 +368,9 @@ child_targets:
 
 test_type: {{ .TestType }}
 {{- end }}
+{{- if and .ContainedBy (not .MultiParentFormats) (.ContainsDefaultParentDn) (.DocumentationExamples)}}
+test_type: {{ .TestType }}
+{{- end }}
 class_version: {{.ClassVersion}}
 {{- $exists_exclude := false -}}
 {{- range .Properties }}

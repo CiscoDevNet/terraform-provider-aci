@@ -14,13 +14,13 @@ default:
   site_id: "0"
 
 datasource_non_existing:
-  id_attribute: "2"
+  fabric_id: "2"
 
 datasource_required:
-  id_attribute: "1"
+  fabric_id: "1"
 
 resource_required:
-  id_attribute: "1"
+  fabric_id: "1"
   community: "extended:as2-nn4:5:16"
 
 all:
@@ -74,4 +74,5 @@ children:
     - key: "key_1"
       value: "test_value"
       
+test_type: both
 class_version: 2.0(1m)-

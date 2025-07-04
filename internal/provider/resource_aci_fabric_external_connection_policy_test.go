@@ -14,15 +14,15 @@ import (
 func TestAccResourceFvFabricExtConnP(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t, "<no value>", "2.0(1m)-") },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "2.0(1m)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
 				Config: testConfigFvFabricExtConnPMinAllowExisting,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_fabric_external_connection_policy.allow_test", "id_attribute", "1"),
-					resource.TestCheckResourceAttr("aci_fabric_external_connection_policy.allow_test_2", "id_attribute", "1"),
+					resource.TestCheckResourceAttr("aci_fabric_external_connection_policy.allow_test", "fabric_id", "1"),
+					resource.TestCheckResourceAttr("aci_fabric_external_connection_policy.allow_test_2", "fabric_id", "1"),
 					resource.TestCheckResourceAttr("aci_fabric_external_connection_policy.allow_test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_fabric_external_connection_policy.allow_test_2", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_fabric_external_connection_policy.allow_test", "community", "extended:as2-nn4:5:16"),
@@ -46,7 +46,7 @@ func TestAccResourceFvFabricExtConnP(t *testing.T) {
 
 	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t, "<no value>", "2.0(1m)-") },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "2.0(1m)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -59,15 +59,15 @@ func TestAccResourceFvFabricExtConnP(t *testing.T) {
 
 	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t, "<no value>", "2.0(1m)-") },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "2.0(1m)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
 				Config: testConfigFvFabricExtConnPMinAllowExisting,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_fabric_external_connection_policy.allow_test", "id_attribute", "1"),
-					resource.TestCheckResourceAttr("aci_fabric_external_connection_policy.allow_test_2", "id_attribute", "1"),
+					resource.TestCheckResourceAttr("aci_fabric_external_connection_policy.allow_test", "fabric_id", "1"),
+					resource.TestCheckResourceAttr("aci_fabric_external_connection_policy.allow_test_2", "fabric_id", "1"),
 					resource.TestCheckResourceAttr("aci_fabric_external_connection_policy.allow_test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_fabric_external_connection_policy.allow_test_2", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_fabric_external_connection_policy.allow_test", "community", "extended:as2-nn4:5:16"),
@@ -90,14 +90,14 @@ func TestAccResourceFvFabricExtConnP(t *testing.T) {
 	})
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t, "<no value>", "2.0(1m)-") },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "2.0(1m)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
 				Config: testConfigFvFabricExtConnPMin,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_fabric_external_connection_policy.test", "id_attribute", "1"),
+					resource.TestCheckResourceAttr("aci_fabric_external_connection_policy.test", "fabric_id", "1"),
 					resource.TestCheckResourceAttr("aci_fabric_external_connection_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_fabric_external_connection_policy.test", "community", "extended:as2-nn4:5:16"),
 					resource.TestCheckResourceAttr("aci_fabric_external_connection_policy.test", "description", ""),
@@ -112,7 +112,7 @@ func TestAccResourceFvFabricExtConnP(t *testing.T) {
 			{
 				Config: testConfigFvFabricExtConnPAll,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_fabric_external_connection_policy.test", "id_attribute", "1"),
+					resource.TestCheckResourceAttr("aci_fabric_external_connection_policy.test", "fabric_id", "1"),
 					resource.TestCheckResourceAttr("aci_fabric_external_connection_policy.test", "annotation", "annotation"),
 					resource.TestCheckResourceAttr("aci_fabric_external_connection_policy.test", "community", "extended:as2-nn4:5:16"),
 					resource.TestCheckResourceAttr("aci_fabric_external_connection_policy.test", "description", "description_1"),
@@ -127,7 +127,7 @@ func TestAccResourceFvFabricExtConnP(t *testing.T) {
 			{
 				Config: testConfigFvFabricExtConnPMin,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_fabric_external_connection_policy.test", "id_attribute", "1"),
+					resource.TestCheckResourceAttr("aci_fabric_external_connection_policy.test", "fabric_id", "1"),
 					resource.TestCheckResourceAttr("aci_fabric_external_connection_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_fabric_external_connection_policy.test", "community", "extended:as2-nn4:5:16"),
 					resource.TestCheckResourceAttr("aci_fabric_external_connection_policy.test", "description", "description_1"),
@@ -143,7 +143,7 @@ func TestAccResourceFvFabricExtConnP(t *testing.T) {
 				Config: testConfigFvFabricExtConnPReset,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_fabric_external_connection_policy.test", "community", "extended:as2-nn4:5:16"),
-					resource.TestCheckResourceAttr("aci_fabric_external_connection_policy.test", "id_attribute", "1"),
+					resource.TestCheckResourceAttr("aci_fabric_external_connection_policy.test", "fabric_id", "1"),
 					resource.TestCheckResourceAttr("aci_fabric_external_connection_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_fabric_external_connection_policy.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_fabric_external_connection_policy.test", "name", ""),
@@ -307,11 +307,11 @@ func TestAccResourceFvFabricExtConnP(t *testing.T) {
 const testConfigFvFabricExtConnPMinAllowExisting = `
 resource "aci_fabric_external_connection_policy" "allow_test" {
   community = "extended:as2-nn4:5:16"
-  id_attribute = "1"
+  fabric_id = "1"
 }
 resource "aci_fabric_external_connection_policy" "allow_test_2" {
   community = "extended:as2-nn4:5:16"
-  id_attribute = "1"
+  fabric_id = "1"
   depends_on = [aci_fabric_external_connection_policy.allow_test]
 }
 `
@@ -319,13 +319,13 @@ resource "aci_fabric_external_connection_policy" "allow_test_2" {
 const testConfigFvFabricExtConnPMin = `
 resource "aci_fabric_external_connection_policy" "test" {
   community = "extended:as2-nn4:5:16"
-  id_attribute = "1"
+  fabric_id = "1"
 }
 `
 
 const testConfigFvFabricExtConnPAll = `
 resource "aci_fabric_external_connection_policy" "test" {
-  id_attribute = "1"
+  fabric_id = "1"
   annotation = "annotation"
   community = "extended:as2-nn4:5:16"
   description = "description_1"
@@ -339,7 +339,7 @@ resource "aci_fabric_external_connection_policy" "test" {
 
 const testConfigFvFabricExtConnPReset = `
 resource "aci_fabric_external_connection_policy" "test" {
-  id_attribute = "1"
+  fabric_id = "1"
   annotation = "orchestrator:terraform"
   community = "extended:as2-nn4:5:16"
   description = ""
@@ -353,7 +353,7 @@ resource "aci_fabric_external_connection_policy" "test" {
 const testConfigFvFabricExtConnPChildren = `
 resource "aci_fabric_external_connection_policy" "test" {
   community = "extended:as2-nn4:5:16"
-  id_attribute = "1"
+  fabric_id = "1"
   annotations = [
 	{
 	  key = "key_0"
@@ -410,14 +410,14 @@ resource "aci_fabric_external_connection_policy" "test" {
 const testConfigFvFabricExtConnPChildrenRemoveFromConfig = `
 resource "aci_fabric_external_connection_policy" "test" {
   community = "extended:as2-nn4:5:16"
-  id_attribute = "1"
+  fabric_id = "1"
 }
 `
 
 const testConfigFvFabricExtConnPChildrenRemoveOne = `
 resource "aci_fabric_external_connection_policy" "test" {
   community = "extended:as2-nn4:5:16"
-  id_attribute = "1"
+  fabric_id = "1"
   annotations = [ 
 	{
 	  key = "key_1"
@@ -458,7 +458,7 @@ resource "aci_fabric_external_connection_policy" "test" {
 const testConfigFvFabricExtConnPChildrenRemoveAll = `
 resource "aci_fabric_external_connection_policy" "test" {
   community = "extended:as2-nn4:5:16"
-  id_attribute = "1"
+  fabric_id = "1"
   annotations = []
   peering_profile = {
     annotation = "annotation_1"

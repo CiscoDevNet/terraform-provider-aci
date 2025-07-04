@@ -14,7 +14,7 @@ import (
 func TestAccDataSourceFvFabricExtConnP(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t, "<no value>", "2.0(1m)-") },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "2.0(1m)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -40,13 +40,13 @@ func TestAccDataSourceFvFabricExtConnP(t *testing.T) {
 
 const testConfigFvFabricExtConnPDataSource = testConfigFvFabricExtConnPAll + `
 data "aci_fabric_external_connection_policy" "test" {
-  id_attribute = "1"
+  fabric_id = "1"
   depends_on = [aci_fabric_external_connection_policy.test]
 }
 `
 
 const testConfigFvFabricExtConnPNotExisting = testConfigFvFabricExtConnPAll + `
 data "aci_fabric_external_connection_policy" "test_non_existing" {
-  id_attribute = "2"
+  fabric_id = "2"
 }
 `

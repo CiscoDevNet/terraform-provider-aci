@@ -35,8 +35,8 @@ The configuration snippet below creates a Fabric External Connection Policy with
 ```hcl
 
 resource "aci_fabric_external_connection_policy" "example_tenant" {
-  parent_dn    = aci_tenant.example.id
-  id_attribute = "1"
+  parent_dn = aci_tenant.example.id
+  fabric_id = "1"
 }
 
 ```
@@ -47,16 +47,16 @@ The configuration snippet below shows all possible attributes of the Fabric Exte
 ```hcl
 
 resource "aci_fabric_external_connection_policy" "full_example_tenant" {
-  parent_dn    = aci_tenant.example.id
-  annotation   = "annotation"
-  description  = "description_1"
-  id_attribute = "1"
-  name         = "name_1"
-  name_alias   = "name_alias_1"
-  owner_key    = "owner_key_1"
-  owner_tag    = "owner_tag_1"
-  community    = "extended:as2-nn4:5:16"
-  site_id      = "0"
+  parent_dn   = aci_tenant.example.id
+  annotation  = "annotation"
+  description = "description_1"
+  fabric_id   = "1"
+  name        = "name_1"
+  name_alias  = "name_alias_1"
+  owner_key   = "owner_key_1"
+  owner_tag   = "owner_tag_1"
+  community   = "extended:as2-nn4:5:16"
+  site_id     = "0"
   peering_profile = {
     annotation  = "annotation_1"
     description = "description_1"
@@ -101,7 +101,7 @@ All examples for the Fabric External Connection Policy resource can be found in 
 
 ### Required ###
 
-* `id_attribute` (id) - (string) The identifier of the Fabric External Connection Policy object.
+* `fabric_id` (id) - (string) A unique identifier of the fabric, associated with the Fabric External Connection Policy object.
 
 ### Read-Only ###
 

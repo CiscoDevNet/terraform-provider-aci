@@ -2530,11 +2530,13 @@ l3extRsInstPToProfile:
 
 fvFabricExtConnP:
   documentation:
+    id: "A unique identifier of the fabric, associated with the Fabric External Connection Policy object"
     rt: "A global route target used to define communities for route leaking or redistribution in multi-pod or multi-site deployments to manage routing policies across fabrics."
     siteId: "A unique identifier for the site associated with the Fabric External Connection Policy object."
   default_values:
     parent_dn: "uni/tn-infra"
   overwrites:
+    id: "fabric_id"
     rt: "community"
   resource_required:
     - "rt"
@@ -2544,12 +2546,12 @@ fvFabricExtConnP:
     all:
       community: "extended:as2-nn4:5:16"
     resource_required:
-      id_attribute: "1"
+      fabric_id: "1"
       community: "extended:as2-nn4:5:16"
     datasource_non_existing:
-      id_attribute: "2"
+      fabric_id: "2"
     datasource_required:
-      id_attribute: "1"
+      fabric_id: "1"
 
 fvPeeringP:
   documentation:

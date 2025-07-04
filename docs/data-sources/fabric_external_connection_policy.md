@@ -31,8 +31,8 @@ Data source for ACI Fabric External Connection Policy
 ```hcl
 
 data "aci_fabric_external_connection_policy" "example_tenant" {
-  parent_dn    = aci_tenant.example.id
-  id_attribute = "1"
+  parent_dn = aci_tenant.example.id
+  fabric_id = "1"
 }
 
 ```
@@ -41,7 +41,7 @@ data "aci_fabric_external_connection_policy" "example_tenant" {
 
 ### Required ###
 
-* `id_attribute` (id) - (string) The identifier of the Fabric External Connection Policy object.
+* `fabric_id` (id) - (string) A unique identifier of the fabric, associated with the Fabric External Connection Policy object.
 
 ### Optional ###
 
