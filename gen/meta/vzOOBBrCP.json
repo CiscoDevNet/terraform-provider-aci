@@ -190,17 +190,17 @@
                              "platformFlavors": [
 
                              ],
-                             "label": "deleteAll "},
+                             "label": "Delete All "},
                          { "value": "8192", "localName": "deleteNonPresent",
                              "platformFlavors": [
 
                              ],
-                             "label": "deleteNonPresent "},
+                             "label": "Delete Non Present "},
                          { "value": "4096", "localName": "ignore",
                              "platformFlavors": [
 
                              ],
-                             "label": "ignore "}
+                             "label": "Ignore "}
                     ],
                     "platformFlavors": [
 
@@ -369,12 +369,12 @@
                              "platformFlavors": [
 
                              ],
-                             "label": "msc "},
+                             "label": "MSC "},
                          { "value": "0", "localName": "undefined",
                              "platformFlavors": [
 
                              ],
-                             "label": "undefined "}
+                             "label": "Undefined "}
                     ],
                     "default": "undefined",
                     "platformFlavors": [
@@ -389,7 +389,7 @@
                     "isConfigurable": true,
                     "propGlobalId": "55648",
                     "propLocalId": "12600",
-                    "label": "Install Rules or Estimate Nummber of Rules",
+                    "label": "Install Rules or Estimate Number of Rules",
                     "baseType": "scalar:Enum8",
                     "modelType": "vz:Intent",
                     "needsPropDelimiters": false,
@@ -413,17 +413,17 @@
                              "platformFlavors": [
 
                              ],
-                             "label": "process configuration and estimate number of rules for adding contract "},
+                             "label": "Process Configuration and Estimate Number of Rules for Adding Contract "},
                          { "value": "1", "localName": "estimate_delete",
                              "platformFlavors": [
 
                              ],
-                             "label": "process configuration and estimate number of rules for deleting contract "},
+                             "label": "Process Configuration and Estimate Number of Rules for Deleting Contract "},
                          { "value": "0", "localName": "install",
                              "platformFlavors": [
 
                              ],
-                             "label": "install rules in hardware "}
+                             "label": "Install Rules in Hardware "}
                     ],
                     "default": "install",
                     "platformFlavors": [
@@ -485,7 +485,7 @@
                              "platformFlavors": [
 
                              ],
-                             "label": "ResolvedOnBehalf "}
+                             "label": "Resolved On Behalf "}
                     ],
                     "default": "local",
                     "platformFlavors": [
@@ -527,7 +527,7 @@
                              "platformFlavors": [
 
                              ],
-                             "label": "never "}
+                             "label": "Never "}
                     ],
                     "default": "never",
                     "platformFlavors": [
@@ -545,7 +545,7 @@
                     "isConfigurable": false,
                     "propGlobalId": "14073",
                     "propLocalId": "228",
-                    "label": "Monitoring policy",
+                    "label": "Monitoring Policy",
                     "baseType": "reference:BinRef",
                     "modelType": "reference:BinRef",
                     "needsPropDelimiters": true,
@@ -715,7 +715,7 @@
                     "isConfigurable": true,
                     "propGlobalId": "1044",
                     "propLocalId": "172",
-                    "label": "QOS Class Id",
+                    "label": "QoS Class ID",
                     "baseType": "scalar:Enum8",
                     "modelType": "qos:TenantPrio",
                     "needsPropDelimiters": false,
@@ -793,7 +793,7 @@
                     "isConfigurable": false,
                     "propGlobalId": "16474",
                     "propLocalId": "4316",
-                    "label": "Reevaluate entire collection tree",
+                    "label": "Reevaluate Entire Collection Tree",
                     "baseType": "scalar:Bool",
                     "modelType": "scalar:Bool",
                     "needsPropDelimiters": false,
@@ -948,7 +948,7 @@
                              "comment": [
                                  "In a setter method: specifies that an object should be created. An error is returned if the object already exists.  \nIn the return value of a setter method: indicates that an object has been created.  \n"
                              ],
-                             "label": "created "},
+                             "label": "Created "},
                          { "value": "8", "localName": "deleted",
                              "platformFlavors": [
 
@@ -956,7 +956,7 @@
                              "comment": [
                                  "In a setter method: specifies that an object should be deleted.  \nIn the return value of a setter method: indicates that an object has been deleted.\n"
                              ],
-                             "label": "deleted "},
+                             "label": "Deleted "},
                          { "value": "4", "localName": "modified",
                              "platformFlavors": [
 
@@ -964,7 +964,7 @@
                              "comment": [
                                  "In a setter method: specifies that an object should be modified  \nIn the return value of a setter method: indicates that an object has been modified.\n"
                              ],
-                             "label": "modified "}
+                             "label": "Modified "}
                     ],
                     "platformFlavors": [
 
@@ -981,7 +981,7 @@
                     "isConfigurable": true,
                     "propGlobalId": "22211",
                     "propLocalId": "855",
-                    "label": "Contract Level Dscp",
+                    "label": "Contract Level DSCP",
                     "baseType": "scalar:UByte",
                     "modelType": "qosp:Dscp",
                     "needsPropDelimiters": false,
@@ -1006,7 +1006,7 @@
                              "comment": [
                                  "AF11 low drop"
                              ],
-                             "label": "AF11 low drop "},
+                             "label": "AF11 Low Drop "},
                          { "value": "12", "localName": "AF12",
                              "platformFlavors": [
 
@@ -1014,7 +1014,7 @@
                              "comment": [
                                  "AF12 medium drop"
                              ],
-                             "label": "AF12 medium drop "},
+                             "label": "AF12 Medium Drop "},
                          { "value": "14", "localName": "AF13",
                              "platformFlavors": [
 
@@ -1022,7 +1022,7 @@
                              "comment": [
                                  "AF13 high drop"
                              ],
-                             "label": "AF13 high drop "},
+                             "label": "AF13 High Drop "},
                          { "value": "18", "localName": "AF21",
                              "platformFlavors": [
 
@@ -1030,7 +1030,7 @@
                              "comment": [
                                  "AF21 low drop"
                              ],
-                             "label": "AF21 low drop "},
+                             "label": "AF21 Low Drop "},
                          { "value": "20", "localName": "AF22",
                              "platformFlavors": [
 
@@ -1038,7 +1038,7 @@
                              "comment": [
                                  "AF22 medium drop"
                              ],
-                             "label": "AF22 medium drop "},
+                             "label": "AF22 Medium Drop "},
                          { "value": "22", "localName": "AF23",
                              "platformFlavors": [
 
@@ -1046,7 +1046,7 @@
                              "comment": [
                                  "AF22 high drop"
                              ],
-                             "label": "AF23 high drop "},
+                             "label": "AF23 High Drop "},
                          { "value": "26", "localName": "AF31",
                              "platformFlavors": [
 
@@ -1054,7 +1054,7 @@
                              "comment": [
                                  "AF31 low drop"
                              ],
-                             "label": "AF31 low drop "},
+                             "label": "AF31 Low Drop "},
                          { "value": "28", "localName": "AF32",
                              "platformFlavors": [
 
@@ -1062,7 +1062,7 @@
                              "comment": [
                                  "AF32 medium drop"
                              ],
-                             "label": "AF32 medium drop "},
+                             "label": "AF32 Medium Drop "},
                          { "value": "30", "localName": "AF33",
                              "platformFlavors": [
 
@@ -1070,7 +1070,7 @@
                              "comment": [
                                  "AF33 high drop"
                              ],
-                             "label": "AF33 high drop "},
+                             "label": "AF33 High Drop "},
                          { "value": "34", "localName": "AF41",
                              "platformFlavors": [
 
@@ -1078,7 +1078,7 @@
                              "comment": [
                                  "AF41 low drop"
                              ],
-                             "label": "AF41 low drop "},
+                             "label": "AF41 Low Drop "},
                          { "value": "36", "localName": "AF42",
                              "platformFlavors": [
 
@@ -1086,7 +1086,7 @@
                              "comment": [
                                  "AF42 medium drop"
                              ],
-                             "label": "AF42 medium drop "},
+                             "label": "AF42 Medium Drop "},
                          { "value": "38", "localName": "AF43",
                              "platformFlavors": [
 
@@ -1094,7 +1094,7 @@
                              "comment": [
                                  "AF42 high drop"
                              ],
-                             "label": "AF43 high drop "},
+                             "label": "AF43 High Drop "},
                          { "value": "0", "localName": "CS0",
                              "platformFlavors": [
 
