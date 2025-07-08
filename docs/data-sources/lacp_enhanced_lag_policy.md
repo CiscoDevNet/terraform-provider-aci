@@ -24,7 +24,7 @@ Data source for ACI LACP Enhanced Lag Policy
 
 ## GUI Information ##
 
-* Location: `Virtual Networking -> VMM -> Domains -> VSwitch Policy -> Enhanced Lag Policy`
+* Location: `Virtual Networking -> VMware -> Domains -> VSwitch Policy -> Enhanced Lag Policy`
 
 ## Example Usage ##
 
