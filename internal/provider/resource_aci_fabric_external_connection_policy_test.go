@@ -120,7 +120,7 @@ func TestAccResourceFvFabricExtConnP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_fabric_external_connection_policy.test", "name_alias", "name_alias_1"),
 					resource.TestCheckResourceAttr("aci_fabric_external_connection_policy.test", "owner_key", "owner_key_1"),
 					resource.TestCheckResourceAttr("aci_fabric_external_connection_policy.test", "owner_tag", "owner_tag_1"),
-					resource.TestCheckResourceAttr("aci_fabric_external_connection_policy.test", "site_id", "0"),
+					resource.TestCheckResourceAttr("aci_fabric_external_connection_policy.test", "site_id", "1"),
 				),
 			},
 			// Update with minimum config and verify config is unchanged
@@ -135,7 +135,7 @@ func TestAccResourceFvFabricExtConnP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_fabric_external_connection_policy.test", "name_alias", "name_alias_1"),
 					resource.TestCheckResourceAttr("aci_fabric_external_connection_policy.test", "owner_key", "owner_key_1"),
 					resource.TestCheckResourceAttr("aci_fabric_external_connection_policy.test", "owner_tag", "owner_tag_1"),
-					resource.TestCheckResourceAttr("aci_fabric_external_connection_policy.test", "site_id", "0"),
+					resource.TestCheckResourceAttr("aci_fabric_external_connection_policy.test", "site_id", "1"),
 				),
 			},
 			// Update with empty strings config or default value
@@ -333,7 +333,7 @@ resource "aci_fabric_external_connection_policy" "test" {
   name_alias = "name_alias_1"
   owner_key = "owner_key_1"
   owner_tag = "owner_tag_1"
-  site_id = "0"
+  site_id = "1"
 }
 `
 
