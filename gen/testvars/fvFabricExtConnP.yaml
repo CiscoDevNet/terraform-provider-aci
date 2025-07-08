@@ -31,7 +31,7 @@ all:
   owner_key: "owner_key_1"
   owner_tag: "owner_tag_1"
   community: "extended:as2-nn4:5:16"
-  site_id: "0"
+  site_id: "1"
 
 children:
   peering_profile:

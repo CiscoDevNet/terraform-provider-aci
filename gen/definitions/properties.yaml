@@ -2545,6 +2545,7 @@ fvFabricExtConnP:
       community: "extended:as2-nn4:5:16"
     all:
       community: "extended:as2-nn4:5:16"
+      site_id: "1"
     resource_required:
       fabric_id: "1"
       community: "extended:as2-nn4:5:16"

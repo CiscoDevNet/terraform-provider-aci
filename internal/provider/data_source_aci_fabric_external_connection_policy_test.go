@@ -27,7 +27,7 @@ func TestAccDataSourceFvFabricExtConnP(t *testing.T) {
 					resource.TestCheckResourceAttr("data.aci_fabric_external_connection_policy.test", "name_alias", "name_alias_1"),
 					resource.TestCheckResourceAttr("data.aci_fabric_external_connection_policy.test", "owner_key", "owner_key_1"),
 					resource.TestCheckResourceAttr("data.aci_fabric_external_connection_policy.test", "owner_tag", "owner_tag_1"),
-					resource.TestCheckResourceAttr("data.aci_fabric_external_connection_policy.test", "site_id", "0"),
+					resource.TestCheckResourceAttr("data.aci_fabric_external_connection_policy.test", "site_id", "1"),
 				),
 			},
 			{
