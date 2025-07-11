@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.16.1 (July 11, 2025)
+
+IMPROVEMENTS:
+- Migrate aci_taboo_contract and add support for taboo contract subjects vztsubj
+- Add versions for properties in documentation
+- Migration of vrf into plugin framework and addition of aci_eigrp_address_family_context resource and datasource
+- Add aci_remote_site and aci_associated_site resources and datasources for multisite translation mapping classes fvsiteassociated and fvremoteid
+- Add support for nutanix in the aci_vmm_domain resource
+- Add resources and datasources for external epg (l3extinstp) and its relation to route profile (l3extrsinstptoprofile)
+- Addition of new resource and test file for fabric_external_connection_policies
+- Add resource and data source for aci_lacp_enhanced_lag_policy.
+
+BUG FIXES:
+- Fix to allow updating of attributes in the aci_external_network_instance_profile resource
+- Fix issue when apic return error 'cannot be deleted.' with wrong error code (dcne-380) (#1354)
+- Fix to avoid panic runtime error when annotation is updated for l3outs in aci_l3_outside resource
+- Fixed an issue with `aci_contract_subject_filter` when using "none" in the directives attribute.
+- Fix to allow all children for a resource that are defined in state to be removed with aci_rest_managed resource
+- Fix to prevent annotation to be added to the child payload for classes that do not allow the annotation attribute to be configured with aci_rest_managed_resource
+
 ## 2.16.0 (April 18, 2025)
 
 This release is the first release that includes resources and data sources that have been migrated from SDKv2 to the Terraform Provider Framework. Those resources and data sources will continue to accept legacy attributes but deprecation warnings will be displayed. See the [migration guide](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/guides/migration) for more details on the migration and how to upgrade the provider to this release and any subsequent v2.x release that will include migrated resources and data sources.
