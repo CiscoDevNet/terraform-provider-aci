@@ -2251,6 +2251,14 @@
 
                              ],
                              "label": " "},
+                         { "value": "0x80000", "localName": "dynamic-port-binding-deprecated",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "Port Binding Validation"
+                             ],
+                             "label": "Dynamic port binding (lateBinding) is deprecated. Please choose a different port binding policy. "},
                          { "value": "8", "localName": "encap-assignment",
                              "platformFlavors": [
 
@@ -2293,6 +2301,14 @@
 
                              ],
                              "label": "IDs Not Allocated "},
+                         { "value": "0x20000", "localName": "incorrect-active-standby-uplink-order",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "Active/Standby Uplink Config Validations"
+                             ],
+                             "label": "incorrect active/standby config. Active uplink cannot be empty or null if standby uplink is configured OR Active uplink cannot be 0 as no uplink get assigned in the vCenter. "},
                          { "value": "1024", "localName": "instrimedcy-unsupported",
                              "platformFlavors": [
 
@@ -2328,7 +2344,15 @@
                              "platformFlavors": [
 
                              ],
-                             "label": "Not Associated With Management Zone "}
+                             "label": "Not Associated With Management Zone "},
+                         { "value": "0x40000", "localName": "unsupported-vrf-enforcement-direction",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "VRF Enforce Direction Validations"
+                             ],
+                             "label": "Unsupported VRF enforcement directon. Only egress direction is supported for common policy config "}
                     ],
                     "default": "none",
                     "platformFlavors": [
