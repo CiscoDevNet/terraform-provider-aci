@@ -225,17 +225,17 @@
                              "platformFlavors": [
 
                              ],
-                             "label": "deleteAll "},
+                             "label": "Delete All "},
                          { "value": "8192", "localName": "deleteNonPresent",
                              "platformFlavors": [
 
                              ],
-                             "label": "deleteNonPresent "},
+                             "label": "Delete Non Present "},
                          { "value": "4096", "localName": "ignore",
                              "platformFlavors": [
 
                              ],
-                             "label": "ignore "}
+                             "label": "Ignore "}
                     ],
                     "platformFlavors": [
 
@@ -342,12 +342,12 @@
                              "platformFlavors": [
 
                              ],
-                             "label": "msc "},
+                             "label": "MSC "},
                          { "value": "0", "localName": "undefined",
                              "platformFlavors": [
 
                              ],
-                             "label": "undefined "}
+                             "label": "Undefined "}
                     ],
                     "default": "undefined",
                     "platformFlavors": [
@@ -409,7 +409,7 @@
                              "platformFlavors": [
 
                              ],
-                             "label": "ResolvedOnBehalf "}
+                             "label": "Resolved On Behalf "}
                     ],
                     "default": "local",
                     "platformFlavors": [
@@ -451,7 +451,7 @@
                              "platformFlavors": [
 
                              ],
-                             "label": "never "}
+                             "label": "Never "}
                     ],
                     "default": "never",
                     "platformFlavors": [
@@ -661,7 +661,7 @@
                              "comment": [
                                  "In a setter method: specifies that an object should be created. An error is returned if the object already exists.  \nIn the return value of a setter method: indicates that an object has been created.  \n"
                              ],
-                             "label": "created "},
+                             "label": "Created "},
                          { "value": "8", "localName": "deleted",
                              "platformFlavors": [
 
@@ -669,7 +669,7 @@
                              "comment": [
                                  "In a setter method: specifies that an object should be deleted.  \nIn the return value of a setter method: indicates that an object has been deleted.\n"
                              ],
-                             "label": "deleted "},
+                             "label": "Deleted "},
                          { "value": "4", "localName": "modified",
                              "platformFlavors": [
 
@@ -677,7 +677,7 @@
                              "comment": [
                                  "In a setter method: specifies that an object should be modified  \nIn the return value of a setter method: indicates that an object has been modified.\n"
                              ],
-                             "label": "modified "}
+                             "label": "Modified "}
                     ],
                     "platformFlavors": [
 

@@ -161,17 +161,17 @@
                              "platformFlavors": [
 
                              ],
-                             "label": "deleteAll "},
+                             "label": "Delete All "},
                          { "value": "8192", "localName": "deleteNonPresent",
                              "platformFlavors": [
 
                              ],
-                             "label": "deleteNonPresent "},
+                             "label": "Delete Non Present "},
                          { "value": "4096", "localName": "ignore",
                              "platformFlavors": [
 
                              ],
-                             "label": "ignore "}
+                             "label": "Ignore "}
                     ],
                     "platformFlavors": [
 
@@ -241,12 +241,12 @@
                              "platformFlavors": [
 
                              ],
-                             "label": "msc "},
+                             "label": "MSC "},
                          { "value": "0", "localName": "undefined",
                              "platformFlavors": [
 
                              ],
-                             "label": "undefined "}
+                             "label": "Undefined "}
                     ],
                     "default": "undefined",
                     "platformFlavors": [
@@ -264,7 +264,7 @@
                     "isConfigurable": false,
                     "propGlobalId": "107",
                     "propLocalId": "83",
-                    "label": "forceResolve",
+                    "label": "Force Resolve",
                     "baseType": "scalar:Bool",
                     "modelType": "scalar:Bool",
                     "needsPropDelimiters": false,
@@ -355,7 +355,7 @@
                              "platformFlavors": [
 
                              ],
-                             "label": "ResolvedOnBehalf "}
+                             "label": "Resolved On Behalf "}
                     ],
                     "default": "local",
                     "platformFlavors": [
@@ -397,7 +397,7 @@
                              "platformFlavors": [
 
                              ],
-                             "label": "never "}
+                             "label": "Never "}
                     ],
                     "default": "never",
                     "platformFlavors": [
@@ -415,7 +415,7 @@
                     "isConfigurable": false,
                     "propGlobalId": "54515",
                     "propLocalId": "228",
-                    "label": "Monitoring policy",
+                    "label": "Monitoring Policy",
                     "baseType": "reference:BinRef",
                     "modelType": "reference:BinRef",
                     "needsPropDelimiters": true,
@@ -444,7 +444,7 @@
                     "isConfigurable": false,
                     "propGlobalId": "106",
                     "propLocalId": "82",
-                    "label": "rType",
+                    "label": "Resolver Type",
                     "baseType": "scalar:Enum8",
                     "modelType": "reln:ResolverType",
                     "needsPropDelimiters": false,
@@ -468,17 +468,17 @@
                              "platformFlavors": [
 
                              ],
-                             "label": "local "},
+                             "label": "Local "},
                          { "value": "1", "localName": "mo",
                              "platformFlavors": [
 
                              ],
-                             "label": "mo "},
+                             "label": "MO "},
                          { "value": "2", "localName": "service",
                              "platformFlavors": [
 
                              ],
-                             "label": "service "}
+                             "label": "Service "}
                     ],
                     "default": "mo",
                     "platformFlavors": [
@@ -602,7 +602,7 @@
                              "comment": [
                                  "cardinality violation - When relations are created such that\n                     they violate the cardinality, state of the relation would be\n                     set to this."
                              ],
-                             "label": "cardinality-violation "},
+                             "label": "Cardinality Violation "},
                          { "value": "unformed", "localName": "defaultValue",
                              "platformFlavors": [
 
@@ -615,7 +615,7 @@
                              "comment": [
                                  "the relationship is formed with the target object"
                              ],
-                             "label": "formed "},
+                             "label": "Formed "},
                          { "value": "4", "localName": "invalid-target",
                              "platformFlavors": [
 
@@ -623,7 +623,7 @@
                              "comment": [
                                  "invalid target DN"
                              ],
-                             "label": "invalid-target "},
+                             "label": "Invalid Target "},
                          { "value": "2", "localName": "missing-target",
                              "platformFlavors": [
 
@@ -631,7 +631,7 @@
                              "comment": [
                                  "target does not exist"
                              ],
-                             "label": "missing-target "},
+                             "label": "Missing Target "},
                          { "value": "0", "localName": "unformed",
                              "platformFlavors": [
 
@@ -639,7 +639,7 @@
                              "comment": [
                                  "the relationship is not formed"
                              ],
-                             "label": "unformed "}
+                             "label": "Unformed "}
                     ],
                     "default": "unformed",
                     "platformFlavors": [
@@ -679,7 +679,7 @@
                              "comment": [
                                  "target not specified, using default"
                              ],
-                             "label": "default-target "},
+                             "label": "Target Not Specified "},
                          { "value": "none", "localName": "defaultValue",
                              "platformFlavors": [
 
@@ -692,7 +692,7 @@
                              "comment": [
                                  "target not found, using default"
                              ],
-                             "label": "mismatch-target "},
+                             "label": "Target Not Found "},
                          { "value": "0", "localName": "none",
                              "platformFlavors": [
 
@@ -700,7 +700,7 @@
                              "comment": [
                                  "no issue"
                              ],
-                             "label": "none "}
+                             "label": "None "}
                     ],
                     "default": "none",
                     "platformFlavors": [
@@ -740,7 +740,7 @@
                              "comment": [
                                  "In a setter method: specifies that an object should be created. An error is returned if the object already exists.  \nIn the return value of a setter method: indicates that an object has been created.  \n"
                              ],
-                             "label": "created "},
+                             "label": "Created "},
                          { "value": "8", "localName": "deleted",
                              "platformFlavors": [
 
@@ -748,7 +748,7 @@
                              "comment": [
                                  "In a setter method: specifies that an object should be deleted.  \nIn the return value of a setter method: indicates that an object has been deleted.\n"
                              ],
-                             "label": "deleted "},
+                             "label": "Deleted "},
                          { "value": "4", "localName": "modified",
                              "platformFlavors": [
 
@@ -756,7 +756,7 @@
                              "comment": [
                                  "In a setter method: specifies that an object should be modified  \nIn the return value of a setter method: indicates that an object has been modified.\n"
                              ],
-                             "label": "modified "}
+                             "label": "Modified "}
                     ],
                     "platformFlavors": [
 
@@ -773,7 +773,7 @@
                     "isConfigurable": false,
                     "propGlobalId": "54511",
                     "propLocalId": "78",
-                    "label": "Target-class",
+                    "label": "Target Class",
                     "baseType": "scalar:Enum16",
                     "modelType": "reln:ClassId",
                     "needsPropDelimiters": false,
@@ -907,7 +907,7 @@
                     "isConfigurable": false,
                     "propGlobalId": "4988",
                     "propLocalId": "81",
-                    "label": "tType",
+                    "label": "Target Type",
                     "baseType": "scalar:Enum8",
                     "modelType": "reln:TargetType",
                     "needsPropDelimiters": false,
@@ -926,7 +926,7 @@
                              "platformFlavors": [
 
                              ],
-                             "label": "all "},
+                             "label": "All "},
                          { "value": "name", "localName": "defaultValue",
                              "platformFlavors": [
 
@@ -936,12 +936,12 @@
                              "platformFlavors": [
 
                              ],
-                             "label": "mo "},
+                             "label": "MO "},
                          { "value": "0", "localName": "name",
                              "platformFlavors": [
 
                              ],
-                             "label": "name "}
+                             "label": "Name "}
                     ],
                     "default": "name",
                     "platformFlavors": [
