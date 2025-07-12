@@ -1398,27 +1398,28 @@ type Model struct {
 	TargetNamedProperties       map[string]Property
 	DirectParent                *Model
 	// Below booleans are used during template rendering to determine correct rendering the go code
-	AllowDelete               bool
-	AllowChildDelete          bool
-	HasBitmask                bool
-	HasChild                  bool
-	HasParent                 bool
-	HasAnnotation             bool
-	HasValidValues            bool
-	HasChildWithoutIdentifier bool
-	HasNaming                 bool
-	HasOptionalProperties     bool
-	HasOnlyRequiredProperties bool
-	HasNamedProperties        bool
-	HasChildNamedProperties   bool
-	Include                   bool
-	HasReadOnlyProperties     bool
-	HasCustomTypeProperties   bool
-	Exclude                   bool
-	VersionMismatched         map[string][]string
-	TemplateProperties        map[string]interface{}
-	RequiredAsChild           bool
-	ContainsDefaultParentDn   bool
+	AllowDelete                   bool
+	AllowChildDelete              bool
+	HasBitmask                    bool
+	HasChild                      bool
+	HasParent                     bool
+	HasAnnotation                 bool
+	HasValidValues                bool
+	HasChildWithoutIdentifier     bool
+	HasNaming                     bool
+	HasOptionalProperties         bool
+	HasOnlyRequiredProperties     bool
+	HasNamedProperties            bool
+	HasChildNamedProperties       bool
+	Include                       bool
+	HasReadOnlyProperties         bool
+	HasCustomTypeProperties       bool
+	Exclude                       bool
+	VersionMismatched             map[string][]string
+	TemplateProperties            map[string]interface{}
+	RequiredAsChild               bool
+	ContainsDefaultParentDn       bool
+	DataSourceHasNoNameIdentifier bool
 }
 
 type TypeChange struct {
@@ -1544,6 +1545,7 @@ func (m *Model) setClassModel(metaPath string, isChildIteration bool, definition
 		m.SetTestType(classDetails, definitions)
 		m.SetTestApplicableFromVersion(classDetails)
 		m.SetRequiredAsChild(m.PkgName, definitions)
+		m.SetDataSourceHasNoNameIdentifier()
 	}
 
 	/*
@@ -2418,6 +2420,16 @@ func (m *Model) SetLegacyAttributes(definitions Definitions) {
 
 	}
 
+}
+
+func (m *Model) SetDataSourceHasNoNameIdentifier() {
+	if classDetails, ok := m.Definitions.Classes[m.PkgName]; ok {
+		for key, value := range classDetails.(map[interface{}]interface{}) {
+			if key.(string) == "data_source_has_no_name_identifier" {
+				m.DataSourceHasNoNameIdentifier = value.(bool)
+			}
+		}
+	}
 }
 
 func (m *Model) GetLegacyAttribute(attributeName, className string, attributeValue interface{}, definitions Definitions) (LegacyAttribute, string) {
