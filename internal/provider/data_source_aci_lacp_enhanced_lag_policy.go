@@ -52,6 +52,10 @@ func (d *LacpEnhancedLagPolDataSource) Schema(ctx context.Context, req datasourc
 				Computed:            true,
 				MarkdownDescription: `The annotation of the LACP Enhanced Lag Policy object.`,
 			},
+			"id_attribute": schema.StringAttribute{
+				Computed:            true,
+				MarkdownDescription: `The identifier of the LACP Enhanced Lag Policy object.`,
+			},
 			"load_balancing_mode": schema.StringAttribute{
 				Computed:            true,
 				MarkdownDescription: `The load balancing mode of the LACP Enhanced Lag Policy object.`,
