@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.17.0 (July 17, 2025)
+
+This release includes resources and data sources that have been migrated from SDKv2 to the Terraform Provider Framework. Those resources and data sources will continue to accept legacy attributes but deprecation warnings will be displayed. See the [migration guide](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/guides/migration) for more details on the migration and how to upgrade the provider to this release and any subsequent v2.x release that will include migrated resources and data sources.
+
+MIGRATED TO FRAMEWORK:
+- aci_vrf
+- aci_any
+- aci_taboo_contract
+
+IMPROVEMENTS:
+- Add aci_remote_site and aci_associated_site resources and datasources for multisite translation support.
+- Add aci_eigrp_address_family_context resource and datasource.
+- Add aci_fabric_external_connection_policy resource and datasource.
+- Add aci_lacp_enhanced_lag_policy resource and datasource.
+- Add aci_taboo_contract_subject, aci_relation_from_any_to_consumer_contract, aci_relation_from_any_to_contract_interface, aci_relation_from_any_to_provider_contract, and aci_relation_from_taboo_contract_subject_to_filter resource and datasource.
+- Add aci_external_epg and aci_relation_from_external_epg_to_route_control_profile resources and datasources.
+- Add aci_relation_from_vrf_to_address_family_ospf_timers, aci_relation_from_vrf_to_bgp_address_family_context, and aci_relation_from_vrf_to_eigrp_address_family_context resources and datasources.
+- Add support for nutanix in the aci_vmm_domain resource.
+
+BUG FIXES:
+- Fix issue when APIC return error 'cannot be deleted.' with wrong error code.
+- Fix error when updating in the aci_external_network_instance_profile resource.
+- Fix to allow all children that are defined in state to be removed in aci_rest_managed resource.
+- Fix the issue with using "none" in the directives attribute in aci_contract_subject_filter resource.
+- Fix to prevent annotation to be added to the child payload for classes that do not allow the annotation attribute to be configured with aci_rest_managed_resource.
+- Fix to avoid panic runtime error when annotation is updated for l3outs in aci_l3_outside resource.
+
 ## 2.16.0 (April 18, 2025)
 
 This release is the first release that includes resources and data sources that have been migrated from SDKv2 to the Terraform Provider Framework. Those resources and data sources will continue to accept legacy attributes but deprecation warnings will be displayed. See the [migration guide](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/guides/migration) for more details on the migration and how to upgrade the provider to this release and any subsequent v2.x release that will include migrated resources and data sources.
