@@ -42,28 +42,30 @@ type LacpEnhancedLagPolResource struct {
 
 // LacpEnhancedLagPolResourceModel describes the resource data model.
 type LacpEnhancedLagPolResourceModel struct {
-	Id            types.String `tfsdk:"id"`
-	ParentDn      types.String `tfsdk:"parent_dn"`
-	Annotation    types.String `tfsdk:"annotation"`
-	Lbmode        types.String `tfsdk:"load_balancing_mode"`
-	Mode          types.String `tfsdk:"mode"`
-	Name          types.String `tfsdk:"name"`
-	NameAlias     types.String `tfsdk:"name_alias"`
-	NumLinks      types.String `tfsdk:"number_of_links"`
-	TagAnnotation types.Set    `tfsdk:"annotations"`
-	TagTag        types.Set    `tfsdk:"tags"`
+	Id                   types.String `tfsdk:"id"`
+	ParentDn             types.String `tfsdk:"parent_dn"`
+	Annotation           types.String `tfsdk:"annotation"`
+	LacpEnhancedLagPolId types.String `tfsdk:"id_attribute"`
+	Lbmode               types.String `tfsdk:"load_balancing_mode"`
+	Mode                 types.String `tfsdk:"mode"`
+	Name                 types.String `tfsdk:"name"`
+	NameAlias            types.String `tfsdk:"name_alias"`
+	NumLinks             types.String `tfsdk:"number_of_links"`
+	TagAnnotation        types.Set    `tfsdk:"annotations"`
+	TagTag               types.Set    `tfsdk:"tags"`
 }
 
 func getEmptyLacpEnhancedLagPolResourceModel() *LacpEnhancedLagPolResourceModel {
 	return &LacpEnhancedLagPolResourceModel{
-		Id:         basetypes.NewStringNull(),
-		ParentDn:   basetypes.NewStringNull(),
-		Annotation: basetypes.NewStringNull(),
-		Lbmode:     basetypes.NewStringNull(),
-		Mode:       basetypes.NewStringNull(),
-		Name:       basetypes.NewStringNull(),
-		NameAlias:  basetypes.NewStringNull(),
-		NumLinks:   basetypes.NewStringNull(),
+		Id:                   basetypes.NewStringNull(),
+		ParentDn:             basetypes.NewStringNull(),
+		Annotation:           basetypes.NewStringNull(),
+		LacpEnhancedLagPolId: basetypes.NewStringNull(),
+		Lbmode:               basetypes.NewStringNull(),
+		Mode:                 basetypes.NewStringNull(),
+		Name:                 basetypes.NewStringNull(),
+		NameAlias:            basetypes.NewStringNull(),
+		NumLinks:             basetypes.NewStringNull(),
 		TagAnnotation: types.SetNull(types.ObjectType{
 			AttrTypes: map[string]attr.Type{
 				"key":   types.StringType,
@@ -185,6 +187,15 @@ func (r *LacpEnhancedLagPolResource) Schema(ctx context.Context, req resource.Sc
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
 				MarkdownDescription: `The annotation of the LACP Enhanced Lag Policy object.`,
+			},
+			"id_attribute": schema.StringAttribute{
+				Optional: true,
+				Computed: true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
+				},
+				MarkdownDescription: `The identifier of the LACP Enhanced Lag Policy object.`,
 			},
 			"load_balancing_mode": schema.StringAttribute{
 				Optional: true,
@@ -493,6 +504,9 @@ func getAndSetLacpEnhancedLagPolAttributes(ctx context.Context, diags *diag.Diag
 				if attributeName == "annotation" {
 					readData.Annotation = basetypes.NewStringValue(attributeValue.(string))
 				}
+				if attributeName == "id" {
+					readData.LacpEnhancedLagPolId = basetypes.NewStringValue(attributeValue.(string))
+				}
 				if attributeName == "lbmode" {
 					readData.Lbmode = basetypes.NewStringValue(attributeValue.(string))
 				}
@@ -689,6 +703,9 @@ func getLacpEnhancedLagPolCreateJsonPayload(ctx context.Context, diags *diag.Dia
 	payloadMap["children"] = childPayloads
 	if !data.Annotation.IsNull() && !data.Annotation.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["annotation"] = data.Annotation.ValueString()
+	}
+	if !data.LacpEnhancedLagPolId.IsNull() && !data.LacpEnhancedLagPolId.IsUnknown() {
+		payloadMap["attributes"].(map[string]string)["id"] = data.LacpEnhancedLagPolId.ValueString()
 	}
 	if !data.Lbmode.IsNull() && !data.Lbmode.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["lbmode"] = data.Lbmode.ValueString()

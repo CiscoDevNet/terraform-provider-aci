@@ -277,6 +277,36 @@
                     "isDeprecated": false,
                     "isHidden": false
                 },
+                "id": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "An identifier ."
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "5586",
+                    "propLocalId": "12",
+                    "label": "Id",
+                    "baseType": "scalar:Uint64",
+                    "modelType": "naming:Id",
+                    "needsPropDelimiters": false,
+                    "uitype": "number",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": true,
+                    "likeProp": "naming:Identified:id",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
                 "lbmode": {
                     "versions": "3.2(10e)-3.2(10g),3.2(7f)-",
                     "comment": [
