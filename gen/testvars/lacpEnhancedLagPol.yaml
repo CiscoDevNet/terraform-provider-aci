@@ -5,6 +5,7 @@
 
 default:
   annotation: "orchestrator:terraform"
+  id_attribute: ""
   load_balancing_mode: "src-dst-ip"
   mode: "active"
   name_alias: ""
@@ -21,6 +22,7 @@ resource_required:
 
 all:
   annotation: "annotation"
+  id_attribute: "id_attribute_1"
   load_balancing_mode: "dst-ip"
   mode: "active"
   name_alias: "name_alias_1"
