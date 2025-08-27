@@ -5,7 +5,7 @@ go 1.23.0
 toolchain go1.24.0
 
 require (
-	github.com/ciscoecosystem/aci-go-client/v2 v2.31.0
+	github.com/ciscoecosystem/aci-go-client/v2 v2.31.1
 	github.com/ghodss/yaml v1.0.0
 	github.com/hashicorp/go-cty v1.5.0
 	github.com/hashicorp/go-version v1.7.0
