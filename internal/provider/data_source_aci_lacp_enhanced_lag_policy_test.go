@@ -23,6 +23,7 @@ func TestAccDataSourceLacpEnhancedLagPolWithVmmVSwitchPolicyCont(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("data.aci_lacp_enhanced_lag_policy.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("data.aci_lacp_enhanced_lag_policy.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("data.aci_lacp_enhanced_lag_policy.test", "id_attribute", ""),
 					resource.TestCheckResourceAttr("data.aci_lacp_enhanced_lag_policy.test", "load_balancing_mode", "src-dst-ip"),
 					resource.TestCheckResourceAttr("data.aci_lacp_enhanced_lag_policy.test", "mode", "active"),
 					resource.TestCheckResourceAttr("data.aci_lacp_enhanced_lag_policy.test", "name_alias", ""),
