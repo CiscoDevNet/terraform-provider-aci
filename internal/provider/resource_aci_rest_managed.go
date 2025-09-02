@@ -61,6 +61,11 @@ type AciRestManagedChildIdentifier struct {
 	ClassName types.String
 }
 
+type ImportJsonString struct {
+	ParentDn string   `json:"parentDn"`
+	ChildRns []string `json:"childRns"`
+}
+
 // List of attributes to be not stored in state
 var IgnoreAttr = []string{"dn", "configQual", "configSt", "virtualIp", "annotation"}
 
@@ -289,7 +294,12 @@ func (r *AciRestManagedResource) Read(ctx context.Context, req resource.ReadRequ
 			)
 			return
 		}
-		rn_values = strings.Split(rnMap["rn_values"], ",")
+
+		if strings.Contains(rnMap["rn_values"], "<,>") {
+			rn_values = strings.Split(rnMap["rn_values"], "<,>")
+		} else {
+			rn_values = strings.Split(rnMap["rn_values"], ",")
+		}
 	}
 
 	setAciRestManagedAttributes(ctx, &resp.Diagnostics, r.client, data, rn_values)
@@ -370,10 +380,21 @@ func (r *AciRestManagedResource) Delete(ctx context.Context, req resource.Delete
 	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_rest_managed with id '%s'", data.Id.ValueString()))
 }
 
-func splitImportId(importId string) []string {
+func splitImportId(ctx context.Context, importId string) ([]string, error) {
+	// JSON string input support
+	if importId[0:1] == "{" {
+		var ImportJson ImportJsonString
+		err := json.Unmarshal([]byte(importId), &ImportJson)
+		if err != nil {
+			return nil, err
+		}
+		return []string{ImportJson.ParentDn, strings.Join(ImportJson.ChildRns, "<,>")}, nil
+	}
 
 	if !strings.Contains(importId, "[") {
-		return strings.Split(importId, ":")
+		tflog.Warn(ctx, "The use of the colon-separated format to import multiple child resources will be deprecated in the next release.")
+		tflog.Warn(ctx, "Please use a JSON format string to import multiple children, instead of using a colon-separated import statement.")
+		return strings.Split(importId, ":"), nil
 	}
 
 	idParts := []string{}
@@ -395,14 +416,21 @@ func splitImportId(importId string) []string {
 		idParts = append(idParts, importId[startIndex:])
 	}
 
-	return idParts
+	return idParts, nil
 
 }
 
 func (r *AciRestManagedResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_rest_managed")
 
-	idParts := splitImportId(req.ID)
+	idParts, err := splitImportId(ctx, req.ID)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Unable to parse import JSON string",
+			fmt.Sprintf("Err: %s. Please check the import JSON string.", err),
+		)
+		return
+	}
 
 	if len(idParts) == 0 || len(idParts) > 3 {
 		resp.Diagnostics.AddError(
@@ -626,29 +654,31 @@ func setAciRestManagedAttributes(ctx context.Context, diags *diag.Diagnostics, c
 
 			childRequestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s/%s.json?rsp-prop-include=config-only", data.Dn.ValueString(), rn), "GET", nil)
 			childClassData := childRequestData.Search("imdata").Search(aciRestManagedChild.ClassName.ValueString()).Data()
-			childContent := make(map[string]attr.Value, 0)
-			if childClassDetails == nil {
-				// this is not tested because it would involve importing a child corner case
-				// deleting the child between the GET of parent with children and the config-only GET for child
-				diags.AddError(
-					"Import Failed",
-					fmt.Sprintf("Unable to find specified child '%s'", rn),
-				)
-				return
-			} else if len(childClassData.([]interface{})) != 1 {
-				diags.AddError(
-					"Too many results in response",
-					fmt.Sprintf("%v matches returned for rn '%s'. Please report this issue to the provider developers.", len(childClassData.([]interface{})), rn))
-				return
-			}
-
-			for attributeName, attributeValue := range childClassData.([]interface{})[0].(map[string]interface{})["attributes"].(map[string]interface{}) {
-				if !ContainsString(IgnoreAttr, attributeName) || attributeName == "annotation" {
-					childContent[attributeName] = basetypes.NewStringValue(attributeValue.(string))
+			if childClassData != nil {
+				childContent := make(map[string]attr.Value, 0)
+				if childClassDetails == nil {
+					// this is not tested because it would involve importing a child corner case
+					// deleting the child between the GET of parent with children and the config-only GET for child
+					diags.AddError(
+						"Import Failed",
+						fmt.Sprintf("Unable to find specified child '%s'", rn),
+					)
+					return
+				} else if len(childClassData.([]interface{})) != 1 {
+					diags.AddError(
+						"Too many results in response",
+						fmt.Sprintf("%v matches returned for rn '%s'. Please report this issue to the provider developers.", len(childClassData.([]interface{})), rn))
+					return
 				}
+
+				for attributeName, attributeValue := range childClassData.([]interface{})[0].(map[string]interface{})["attributes"].(map[string]interface{}) {
+					if !ContainsString(IgnoreAttr, attributeName) || attributeName == "annotation" {
+						childContent[attributeName] = basetypes.NewStringValue(attributeValue.(string))
+					}
+				}
+				aciRestManagedChild.Content, _ = types.MapValue(types.StringType, childContent)
+				foundChildren = append(foundChildren, aciRestManagedChild)
 			}
-			aciRestManagedChild.Content, _ = types.MapValue(types.StringType, childContent)
-			foundChildren = append(foundChildren, aciRestManagedChild)
 		}
 	}
 
