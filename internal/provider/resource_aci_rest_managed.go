@@ -295,6 +295,9 @@ func (r *AciRestManagedResource) Read(ctx context.Context, req resource.ReadRequ
 			return
 		}
 
+		// Angle brackets are not allowed within ACI class object identifier fields.
+		// Because of that "<,>" string was used to merge and split the list elements.
+		// Only using "," is not enough when the object identifier contains "," for example: "annotationKey-[~!$([])_+-={};:|,.]"
 		if strings.Contains(rnMap["rn_values"], "<,>") {
 			rn_values = strings.Split(rnMap["rn_values"], "<,>")
 		} else {
@@ -380,21 +383,29 @@ func (r *AciRestManagedResource) Delete(ctx context.Context, req resource.Delete
 	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_rest_managed with id '%s'", data.Id.ValueString()))
 }
 
-func splitImportId(ctx context.Context, importId string) ([]string, error) {
+func splitImportId(ctx context.Context, importId string, resp *resource.ImportStateResponse) []string {
 	// JSON string input support
 	if importId[0:1] == "{" {
 		var ImportJson ImportJsonString
 		err := json.Unmarshal([]byte(importId), &ImportJson)
 		if err != nil {
-			return nil, err
+			resp.Diagnostics.AddError(
+				"Unable to parse import JSON string",
+				fmt.Sprintf("Err: %s. Please check the import JSON string.", err),
+			)
+			return nil
 		}
-		return []string{ImportJson.ParentDn, strings.Join(ImportJson.ChildRns, "<,>")}, nil
+
+		// Angle brackets are not allowed within ACI class object identifier fields.
+		// Because of that "<,>" string was used to merge and split the list elements.
+		// Only using "," is not enough when the object identifier contains "," for example: "annotationKey-[~!$([])_+-={};:|,.]"
+		return []string{ImportJson.ParentDn, strings.Join(ImportJson.ChildRns, "<,>")}
 	}
 
 	if !strings.Contains(importId, "[") {
 		tflog.Warn(ctx, "The use of the colon-separated format to import multiple child resources will be deprecated in the next release.")
 		tflog.Warn(ctx, "Please use a JSON format string to import multiple children, instead of using a colon-separated import statement.")
-		return strings.Split(importId, ":"), nil
+		return strings.Split(importId, ":")
 	}
 
 	idParts := []string{}
@@ -416,21 +427,14 @@ func splitImportId(ctx context.Context, importId string) ([]string, error) {
 		idParts = append(idParts, importId[startIndex:])
 	}
 
-	return idParts, nil
+	return idParts
 
 }
 
 func (r *AciRestManagedResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_rest_managed")
 
-	idParts, err := splitImportId(ctx, req.ID)
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Unable to parse import JSON string",
-			fmt.Sprintf("Err: %s. Please check the import JSON string.", err),
-		)
-		return
-	}
+	idParts := splitImportId(ctx, req.ID, resp)
 
 	if len(idParts) == 0 || len(idParts) > 3 {
 		resp.Diagnostics.AddError(
