@@ -298,6 +298,8 @@ func (r *AciRestManagedResource) Read(ctx context.Context, req resource.ReadRequ
 		// Angle brackets are not allowed within ACI class object identifier fields.
 		// Because of that "<,>" string was used to merge and split the list elements.
 		// Only using "," is not enough when the object identifier contains "," for example: "annotationKey-[~!$([])_+-={};:|,.]"
+		// This conversion is required because the SetKey function, utilized by the Terraform private state.
+		// The SetKey function accepts byte strings as the value for the key.
 		if strings.Contains(rnMap["rn_values"], "<,>") {
 			rn_values = strings.Split(rnMap["rn_values"], "<,>")
 		} else {
@@ -399,12 +401,14 @@ func splitImportId(ctx context.Context, importId string, resp *resource.ImportSt
 		// Angle brackets are not allowed within ACI class object identifier fields.
 		// Because of that "<,>" string was used to merge and split the list elements.
 		// Only using "," is not enough when the object identifier contains "," for example: "annotationKey-[~!$([])_+-={};:|,.]"
+		// This conversion is required because the SetKey function, utilized by the Terraform private state.
+		// The SetKey function accepts byte strings as the value for the key.
 		return []string{ImportJson.ParentDn, strings.Join(ImportJson.ChildRns, "<,>")}
 	}
 
 	if !strings.Contains(importId, "[") {
-		tflog.Warn(ctx, "The use of the colon-separated format to import multiple child resources will be deprecated in the next release.")
-		tflog.Warn(ctx, "Please use a JSON format string to import multiple children, instead of using a colon-separated import statement.")
+		tflog.Warn(ctx, "The use of the colon-separated format to import children for the resource will be deprecated in the next release.")
+		tflog.Warn(ctx, "Please use a JSON format string to import children, instead of using a colon-separated import statement.")
 		return strings.Split(importId, ":")
 	}
 
