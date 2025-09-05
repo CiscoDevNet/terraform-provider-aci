@@ -109,7 +109,7 @@ An existing object can be [imported](https://www.terraform.io/docs/import/index.
 terraform import aci_rest_managed.example_tenant `{ "parentDn": "uni/tn-{name}", "childRns": ["rsTenantMonPol", "annotationKey-[{key}]", "{child-n}"] }`
 ```
 
-!> The use of the colon-separated format to import multiple child resources will be deprecated in the next release. Please use a JSON format string to import multiple children, instead of using a colon-separated import statement.
+!> The use of the colon-separated format to import children for the resource will be deprecated in the next release. Please use a JSON format string to import children, instead of using a colon-separated import statement.
 
 ```
 terraform import aci_rest_managed.example_tenant `{ "parentDn": "uni/tn-{name}", "childRns": ["rsTenantMonPol", "annotationKey-[{key}]", "{child-n}"] }`
@@ -117,7 +117,7 @@ terraform import aci_rest_managed.example_tenant `{ "parentDn": "uni/tn-{name}",
 
 Starting in Terraform version 1.5, an existing object can be imported using [import blocks](https://developer.hashicorp.com/terraform/language/import) via the following configuration:
 
-```child
+```
 import {
   id = `{ "parentDn": "uni/tn-{name}", "childRns": ["rsTenantMonPol", "annotationKey-[{key}]", "{child-n}"] }`
   to = aci_rest_managed.example_tenant
