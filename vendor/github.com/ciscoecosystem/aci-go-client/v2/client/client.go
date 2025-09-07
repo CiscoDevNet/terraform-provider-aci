@@ -318,6 +318,32 @@ func (c *Client) useInsecureHTTPClient(insecure bool) *http.Transport {
 
 }
 
+func (c *Client) makeFullUrl(rpath string) (string, string, error) {
+	rpath = strings.TrimLeft(rpath, "/")
+	rpath = fmt.Sprintf("/%v", rpath)
+	pathURL, err := url.Parse(rpath)
+	if err != nil {
+		return "", "", err
+	}
+	fURL, err := url.Parse(c.BaseURL.String())
+	if err != nil {
+		return "", "", err
+	}
+	if c.preserveBaseUrlRef {
+		// Default is false for preserveBaseUrlRef - matching original behavior to strip out BaseURL
+		// Extra slashes at the end of the baseUrl are also preserved.
+		fURLStr := fURL.String() + pathURL.String()
+		fURL, err = url.Parse(fURLStr)
+		if err != nil {
+			return "", "", err
+		}
+	} else {
+		// Original behavior to strip down BaseURL
+		fURL = fURL.ResolveReference(pathURL)
+	}
+	return fURL.String(), pathURL.String(), nil
+}
+
 // Takes raw payload and does the http request
 // - Used for login request
 // - Passwords with special chars have issues when using container
@@ -327,35 +353,16 @@ func (c *Client) MakeRestRequestRaw(method string, rpath string, payload []byte,
 }
 
 func (c *Client) makeRestRequestRaw(method string, rpath string, payload []byte, authenticated bool, skipLoggingPayload bool) (*http.Request, error) {
-
-	pathURL, err := url.Parse(rpath)
+	fURL, pathURL, err := c.makeFullUrl(rpath)
 	if err != nil {
 		return nil, err
 	}
-
-	fURL, err := url.Parse(c.BaseURL.String())
-	if err != nil {
-		return nil, err
-	}
-
-	if c.preserveBaseUrlRef {
-		// Default is false for preserveBaseUrlRef - matching original behavior to strip out BaseURL
-		fURLStr := fURL.String() + pathURL.String()
-		fURL, err = url.Parse(fURLStr)
-		if err != nil {
-			return nil, err
-		}
-	} else {
-		// Original behavior to strip down BaseURL
-		fURL = fURL.ResolveReference(pathURL)
-	}
-
 	var req *http.Request
-	log.Printf("[DEBUG] BaseURL: %s, pathURL: %s, fURL: %s", c.BaseURL.String(), pathURL.String(), fURL.String())
+	log.Printf("[DEBUG] BaseURL: %s, pathURL: %s, fURL: %s", c.BaseURL.String(), pathURL, fURL)
 	if method == "GET" {
-		req, err = http.NewRequest(method, fURL.String(), nil)
+		req, err = http.NewRequest(method, fURL, nil)
 	} else {
-		req, err = http.NewRequest(method, fURL.String(), bytes.NewBuffer(payload))
+		req, err = http.NewRequest(method, fURL, bytes.NewBuffer(payload))
 	}
 	if err != nil {
 		return nil, err
@@ -385,35 +392,16 @@ func (c *Client) MakeRestRequest(method string, rpath string, body *container.Co
 }
 
 func (c *Client) makeRestRequest(method string, rpath string, body *container.Container, authenticated bool, skipLoggingPayload bool) (*http.Request, error) {
-
-	pathURL, err := url.Parse(rpath)
+	fURL, pathURL, err := c.makeFullUrl(rpath)
 	if err != nil {
 		return nil, err
 	}
-
-	fURL, err := url.Parse(c.BaseURL.String())
-	if err != nil {
-		return nil, err
-	}
-
-	if c.preserveBaseUrlRef {
-		// Default is false for preserveBaseUrlRef - matching original behavior to strip out BaseURL
-		fURLStr := fURL.String() + pathURL.String()
-		fURL, err = url.Parse(fURLStr)
-		if err != nil {
-			return nil, err
-		}
-	} else {
-		// Original behavior to strip down BaseURL
-		fURL = fURL.ResolveReference(pathURL)
-	}
-
 	var req *http.Request
-	log.Printf("[DEBUG] BaseURL: %s, pathURL: %s, fURL: %s", c.BaseURL.String(), pathURL.String(), fURL.String())
+	log.Printf("[DEBUG] BaseURL: %s, pathURL: %s, fURL: %s", c.BaseURL.String(), pathURL, fURL)
 	if method == "GET" {
-		req, err = http.NewRequest(method, fURL.String(), nil)
+		req, err = http.NewRequest(method, fURL, nil)
 	} else {
-		req, err = http.NewRequest(method, fURL.String(), bytes.NewBuffer((body.Bytes())))
+		req, err = http.NewRequest(method, fURL, bytes.NewBuffer((body.Bytes())))
 	}
 	if err != nil {
 		return nil, err
