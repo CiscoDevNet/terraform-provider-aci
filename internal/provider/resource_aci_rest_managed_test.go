@@ -10,7 +10,7 @@ import (
 )
 
 func TestAccAciRestManaged_tenant(t *testing.T) {
-	name := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	name := acctest.RandStringFromCharSet(10, acctest.CharSetAlpha)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(7g)-") },
@@ -133,7 +133,7 @@ func TestAccAciRestManaged_noContent(t *testing.T) {
 }
 
 func TestAccAciRestManaged_tenantVrf(t *testing.T) {
-	name := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	name := acctest.RandStringFromCharSet(10, acctest.CharSetAlpha)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(7g)-") },
@@ -156,7 +156,7 @@ func TestAccAciRestManaged_tenantVrf(t *testing.T) {
 }
 
 func TestAccAciRestManaged_import(t *testing.T) {
-	name := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	name := acctest.RandStringFromCharSet(10, acctest.CharSetAlpha)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(7g)-") },
@@ -336,7 +336,7 @@ func TestAccAciRestManaged_import(t *testing.T) {
 }
 
 func TestAccAciRestManaged_importWithIpv6(t *testing.T) {
-	name := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	name := acctest.RandStringFromCharSet(10, acctest.CharSetAlpha)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(7g)-") },
@@ -424,7 +424,7 @@ func TestAccAciRestManaged_importWithIpv6(t *testing.T) {
 }
 
 func TestAccAciRestManaged_importWithBracket(t *testing.T) {
-	name := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	name := acctest.RandStringFromCharSet(10, acctest.CharSetAlpha)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(7g)-") },
@@ -501,7 +501,7 @@ func TestAccAciRestManaged_importWithBracket(t *testing.T) {
 }
 
 func TestAccAciRestManaged_tagTag(t *testing.T) {
-	name := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	name := acctest.RandStringFromCharSet(10, acctest.CharSetAlpha)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(7g)-") },
@@ -524,7 +524,7 @@ func TestAccAciRestManaged_tagTag(t *testing.T) {
 // step 2 - update same tenant with child vrf
 // step 3 - Update tenant again and remove children
 func TestAccAciRestManaged_tenantChildren(t *testing.T) {
-	name := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	name := acctest.RandStringFromCharSet(10, acctest.CharSetAlpha)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(7g)-") },
@@ -568,7 +568,7 @@ func TestAccAciRestManaged_tenantChildren(t *testing.T) {
 }
 
 func TestAccAciRestManaged_ignoreChildAnnotation(t *testing.T) {
-	name := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	name := acctest.RandStringFromCharSet(10, acctest.CharSetAlpha)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(7g)-") },
@@ -593,7 +593,7 @@ func TestAccAciRestManaged_ignoreChildAnnotation(t *testing.T) {
 }
 
 func TestAccAciRestManaged_globalAllowExistingOnCreate(t *testing.T) {
-	name := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	name := acctest.RandStringFromCharSet(10, acctest.CharSetAlpha)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(7g)-") },
@@ -640,7 +640,7 @@ func TestAccAciRestManaged_globalAllowExistingOnCreate(t *testing.T) {
 }
 
 func TestAccAciRestManaged_globalAnnotation(t *testing.T) {
-	name := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	name := acctest.RandStringFromCharSet(10, acctest.CharSetAlpha)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(7g)-") },
@@ -777,7 +777,7 @@ func TestAccAciRestManaged_undeletableClass(t *testing.T) {
 }
 
 func TestAccAciRestManaged_explicitNull(t *testing.T) {
-	name := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	name := acctest.RandStringFromCharSet(10, acctest.CharSetAlpha)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(7g)-") },
