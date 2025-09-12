@@ -58,7 +58,10 @@ func resourceAciL3ExtSubnet() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
-
+			"name": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"aggregate": &schema.Schema{
 				Type:             schema.TypeString,
 				Optional:         true,
@@ -193,6 +196,7 @@ func setL3ExtSubnetAttributes(l3extSubnet *models.L3ExtSubnet, d *schema.Resourc
 
 	d.Set("external_network_instance_profile_dn", GetParentDn(dn, fmt.Sprintf("/extsubnet-[%s]", l3extSubnetMap["ip"])))
 	d.Set("ip", l3extSubnetMap["ip"])
+	d.Set("name", l3extSubnetMap["name"])
 
 	if l3extSubnetMap["aggregate"] == "" {
 		d.Set("aggregate", "none")
@@ -201,7 +205,6 @@ func setL3ExtSubnetAttributes(l3extSubnet *models.L3ExtSubnet, d *schema.Resourc
 	}
 
 	d.Set("annotation", l3extSubnetMap["annotation"])
-	d.Set("ip", l3extSubnetMap["ip"])
 	d.Set("name_alias", l3extSubnetMap["nameAlias"])
 
 	scpGet := make([]string, 0, 1)
@@ -299,6 +302,7 @@ func resourceAciL3ExtSubnetCreate(ctx context.Context, d *schema.ResourceData, m
 	desc := d.Get("description").(string)
 
 	ip := d.Get("ip").(string)
+	name := d.Get("name").(string)
 
 	ExternalNetworkInstanceProfileDn := d.Get("external_network_instance_profile_dn").(string)
 
@@ -318,6 +322,7 @@ func resourceAciL3ExtSubnetCreate(ctx context.Context, d *schema.ResourceData, m
 	if Ip, ok := d.GetOk("ip"); ok {
 		l3extSubnetAttr.Ip = Ip.(string)
 	}
+	l3extSubnetAttr.Name = name
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		l3extSubnetAttr.NameAlias = NameAlias.(string)
 	}
@@ -329,7 +334,7 @@ func resourceAciL3ExtSubnetCreate(ctx context.Context, d *schema.ResourceData, m
 		scp := strings.Join(scpList, ",")
 		l3extSubnetAttr.Scope = scp
 	}
-	l3extSubnet := models.NewL3ExtSubnet(fmt.Sprintf("extsubnet-[%s]", ip), ExternalNetworkInstanceProfileDn, desc, l3extSubnetAttr)
+	l3extSubnet := models.NewL3ExtSubnet(fmt.Sprintf("extsubnet-[%s]", ip), ExternalNetworkInstanceProfileDn, desc, name, l3extSubnetAttr)
 
 	err := aciClient.Save(l3extSubnet)
 	if err != nil {
@@ -384,6 +389,7 @@ func resourceAciL3ExtSubnetUpdate(ctx context.Context, d *schema.ResourceData, m
 	desc := d.Get("description").(string)
 
 	ip := d.Get("ip").(string)
+	name := d.Get("name").(string)
 
 	ExternalNetworkInstanceProfileDn := d.Get("external_network_instance_profile_dn").(string)
 
@@ -406,6 +412,7 @@ func resourceAciL3ExtSubnetUpdate(ctx context.Context, d *schema.ResourceData, m
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		l3extSubnetAttr.NameAlias = NameAlias.(string)
 	}
+	l3extSubnetAttr.Name = name
 	if Scope, ok := d.GetOk("scope"); ok {
 		scpList := make([]string, 0, 1)
 		for _, val := range Scope.([]interface{}) {
@@ -414,7 +421,7 @@ func resourceAciL3ExtSubnetUpdate(ctx context.Context, d *schema.ResourceData, m
 		scp := strings.Join(scpList, ",")
 		l3extSubnetAttr.Scope = scp
 	}
-	l3extSubnet := models.NewL3ExtSubnet(fmt.Sprintf("extsubnet-[%s]", ip), ExternalNetworkInstanceProfileDn, desc, l3extSubnetAttr)
+	l3extSubnet := models.NewL3ExtSubnet(fmt.Sprintf("extsubnet-[%s]", ip), ExternalNetworkInstanceProfileDn, desc, name, l3extSubnetAttr)
 
 	l3extSubnet.Status = "modified"
 

@@ -28,6 +28,7 @@ Manages ACI External EPG Subnet
 	  external_network_instance_profile_dn  = aci_external_network_instance_profile.example.id
 	  description                           = "Sample L3 External subnet"
 	  ip                                    = "10.0.3.28/27"
+	  name                                  = "l3_ext_subnet"
 	  aggregate                             = "shared-rtctrl"
 	  annotation                            = "tag_ext_subnet"
 	  name_alias                            = "alias_ext_subnet"
@@ -48,6 +49,7 @@ Manages ACI External EPG Subnet
 
 * `external_network_instance_profile_dn` - (Required) Distinguished name of the parent External Network Instance Profile object.
 * `ip` - (Required) ip of the External EPG Subnet object.
+* `name` - (Optional) Name of the External EPG Subnet object.
 * `aggregate` - (Optional) Aggregate Routes of the External EPG Subnet object. Allowed values are "import-rtctrl", "export-rtctrl", "shared-rtctrl" and "none".
 * `annotation` - (Optional) annotation of the External EPG Subnet object.
 * `description` - (Optional) Description of the External EPG Subnet object.

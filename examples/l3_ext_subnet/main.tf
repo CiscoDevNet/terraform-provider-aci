@@ -73,6 +73,7 @@ resource "aci_l3_ext_subnet" "foo_subnet" {
   external_network_instance_profile_dn = aci_external_network_instance_profile.foo_external_network_instance_profile.id
   description                          = "Sample L3 External subnet"
   ip                                   = "10.0.3.28/27"
+  name                                 = "l3_ext_subnet"
   aggregate                            = "shared-rtctrl"
   annotation                           = "tag_ext_subnet"
   name_alias                           = "alias_ext_subnet"

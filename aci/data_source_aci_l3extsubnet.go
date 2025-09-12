@@ -26,7 +26,10 @@ func dataSourceAciL3ExtSubnet() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-
+			"name": &schema.Schema{
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 			"aggregate": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
