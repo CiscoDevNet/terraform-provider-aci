@@ -39,6 +39,7 @@ data "aci_l3_ext_subnet" "example" {
 ## Attribute Reference ##
 
 * `id` - Attribute id set to the Dn of the External EPG Subnet object.
+* `name` - (Read-Only) Name of the External EPG Subnet object.
 * `aggregate` - (Optional) Aggregate Routes of the External EPG Subnet object.
 * `annotation` - (Optional) Annotation of the External EPG Subnet object.
 * `description` - (Optional) Description of the External EPG Subnet object.

@@ -15,7 +15,8 @@ type L3ExtSubnet struct {
 }
 
 type L3ExtSubnetAttributes struct {
-	Ip string `json:",omitempty"`
+	Ip   string `json:",omitempty"`
+	Name string `json:",omitempty"`
 
 	Aggregate string `json:",omitempty"`
 
@@ -48,6 +49,7 @@ func (l3extSubnet *L3ExtSubnet) ToMap() (map[string]string, error) {
 	}
 
 	A(l3extSubnetMap, "ip", l3extSubnet.Ip)
+	A(l3extSubnetMap, "name", l3extSubnet.Name)
 
 	A(l3extSubnetMap, "aggregate", l3extSubnet.Aggregate)
 
@@ -74,7 +76,8 @@ func L3ExtSubnetFromContainerList(cont *container.Container, index int) *L3ExtSu
 
 		L3ExtSubnetAttributes{
 
-			Ip: G(SubnetCont, "ip"),
+			Ip:   G(SubnetCont, "ip"),
+			Name: G(SubnetCont, "name"),
 
 			Aggregate: G(SubnetCont, "aggregate"),
 
