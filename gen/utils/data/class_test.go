@@ -24,6 +24,7 @@ var relationInfoNetflowRsExporterToCtx = map[string]interface{}{
 		"fromMo": "netflow:AExporterPol",
 		"toMo":   "fv:Ctx",
 	},
+	"isCreatableDeletable": "always",
 }
 
 func TestSplitClassNameToPackageNameAndShortNameSingle(t *testing.T) {
@@ -167,6 +168,7 @@ func TestSetRelationIncludeFromTrueAndTypeExplicit(t *testing.T) {
 	class := Class{ClassName: "netflowRsExporterToCtx"}
 	class.MetaFileContent = relationInfoNetflowRsExporterToCtx
 	err := class.setRelation()
+	class.setAllowDelete()
 	assert.NoError(t, err, fmt.Sprintf("Expected no error, but got '%s'", err))
 	assert.Equal(t, class.Relation.FromClass, "netflowAExporterPol", fmt.Sprintf("Expected FromClass to be 'netflowAExporterPol', but got '%s'", class.Relation.FromClass))
 	assert.Equal(t, class.Relation.ToClass, "fvCtx", fmt.Sprintf("Expected ToClass to be 'fvCtx', but got '%s'", class.Relation.ToClass))
@@ -187,4 +189,38 @@ func TestSetRelationUndefinedType(t *testing.T) {
 	}
 	err := class.setRelation()
 	assert.Error(t, err, fmt.Sprintf("Expected error, but got '%s'", err))
+}
+
+func TestSetAllowDelete(t *testing.T) {
+	test.InitializeTest(t)
+
+	// When the class isCreatableDeletable property not set to "never" and fvPeeringP.allow_delete is set to false in the definitions (classes.yaml)
+	class := Class{ClassName: "fvPeeringP"}
+	class.MetaFileContent = map[string]interface{}{
+		"isCreatableDeletable": "always",
+	}
+	class.setAllowDelete()
+	assert.Equal(t, class.AllowDelete, false, fmt.Sprintf("Expected isCreatableDeletable to be 'false', but got '%t'", class.AllowDelete))
+
+	// When the class isCreatableDeletable property not set to "never" and commPol.allow_delete is not defined in the definitions (classes.yaml)
+	class = Class{ClassName: "commPol"}
+	class.MetaFileContent = map[string]interface{}{
+		"isCreatableDeletable": "always",
+	}
+	class.setAllowDelete()
+	assert.Equal(t, class.AllowDelete, true, fmt.Sprintf("Expected isCreatableDeletable to be 'true', but got '%t'", class.AllowDelete))
+
+	// When the class isCreatableDeletable property set to "never", AllowDelete is set to false
+	class = Class{ClassName: "commHttp"}
+	class.MetaFileContent = map[string]interface{}{
+		"isCreatableDeletable": "never",
+	}
+	class.setAllowDelete()
+	assert.Equal(t, class.AllowDelete, false, fmt.Sprintf("Expected isCreatableDeletable to be 'false', but got '%t'", class.AllowDelete))
+
+	// When the class is without the isCreatableDeletable property, AllowDelete is set to false
+	class = Class{ClassName: "dummyClass"}
+	class.MetaFileContent = map[string]interface{}{}
+	class.setAllowDelete()
+	assert.Equal(t, class.AllowDelete, false, fmt.Sprintf("Expected isCreatableDeletable to be 'false', but got '%t'", class.AllowDelete))
 }
