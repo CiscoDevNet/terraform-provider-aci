@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"path"
 	"slices"
 	"strings"
 	"unicode"
@@ -12,6 +13,7 @@ import (
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
+	"gopkg.in/yaml.v2"
 )
 
 type Class struct {
@@ -124,6 +126,63 @@ func setRelationshipTypeEnum(relationType string) (RelationshipTypeEnum, error) 
 	default:
 		return Undefined, fmt.Errorf("undefined relationship type '%s'", relationType)
 	}
+}
+
+// A Definitions represents the ACI class and property definitions as defined in the definitions YAML files
+type Definitions struct {
+	Classes    map[string]interface{}
+	Properties map[string]interface{}
+	Migration  map[string]interface{}
+}
+
+// Retrieves the property and classs overwrite definitions from the definitions YAML files
+func getDefinitions() Definitions {
+	definitions := Definitions{}
+	files, err := os.ReadDir(constDefinitionsPath)
+	if err != nil {
+		panic(err)
+	}
+	for _, file := range files {
+		if path.Ext(file.Name()) == ".yaml" {
+			definitionMap := make(map[string]interface{})
+			definition, err := os.ReadFile(fmt.Sprintf("%s/%s", constDefinitionsPath, file.Name()))
+			if err != nil {
+				panic(err)
+			}
+			err = yaml.Unmarshal([]byte(definition), &definitionMap)
+			if err != nil {
+				panic(err)
+			}
+			if file.Name() == "classes.yaml" {
+				definitions.Classes = definitionMap
+			} else if file.Name() == "properties.yaml" {
+				definitions.Properties = definitionMap
+			}
+		} else if path.Ext(file.Name()) == ".json" && strings.Contains(file.Name(), "schema-git-commit-") {
+			definitionMap := make(map[string]interface{})
+			definition, err := os.ReadFile(fmt.Sprintf("%s/%s", constDefinitionsPath, file.Name()))
+			if err != nil {
+				panic(err)
+			}
+			err = json.Unmarshal([]byte(definition), &definitionMap)
+			if err != nil {
+				panic(err)
+			}
+			definitions.Migration = definitionMap
+		}
+	}
+	return definitions
+}
+
+func allowClassDelete(className string, definitions Definitions) bool {
+	if classDetails, ok := definitions.Classes[className]; ok {
+		for key, value := range classDetails.(map[interface{}]interface{}) {
+			if key.(string) == "allow_delete" {
+				return value.(bool)
+			}
+		}
+	}
+	return true
 }
 
 type ClassDocumentation struct {
@@ -272,6 +331,14 @@ func (c *Class) setClassData(ds *DataStore) error {
 func (c *Class) setAllowDelete() {
 	// Determine if the class can be deleted.
 	genLogger.Debug(fmt.Sprintf("Setting AllowDelete for class '%s'.", c.ClassName))
+	definitions := getDefinitions()
+	if allowDelete, ok := c.MetaFileContent["isCreatableDeletable"]; ok {
+		if allowDelete.(string) == "never" || !allowClassDelete(c.ClassName, definitions) {
+			c.AllowDelete = false
+		} else {
+			c.AllowDelete = true
+		}
+	}
 	genLogger.Debug(fmt.Sprintf("Successfully set AllowDelete for class '%s'.", c.ClassName))
 }
 
