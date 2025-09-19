@@ -3,7 +3,7 @@ package data
 const (
 	// Environment variables for logging configuration.
 	// The path to the definition files.
-	constDefinitionsPath = "./gen/definitions"
+	constDefinitionsPath = "../../../gen/definitions"
 	// The path to the global definition file.
 	constGlobalDefinitionFilePath = "./gen/definitions/global.yaml"
 	// Determine if the meta data in the meta directory should be refreshed from remote location
