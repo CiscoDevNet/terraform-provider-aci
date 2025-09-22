@@ -1,6 +1,7 @@
 package data
 
 import (
+	"fmt"
 	"os"
 
 	"gopkg.in/yaml.v2"
@@ -25,4 +26,25 @@ func loadGlobalMetaDefinition() GlobalMetaDefinition {
 	}
 
 	return definitionGlobalMetaData
+}
+
+type ClassDefinition struct {
+	AllowDelete string `yaml:"allow_delete"`
+}
+
+func loadClassDefinition(className string) ClassDefinition {
+	classDefinitionPath := fmt.Sprintf("%s/%s.yaml", constDefinitionsPath, className)
+
+	classDefinitionBytes, err := os.ReadFile(classDefinitionPath)
+	if err != nil {
+		genLogger.Fatal(fmt.Sprintf("A file '%s' is required to be defined in the definitions folder.", classDefinitionPath))
+	}
+
+	var classDefinitionData ClassDefinition
+	err = yaml.Unmarshal(classDefinitionBytes, &classDefinitionData)
+	if err != nil {
+		genLogger.Fatal(err.Error())
+	}
+
+	return classDefinitionData
 }
