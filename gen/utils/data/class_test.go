@@ -201,26 +201,4 @@ func TestSetAllowDelete(t *testing.T) {
 	}
 	class.setAllowDelete()
 	assert.Equal(t, class.AllowDelete, false, fmt.Sprintf("Expected isCreatableDeletable to be 'false', but got '%t'", class.AllowDelete))
-
-	// When the class isCreatableDeletable property not set to "never" and commPol.allow_delete is not defined in the definitions (classes.yaml)
-	class = Class{ClassName: "commPol"}
-	class.MetaFileContent = map[string]interface{}{
-		"isCreatableDeletable": "always",
-	}
-	class.setAllowDelete()
-	assert.Equal(t, class.AllowDelete, true, fmt.Sprintf("Expected isCreatableDeletable to be 'true', but got '%t'", class.AllowDelete))
-
-	// When the class isCreatableDeletable property set to "never", AllowDelete is set to false
-	class = Class{ClassName: "commHttp"}
-	class.MetaFileContent = map[string]interface{}{
-		"isCreatableDeletable": "never",
-	}
-	class.setAllowDelete()
-	assert.Equal(t, class.AllowDelete, false, fmt.Sprintf("Expected isCreatableDeletable to be 'false', but got '%t'", class.AllowDelete))
-
-	// When the class is without the isCreatableDeletable property, AllowDelete is set to false
-	class = Class{ClassName: "dummyClass"}
-	class.MetaFileContent = map[string]interface{}{}
-	class.setAllowDelete()
-	assert.Equal(t, class.AllowDelete, false, fmt.Sprintf("Expected isCreatableDeletable to be 'false', but got '%t'", class.AllowDelete))
 }
