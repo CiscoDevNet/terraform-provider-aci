@@ -5,7 +5,7 @@ const (
 	// The path to the definition files.
 	constDefinitionsPath = "../../../gen/definitions"
 	// The path to the global definition file.
-	constGlobalDefinitionFilePath = "./gen/definitions/global.yaml"
+	constGlobalDefinitionFilePath = "../../../gen/definitions/global.yaml"
 	// Determine if the meta data in the meta directory should be refreshed from remote location
 	// The default is to not refresh the meta data.
 	constEnvMetaRefresh = "GEN_ACI_TF_META_REFRESH_ALL"
