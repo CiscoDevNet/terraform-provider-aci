@@ -48,12 +48,12 @@ Manages ACI External EPG Subnet
 ## Argument Reference ##
 
 * `external_network_instance_profile_dn` - (Required) Distinguished name of the parent External Network Instance Profile object.
-* `ip` - (Required) ip of the External EPG Subnet object.
+* `ip` - (Required) IP of the External EPG Subnet object.
 * `name` - (Optional) Name of the External EPG Subnet object.
 * `aggregate` - (Optional) Aggregate Routes of the External EPG Subnet object. Allowed values are "import-rtctrl", "export-rtctrl", "shared-rtctrl" and "none".
-* `annotation` - (Optional) annotation of the External EPG Subnet object.
+* `annotation` - (Optional) Annotation of the External EPG Subnet object.
 * `description` - (Optional) Description of the External EPG Subnet object.
-* `name_alias` - (Optional) name_alias of the External EPG Subnet object.
+* `name_alias` - (Optional) Name alias of the External EPG Subnet object.
 * `scope` - (Optional) The list of domain applicable to the capability. Allowed values are "import-rtctrl", "export-rtctrl", "import-security", "shared-security" and "shared-rtctrl". Default is "import-security".
 * `relation_l3ext_rs_subnet_to_profile` - (Optional) Relation to Route Control Profile (class rtctrlProfile). Type: Block.
 	* `tn_rtctrl_profile_name` - **Deprecated** (Optional) Associates the External EPGs with the Route Control Profiles.

@@ -61,6 +61,7 @@ func resourceAciL3ExtSubnet() *schema.Resource {
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"aggregate": &schema.Schema{
 				Type:             schema.TypeString,
