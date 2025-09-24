@@ -334,7 +334,7 @@ func resourceAciL3ExtSubnetCreate(ctx context.Context, d *schema.ResourceData, m
 		scp := strings.Join(scpList, ",")
 		l3extSubnetAttr.Scope = scp
 	}
-	l3extSubnet := models.NewL3ExtSubnet(fmt.Sprintf("extsubnet-[%s]", ip), ExternalNetworkInstanceProfileDn, desc, name, l3extSubnetAttr)
+	l3extSubnet := models.NewL3ExtSubnet(fmt.Sprintf("extsubnet-[%s]", ip), ExternalNetworkInstanceProfileDn, desc, l3extSubnetAttr)
 
 	err := aciClient.Save(l3extSubnet)
 	if err != nil {
@@ -421,7 +421,7 @@ func resourceAciL3ExtSubnetUpdate(ctx context.Context, d *schema.ResourceData, m
 		scp := strings.Join(scpList, ",")
 		l3extSubnetAttr.Scope = scp
 	}
-	l3extSubnet := models.NewL3ExtSubnet(fmt.Sprintf("extsubnet-[%s]", ip), ExternalNetworkInstanceProfileDn, desc, name, l3extSubnetAttr)
+	l3extSubnet := models.NewL3ExtSubnet(fmt.Sprintf("extsubnet-[%s]", ip), ExternalNetworkInstanceProfileDn, desc, l3extSubnetAttr)
 
 	l3extSubnet.Status = "modified"
 
