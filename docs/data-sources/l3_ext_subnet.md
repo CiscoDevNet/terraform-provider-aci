@@ -40,13 +40,13 @@ data "aci_l3_ext_subnet" "example" {
 
 * `id` - Attribute id set to the Dn of the External EPG Subnet object.
 * `name` - (Read-Only) Name of the External EPG Subnet object.
-* `aggregate` - (Optional) Aggregate Routes of the External EPG Subnet object.
-* `annotation` - (Optional) Annotation of the External EPG Subnet object.
-* `description` - (Optional) Description of the External EPG Subnet object.
-* `name_alias` - (Optional) Name alias of the External EPG Subnet object.
-* `scope` - (Optional) The list of domain applicable to the capability.
-* `relation_l3ext_rs_subnet_to_profile` - (Optional) Relation to Route Control Profile (class rtctrlProfile). Type: Block.
-	* `tn_rtctrl_profile_name` - **Deprecated** (Optional) Associates the External EPGs with the Route Control Profiles.
-	* `tn_rtctrl_profile_dn` - (Optional) Associates the External EPGs with the Route Control Profiles.
-	* `direction` - (Optional) Relation to configure route map for each BGP peer in the inbound and outbound directions.
-* `relation_l3ext_rs_subnet_to_rt_summ` - (Optional) Relation to a Route Summarization Policy (class rtsumARtSummPol).
+* `aggregate` - (Read-Only) Aggregate Routes of the External EPG Subnet object.
+* `annotation` - (Read-Only) Annotation of the External EPG Subnet object.
+* `description` - (Read-Only) Description of the External EPG Subnet object.
+* `name_alias` - (Read-Only) Name alias of the External EPG Subnet object.
+* `scope` - (Read-Only) The list of domain applicable to the capability.
+* `relation_l3ext_rs_subnet_to_profile` - (Read-Only) Relation to Route Control Profile (class rtctrlProfile). Type: Block.
+	* `tn_rtctrl_profile_name` - **Deprecated** (Read-Only) Associates the External EPGs with the Route Control Profiles.
+	* `tn_rtctrl_profile_dn` - (Read-Only) Associates the External EPGs with the Route Control Profiles.
+	* `direction` - (Read-Only) Relation to configure route map for each BGP peer in the inbound and outbound directions.
+* `relation_l3ext_rs_subnet_to_rt_summ` - (Read-Only) Relation to a Route Summarization Policy (class rtsumARtSummPol).
