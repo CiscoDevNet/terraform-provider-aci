@@ -193,12 +193,32 @@ func TestSetRelationUndefinedType(t *testing.T) {
 
 func TestSetAllowDelete(t *testing.T) {
 	test.InitializeTest(t)
-
-	// When the class isCreatableDeletable property not set to "never" and fvPeeringP.allow_delete is set to false in the definitions (classes.yaml)
 	class := Class{ClassName: "fvPeeringP"}
+
+	//Case 1: Verify that AllowDelete is false when fvPeeringP's definitions.allow_delete is an empty string and meta.isCreatableDeletable is set to 'never'.
+	class.MetaFileContent = map[string]interface{}{
+		"isCreatableDeletable": "never",
+	}
+	class.setAllowDelete()
+	assert.Equal(t, class.AllowDelete, false, fmt.Sprintf("Expected isCreatableDeletable to be 'false', but got '%t'", class.AllowDelete))
+
+	//Case 2: Verify that AllowDelete is true when fvPeeringP's definitions.allow_delete is an empty string and meta.isCreatableDeletable is not set to 'never'.
 	class.MetaFileContent = map[string]interface{}{
 		"isCreatableDeletable": "always",
 	}
 	class.setAllowDelete()
+	assert.Equal(t, class.AllowDelete, true, fmt.Sprintf("Expected isCreatableDeletable to be 'true', but got '%t'", class.AllowDelete))
+
+	// Reset class.AllowDelete to false for subsequent definition overwrite checks.
+	class.AllowDelete = false
+
+	//Case 3: Verify that AllowDelete is false if fvPeeringP's definitions.allow_delete is explicitly set to 'never'.
+	class.ClassDefinition = ClassDefinition{AllowDelete: "never"}
+	class.setAllowDelete()
 	assert.Equal(t, class.AllowDelete, false, fmt.Sprintf("Expected isCreatableDeletable to be 'false', but got '%t'", class.AllowDelete))
+
+	//Case 4: Verify that AllowDelete is true if fvPeeringP's definitions.allow_delete is explicitly not set to 'never'.
+	class.ClassDefinition = ClassDefinition{AllowDelete: "always"}
+	class.setAllowDelete()
+	assert.Equal(t, class.AllowDelete, true, fmt.Sprintf("Expected isCreatableDeletable to be 'true', but got '%t'", class.AllowDelete))
 }
