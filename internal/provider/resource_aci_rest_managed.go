@@ -407,8 +407,8 @@ func splitImportId(ctx context.Context, importId string, resp *resource.ImportSt
 	}
 
 	if !strings.Contains(importId, "[") {
-		tflog.Warn(ctx, "The use of the colon-separated format to import children for the resource will be deprecated in the next release.")
-		tflog.Warn(ctx, "Please use a JSON format string to import children, instead of using a colon-separated import statement.")
+		tflog.Warn(ctx, "The use of the colon-separated format to import children for the resource is deprecated and will be removed in the next release.")
+		tflog.Warn(ctx, "Please use the JSON format string to import children, instead of using a colon-separated import statement.")
 		return strings.Split(importId, ":")
 	}
 

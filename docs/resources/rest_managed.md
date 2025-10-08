@@ -109,7 +109,7 @@ An existing object can be [imported](https://www.terraform.io/docs/import/index.
 terraform import aci_rest_managed.example_tenant `{ "parentDn": "uni/tn-{name}", "childRns": ["rsTenantMonPol", "annotationKey-[{key}]", "{child-n}"] }`
 ```
 
-!> The use of the colon-separated format to import children for the resource will be deprecated in the next release. Please use a JSON format string to import children, instead of using a colon-separated import statement.
+!> The use of the colon-separated format to import children for the resource is deprecated and will be removed in the next release. Please use the JSON format string shown above to import children, instead of using a colon-separated import statement.
 
 ```
 terraform import aci_rest_managed.example_tenant `{ "parentDn": "uni/tn-{name}", "childRns": ["rsTenantMonPol", "annotationKey-[{key}]", "{child-n}"] }`
