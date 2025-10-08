@@ -34,13 +34,14 @@ type ClassDefinition struct {
 
 func loadClassDefinition(className string) ClassDefinition {
 	classDefinitionPath := fmt.Sprintf("%s/%s.yaml", constDefinitionsPath, className)
+	var classDefinitionData ClassDefinition
 
 	classDefinitionBytes, err := os.ReadFile(classDefinitionPath)
 	if err != nil {
-		genLogger.Fatal(fmt.Sprintf("A file '%s' is required to be defined in the definitions folder.", classDefinitionPath))
+		genLogger.Debug(fmt.Sprintf("A file '%s' is required to be defined in the definitions folder.", classDefinitionPath))
+		return classDefinitionData
 	}
 
-	var classDefinitionData ClassDefinition
 	err = yaml.Unmarshal(classDefinitionBytes, &classDefinitionData)
 	if err != nil {
 		genLogger.Fatal(err.Error())
