@@ -195,30 +195,40 @@ func TestSetAllowDelete(t *testing.T) {
 	test.InitializeTest(t)
 	class := Class{ClassName: "fvPeeringP"}
 
-	//Case 1: Verify that AllowDelete is false when fvPeeringP's definitions.allow_delete is an empty string and meta.isCreatableDeletable is set to 'never'.
-	class.MetaFileContent = map[string]interface{}{
-		"isCreatableDeletable": "never",
+	tests := []map[string]interface{}{
+		{
+			"name":                   "definitions.allow_delete is an empty string, isCreatableDeletable is 'never'",
+			"metaFileContent":        map[string]interface{}{"isCreatableDeletable": "never"},
+			"classDefinitionContent": ClassDefinition{},
+			"expected":               false,
+		},
+		{
+			"name":                   "definitions.allow_delete is an empty string, isCreatableDeletable is not 'never'",
+			"metaFileContent":        map[string]interface{}{"isCreatableDeletable": "always"},
+			"classDefinitionContent": ClassDefinition{},
+			"expected":               true,
+		},
+		{
+			"name":                   "definitions.allow_delete is 'never'",
+			"metaFileContent":        map[string]interface{}{},
+			"classDefinitionContent": ClassDefinition{AllowDelete: "never"},
+			"expected":               false,
+		},
+		{
+			"name":                   "definitions.allow_delete is not 'never'",
+			"metaFileContent":        map[string]interface{}{},
+			"classDefinitionContent": ClassDefinition{AllowDelete: "always"},
+			"expected":               true,
+		},
 	}
-	class.setAllowDelete()
-	assert.Equal(t, class.AllowDelete, false, fmt.Sprintf("Expected isCreatableDeletable to be 'false', but got '%t'", class.AllowDelete))
 
-	//Case 2: Verify that AllowDelete is true when fvPeeringP's definitions.allow_delete is an empty string and meta.isCreatableDeletable is not set to 'never'.
-	class.MetaFileContent = map[string]interface{}{
-		"isCreatableDeletable": "always",
+	for _, test := range tests {
+		genLogger.Info(fmt.Sprintf("Executing: %s with scenario '%s'", t.Name(), test["name"]))
+		class.MetaFileContent = test["metaFileContent"].(map[string]interface{})
+		class.ClassDefinition = test["classDefinitionContent"].(ClassDefinition)
+		class.AllowDelete = false
+		class.setAllowDelete()
+		assert.Equal(t, test["expected"].(bool), class.AllowDelete,
+			fmt.Sprintf("Expected '%v', but got '%v' for case '%s'", test["expected"], class.AllowDelete, test["name"]))
 	}
-	class.setAllowDelete()
-	assert.Equal(t, class.AllowDelete, true, fmt.Sprintf("Expected isCreatableDeletable to be 'true', but got '%t'", class.AllowDelete))
-
-	// Reset class.AllowDelete to false for subsequent definition overwrite checks.
-	class.AllowDelete = false
-
-	//Case 3: Verify that AllowDelete is false if fvPeeringP's definitions.allow_delete is explicitly set to 'never'.
-	class.ClassDefinition = ClassDefinition{AllowDelete: "never"}
-	class.setAllowDelete()
-	assert.Equal(t, class.AllowDelete, false, fmt.Sprintf("Expected isCreatableDeletable to be 'false', but got '%t'", class.AllowDelete))
-
-	//Case 4: Verify that AllowDelete is true if fvPeeringP's definitions.allow_delete is explicitly not set to 'never'.
-	class.ClassDefinition = ClassDefinition{AllowDelete: "always"}
-	class.setAllowDelete()
-	assert.Equal(t, class.AllowDelete, true, fmt.Sprintf("Expected isCreatableDeletable to be 'true', but got '%t'", class.AllowDelete))
 }
