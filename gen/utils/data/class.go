@@ -17,6 +17,8 @@ import (
 type Class struct {
 	// This is used to prevent the deletion of the class if it is not allowed on APIC.
 	AllowDelete bool
+	// Custom class definition to override class meta properties
+	ClassDefinition ClassDefinition
 	// Full name of the class, ex "fvTenant".
 	ClassName string
 	// Capitalized name of the class, ex "FvTenant".
@@ -75,8 +77,6 @@ type Class struct {
 	// The first version is the minimum version and the second version is the maximum version.
 	// A dash at the end of a range (ex. 4.2(7f)-) indicates that the class is supported from the first version to the latest version.
 	Versions []VersionRange
-	// Custom class definition to overwrite class meta properties
-	ClassDefinition ClassDefinition
 }
 
 type PlatformTypeEnum int
@@ -163,12 +163,12 @@ func NewClass(className string, ds *DataStore) (*Class, error) {
 	}
 
 	class := Class{
+		ClassDefinition:       loadClassDefinition(className),
 		ClassName:             className,
 		ClassNameShort:        shortName,
 		ClassNameForFunctions: cases.Title(language.Und, cases.NoLower).String(className),
 		ClassNamePackage:      packageName,
 		Properties:            make(map[string]*Property),
-		ClassDefinition:       loadClassDefinition(className),
 	}
 
 	genLogger.Trace(fmt.Sprintf("Successfully created new class struct with class name: %s.", className))
@@ -275,7 +275,6 @@ func (c *Class) setClassData(ds *DataStore) error {
 func (c *Class) setAllowDelete() {
 	// Determine if the class can be deleted.
 	genLogger.Debug(fmt.Sprintf("Setting AllowDelete for class '%s'.", c.ClassName))
-
 	if c.ClassDefinition.AllowDelete != "" && c.ClassDefinition.AllowDelete != "never" {
 		c.AllowDelete = true
 	} else if c.ClassDefinition.AllowDelete == "" {
@@ -284,8 +283,7 @@ func (c *Class) setAllowDelete() {
 			c.AllowDelete = true
 		}
 	}
-
-	genLogger.Debug(fmt.Sprintf("Successfully set AllowDelete for class '%s'.", c.ClassName))
+	genLogger.Debug(fmt.Sprintf("The AllowDelete property was successfully set to '%t' for the class '%s'.", c.AllowDelete, c.ClassName))
 }
 
 func (c *Class) setChildren() {
