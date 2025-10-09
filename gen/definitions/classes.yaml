@@ -187,6 +187,15 @@ monEPGPol:
 vmmDomP:
   resource_name: "vmm_domain"
 
+vmmUplinkPCont:
+  resource_name: "vmm_uplink_container"
+  include: true
+  children:
+    - "vmmUplinkP"
+
+vmmUplinkP:
+  resource_name: "vmm_uplink_policy"
+
 fvAp:
   resource_name: "application_profile"
   ui_locations:

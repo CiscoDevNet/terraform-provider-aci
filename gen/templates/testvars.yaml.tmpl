@@ -139,6 +139,14 @@ custom_type:
       {{- end}}
     {{- end}}
   {{- end}}
+{{- else }}
+{{- $includeRequiredHeader := true}} 
+  {{- range .Properties}}{{$testValue := createTestValue .SnakeCaseName}}{{$overwritePropertyName := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
+    {{- if or .IsNaming (or .IsRequired (isRequiredInTestValue .PkgName $overwritePropertyName $.Definitions "resource_required"))}}
+{{- if $includeRequiredHeader}}{{- $includeRequiredHeader := false}}resource_required:{{- end}}
+  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName $testValue "resource_required" 0 $.Definitions}}"
+    {{- end}}
+  {{- end}}
 {{- end }}
 {{- if .HasReadOnlyProperties}}
 

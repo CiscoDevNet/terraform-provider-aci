@@ -85,6 +85,7 @@ global:
     Ospf: "OSPF"
     Evpn: "EVPN"
     Lacp Enhanced Lag Policy: "LACP Enhanced Lag Policy"
+    Vmm: "VMM"
   ignores:
     - "userdom"
 
@@ -663,8 +664,6 @@ fvCrtrn:
     all:
       match: "all"
       precedence: "1"
-      name: "criterion"
-    resource_required:
       name: "criterion"
     datasource_required:
       name: "criterion"
@@ -2653,3 +2652,53 @@ vzRsAnyToProv:
       relation_resource_name: "contract"
       properties:
         name: "contract_name_1"
+
+vmmUplinkPCont:
+  overwrites:
+    num_of_uplinks: number_of_uplinks
+  resource_required:
+    - "numOfUplinks"
+  ignores:
+    - "id"
+    - "name"
+  documentation:
+    numOfUplinks: "The number of uplinks in the %s object."
+  test_values:
+    default:
+      number_of_uplinks: "2"
+    all:
+      number_of_uplinks: "1"
+    resource_required:
+      number_of_uplinks: "2"
+
+vmmUplinkP:
+  overwrites:
+    vmm_uplink_policys: uplink_policies
+  documentation:
+    uplinkName: "The uplink name of the %s object."
+    uplinkId: "The uplink identifier of the %s object."
+  ignores:
+    - "id"
+    - "name"
+  resource_required:
+    - "uplinkId"
+    - "uplinkName"
+  parents:
+    - class_name: "vmmUplinkPCont"
+      parent_dependency: "VmmDomP"
+      parent_dn: "aci_vmm_uplink_container.test.id"
+  test_values:
+    default:
+      uplink_name: "uplink_name_1"
+    all:
+      uplink_name: "uplink_name_2"
+    resource_required:
+      uplink_id: "1"
+      uplink_name: "uplink_name_1"
+    datasource_non_existing:
+      uplink_id: "2"
+    datasource_required:
+      uplink_id: "1"
+    test_values_for_parent:
+      - uplink_id: "2"
+      - uplink_id: "1"

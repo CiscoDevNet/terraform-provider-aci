@@ -2648,16 +2648,23 @@ func {{.ResourceClassName}}{{.ParentHierarchy}}SetToSetNullWhenStateIsNullPlanIs
 		for index, stateValue := range stateSetValues {
  			nullInStateFound := false
 			{{- range .Properties}}
+				{{- if eq .Name "Id"}}
+			if stateValue.{{.ResourceClassName}}{{ .Name }}.IsNull() {
+				nullInStateFound = true
+				planSetValues[index].{{.ResourceClassName}}{{ .Name }} = basetypes.NewStringNull()
+			}
+				{{- else}}
 			if stateValue.{{ .Name }}.IsNull() {
 				nullInStateFound = true
-				{{- if eq .ValueType "bitmask"}}
+					{{- if eq .ValueType "bitmask"}}
 				planSetValues[index].{{ .Name }} = basetypes.NewSetNull(types.StringType)
- 				{{- else if .HasCustomType}}
+ 					{{- else if .HasCustomType}}
  				planSetValues[index].{{ .Name }} = customTypes.New{{.ResourceClassName}}{{.Name}}StringNull()
-				{{- else}}
+					{{- else}}
 				planSetValues[index].{{ .Name }} = basetypes.NewStringNull()
- 				{{- end}}
+ 					{{- end}}
 			}
+				{{- end}}
 			{{- end}}
  			if !nullInStateFound {
 				// when there are no null fields we can conclude the version supports all attributes in set
