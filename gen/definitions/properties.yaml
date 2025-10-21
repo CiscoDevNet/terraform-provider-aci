@@ -2722,3 +2722,18 @@ fvUplinkOrderCont:
     all:
       active_uplinks: "1,2"
       standby_uplinks: "3,4"
+
+vnsLDevIf:
+  overwrites:
+    ldev: "logical_device"
+  documentation:
+    ldev: "The distinguished name (DN) of the logical device to export."
+  example_value_overwrite:
+    logical_device: "aci_l4_l7_device.example_in_another_tenant.id"
+  test_values:
+    default:
+      logical_device: "uni/tn-test_tenant/lDevVip-test_ldevvip"
+    resource_required:
+      logical_device: "uni/tn-test_tenant/lDevVip-test_ldevvip"
+    all:
+      logical_device: "uni/tn-test_tenant/lDevVip-test_ldevvip"

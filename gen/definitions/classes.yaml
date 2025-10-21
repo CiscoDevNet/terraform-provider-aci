@@ -1131,3 +1131,9 @@ vzRsAnyToProv:
   sub_category: "Networking"
   ui_locations:
     - "Tenants -> Networking -> VRFs -> EPG|ESG Collection for VRF -> Provided Contracts"
+
+vnsLDevIf:
+  resource_name: "imported_logical_device"
+  sub_category: "L4-L7"
+  ui_locations:
+    - "Tenants -> Services -> L4-L7 -> Imported Devices"

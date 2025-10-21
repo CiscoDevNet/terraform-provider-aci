@@ -1,0 +1,1258 @@
+{
+        "vns:LDevIf": {
+            "contains": {
+                "aaa:RbacAnnotation": "",
+                "fault:Counts": "",
+                "fault:Delegate": "",
+                "fault:Inst": "",
+                "health:Inst": "",
+                "tag:AliasDelInst": "",
+                "tag:AliasInst": "",
+                "tag:Annotation": "",
+                "tag:ExtMngdInst": "",
+                "tag:Inst": "",
+                "tag:Tag": "",
+                "vns:ConfIssue": "",
+                "vns:LDevIfLIf": "",
+                "vns:RsLdevIfToLDev": "",
+                "vns:RtLDevCtxToLDev": "",
+                "vns:RtNodeToLDev": ""
+            },
+            "rnMap": {
+                "alias": "tag:AliasInst",
+                "aliasdel-": "tag:AliasDelInst",
+                "annotationKey-": "tag:Annotation",
+                "extmngd": "tag:ExtMngdInst",
+                "fault-": "fault:Inst",
+                "fd-": "fault:Delegate",
+                "fltCnts": "fault:Counts",
+                "health": "health:Inst",
+                "lDevIfLIf-": "vns:LDevIfLIf",
+                "rbacDom-": "aaa:RbacAnnotation",
+                "rsldevIfToLDev": "vns:RsLdevIfToLDev",
+                "rtLDevCtxToLDev-": "vns:RtLDevCtxToLDev",
+                "rtnodeToLDev-": "vns:RtNodeToLDev",
+                "tag-": "tag:Inst",
+                "tagKey-": "tag:Tag",
+                "vnsConfIssue-": "vns:ConfIssue"
+            },
+            "identifiedBy": [
+                "ldev"
+            ],
+            "rnFormat": "lDevIf-[{ldev}]",
+            "containedBy": {
+                "fv:Tenant": ""
+            },
+            "superClasses": [
+                "vns:ALDevIf",
+                "vns:AL4L7ServiceFault",
+                "naming:NamedObject"
+            ],
+            "subClasses": {
+
+            },
+            "relationFrom": {
+                "vns:RtLDevCtxToLDev": "vns:LDevCtx",
+                "vns:RtNodeToLDev": "vns:AbsNode"
+            },
+            "relationTo": {
+                "vns:RsLdevIfToLDev": "vns:ALDev"
+            },
+            "dnFormats": [
+                "uni/tn-{name}/lDevIf-[{ldev}]"
+            ],
+            "writeAccess": [
+                "admin",
+                "nw-svc-policy"
+            ],
+            "readAccess": [
+                "admin",
+                "nw-svc-policy",
+                "ops"
+            ],
+            "faults": {
+
+            },
+            "events": {
+                "E4213508": "creation||vns:LDevIf",
+                "E4213509": "modification||vns:LDevIf",
+                "E4213510": "deletion||vns:LDevIf"
+            },
+            "stats": {
+
+            },
+            "versions": "1.0(1e)-",
+            "isAbstract": false,
+            "isConfigurable": true,
+            "isContextRoot": false,
+            "isNxosConverged": false,
+            "isDeprecated": false,
+            "isHidden": false,
+            "isEncrypted": false,
+            "isExportable": true,
+            "isPersistent": true,
+            "isSubjectToQuota": false,
+            "isObservable": true,
+            "hasStats": false,
+            "isStat": false,
+            "isFaultable": true,
+            "isDomainable": false,
+            "isHealthScorable": true,
+            "shouldCollectHealthStats": false,
+            "healthCollectionSource": "faults",
+            "hasEventRules": false,
+            "abstractionLayer": "logical",
+            "apicNxProcessing": false,
+            "monitoringPolicySource": "Parent",
+            "isCreatableDeletable": "always",
+            "platformFlavors": [
+
+            ],
+            "classId": "4869",
+            "className": "LDevIf",
+            "classPkg": "vns",
+            "featureTag": "",
+            "moCategory": "Regular",
+            "label": "Logical Device Consumer",
+            "comment": [
+                "The logical device interface is a proxy object in the tenant that points to the logical device. This is used when the device cluster is defined in a common tenant and other tenants want to use the service provided by this device cluster."
+            ],
+            "properties": {
+                "annotation": {
+                    "versions": "3.2(1l)-",
+                    "comment": [
+                         "User annotation. Suggested format orchestrator:value"
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "37994",
+                    "propLocalId": "8719",
+                    "label": "Annotation",
+                    "baseType": "string:Basic",
+                    "modelType": "mo:Annotation",
+                    "needsPropDelimiters": false,
+                    "uitype": "string",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validators": [
+                         {"min" : 0, "max": 128,
+                             "regexs": [
+                                 {"regex" : "^[a-zA-Z0-9_.:-]+$", "type": "include"}
+                             ]
+                         }
+                    ],
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "childAction": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "Delete or ignore. For internal use only."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "4",
+                    "propLocalId": "5",
+                    "label": "childAction",
+                    "baseType": "scalar:Bitmask32",
+                    "modelType": "mo:ModificationChildAction",
+                    "needsPropDelimiters": false,
+                    "uitype": "bitmask",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "16384", "localName": "deleteAll",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Delete All "},
+                         { "value": "8192", "localName": "deleteNonPresent",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Delete Non Present "},
+                         { "value": "4096", "localName": "ignore",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Ignore "}
+                    ],
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "configIssues": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "The configuration issues occurred. If an issue has occurred, the value returned indicates the type of issue."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "5173",
+                    "propLocalId": "153",
+                    "label": "configIssues",
+                    "baseType": "scalar:Bitmask64",
+                    "modelType": "vns:ConfIssuesType",
+                    "needsPropDelimiters": false,
+                    "uitype": "bitmask",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "0x200000000000", "localName": "arp-flood-enabled",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "ARP Flood Enabled "},
+                         { "value": "0x400000000", "localName": "cdev-missing-cif",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "No Interface Defined "},
+                         { "value": "0x200000", "localName": "cdev-missing-mgmt-ip",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "No CDev mgmt IP Found "},
+                         { "value": "0x800000000", "localName": "cdev-missing-path-for-interface",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Missing Interface Path "},
+                         { "value": "0x10000000000000", "localName": "cdev-missing-virtual-info",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Virtual Object Info (ex: Vcenter Name, VM Name) Missing in CDev "},
+                         { "value": "0x100000000000000", "localName": "cif-missing-virtual-info",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "CIf Virtual Object (ex: VNIC Name) Missing "},
+                         { "value": "0x80", "localName": "context-cardinality-violation-failure",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Invalid Cluster Context Cardinality "},
+                         { "value": "0", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "0x4000000000000", "localName": "devfolder-validation-failed",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "DevFolder Key Not Found in MFolder "},
+                         { "value": "0x8000000000000", "localName": "devparam-validation-failed",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "DevParam Key and/or Value Not Found in MParam "},
+                         { "value": "0x8", "localName": "epp-download-failure",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "EPP Download Failure "},
+                         { "value": "0x400000000000", "localName": "folderinst-validation-failed",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "FolderInst Key Not Found in MFolder "},
+                         { "value": "0x100", "localName": "function-type-mismatch-failure",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Invalid Function Type "},
+                         { "value": "0x40000000000", "localName": "gothrough-routing-enabled-both",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Both Go Through Node Legs Have Routing Enabled "},
+                         { "value": "0x4000000000000000", "localName": "gothru-same-bd",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Both Go Through Node Legs Attached to Same BD "},
+                         { "value": "0x20000000000", "localName": "graph-loop-detected",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Service Graph Template Invalid Due to Loop "},
+                         { "value": "0x20", "localName": "id-allocation-failure",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "ID Allocation Failure "},
+                         { "value": "0x80000000", "localName": "inappropriate-devfolder",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Illegal Folder in Configuration "},
+                         { "value": "0x200000000", "localName": "insufficient-devctx",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Folder Missing Value for Each Associated CDev "},
+                         { "value": "0x10000", "localName": "internal-error",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Internal Graph Processing Error "},
+                         { "value": "0x20000000", "localName": "invalid-absfunc-profile",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Invalid Service Graph Template Function Profile Config "},
+                         { "value": "0x1", "localName": "invalid-abstract-graph-config",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Invalid Abstract Graph Config "},
+                         { "value": "0x200", "localName": "invalid-abstract-graph-config-param",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Invalid Abstract Graph Config Param "},
+                         { "value": "0x1000000000000000", "localName": "invalid-config",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Device Configuration Contains Errors "},
+                         { "value": "0x40000000000000", "localName": "invalid-conn-for-configparam",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Config Param Using Invalid Graph Connector. "},
+                         { "value": "0x80000000000000", "localName": "invalid-connection",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Invalid AbsGraph Connection "},
+                         { "value": "0x2000000000000000", "localName": "invalid-devcfg-folder",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Invalid DevCfg Folder Configuration Parameters "},
+                         { "value": "0x100000000", "localName": "invalid-devctx",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Invalid Device Context for this Folder "},
+                         { "value": "0x200000000000000", "localName": "invalid-filter-referred-by-rsconntoflt",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "AbsGraph Connector Pointing to Invalid Filter. "},
+                         { "value": "0x400000", "localName": "invalid-graphinst",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Graphinst Config Invalid "},
+                         { "value": "0x4000", "localName": "invalid-ldev",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Invalid Cluster "},
+                         { "value": "0x1000000000000", "localName": "invalid-mfolder",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "FolderInst Points to Invalid MFolder "},
+                         { "value": "0x2000000000000", "localName": "invalid-namespace-allocation-mode",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "VlanInstP Allocation Mode Not Dynamic "},
+                         { "value": "0x1000", "localName": "invalid-param-config",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Invalid Param Config "},
+                         { "value": "0x2000", "localName": "invalid-param-scope",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Invalid Parameter Scope "},
+                         { "value": "0x20000000000000", "localName": "invalid-relation-target",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Relation Target Parameter Could Bot Be Resolved "},
+                         { "value": "0x100000", "localName": "invalid-rsmconnatt",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Invalid RsMConnAtt MO Connector "},
+                         { "value": "0x80000000000", "localName": "invalid-terminal-nodes",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Service Graph Template Must Have 2+ Terminal Nodes "},
+                         { "value": "0x2000000000", "localName": "ldevvip-missing-mgmt-ip",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "No LDevVip mgmt IP Found "},
+                         { "value": "0x4000000000", "localName": "lif-has-invalid-interface-label",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Invalid LIf MifLbl "},
+                         { "value": "0x8000000000", "localName": "lif-invalid-CIf",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Invalid LIf CIf "},
+                         { "value": "0x40000", "localName": "missing-abs-function",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Abstract Function Definition not Found "},
+                         { "value": "0x800", "localName": "missing-abs-graph",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "No ABS Graph Found "},
+                         { "value": "0x1000000", "localName": "missing-bd",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "No BD Found "},
+                         { "value": "0x40000000", "localName": "missing-cdev",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "No Device Found in Cluster "},
+                         { "value": "0x1000000000", "localName": "missing-cif",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Device Interfaces not Match Cluster. "},
+                         { "value": "0x8000", "localName": "missing-config-params",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "No Configuration Parameters for GraphInst "},
+                         { "value": "0x8000000", "localName": "missing-function-in-device-package",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "No Function Found in Device Package "},
+                         { "value": "0x10000000000", "localName": "missing-function-node",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Service Graph Missing Function Node. "},
+                         { "value": "0x800000", "localName": "missing-interface",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "No Interface Found "},
+                         { "value": "0x800000000000000", "localName": "missing-l3ctx",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "No L3 Context Found for Graph Connection "},
+                         { "value": "0x10", "localName": "missing-l3instp",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "No L3InstP Found "},
+                         { "value": "0x40", "localName": "missing-ldev",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "No Cluster Found "},
+                         { "value": "0x100000000000", "localName": "missing-ldev-ctx",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "No LDev Device Context Found "},
+                         { "value": "0x10000000", "localName": "missing-lif",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "No Cluster Interface Found "},
+                         { "value": "0x2", "localName": "missing-mandatory-param",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Mandatory Param Not Found "},
+                         { "value": "0x400000000000000", "localName": "missing-mdev",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "LDevVip Must Be Associated With an MDev. "},
+                         { "value": "0x400", "localName": "missing-mparam",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "No Parameter Definition Found "},
+                         { "value": "0x4000000", "localName": "missing-namespace",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "No VLAN/VXLAN Namespace Found "},
+                         { "value": "0x2000000", "localName": "missing-terminal",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Terminal Node Missing Terminal "},
+                         { "value": "0", "localName": "ok",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "ok "},
+                         { "value": "0x4", "localName": "param-cardinality-error",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Invalid Param Cardinality "},
+                         { "value": "0x80000", "localName": "param-validation-failed",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Param Value Invalid "},
+                         { "value": "0x800000000000", "localName": "paraminst-validation-failed",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "ParamInst Key and/or Value Not Found in MParam "},
+                         { "value": "0x8000000000000000", "localName": "relinst-validation-failed",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "CfgRelInst Key and/or Value Not found in MParam "},
+                         { "value": "0x20000", "localName": "resource-allocation-failure",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Required Resource not Allocated During Graph Processing "}
+                    ],
+                    "default": "ok",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "configSt": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "The configuration state of the device. The configuration may not yet have been applied, is in the process of being applied, has already been applied, or has failed to apply."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "5174",
+                    "propLocalId": "474",
+                    "label": "configSt",
+                    "baseType": "scalar:Enum8",
+                    "modelType": "vns:ConfSt",
+                    "needsPropDelimiters": false,
+                    "uitype": "enum",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "2", "localName": "applied",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Applied "},
+                         { "value": "1", "localName": "applying",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Applying "},
+                         { "value": "none", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "3", "localName": "failed-to-apply",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Failed to Apply "},
+                         { "value": "0", "localName": "none",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "None "}
+                    ],
+                    "default": "none",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "description": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "A description of this configuration item."
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "5172",
+                    "propLocalId": "318",
+                    "label": "description",
+                    "baseType": "string:Basic",
+                    "modelType": "string:Basic",
+                    "needsPropDelimiters": false,
+                    "uitype": "string",
+                    "createOnly": true,
+                    "readWrite": false,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validators": [
+                         {"min" : 0, "max": 512 }
+                    ],
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "dn": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "A tag or metadata is a non-hierarchical keyword or term assigned to the fabric module."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "1",
+                    "propLocalId": "2",
+                    "label": "dn",
+                    "baseType": "reference:BinRef",
+                    "modelType": "reference:BinRef",
+                    "needsPropDelimiters": true,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "extMngdBy": {
+                    "versions": "3.2(1l)-",
+                    "comment": [
+                         "Indicates which orchestrator is managing this MO"
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "40133",
+                    "propLocalId": "8023",
+                    "label": "Managed By",
+                    "baseType": "scalar:Bitmask32",
+                    "modelType": "mo:ExtMngdByType",
+                    "needsPropDelimiters": false,
+                    "uitype": "bitmask",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "undefined", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "1", "localName": "msc",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "MSC "},
+                         { "value": "0", "localName": "undefined",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Undefined "}
+                    ],
+                    "default": "undefined",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "faultCode": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "The code corresponding to a service fault. The code characterizes information about the fault. The fault may be reported while updating a configuration or polling for health or counter values."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "5135",
+                    "propLocalId": "2591",
+                    "label": "Fault Code",
+                    "baseType": "scalar:Uint32",
+                    "modelType": "scalar:Uint32",
+                    "needsPropDelimiters": false,
+                    "uitype": "number",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "faultMessage": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "The message returned with a service fault. The message provides descriptive information about the fault. The fault may be reported while updating a configuration or polling for health or counter values."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "5137",
+                    "propLocalId": "2593",
+                    "label": "Fault Message",
+                    "baseType": "string:Basic",
+                    "modelType": "string:Basic",
+                    "needsPropDelimiters": false,
+                    "uitype": "string",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "faultSeverity": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "The severity of a service fault. The fault may be reported while updating a configuration or polling for health or counter values."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "5136",
+                    "propLocalId": "2592",
+                    "label": "Fault Severity",
+                    "baseType": "scalar:Enum8",
+                    "modelType": "condition:Severity",
+                    "needsPropDelimiters": false,
+                    "uitype": "enum",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "0", "localName": "cleared",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "The Cleared severity level indicates the clearing of one or more previously reported alarms. This\n                alarm clears all alarms for this managed object that have the same Alarm type, Probable cause and\n                Specific problems (if given). Multiple associated notifications may be cleared by using the Correlated\n                notifications parameter (defined below)."
+                             ],
+                             "label": "Cleared "},
+                         { "value": "5", "localName": "critical",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "The Critical severity level indicates that a service affecting condition has occurred and an\n                immediate corrective action is required. Such a severity can be reported, for example, when a managed\n                object becomes totally out of service and its capability must be restored."
+                             ],
+                             "label": "Critical "},
+                         { "value": "minor", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "1", "localName": "info",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Info "},
+                         { "value": "4", "localName": "major",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "The Major severity level indicates that a service affecting condition has developed and an urgent\n                corrective action is required. Such a severity can be reported, for example, when there is a severe\n                degradation in the capability of the managed object and its full capability must be restored."
+                             ],
+                             "label": "Major "},
+                         { "value": "3", "localName": "minor",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "The Minor severity level indicates the existence of a non-service affecting fault condition and that\n                corrective action should be taken in order to prevent a more serious (for example, service affecting) fault.\n                Such a severity can be reported, for example, when the detected alarm condition is not currently\n                degrading the capacity of the managed object."
+                             ],
+                             "label": "Minor "},
+                         { "value": "2", "localName": "warning",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "The Warning severity level indicates the detection of a potential or impending service affecting\n                fault, before any significant effects have been felt. Action should be taken to further diagnose (if\n                necessary) and correct the problem in order to prevent it from becoming a more serious service affecting\n                fault."
+                             ],
+                             "label": "Warning "}
+                    ],
+                    "default": "minor",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "lcOwn": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "A value that indicates how this object was created. For internal use only."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "9",
+                    "propLocalId": "9",
+                    "label": "lcOwn",
+                    "baseType": "scalar:Enum8",
+                    "modelType": "mo:Owner",
+                    "needsPropDelimiters": false,
+                    "uitype": "enum",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "local", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "4", "localName": "implicit",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Implicit "},
+                         { "value": "0", "localName": "local",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Local "},
+                         { "value": "1", "localName": "policy",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Policy "},
+                         { "value": "2", "localName": "replica",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Replica "},
+                         { "value": "3", "localName": "resolveOnBehalf",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Resolved On Behalf "}
+                    ],
+                    "default": "local",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "ldev": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         ""
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "5171",
+                    "propLocalId": "2610",
+                    "label": "ldev",
+                    "baseType": "reference:BinRef",
+                    "modelType": "reference:BinRef",
+                    "needsPropDelimiters": true,
+                    "uitype": "string",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": false,
+                    "isNaming": true,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "modTs": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "The time when this object was last modified."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "7",
+                    "propLocalId": "7",
+                    "label": "modTs",
+                    "baseType": "scalar:Date",
+                    "modelType": "mo:TStamp",
+                    "needsPropDelimiters": false,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "never", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "0", "localName": "never",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Never "}
+                    ],
+                    "default": "never",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "monPolDn": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "The monitoring policy attached to this observable object."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "14894",
+                    "propLocalId": "228",
+                    "label": "Monitoring Policy",
+                    "baseType": "reference:BinRef",
+                    "modelType": "reference:BinRef",
+                    "needsPropDelimiters": true,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "name": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "The name of the object."
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "5577",
+                    "propLocalId": "13",
+                    "label": "Name",
+                    "baseType": "string:Basic",
+                    "modelType": "naming:Name",
+                    "needsPropDelimiters": false,
+                    "uitype": "string",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": true,
+                    "likeProp": "naming:Named:name",
+                    "validators": [
+                         {"min" : 0, "max": 16,
+                             "regexs": [
+                                 {"regex" : "^[a-zA-Z0-9_.:-]+$", "type": "include"}
+                             ]
+                         }
+                    ],
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "nameAlias": {
+                    "versions": "2.2(1k)-",
+                    "isConfigurable": true,
+                    "propGlobalId": "28417",
+                    "propLocalId": "6719",
+                    "label": "Display Name",
+                    "baseType": "string:Basic",
+                    "modelType": "naming:NameAlias",
+                    "needsPropDelimiters": false,
+                    "uitype": "string",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validators": [
+                         {"min" : 0, "max": 63,
+                             "regexs": [
+                                 {"regex" : "^[a-zA-Z0-9_.-]+$", "type": "include"}
+                             ]
+                         }
+                    ],
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "rn": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "Identifies an object from its siblings within the context of its parent object. The distinguished name contains a sequence of relative names."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "2",
+                    "propLocalId": "3",
+                    "label": "rn",
+                    "baseType": "reference:BinRN",
+                    "modelType": "reference:BinRN",
+                    "needsPropDelimiters": true,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "status": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "The upgrade status. This property is for internal use only."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "3",
+                    "propLocalId": "4",
+                    "label": "status",
+                    "baseType": "scalar:Bitmask32",
+                    "modelType": "mo:ModificationStatus",
+                    "needsPropDelimiters": false,
+                    "uitype": "bitmask",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "2", "localName": "created",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "In a setter method: specifies that an object should be created. An error is returned if the object already exists.  \nIn the return value of a setter method: indicates that an object has been created.  \n"
+                             ],
+                             "label": "Created "},
+                         { "value": "8", "localName": "deleted",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "In a setter method: specifies that an object should be deleted.  \nIn the return value of a setter method: indicates that an object has been deleted.\n"
+                             ],
+                             "label": "Deleted "},
+                         { "value": "4", "localName": "modified",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "In a setter method: specifies that an object should be modified  \nIn the return value of a setter method: indicates that an object has been modified.\n"
+                             ],
+                             "label": "Modified "}
+                    ],
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "uid": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "A unique identifier for this object."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "8",
+                    "propLocalId": "8",
+                    "label": "uid",
+                    "baseType": "scalar:Uint16",
+                    "modelType": "scalar:Uint16",
+                    "needsPropDelimiters": false,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "userdom": {
+                    "versions": "5.0(1k)-",
+                    "isConfigurable": true,
+                    "propGlobalId": "60657",
+                    "propLocalId": "13244",
+                    "label": "userdom",
+                    "baseType": "string:Basic",
+                    "modelType": "mo:UserDomType",
+                    "needsPropDelimiters": false,
+                    "uitype": "string",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validators": [
+                         {"min" : 0, "max": 1024,
+                             "regexs": [
+                                 {"regex" : "^[a-zA-Z0-9_.:-]+$", "type": "include"}
+                             ]
+                         }
+                    ],
+                    "validValues": [
+                         { "value": "all", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "}
+                    ],
+                    "default": "all",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                }
+            }
+        }
+}
