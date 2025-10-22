@@ -10,13 +10,13 @@ default:
   name_alias: ""
 
 datasource_non_existing:
-  logical_device: "non_existing_ldev"
+  logical_device: "uni/tn-test_tenant/lDevVip-test_imported_device"
 
 datasource_required:
-  logical_device: "test_ldev"
+  logical_device: "uni/tn-test_tenant/lDevVip-test_imported_device"
 
 resource_required:
-  logical_device: "uni/tn-test_tenant/lDevVip-test_ldevvip"
+  logical_device: "uni/tn-test_tenant/lDevVip-test_imported_device"
 
 all:
   annotation: "annotation"
