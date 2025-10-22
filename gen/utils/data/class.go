@@ -275,13 +275,13 @@ func (c *Class) setClassData(ds *DataStore) error {
 func (c *Class) setAllowDelete() {
 	// Determine if the class can be deleted.
 	genLogger.Debug(fmt.Sprintf("Setting AllowDelete for class '%s'.", c.ClassName))
-	if c.ClassDefinition.AllowDelete != "" && c.ClassDefinition.AllowDelete != "never" {
-		c.AllowDelete = true
-	} else if c.ClassDefinition.AllowDelete == "" {
-		allowDelete, ok := c.MetaFileContent["isCreatableDeletable"]
-		if ok && allowDelete.(string) != "never" {
+	if c.ClassDefinition.AllowDelete == "" {
+		isCreatableDeletable, ok := c.MetaFileContent["isCreatableDeletable"]
+		if ok && isCreatableDeletable.(string) != "never" {
 			c.AllowDelete = true
 		}
+	} else if c.ClassDefinition.AllowDelete != "never" {
+		c.AllowDelete = true
 	}
 	genLogger.Debug(fmt.Sprintf("The AllowDelete property was successfully set to '%t' for the class '%s'.", c.AllowDelete, c.ClassName))
 }
