@@ -190,7 +190,7 @@ func (r *VnsLDevIfResource) Schema(ctx context.Context, req resource.SchemaReque
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
-				MarkdownDescription: `A description of this configuration item.`,
+				MarkdownDescription: `The description of the Imported Logical Device object.`,
 			},
 			"logical_device": schema.StringAttribute{
 				Required: true,
@@ -199,7 +199,7 @@ func (r *VnsLDevIfResource) Schema(ctx context.Context, req resource.SchemaReque
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
-				MarkdownDescription: `The distinguished name (DN) of the logical device to export.`,
+				MarkdownDescription: `The distinguished name (DN) of the Logical Device to import.`,
 			},
 			"name": schema.StringAttribute{
 				Optional: true,

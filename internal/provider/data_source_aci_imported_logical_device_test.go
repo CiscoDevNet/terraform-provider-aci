@@ -21,7 +21,7 @@ func TestAccDataSourceVnsLDevIfWithFvTenant(t *testing.T) {
 				Config:             testConfigVnsLDevIfDataSourceDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.aci_imported_logical_device.test", "logical_device", "test_ldev"),
+					resource.TestCheckResourceAttr("data.aci_imported_logical_device.test", "logical_device", "uni/tn-test_tenant/lDevVip-test_imported_device"),
 					resource.TestCheckResourceAttr("data.aci_imported_logical_device.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("data.aci_imported_logical_device.test", "description", ""),
 					resource.TestCheckResourceAttr("data.aci_imported_logical_device.test", "name", ""),
@@ -39,7 +39,7 @@ func TestAccDataSourceVnsLDevIfWithFvTenant(t *testing.T) {
 const testConfigVnsLDevIfDataSourceDependencyWithFvTenant = testConfigVnsLDevIfMinDependencyWithFvTenant + `
 data "aci_imported_logical_device" "test" {
   parent_dn = aci_tenant.test.id
-  logical_device = "test_ldev"
+  logical_device = "uni/tn-test_tenant/lDevVip-test_imported_device"
   depends_on = [aci_imported_logical_device.test]
 }
 `
@@ -47,6 +47,6 @@ data "aci_imported_logical_device" "test" {
 const testConfigVnsLDevIfNotExistingFvTenant = testConfigFvTenantMin + `
 data "aci_imported_logical_device" "test_non_existing" {
   parent_dn = aci_tenant.test.id
-  logical_device = "non_existing_ldev"
+  logical_device = "uni/tn-test_tenant/lDevVip-test_imported_device"
 }
 `
