@@ -106,10 +106,20 @@ resource "aci_rest_managed" "example_tenant_with_child" {
 An existing object can be [imported](https://www.terraform.io/docs/import/index.html) into this resource via its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_rest_managed.example_tenant `{ "parentDn": "uni/tn-{name}", "childRns": ["rsTenantMonPol", "annotationKey-[{key}]", "{child-n}"] }`
+terraform import aci_rest_managed.example_tenant uni/tn-{name}
+
+or
+
+terraform import aci_rest_managed.example_tenant `{ "parentDn": "uni/tn-{name}" }`
 ```
 
-!> The use of the colon-separated format to import children for the resource is deprecated and will be removed in the next release. Please use the JSON format string shown above to import children, instead of using a colon-separated import statement.
+When children need to be imported they must be specified by appending them to the distinguished name (DN) with the below format:
+
+```
+terraform import aci_rest_managed.example_tenant uni/tn-{name}:{child-rn-1},{child-rn-N}
+```
+
+!> The use of the colon-separated format to import children for the resource is deprecated and will be removed in the next release. Please use the JSON format string shown below to import children, instead of using a colon-separated import statement.
 
 ```
 terraform import aci_rest_managed.example_tenant `{ "parentDn": "uni/tn-{name}", "childRns": ["rsTenantMonPol", "annotationKey-[{key}]", "{child-n}"] }`
@@ -119,7 +129,21 @@ Starting in Terraform version 1.5, an existing object can be imported using [imp
 
 ```
 import {
+  id = `{ "parentDn": "uni/tn-{name}" }`
+  to = aci_rest_managed.example_tenant
+}
+
+or
+
+import {
   id = `{ "parentDn": "uni/tn-{name}", "childRns": ["rsTenantMonPol", "annotationKey-[{key}]", "{child-n}"] }`
+  to = aci_rest_managed.example_tenant
+}
+
+or
+
+import {
+  id = "uni/tn-{name}"
   to = aci_rest_managed.example_tenant
 }
 ```
