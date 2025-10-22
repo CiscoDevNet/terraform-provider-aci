@@ -54,11 +54,11 @@ func (d *VnsLDevIfDataSource) Schema(ctx context.Context, req datasource.SchemaR
 			},
 			"description": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `A description of this configuration item.`,
+				MarkdownDescription: `The description of the Imported Logical Device object.`,
 			},
 			"logical_device": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: `The distinguished name (DN) of the logical device to export.`,
+				MarkdownDescription: `The distinguished name (DN) of the Logical Device to import.`,
 			},
 			"name": schema.StringAttribute{
 				Computed:            true,

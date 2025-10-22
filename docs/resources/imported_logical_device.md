@@ -77,7 +77,7 @@ All examples for the Imported Logical Device resource can be found in the [examp
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
-* `logical_device` (ldev) - (string) The distinguished name (DN) of the logical device to export.
+* `logical_device` (ldev) - (string) The distinguished name (DN) of the Logical Device to import.
 
 ### Read-Only ###
 
@@ -87,7 +87,7 @@ All examples for the Imported Logical Device resource can be found in the [examp
 
 * `annotation` (annotation) - (string) The annotation of the Imported Logical Device object. This attribute is supported in ACI versions: 3.2(1l) and later.
   - Default: `orchestrator:terraform`
-* `description` (description) - (string) A description of this configuration item.
+* `description` (description) - (string) The description of the Imported Logical Device object.
 * `name` (name) - (string) The name of the Imported Logical Device object.
 * `name_alias` (nameAlias) - (string) The name alias of the Imported Logical Device object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.

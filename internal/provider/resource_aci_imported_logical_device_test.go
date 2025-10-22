@@ -22,8 +22,8 @@ func TestAccResourceVnsLDevIfWithFvTenant(t *testing.T) {
 				Config:             testConfigVnsLDevIfMinDependencyWithFvTenantAllowExisting,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_imported_logical_device.allow_test", "logical_device", "uni/tn-test_tenant/lDevVip-test_ldevvip"),
-					resource.TestCheckResourceAttr("aci_imported_logical_device.allow_test_2", "logical_device", "uni/tn-test_tenant/lDevVip-test_ldevvip"),
+					resource.TestCheckResourceAttr("aci_imported_logical_device.allow_test", "logical_device", "uni/tn-test_tenant/lDevVip-test_imported_device"),
+					resource.TestCheckResourceAttr("aci_imported_logical_device.allow_test_2", "logical_device", "uni/tn-test_tenant/lDevVip-test_imported_device"),
 					resource.TestCheckResourceAttr("aci_imported_logical_device.allow_test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_imported_logical_device.allow_test_2", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_imported_logical_device.allow_test", "description", ""),
@@ -60,8 +60,8 @@ func TestAccResourceVnsLDevIfWithFvTenant(t *testing.T) {
 				Config:             testConfigVnsLDevIfMinDependencyWithFvTenantAllowExisting,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_imported_logical_device.allow_test", "logical_device", "uni/tn-test_tenant/lDevVip-test_ldevvip"),
-					resource.TestCheckResourceAttr("aci_imported_logical_device.allow_test_2", "logical_device", "uni/tn-test_tenant/lDevVip-test_ldevvip"),
+					resource.TestCheckResourceAttr("aci_imported_logical_device.allow_test", "logical_device", "uni/tn-test_tenant/lDevVip-test_imported_device"),
+					resource.TestCheckResourceAttr("aci_imported_logical_device.allow_test_2", "logical_device", "uni/tn-test_tenant/lDevVip-test_imported_device"),
 					resource.TestCheckResourceAttr("aci_imported_logical_device.allow_test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_imported_logical_device.allow_test_2", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_imported_logical_device.allow_test", "description", ""),
@@ -84,7 +84,7 @@ func TestAccResourceVnsLDevIfWithFvTenant(t *testing.T) {
 				Config:             testConfigVnsLDevIfMinDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_imported_logical_device.test", "logical_device", "uni/tn-test_tenant/lDevVip-test_ldevvip"),
+					resource.TestCheckResourceAttr("aci_imported_logical_device.test", "logical_device", "uni/tn-test_tenant/lDevVip-test_imported_device"),
 					resource.TestCheckResourceAttr("aci_imported_logical_device.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_imported_logical_device.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_imported_logical_device.test", "name", ""),
@@ -96,7 +96,7 @@ func TestAccResourceVnsLDevIfWithFvTenant(t *testing.T) {
 				Config:             testConfigVnsLDevIfAllDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_imported_logical_device.test", "logical_device", "uni/tn-test_tenant/lDevVip-test_ldevvip"),
+					resource.TestCheckResourceAttr("aci_imported_logical_device.test", "logical_device", "uni/tn-test_tenant/lDevVip-test_imported_device"),
 					resource.TestCheckResourceAttr("aci_imported_logical_device.test", "annotation", "annotation"),
 					resource.TestCheckResourceAttr("aci_imported_logical_device.test", "description", "description_1"),
 					resource.TestCheckResourceAttr("aci_imported_logical_device.test", "name", "name_1"),
@@ -108,7 +108,7 @@ func TestAccResourceVnsLDevIfWithFvTenant(t *testing.T) {
 				Config:             testConfigVnsLDevIfMinDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_imported_logical_device.test", "logical_device", "uni/tn-test_tenant/lDevVip-test_ldevvip"),
+					resource.TestCheckResourceAttr("aci_imported_logical_device.test", "logical_device", "uni/tn-test_tenant/lDevVip-test_imported_device"),
 				),
 			},
 			// Update with empty strings config or default value
@@ -116,7 +116,7 @@ func TestAccResourceVnsLDevIfWithFvTenant(t *testing.T) {
 				Config:             testConfigVnsLDevIfResetDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_imported_logical_device.test", "logical_device", "uni/tn-test_tenant/lDevVip-test_ldevvip"),
+					resource.TestCheckResourceAttr("aci_imported_logical_device.test", "logical_device", "uni/tn-test_tenant/lDevVip-test_imported_device"),
 					resource.TestCheckResourceAttr("aci_imported_logical_device.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_imported_logical_device.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_imported_logical_device.test", "name", ""),
@@ -134,7 +134,7 @@ func TestAccResourceVnsLDevIfWithFvTenant(t *testing.T) {
 				Config:             testConfigVnsLDevIfChildrenDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_imported_logical_device.test", "logical_device", "uni/tn-test_tenant/lDevVip-test_ldevvip"),
+					resource.TestCheckResourceAttr("aci_imported_logical_device.test", "logical_device", "uni/tn-test_tenant/lDevVip-test_imported_device"),
 					resource.TestCheckResourceAttr("aci_imported_logical_device.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_imported_logical_device.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_imported_logical_device.test", "name", ""),
@@ -207,11 +207,11 @@ func TestAccResourceVnsLDevIfWithFvTenant(t *testing.T) {
 const testConfigVnsLDevIfMinDependencyWithFvTenantAllowExisting = testConfigFvTenantMin + `
 resource "aci_imported_logical_device" "allow_test" {
   parent_dn = aci_tenant.test.id
-  logical_device = "uni/tn-test_tenant/lDevVip-test_ldevvip"
+  logical_device = "uni/tn-test_tenant/lDevVip-test_imported_device"
 }
 resource "aci_imported_logical_device" "allow_test_2" {
   parent_dn = aci_tenant.test.id
-  logical_device = "uni/tn-test_tenant/lDevVip-test_ldevvip"
+  logical_device = "uni/tn-test_tenant/lDevVip-test_imported_device"
   depends_on = [aci_imported_logical_device.allow_test]
 }
 `
@@ -219,14 +219,14 @@ resource "aci_imported_logical_device" "allow_test_2" {
 const testConfigVnsLDevIfMinDependencyWithFvTenant = testConfigFvTenantMin + `
 resource "aci_imported_logical_device" "test" {
   parent_dn = aci_tenant.test.id
-  logical_device = "uni/tn-test_tenant/lDevVip-test_ldevvip"
+  logical_device = "uni/tn-test_tenant/lDevVip-test_imported_device"
 }
 `
 
 const testConfigVnsLDevIfAllDependencyWithFvTenant = testConfigFvTenantMin + `
 resource "aci_imported_logical_device" "test" {
   parent_dn = aci_tenant.test.id
-  logical_device = "uni/tn-test_tenant/lDevVip-test_ldevvip"
+  logical_device = "uni/tn-test_tenant/lDevVip-test_imported_device"
   annotation = "annotation"
   description = "description_1"
   name = "name_1"
@@ -237,7 +237,7 @@ resource "aci_imported_logical_device" "test" {
 const testConfigVnsLDevIfResetDependencyWithFvTenant = testConfigFvTenantMin + `
 resource "aci_imported_logical_device" "test" {
   parent_dn = aci_tenant.test.id
-  logical_device = "uni/tn-test_tenant/lDevVip-test_ldevvip"
+  logical_device = "uni/tn-test_tenant/lDevVip-test_imported_device"
   annotation = "orchestrator:terraform"
   description = ""
   name = ""
@@ -247,7 +247,7 @@ resource "aci_imported_logical_device" "test" {
 const testConfigVnsLDevIfChildrenDependencyWithFvTenant = testConfigFvTenantMin + `
 resource "aci_imported_logical_device" "test" {
   parent_dn = aci_tenant.test.id
-  logical_device = "uni/tn-test_tenant/lDevVip-test_ldevvip"
+  logical_device = "uni/tn-test_tenant/lDevVip-test_imported_device"
   annotations = [
     {
       key = "key_0"
@@ -274,14 +274,14 @@ resource "aci_imported_logical_device" "test" {
 const testConfigVnsLDevIfChildrenRemoveFromConfigDependencyWithFvTenant = testConfigFvTenantMin + `
 resource "aci_imported_logical_device" "test" {
   parent_dn = aci_tenant.test.id
-  logical_device = "uni/tn-test_tenant/lDevVip-test_ldevvip"
+  logical_device = "uni/tn-test_tenant/lDevVip-test_imported_device"
 }
 `
 
 const testConfigVnsLDevIfChildrenRemoveOneDependencyWithFvTenant = testConfigFvTenantMin + `
 resource "aci_imported_logical_device" "test" {
   parent_dn = aci_tenant.test.id
-  logical_device = "uni/tn-test_tenant/lDevVip-test_ldevvip"
+  logical_device = "uni/tn-test_tenant/lDevVip-test_imported_device"
   annotations = [ 
 	{
 	  key = "key_1"
@@ -300,7 +300,7 @@ resource "aci_imported_logical_device" "test" {
 const testConfigVnsLDevIfChildrenRemoveAllDependencyWithFvTenant = testConfigFvTenantMin + `
 resource "aci_imported_logical_device" "test" {
   parent_dn = aci_tenant.test.id
-  logical_device = "uni/tn-test_tenant/lDevVip-test_ldevvip"
+  logical_device = "uni/tn-test_tenant/lDevVip-test_imported_device"
   annotations = []
   tags = []
 }
