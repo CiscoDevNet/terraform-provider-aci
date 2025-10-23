@@ -66,6 +66,9 @@ type ImportJsonString struct {
 	ChildRns []string `json:"childRns"`
 }
 
+// Angle brackets are not allowed within ACI class object identifier fields.
+// Because of that "<,>" string was used to merge and split the list elements.
+// Only using "," is not enough when the object identifier contains "," for example: "annotationKey-[~!$([])_+-={};:|,.]"
 const ListElementConcatenationDelimiter = "<,>"
 
 // List of attributes to be not stored in state
@@ -297,9 +300,6 @@ func (r *AciRestManagedResource) Read(ctx context.Context, req resource.ReadRequ
 			return
 		}
 
-		// Angle brackets are not allowed within ACI class object identifier fields.
-		// Because of that "<,>" string was used to merge and split the list elements.
-		// Only using "," is not enough when the object identifier contains "," for example: "annotationKey-[~!$([])_+-={};:|,.]"
 		// This conversion is required because the SetKey function, utilized by the Terraform private state.
 		// The SetKey function accepts byte strings as the value for the key.
 		if strings.Contains(rnMap["rn_values"], ListElementConcatenationDelimiter) {
@@ -392,9 +392,6 @@ func parseImportId(ctx context.Context, importId string) (string, string) {
 	err := json.Unmarshal([]byte(importId), &importJson)
 	if err == nil {
 		// JSON parsing successful
-		// Angle brackets are not allowed within ACI class object identifier fields.
-		// Because of that "<,>" string was used to merge and split the list elements.
-		// Only using "," is not enough when the object identifier contains "," for example: "annotationKey-[~!$([])_+-={};:|,.]"
 		// This conversion is required because the SetKey function, utilized by the Terraform private state.
 		// The SetKey function accepts byte strings as the value for the key.
 		return importJson.ParentDn, strings.Join(importJson.ChildRns, ListElementConcatenationDelimiter)
