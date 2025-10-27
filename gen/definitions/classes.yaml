@@ -189,12 +189,18 @@ vmmDomP:
 
 vmmUplinkPCont:
   resource_name: "vmm_uplink_container"
+  sub_category: "Virtual Networking"
+  ui_locations:
+    - "Virtual Networking -> VMware -> Create Uplinks"
   include: true
   children:
     - "vmmUplinkP"
 
 vmmUplinkP:
   resource_name: "vmm_uplink_policy"
+  sub_category: "Virtual Networking"
+  ui_locations:
+    - "Virtual Networking -> VMware -> Name of Uplinks"
 
 fvAp:
   resource_name: "application_profile"
