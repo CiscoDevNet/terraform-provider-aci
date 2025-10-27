@@ -2,6 +2,7 @@
 resource "aci_lacp_enhanced_lag_policy" "full_example_vswitch_policy" {
   parent_dn           = aci_vswitch_policy.example.id
   annotation          = "annotation"
+  id_attribute        = "id_attribute_1"
   load_balancing_mode = "dst-ip"
   mode                = "active"
   name                = "test_name"
