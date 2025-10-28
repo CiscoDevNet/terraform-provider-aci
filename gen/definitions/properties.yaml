@@ -86,6 +86,7 @@ global:
     Evpn: "EVPN"
     Lacp Enhanced Lag Policy: "LACP Enhanced Lag Policy"
     Vmm: "VMM"
+    Policys: "Policies"
   ignores:
     - "userdom"
 

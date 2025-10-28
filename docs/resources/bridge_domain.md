@@ -501,7 +501,7 @@ All examples for the Bridge Domain resource can be found in the [examples](https
   
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-* `relation_to_netflow_monitor_policies` - (list) A list of Relation From Bridge Domain To NetFlow Monitor Policys (ACI object [fvRsBDToNetflowMonitorPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsBDToNetflowMonitorPol/overview)) pointing to NetFlow Monitor Policy (ACI Object [netflowMonitorPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowMonitorPol/overview)) which can be configured using the [aci_netflow_monitor_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/netflow_monitor_policy) resource. This attribute is supported in ACI versions: 2.2(1k) and later.
+* `relation_to_netflow_monitor_policies` - (list) A list of Relation From Bridge Domain To NetFlow Monitor Policies (ACI object [fvRsBDToNetflowMonitorPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsBDToNetflowMonitorPol/overview)) pointing to NetFlow Monitor Policy (ACI Object [netflowMonitorPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowMonitorPol/overview)) which can be configured using the [aci_netflow_monitor_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/netflow_monitor_policy) resource. This attribute is supported in ACI versions: 2.2(1k) and later.
   #### Required ####
   
     * `filter_type` (fltType) - (string) The filter type of the NetFlow Monitor Policy object.

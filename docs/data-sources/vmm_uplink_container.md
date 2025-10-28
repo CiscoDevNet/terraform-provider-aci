@@ -55,7 +55,7 @@ data "aci_vmm_uplink_container" "example_vmm_domain" {
 * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `uplink_policies` - (list) A list of VMM Uplink Policys (ACI object [vmmUplinkP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vmmUplinkP/overview)).
+* `uplink_policies` - (list) A list of VMM Uplink Policies (ACI object [vmmUplinkP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vmmUplinkP/overview)).
     * `annotation` (annotation) - (string) The annotation of the VMM Uplink Policy object.
     * `name_alias` (nameAlias) - (string) The name alias of the VMM Uplink Policy object.
     * `uplink_id` (uplinkId) - (string) The uplink identifier of the VMM Uplink Policy object.

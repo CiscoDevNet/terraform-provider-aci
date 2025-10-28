@@ -116,7 +116,7 @@ All examples for the VMM Uplink Container resource can be found in the [examples
   
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `uplink_policies` - (list) A list of VMM Uplink Policys (ACI object [vmmUplinkP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vmmUplinkP/overview)). VMM Uplink Policys can also be configured using a separate [aci_vmm_uplink_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vmm_uplink_policy) resource.
+* `uplink_policies` - (list) A list of VMM Uplink Policies (ACI object [vmmUplinkP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vmmUplinkP/overview)). VMM Uplink Policies can also be configured using a separate [aci_vmm_uplink_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vmm_uplink_policy) resource.
   #### Required ####
   
     * `uplink_id` (uplinkId) - (string) The uplink identifier of the VMM Uplink Policy object.
