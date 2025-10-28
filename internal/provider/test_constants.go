@@ -145,3 +145,27 @@ resource "aci_vswitch_policy" "test" {
   vmm_domain_dn = aci_vmm_domain.test.id
 }
 `
+
+const testConfigImportedVnsLDevVipWithFvTenant = `
+resource "aci_tenant" "test_tenant_imported_device" {
+  name = "test_tenant_imported_device"
+}
+
+resource "aci_physical_domain" "test" {
+  name = "test"
+}
+
+resource "aci_l4_l7_device" "test_imported_device" {
+  tenant_dn                            = aci_tenant.test_tenant_imported_device.id
+  name                                 = "test_imported_device"
+  active                               = "no"
+  context_aware                        = "single-Context"
+  device_type                          = "PHYSICAL"
+  function_type                        = "GoTo"
+  is_copy                              = "no"
+  mode                                 = "legacy-Mode"
+  promiscuous_mode                     = "no"
+  service_type                         = "OTHERS"
+  relation_vns_rs_al_dev_to_phys_dom_p = "uni/phys-test"
+}
+`
