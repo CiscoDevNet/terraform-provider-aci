@@ -530,3 +530,8 @@ version_mismatch: true
 {{- if .DataSourceHasNoNameIdentifier }}
 data_source_has_no_name_identifier: {{ .DataSourceHasNoNameIdentifier }}
 {{- end}}
+
+{{- $customTestDependency := getCustomTestDependency .PkgName $.Definitions }}
+{{- if ne $customTestDependency "" }}
+custom_test_dependency_name: "{{ $customTestDependency }}"
+{{- end}}

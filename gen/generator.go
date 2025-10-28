@@ -151,6 +151,7 @@ var templateFuncs = template.FuncMap{
 	"getLegacyBlockTestValue":                  GetBlockTestValue,
 	"getDeprecatedExplanation":                 GetDeprecatedExplanation,
 	"getIgnoredExplanation":                    GetIgnoredExplanation,
+	"getCustomTestDependency":                  GetCustomTestDependency,
 }
 
 func GetDeprecatedExplanation(attributeName, replacedByAttributeName string) string {
@@ -3435,4 +3436,15 @@ func HasCustomTypeDocs(classPkgName, propertyName string, definitions Definition
 		}
 	}
 	return true
+}
+
+func GetCustomTestDependency(classPkgName string, definitions Definitions) string {
+	if classDetails, ok := definitions.Properties[classPkgName]; ok {
+		for key, value := range classDetails.(map[interface{}]interface{}) {
+			if key.(string) == "custom_test_dependency_name" {
+				return value.(string)
+			}
+		}
+	}
+	return ""
 }

@@ -10,13 +10,13 @@ default:
   name_alias: ""
 
 datasource_non_existing:
-  logical_device: "uni/tn-test_tenant/lDevVip-test_imported_device"
+  logical_device: "uni/tn-test_tenant_imported_device/lDevVip-test_imported_device"
 
 datasource_required:
-  logical_device: "uni/tn-test_tenant/lDevVip-test_imported_device"
+  logical_device: "uni/tn-test_tenant_imported_device/lDevVip-test_imported_device"
 
 resource_required:
-  logical_device: "uni/tn-test_tenant/lDevVip-test_imported_device"
+  logical_device: "uni/tn-test_tenant_imported_device/lDevVip-test_imported_device"
 
 all:
   annotation: "annotation"
@@ -46,3 +46,4 @@ parents:
     class_in_parent: false
     test_type: both
 class_version: 1.0(1e)-
+custom_test_dependency_name: "ImportedVnsLDevVipWithFvTenant"
