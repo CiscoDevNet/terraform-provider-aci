@@ -300,8 +300,6 @@ func (r *AciRestManagedResource) Read(ctx context.Context, req resource.ReadRequ
 			return
 		}
 
-		// This conversion is required because the SetKey function, utilized by the Terraform private state.
-		// The SetKey function accepts byte strings as the value for the key.
 		if strings.Contains(rnMap["rn_values"], ListElementConcatenationDelimiter) {
 			rn_values = strings.Split(rnMap["rn_values"], ListElementConcatenationDelimiter)
 		} else {
@@ -391,9 +389,9 @@ func parseImportId(ctx context.Context, importId string) (string, string) {
 	var importJson ImportJsonString
 	err := json.Unmarshal([]byte(importId), &importJson)
 	if err == nil {
-		// JSON parsing successful
-		// This conversion is required because the SetKey function, utilized by the Terraform private state.
-		// The SetKey function accepts byte strings as the value for the key.
+		tflog.Debug(ctx, "JSON parsing of the import ID successful.")
+		// Converting the ChildRns list to a string before storing it in the Terraform private state.
+		// Which is then accessed by Terraform private state functions to set and retrieve data from the private state.
 		return importJson.ParentDn, strings.Join(importJson.ChildRns, ListElementConcatenationDelimiter)
 	}
 
