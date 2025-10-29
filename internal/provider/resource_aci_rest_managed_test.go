@@ -7,6 +7,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	"github.com/hashicorp/terraform-plugin-testing/terraform"
 )
 
 func TestAccAciRestManaged_tenant(t *testing.T) {
@@ -921,6 +922,125 @@ func TestAccAciRestManaged_undeletableObject(t *testing.T) {
 	})
 }
 
+var onDestroyTestName string
+
+func init() {
+	onDestroyTestName = acctest.RandStringFromCharSet(10, acctest.CharSetAlpha)
+}
+
+func TestAccAciRestManaged_onDestroyCreate(t *testing.T) {
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(1g)-") },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccAciRestManagedConfig_onDestroy(),
+				Check: resource.ComposeTestCheckFunc(
+					// Check parent attributes
+					resource.TestCheckResourceAttr("aci_rest_managed.tenant_with_destroy", "dn", "uni/tn-"+onDestroyTestName),
+					resource.TestCheckResourceAttr("aci_rest_managed.tenant_with_destroy", "class_name", "fvTenant"),
+					resource.TestCheckResourceAttr("aci_rest_managed.tenant_with_destroy", "content.name", onDestroyTestName),
+					resource.TestCheckResourceAttr("aci_rest_managed.tenant_with_destroy", "content.descr", "Production Tenant"),
+
+					// Check regular children (3 children)
+					resource.TestCheckResourceAttr("aci_rest_managed.tenant_with_destroy", "child.#", "3"),
+
+					// Check content_on_destroy
+					resource.TestCheckResourceAttr("aci_rest_managed.tenant_with_destroy", "content_on_destroy.descr", "Decommissioned Tenant"),
+
+					// Check child_on_destroy (2 children with destroy config)
+					resource.TestCheckResourceAttr("aci_rest_managed.tenant_with_destroy", "child_on_destroy.#", "2"),
+				),
+			},
+		},
+	})
+}
+
+func TestAccAciRestManaged_onDestroyImport(t *testing.T) {
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(1g)-") },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config:        testAccAciRestManagedConfig_onDestroyMinimal(),
+				ImportState:   true,
+				ImportStateId: fmt.Sprintf("uni/tn-%s:ap-web,ctx-vrf1", onDestroyTestName),
+				ResourceName:  "aci_rest_managed.tenant_with_destroy",
+				ImportStateCheck: func(states []*terraform.InstanceState) error {
+					if len(states) != 1 {
+						return fmt.Errorf("expected 1 resource state, got %d", len(states))
+					}
+
+					state := states[0]
+
+					// Validate parent
+					if state.Attributes["dn"] != "uni/tn-"+onDestroyTestName {
+						return fmt.Errorf("dn mismatch")
+					}
+
+					if state.Attributes["class_name"] != "fvTenant" {
+						return fmt.Errorf("class_name mismatch")
+					}
+
+					if state.Attributes["content.descr"] != "Decommissioned Tenant" {
+						return fmt.Errorf("content.descr mismatch: expected 'Decommissioned Tenant', got '%s'", state.Attributes["content.descr"])
+					}
+
+					// Check children count
+					childCount := 2
+					if state.Attributes["child.#"] != "2" {
+						return fmt.Errorf("expected 2 children, got %s", state.Attributes["child.#"])
+					}
+
+					// Validate each child using helper
+					if err := findAndValidateChildForRestManaged(state, childCount, "ap-web", "fvAp", map[string]string{
+						"name":  "web",
+						"descr": "Archived Web App",
+					}); err != nil {
+						return err
+					}
+
+					if err := findAndValidateChildForRestManaged(state, childCount, "ctx-vrf1", "fvCtx", map[string]string{
+						"name":  "vrf1",
+						"descr": "Archived VRF",
+					}); err != nil {
+						return err
+					}
+
+					return nil
+				},
+			},
+			{
+				Config:        testAccAciRestManagedConfig_onDestroyMinimal(),
+				ImportState:   true,
+				ImportStateId: fmt.Sprintf("uni/tn-%s:ap-database", onDestroyTestName),
+				ResourceName:  "aci_rest_managed.tenant_with_destroy",
+				ExpectError:   regexp.MustCompile("Unable to find specified child 'ap-database'"),
+				Destroy:       true,
+			},
+		},
+	})
+}
+
+// Explicit Destroy of resource with on_destroy attributes
+func TestAccAciRestManaged_explpicitDestroy(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(1g)-") },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccAciRestManagedConfig_onDestroyMinimal(),
+			},
+			{
+				Config:  testAccAciRestManagedConfig_onDestroyMinimal(),
+				Destroy: true,
+			},
+		},
+	})
+}
+
 func testAccAciRestManagedConfig_tenant(name string, description string) string {
 	return fmt.Sprintf(`
 	resource "aci_rest_managed" "fvTenant" {
@@ -1368,7 +1488,7 @@ func testAccAciRestManagedConfig_undeletableClass() string {
 		  key            = "test"
 		  loopProtectAct = "port-disable"
 		}
-	} 
+	}
 	`
 }
 
@@ -1474,4 +1594,76 @@ func testAccAciRestManagedConfig_undeletableObject() string {
 		}
 	  }
 	`
+}
+
+func testAccAciRestManagedConfig_onDestroy() string {
+	return fmt.Sprintf(`
+    resource "aci_rest_managed" "tenant_with_destroy" {
+        dn         = "uni/tn-%[1]s"
+        class_name = "fvTenant"
+        content = {
+            name  = "%[1]s"
+            descr = "Production Tenant"
+        }
+
+        child {
+            rn         = "ap-web"
+            class_name = "fvAp"
+            content = {
+                name  = "web"
+                descr = "Web Application"
+            }
+        }
+
+        child {
+            rn         = "ap-database"
+            class_name = "fvAp"
+            content = {
+                name  = "database"
+                descr = "Database Application"
+            }
+        }
+
+        child {
+            rn         = "ctx-vrf1"
+            class_name = "fvCtx"
+            content = {
+                name  = "vrf1"
+                descr = "Production VRF"
+            }
+        }
+
+        content_on_destroy = {
+            descr = "Decommissioned Tenant"
+        }
+
+        child_on_destroy {
+            rn         = "ap-web"
+            class_name = "fvAp"
+            content = {
+                descr = "Archived Web App"
+            }
+        }
+
+        child_on_destroy {
+            rn         = "ctx-vrf1"
+            class_name = "fvCtx"
+            content = {
+                descr = "Archived VRF"
+            }
+        }
+    }
+    `, onDestroyTestName)
+}
+
+func testAccAciRestManagedConfig_onDestroyMinimal() string {
+	return fmt.Sprintf(`
+    resource "aci_rest_managed" "tenant_with_destroy" {
+        dn         = "uni/tn-%[1]s"
+        class_name = "fvTenant"
+        content = {
+            name = "%[1]s"
+        }
+    }
+    `, onDestroyTestName)
 }

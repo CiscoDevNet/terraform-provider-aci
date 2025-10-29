@@ -63,6 +63,70 @@ resource "aci_rest_managed" "example_tenant_with_child" {
 }
 ```
 
+The configuration snippet below demonstrates using content_on_destroy to modify a Tenant object during destroy instead of deleting it.
+
+```terraform
+resource "aci_rest_managed" "tenant_with_cleanup" {
+  dn         = "uni/tn-PRODUCTION_TENANT"
+  class_name = "fvTenant"
+  content = {
+    name  = "PRODUCTION_TENANT"
+    descr = "Production tenant for applications"
+  }
+  
+  child {
+    rn         = "ap-web"
+    class_name = "fvAp"
+    content = {
+      name  = "web"
+      descr = "Web application profile"
+    }
+  }
+  
+  child {
+    rn         = "ap-database"
+    class_name = "fvAp"
+    content = {
+      name  = "database"
+      descr = "Database application profile"
+    }
+  }
+  
+  child {
+    rn         = "ctx-production"
+    class_name = "fvCtx"
+    content = {
+      name  = "production"
+      descr = "Production VRF"
+    }
+  }
+  
+  # Content to apply during terraform destroy
+  content_on_destroy = {
+    descr = "Decommissioned - Archived Tenant"
+  }
+  
+  # Children to modify during destroy (others will be deleted)
+  child_on_destroy {
+    rn         = "ap-web"
+    class_name = "fvAp"
+    content = {
+      descr = "Archived - Web application"
+    }
+  }
+  
+  child_on_destroy {
+    rn         = "ctx-production"
+    class_name = "fvCtx"
+    content = {
+      descr = "Archived - Production VRF"
+    }
+  }
+  
+  # Note: ap-database is not listed in child_on_destroy, so it will be deleted normally
+}
+```
+
 ## Schema ##
 
 ### Required ###
@@ -88,6 +152,14 @@ resource "aci_rest_managed" "example_tenant_with_child" {
 * `escape_html` - (boolean) Enable escaping of HTML characters when encoding the JSON payload.
   - Default: `true`
 
+* `content_on_destroy` - (map) A map of key-value pairs to be applied to the parent object during terraform destroy operations. This allows modifying the object with cleanup values instead of deleting it. When this attribute is specified, the object will be updated with these values rather than being deleted from ACI.
+
+!> The annotation property is not allowed to be set in content_on_destroy.
+
+~> Note: child_on_destroy is only processed when content_on_destroy is also specified. If content_on_destroy is not present, child_on_destroy will be ignored and all children will be deleted normally.
+
+~> When adding content_on_destroy to an existing resource, Terraform will show this attribute being added in the plan. This is expected behavior and will not trigger any API calls. The attribute will be used only during terraform destroy.
+
 * `child` - (block) A nested block representing a child object. Multiple child blocks can be specified.
 
   ~> Omitting child blocks from the configuration causes any existing child blocks present in the state to be removed.
@@ -100,6 +172,21 @@ resource "aci_rest_managed" "example_tenant_with_child" {
   #### Optional ###
 
   * `content` - (map) A map of key-value pairs which represents the attributes for the child object. When annotation is provided in the content of the child it will take precedence over the annotation set at the parent level.
+
+* `child_on_destroy` - (block) A nested block representing a child object to be modified during terraform destroy operations. Multiple child_on_destroy blocks can be specified. Children listed here will be updated with the specified content instead of being deleted. Children not listed in child_on_destroy will be deleted normally during destroy.
+
+!> child_on_destroy only takes effect when content_on_destroy is also specified. Without content_on_destroy, all children will be deleted using the standard deletion process.
+
+~> Only children that have both matching rn and class_name in child_on_destroy will be modified during destroy. All other children will be deleted.
+
+  #### Required ####
+
+  * `rn` - (string) The Relative Name of the child object. Must match the rn of an existing child in the child block.
+  * `class_name` - (string) Class name of child object. Must match the class_name of an existing child in the child block.
+
+  #### Optional ###
+
+  * `content` - (map) A map of key-value pairs which represents the attributes to be applied to the child object during destroy.
 
 ## Importing ##
 
