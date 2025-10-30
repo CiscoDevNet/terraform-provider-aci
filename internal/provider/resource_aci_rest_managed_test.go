@@ -253,24 +253,6 @@ func TestAccAciRestManaged_import(t *testing.T) {
 				),
 			},
 			{
-				ImportState:   true,
-				ImportStateId: fmt.Sprintf("uni/tn-%s:ctx-VRF1,ctx-VRF2", name),
-				ResourceName:  "aci_rest_managed.import",
-				ExpectError:   regexp.MustCompile("Import Failed"),
-			},
-			{
-				ImportState:   true,
-				ImportStateId: fmt.Sprintf("polUni:uni/tn-%s:ctx-VRF1,ctx-VRF2", name),
-				ResourceName:  "aci_rest_managed.import",
-				ExpectError:   regexp.MustCompile("Import Failed"),
-			},
-			{
-				ImportState:   true,
-				ImportStateId: fmt.Sprintf("polUni:uni/tn-%s:ctx-VRF1:ctx-VRF2", name),
-				ResourceName:  "aci_rest_managed.import",
-				ExpectError:   regexp.MustCompile("Unexpected Import Identifier"),
-			},
-			{
 				Config: testAccAciRestManagedConfig_importWithMultipleChildren(name, "import"),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_rest_managed.import", "content.name", name),
@@ -329,6 +311,84 @@ func TestAccAciRestManaged_import(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_rest_managed.import", "child.2.rn", "ctx-VRF2"),
 					resource.TestCheckResourceAttr("aci_rest_managed.import", "child.2.content.name", "VRF2"),
 					resource.TestCheckResourceAttr("aci_rest_managed.import", "child.#", "2"),
+				),
+			},
+			{
+				Config: testAccAciRestManagedConfig_importMultipleChildrenWithImportJsonString(name, "import_json_str"),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_rest_managed.eptags_import_json_str", "dn", "uni/tn-"+name+"/eptags"),
+					resource.TestCheckResourceAttr("aci_rest_managed.eptags_import_json_str", "child.#", "4"),
+					resource.TestCheckResourceAttr("aci_rest_managed.eptags_import_json_str", "annotation", "orchestrator:from_resource"),
+					resource.TestCheckResourceAttr("aci_rest_managed.eptags_import_json_str", "class_name", "fvEpTags"),
+				),
+			},
+			{
+
+				ImportState:   true,
+				ImportStateId: fmt.Sprintf(`{ "parentDn": "uni/tn-%s/eptags" }`, name),
+				ResourceName:  "aci_rest_managed.eptags_import_json_str",
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_rest_managed.eptags_import_json_str", "content.annotation", "orchestrator:from_resource"),
+					resource.TestCheckResourceAttr("aci_rest_managed.eptags_import_json_str", "dn", "uni/tn-"+name+"/eptags"),
+					resource.TestCheckResourceAttr("aci_rest_managed.eptags_import_json_str", "annotation", "orchestrator:from_resource"),
+					resource.TestCheckResourceAttr("aci_rest_managed.eptags_import_json_str", "class_name", "fvEpTags"),
+				),
+			},
+			{
+
+				ImportState:   true,
+				ImportStateId: fmt.Sprintf(`{ "parentDn": "uni/tn-%s/eptags", "childRns": [ "annotationKey-[~!$([])_+-={};:|,.]", "annotationKey-[tagAnnotation2]", "epmactag-90:B5:B8:42:D1:88-[default]", "epiptag-[2001:10:1::1]-default" ] }`, name),
+				ResourceName:  "aci_rest_managed.eptags_import_json_str",
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_rest_managed.eptags_import_json_str", "content.annotation", "orchestrator:from_resource"),
+					resource.TestCheckResourceAttr("aci_rest_managed.eptags_import_json_str", "dn", "uni/tn-"+name+"/eptags"),
+					resource.TestCheckResourceAttr("aci_rest_managed.eptags_import_json_str", "child.#", "4"),
+					resource.TestCheckResourceAttr("aci_rest_managed.eptags_import_json_str", "annotation", "orchestrator:from_resource"),
+					resource.TestCheckResourceAttr("aci_rest_managed.eptags_import_json_str", "class_name", "fvEpTags"),
+					resource.TestCheckResourceAttr("aci_rest_managed.eptags_import_json_str", "child.0.class_name", "tagAnnotation"),
+					resource.TestCheckResourceAttr("aci_rest_managed.eptags_import_json_str", "child.0.rn", "annotationKey-[~!$([])_+-={};:|,.]"),
+					resource.TestCheckResourceAttr("aci_rest_managed.eptags_import_json_str", "child.0.content.key", "~!$([])_+-={};:|,."),
+					resource.TestCheckResourceAttr("aci_rest_managed.eptags_import_json_str", "child.0.content.value", "tagAnnotation1"),
+					resource.TestCheckResourceAttr("aci_rest_managed.eptags_import_json_str", "child.1.class_name", "tagAnnotation"),
+					resource.TestCheckResourceAttr("aci_rest_managed.eptags_import_json_str", "child.1.rn", "annotationKey-[tagAnnotation2]"),
+					resource.TestCheckResourceAttr("aci_rest_managed.eptags_import_json_str", "child.1.content.key", "tagAnnotation2"),
+					resource.TestCheckResourceAttr("aci_rest_managed.eptags_import_json_str", "child.1.content.value", "tagAnnotation2"),
+					resource.TestCheckResourceAttr("aci_rest_managed.eptags_import_json_str", "child.2.class_name", "fvEpMacTag"),
+					resource.TestCheckResourceAttr("aci_rest_managed.eptags_import_json_str", "child.2.rn", "epmactag-90:B5:B8:42:D1:88-[default]"),
+					resource.TestCheckResourceAttr("aci_rest_managed.eptags_import_json_str", "child.2.content.bdName", "default"),
+					resource.TestCheckResourceAttr("aci_rest_managed.eptags_import_json_str", "child.2.content.mac", "90:B5:B8:42:D1:88"),
+					resource.TestCheckResourceAttr("aci_rest_managed.eptags_import_json_str", "child.3.class_name", "fvEpIpTag"),
+					resource.TestCheckResourceAttr("aci_rest_managed.eptags_import_json_str", "child.3.rn", "epiptag-[2001:10:1::1]-default"),
+					resource.TestCheckResourceAttr("aci_rest_managed.eptags_import_json_str", "child.3.content.ip", "2001:10:1::1"),
+					resource.TestCheckResourceAttr("aci_rest_managed.eptags_import_json_str", "child.3.content.bdName", "default"),
+				),
+			},
+			{
+
+				ImportState:   true,
+				ImportStateId: fmt.Sprintf(`{ "parentDn": "uni/tn-%s/BD-bd_test", "childRns": [ "rgexpmac-00:22:BD:F8:11:FF", "rgexpmac-00:22:BD:F8:12:FF" ] }`, name),
+				ResourceName:  "aci_rest_managed.bd",
+				Check: resource.ComposeTestCheckFunc(
+
+					resource.TestCheckResourceAttr("aci_rest_managed.bd", "dn", "uni/tn-"+name+"/BD-bd_test"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bd", "child.#", "2"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bd", "class_name", "fvBD"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bd", "name", "bd_test"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bd", "child.0.class_name", "fvRogueExceptionMac"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bd", "child.0.mac", "00:22:BD:F8:11:FF"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bd", "child.1.class_name", "fvRogueExceptionMac"),
+					resource.TestCheckResourceAttr("aci_rest_managed.bd", "child.1.mac", "00:22:BD:F8:12:FF"),
+				),
+			},
+			{
+
+				ImportState:   true,
+				ImportStateId: fmt.Sprintf(`{ "parentDn": "uni/tn-%s/BD-bd_test/rgexpmac-00:22:BD:F8:11:FF" }`, name),
+				ResourceName:  "aci_rest_managed.rogue_exception_mac_11",
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_rest_managed.rogue_exception_mac_11", "dn", "uni/tn-"+name+"/BD-bd_test/rgexpmac-00:22:BD:F8:11:FF"),
+					resource.TestCheckResourceAttr("aci_rest_managed.rogue_exception_mac_11", "class_name", "fvRogueExceptionMac"),
+					resource.TestCheckResourceAttr("aci_rest_managed.rogue_exception_mac_11", "mac", "00:22:BD:F8:11:FF"),
 				),
 			},
 		},
@@ -1006,6 +1066,84 @@ func testAccAciRestManagedConfig_importWithMultipleChildren(name string, resourc
 				name = "AP1"
 			}
 		}
+	}
+	`, name, resource)
+}
+
+func testAccAciRestManagedConfig_importMultipleChildrenWithImportJsonString(name string, resource string) string {
+	return fmt.Sprintf(`
+	resource "aci_rest_managed" "tenant_%[2]s" {
+		dn         = "uni/tn-%[1]s"
+		class_name = "fvTenant"
+		annotation = "orchestrator:from_resource"
+		content    = {
+			name = "%[1]s"
+		}
+	}
+
+	resource "aci_rest_managed" "bd" {
+		dn         = "uni/tn-%[1]s/BD-bd_test"
+		class_name = "fvBD"
+		content    = {
+			name = "bd_test"
+		}
+		depends_on = [aci_rest_managed.tenant_%[2]s]
+	}
+
+	resource "aci_rest_managed" "rogue_exception_mac_11" {
+		dn         = "uni/tn-%[1]s/BD-bd_test/rgexpmac-00:22:BD:F8:11:FF"
+		class_name = "fvRogueExceptionMac"
+		content    = {
+			mac = "00:22:BD:F8:11:FF"
+		}
+		depends_on = [aci_rest_managed.bd]
+	}
+
+	resource "aci_rest_managed" "rogue_exception_mac_12" {
+		dn         = "uni/tn-%[1]s/BD-bd_test/rgexpmac-00:22:BD:F8:12:FF"
+		class_name = "fvRogueExceptionMac"
+		content    = {
+			mac = "00:22:BD:F8:12:FF"
+		}
+		depends_on = [aci_rest_managed.bd]
+	}
+
+	resource "aci_rest_managed" "eptags_%[2]s" {
+		dn         = "${aci_rest_managed.tenant_%[2]s.id}/eptags"
+		class_name = "fvEpTags"
+		annotation = "orchestrator:from_resource"
+		content    = {}
+		child {
+			rn         = "annotationKey-[~!$([])_+-={};:|,.]"
+			class_name = "tagAnnotation"
+			content    = {
+				key   = "~!$([])_+-={};:|,."
+				value = "tagAnnotation1"
+			}
+		}
+		child {
+			rn         = "annotationKey-[tagAnnotation2]"
+			class_name = "tagAnnotation"
+			content    = {
+				key   = "tagAnnotation2"
+				value = "tagAnnotation2"
+			}
+		}
+		child {
+			rn         = "epmactag-90:B5:B8:42:D1:88-[default]"
+			class_name = "fvEpMacTag"
+			content    = {
+				mac	= "90:B5:B8:42:D1:88"
+			}
+		}
+		child {
+			rn         = "epiptag-[2001:10:1::1]-default"
+			class_name = "fvEpIpTag"
+			content    = {
+				ip	= "2001:10:1::1"
+			}
+		}
+		depends_on = [aci_rest_managed.tenant_%[2]s]
 	}
 	`, name, resource)
 }

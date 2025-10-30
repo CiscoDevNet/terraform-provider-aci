@@ -109,17 +109,45 @@ An existing object can be [imported](https://www.terraform.io/docs/import/index.
 terraform import aci_rest_managed.example_tenant uni/tn-{name}
 ```
 
-When children need to be imported they must be specified by appending them to the distinguished name (DN) with the below format:
+To support more complex scenarios, it can also be imported using a JSON representation as shown in the following command:
 
 ```
-terraform import aci_rest_managed.example_tenant uni/tn-{name}:{child-rn-1},{child-rn-N}
+terraform import aci_rest_managed.example_tenant `{ "parentDn": "uni/tn-{name}" }`
 ```
+
+When children need to be imported, they must be specified in the JSON object under the "childRns" key as a list of relative names (RNs) next to the DN key as shown below:
+
+```
+terraform import aci_rest_managed.example_tenant `{ "parentDn": "uni/tn-{name}", "childRns": ["rsTenantMonPol", "annotationKey-[{key}]", "{child-n}"] }`
+```
+
+!> The use of the previously supported colon-separated format to import children for the resource is deprecated and will be removed in the next release as it creates issues with DN containing colons. Please use the JSON format string shown above to import children.
 
 Starting in Terraform version 1.5, an existing object can be imported using [import blocks](https://developer.hashicorp.com/terraform/language/import) via the following configuration:
+
+Importing an object using its distinguished name (DN):
 
 ```
 import {
   id = "uni/tn-{name}"
+  to = aci_rest_managed.example_tenant
+}
+```
+
+Importing an object using its distinguished name (DN) with a JSON string:
+
+```
+import {
+  id = `{ "parentDn": "uni/tn-{name}" }`
+  to = aci_rest_managed.example_tenant
+}
+```
+
+Importing a parent object using its distinguished name (DN) and child objects using their relative names (RNs) with a JSON string:
+
+```
+import {
+  id = `{ "parentDn": "uni/tn-{name}", "childRns": ["rsTenantMonPol", "annotationKey-[{key}]", "{child-n}"] }`
   to = aci_rest_managed.example_tenant
 }
 ```

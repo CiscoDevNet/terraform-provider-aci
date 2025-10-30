@@ -61,6 +61,16 @@ type AciRestManagedChildIdentifier struct {
 	ClassName types.String
 }
 
+type ImportJsonString struct {
+	ParentDn string   `json:"parentDn"`
+	ChildRns []string `json:"childRns"`
+}
+
+// Angle brackets are not allowed within ACI class object identifier fields.
+// Because of that "<,>" string was used to merge and split the list elements.
+// Only using "," is not enough when the object identifier contains "," for example: "annotationKey-[~!$([])_+-={};:|,.]"
+const ListElementConcatenationDelimiter = "<,>"
+
 // List of attributes to be not stored in state
 var IgnoreAttr = []string{"dn", "configQual", "configSt", "virtualIp", "annotation"}
 
@@ -289,7 +299,12 @@ func (r *AciRestManagedResource) Read(ctx context.Context, req resource.ReadRequ
 			)
 			return
 		}
-		rn_values = strings.Split(rnMap["rn_values"], ",")
+
+		if strings.Contains(rnMap["rn_values"], ListElementConcatenationDelimiter) {
+			rn_values = strings.Split(rnMap["rn_values"], ListElementConcatenationDelimiter)
+		} else {
+			rn_values = strings.Split(rnMap["rn_values"], ",")
+		}
 	}
 
 	setAciRestManagedAttributes(ctx, &resp.Diagnostics, r.client, data, rn_values)
@@ -370,53 +385,62 @@ func (r *AciRestManagedResource) Delete(ctx context.Context, req resource.Delete
 	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_rest_managed with id '%s'", data.Id.ValueString()))
 }
 
-func splitImportId(importId string) []string {
-
-	if !strings.Contains(importId, "[") {
-		return strings.Split(importId, ":")
+func parseImportId(ctx context.Context, importId string) (string, string) {
+	var importJson ImportJsonString
+	err := json.Unmarshal([]byte(importId), &importJson)
+	if err == nil {
+		tflog.Debug(ctx, "JSON parsing of the import ID successful.")
+		// Converting the ChildRns list to a string before storing it in the Terraform private state.
+		// Which is then accessed by Terraform private state functions to set and retrieve data from the private state.
+		return importJson.ParentDn, strings.Join(importJson.ChildRns, ListElementConcatenationDelimiter)
 	}
 
-	idParts := []string{}
-	var openBrackets, startIndex int
-
-	for index, character := range importId {
-		if string(character) == "[" {
-			openBrackets += 1
-		} else if string(character) == "]" {
-			openBrackets -= 1
-		}
-		if openBrackets == 0 && string(character) == ":" {
-			idParts = append(idParts, importId[startIndex:index])
-			startIndex = index + 1
-		}
-	}
-
-	if startIndex < len(importId) {
-		idParts = append(idParts, importId[startIndex:])
-	}
-
-	return idParts
-
+	// JSON parsing failed, fall back to legacy logic
+	tflog.Debug(ctx, "JSON parsing of the import ID failed. Falling back to legacy parsing logic.")
+	return legacyParseImportId(ctx, importId)
 }
 
-func (r *AciRestManagedResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	tflog.Debug(ctx, "Start import state of resource: aci_rest_managed")
+func legacyParseImportId(ctx context.Context, importId string) (string, string) {
+	var dn, rnValues string
+	var idParts []string
 
-	idParts := splitImportId(req.ID)
+	// Check for simple colon-separated format without brackets
+	colonCount := strings.Count(importId, ":")
+	if !strings.Contains(importId, "[") && colonCount > 0 && colonCount < 3 {
+		tflog.Warn(ctx, "The use of the colon-separated format to import children for the resource is deprecated and will be removed in the next release.")
+		tflog.Warn(ctx, "Please use the JSON format string to import children, instead of using a colon-separated import statement.")
+		idParts = strings.Split(importId, ":")
+	} else if strings.Contains(importId, "[") {
+		// Custom splitting logic that respects brackets
+		var openBrackets int
+		var currentPartStart int
 
-	if len(idParts) == 0 || len(idParts) > 3 {
-		resp.Diagnostics.AddError(
-			"Unexpected Import Identifier",
-			fmt.Sprintf("Expected import identifier with format: <DN>:<RN-CHILD>,... or <CLASS_NAME>:<DN>:<RN-CHILD>,... Got: %q", req.ID),
-		)
-		return
+		for i, r := range importId {
+			switch r {
+			case '[':
+				openBrackets++
+			case ']':
+				openBrackets--
+			case ':':
+				if openBrackets == 0 {
+					idParts = append(idParts, importId[currentPartStart:i])
+					currentPartStart = i + 1
+				}
+			}
+		}
+		// Append the last part after the loop
+		if currentPartStart < len(importId) {
+			idParts = append(idParts, importId[currentPartStart:])
+		}
+	} else {
+		// When the import ID is a simple colon-delimited string (no brackets)
+		return importId, ""
 	}
 
-	var dn, rnValues string
 	if len(idParts) == 1 {
 		dn = idParts[0]
 	} else if len(idParts) == 2 {
-		if strings.Contains(idParts[0], "uni/") {
+		if strings.HasPrefix(idParts[0], "uni/") {
 			dn = idParts[0]
 			rnValues = idParts[1]
 		} else {
@@ -425,6 +449,21 @@ func (r *AciRestManagedResource) ImportState(ctx context.Context, req resource.I
 	} else if len(idParts) == 3 {
 		dn = idParts[1]
 		rnValues = idParts[2]
+	}
+
+	return dn, rnValues
+}
+
+func (r *AciRestManagedResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	tflog.Debug(ctx, "Start import state of resource: aci_rest_managed")
+
+	dn, rnValues := parseImportId(ctx, req.ID)
+	if dn == "" && rnValues == "" {
+		resp.Diagnostics.AddError(
+			"Unexpected Import Identifier",
+			fmt.Sprintf("Please use the JSON format string to import children, instead of using a colon-separated import statement,... Got: %q", req.ID),
+		)
+		return
 	}
 
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), dn)...)
@@ -437,7 +476,7 @@ func (r *AciRestManagedResource) ImportState(ctx context.Context, req resource.I
 		resp.Diagnostics.Append(diags...)
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_annotation with id '%s'", idParts[0]))
+	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_annotation with id '%s'", dn))
 
 	tflog.Debug(ctx, "End import of state resource: aci_rest_managed")
 }
@@ -626,29 +665,31 @@ func setAciRestManagedAttributes(ctx context.Context, diags *diag.Diagnostics, c
 
 			childRequestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s/%s.json?rsp-prop-include=config-only", data.Dn.ValueString(), rn), "GET", nil)
 			childClassData := childRequestData.Search("imdata").Search(aciRestManagedChild.ClassName.ValueString()).Data()
-			childContent := make(map[string]attr.Value, 0)
-			if childClassDetails == nil {
-				// this is not tested because it would involve importing a child corner case
-				// deleting the child between the GET of parent with children and the config-only GET for child
-				diags.AddError(
-					"Import Failed",
-					fmt.Sprintf("Unable to find specified child '%s'", rn),
-				)
-				return
-			} else if len(childClassData.([]interface{})) != 1 {
-				diags.AddError(
-					"Too many results in response",
-					fmt.Sprintf("%v matches returned for rn '%s'. Please report this issue to the provider developers.", len(childClassData.([]interface{})), rn))
-				return
-			}
-
-			for attributeName, attributeValue := range childClassData.([]interface{})[0].(map[string]interface{})["attributes"].(map[string]interface{}) {
-				if !ContainsString(IgnoreAttr, attributeName) || attributeName == "annotation" {
-					childContent[attributeName] = basetypes.NewStringValue(attributeValue.(string))
+			if childClassData != nil {
+				childContent := make(map[string]attr.Value, 0)
+				if childClassDetails == nil {
+					// this is not tested because it would involve importing a child corner case
+					// deleting the child between the GET of parent with children and the config-only GET for child
+					diags.AddError(
+						"Import Failed",
+						fmt.Sprintf("Unable to find specified child '%s'", rn),
+					)
+					return
+				} else if len(childClassData.([]interface{})) != 1 {
+					diags.AddError(
+						"Too many results in response",
+						fmt.Sprintf("%v matches returned for rn '%s'. Please report this issue to the provider developers.", len(childClassData.([]interface{})), rn))
+					return
 				}
+
+				for attributeName, attributeValue := range childClassData.([]interface{})[0].(map[string]interface{})["attributes"].(map[string]interface{}) {
+					if !ContainsString(IgnoreAttr, attributeName) || attributeName == "annotation" {
+						childContent[attributeName] = basetypes.NewStringValue(attributeValue.(string))
+					}
+				}
+				aciRestManagedChild.Content, _ = types.MapValue(types.StringType, childContent)
+				foundChildren = append(foundChildren, aciRestManagedChild)
 			}
-			aciRestManagedChild.Content, _ = types.MapValue(types.StringType, childContent)
-			foundChildren = append(foundChildren, aciRestManagedChild)
 		}
 	}
 
