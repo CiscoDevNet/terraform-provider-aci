@@ -1552,6 +1552,7 @@ fvBD:
     mcastAllow: "no"
     ipv6McastAllow: "no"
     mac: "00:22:BD:F8:19:FF"
+    epMoveDetectMode: "@aci_gen_default_value_overwrite_to_empty_string!"
   overwrites:
     arp_flood: "arp_flooding"
     host_based_routing: "advertise_host_routes"

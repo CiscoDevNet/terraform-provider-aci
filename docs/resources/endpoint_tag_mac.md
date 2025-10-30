@@ -89,7 +89,7 @@ All examples for the Endpoint Tag MAC resource can be found in the [examples](ht
 ### Optional ###
 
 * `annotation` (annotation) - (string) The annotation of the Endpoint Tag MAC object.
-  - Default: `orchestrator:terraform`
+  - Default: `"orchestrator:terraform"`
 * `id_attribute` (id) - (string) The identifier of the Endpoint Tag MAC object.
 * `name` (name) - (string) The name of the Endpoint Tag MAC object.
 * `name_alias` (nameAlias) - (string) The name alias of the Endpoint Tag MAC object.

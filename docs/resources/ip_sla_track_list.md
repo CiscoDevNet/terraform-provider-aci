@@ -111,22 +111,22 @@ All examples for the IP SLA Track List resource can be found in the [examples](h
 ### Optional ###
 
 * `annotation` (annotation) - (string) The annotation of the IP SLA Track List object.
-  - Default: `orchestrator:terraform`
+  - Default: `"orchestrator:terraform"`
 * `description` (descr) - (string) The description of the IP SLA Track List object.
 * `name_alias` (nameAlias) - (string) The name alias of the IP SLA Track List object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `percentage_down` (percentageDown) - (string) The down percentage assigned to the IP SLA Track List determines whether a route is considered available or unavailable. This attribute is applicable only when the track type is 'percentage'.
-  - Default: `0`
+  - Default: `"0"`
 * `percentage_up` (percentageUp) - (string) The up percentage assigned to the IP SLA Track List determines whether a route is considered available or unavailable. The percentage up must be greater than the percentage down. This attribute is applicable only when the track type is 'percentage'.
-  - Default: `1`
+  - Default: `"1"`
 * `type` (type) - (string) The type of the IP SLA Track List. Choose 'percentage' if you want the route availability to be based on the percentage of track members that are up or down. Choose 'weight' if the route availability is based on a weight value that is assigned to each track member.
-  - Default: `percentage`
-  - Valid Values: `percentage`, `weight`.
+  - Default: `"percentage"`
+  - Valid Values: `"percentage"`, `"weight"`.
 * `weight_down` (weightDown) - (string) The down weight assigned to the IP SLA Track List determines whether a route is considered available or unavailable. This attribute is applicable only when the track type is 'weight'.
-  - Default: `0`
+  - Default: `"0"`
 * `weight_up` (weightUp) - (string) The up weight assigned to the IP SLA Track List determines whether a route is considered available or unavailable. The up weight must be greater than the down weight. This attribute is applicable only when the track type is 'weight'.
-  - Default: `1`
+  - Default: `"1"`
 * `relation_to_ip_sla_track_members` - (list) A list of Relation To IP SLA Track Members (ACI object [fvRsOtmListMember](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsOtmListMember/overview)) pointing to IP SLA Track Member (ACI Object [fvTrackMember](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTrackMember/overview)) which can be configured using the [aci_ip_sla_track_member](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/ip_sla_track_member) resource.
   #### Required ####
   
@@ -134,9 +134,9 @@ All examples for the IP SLA Track List resource can be found in the [examples](h
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation To IP SLA Track Member object.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `weight` (weight) - (string) The weight associated with the IP SLA Track Member that contributes to the total weight that is used to determines whether a route is considered available or unavailable.
-      - Default: `10`
+      - Default: `"10"`
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
   

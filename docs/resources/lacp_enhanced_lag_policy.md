@@ -87,16 +87,16 @@ All examples for the LACP Enhanced Lag Policy resource can be found in the [exam
 ### Optional ###
 
 * `annotation` (annotation) - (string) The annotation of the LACP Enhanced Lag Policy object.
-  - Default: `orchestrator:terraform`
+  - Default: `"orchestrator:terraform"`
 * `load_balancing_mode` (lbmode) - (string) The load balancing mode of the LACP Enhanced Lag Policy object.
-  - Default: `src-dst-ip`
-  - Valid Values: `dst-ip`, `dst-ip-l4port`, `dst-ip-l4port-vlan`, `dst-ip-vlan`, `dst-l4port`, `dst-mac`, `src-dst-ip`, `src-dst-ip-l4port`, `src-dst-ip-l4port-vlan`, `src-dst-ip-vlan`, `src-dst-l4port`, `src-dst-mac`, `src-ip`, `src-ip-l4port`, `src-ip-l4port-vlan`, `src-ip-vlan`, `src-l4port`, `src-mac`, `src-port-id`, `vlan`.
+  - Default: `"src-dst-ip"`
+  - Valid Values: `"dst-ip"`, `"dst-ip-l4port"`, `"dst-ip-l4port-vlan"`, `"dst-ip-vlan"`, `"dst-l4port"`, `"dst-mac"`, `"src-dst-ip"`, `"src-dst-ip-l4port"`, `"src-dst-ip-l4port-vlan"`, `"src-dst-ip-vlan"`, `"src-dst-l4port"`, `"src-dst-mac"`, `"src-ip"`, `"src-ip-l4port"`, `"src-ip-l4port-vlan"`, `"src-ip-vlan"`, `"src-l4port"`, `"src-mac"`, `"src-port-id"`, `"vlan"`.
 * `mode` (mode) - (string) The LACP mode of the LACP Enhanced Lag Policy object.
-  - Default: `active`
-  - Valid Values: `active`, `passive`.
+  - Default: `"active"`
+  - Valid Values: `"active"`, `"passive"`.
 * `name_alias` (nameAlias) - (string) The name alias of the LACP Enhanced Lag Policy object.
 * `number_of_links` (numLinks) - (string) The number of links of the LACP Enhanced Lag Policy object.
-  - Default: `2`
+  - Default: `"2"`
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
   

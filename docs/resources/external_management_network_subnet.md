@@ -86,7 +86,7 @@ All examples for the External Management Network Subnet resource can be found in
 ### Optional ###
 
 * `annotation` (annotation) - (string) The annotation of the External Management Network Subnet object. This attribute is supported in ACI versions: 3.2(1l) and later.
-  - Default: `orchestrator:terraform`
+  - Default: `"orchestrator:terraform"`
 * `description` (descr) - (string) The description of the External Management Network Subnet object.
 * `name` (name) - (string) The name of the External Management Network Subnet object.
 * `name_alias` (nameAlias) - (string) The name alias of the External Management Network Subnet object. This attribute is supported in ACI versions: 2.2(1k) and later.
