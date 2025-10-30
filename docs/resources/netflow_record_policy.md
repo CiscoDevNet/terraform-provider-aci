@@ -97,14 +97,14 @@ All examples for the NetFlow Record Policy resource can be found in the [example
 
   - Default: `uni/infra`
 * `annotation` (annotation) - (string) The annotation of the NetFlow Record Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
-  - Default: `orchestrator:terraform`
+  - Default: `"orchestrator:terraform"`
 * `collect_parameters` (collect) - (list) Collect parameters of the NetFlow Record Policy object.
-  - Default: `src-intf`.
-  - Valid Values: `count-bytes`, `count-pkts`, `pkt-disp`, `sampler-id`, `src-intf`, `tcp-flags`, `ts-first`, `ts-recent`.
+  - Default: `"src-intf"`
+  - Valid Values: `"count-bytes"`, `"count-pkts"`, `"pkt-disp"`, `"sampler-id"`, `"src-intf"`, `"tcp-flags"`, `"ts-first"`, `"ts-recent"`.
 * `description` (descr) - (string) The description of the NetFlow Record Policy object.
 * `match_parameters` (match) - (list) Match parameters of the NetFlow Record Policy object.
-  - Default: `unspecified`.
-  - Valid Values: `dst-ip`, `dst-ipv4`, `dst-ipv6`, `dst-mac`, `dst-port`, `ethertype`, `proto`, `src-ip`, `src-ipv4`, `src-ipv6`, `src-mac`, `src-port`, `tos`, `vlan`.
+  - Default: `"unspecified"`
+  - Valid Values: `"dst-ip"`, `"dst-ipv4"`, `"dst-ipv6"`, `"dst-mac"`, `"dst-port"`, `"ethertype"`, `"proto"`, `"src-ip"`, `"src-ipv4"`, `"src-ipv6"`, `"src-mac"`, `"src-port"`, `"tos"`, `"vlan"`.
 * `name_alias` (nameAlias) - (string) The name alias of the NetFlow Record Policy object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.

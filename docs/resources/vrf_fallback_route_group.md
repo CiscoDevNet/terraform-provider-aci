@@ -125,7 +125,7 @@ All examples for the VRF Fallback Route Group resource can be found in the [exam
 ### Optional ###
 
 * `annotation` (annotation) - (string) The annotation of the VRF Fallback Route Group object.
-  - Default: `orchestrator:terraform`
+  - Default: `"orchestrator:terraform"`
 * `description` (descr) - (string) The description of the VRF Fallback Route Group object.
 * `name_alias` (nameAlias) - (string) The name alias of the VRF Fallback Route Group object.
 * `vrf_fallback_route_group_members` - (list) A list of VRF Fallback Route Group Members (ACI object [fvFBRMember](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvFBRMember/overview)). VRF Fallback Route Group Members can also be configured using a separate [aci_vrf_fallback_route_group_member](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vrf_fallback_route_group_member) resource.
@@ -135,7 +135,7 @@ All examples for the VRF Fallback Route Group resource can be found in the [exam
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the VRF Fallback Route Group Member object.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `description` (descr) - (string) The description of the VRF Fallback Route Group Member object.
     * `name` (name) - (string) The name of the VRF Fallback Route Group Member object.
     * `name_alias` (nameAlias) - (string) The name alias of the VRF Fallback Route Group Member object.
@@ -156,7 +156,7 @@ All examples for the VRF Fallback Route Group resource can be found in the [exam
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the VRF Fallback Route object.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `description` (descr) - (string) The description of the VRF Fallback Route object.
     * `name` (name) - (string) The name of the VRF Fallback Route object.
     * `name_alias` (nameAlias) - (string) The name alias of the VRF Fallback Route object.

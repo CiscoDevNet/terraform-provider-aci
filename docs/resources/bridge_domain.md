@@ -334,81 +334,82 @@ All examples for the Bridge Domain resource can be found in the [examples](https
 * `id` - (string) The distinguished name (DN) of the Bridge Domain object.
 * `pc_tag` (pcTag) - (string) The classification tag used for policy enforcement and zoning.
 * `scope` (scope) - (string) The scope ID (L3-VNI) of the Bridge Domain object.
-  - Default: `0`
+  - Default: `"0"`
 * `segment` (seg) - (string) The segment ID (L2-VNI) of the Bridge Domain object.
 
 ### Optional ###
 
 * `optimize_wan_bandwidth` (OptimizeWanBandwidth) - (string) Optimize WAN Bandwidth for the Bridge Domain object. This attribute is supported in ACI versions: 3.0(1k) and later.
-  - Default: `no`
-  - Valid Values: `no`, `yes`.
+  - Default: `"no"`
+  - Valid Values: `"no"`, `"yes"`.
 * `annotation` (annotation) - (string) The annotation of the Bridge Domain object. This attribute is supported in ACI versions: 3.2(1l) and later.
-  - Default: `orchestrator:terraform`
+  - Default: `"orchestrator:terraform"`
 * `arp_flooding` (arpFlood) - (string) Enable ARP flooding for the Bridge Domain object. If flooding is disabled, ARP requests for unknown endpoints will be forwarded by the leaf switch to the spine proxy for resolution and might trigger an ARP glean if the endpoint is not present in the COOP database.
-  - Default: `no`
-  - Valid Values: `no`, `yes`.
+  - Default: `"no"`
+  - Valid Values: `"no"`, `"yes"`.
 * `description` (descr) - (string) The description of the Bridge Domain object.
 * `enable_rogue_exception_mac` (enableRogueExceptMac) - (string) Enable rogue exception based on MAC wildcard for the Bridge Domain object. This attribute is supported in ACI versions: 6.0(2h) and later.
-  - Default: `no`
-  - Valid Values: `no`, `yes`.
+  - Default: `"no"`
+  - Valid Values: `"no"`, `"yes"`.
 * `clear_remote_mac_entries` (epClear) - (string) Clear all endpoints in leaf switches for the Bridge Domain object. This attribute is supported in ACI versions: 2.2(2e) and later.
-  - Default: `no`
-  - Valid Values: `no`, `yes`.
+  - Default: `"no"`
+  - Valid Values: `"no"`, `"yes"`.
 * `endpoint_move_detection_mode` (epMoveDetectMode) - (string) The End Point move detection option uses the Gratuitous Address Resolution Protocol (GARP). A gratuitous ARP is an ARP broadcast-type of packet that is used to verify that no other device on the network has the same IP address as the sending device. This attribute is supported in ACI versions: 1.1(1j) and later.
-  - Valid Values: ``, `garp`.
+  - Default: `""`
+  - Valid Values: `""`, `"garp"`.
 * `advertise_host_routes` (hostBasedRouting) - (string) Advertise host routes (/32 prefixes) out of the L3Out(s) associated to the Bridge Domain object. This attribute is supported in ACI versions: 4.0(1h) and later.
-  - Default: `no`
-  - Valid Values: `no`, `yes`.
+  - Default: `"no"`
+  - Valid Values: `"no"`, `"yes"`.
 * `enable_intersite_bum_traffic` (intersiteBumTrafficAllow) - (string) Enable intersite Broadcast, Unknown-Unicast and Multicast (BUM) traffic between sites for the Bridge Domain object. This attribute is supported in ACI versions: 3.0(1k) and later.
-  - Default: `no`
-  - Valid Values: `no`, `yes`.
+  - Default: `"no"`
+  - Valid Values: `"no"`, `"yes"`.
 * `intersite_l2_stretch` (intersiteL2Stretch) - (string) Enable L2 stretch between sites for the Bridge Domain object. This attribute is supported in ACI versions: 3.0(1k) and later.
-  - Default: `no`
-  - Valid Values: `no`, `yes`.
+  - Default: `"no"`
+  - Valid Values: `"no"`, `"yes"`.
 * `ip_learning` (ipLearning) - (string) The IP learning setting of the Bridge Domain object. This attribute is supported in ACI versions: 2.0(1m) and later.
-  - Default: `yes`
-  - Valid Values: `no`, `yes`.
+  - Default: `"yes"`
+  - Valid Values: `"no"`, `"yes"`.
 * `pim_ipv6` (ipv6McastAllow) - (string) Enable IPv6 Protocol Independent Multicast (PIM) traffic for the Bridge Domain object. This attribute is supported in ACI versions: 4.2(1i) and later.
-  - Default: `no`
-  - Valid Values: `no`, `yes`.
+  - Default: `"no"`
+  - Valid Values: `"no"`, `"yes"`.
 * `limit_ip_learn_to_subnets` (limitIpLearnToSubnets) - (string) Limit IP address learning to subnets for the Bridge Domain object. Every Bridge Domain object can have multiple subnets associated with it. This attribute is supported in ACI versions: 1.1(1j) and later.
-  - Default: `yes`
-  - Valid Values: `no`, `yes`.
+  - Default: `"yes"`
+  - Valid Values: `"no"`, `"yes"`.
 * `link_local_ipv6_address` (llAddr) - (string) The override of the system generated IPv6 link-local address. This attribute is supported in ACI versions: 1.1(1j) and later.
 * `custom_mac_address` (mac) - (string) The MAC address of the Bridge Domain object.
-  - Default: `00:22:BD:F8:19:FF`
+  - Default: `"00:22:BD:F8:19:FF"`
 * `drop_arp_with_multicast_smac` (mcastARPDrop) - (string) Drop rogue multicast ARP packets for the Bridge Domain object. This attribute is supported in ACI versions: 5.2(5c) and later.
-  - Default: `yes`
-  - Valid Values: `no`, `yes`.
+  - Default: `"yes"`
+  - Valid Values: `"no"`, `"yes"`.
 * `pim` (mcastAllow) - (string) Enable IPv4 Protocol Independent Multicast (PIM) traffic for the Bridge Domain object. This attribute is supported in ACI versions: 2.0(1m) and later.
-  - Default: `no`
-  - Valid Values: `no`, `yes`.
+  - Default: `"no"`
+  - Valid Values: `"no"`, `"yes"`.
 * `multi_destination_flooding` (multiDstPktAct) - (string) The multiple destination forwarding method for L2 Multicast, Broadcast, and Link Layer traffic types. This attribute is supported in ACI versions: 1.1(1j) and later.
-  - Default: `bd-flood`
-  - Valid Values: `bd-flood`, `drop`, `encap-flood`.
+  - Default: `"bd-flood"`
+  - Valid Values: `"bd-flood"`, `"drop"`, `"encap-flood"`.
 * `name_alias` (nameAlias) - (string) The name alias of the Bridge Domain object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `service_bd_routing_disable` (serviceBdRoutingDisable) - (string) Disable Routing on service BD. This attribute is supported in ACI versions: 6.0(4c) and later.
-  - Default: `no`
-  - Valid Values: `no`, `yes`.
+  - Default: `"no"`
+  - Valid Values: `"no"`, `"yes"`.
 * `bridge_domain_type` (type) - (string) The domain type of the Bridge Domain object. This attribute is supported in ACI versions: 2.0(1m) and later.
-  - Default: `regular`
-  - Valid Values: `fc`, `regular`.
+  - Default: `"regular"`
+  - Valid Values: `"fc"`, `"regular"`.
 * `unicast_routing` (unicastRoute) - (string) Enables L3 routing and endpoint IP learning for the Bridge Domain object.
-  - Default: `yes`
-  - Valid Values: `no`, `yes`.
+  - Default: `"yes"`
+  - Valid Values: `"no"`, `"yes"`.
 * `l2_unknown_unicast_flooding` (unkMacUcastAct) - (string) The forwarding method for unknown layer 2 destinations.
-  - Default: `proxy`
-  - Valid Values: `flood`, `proxy`.
+  - Default: `"proxy"`
+  - Valid Values: `"flood"`, `"proxy"`.
 * `l3_unknown_multicast_flooding` (unkMcastAct) - (string) The forwarding method for unknown layer 3 multicast destinations.
-  - Default: `flood`
-  - Valid Values: `flood`, `opt-flood`.
+  - Default: `"flood"`
+  - Valid Values: `"flood"`, `"opt-flood"`.
 * `ipv6_l3_unknown_multicast_flooding` (v6unkMcastAct) - (string) The forwarding method for unknown IPv6 multicast destinations. This attribute is supported in ACI versions: 4.1(1i) and later.
-  - Default: `flood`
-  - Valid Values: `flood`, `opt-flood`.
+  - Default: `"flood"`
+  - Valid Values: `"flood"`, `"opt-flood"`.
 * `virtual_mac_address` (vmac) - (string) The virtual MAC address of the Bridge Domain object. This is used when the the BD/SVI is extended to multiple sites using a L2 Outside. This attribute is supported in ACI versions: 1.2(1i) and later.
-  - Default: `not-applicable`
+  - Default: `"not-applicable"`
 * `legacy_mode` - (map) A map of Legacy Mode (ACI object [fvAccP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvAccP/overview)).
   #### Required ####
   
@@ -416,7 +417,7 @@ All examples for the Bridge Domain resource can be found in the [examples](https
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Legacy Mode object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `description` (descr) - (string) The description of the Legacy Mode object.
     * `name` (name) - (string) The name of the Legacy Mode object.
     * `name_alias` (nameAlias) - (string) The name alias of the Legacy Mode object. This attribute is supported in ACI versions: 2.2(1k) and later.
@@ -439,7 +440,7 @@ All examples for the Bridge Domain resource can be found in the [examples](https
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Rogue Coop Exception object.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `description` (descr) - (string) The description of the Rogue Coop Exception object.
     * `name` (name) - (string) The name of the Rogue Coop Exception object.
     * `name_alias` (nameAlias) - (string) The name alias of the Rogue Coop Exception object.
@@ -457,7 +458,7 @@ All examples for the Bridge Domain resource can be found in the [examples](https
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation From Bridge Domain To Monitoring Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `monitoring_policy_name` (tnMonEPGPolName) - (string) The name of the Monitoring Policy object.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
@@ -473,7 +474,7 @@ All examples for the Bridge Domain resource can be found in the [examples](https
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation From Bridge Domain To First Hop Security Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `first_hop_security_policy_name` (tnFhsBDPolName) - (string) The name of the First Hop Security Policy object.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
@@ -489,7 +490,7 @@ All examples for the Bridge Domain resource can be found in the [examples](https
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation From Bridge Domain To Neighbor Discovery Interface Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `neighbor_discovery_interface_policy_name` (tnNdIfPolName) - (string) The name of the Neighbor Discovery Interface Policy object.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
@@ -505,12 +506,12 @@ All examples for the Bridge Domain resource can be found in the [examples](https
   #### Required ####
   
     * `filter_type` (fltType) - (string) The filter type of the NetFlow Monitor Policy object.
-     - Valid Values: `ce`, `ipv4`, `ipv6`, `unspecified`.
+     - Valid Values: `"ce"`, `"ipv4"`, `"ipv6"`, `"unspecified"`.
     * `netflow_monitor_policy_name` (tnNetflowMonitorPolName) - (string) The name of the NetFlow Monitor Policy object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/netflow_monitor_policy) with `aci_netflow_monitor_policy.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/netflow_monitor_policy) with `data.aci_netflow_monitor_policy.example.name`.
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation From Bridge Domain To NetFlow Monitor Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
   
@@ -528,7 +529,7 @@ All examples for the Bridge Domain resource can be found in the [examples](https
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation From Bridge Domain To L3 Outside object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
   
@@ -543,7 +544,7 @@ All examples for the Bridge Domain resource can be found in the [examples](https
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation From Bridge Domain To Route Control Profile object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `l3_outside_name` (tnL3extOutName) - (string) The name of the L3 Outside object.
     * `route_control_profile_name` (tnRtctrlProfileName) - (string) The name of the Route Control Profile object.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
@@ -560,7 +561,7 @@ All examples for the Bridge Domain resource can be found in the [examples](https
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation From Bridge Domain To DHCP Relay Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `dhcp_relay_policy_name` (tnDhcpRelayPName) - (string) The name of the DHCP Relay Policy object.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
@@ -576,10 +577,10 @@ All examples for the Bridge Domain resource can be found in the [examples](https
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation From Bridge Domain To End Point Retention Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `resolve_action` (resolveAct) - (string) The action to take for resolving the Endpoint Retention Policy object.
-      - Default: `resolve`
-      - Valid Values: `inherit`, `resolve`.
+      - Default: `"resolve"`
+      - Valid Values: `"inherit"`, `"resolve"`.
     * `end_point_retention_policy_name` (tnFvEpRetPolName) - (string) The name of the Endpoint Retention Policy object.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
@@ -595,7 +596,7 @@ All examples for the Bridge Domain resource can be found in the [examples](https
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation To VRF object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `vrf_name` (tnFvCtxName) - (string) The name of the VRF object.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
@@ -611,7 +612,7 @@ All examples for the Bridge Domain resource can be found in the [examples](https
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation To IGMP Snooping Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `igmp_snooping_policy_name` (tnIgmpSnoopPolName) - (string) The name of the IGMP Snooping Policy object.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
@@ -627,7 +628,7 @@ All examples for the Bridge Domain resource can be found in the [examples](https
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation To MLD Snooping Policy object.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `mld_snooping_policy_name` (tnMldSnoopPolName) - (string) The name of the MLD Snooping Policy object.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####

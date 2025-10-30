@@ -90,10 +90,10 @@ All examples for the PIM Route Map Entry resource can be found in the [examples]
 ### Optional ###
 
 * `action` (action) - (string) The route action of the PIM Route Map Entry object.
-  - Default: `permit`
-  - Valid Values: `deny`, `permit`.
+  - Default: `"permit"`
+  - Valid Values: `"deny"`, `"permit"`.
 * `annotation` (annotation) - (string) The annotation of the PIM Route Map Entry object. This attribute is supported in ACI versions: 3.2(1l) and later.
-  - Default: `orchestrator:terraform`
+  - Default: `"orchestrator:terraform"`
 * `description` (descr) - (string) The description of the PIM Route Map Entry object.
 * `group_ip` (grp) - (string) The group ip of the PIM Route Map Entry object.
 * `name` (name) - (string) The name of the PIM Route Map Entry object.

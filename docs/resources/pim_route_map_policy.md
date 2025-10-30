@@ -87,7 +87,7 @@ All examples for the PIM Route Map Policy resource can be found in the [examples
 ### Optional ###
 
 * `annotation` (annotation) - (string) The annotation of the PIM Route Map Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
-  - Default: `orchestrator:terraform`
+  - Default: `"orchestrator:terraform"`
 * `description` (descr) - (string) The description of the PIM Route Map Policy object.
 * `name_alias` (nameAlias) - (string) The name alias of the PIM Route Map Policy object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.

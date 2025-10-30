@@ -88,7 +88,7 @@ All examples for the EPG uSeg AD Group Attribute resource can be found in the [e
 ### Optional ###
 
 * `annotation` (annotation) - (string) The annotation of the EPG uSeg AD Group Attribute object.
-  - Default: `orchestrator:terraform`
+  - Default: `"orchestrator:terraform"`
 * `description` (descr) - (string) The description of the EPG uSeg AD Group Attribute object.
 * `name` (name) - (string) The name of the EPG uSeg AD Group Attribute object.
 * `name_alias` (nameAlias) - (string) The name alias of the EPG uSeg AD Group Attribute object.
