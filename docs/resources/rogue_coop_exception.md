@@ -86,7 +86,7 @@ All examples for the Rogue Coop Exception resource can be found in the [examples
 ### Optional ###
 
 * `annotation` (annotation) - (string) The annotation of the Rogue Coop Exception object.
-  - Default: `orchestrator:terraform`
+  - Default: `"orchestrator:terraform"`
 * `description` (descr) - (string) The description of the Rogue Coop Exception object.
 * `name` (name) - (string) The name of the Rogue Coop Exception object.
 * `name_alias` (nameAlias) - (string) The name alias of the Rogue Coop Exception object.

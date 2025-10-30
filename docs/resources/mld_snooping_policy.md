@@ -97,29 +97,29 @@ All examples for the MLD Snooping Policy resource can be found in the [examples]
 ### Optional ###
 
 * `admin_state` (adminSt) - (string) The administrative state of the MLD Snooping Policy object.
-  - Default: `disabled`
-  - Valid Values: `disabled`, `enabled`.
+  - Default: `"disabled"`
+  - Valid Values: `"disabled"`, `"enabled"`.
 * `annotation` (annotation) - (string) The annotation of the MLD Snooping Policy object.
-  - Default: `orchestrator:terraform`
+  - Default: `"orchestrator:terraform"`
 * `control` (ctrl) - (list) The controls for the MLD Snooping Policy object.
-  - Valid Values: `fast-leave`, `opt-flood`, `querier`, `routing`.
+  - Valid Values: `"fast-leave"`, `"opt-flood"`, `"querier"`, `"routing"`.
 * `description` (descr) - (string) The description of the MLD Snooping Policy object.
 * `last_member_interval` (lastMbrIntvl) - (string) The last member interval (seconds) of the MLD Snooping Policy object. The group state is removed when no host responds before the timeout.
-  - Default: `1`
+  - Default: `"1"`
 * `name_alias` (nameAlias) - (string) The name alias of the MLD Snooping Policy object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `query_interval` (queryIntvl) - (string) The query interval (seconds) of the MLD Snooping Policy object.
-  - Default: `125`
+  - Default: `"125"`
 * `response_interval` (rspIntvl) - (string) The response interval (seconds) of the MLD Snooping Policy object.
-  - Default: `10`
+  - Default: `"10"`
 * `start_query_count` (startQueryCnt) - (string) The start query count of the MLD Snooping Policy object.
-  - Default: `2`
+  - Default: `"2"`
 * `start_query_interval` (startQueryIntvl) - (string) The query interval (seconds) of the MLD Snooping Policy object at start-up.
-  - Default: `31`
+  - Default: `"31"`
 * `version` (ver) - (string) The MLD version. This attribute is supported in ACI versions: 5.1(1h) and later.
-  - Default: `v2`
-  - Valid Values: `unspecified`, `v1`, `v2`.
+  - Default: `"v2"`
+  - Valid Values: `"unspecified"`, `"v1"`, `"v2"`.
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
   

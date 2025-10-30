@@ -84,9 +84,9 @@ All examples for the Relation To IP SLA Track Member resource can be found in th
 ### Optional ###
 
 * `annotation` (annotation) - (string) The annotation of the Relation To IP SLA Track Member object.
-  - Default: `orchestrator:terraform`
+  - Default: `"orchestrator:terraform"`
 * `weight` (weight) - (string) The weight associated with the IP SLA Track Member that contributes to the total weight that is used to determines whether a route is considered available or unavailable.
-  - Default: `10`
+  - Default: `"10"`
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
   

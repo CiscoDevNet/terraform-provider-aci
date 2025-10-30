@@ -93,29 +93,29 @@ All examples for the Trust Control Policy resource can be found in the [examples
 ### Optional ###
 
 * `annotation` (annotation) - (string) The annotation of the Trust Control Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
-  - Default: `orchestrator:terraform`
+  - Default: `"orchestrator:terraform"`
 * `description` (descr) - (string) The description of the Trust Control Policy object.
 * `has_dhcpv4_server` (hasDhcpv4Server) - (string) The Trust Control Policy object contains DHCPv4 servers.
-  - Default: `no`
-  - Valid Values: `no`, `yes`.
+  - Default: `"no"`
+  - Valid Values: `"no"`, `"yes"`.
 * `has_dhcpv6_server` (hasDhcpv6Server) - (string) The Trust Control Policy object contains DHCPv6 servers.
-  - Default: `no`
-  - Valid Values: `no`, `yes`.
+  - Default: `"no"`
+  - Valid Values: `"no"`, `"yes"`.
 * `has_ipv6_router` (hasIpv6Router) - (string) The Trust Control Policy object contains IPv6 routers.
-  - Default: `no`
-  - Valid Values: `no`, `yes`.
+  - Default: `"no"`
+  - Valid Values: `"no"`, `"yes"`.
 * `name_alias` (nameAlias) - (string) The name alias of the Trust Control Policy object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `trust_arp` (trustArp) - (string) The address resolution protocol (ARP) trust status of the Trust Control Policy object.
-  - Default: `no`
-  - Valid Values: `no`, `yes`.
+  - Default: `"no"`
+  - Valid Values: `"no"`, `"yes"`.
 * `trust_nd` (trustNd) - (string) The neighbor discovery (ND) trust status of the Trust Control Policy object.
-  - Default: `no`
-  - Valid Values: `no`, `yes`.
+  - Default: `"no"`
+  - Valid Values: `"no"`, `"yes"`.
 * `trust_ra` (trustRa) - (string) The router advertisement (RA) trust status of the Trust Control Policy object.
-  - Default: `no`
-  - Valid Values: `no`, `yes`.
+  - Default: `"no"`
+  - Valid Values: `"no"`, `"yes"`.
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
   

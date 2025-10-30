@@ -249,60 +249,60 @@ All examples for the Management Access Policy resource can be found in the [exam
 ### Optional ###
 
 * `annotation` (annotation) - (string) The annotation of the Management Access Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
-  - Default: `orchestrator:terraform`
+  - Default: `"orchestrator:terraform"`
 * `description` (descr) - (string) The description of the Management Access Policy object.
 * `name_alias` (nameAlias) - (string) The name alias of the Management Access Policy object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `strict_security_on_apic_oob_subnet` (strictSecurityOnApicOOBSubnet) - (string) Removes implicit access permissions from any APIC out-of-band (OOB) subnet IP address.
-  - Default: `no`
-  - Valid Values: `no`, `yes`.
+  - Default: `"no"`
+  - Valid Values: `"no"`, `"yes"`.
 * `http_service` - (map) A map of HTTP Service (ACI object [commHttp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/commHttp/overview)).
   #### Optional ####
     
     * `allow_credentials` (accessControlAllowCredential) - (string) Determines if credentials are allowed in HTTP responses. This attribute is supported in ACI versions: 2.3(1e) and later.
-      - Default: `disabled`
-      - Valid Values: `disabled`, `enabled`.
+      - Default: `"disabled"`
+      - Valid Values: `"disabled"`, `"enabled"`.
     * `allow_origins` (accessControlAllowOrigins) - (string) Determines which origins can access the resource. For example, inputting http://127.0.0.1:8000 would allow access from a source device with that IP address and port. This attribute is supported in ACI versions: 1.1(1j) and later.
     * `admin_state` (adminSt) - (string) The administrative state of the HTTP Service.
-      - Default: `disabled`
-      - Valid Values: `disabled`, `enabled`.
+      - Default: `"disabled"`
+      - Valid Values: `"disabled"`, `"enabled"`.
     * `annotation` (annotation) - (string) The annotation of the HTTP Service object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `cli_only_mode` (cliOnlyMode) - (string) Determines if CLI-only mode is enabled. This attribute is supported in ACI versions: 4.1(1i) and later.
-      - Default: `disabled`
-      - Valid Values: `disabled`, `enabled`.
+      - Default: `"disabled"`
+      - Valid Values: `"disabled"`, `"enabled"`.
     * `description` (descr) - (string) The description of the HTTP Service object.
     * `global_throttle_rate` (globalThrottleRate) - (string) The maximum amount of API calls allowed per unit time. This attribute is supported in ACI versions: 4.2(1i) and later.
-      - Default: `10000`
+      - Default: `"10000"`
     * `global_throttle_state` (globalThrottleSt) - (string) The throttle state for all clients without specific identifier in their headers. This attribute is supported in ACI versions: 4.2(1i) and later.
-      - Default: `disabled`
-      - Valid Values: `disabled`, `enabled`.
+      - Default: `"disabled"`
+      - Valid Values: `"disabled"`, `"enabled"`.
     * `global_throttle_unit` (globalThrottleUnit) - (string) The unit of measurement for rate limiting. This attribute is supported in ACI versions: 4.2(1i) and later.
-      - Default: `r/s`
+      - Default: `"r/s"`
     * `max_request_status_count` (maxRequestStatusCount) - (string) The maximum number of request status objects to keep. This attribute is supported in ACI versions: 1.1(1j) and later.
     * `name` (name) - (string) The name of the HTTP Service object.
-      - Default: `http`
+      - Default: `"http"`
     * `name_alias` (nameAlias) - (string) The name alias of the HTTP Service object. This attribute is supported in ACI versions: 2.2(1k) and later.
     * `node_exporter` (nodeExporter) - (string) The node exporter service status. This attribute is supported in ACI versions: 5.2(3e) and later.
-      - Default: `disabled`
-      - Valid Values: `disabled`, `enabled`.
+      - Default: `"disabled"`
+      - Valid Values: `"disabled"`, `"enabled"`.
     * `port` (port) - (string) The port used by the HTTP communication service.
-      - Default: `80`
+      - Default: `"80"`
     * `redirect_state` (redirectSt) - (string) The state of HTTP communication service.
-      - Default: `disabled`
-      - Valid Values: `disabled`, `enabled`, `tested`.
+      - Default: `"disabled"`
+      - Valid Values: `"disabled"`, `"enabled"`, `"tested"`.
     * `server_header` (serverHeader) - (string) Determines if the server header is included in responses. This attribute is supported in ACI versions: 5.2(1g) and later.
-      - Default: `enabled`
-      - Valid Values: `disabled`, `enabled`.
+      - Default: `"enabled"`
+      - Valid Values: `"disabled"`, `"enabled"`.
     * `login_throttle_rate` (throttleRate) - (string) The maximum login/refresh allowed per second. This attribute is supported in ACI versions: 3.1(1i) and later.
-      - Default: `2`
+      - Default: `"2"`
     * `login_throttle_state` (throttleSt) - (string) The state of login and refresh throttling. This attribute is supported in ACI versions: 3.1(1i) and later.
-      - Default: `enabled`
-      - Valid Values: `disabled`, `enabled`.
+      - Default: `"enabled"`
+      - Valid Values: `"disabled"`, `"enabled"`.
     * `visore_access` (visoreAccess) - (string) Grants permissions for accessing the Visore tool, also known as Object Store Browser, in Cisco ACI. This attribute is supported in ACI versions: 3.1(1i) and later.
-      - Default: `enabled`
-      - Valid Values: `disabled`, `enabled`.
+      - Default: `"enabled"`
+      - Valid Values: `"disabled"`, `"enabled"`.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
   
@@ -317,61 +317,61 @@ All examples for the Management Access Policy resource can be found in the [exam
   #### Optional ####
     
     * `allow_credentials` (accessControlAllowCredential) - (string) Determines if credentials are allowed in HTTPS responses. This attribute is supported in ACI versions: 2.3(1e) and later.
-      - Default: `disabled`
-      - Valid Values: `disabled`, `enabled`.
+      - Default: `"disabled"`
+      - Valid Values: `"disabled"`, `"enabled"`.
     * `allow_origins` (accessControlAllowOrigins) - (string) Determines which origins can access the resource. For example, inputting http://127.0.0.1:8000 would allow access from a source device with that IP address and port. This attribute is supported in ACI versions: 1.1(1j) and later.
     * `admin_state` (adminSt) - (string) The administrative state of the HTTPS Service.
-      - Default: `enabled`
-      - Valid Values: `enabled`.
+      - Default: `"enabled"`
+      - Valid Values: `"enabled"`.
     * `annotation` (annotation) - (string) The annotation of the HTTPS Service object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `cli_only_mode` (cliOnlyMode) - (string) Determines if CLI-only mode is enabled. This attribute is supported in ACI versions: 4.1(1i) and later.
-      - Default: `disabled`
-      - Valid Values: `disabled`, `enabled`.
+      - Default: `"disabled"`
+      - Valid Values: `"disabled"`, `"enabled"`.
     * `client_certificate_authentication_state` (clientCertAuthState) - (string) The authentication state of the client certificate. This attribute is supported in ACI versions: 4.0(1h) and later.
-      - Default: `disabled`
-      - Valid Values: `disabled`, `enabled`.
+      - Default: `"disabled"`
+      - Valid Values: `"disabled"`, `"enabled"`.
     * `description` (descr) - (string) The description of the HTTPS Service object.
     * `dh_parameter` (dhParam) - (string) Determines the settings for Diffie-Hellman (DH) parameters. This attribute is supported in ACI versions: 1.2(2g) and later.
-      - Default: `none`
-      - Valid Values: `1024`, `2048`, `4096`, `none`.
+      - Default: `"none"`
+      - Valid Values: `"1024"`, `"2048"`, `"4096"`, `"none"`.
     * `global_throttle_rate` (globalThrottleRate) - (string) The maximum amount of API calls allowed per unit time. This attribute is supported in ACI versions: 4.2(1i) and later.
-      - Default: `10000`
+      - Default: `"10000"`
     * `global_throttle_state` (globalThrottleSt) - (string) The throttle state for all clients without specific identifier in their headers. This attribute is supported in ACI versions: 4.2(1i) and later.
-      - Default: `disabled`
-      - Valid Values: `disabled`, `enabled`.
+      - Default: `"disabled"`
+      - Valid Values: `"disabled"`, `"enabled"`.
     * `global_throttle_unit` (globalThrottleUnit) - (string) The unit of measurement for rate limiting specified with the 'global_throttle_rate' attribute. This attribute is supported in ACI versions: 4.2(1i) and later.
-      - Default: `r/s`
-      - Valid Values: `r/m`, `r/s`.
+      - Default: `"r/s"`
+      - Valid Values: `"r/m"`, `"r/s"`.
     * `max_request_status_count` (maxRequestStatusCount) - (string) The maximum number of request status objects to keep. This attribute is supported in ACI versions: 1.1(1j) and later.
     * `name` (name) - (string) The name of the HTTPS Service object.
-      - Default: `https`
+      - Default: `"https"`
     * `name_alias` (nameAlias) - (string) The name alias of the HTTPS Service object. This attribute is supported in ACI versions: 2.2(1k) and later.
     * `node_exporter` (nodeExporter) - (string) The node exporter service status. This attribute is supported in ACI versions: 5.2(3e) and later.
-      - Default: `disabled`
-      - Valid Values: `disabled`, `enabled`.
+      - Default: `"disabled"`
+      - Valid Values: `"disabled"`, `"enabled"`.
     * `port` (port) - (string) The port used by the HTTPS communication service.
-      - Default: `443`
+      - Default: `"443"`
     * `referer` (referer) - (string) Allowed HTTP referers. This attribute is supported in ACI versions: 6.0(2h) and later.
     * `server_header` (serverHeader) - (string) Determines if the server header is included in responses. This attribute is supported in ACI versions: 5.2(1g) and later.
-      - Default: `enabled`
-      - Valid Values: `disabled`, `enabled`.
+      - Default: `"enabled"`
+      - Valid Values: `"disabled"`, `"enabled"`.
     * `ssl_protocols` (sslProtocols) - (list) The SSL protocols allowed by HTTPS communication service. This attribute is supported in ACI versions: 1.1(1j) and later.
-      - Default: `TLSv1.1,TLSv1.2`
-      - Valid Values: `TLSv1`, `TLSv1.1`, `TLSv1.2`, `TLSv1.3`.
+      - Default: `"TLSv1.1,TLSv1.2"`
+      - Valid Values: `"TLSv1"`, `"TLSv1.1"`, `"TLSv1.2"`, `"TLSv1.3"`.
     * `login_throttle_rate` (throttleRate) - (string) The maximum login/refresh allowed per second. This attribute is supported in ACI versions: 3.1(1i) and later.
-      - Default: `2`
+      - Default: `"2"`
     * `login_throttle_state` (throttleSt) - (string) The state of login and refresh throttling. This attribute is supported in ACI versions: 3.1(1i) and later.
-      - Default: `enabled`
-      - Valid Values: `disabled`, `enabled`.
+      - Default: `"enabled"`
+      - Valid Values: `"disabled"`, `"enabled"`.
     * `visore_access` (visoreAccess) - (string) Grants permissions for accessing the Visore tool, also known as Object Store Browser, in Cisco ACI. This attribute is supported in ACI versions: 3.1(1i) and later.
-      - Default: `enabled`
-      - Valid Values: `disabled`, `enabled`.
+      - Default: `"enabled"`
+      - Valid Values: `"disabled"`, `"enabled"`.
     * `certificate_authority` - (map) A map of Certificate Authority (ACI object [commRsClientCertCA](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/commRsClientCertCA/overview)) pointing to Certificate Authority (ACI Object [pkiTP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/pkiTP/overview)) which can be configured using the [aci_certificate_authority](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/certificate_authority) resource. This attribute is supported in ACI versions: 4.0(1h) and later.
       #### Optional ####
     
         * `annotation` (annotation) - (string) The annotation of the Certificate Authority object.
-          - Default: `orchestrator:terraform`
+          - Default: `"orchestrator:terraform"`
         * `target_dn` (tDn) - (string) The distinguished name of the target.
         * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
           #### Required ####
@@ -387,7 +387,7 @@ All examples for the Management Access Policy resource can be found in the [exam
       #### Optional ####
     
         * `annotation` (annotation) - (string) The annotation of the Key Ring object. This attribute is supported in ACI versions: 3.2(1l) and later.
-          - Default: `orchestrator:terraform`
+          - Default: `"orchestrator:terraform"`
         * `key_ring_name` (tnPkiKeyRingName) - (string) The HTTP connection key ring. Each PKI device holds a pair of asymmetric Rivest-Shamir-Adleman (RSA) or Elliptic Curve Cryptography (ECC) encryption keys, one kept private and one made public, stored in an internal key ring.
         * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
           #### Required ####
@@ -413,14 +413,14 @@ All examples for the Management Access Policy resource can be found in the [exam
   #### Optional ####
     
     * `admin_state` (adminSt) - (string) The administrative state of the SSH access via WEB object.
-      - Default: `disabled`
-      - Valid Values: `disabled`, `enabled`.
+      - Default: `"disabled"`
+      - Valid Values: `"disabled"`, `"enabled"`.
     * `annotation` (annotation) - (string) The annotation of the SSH access via WEB object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `description` (descr) - (string) The description of the SSH access via WEB object.
-      - Default: `Shellinabox server`
+      - Default: `"Shellinabox server"`
     * `name` (name) - (string) The name of the SSH access via WEB object.
-      - Default: `shellinabox`
+      - Default: `"shellinabox"`
     * `name_alias` (nameAlias) - (string) The name alias of the SSH access via WEB object. This attribute is supported in ACI versions: 2.2(1k) and later.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
@@ -436,31 +436,31 @@ All examples for the Management Access Policy resource can be found in the [exam
   #### Optional ####
     
     * `admin_state` (adminSt) - (string) The administrative state of the SSH Service object.
-      - Default: `enabled`
-      - Valid Values: `disabled`, `enabled`.
+      - Default: `"enabled"`
+      - Valid Values: `"disabled"`, `"enabled"`.
     * `annotation` (annotation) - (string) The annotation of the SSH Service object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `description` (descr) - (string) The description of the SSH Service object.
     * `host_key_algorithms` (hostkeyAlgos) - (list) The supported algorithms for the host key. This attribute is supported in ACI versions: 
-      - Default: `rsa-sha2-256,rsa-sha2-512,ssh-ed25519`
-      - Valid Values: `rsa-sha2-256`, `rsa-sha2-512`, `ssh-ed25519`.
+      - Default: `"rsa-sha2-256,rsa-sha2-512,ssh-ed25519"`
+      - Valid Values: `"rsa-sha2-256"`, `"rsa-sha2-512"`, `"ssh-ed25519"`.
     * `kex_algorithms` (kexAlgos) - (list) The supported algorithms for key exchange. This attribute is supported in ACI versions: 4.2(7f) to 4.2(7w), 5.2(1g) and later.
-      - Default: `diffie-hellman-group14-sha256,diffie-hellman-group16-sha512,curve25519-sha256@libssh.org,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,curve25519-sha256`
-      - Valid Values: `curve25519-sha256`, `curve25519-sha256@libssh.org`, `diffie-hellman-group1-sha1`, `diffie-hellman-group14-sha1`, `diffie-hellman-group14-sha256`, `diffie-hellman-group16-sha512`, `ecdh-sha2-nistp256`, `ecdh-sha2-nistp384`, `ecdh-sha2-nistp521`.
+      - Default: `"diffie-hellman-group14-sha256,diffie-hellman-group16-sha512,curve25519-sha256@libssh.org,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,curve25519-sha256"`
+      - Valid Values: `"curve25519-sha256"`, `"curve25519-sha256@libssh.org"`, `"diffie-hellman-group1-sha1"`, `"diffie-hellman-group14-sha1"`, `"diffie-hellman-group14-sha256"`, `"diffie-hellman-group16-sha512"`, `"ecdh-sha2-nistp256"`, `"ecdh-sha2-nistp384"`, `"ecdh-sha2-nistp521"`.
     * `name` (name) - (string) The name of the SSH Service object.
-      - Default: `ssh`
+      - Default: `"ssh"`
     * `name_alias` (nameAlias) - (string) The name alias of the SSH Service object. This attribute is supported in ACI versions: 2.2(1k) and later.
     * `password_authentication_state` (passwordAuth) - (string) Determines the state of password-based authentication to control administrator access to the management interfaces of the ACI fabric. This attribute is supported in ACI versions: 4.1(1i) and later.
-      - Default: `enabled`
-      - Valid Values: `disabled`, `enabled`.
+      - Default: `"enabled"`
+      - Valid Values: `"disabled"`, `"enabled"`.
     * `port` (port) - (string) The port used by the SSH service.
-      - Default: `22`
+      - Default: `"22"`
     * `ssh_ciphers` (sshCiphers) - (list) The ciphers supported by the SSH service. This attribute is supported in ACI versions: 3.1(1i) and later.
-      - Default: `aes128-ctr,aes192-ctr,aes256-ctr,aes128-gcm@openssh.com,aes256-gcm@openssh.com,chacha20-poly1305@openssh.com`
-      - Valid Values: `aes128-ctr`, `aes128-gcm@openssh.com`, `aes192-ctr`, `aes256-ctr`, `aes256-gcm@openssh.com`, `chacha20-poly1305@openssh.com`.
+      - Default: `"aes128-ctr,aes192-ctr,aes256-ctr,aes128-gcm@openssh.com,aes256-gcm@openssh.com,chacha20-poly1305@openssh.com"`
+      - Valid Values: `"aes128-ctr"`, `"aes128-gcm@openssh.com"`, `"aes192-ctr"`, `"aes256-ctr"`, `"aes256-gcm@openssh.com"`, `"chacha20-poly1305@openssh.com"`.
     * `ssh_macs` (sshMacs) - (list) The message authentication codes (MACs) supported by the SSH service. This attribute is supported in ACI versions: 3.1(1i) and later.
-      - Default: `hmac-sha2-256,hmac-sha2-512,hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com`
-      - Valid Values: `hmac-sha1`, `hmac-sha2-256`, `hmac-sha2-256-etm@openssh.com`, `hmac-sha2-512`, `hmac-sha2-512-etm@openssh.com`.
+      - Default: `"hmac-sha2-256,hmac-sha2-512,hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com"`
+      - Valid Values: `"hmac-sha1"`, `"hmac-sha2-256"`, `"hmac-sha2-256-etm@openssh.com"`, `"hmac-sha2-512"`, `"hmac-sha2-512-etm@openssh.com"`.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
   
@@ -475,16 +475,16 @@ All examples for the Management Access Policy resource can be found in the [exam
   #### Optional ####
     
     * `admin_state` (adminSt) - (string) The administrative state of the Telnet Service object.
-      - Default: `disabled`
-      - Valid Values: `disabled`, `enabled`.
+      - Default: `"disabled"`
+      - Valid Values: `"disabled"`, `"enabled"`.
     * `annotation` (annotation) - (string) The annotation of the Telnet Service object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `description` (descr) - (string) The description of the Telnet Service object.
     * `name` (name) - (string) The name of the Telnet Service object.
-      - Default: `telnet`
+      - Default: `"telnet"`
     * `name_alias` (nameAlias) - (string) The name alias of the Telnet Service object. This attribute is supported in ACI versions: 2.2(1k) and later.
     * `port` (port) - (string) The port used by the Telnet service.
-      - Default: `23`
+      - Default: `"23"`
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
   

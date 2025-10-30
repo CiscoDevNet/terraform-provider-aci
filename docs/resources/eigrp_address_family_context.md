@@ -92,19 +92,19 @@ All examples for the EIGRP Address Family Context resource can be found in the [
 ### Optional ###
 
 * `active_interval` (actIntvl) - (string) The active timer interval, which specifies the length of time an EIGRP route can stay in the Active state without a best path. When the time ends, the route is moved to the Stuck-In-Active state.
-  - Default: `3`
+  - Default: `"3"`
 * `annotation` (annotation) - (string) The annotation of the EIGRP Address Family Context object. This attribute is supported in ACI versions: 3.2(1l) and later.
-  - Default: `orchestrator:terraform`
+  - Default: `"orchestrator:terraform"`
 * `description` (descr) - (string) The description of the EIGRP Address Family Context object.
 * `external_distance` (extDist) - (string) The administrative distance preference for external routes.
-  - Default: `170`
+  - Default: `"170"`
 * `internal_distance` (intDist) - (string) The administrative distance preference for internal routes.
-  - Default: `90`
+  - Default: `"90"`
 * `maximum_path_limit` (maxPaths) - (string) The maximum number of different equal cost paths to install in the routing table.
-  - Default: `8`
+  - Default: `"8"`
 * `metric_style` (metricStyle) - (string) The metric style used for metric calculations.
-  - Default: `narrow`
-  - Valid Values: `narrow`, `wide`.
+  - Default: `"narrow"`
+  - Valid Values: `"narrow"`, `"wide"`.
 * `name_alias` (nameAlias) - (string) The name alias of the EIGRP Address Family Context object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.

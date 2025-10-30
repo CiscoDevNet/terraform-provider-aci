@@ -122,7 +122,7 @@ All examples for the Access Interface Override resource can be found in the [exa
 
   - Default: `uni/infra`
 * `annotation` (annotation) - (string) The annotation of the Access Interface Override object. This attribute is supported in ACI versions: 3.2(1l) and later.
-  - Default: `orchestrator:terraform`
+  - Default: `"orchestrator:terraform"`
 * `description` (descr) - (string) The description of the Access Interface Override object.
 * `name_alias` (nameAlias) - (string) The name alias of the Access Interface Override object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
@@ -134,7 +134,7 @@ All examples for the Access Interface Override resource can be found in the [exa
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation To Host Path object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
   
@@ -149,7 +149,7 @@ All examples for the Access Interface Override resource can be found in the [exa
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation To Access Interface Policy Group object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `target_dn` (tDn) - (string) The distinguished name of the target.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####

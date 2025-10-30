@@ -114,87 +114,87 @@ All examples for the Data Plane Policing Policy resource can be found in the [ex
 
   - Default: `uni/infra`
 * `admin_state` (adminSt) - (string) The administrative state of the Data Plane Policing Policy object.
-  - Default: `disabled`
-  - Valid Values: `disabled`, `enabled`.
+  - Default: `"disabled"`
+  - Valid Values: `"disabled"`, `"enabled"`.
 * `annotation` (annotation) - (string) The annotation of the Data Plane Policing Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
-  - Default: `orchestrator:terraform`
+  - Default: `"orchestrator:terraform"`
 * `excessive_burst` (be) - (string) The excessive burst size of the Data Plane Policing Policy object. Only applicable for 2R3C policer.
-  - Default: `unspecified`
+  - Default: `"unspecified"`
   - Valid Values:
-    * `unspecified`.
+    * `"unspecified"`.
     * Or a value in the range of `0` to `549755813760`.
 * `excessive_burst_unit` (beUnit) - (string) The excessive burst size unit of the Data Plane Policing Policy object. Only applicable for 2R3C policer.
-  - Default: `unspecified`
-  - Valid Values: `giga`, `kilo`, `mega`, `msec`, `unspecified`, `usec`.
+  - Default: `"unspecified"`
+  - Valid Values: `"giga"`, `"kilo"`, `"mega"`, `"msec"`, `"unspecified"`, `"usec"`.
 * `burst` (burst) - (string) The burst size of the Data Plane Policing Policy object.
-  - Default: `unspecified`
+  - Default: `"unspecified"`
   - Valid Values:
-    * `unspecified`.
+    * `"unspecified"`.
     * Or a value in the range of `0` to `549755813760`.
 * `burst_unit` (burstUnit) - (string) The burst size unit of the Data Plane Policing Policy object.
-  - Default: `unspecified`
-  - Valid Values: `giga`, `kilo`, `mega`, `msec`, `unspecified`, `usec`.
+  - Default: `"unspecified"`
+  - Valid Values: `"giga"`, `"kilo"`, `"mega"`, `"msec"`, `"unspecified"`, `"usec"`.
 * `conform_action` (conformAction) - (string) The conform action of the Data Plane Policing Policy object.
-  - Default: `transmit`
-  - Valid Values: `drop`, `mark`, `transmit`.
+  - Default: `"transmit"`
+  - Valid Values: `"drop"`, `"mark"`, `"transmit"`.
 * `conform_mark_cos` (conformMarkCos) - (string) The conform mark class of service (CoS) of the Data Plane Policing Policy object.
-  - Default: `unspecified`
+  - Default: `"unspecified"`
   - Valid Values:
-    * `unspecified`.
+    * `"unspecified"`.
     * Or a value in the range of `0` to `7`.
 * `conform_mark_dscp` (conformMarkDscp) - (string) The conform mark differentiated services code point (DSCP) of the Data Plane Policing Policy object.
-  - Default: `unspecified`
+  - Default: `"unspecified"`
   - Valid Values:
-    * `unspecified`.
+    * `"unspecified"`.
     * Or a value in the range of `0` to `63`.
 * `description` (descr) - (string) The description of the Data Plane Policing Policy object.
 * `exceed_action` (exceedAction) - (string) The exceed action of the Data Plane Policing Policy object.
-  - Default: `drop`
-  - Valid Values: `drop`, `mark`, `transmit`.
+  - Default: `"drop"`
+  - Valid Values: `"drop"`, `"mark"`, `"transmit"`.
 * `exceed_mark_cos` (exceedMarkCos) - (string) The exceed mark class of service (CoS) of the Data Plane Policing Policy object.
-  - Default: `unspecified`
+  - Default: `"unspecified"`
   - Valid Values:
-    * `unspecified`.
+    * `"unspecified"`.
     * Or a value in the range of `0` to `7`.
 * `exceed_mark_dscp` (exceedMarkDscp) - (string) The exceed mark differentiated services code point (DSCP) of the Data Plane Policing Policy object.
-  - Default: `unspecified`
+  - Default: `"unspecified"`
   - Valid Values:
-    * `unspecified`.
+    * `"unspecified"`.
     * Or a value in the range of `0` to `63`.
 * `mode` (mode) - (string) Policer mode - bytes or packet policer.
-  - Default: `bit`
-  - Valid Values: `bit`, `packet`.
+  - Default: `"bit"`
+  - Valid Values: `"bit"`, `"packet"`.
 * `name_alias` (nameAlias) - (string) The name alias of the Data Plane Policing Policy object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `peak_rate` (pir) - (string) The peak information rate (PIR) of the Data Plane Policing Policy object. Only applicable for 2R3C policer.
-  - Default: `0`
+  - Default: `"0"`
 * `peak_rate_unit` (pirUnit) - (string) The peak information rate (PIR) unit of the Data Plane Policing Policy object. Only applicable for 2R3C policer.
-  - Default: `unspecified`
-  - Valid Values: `giga`, `kilo`, `mega`, `unspecified`.
+  - Default: `"unspecified"`
+  - Valid Values: `"giga"`, `"kilo"`, `"mega"`, `"unspecified"`.
 * `rate` (rate) - (string) The rate of the Data Plane Policing Policy object.
-  - Default: `0`
+  - Default: `"0"`
 * `rate_unit` (rateUnit) - (string) The rate unit of the Data Plane Policing Policy object.
-  - Default: `unspecified`
-  - Valid Values: `giga`, `kilo`, `mega`, `unspecified`.
+  - Default: `"unspecified"`
+  - Valid Values: `"giga"`, `"kilo"`, `"mega"`, `"unspecified"`.
 * `sharing_mode` (sharingMode) - (string) The sharing mode of the Data Plane Policing Policy object. This attribute is supported in ACI versions: 3.1(1i) and later.
-  - Default: `dedicated`
-  - Valid Values: `dedicated`, `shared`.
+  - Default: `"dedicated"`
+  - Valid Values: `"dedicated"`, `"shared"`.
 * `type` (type) - (string) The type of the Data Plane Policing Policy object.
-  - Default: `1R2C`
-  - Valid Values: `1R2C`, `2R3C`.
+  - Default: `"1R2C"`
+  - Valid Values: `"1R2C"`, `"2R3C"`.
 * `violate_action` (violateAction) - (string) The violate action of the Data Plane Policing Policy object.
-  - Default: `drop`
-  - Valid Values: `drop`, `mark`, `transmit`.
+  - Default: `"drop"`
+  - Valid Values: `"drop"`, `"mark"`, `"transmit"`.
 * `violate_mark_cos` (violateMarkCos) - (string) The violate mark class of service (CoS) of the Data Plane Policing Policy object.
-  - Default: `unspecified`
+  - Default: `"unspecified"`
   - Valid Values:
-    * `unspecified`.
+    * `"unspecified"`.
     * Or a value in the range of `0` to `7`.
 * `violate_mark_dscp` (violateMarkDscp) - (string) The violate mark differentiated services code point (DSCP) of the Data Plane Policing Policy object.
-  - Default: `unspecified`
+  - Default: `"unspecified"`
   - Valid Values:
-    * `unspecified`.
+    * `"unspecified"`.
     * Or a value in the range of `0` to `63`.
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####

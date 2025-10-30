@@ -243,33 +243,33 @@ All examples for the VRF resource can be found in the [examples](https://github.
 * `id` - (string) The distinguished name (DN) of the VRF object.
 * `pc_tag` (pcTag) - (string) The classification tag used for policy enforcement and zoning.
 * `scope` (scope) - (string) The scope ID (L3-VNI) of the VRF object.
-  - Default: `0`
+  - Default: `"0"`
 
 ### Optional ###
 
 * `annotation` (annotation) - (string) The annotation of the VRF object. This attribute is supported in ACI versions: 3.2(1l) and later.
-  - Default: `orchestrator:terraform`
+  - Default: `"orchestrator:terraform"`
 * `bd_enforcement` (bdEnforcedEnable) - (string) The Bridge Domain (BD) enforcement status of the VRF. BD enforcement will restrict a host from sending ping requests to subnets outside the Bridge Domain (BD). The feature blocks ICMP, TCP and UDP traffic between BDs. This attribute is supported in ACI versions: 3.0(1k) and later.
-  - Default: `no`
-  - Valid Values: `no`, `yes`.
+  - Default: `"no"`
+  - Valid Values: `"no"`, `"yes"`.
 * `description` (descr) - (string) The description of the VRF object.
 * `ip_data_plane_learning` (ipDataPlaneLearning) - (string) The IP data plane status of the VRF object. The process known as IP data plane learning involves acquiring the endpoint's IPv4 or IPv6 address through data plane routing of traffic from the endpoint. This attribute is supported in ACI versions: 4.0(1h) and later.
-  - Default: `enabled`
-  - Valid Values: `disabled`, `enabled`.
+  - Default: `"enabled"`
+  - Valid Values: `"disabled"`, `"enabled"`.
 * `name_alias` (nameAlias) - (string) The name alias of the VRF object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `policy_control_enforcement_direction` (pcEnfDir) - (string) The policy control enforcement direction of the VRF object. VRF ingress policy enforcement involves ACL filtering on the leaf switch where the endpoint is located, reducing the policy CAM usage on the border leaf switch by confining the filtering to 'compute' leaf switches. VRF egress policy enforcement extends ACL filtering to the border leaf switch, increasing its policy CAM usage. The border leaf switch handles filtering for traffic from L3Out to EPG after the endpoint is learned, unless the endpoint-to-destination class mapping is unknown, in which case the compute leaf switch handles the filtering. This attribute is supported in ACI versions: 1.2(1i) and later.
-  - Default: `ingress`
-  - Valid Values: `egress`, `ingress`.
+  - Default: `"ingress"`
+  - Valid Values: `"egress"`, `"ingress"`.
 * `policy_control_enforcement_mode` (pcEnfPref) - (string) The policy control enforcement mode of the VRF object. VRFs in unenforced mode do not restrict traffic between EPGs that are member of the VRF. VRFs in enforced mode restrict traffic not allowed by contracts between EPGs that are member of the VRF. The policy control enforcement direction is used to determine the preferred enforcement method.
-  - Default: `enforced`
-  - Valid Values: `enforced`, `unenforced`.
+  - Default: `"enforced"`
+  - Valid Values: `"enforced"`, `"unenforced"`.
 * `relation_to_bgp_timers` - (map) A map of Relation To BGP Timers (ACI object [fvRsBgpCtxPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsBgpCtxPol/overview)) pointing to BGP Timers (ACI Object [bgpCtxPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/bgpCtxPol/overview)) which can be configured using the [aci_bgp_timers](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bgp_timers) resource.
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation To BGP Timers object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `bgp_timers_name` (tnBgpCtxPolName) - (string) The name of the BGP timers policy associated with this context.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
@@ -285,7 +285,7 @@ All examples for the VRF resource can be found in the [examples](https://github.
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation From VRF To Monitoring Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `monitoring_policy_name` (tnMonEPGPolName) - (string) The name of the monitoring policy associated with this context.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
@@ -301,12 +301,12 @@ All examples for the VRF resource can be found in the [examples](https://github.
   #### Required ####
   
     * `address_family` (af) - (string) The type of address family for the Relation From VRF To BGP Address Family Context.
-     - Valid Values: `ipv4-ucast`, `ipv6-ucast`.
+     - Valid Values: `"ipv4-ucast"`, `"ipv6-ucast"`.
     * `bgp_address_family_context_name` (tnBgpCtxAfPolName) - (string) The name of the BGP Address Family Context. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bgp_address_family_context) with `aci_bgp_address_family_context.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/bgp_address_family_context) with `data.aci_bgp_address_family_context.example.name`.
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation From VRF To BGP Address Family Context object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
   
@@ -321,12 +321,12 @@ All examples for the VRF resource can be found in the [examples](https://github.
   #### Required ####
   
     * `address_family` (af) - (string) The type of address family for the Relation From VRF To EIGRP Address Family Context.
-     - Valid Values: `ipv4-ucast`, `ipv6-ucast`.
+     - Valid Values: `"ipv4-ucast"`, `"ipv6-ucast"`.
     * `eigrp_address_family_context_name` (tnEigrpCtxAfPolName) - (string) The name of the EIGRP Address Family Context. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/eigrp_address_family_context) with `aci_eigrp_address_family_context.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/eigrp_address_family_context) with `data.aci_eigrp_address_family_context.example.name`.
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation From VRF To EIGRP Address Family Context object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
   
@@ -341,7 +341,7 @@ All examples for the VRF resource can be found in the [examples](https://github.
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation From VRF To End Point Retention Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `end_point_retention_policy_name` (tnFvEpRetPolName) - (string) The end point retention policy name.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
@@ -357,7 +357,7 @@ All examples for the VRF resource can be found in the [examples](https://github.
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation From VRF To L3Out Route Tag Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `l3out_route_tag_policy_name` (tnL3extRouteTagPolName) - (string) The name of the External Route Tag policy associated with this context.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
@@ -373,12 +373,12 @@ All examples for the VRF resource can be found in the [examples](https://github.
   #### Required ####
   
     * `address_family` (af) - (string) The type of address family for the Relation From VRF To Address Family OSPF Timers.
-     - Valid Values: `ipv4-ucast`, `ipv6-ucast`.
+     - Valid Values: `"ipv4-ucast"`, `"ipv6-ucast"`.
     * `ospf_timers_name` (tnOspfCtxPolName) - (string) The name of the OSPF timers policy associated with this object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/ospf_timers) with `aci_ospf_timers.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/ospf_timers) with `data.aci_ospf_timers.example.name`.
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation From VRF To Address Family OSPF Timers object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
   
@@ -393,7 +393,7 @@ All examples for the VRF resource can be found in the [examples](https://github.
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation From VRF To WAN VPN object.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `target_dn` (tDn) - (string) The distinguished name of the target.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
@@ -409,7 +409,7 @@ All examples for the VRF resource can be found in the [examples](https://github.
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation To OSPF Timers object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `ospf_timers_name` (tnOspfCtxPolName) - (string) The name of the OSPF timers policy associated with this context.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####

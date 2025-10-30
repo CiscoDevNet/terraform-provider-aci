@@ -199,27 +199,27 @@ All examples for the Endpoint Security Group resource can be found in the [examp
 * `id` - (string) The distinguished name (DN) of the Endpoint Security Group object.
 * `pc_tag` (pcTag) - (string) The classification tag used for policy enforcement and zoning.
 * `scope` (scope) - (string) The scope ID (L3-VNI) of the Endpoint Security Group object.
-  - Default: `0`
+  - Default: `"0"`
 
 ### Optional ###
 
 * `annotation` (annotation) - (string) The annotation of the Endpoint Security Group object.
-  - Default: `orchestrator:terraform`
+  - Default: `"orchestrator:terraform"`
 * `description` (descr) - (string) The description of the Endpoint Security Group object.
 * `exception_tag` (exceptionTag) - (string) Contract Exception Tag.
 * `match_criteria` (matchT) - (string) The provider label match criteria.
-  - Default: `AtleastOne`
-  - Valid Values: `All`, `AtleastOne`, `AtmostOne`, `None`.
+  - Default: `"AtleastOne"`
+  - Valid Values: `"All"`, `"AtleastOne"`, `"AtmostOne"`, `"None"`.
 * `name_alias` (nameAlias) - (string) The name alias of the Endpoint Security Group object.
 * `intra_esg_isolation` (pcEnfPref) - (string) Parameter used to determine whether communication between endpoints within the ESG is blocked.
-  - Default: `unenforced`
-  - Valid Values: `enforced`, `unenforced`.
+  - Default: `"unenforced"`
+  - Valid Values: `"enforced"`, `"unenforced"`.
 * `preferred_group_member` (prefGrMemb) - (string) Parameter used to determine whether the ESG is part of the preferred group. Members of this group are allowed to communicate without contracts.
-  - Default: `exclude`
-  - Valid Values: `exclude`, `include`.
+  - Default: `"exclude"`
+  - Valid Values: `"exclude"`, `"include"`.
 * `admin_state` (shutdown) - (string) Withdraw the ESG configuration from all nodes in the fabric. This attribute is supported in ACI versions: 5.2(1g) and later.
-  - Default: `no`
-  - Valid Values: `no`, `yes`.
+  - Default: `"no"`
+  - Valid Values: `"no"`, `"yes"`.
 * `relation_to_consumed_contracts` - (list) A list of Relation To Consumed Contracts (ACI object [fvRsCons](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsCons/overview)) pointing to Contract (ACI Object [vzBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzBrCP/overview)) which can be configured using the [aci_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/contract) resource. This attribute is supported in ACI versions: 1.0(1e) and later.
   #### Required ####
   
@@ -227,10 +227,10 @@ All examples for the Endpoint Security Group resource can be found in the [examp
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation To Consumed Contract object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
-      - Default: `unspecified`
-      - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
+      - Default: `"unspecified"`
+      - Valid Values: `"level1"`, `"level2"`, `"level3"`, `"level4"`, `"level5"`, `"level6"`, `"unspecified"`.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
   
@@ -248,10 +248,10 @@ All examples for the Endpoint Security Group resource can be found in the [examp
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation To Imported Contract object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
-      - Default: `unspecified`
-      - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
+      - Default: `"unspecified"`
+      - Valid Values: `"level1"`, `"level2"`, `"level3"`, `"level4"`, `"level5"`, `"level6"`, `"unspecified"`.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
   
@@ -269,7 +269,7 @@ All examples for the Endpoint Security Group resource can be found in the [examp
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation To Intra EPG Contract object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
   
@@ -287,13 +287,13 @@ All examples for the Endpoint Security Group resource can be found in the [examp
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation To Provided Contract object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `match_criteria` (matchT) - (string) The provider label match criteria.
-      - Default: `AtleastOne`
-      - Valid Values: `All`, `AtleastOne`, `AtmostOne`, `None`.
+      - Default: `"AtleastOne"`
+      - Valid Values: `"All"`, `"AtleastOne"`, `"AtmostOne"`, `"None"`.
     * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
-      - Default: `unspecified`
-      - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
+      - Default: `"unspecified"`
+      - Valid Values: `"level1"`, `"level2"`, `"level3"`, `"level4"`, `"level5"`, `"level6"`, `"unspecified"`.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
   
@@ -308,7 +308,7 @@ All examples for the Endpoint Security Group resource can be found in the [examp
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation To VRF object.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `vrf_name` (tnFvCtxName) - (string) The name of the VRF object.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
@@ -327,7 +327,7 @@ All examples for the Endpoint Security Group resource can be found in the [examp
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation To Contract Master object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
   

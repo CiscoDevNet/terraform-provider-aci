@@ -87,7 +87,7 @@ All examples for the VRF Fallback Route Group Member resource can be found in th
 ### Optional ###
 
 * `annotation` (annotation) - (string) The annotation of the VRF Fallback Route Group Member object.
-  - Default: `orchestrator:terraform`
+  - Default: `"orchestrator:terraform"`
 * `description` (descr) - (string) The description of the VRF Fallback Route Group Member object.
 * `name` (name) - (string) The name of the VRF Fallback Route Group Member object.
 * `name_alias` (nameAlias) - (string) The name alias of the VRF Fallback Route Group Member object.

@@ -137,7 +137,7 @@ All examples for the Custom QoS Policy resource can be found in the [examples](h
 ### Optional ###
 
 * `annotation` (annotation) - (string) The annotation of the Custom QoS Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
-  - Default: `orchestrator:terraform`
+  - Default: `"orchestrator:terraform"`
 * `description` (descr) - (string) The description of the Custom QoS Policy object.
 * `name_alias` (nameAlias) - (string) The name alias of the Custom QoS Policy object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
@@ -147,28 +147,28 @@ All examples for the Custom QoS Policy resource can be found in the [examples](h
   
     * `from` (from) - (string) The Dot1p priority range starting value.
      - Valid Values:
-       * `0`, `1`, `2`, `3`, `4`, `5`, `6`, `7`, `unspecified`.
+       * `"0"`, `"1"`, `"2"`, `"3"`, `"4"`, `"5"`, `"6"`, `"7"`, `"unspecified"`.
        * Or a value in the range of `0` to `8`.
     * `to` (to) - (string) The Dot1p priority range ending value.
      - Valid Values:
-       * `0`, `1`, `2`, `3`, `4`, `5`, `6`, `7`, `unspecified`.
+       * `"0"`, `"1"`, `"2"`, `"3"`, `"4"`, `"5"`, `"6"`, `"7"`, `"unspecified"`.
        * Or a value in the range of `0` to `8`.
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Dot1p Classifier object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `description` (descr) - (string) The description of the Dot1p Classifier object.
     * `name` (name) - (string) The name of the Dot1p Classifier object.
     * `name_alias` (nameAlias) - (string) The name alias of the Dot1p Classifier object. This attribute is supported in ACI versions: 2.2(1k) and later.
     * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
-      - Default: `unspecified`
-      - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
+      - Default: `"unspecified"`
+      - Valid Values: `"level1"`, `"level2"`, `"level3"`, `"level4"`, `"level5"`, `"level6"`, `"unspecified"`.
     * `target` (target) - (string) The target of the Dot1p Classifier object. This Fabric only supports DSCP mutation, Dot1P mutation is not supported.
-      - Default: `unspecified`
-      - Valid Values: `AF11`, `AF12`, `AF13`, `AF21`, `AF22`, `AF23`, `AF31`, `AF32`, `AF33`, `AF41`, `AF42`, `AF43`, `CS0`, `CS1`, `CS2`, `CS3`, `CS4`, `CS5`, `CS6`, `CS7`, `EF`, `VA`, `unspecified`.
+      - Default: `"unspecified"`
+      - Valid Values: `"AF11"`, `"AF12"`, `"AF13"`, `"AF21"`, `"AF22"`, `"AF23"`, `"AF31"`, `"AF32"`, `"AF33"`, `"AF41"`, `"AF42"`, `"AF43"`, `"CS0"`, `"CS1"`, `"CS2"`, `"CS3"`, `"CS4"`, `"CS5"`, `"CS6"`, `"CS7"`, `"EF"`, `"VA"`, `"unspecified"`.
     * `target_cos` (targetCos) - (string) The target Class of Service (CoS) to be driven based on the range of DSCP input values coming into the fabric. This attribute is supported in ACI versions: 2.1(1h) and later.
-      - Default: `unspecified`
-      - Valid Values: `0`, `1`, `2`, `3`, `4`, `5`, `6`, `7`, `unspecified`.
+      - Default: `"unspecified"`
+      - Valid Values: `"0"`, `"1"`, `"2"`, `"3"`, `"4"`, `"5"`, `"6"`, `"7"`, `"unspecified"`.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
   
@@ -184,28 +184,28 @@ All examples for the Custom QoS Policy resource can be found in the [examples](h
   
     * `from` (from) - (string) The DSCP range starting value.
      - Valid Values:
-       * `AF11`, `AF12`, `AF13`, `AF21`, `AF22`, `AF23`, `AF31`, `AF32`, `AF33`, `AF41`, `AF42`, `AF43`, `CS0`, `CS1`, `CS2`, `CS3`, `CS4`, `CS5`, `CS6`, `CS7`, `EF`, `VA`.
+       * `"AF11"`, `"AF12"`, `"AF13"`, `"AF21"`, `"AF22"`, `"AF23"`, `"AF31"`, `"AF32"`, `"AF33"`, `"AF41"`, `"AF42"`, `"AF43"`, `"CS0"`, `"CS1"`, `"CS2"`, `"CS3"`, `"CS4"`, `"CS5"`, `"CS6"`, `"CS7"`, `"EF"`, `"VA"`.
        * Or a value in the range of `0` to `63`.
     * `to` (to) - (string) The DSCP range ending value.
      - Valid Values:
-       * `AF11`, `AF12`, `AF13`, `AF21`, `AF22`, `AF23`, `AF31`, `AF32`, `AF33`, `AF41`, `AF42`, `AF43`, `CS0`, `CS1`, `CS2`, `CS3`, `CS4`, `CS5`, `CS6`, `CS7`, `EF`, `VA`.
+       * `"AF11"`, `"AF12"`, `"AF13"`, `"AF21"`, `"AF22"`, `"AF23"`, `"AF31"`, `"AF32"`, `"AF33"`, `"AF41"`, `"AF42"`, `"AF43"`, `"CS0"`, `"CS1"`, `"CS2"`, `"CS3"`, `"CS4"`, `"CS5"`, `"CS6"`, `"CS7"`, `"EF"`, `"VA"`.
        * Or a value in the range of `0` to `63`.
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the DSCP to Priority Map object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `description` (descr) - (string) The description of the DSCP to Priority Map object.
     * `name` (name) - (string) The name of the DSCP to Priority Map object.
     * `name_alias` (nameAlias) - (string) The name alias of the DSCP to Priority Map object. This attribute is supported in ACI versions: 2.2(1k) and later.
     * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
-      - Default: `unspecified`
-      - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
+      - Default: `"unspecified"`
+      - Valid Values: `"level1"`, `"level2"`, `"level3"`, `"level4"`, `"level5"`, `"level6"`, `"unspecified"`.
     * `target` (target) - (string) The target of the DSCP to Priority Map object. This Fabric only supports DSCP mutation, Dot1P mutation is not supported.
-      - Default: `unspecified`
-      - Valid Values: `AF11`, `AF12`, `AF13`, `AF21`, `AF22`, `AF23`, `AF31`, `AF32`, `AF33`, `AF41`, `AF42`, `AF43`, `CS0`, `CS1`, `CS2`, `CS3`, `CS4`, `CS5`, `CS6`, `CS7`, `EF`, `VA`, `unspecified`.
+      - Default: `"unspecified"`
+      - Valid Values: `"AF11"`, `"AF12"`, `"AF13"`, `"AF21"`, `"AF22"`, `"AF23"`, `"AF31"`, `"AF32"`, `"AF33"`, `"AF41"`, `"AF42"`, `"AF43"`, `"CS0"`, `"CS1"`, `"CS2"`, `"CS3"`, `"CS4"`, `"CS5"`, `"CS6"`, `"CS7"`, `"EF"`, `"VA"`, `"unspecified"`.
     * `target_cos` (targetCos) - (string) Target COS to be driven based on the range of input values of DSCP coming into the fabric. This attribute is supported in ACI versions: 2.1(1h) and later.
-      - Default: `unspecified`
-      - Valid Values: `0`, `1`, `2`, `3`, `4`, `5`, `6`, `7`, `unspecified`.
+      - Default: `"unspecified"`
+      - Valid Values: `"0"`, `"1"`, `"2"`, `"3"`, `"4"`, `"5"`, `"6"`, `"7"`, `"unspecified"`.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
   

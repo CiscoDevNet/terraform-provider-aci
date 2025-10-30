@@ -79,10 +79,10 @@ All examples for the {{.ResourceNameAsDescription}} resource can be found in the
 * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}}{{if ne .NamedPropertyClass ""}}{{$RName := getResourceName .NamedPropertyClass $.Definitions}} This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{$RName}}) with `aci_{{$RName}}.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/{{$RName}}) with `data.aci_{{$RName}}.example.name`.{{end}}{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
       {{- if and .HasCustomType (hasCustomTypeDocs .PkgName .Name $.Definitions)}}{{$i := 1}}{{$length := len .ValidValues}}
   - Valid Values:
-    *{{ range .ValidValues}} `{{ . }}`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
+    *{{ range .ValidValues}} `"{{ . }}"`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
     * Or a value in the range of `{{ printf "%.0f" (index .Validators 0 "min") }}` to `{{ printf "%.0f" (index .Validators 0 "max") }}`.
       {{- else if .ValidValues }}{{$i := 1}}{{$length := len .ValidValues}}
-  - Valid Values:{{ range .ValidValues}} `{{ . }}`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
+  - Valid Values:{{ range .ValidValues}} `"{{ . }}"`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
       {{- end}}
     {{- end}}
 {{- end}}
@@ -100,7 +100,11 @@ All examples for the {{.ResourceNameAsDescription}} resource can be found in the
     {{- if .ReadOnly}}
 * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}}{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
         {{- if .DefaultValue }}
-  - Default: `{{ .DefaultValue }}`
+          {{- if eq .DefaultValue "@aci_gen_default_value_overwrite_to_empty_string!"}}
+  - Default: `""`
+          {{- else}}
+  - Default: `"{{ .DefaultValue }}"`
+          {{- end}}
         {{- end}}
     {{- end }}
 {{- end }}
@@ -119,22 +123,30 @@ All examples for the {{.ResourceNameAsDescription}} resource can be found in the
       {{- if eq .ValueType "bitmask"}}
 * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (list) {{.Comment}}{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
         {{- if .DefaultValue }}
-  - Default: `{{ .DefaultValue }}`.
+          {{- if eq .DefaultValue "@aci_gen_default_value_overwrite_to_empty_string!"}}
+  - Default: `""`
+          {{- else}}
+  - Default: `"{{ .DefaultValue }}"`
+          {{- end}}
         {{- end}}
         {{- if .ValidValues }}{{$i := 1}}{{$length := len .ValidValues}}
-  - Valid Values:{{ range .ValidValues}} `{{ . }}`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
+  - Valid Values:{{ range .ValidValues}} `"{{ . }}"`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
         {{- end}}
       {{- else}}
 * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}}{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
         {{- if .DefaultValue }}
-  - Default: `{{ .DefaultValue }}`
+          {{- if eq .DefaultValue "@aci_gen_default_value_overwrite_to_empty_string!"}}
+  - Default: `""`
+          {{- else}}
+  - Default: `"{{ .DefaultValue }}"`
+          {{- end}}
         {{- end}}
         {{- if and .HasCustomType (hasCustomTypeDocs .PkgName .Name $.Definitions)}}{{$i := 1}}{{$length := len .ValidValues}}
   - Valid Values:
-    *{{ range .ValidValues}} `{{ . }}`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
+    *{{ range .ValidValues}} `"{{ . }}"`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
     * Or a value in the range of `{{ printf "%.0f" (index .Validators 0 "min") }}` to `{{ printf "%.0f" (index .Validators 0 "max") }}`.
         {{- else if .ValidValues }}{{$i := 1}}{{$length := len .ValidValues}}
-  - Valid Values:{{ range .ValidValues}} `{{ . }}`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
+  - Valid Values:{{ range .ValidValues}} `"{{ . }}"`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
         {{- end}}
       {{- end}}
     {{- end}}
@@ -209,10 +221,10 @@ import {
     {{ $indent }}* `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}}{{if ne .NamedPropertyClass ""}}{{$RName := getResourceName .NamedPropertyClass $.Definitions}} This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{$RName}}) with `aci_{{$RName}}.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/{{$RName}}) with `data.aci_{{$RName}}.example.name`.{{end}}{{if ne $childVersion .Versions}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
               {{- if and .HasCustomType (hasCustomTypeDocs .PkgName .Name $.Definitions)}}{{$i := 1}}{{$length := len .ValidValues}}
     {{ $indent }} - Valid Values:
-    {{ $indent }}   *{{ range .ValidValues}} `{{ . }}`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
+    {{ $indent }}   *{{ range .ValidValues}} `"{{ . }}"`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
     {{ $indent }}   * Or a value in the range of `{{ printf "%.0f" (index .Validators 0 "min") }}` to `{{ printf "%.0f" (index .Validators 0 "max") }}`.
               {{- else if .ValidValues }}{{$i := 1}}{{$length := len .ValidValues}}
-    {{ $indent }} - Valid Values:{{ range .ValidValues}} `{{ . }}`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
+    {{ $indent }} - Valid Values:{{ range .ValidValues}} `"{{ . }}"`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
               {{- end}}
           {{- end}}
       {{- end}}
@@ -227,10 +239,14 @@ import {
     {{ $indent }}* `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}}{{if ne $childVersion .Versions}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
         {{- end}}
         {{- if .DefaultValue }}
-      {{ $indent }}- Default: `{{ .DefaultValue }}`
+          {{- if eq .DefaultValue "@aci_gen_default_value_overwrite_to_empty_string!"}}
+      {{ $indent }}- Default: `""`
+          {{- else}}
+      {{ $indent }}- Default: `"{{ .DefaultValue }}"`
+          {{- end}}
         {{- end}}
         {{- if .ValidValues }}{{$i := 1}}{{$length := len .ValidValues}}
-      {{ $indent }}- Valid Values:{{ range .ValidValues}} `{{ . }}`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
+      {{ $indent }}- Valid Values:{{ range .ValidValues}} `"{{ . }}"`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
         {{- end}}
       {{- end}}
     {{- end}}

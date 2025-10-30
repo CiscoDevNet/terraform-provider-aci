@@ -237,36 +237,36 @@ All examples for the External EPG resource can be found in the [examples](https:
 * `id` - (string) The distinguished name (DN) of the External EPG object.
 * `pc_tag` (pcTag) - (string) The classification tag used for policy enforcement and zoning.
 * `scope` (scope) - (string) The scope ID (L3-VNI) of the External EPG object.
-  - Default: `0`
+  - Default: `"0"`
 
 ### Optional ###
 
 * `annotation` (annotation) - (string) The annotation of the External EPG object. This attribute is supported in ACI versions: 3.2(1l) and later.
-  - Default: `orchestrator:terraform`
+  - Default: `"orchestrator:terraform"`
 * `description` (descr) - (string) The description of the External EPG object.
 * `contract_exception_tag` (exceptionTag) - (string) The contract exception tag of the External EPG object. This attribute is supported in ACI versions: 3.2(1l) and later.
 * `flood_in_encapsulation` (floodOnEncap) - (string) Flood L2 Multicast/Broadcast and Link Local Layer based on encapsulation. This attribute is supported in ACI versions: 3.1(1i) and later.
-  - Default: `disabled`
-  - Valid Values: `disabled`, `enabled`.
+  - Default: `"disabled"`
+  - Valid Values: `"disabled"`, `"enabled"`.
 * `match_criteria` (matchT) - (string) The provider label match criteria.
-  - Default: `AtleastOne`
-  - Valid Values: `All`, `AtleastOne`, `AtmostOne`, `None`.
+  - Default: `"AtleastOne"`
+  - Valid Values: `"All"`, `"AtleastOne"`, `"AtmostOne"`, `"None"`.
 * `name_alias` (nameAlias) - (string) The name alias of the External EPG object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `intra_epg_isolation` (pcEnfPref) - (string) Parameter used to determine whether communication between endpoints within the EPG is blocked. This attribute is supported in ACI versions: 5.2(1g) and later.
-  - Default: `unenforced`
-  - Valid Values: `enforced`, `unenforced`.
+  - Default: `"unenforced"`
+  - Valid Values: `"enforced"`, `"unenforced"`.
 * `preferred_group_member` (prefGrMemb) - (string) Parameter used to determine whether the EPG is part of the preferred group. Members of this group are allowed to communicate without contracts. This attribute is supported in ACI versions: 2.1(1h) and later.
-  - Default: `exclude`
-  - Valid Values: `exclude`, `include`.
+  - Default: `"exclude"`
+  - Valid Values: `"exclude"`, `"include"`.
 * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
-  - Default: `unspecified`
+  - Default: `"unspecified"`
   - Valid Values:
-    * `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
+    * `"level1"`, `"level2"`, `"level3"`, `"level4"`, `"level5"`, `"level6"`, `"unspecified"`.
     * Or a value in the range of `0` to `9`.
 * `target_dscp` (targetDscp) - (string) The target DSCP value of the External EPG object.
-  - Default: `unspecified`
+  - Default: `"unspecified"`
   - Valid Values:
-    * `AF11`, `AF12`, `AF13`, `AF21`, `AF22`, `AF23`, `AF31`, `AF32`, `AF33`, `AF41`, `AF42`, `AF43`, `CS0`, `CS1`, `CS2`, `CS3`, `CS4`, `CS5`, `CS6`, `CS7`, `EF`, `VA`, `unspecified`.
+    * `"AF11"`, `"AF12"`, `"AF13"`, `"AF21"`, `"AF22"`, `"AF23"`, `"AF31"`, `"AF32"`, `"AF33"`, `"AF41"`, `"AF42"`, `"AF43"`, `"CS0"`, `"CS1"`, `"CS2"`, `"CS3"`, `"CS4"`, `"CS5"`, `"CS6"`, `"CS7"`, `"EF"`, `"VA"`, `"unspecified"`.
     * Or a value in the range of `0` to `64`.
 * `relation_to_consumed_contracts` - (list) A list of Relation To Consumed Contracts (ACI object [fvRsCons](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsCons/overview)) pointing to Contract (ACI Object [vzBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzBrCP/overview)) which can be configured using the [aci_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/contract) resource.
   #### Required ####
@@ -275,10 +275,10 @@ All examples for the External EPG resource can be found in the [examples](https:
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation To Consumed Contract object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
-      - Default: `unspecified`
-      - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
+      - Default: `"unspecified"`
+      - Valid Values: `"level1"`, `"level2"`, `"level3"`, `"level4"`, `"level5"`, `"level6"`, `"unspecified"`.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
   
@@ -296,10 +296,10 @@ All examples for the External EPG resource can be found in the [examples](https:
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation To Imported Contract object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
-      - Default: `unspecified`
-      - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
+      - Default: `"unspecified"`
+      - Valid Values: `"level1"`, `"level2"`, `"level3"`, `"level4"`, `"level5"`, `"level6"`, `"unspecified"`.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
   
@@ -314,7 +314,7 @@ All examples for the External EPG resource can be found in the [examples](https:
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation To Custom QoS Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `custom_qos_policy_name` (tnQosCustomPolName) - (string) The Custom QoS traffic policy name.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
@@ -333,7 +333,7 @@ All examples for the External EPG resource can be found in the [examples](https:
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation To Intra EPG Contract object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
   
@@ -351,7 +351,7 @@ All examples for the External EPG resource can be found in the [examples](https:
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation To Taboo Contract object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
   
@@ -369,13 +369,13 @@ All examples for the External EPG resource can be found in the [examples](https:
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation To Provided Contract object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `match_criteria` (matchT) - (string) The provider label match criteria.
-      - Default: `AtleastOne`
-      - Valid Values: `All`, `AtleastOne`, `AtmostOne`, `None`.
+      - Default: `"AtleastOne"`
+      - Valid Values: `"All"`, `"AtleastOne"`, `"AtmostOne"`, `"None"`.
     * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
-      - Default: `unspecified`
-      - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
+      - Default: `"unspecified"`
+      - Valid Values: `"level1"`, `"level2"`, `"level3"`, `"level4"`, `"level5"`, `"level6"`, `"unspecified"`.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
   
@@ -393,7 +393,7 @@ All examples for the External EPG resource can be found in the [examples](https:
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation To Contract Master object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
   
@@ -408,12 +408,12 @@ All examples for the External EPG resource can be found in the [examples](https:
   #### Required ####
   
     * `direction` (direction) - (string) The direction on which to apply the Route Map associated with the Route Control Profile.
-     - Valid Values: `export`, `import`.
+     - Valid Values: `"export"`, `"import"`.
     * `route_control_profile_name` (tnRtctrlProfileName) - (string) The name of the Route Control Profile object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/route_control_profile) with `aci_route_control_profile.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/route_control_profile) with `data.aci_route_control_profile.example.name`.
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation From External EPG To Route Control Profile object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
   

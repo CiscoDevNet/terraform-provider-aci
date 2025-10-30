@@ -87,7 +87,7 @@ All examples for the L3Out Node SR-MPLS Segment ID Profile resource can be found
 ### Optional ###
 
 * `annotation` (annotation) - (string) The annotation of the L3Out Node SR-MPLS Segment ID Profile object.
-  - Default: `orchestrator:terraform`
+  - Default: `"orchestrator:terraform"`
 * `description` (descr) - (string) The description of the L3Out Node SR-MPLS Segment ID Profile object.
 * `loopback_address` (loopbackAddr) - (string) The loopback address of the L3Out Node SR-MPLS Segment ID Profile object.
 * `name` (name) - (string) The name of the L3Out Node SR-MPLS Segment ID Profile object.

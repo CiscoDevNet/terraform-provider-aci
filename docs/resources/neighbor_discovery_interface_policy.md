@@ -99,36 +99,36 @@ All examples for the Neighbor Discovery Interface Policy resource can be found i
 ### Optional ###
 
 * `annotation` (annotation) - (string) The annotation of the Neighbor Discovery Interface Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
-  - Default: `orchestrator:terraform`
+  - Default: `"orchestrator:terraform"`
 * `controller_state` (ctrl) - (list) The controls for the Neighbor Discovery Interface Policy object.
-  - Default: `unspecified`.
-  - Valid Values: `managed-cfg`, `other-cfg`, `suppress-ra`, `suppress-ra-mtu`, `unsolicit-na-glean`, `unspecified`.
+  - Default: `"unspecified"`
+  - Valid Values: `"managed-cfg"`, `"other-cfg"`, `"suppress-ra"`, `"suppress-ra-mtu"`, `"unsolicit-na-glean"`, `"unspecified"`.
 * `description` (descr) - (string) The description of the Neighbor Discovery Interface Policy object.
 * `hop_limit` (hopLimit) - (string) The hop limit of the Neighbor Discovery Interface Policy object.
-  - Default: `64`
+  - Default: `"64"`
 * `mtu` (mtu) - (string) The maximum transmission unit (MTU) of the Neighbor Discovery Interface Policy object.
-  - Default: `9000`
+  - Default: `"9000"`
 * `name_alias` (nameAlias) - (string) The name alias of the Neighbor Discovery Interface Policy object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `neighbor_solicitation_interval` (nsIntvl) - (string) The interval (milliseconds) for sending neighbor solicitation (NS) messages.
-  - Default: `1000`
+  - Default: `"1000"`
 * `neighbor_solicitation_retries` (nsRetries) - (string) The retransmission count for sending neighbor solicitation (NS) messages.
-  - Default: `3`
+  - Default: `"3"`
 * `nud_retry_base` (nudRetryBase) - (string) The retransmission base value for neighbor unreachability detection (NUD). This attribute is supported in ACI versions: 5.1(1h) and later.
-  - Default: `1`
+  - Default: `"1"`
 * `nud_retry_interval` (nudRetryInterval) - (string) The retransmission interval (milliseconds) for neighbor unreachability detection (NUD). This attribute is supported in ACI versions: 5.1(1h) and later.
-  - Default: `1000`
+  - Default: `"1000"`
 * `nud_retry_max_attempts` (nudRetryMaxAttempts) - (string) The maximum number of retransmission attempts for neighbor unreachability detection (NUD). This attribute is supported in ACI versions: 5.1(1h) and later.
-  - Default: `3`
+  - Default: `"3"`
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `router_advertisement_interval` (raIntvl) - (string) The interval (seconds) for sending route advertisement messages.
-  - Default: `600`
+  - Default: `"600"`
 * `router_advertisement_lifetime` (raLifetime) - (string) The default router lifetime (seconds).
-  - Default: `1800`
+  - Default: `"1800"`
 * `reachable_time` (reachableTime) - (string) The time (milliseconds) for which a neighbor is considered reachable after receiving reachability confirmation.
-  - Default: `0`
+  - Default: `"0"`
 * `retransmit_timer` (retransTimer) - (string) The retransmission time (milliseconds) for sending neighbor solicitation messages.
-  - Default: `0`
+  - Default: `"0"`
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
   

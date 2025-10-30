@@ -130,19 +130,19 @@ All examples for the EPG uSeg VM Attribute resource can be found in the [example
 ### Optional ###
 
 * `annotation` (annotation) - (string) The annotation of the EPG uSeg VM Attribute object. This attribute is supported in ACI versions: 3.2(1l) and later.
-  - Default: `orchestrator:terraform`
+  - Default: `"orchestrator:terraform"`
 * `category` (category) - (string) The category of the EPG uSeg VM Attribute object. This attribute is supported in ACI versions: 2.3(1e) and later.
 * `description` (descr) - (string) The description of the EPG uSeg VM Attribute object.
 * `label_name` (labelName) - (string) The label name of the EPG uSeg VM Attribute object.
 * `name_alias` (nameAlias) - (string) The name alias of the EPG uSeg VM Attribute object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `operator` (operator) - (string) The operator of the EPG uSeg VM Attribute object.
-  - Default: `equals`
-  - Valid Values: `contains`, `endsWith`, `equals`, `notEquals`, `startsWith`.
+  - Default: `"equals"`
+  - Valid Values: `"contains"`, `"endsWith"`, `"equals"`, `"notEquals"`, `"startsWith"`.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `type` (type) - (string) The type of the EPG uSeg VM Attribute object.
-  - Default: `vm-name`
-  - Valid Values: `custom-label`, `domain`, `guest-os`, `hv`, `rootContName`, `tag`, `vm`, `vm-folder`, `vm-name`, `vmfolder-path`, `vnic`.
+  - Default: `"vm-name"`
+  - Valid Values: `"custom-label"`, `"domain"`, `"guest-os"`, `"hv"`, `"rootContName"`, `"tag"`, `"vm"`, `"vm-folder"`, `"vm-name"`, `"vmfolder-path"`, `"vnic"`.
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
   

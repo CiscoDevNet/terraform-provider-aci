@@ -416,59 +416,59 @@ All examples for the Application EPG resource can be found in the [examples](htt
 * `id` - (string) The distinguished name (DN) of the Application EPG object.
 * `pc_tag` (pcTag) - (string) The classification tag used for policy enforcement and zoning.
 * `scope` (scope) - (string) The scope ID (L3-VNI) of the Application EPG object.
-  - Default: `0`
+  - Default: `"0"`
 
 ### Optional ###
 
 * `annotation` (annotation) - (string) The annotation of the Application EPG object. This attribute is supported in ACI versions: 3.2(1l) and later.
-  - Default: `orchestrator:terraform`
+  - Default: `"orchestrator:terraform"`
 * `description` (descr) - (string) The description of the Application EPG object.
 * `contract_exception_tag` (exceptionTag) - (string) The contract exception tag of the Application EPG object. This attribute is supported in ACI versions: 3.2(1l) and later.
 * `flood_in_encapsulation` (floodOnEncap) - (string) Flood L2 Multicast/Broadcast and Link Local Layer based on encapsulation. This attribute is supported in ACI versions: 3.1(1i) and later.
-  - Default: `disabled`
-  - Valid Values: `disabled`, `enabled`.
+  - Default: `"disabled"`
+  - Valid Values: `"disabled"`, `"enabled"`.
 * `forwarding_control` (fwdCtrl) - (string) The forwarding control of the Application EPG object. This attribute is supported in ACI versions: 2.0(2f) and later.
-  - Default: `none`
-  - Valid Values: `none`, `proxy-arp`.
+  - Default: `"none"`
+  - Valid Values: `"none"`, `"proxy-arp"`.
 * `has_multicast_source` (hasMcastSource) - (string) The Application EPG object has a multicast source. This attribute is supported in ACI versions: 4.0(1h) and later.
-  - Default: `no`
-  - Valid Values: `no`, `yes`.
+  - Default: `"no"`
+  - Valid Values: `"no"`, `"yes"`.
 * `useg_epg` (isAttrBasedEPg) - (string) The Application EPG object is microsegmented (uSeg). This attribute is supported in ACI versions: 1.2(1i) and later.
-  - Default: `no`
-  - Valid Values: `no`, `yes`.
+  - Default: `"no"`
+  - Valid Values: `"no"`, `"yes"`.
 * `match_criteria` (matchT) - (string) The provider label match criteria.
-  - Default: `AtleastOne`
-  - Valid Values: `All`, `AtleastOne`, `AtmostOne`, `None`.
+  - Default: `"AtleastOne"`
+  - Valid Values: `"All"`, `"AtleastOne"`, `"AtmostOne"`, `"None"`.
 * `name_alias` (nameAlias) - (string) The name alias of the Application EPG object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `intra_epg_isolation` (pcEnfPref) - (string) Parameter used to determine whether communication between endpoints within the EPG is blocked. This attribute is supported in ACI versions: 1.2(2g) and later.
-  - Default: `unenforced`
-  - Valid Values: `enforced`, `unenforced`.
+  - Default: `"unenforced"`
+  - Valid Values: `"enforced"`, `"unenforced"`.
 * `preferred_group_member` (prefGrMemb) - (string) Parameter used to determine whether the EPG is part of the preferred group. Members of this group are allowed to communicate without contracts. This attribute is supported in ACI versions: 2.1(1h) and later.
-  - Default: `exclude`
-  - Valid Values: `exclude`, `include`.
+  - Default: `"exclude"`
+  - Valid Values: `"exclude"`, `"include"`.
 * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
-  - Default: `unspecified`
-  - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
+  - Default: `"unspecified"`
+  - Valid Values: `"level1"`, `"level2"`, `"level3"`, `"level4"`, `"level5"`, `"level6"`, `"unspecified"`.
 * `admin_state` (shutdown) - (string) Withdraw AEPg Configuration from all Nodes in the Fabric. This attribute is supported in ACI versions: 4.0(1h) and later.
-  - Default: `no`
-  - Valid Values: `no`, `yes`.
+  - Default: `"no"`
+  - Valid Values: `"no"`, `"yes"`.
 * `epg_useg_block_statement` - (map) A map of EPG uSeg Block Statement (ACI object [fvCrtrn](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvCrtrn/overview)). EPG uSeg Block Statement can also be configured using a separate [aci_epg_useg_block_statement](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/epg_useg_block_statement) resource. This attribute is supported in ACI versions: 1.1(1j) and later.
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the EPG uSeg Block Statement object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `description` (descr) - (string) The description of the EPG uSeg Block Statement object.
     * `match` (match) - (string) The Matching Rule Type of the EPG uSeg Block Statement object. This attribute is supported in ACI versions: 1.2(1i) and later.
-      - Default: `any`
-      - Valid Values: `all`, `any`.
+      - Default: `"any"`
+      - Valid Values: `"all"`, `"any"`.
     * `name` (name) - (string) The name of the EPG uSeg Block Statement object.
     * `name_alias` (nameAlias) - (string) The name alias of the EPG uSeg Block Statement object. This attribute is supported in ACI versions: 2.2(1k) and later.
     * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
     * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
     * `precedence` (prec) - (string) The precedence of the EPG uSeg Block Statement object. This attribute is supported in ACI versions: 4.1(1i) and later.
     * `scope` (scope) - (string) The scope of the EPG uSeg Block Statement object. This attribute is supported in ACI versions: 4.1(1i) and later.
-      - Default: `scope-bd`
-      - Valid Values: `scope-bd`, `scope-vrf`.
+      - Default: `"scope-bd"`
+      - Valid Values: `"scope-bd"`, `"scope-vrf"`.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
   
@@ -483,7 +483,7 @@ All examples for the Application EPG resource can be found in the [examples](htt
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation From Application EPG To Monitoring Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `monitoring_policy_name` (tnMonEPGPolName) - (string) The name of the monitoring policy.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
@@ -499,7 +499,7 @@ All examples for the Application EPG resource can be found in the [examples](htt
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation To Bridge Domain object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `bridge_domain_name` (tnFvBDName) - (string) The name of the bridge domain associated with this EPG.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
@@ -518,10 +518,10 @@ All examples for the Application EPG resource can be found in the [examples](htt
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation To Consumed Contract object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
-      - Default: `unspecified`
-      - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
+      - Default: `"unspecified"`
+      - Valid Values: `"level1"`, `"level2"`, `"level3"`, `"level4"`, `"level5"`, `"level6"`, `"unspecified"`.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
   
@@ -539,10 +539,10 @@ All examples for the Application EPG resource can be found in the [examples](htt
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation To Imported Contract object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
-      - Default: `unspecified`
-      - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
+      - Default: `"unspecified"`
+      - Valid Values: `"level1"`, `"level2"`, `"level3"`, `"level4"`, `"level5"`, `"level6"`, `"unspecified"`.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
   
@@ -557,7 +557,7 @@ All examples for the Application EPG resource can be found in the [examples](htt
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation To Custom QoS Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `custom_qos_policy_name` (tnQosCustomPolName) - (string) The Custom QoS traffic policy name.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
@@ -581,56 +581,56 @@ All examples for the Application EPG resource can be found in the [examples](htt
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation To Domain object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `binding_type` (bindingType) - (string) The binding type of the Relation To Domain object. This attribute is supported in ACI versions: 4.0(1h) and later.
-      - Default: `none`
-      - Valid Values: `dynamicBinding`, `ephemeral`, `none`, `staticBinding`.
+      - Default: `"none"`
+      - Valid Values: `"dynamicBinding"`, `"ephemeral"`, `"none"`, `"staticBinding"`.
     * `class_preference` (classPref) - (string) The class preference of the Relation To Domain object. Set 'useg' to allow microsegmentation. This attribute is supported in ACI versions: 1.2(2g) and later.
-      - Default: `encap`
-      - Valid Values: `encap`, `useg`.
+      - Default: `"encap"`
+      - Valid Values: `"encap"`, `"useg"`.
     * `custom_epg_name` (customEpgName) - (string) The display name of the user configured port-group. This attribute is supported in ACI versions: 4.2(3j) and later.
     * `delimiter` (delimiter) - (string) The delimiter of the Relation To Domain object. This attribute is supported in ACI versions: 2.0(1m) and later.
     * `encapsulation` (encap) - (string) The encapsulation of the Relation To Domain object. The encapsulation refers to the EPG VLAN when class preference is set to 'encap, or to the Secondary VLAN when class preference is set to 'useg'. This attribute is supported in ACI versions: 1.1(1j) and later.
     * `encapsulation_mode` (encapMode) - (string) The encapsulation mode of the Relation To Domain object. This attribute is supported in ACI versions: 2.1(1h) and later.
-      - Default: `auto`
-      - Valid Values: `auto`, `vlan`, `vxlan`.
+      - Default: `"auto"`
+      - Valid Values: `"auto"`, `"vlan"`, `"vxlan"`.
     * `epg_cos` (epgCos) - (string) The class of service (CoS) of the Relation To Domain object. This attribute is supported in ACI versions: 3.0(1k) and later.
-      - Default: `Cos0`
-      - Valid Values: `Cos0`, `Cos1`, `Cos2`, `Cos3`, `Cos4`, `Cos5`, `Cos6`, `Cos7`.
+      - Default: `"Cos0"`
+      - Valid Values: `"Cos0"`, `"Cos1"`, `"Cos2"`, `"Cos3"`, `"Cos4"`, `"Cos5"`, `"Cos6"`, `"Cos7"`.
     * `epg_cos_pref` (epgCosPref) - (string) The class of service (CoS) preference of the Relation To Domain object. This attribute is supported in ACI versions: 3.0(1k) and later.
-      - Default: `disabled`
-      - Valid Values: `disabled`, `enabled`.
+      - Default: `"disabled"`
+      - Valid Values: `"disabled"`, `"enabled"`.
     * `deployment_immediacy` (instrImedcy) - (string) The deployment immediacy of the Relation To Domain object. Specifies when the policy is pushed into the hardware policy content-addressable memory (CAM).
-      - Default: `lazy`
-      - Valid Values: `immediate`, `lazy`.
+      - Default: `"lazy"`
+      - Valid Values: `"immediate"`, `"lazy"`.
     * `ipam_dhcp_override` (ipamDhcpOverride) - (string) The IP address management (IPAM) DHCP override of the Relation To Domain object. Only applicable for Nutanix domains. This attribute is supported in ACI versions: 6.0(3d) and later.
     * `ipam_enabled` (ipamEnabled) - (string) The IP address management (IPAM) enabled status of the Relation To Domain object. Only applicable for Nutanix domains. This attribute is supported in ACI versions: 6.0(3d) and later.
-      - Default: `no`
-      - Valid Values: `no`, `yes`.
+      - Default: `"no"`
+      - Valid Values: `"no"`, `"yes"`.
     * `ipam_gateway` (ipamGateway) - (string) The IP address management (IPAM) gateway of the Relation To Domain object. Only applicable for Nutanix domains. This attribute is supported in ACI versions: 6.0(3d) and later.
     * `lag_policy_name` (lagPolicyName) - (string) The link aggregation group (LAG) policy name of the Relation To Domain object. This attribute is supported in ACI versions: 3.2(10e) to 3.2(10g), 3.2(7f) and later.
     * `netflow_direction` (netflowDir) - (string) The NetFlow monitoring direction of the Relation To Domain object. This attribute is supported in ACI versions: 3.0(1k) and later.
-      - Default: `both`
-      - Valid Values: `both`, `egress`, `ingress`.
+      - Default: `"both"`
+      - Valid Values: `"both"`, `"egress"`, `"ingress"`.
     * `enable_netflow` (netflowPref) - (string) The NetFlow enabled status for the Relation To Domain object. This attribute is supported in ACI versions: 2.2(1k) and later.
-      - Default: `disabled`
-      - Valid Values: `disabled`, `enabled`.
+      - Default: `"disabled"`
+      - Valid Values: `"disabled"`, `"enabled"`.
     * `number_of_ports` (numPorts) - (string) The number of ports of the Relation To Domain object. This attribute is supported in ACI versions: 4.0(1h) and later.
     * `port_allocation` (portAllocation) - (string) Port allocation for ports. This attribute is supported in ACI versions: 4.0(1h) and later.
-      - Default: `none`
-      - Valid Values: `elastic`, `fixed`, `none`.
+      - Default: `"none"`
+      - Valid Values: `"elastic"`, `"fixed"`, `"none"`.
     * `primary_encapsulation` (primaryEncap) - (string) The primary encapsulation of the Relation To Domain object. This is used when the class preference is set to 'useg'. This attribute is supported in ACI versions: 1.2(2g) and later.
     * `primary_encapsulation_inner` (primaryEncapInner) - (string) The primary inner encapsulation of the Relation To Domain object. This is used for the portgroup at the VMWare Distributed Virtual Switch (DVS). This VLAN is internal to the DVS and is used for communication between the other VMs and the AVE VM at a host. Traffic is not forwarded to the fabric over the VLAN. Only applicable for Cisco ACI Virtual Edge (AVE) domains. This attribute is supported in ACI versions: 3.1(1i) and later.
     * `resolution_immediacy` (resImedcy) - (string) The resolution immediacy of the Relation To Domain object. Specifies if policies are resolved immmediately or when needed.
-      - Default: `lazy`
-      - Valid Values: `immediate`, `lazy`, `pre-provision`.
+      - Default: `"lazy"`
+      - Valid Values: `"immediate"`, `"lazy"`, `"pre-provision"`.
     * `secondary_encapsulation_inner` (secondaryEncapInner) - (string) The secondary inner encapsulation of the Relation To Domain object. This is used for the portgroup at the VMWare Distributed Virtual Switch (DVS). This VLAN is internal to the DVS and is used for communication between the other VMs and the AVE VM at a host. Traffic is not forwarded to the fabric over the VLAN. Only applicable for Cisco ACI Virtual Edge (AVE) domains. This attribute is supported in ACI versions: 3.1(1i) and later.
     * `switching_mode` (switchingMode) - (string) The switching mode of the Relation To Domain object. This attribute is supported in ACI versions: 3.1(1i) and later.
-      - Default: `native`
-      - Valid Values: `AVE`, `native`.
+      - Default: `"native"`
+      - Valid Values: `"AVE"`, `"native"`.
     * `untagged` (untagged) - (string) The untagged status of the Relation To Domain object. This attribute is supported in ACI versions: 3.2(10e) to 3.2(10g), 3.2(7f) to 3.2(9h), 4.2(1i) and later.
-      - Default: `no`
-      - Valid Values: `no`, `yes`.
+      - Default: `"no"`
+      - Valid Values: `"no"`, `"yes"`.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
   
@@ -645,7 +645,7 @@ All examples for the Application EPG resource can be found in the [examples](htt
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation To Data Plane Policing Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `data_plane_policing_policy_name` (tnQosDppPolName) - (string) Name.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
@@ -664,13 +664,13 @@ All examples for the Application EPG resource can be found in the [examples](htt
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation To Fibre Channel Path object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `description` (descr) - (string) The description of the Relation To Fibre Channel Path object.
     * `vsan` (vsan) - (string) The virtual storage area network (VSAN) of the Relation To Fibre Channel Path object.
-      - Default: `unknown`
+      - Default: `"unknown"`
     * `vsan_mode` (vsanMode) - (string) The virtual storage area network (VSAN) mode of the Relation To Fibre Channel Path object.
-      - Default: `regular`
-      - Valid Values: `native`, `regular`.
+      - Default: `"regular"`
+      - Valid Values: `"native"`, `"regular"`.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
   
@@ -688,7 +688,7 @@ All examples for the Application EPG resource can be found in the [examples](htt
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation To Intra EPG Contract object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
   
@@ -707,14 +707,14 @@ All examples for the Application EPG resource can be found in the [examples](htt
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation To Static Leaf object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `description` (descr) - (string) The description of the Relation To Static Leaf object. This attribute is supported in ACI versions: 1.0(4g) and later.
     * `deployment_immediacy` (instrImedcy) - (string) The deployment immediacy of the Relation To Static Leaf object. Specifies when the policy is pushed into the hardware policy content-addressable memory (CAM).
-      - Default: `lazy`
-      - Valid Values: `immediate`, `lazy`.
+      - Default: `"lazy"`
+      - Valid Values: `"immediate"`, `"lazy"`.
     * `mode` (mode) - (string) The static association mode with the path of the Relation To Static Leaf object.
-      - Default: `regular`
-      - Valid Values: `native`, `regular`, `untagged`.
+      - Default: `"regular"`
+      - Valid Values: `"native"`, `"regular"`, `"untagged"`.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
   
@@ -733,14 +733,14 @@ All examples for the Application EPG resource can be found in the [examples](htt
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation To Static Path object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `description` (descr) - (string) The description of the Relation To Static Path object. This attribute is supported in ACI versions: 1.0(4g) and later.
     * `deployment_immediacy` (instrImedcy) - (string) The deployment immediacy of the Relation To Static Path object. Specifies when the policy is pushed into the hardware policy content-addressable memory (CAM).
-      - Default: `lazy`
-      - Valid Values: `immediate`, `lazy`.
+      - Default: `"lazy"`
+      - Valid Values: `"immediate"`, `"lazy"`.
     * `mode` (mode) - (string) The static association mode of the Relation To Static Path object.
-      - Default: `regular`
-      - Valid Values: `native`, `regular`, `untagged`.
+      - Default: `"regular"`
+      - Valid Values: `"native"`, `"regular"`, `"untagged"`.
     * `primary_encapsulation` (primaryEncap) - (string) The primary VLAN encapsulation of the Relation To Static Path object. This attribute is supported in ACI versions: 1.2(2g) and later.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
@@ -759,7 +759,7 @@ All examples for the Application EPG resource can be found in the [examples](htt
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation To Taboo Contract object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
   
@@ -777,13 +777,13 @@ All examples for the Application EPG resource can be found in the [examples](htt
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation To Provided Contract object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `match_criteria` (matchT) - (string) The provider label match criteria.
-      - Default: `AtleastOne`
-      - Valid Values: `All`, `AtleastOne`, `AtmostOne`, `None`.
+      - Default: `"AtleastOne"`
+      - Valid Values: `"All"`, `"AtleastOne"`, `"AtmostOne"`, `"None"`.
     * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
-      - Default: `unspecified`
-      - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
+      - Default: `"unspecified"`
+      - Valid Values: `"level1"`, `"level2"`, `"level3"`, `"level4"`, `"level5"`, `"level6"`, `"unspecified"`.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
   
@@ -801,7 +801,7 @@ All examples for the Application EPG resource can be found in the [examples](htt
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation To Contract Master object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
   
@@ -816,7 +816,7 @@ All examples for the Application EPG resource can be found in the [examples](htt
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation To Trust Control Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `trust_control_policy_name` (tnFhsTrustCtrlPolName) - (string) Name.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####

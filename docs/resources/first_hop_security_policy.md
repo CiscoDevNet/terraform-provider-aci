@@ -117,47 +117,47 @@ All examples for the First Hop Security Policy resource can be found in the [exa
 ### Optional ###
 
 * `annotation` (annotation) - (string) The annotation of the First Hop Security Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
-  - Default: `orchestrator:terraform`
+  - Default: `"orchestrator:terraform"`
 * `description` (descr) - (string) The description of the First Hop Security Policy object.
 * `ip_inspection` (ipInspectAdminSt) - (string) The Inspection Status for IPv4 and IPv6 traffic of the First Hop Security Policy object.
-  - Default: `enabled-both`
-  - Valid Values: `disabled`, `enabled-both`, `enabled-ipv4`, `enabled-ipv6`.
+  - Default: `"enabled-both"`
+  - Valid Values: `"disabled"`, `"enabled-both"`, `"enabled-ipv4"`, `"enabled-ipv6"`.
 * `name_alias` (nameAlias) - (string) The name alias of the First Hop Security Policy object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `router_advertisement` (raGuardAdminSt) - (string) Enable Router Advertisement Guard for the First Hop Security Policy object.
-  - Default: `enabled`
-  - Valid Values: `disabled`, `enabled`.
+  - Default: `"enabled"`
+  - Valid Values: `"disabled"`, `"enabled"`.
 * `source_guard` (srcGuardAdminSt) - (string) The Source Guard Status for IPv4 and IPv6 traffic of the First Hop Security Policy object.
-  - Default: `enabled-both`
-  - Valid Values: `disabled`, `enabled-both`, `enabled-ipv4`, `enabled-ipv6`.
+  - Default: `"enabled-both"`
+  - Valid Values: `"disabled"`, `"enabled-both"`, `"enabled-ipv4"`, `"enabled-ipv6"`.
 * `route_advertisement_guard_policy` - (map) A map of Route Advertisement Guard Policy (ACI object [fhsRaGuardPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fhsRaGuardPol/overview)).
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Route Advertisement Guard Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
-      - Default: `orchestrator:terraform`
+      - Default: `"orchestrator:terraform"`
     * `description` (descr) - (string) The description of the Route Advertisement Guard Policy object.
     * `managed_config_check` (managedConfigCheck) - (string) Perform a managed configuration check for the Route Advertisement Guard Policy object.
-      - Default: `no`
-      - Valid Values: `no`, `yes`.
+      - Default: `"no"`
+      - Valid Values: `"no"`, `"yes"`.
     * `managed_config_flag` (managedConfigFlag) - (string) The managed configuration flag setting for the Route Advertisement Guard Policy object.
-      - Default: `no`
-      - Valid Values: `no`, `yes`.
+      - Default: `"no"`
+      - Valid Values: `"no"`, `"yes"`.
     * `max_hop_limit` (maxHopLimit) - (string) The maximum hop limit for the Route Advertisement Guard Policy object.
-      - Default: `0`
+      - Default: `"0"`
     * `max_router_preference` (maxRouterPref) - (string) The allowed maximum router preference for the Route Advertisement Guard Policy object.
-      - Default: `disabled`
-      - Valid Values: `disabled`, `high`, `low`, `medium`.
+      - Default: `"disabled"`
+      - Valid Values: `"disabled"`, `"high"`, `"low"`, `"medium"`.
     * `min_hop_limit` (minHopLimit) - (string) The minimum hop limit for the Route Advertisement Guard Policy object.
-      - Default: `0`
+      - Default: `"0"`
     * `name` (name) - (string) The name of the Route Advertisement Guard Policy object.
     * `name_alias` (nameAlias) - (string) The name alias of the Route Advertisement Guard Policy object.
     * `other_config_check` (otherConfigCheck) - (string) Perform other configuration checks for the Route Advertisement Guard Policy object.
-      - Default: `no`
-      - Valid Values: `no`, `yes`.
+      - Default: `"no"`
+      - Valid Values: `"no"`, `"yes"`.
     * `other_config_flag` (otherConfigFlag) - (string) The other configuration flag setting for the Route Advertisement Guard Policy object.
-      - Default: `no`
-      - Valid Values: `no`, `yes`.
+      - Default: `"no"`
+      - Valid Values: `"no"`, `"yes"`.
     * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
     * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.

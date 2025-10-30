@@ -83,7 +83,7 @@ All examples for the Relation From Bridge Domain To NetFlow Monitor Policy resou
     - [fvSvcBD](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvSvcBD/overview)
 
 * `filter_type` (fltType) - (string) The filter type of the NetFlow Monitor Policy object.
-  - Valid Values: `ce`, `ipv4`, `ipv6`, `unspecified`.
+  - Valid Values: `"ce"`, `"ipv4"`, `"ipv6"`, `"unspecified"`.
 * `netflow_monitor_policy_name` (tnNetflowMonitorPolName) - (string) The name of the NetFlow Monitor Policy object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/netflow_monitor_policy) with `aci_netflow_monitor_policy.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/netflow_monitor_policy) with `data.aci_netflow_monitor_policy.example.name`.
 
 ### Read-Only ###
@@ -93,7 +93,7 @@ All examples for the Relation From Bridge Domain To NetFlow Monitor Policy resou
 ### Optional ###
 
 * `annotation` (annotation) - (string) The annotation of the Relation From Bridge Domain To NetFlow Monitor Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
-  - Default: `orchestrator:terraform`
+  - Default: `"orchestrator:terraform"`
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
   

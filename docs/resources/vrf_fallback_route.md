@@ -87,7 +87,7 @@ All examples for the VRF Fallback Route resource can be found in the [examples](
 ### Optional ###
 
 * `annotation` (annotation) - (string) The annotation of the VRF Fallback Route object.
-  - Default: `orchestrator:terraform`
+  - Default: `"orchestrator:terraform"`
 * `description` (descr) - (string) The description of the VRF Fallback Route object.
 * `name` (name) - (string) The name of the VRF Fallback Route object.
 * `name_alias` (nameAlias) - (string) The name alias of the VRF Fallback Route object.

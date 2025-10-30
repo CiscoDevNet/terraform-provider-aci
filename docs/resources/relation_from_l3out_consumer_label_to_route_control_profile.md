@@ -81,7 +81,7 @@ All examples for the Relation From L3Out Consumer Label To Route Control Profile
     - [l3extConsLblDef](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extConsLblDef/overview)
 
 * `direction` (direction) - (string) The direction on which to apply the Route Map associated with the Route Control Profile.
-  - Valid Values: `export`, `import`.
+  - Valid Values: `"export"`, `"import"`.
 * `target_dn` (tDn) - (string) The distinguished name (DN) of the Route Control Profile object.
 
 ### Read-Only ###
@@ -91,7 +91,7 @@ All examples for the Relation From L3Out Consumer Label To Route Control Profile
 ### Optional ###
 
 * `annotation` (annotation) - (string) The annotation of the Relation From L3Out Consumer Label To Route Control Profile object.
-  - Default: `orchestrator:terraform`
+  - Default: `"orchestrator:terraform"`
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
   
