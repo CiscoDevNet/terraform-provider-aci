@@ -92,15 +92,6 @@ resource "aci_rest_managed" "tenant_with_cleanup" {
     }
   }
   
-  child {
-    rn         = "ctx-production"
-    class_name = "fvCtx"
-    content = {
-      name  = "production"
-      descr = "Production VRF"
-    }
-  }
-  
   # Content to apply during terraform destroy
   content_on_destroy = {
     descr = "Decommissioned - Archived Tenant"
@@ -112,14 +103,6 @@ resource "aci_rest_managed" "tenant_with_cleanup" {
     class_name = "fvAp"
     content = {
       descr = "Archived - Web application"
-    }
-  }
-  
-  child_on_destroy {
-    rn         = "ctx-production"
-    class_name = "fvCtx"
-    content = {
-      descr = "Archived - Production VRF"
     }
   }
   
@@ -152,11 +135,11 @@ resource "aci_rest_managed" "tenant_with_cleanup" {
 * `escape_html` - (boolean) Enable escaping of HTML characters when encoding the JSON payload.
   - Default: `true`
 
-* `content_on_destroy` - (map) A map of key-value pairs to be applied to the parent object during terraform destroy operations. This allows modifying the object with cleanup values instead of deleting it. When this attribute is specified, the object will be updated with these values rather than being deleted from ACI.
+* `content_on_destroy` - (map) A map of key-value pairs to be applied to the parent object during Terraform destroy operations. This allows modifying the object with clean up values instead of deleting it. When this attribute is specified, the object will be updated with these values rather than being deleted from ACI.
 
   ~> When adding `content_on_destroy` to an existing resource, Terraform will show this attribute being added in the plan. This is expected behavior and will not trigger any API calls or resource modifications. You must run `terraform apply` to store the `content_on_destroy` configuration in the state before it can take effect during `terraform destroy`. The attribute values are only applied when executing `terraform destroy` and have no impact on the resource during normal operations.
 
-  !> The annotation property is not allowed to be set in content_on_destroy.
+  !> The `annotation` property is not allowed to be set in `content_on_destroy`.
 
 * `child` - (block) A nested block representing a child object. Multiple child blocks can be specified.
 
@@ -171,11 +154,11 @@ resource "aci_rest_managed" "tenant_with_cleanup" {
 
   * `content` - (map) A map of key-value pairs which represents the attributes for the child object. When annotation is provided in the content of the child it will take precedence over the annotation set at the parent level.
 
-* `child_on_destroy` - (block) A nested block representing a child object to be modified during terraform destroy operations. Multiple child_on_destroy blocks can be specified. Children listed here will be updated with the specified content instead of being deleted. Children not listed in child_on_destroy will be deleted normally during destroy.
+* `child_on_destroy` - (block) A nested block representing a child object to be modified during Terraform destroy operations. Multiple `child_on_destroy` blocks can be specified. Children listed here will be updated with the specified content instead of being deleted. Children not listed in `child_on_destroy` will be deleted normally during destroy.
 
-  !> child_on_destroy only takes effect when content_on_destroy is also specified. Without content_on_destroy, all children will be deleted using the standard deletion process.
+  !> `child_on_destroy` only takes effect when `content_on_destroy` is also specified. Without `content_on_destroy`, all children will be deleted using the standard deletion process.
 
-  ~> Only children that have both matching rn and class_name in child_on_destroy will be modified during destroy. All other children will be deleted.
+  ~> Only children that have both matching `rn` and `class_name` in `child_on_destroy` will be modified during destroy. All other children will be deleted.
 
   #### Required ####
 
