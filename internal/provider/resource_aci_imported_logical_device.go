@@ -199,7 +199,7 @@ func (r *VnsLDevIfResource) Schema(ctx context.Context, req resource.SchemaReque
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
-				MarkdownDescription: `The distinguished name (DN) of the Logical Device to import.`,
+				MarkdownDescription: `The distinguished name (DN) of the Logical Device to import (ACI object [vnsLDevVip](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vnsLDevVip/overview). The Logical Device can be configured using [aci_l4_l7_device](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l4_l7_devices) resource).`,
 			},
 			"name": schema.StringAttribute{
 				Optional: true,
