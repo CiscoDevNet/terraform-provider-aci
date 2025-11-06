@@ -13,11 +13,11 @@ jobs:
         uses: actions/checkout@v4
       - name: Unshallow
         run: git fetch --prune --unshallow
-      
+
       # git-cliff generates CHANGELOG.md
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: "3.10"
       - run: pip install git-cliff typos
       - name: Check new changlog entry for version bump type
         id: type
@@ -54,12 +54,24 @@ jobs:
       # Generate annotation_unsupported.go
       - uses: actions/setup-go@v5
         with:
-          go-version-file: 'go.mod'
+          go-version-file: "go.mod"
       - uses: hashicorp/setup-terraform@v3
       - name: Generate annotation unsupported provider code
         run: go generate
         env:
-          GEN_ANNOTATION_UNSUPPORTED: '1'
+          GEN_ANNOTATION_UNSUPPORTED: "1"
+
+      # Generate SBOM
+      - name: Generate SBOM SPDX JSON file
+        uses: anchore/sbom-action@v0
+        with:
+          path: ./
+          artifact-name: sbom.spdx.json
+          output-file: ./sbom.spdx.json
+        env:
+          SYFT_EXCLUDE: ./.github
+      - name: Beautify SBOM JSON file
+        run: python -m json.tool  sbom.spdx.json sbom.spdx.json
 
       # Commit changes to release_pr branch
       - name: Set git config
