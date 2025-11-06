@@ -2727,7 +2727,7 @@ vnsLDevIf:
   overwrites:
     ldev: "logical_device"
   documentation:
-    ldev: "The distinguished name (DN) of the Logical Device to import."
+    ldev: "The distinguished name (DN) of the Logical Device to import (ACI object [vnsLDevVip](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vnsLDevVip/overview). The Logical Device can be configured using [aci_l4_l7_device](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l4_l7_devices) resource)"
     description: "The description of the Imported Logical Device object."
   example_value_overwrite:
     logical_device: "aci_l4_l7_device.example_in_another_tenant.id"

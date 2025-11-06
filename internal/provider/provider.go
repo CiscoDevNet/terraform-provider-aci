@@ -375,12 +375,9 @@ func (p *AciProvider) DataSources(ctx context.Context) []func() datasource.DataS
 		NewRtctrlProfileDataSource,
 		NewTagAnnotationDataSource,
 		NewTagTagDataSource,
-<<<<<<< HEAD
 		NewVmmUplinkPDataSource,
 		NewVmmUplinkPContDataSource,
-=======
 		NewVnsLDevIfDataSource,
->>>>>>> 759131e6 ([minor_change] Add resource and data source to import L4-L7 Logical Devices from one tenant to another.)
 		NewVzAnyDataSource,
 		NewVzOOBBrCPDataSource,
 		NewVzRsAnyToConsDataSource,
