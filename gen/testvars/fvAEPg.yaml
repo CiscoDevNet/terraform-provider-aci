@@ -270,7 +270,7 @@ children:
       primary_encapsulation_inner: "vlan-300"
       resolution_immediacy: "immediate"
       secondary_encapsulation_inner: "vlan-400"
-      switching_mode: "AVE"
+      switching_mode: "native"
       target_dn: "target_dn_0"
       untagged: "no"
       
@@ -282,6 +282,32 @@ children:
         4.2(3j)-:
           custom_epg_name: "custom_epg_name_1"
       children:
+        uplink_order_container:
+          - active_uplinks: "1,2"
+            annotation: "annotation_1"
+            description: "description_1"
+            name: "name_1"
+            name_alias: "name_alias_1"
+            owner_key: "owner_key_1"
+            owner_tag: "owner_tag_1"
+            standby_uplinks: "3,4"
+            deletable_child: false
+            child_required: false
+            children:
+              annotations:
+                - key: "key_0"
+                  value: "value_1"
+      
+                - key: "key_1"
+                  value: "test_value"
+      
+              tags:
+                - key: "key_0"
+                  value: "value_1"
+      
+                - key: "key_1"
+                  value: "test_value"
+      
         annotations:
           - key: "key_0"
             value: "value_1"
@@ -313,7 +339,7 @@ children:
       secondary_encapsulation_inner: "unknown"
       switching_mode: "native"
       target_dn: "target_dn_1"
-      untagged: "yes"
+      untagged: "no"
       
       version_mismatch:
         4.0(1h)-:
@@ -323,6 +349,32 @@ children:
         4.2(3j)-:
           custom_epg_name: "custom_epg_name_2"
       children:
+        uplink_order_container:
+          - active_uplinks: "1,2"
+            annotation: "annotation_1"
+            description: "description_1"
+            name: "name_1"
+            name_alias: "name_alias_1"
+            owner_key: "owner_key_1"
+            owner_tag: "owner_tag_1"
+            standby_uplinks: "3,4"
+            deletable_child: false
+            child_required: false
+            children:
+              annotations:
+                - key: "key_0"
+                  value: "value_1"
+      
+                - key: "key_1"
+                  value: "test_value"
+      
+              tags:
+                - key: "key_0"
+                  value: "value_1"
+      
+                - key: "key_1"
+                  value: "test_value"
+      
         annotations:
           - key: "key_0"
             value: "value_1"

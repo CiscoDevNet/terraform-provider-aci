@@ -148,6 +148,76 @@ func (d *FvRsDomAttDataSource) Schema(ctx context.Context, req datasource.Schema
 				Computed:            true,
 				MarkdownDescription: `The untagged status of the Relation To Domain object.`,
 			},
+			"uplink_order_container": schema.SingleNestedAttribute{
+				MarkdownDescription: `Uplink Failover Order Container Mo`,
+				Computed:            true,
+				Attributes: map[string]schema.Attribute{
+					"active_uplinks": schema.StringAttribute{
+						Computed:            true,
+						MarkdownDescription: `The active uplink IDs of the Uplink Order Container object. When defined the value cannot be set back to empty.`,
+					},
+					"annotation": schema.StringAttribute{
+						Computed:            true,
+						MarkdownDescription: `The annotation of the Uplink Order Container object.`,
+					},
+					"description": schema.StringAttribute{
+						Computed:            true,
+						MarkdownDescription: `The description of the Uplink Order Container object.`,
+					},
+					"name": schema.StringAttribute{
+						Computed:            true,
+						MarkdownDescription: `The name of the Uplink Order Container object.`,
+					},
+					"name_alias": schema.StringAttribute{
+						Computed:            true,
+						MarkdownDescription: `The name alias of the Uplink Order Container object.`,
+					},
+					"owner_key": schema.StringAttribute{
+						Computed:            true,
+						MarkdownDescription: `The key for enabling clients to own their data for entity correlation.`,
+					},
+					"owner_tag": schema.StringAttribute{
+						Computed:            true,
+						MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
+					},
+					"standby_uplinks": schema.StringAttribute{
+						Computed:            true,
+						MarkdownDescription: `The passive uplink IDs of the Uplink Order Container object.`,
+					},
+					"annotations": schema.SetNestedAttribute{
+						MarkdownDescription: ``,
+						Computed:            true,
+						NestedObject: schema.NestedAttributeObject{
+							Attributes: map[string]schema.Attribute{
+								"key": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+								},
+								"value": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The value of the property.`,
+								},
+							},
+						},
+					},
+					"tags": schema.SetNestedAttribute{
+						MarkdownDescription: ``,
+						Computed:            true,
+						NestedObject: schema.NestedAttributeObject{
+							Attributes: map[string]schema.Attribute{
+								"key": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+								},
+								"value": schema.StringAttribute{
+									Computed:            true,
+									MarkdownDescription: `The value of the property.`,
+								},
+							},
+						},
+					},
+				},
+			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,
 				Computed:            true,

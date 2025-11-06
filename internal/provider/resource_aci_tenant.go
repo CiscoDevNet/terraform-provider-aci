@@ -374,6 +374,7 @@ func (r *FvTenantResource) ModifyPlan(ctx context.Context, req resource.ModifyPl
 				return
 			}
 		}
+
 		if !configData.FvRsTenantMonPol.IsNull() && stateData != nil {
 			if IsEmptySingleNestedAttribute(configData.FvRsTenantMonPol.Attributes()) {
 				FvRsTenantMonPolObject, _ := types.ObjectValueFrom(ctx, FvRsTenantMonPolFvTenantType, getEmptyFvRsTenantMonPolFvTenantResourceModel())
@@ -778,10 +779,9 @@ func (r *FvTenantResource) Update(ctx context.Context, req resource.UpdateReques
 	// Read Terraform plan data into the model
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
 	resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
-	// Error out when child object fvRsTenantMonPol is being deleted
 	if IsEmptySingleNestedAttribute(data.FvRsTenantMonPol.Attributes()) && !IsEmptySingleNestedAttribute(stateData.FvRsTenantMonPol.Attributes()) {
 		resp.Diagnostics.AddError(
-			"FvRsTenantMonPol object cannot be deleted",
+			"FvRsTenantMonPol object defined by relation_from_tenant_to_monitoring_policy cannot be deleted",
 			"deletion of child is only possible upon deletion of the parent",
 		)
 	}

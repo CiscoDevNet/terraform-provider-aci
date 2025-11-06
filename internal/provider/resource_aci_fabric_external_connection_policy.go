@@ -256,6 +256,7 @@ func (r *FvFabricExtConnPResource) ModifyPlan(ctx context.Context, req resource.
 				return
 			}
 		}
+
 		if !configData.FvPeeringP.IsNull() && stateData != nil {
 			if IsEmptySingleNestedAttribute(configData.FvPeeringP.Attributes()) {
 				FvPeeringPObject, _ := types.ObjectValueFrom(ctx, FvPeeringPFvFabricExtConnPType, getEmptyFvPeeringPFvFabricExtConnPResourceModel())
@@ -681,10 +682,9 @@ func (r *FvFabricExtConnPResource) Update(ctx context.Context, req resource.Upda
 	// Read Terraform plan data into the model
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
 	resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
-	// Error out when child object fvPeeringP is being deleted
 	if IsEmptySingleNestedAttribute(data.FvPeeringP.Attributes()) && !IsEmptySingleNestedAttribute(stateData.FvPeeringP.Attributes()) {
 		resp.Diagnostics.AddError(
-			"FvPeeringP object cannot be deleted",
+			"FvPeeringP object defined by bgp_evpn_peering_profile cannot be deleted",
 			"deletion of child is only possible upon deletion of the parent",
 		)
 	}

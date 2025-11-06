@@ -276,6 +276,7 @@ func (r *FhsBDPolResource) ModifyPlan(ctx context.Context, req resource.ModifyPl
 				return
 			}
 		}
+
 		if !configData.FhsRaGuardPol.IsNull() && stateData != nil {
 			if IsEmptySingleNestedAttribute(configData.FhsRaGuardPol.Attributes()) {
 				FhsRaGuardPolObject, _ := types.ObjectValueFrom(ctx, FhsRaGuardPolFhsBDPolType, getEmptyFhsRaGuardPolFhsBDPolResourceModel())

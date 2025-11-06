@@ -2226,60 +2226,70 @@ func (r *FvBDResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRe
 				return
 			}
 		}
+
 		if !configData.FvAccP.IsNull() && stateData != nil {
 			if IsEmptySingleNestedAttribute(configData.FvAccP.Attributes()) {
 				FvAccPObject, _ := types.ObjectValueFrom(ctx, FvAccPFvBDType, getEmptyFvAccPFvBDResourceModel())
 				planData.FvAccP = FvAccPObject
 			}
 		}
+
 		if !configData.FvRsABDPolMonPol.IsNull() && stateData != nil {
 			if IsEmptySingleNestedAttribute(configData.FvRsABDPolMonPol.Attributes()) {
 				FvRsABDPolMonPolObject, _ := types.ObjectValueFrom(ctx, FvRsABDPolMonPolFvBDType, getEmptyFvRsABDPolMonPolFvBDResourceModel())
 				planData.FvRsABDPolMonPol = FvRsABDPolMonPolObject
 			}
 		}
+
 		if !configData.FvRsBDToFhs.IsNull() && stateData != nil {
 			if IsEmptySingleNestedAttribute(configData.FvRsBDToFhs.Attributes()) {
 				FvRsBDToFhsObject, _ := types.ObjectValueFrom(ctx, FvRsBDToFhsFvBDType, getEmptyFvRsBDToFhsFvBDResourceModel())
 				planData.FvRsBDToFhs = FvRsBDToFhsObject
 			}
 		}
+
 		if !configData.FvRsBDToNdP.IsNull() && stateData != nil {
 			if IsEmptySingleNestedAttribute(configData.FvRsBDToNdP.Attributes()) {
 				FvRsBDToNdPObject, _ := types.ObjectValueFrom(ctx, FvRsBDToNdPFvBDType, getEmptyFvRsBDToNdPFvBDResourceModel())
 				planData.FvRsBDToNdP = FvRsBDToNdPObject
 			}
 		}
+
 		if !configData.FvRsBDToProfile.IsNull() && stateData != nil {
 			if IsEmptySingleNestedAttribute(configData.FvRsBDToProfile.Attributes()) {
 				FvRsBDToProfileObject, _ := types.ObjectValueFrom(ctx, FvRsBDToProfileFvBDType, getEmptyFvRsBDToProfileFvBDResourceModel())
 				planData.FvRsBDToProfile = FvRsBDToProfileObject
 			}
 		}
+
 		if !configData.FvRsBDToRelayP.IsNull() && stateData != nil {
 			if IsEmptySingleNestedAttribute(configData.FvRsBDToRelayP.Attributes()) {
 				FvRsBDToRelayPObject, _ := types.ObjectValueFrom(ctx, FvRsBDToRelayPFvBDType, getEmptyFvRsBDToRelayPFvBDResourceModel())
 				planData.FvRsBDToRelayP = FvRsBDToRelayPObject
 			}
 		}
+
 		if !configData.FvRsBdToEpRet.IsNull() && stateData != nil {
 			if IsEmptySingleNestedAttribute(configData.FvRsBdToEpRet.Attributes()) {
 				FvRsBdToEpRetObject, _ := types.ObjectValueFrom(ctx, FvRsBdToEpRetFvBDType, getEmptyFvRsBdToEpRetFvBDResourceModel())
 				planData.FvRsBdToEpRet = FvRsBdToEpRetObject
 			}
 		}
+
 		if !configData.FvRsCtx.IsNull() && stateData != nil {
 			if IsEmptySingleNestedAttribute(configData.FvRsCtx.Attributes()) {
 				FvRsCtxObject, _ := types.ObjectValueFrom(ctx, FvRsCtxFvBDType, getEmptyFvRsCtxFvBDResourceModel())
 				planData.FvRsCtx = FvRsCtxObject
 			}
 		}
+
 		if !configData.FvRsIgmpsn.IsNull() && stateData != nil {
 			if IsEmptySingleNestedAttribute(configData.FvRsIgmpsn.Attributes()) {
 				FvRsIgmpsnObject, _ := types.ObjectValueFrom(ctx, FvRsIgmpsnFvBDType, getEmptyFvRsIgmpsnFvBDResourceModel())
 				planData.FvRsIgmpsn = FvRsIgmpsnObject
 			}
 		}
+
 		if !configData.FvRsMldsn.IsNull() && stateData != nil {
 			if IsEmptySingleNestedAttribute(configData.FvRsMldsn.Attributes()) {
 				FvRsMldsnObject, _ := types.ObjectValueFrom(ctx, FvRsMldsnFvBDType, getEmptyFvRsMldsnFvBDResourceModel())
@@ -5075,38 +5085,33 @@ func (r *FvBDResource) Update(ctx context.Context, req resource.UpdateRequest, r
 	// Read Terraform plan data into the model
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
 	resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
-	// Error out when child object fvRsBDToNdP is being deleted
 	if IsEmptySingleNestedAttribute(data.FvRsBDToNdP.Attributes()) && !IsEmptySingleNestedAttribute(stateData.FvRsBDToNdP.Attributes()) {
 		resp.Diagnostics.AddError(
-			"FvRsBDToNdP object cannot be deleted",
+			"FvRsBDToNdP object defined by relation_from_bridge_domain_to_neighbor_discovery_interface_policy cannot be deleted",
 			"deletion of child is only possible upon deletion of the parent",
 		)
 	}
-	// Error out when child object fvRsBdToEpRet is being deleted
 	if IsEmptySingleNestedAttribute(data.FvRsBdToEpRet.Attributes()) && !IsEmptySingleNestedAttribute(stateData.FvRsBdToEpRet.Attributes()) {
 		resp.Diagnostics.AddError(
-			"FvRsBdToEpRet object cannot be deleted",
+			"FvRsBdToEpRet object defined by relation_from_bridge_domain_to_end_point_retention_policy cannot be deleted",
 			"deletion of child is only possible upon deletion of the parent",
 		)
 	}
-	// Error out when child object fvRsCtx is being deleted
 	if IsEmptySingleNestedAttribute(data.FvRsCtx.Attributes()) && !IsEmptySingleNestedAttribute(stateData.FvRsCtx.Attributes()) {
 		resp.Diagnostics.AddError(
-			"FvRsCtx object cannot be deleted",
+			"FvRsCtx object defined by relation_to_vrf cannot be deleted",
 			"deletion of child is only possible upon deletion of the parent",
 		)
 	}
-	// Error out when child object fvRsIgmpsn is being deleted
 	if IsEmptySingleNestedAttribute(data.FvRsIgmpsn.Attributes()) && !IsEmptySingleNestedAttribute(stateData.FvRsIgmpsn.Attributes()) {
 		resp.Diagnostics.AddError(
-			"FvRsIgmpsn object cannot be deleted",
+			"FvRsIgmpsn object defined by relation_to_igmp_snooping_policy cannot be deleted",
 			"deletion of child is only possible upon deletion of the parent",
 		)
 	}
-	// Error out when child object fvRsMldsn is being deleted
 	if IsEmptySingleNestedAttribute(data.FvRsMldsn.Attributes()) && !IsEmptySingleNestedAttribute(stateData.FvRsMldsn.Attributes()) {
 		resp.Diagnostics.AddError(
-			"FvRsMldsn object cannot be deleted",
+			"FvRsMldsn object defined by relation_to_mld_snooping_policy cannot be deleted",
 			"deletion of child is only possible upon deletion of the parent",
 		)
 	}

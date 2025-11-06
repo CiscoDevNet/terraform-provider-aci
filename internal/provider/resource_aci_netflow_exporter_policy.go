@@ -321,12 +321,14 @@ func (r *NetflowExporterPolResource) ModifyPlan(ctx context.Context, req resourc
 				return
 			}
 		}
+
 		if !configData.NetflowRsExporterToCtx.IsNull() && stateData != nil {
 			if IsEmptySingleNestedAttribute(configData.NetflowRsExporterToCtx.Attributes()) {
 				NetflowRsExporterToCtxObject, _ := types.ObjectValueFrom(ctx, NetflowRsExporterToCtxNetflowExporterPolType, getEmptyNetflowRsExporterToCtxNetflowExporterPolResourceModel())
 				planData.NetflowRsExporterToCtx = NetflowRsExporterToCtxObject
 			}
 		}
+
 		if !configData.NetflowRsExporterToEPg.IsNull() && stateData != nil {
 			if IsEmptySingleNestedAttribute(configData.NetflowRsExporterToEPg.Attributes()) {
 				NetflowRsExporterToEPgObject, _ := types.ObjectValueFrom(ctx, NetflowRsExporterToEPgNetflowExporterPolType, getEmptyNetflowRsExporterToEPgNetflowExporterPolResourceModel())

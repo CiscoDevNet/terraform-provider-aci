@@ -206,6 +206,7 @@ func getEmptyFvAEPgResourceModel() *FvAEPgResourceModel {
 				"switching_mode":                types.StringType,
 				"target_dn":                     types.StringType,
 				"untagged":                      types.StringType,
+				"uplink_order_container":        types.ObjectType{AttrTypes: FvUplinkOrderContFvRsDomAttFvAEPgType},
 				"annotations":                   types.SetType{ElemType: TagAnnotationFvRsDomAttFvAEPgType},
 				"tags":                          types.SetType{ElemType: TagTagFvRsDomAttFvAEPgType},
 			},
@@ -901,6 +902,7 @@ type FvRsDomAttFvAEPgResourceModel struct {
 	SwitchingMode       types.String `tfsdk:"switching_mode"`
 	TDn                 types.String `tfsdk:"target_dn"`
 	Untagged            types.String `tfsdk:"untagged"`
+	FvUplinkOrderCont   types.Object `tfsdk:"uplink_order_container"`
 	TagAnnotation       types.Set    `tfsdk:"annotations"`
 	TagTag              types.Set    `tfsdk:"tags"`
 }
@@ -932,6 +934,18 @@ func getEmptyFvRsDomAttFvAEPgResourceModel() FvRsDomAttFvAEPgResourceModel {
 		SwitchingMode:       basetypes.NewStringNull(),
 		TDn:                 basetypes.NewStringNull(),
 		Untagged:            basetypes.NewStringNull(),
+		FvUplinkOrderCont: types.ObjectNull(map[string]attr.Type{
+			"active_uplinks":  types.StringType,
+			"annotation":      types.StringType,
+			"description":     types.StringType,
+			"name":            types.StringType,
+			"name_alias":      types.StringType,
+			"owner_key":       types.StringType,
+			"owner_tag":       types.StringType,
+			"standby_uplinks": types.StringType,
+			"annotations":     types.SetType{ElemType: TagAnnotationFvUplinkOrderContFvRsDomAttFvAEPgType},
+			"tags":            types.SetType{ElemType: TagTagFvUplinkOrderContFvRsDomAttFvAEPgType},
+		}),
 		TagAnnotation: types.SetNull(types.ObjectType{
 			AttrTypes: map[string]attr.Type{
 				"key":   types.StringType,
@@ -974,6 +988,7 @@ var FvRsDomAttFvAEPgType = types.ObjectType{
 		"switching_mode":                types.StringType,
 		"target_dn":                     types.StringType,
 		"untagged":                      types.StringType,
+		"uplink_order_container":        types.ObjectType{AttrTypes: FvUplinkOrderContFvRsDomAttFvAEPgType},
 		"annotations":                   types.SetType{ElemType: TagAnnotationFvRsDomAttFvAEPgType},
 		"tags":                          types.SetType{ElemType: TagTagFvRsDomAttFvAEPgType},
 	},
@@ -1098,6 +1113,98 @@ func FvRsDomAttFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(ctx co
 	planSet, _ := types.SetValueFrom(ctx, FvRsDomAttFvAEPgType, planSetValues)
 	return planSet
 
+}
+
+// FvUplinkOrderContFvRsDomAttFvAEPgResourceModel describes the resource data model for the children without relation ships.
+type FvUplinkOrderContFvRsDomAttFvAEPgResourceModel struct {
+	Active        types.String `tfsdk:"active_uplinks"`
+	Annotation    types.String `tfsdk:"annotation"`
+	Descr         types.String `tfsdk:"description"`
+	Name          types.String `tfsdk:"name"`
+	NameAlias     types.String `tfsdk:"name_alias"`
+	OwnerKey      types.String `tfsdk:"owner_key"`
+	OwnerTag      types.String `tfsdk:"owner_tag"`
+	Standby       types.String `tfsdk:"standby_uplinks"`
+	TagAnnotation types.Set    `tfsdk:"annotations"`
+	TagTag        types.Set    `tfsdk:"tags"`
+}
+
+func getEmptyFvUplinkOrderContFvRsDomAttFvAEPgResourceModel() FvUplinkOrderContFvRsDomAttFvAEPgResourceModel {
+	return FvUplinkOrderContFvRsDomAttFvAEPgResourceModel{
+		Active:     basetypes.NewStringNull(),
+		Annotation: basetypes.NewStringNull(),
+		Descr:      basetypes.NewStringNull(),
+		Name:       basetypes.NewStringNull(),
+		NameAlias:  basetypes.NewStringNull(),
+		OwnerKey:   basetypes.NewStringNull(),
+		OwnerTag:   basetypes.NewStringNull(),
+		Standby:    basetypes.NewStringNull(),
+		TagAnnotation: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"key":   types.StringType,
+				"value": types.StringType,
+			},
+		}),
+		TagTag: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"key":   types.StringType,
+				"value": types.StringType,
+			},
+		}),
+	}
+}
+
+var FvUplinkOrderContFvRsDomAttFvAEPgType = map[string]attr.Type{
+	"active_uplinks":  types.StringType,
+	"annotation":      types.StringType,
+	"description":     types.StringType,
+	"name":            types.StringType,
+	"name_alias":      types.StringType,
+	"owner_key":       types.StringType,
+	"owner_tag":       types.StringType,
+	"standby_uplinks": types.StringType,
+	"annotations":     types.SetType{ElemType: TagAnnotationFvUplinkOrderContFvRsDomAttFvAEPgType},
+	"tags":            types.SetType{ElemType: TagTagFvUplinkOrderContFvRsDomAttFvAEPgType},
+}
+
+// TagAnnotationFvUplinkOrderContFvRsDomAttFvAEPgResourceModel describes the resource data model for the children without relation ships.
+type TagAnnotationFvUplinkOrderContFvRsDomAttFvAEPgResourceModel struct {
+	Key   types.String `tfsdk:"key"`
+	Value types.String `tfsdk:"value"`
+}
+
+func getEmptyTagAnnotationFvUplinkOrderContFvRsDomAttFvAEPgResourceModel() TagAnnotationFvUplinkOrderContFvRsDomAttFvAEPgResourceModel {
+	return TagAnnotationFvUplinkOrderContFvRsDomAttFvAEPgResourceModel{
+		Key:   basetypes.NewStringNull(),
+		Value: basetypes.NewStringNull(),
+	}
+}
+
+var TagAnnotationFvUplinkOrderContFvRsDomAttFvAEPgType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
+}
+
+// TagTagFvUplinkOrderContFvRsDomAttFvAEPgResourceModel describes the resource data model for the children without relation ships.
+type TagTagFvUplinkOrderContFvRsDomAttFvAEPgResourceModel struct {
+	Key   types.String `tfsdk:"key"`
+	Value types.String `tfsdk:"value"`
+}
+
+func getEmptyTagTagFvUplinkOrderContFvRsDomAttFvAEPgResourceModel() TagTagFvUplinkOrderContFvRsDomAttFvAEPgResourceModel {
+	return TagTagFvUplinkOrderContFvRsDomAttFvAEPgResourceModel{
+		Key:   basetypes.NewStringNull(),
+		Value: basetypes.NewStringNull(),
+	}
+}
+
+var TagTagFvUplinkOrderContFvRsDomAttFvAEPgType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
 }
 
 // TagAnnotationFvRsDomAttFvAEPgResourceModel describes the resource data model for the children without relation ships.
@@ -2611,6 +2718,7 @@ func (r *FvAEPgResource) UpgradeState(ctx context.Context) map[int64]resource.St
 							"switching_mode":                basetypes.StringType{},
 							"target_dn":                     basetypes.StringType{},
 							"untagged":                      basetypes.StringType{},
+							"uplink_order_container":        basetypes.ObjectType{AttrTypes: FvUplinkOrderContFvRsDomAttFvAEPgType},
 							"annotations":                   basetypes.SetType{ElemType: TagAnnotationFvRsDomAttFvAEPgType},
 							"tags":                          basetypes.SetType{ElemType: TagTagFvRsDomAttFvAEPgType},
 						},
@@ -3108,36 +3216,72 @@ func (r *FvAEPgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlan
 				return
 			}
 		}
+
+		FvRsDomAttFvAEPgList := make([]FvRsDomAttFvAEPgResourceModel, 0)
+		var FvRsDomAttConfigDataList, FvRsDomAttPlanDataList []FvRsDomAttFvAEPgResourceModel
+		planData.FvRsDomAtt.ElementsAs(ctx, &FvRsDomAttPlanDataList, false)
+		configData.FvRsDomAtt.ElementsAs(ctx, &FvRsDomAttConfigDataList, false)
+
+		for _, FvRsDomAttPlanData := range FvRsDomAttPlanDataList {
+			var FvRsDomAttConfigData FvRsDomAttFvAEPgResourceModel
+			for _, configData := range FvRsDomAttConfigDataList {
+				if FvRsDomAttPlanData.TDn == configData.TDn {
+					FvRsDomAttConfigData = configData
+					break
+				}
+			}
+
+			var fvUplinkOrderContFvRsDomAttFvAEPgConfigData FvUplinkOrderContFvRsDomAttFvAEPgResourceModel
+			if !FvRsDomAttConfigData.FvUplinkOrderCont.IsNull() && stateData != nil {
+				FvRsDomAttConfigData.FvUplinkOrderCont.As(ctx, &fvUplinkOrderContFvRsDomAttFvAEPgConfigData, basetypes.ObjectAsOptions{})
+				if IsEmptySingleNestedAttribute(FvRsDomAttConfigData.FvUplinkOrderCont.Attributes()) {
+					FvUplinkOrderContFvRsDomAttFvAEPgObject, _ := types.ObjectValueFrom(ctx, FvUplinkOrderContFvRsDomAttFvAEPgType, getEmptyFvUplinkOrderContFvRsDomAttFvAEPgResourceModel())
+					FvRsDomAttPlanData.FvUplinkOrderCont = FvUplinkOrderContFvRsDomAttFvAEPgObject
+				}
+			}
+			FvRsDomAttFvAEPgList = append(FvRsDomAttFvAEPgList, FvRsDomAttPlanData)
+		}
+
 		if !configData.FvCrtrn.IsNull() && stateData != nil {
 			if IsEmptySingleNestedAttribute(configData.FvCrtrn.Attributes()) {
 				FvCrtrnObject, _ := types.ObjectValueFrom(ctx, FvCrtrnFvAEPgType, getEmptyFvCrtrnFvAEPgResourceModel())
 				planData.FvCrtrn = FvCrtrnObject
 			}
 		}
+
 		if !configData.FvRsAEPgMonPol.IsNull() && stateData != nil {
 			if IsEmptySingleNestedAttribute(configData.FvRsAEPgMonPol.Attributes()) {
 				FvRsAEPgMonPolObject, _ := types.ObjectValueFrom(ctx, FvRsAEPgMonPolFvAEPgType, getEmptyFvRsAEPgMonPolFvAEPgResourceModel())
 				planData.FvRsAEPgMonPol = FvRsAEPgMonPolObject
 			}
 		}
+
 		if !configData.FvRsBd.IsNull() && stateData != nil {
 			if IsEmptySingleNestedAttribute(configData.FvRsBd.Attributes()) {
 				FvRsBdObject, _ := types.ObjectValueFrom(ctx, FvRsBdFvAEPgType, getEmptyFvRsBdFvAEPgResourceModel())
 				planData.FvRsBd = FvRsBdObject
 			}
 		}
+
 		if !configData.FvRsCustQosPol.IsNull() && stateData != nil {
 			if IsEmptySingleNestedAttribute(configData.FvRsCustQosPol.Attributes()) {
 				FvRsCustQosPolObject, _ := types.ObjectValueFrom(ctx, FvRsCustQosPolFvAEPgType, getEmptyFvRsCustQosPolFvAEPgResourceModel())
 				planData.FvRsCustQosPol = FvRsCustQosPolObject
 			}
 		}
+
+		if !configData.FvRsDomAtt.IsNull() && stateData != nil {
+			FvRsDomAttSet, _ := types.SetValueFrom(ctx, FvRsDomAttFvAEPgType, FvRsDomAttFvAEPgList)
+			planData.FvRsDomAtt = FvRsDomAttSet
+		}
+
 		if !configData.FvRsDppPol.IsNull() && stateData != nil {
 			if IsEmptySingleNestedAttribute(configData.FvRsDppPol.Attributes()) {
 				FvRsDppPolObject, _ := types.ObjectValueFrom(ctx, FvRsDppPolFvAEPgType, getEmptyFvRsDppPolFvAEPgResourceModel())
 				planData.FvRsDppPol = FvRsDppPolObject
 			}
 		}
+
 		if !configData.FvRsTrustCtrl.IsNull() && stateData != nil {
 			if IsEmptySingleNestedAttribute(configData.FvRsTrustCtrl.Attributes()) {
 				FvRsTrustCtrlObject, _ := types.ObjectValueFrom(ctx, FvRsTrustCtrlFvAEPgType, getEmptyFvRsTrustCtrlFvAEPgResourceModel())
@@ -5249,6 +5393,148 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							},
 							MarkdownDescription: `The untagged status of the Relation To Domain object.`,
 						},
+						"uplink_order_container": schema.SingleNestedAttribute{
+							MarkdownDescription: `Uplink Failover Order Container Mo`,
+							Optional:            true,
+							Computed:            true,
+							PlanModifiers: []planmodifier.Object{
+								objectplanmodifier.UseStateForUnknown(),
+							},
+							Attributes: map[string]schema.Attribute{
+								"active_uplinks": schema.StringAttribute{
+									Optional: true,
+									Computed: true,
+									PlanModifiers: []planmodifier.String{
+										stringplanmodifier.UseStateForUnknown(),
+									},
+									MarkdownDescription: `The active uplink IDs of the Uplink Order Container object. When defined the value cannot be set back to empty.`,
+								},
+								"annotation": schema.StringAttribute{
+									Optional: true,
+									Computed: true,
+									PlanModifiers: []planmodifier.String{
+										stringplanmodifier.UseStateForUnknown(),
+									},
+									MarkdownDescription: `The annotation of the Uplink Order Container object.`,
+								},
+								"description": schema.StringAttribute{
+									Optional: true,
+									Computed: true,
+									PlanModifiers: []planmodifier.String{
+										stringplanmodifier.UseStateForUnknown(),
+									},
+									MarkdownDescription: `The description of the Uplink Order Container object.`,
+								},
+								"name": schema.StringAttribute{
+									Optional: true,
+									Computed: true,
+									PlanModifiers: []planmodifier.String{
+										stringplanmodifier.UseStateForUnknown(),
+									},
+									MarkdownDescription: `The name of the Uplink Order Container object.`,
+								},
+								"name_alias": schema.StringAttribute{
+									Optional: true,
+									Computed: true,
+									PlanModifiers: []planmodifier.String{
+										stringplanmodifier.UseStateForUnknown(),
+									},
+									MarkdownDescription: `The name alias of the Uplink Order Container object.`,
+								},
+								"owner_key": schema.StringAttribute{
+									Optional: true,
+									Computed: true,
+									PlanModifiers: []planmodifier.String{
+										stringplanmodifier.UseStateForUnknown(),
+									},
+									MarkdownDescription: `The key for enabling clients to own their data for entity correlation.`,
+								},
+								"owner_tag": schema.StringAttribute{
+									Optional: true,
+									Computed: true,
+									PlanModifiers: []planmodifier.String{
+										stringplanmodifier.UseStateForUnknown(),
+									},
+									MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
+								},
+								"standby_uplinks": schema.StringAttribute{
+									Optional: true,
+									Computed: true,
+									PlanModifiers: []planmodifier.String{
+										stringplanmodifier.UseStateForUnknown(),
+									},
+									MarkdownDescription: `The passive uplink IDs of the Uplink Order Container object.`,
+								},
+								"annotations": schema.SetNestedAttribute{
+									MarkdownDescription: ``,
+									Optional:            true,
+									Computed:            true,
+									PlanModifiers: []planmodifier.Set{
+										setplanmodifier.UseStateForUnknown(),
+									},
+									NestedObject: schema.NestedAttributeObject{
+										Attributes: map[string]schema.Attribute{
+											"key": schema.StringAttribute{
+												Optional: true,
+												Computed: true,
+												PlanModifiers: []planmodifier.String{
+													stringplanmodifier.UseStateForUnknown(),
+												},
+												Validators: []validator.String{
+													MakeStringRequired(),
+												},
+												MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+											},
+											"value": schema.StringAttribute{
+												Optional: true,
+												Computed: true,
+												PlanModifiers: []planmodifier.String{
+													stringplanmodifier.UseStateForUnknown(),
+												},
+												Validators: []validator.String{
+													MakeStringRequired(),
+												},
+												MarkdownDescription: `The value of the property.`,
+											},
+										},
+									},
+								},
+								"tags": schema.SetNestedAttribute{
+									MarkdownDescription: ``,
+									Optional:            true,
+									Computed:            true,
+									PlanModifiers: []planmodifier.Set{
+										setplanmodifier.UseStateForUnknown(),
+									},
+									NestedObject: schema.NestedAttributeObject{
+										Attributes: map[string]schema.Attribute{
+											"key": schema.StringAttribute{
+												Optional: true,
+												Computed: true,
+												PlanModifiers: []planmodifier.String{
+													stringplanmodifier.UseStateForUnknown(),
+												},
+												Validators: []validator.String{
+													MakeStringRequired(),
+												},
+												MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+											},
+											"value": schema.StringAttribute{
+												Optional: true,
+												Computed: true,
+												PlanModifiers: []planmodifier.String{
+													stringplanmodifier.UseStateForUnknown(),
+												},
+												Validators: []validator.String{
+													MakeStringRequired(),
+												},
+												MarkdownDescription: `The value of the property.`,
+											},
+										},
+									},
+								},
+							},
+						},
 						"annotations": schema.SetNestedAttribute{
 							MarkdownDescription: ``,
 							Optional:            true,
@@ -6664,19 +6950,36 @@ func (r *FvAEPgResource) Update(ctx context.Context, req resource.UpdateRequest,
 	// Read Terraform plan data into the model
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
 	resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
-	// Error out when child object fvRsBd is being deleted
 	if IsEmptySingleNestedAttribute(data.FvRsBd.Attributes()) && !IsEmptySingleNestedAttribute(stateData.FvRsBd.Attributes()) {
 		resp.Diagnostics.AddError(
-			"FvRsBd object cannot be deleted",
+			"FvRsBd object defined by relation_to_bridge_domain cannot be deleted",
 			"deletion of child is only possible upon deletion of the parent",
 		)
 	}
-	// Error out when child object fvRsCustQosPol is being deleted
 	if IsEmptySingleNestedAttribute(data.FvRsCustQosPol.Attributes()) && !IsEmptySingleNestedAttribute(stateData.FvRsCustQosPol.Attributes()) {
 		resp.Diagnostics.AddError(
-			"FvRsCustQosPol object cannot be deleted",
+			"FvRsCustQosPol object defined by relation_to_custom_qos_policy cannot be deleted",
 			"deletion of child is only possible upon deletion of the parent",
 		)
+	}
+	var fvRsDomAttFvAEPgDataList []FvRsDomAttFvAEPgResourceModel
+	var fvRsDomAttFvAEPgStateDataList []FvRsDomAttFvAEPgResourceModel
+	data.FvRsDomAtt.ElementsAs(ctx, &fvRsDomAttFvAEPgDataList, false)
+	stateData.FvRsDomAtt.ElementsAs(ctx, &fvRsDomAttFvAEPgStateDataList, false)
+	for _, fvRsDomAttFvAEPgData := range fvRsDomAttFvAEPgDataList {
+		var fvRsDomAttFvAEPgStateData FvRsDomAttFvAEPgResourceModel
+		for _, stateData := range fvRsDomAttFvAEPgStateDataList {
+			if fvRsDomAttFvAEPgData.TDn == stateData.TDn {
+				fvRsDomAttFvAEPgStateData = stateData
+				break
+			}
+		}
+		if IsEmptySingleNestedAttribute(fvRsDomAttFvAEPgData.FvUplinkOrderCont.Attributes()) && !IsEmptySingleNestedAttribute(fvRsDomAttFvAEPgStateData.FvUplinkOrderCont.Attributes()) {
+			resp.Diagnostics.AddError(
+				"FvUplinkOrderCont object defined by uplink_order_container cannot be deleted",
+				"deletion of child is only possible upon deletion of the parent",
+			)
+		}
 	}
 
 	if resp.Diagnostics.HasError() {
@@ -6793,7 +7096,7 @@ func (r *FvAEPgResource) ImportState(ctx context.Context, req resource.ImportSta
 }
 
 func getAndSetFvAEPgAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvAEPgResourceModel) {
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "fvAEPg,fvCrtrn,fvRsAEPgMonPol,fvRsBd,fvRsCons,fvRsConsIf,fvRsCustQosPol,fvRsDomAtt,fvRsDppPol,fvRsFcPathAtt,fvRsIntraEpg,fvRsNodeAtt,fvRsPathAtt,fvRsProtBy,fvRsProv,fvRsSecInherited,fvRsTrustCtrl,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag"), "GET", nil)
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "fvAEPg,fvCrtrn,fvRsAEPgMonPol,fvRsBd,fvRsCons,fvRsConsIf,fvRsCustQosPol,fvRsDomAtt,fvRsDppPol,fvRsFcPathAtt,fvRsIntraEpg,fvRsNodeAtt,fvRsPathAtt,fvRsProtBy,fvRsProv,fvRsSecInherited,fvRsTrustCtrl,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,fvUplinkOrderCont,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag"), "GET", nil)
 
 	readData := getEmptyFvAEPgResourceModel()
 
@@ -7307,12 +7610,83 @@ func getAndSetFvAEPgAttributes(ctx context.Context, diags *diag.Diagnostics, cli
 								}
 
 							}
+							FvUplinkOrderContFvRsDomAttFvAEPgList := make([]FvUplinkOrderContFvRsDomAttFvAEPgResourceModel, 0)
 							TagAnnotationFvRsDomAttFvAEPgList := make([]TagAnnotationFvRsDomAttFvAEPgResourceModel, 0)
 							TagTagFvRsDomAttFvAEPgList := make([]TagTagFvRsDomAttFvAEPgResourceModel, 0)
 							childrenOfFvRsDomAttFvAEPg, childrenOfFvRsDomAttFvAEPgExist := childClassDetails.(map[string]interface{})["children"]
 							if childrenOfFvRsDomAttFvAEPgExist {
 								for _, childFvRsDomAttFvAEPg := range childrenOfFvRsDomAttFvAEPg.([]interface{}) {
 									for childClassNameFvRsDomAttFvAEPg, childClassDetailsFvRsDomAttFvAEPg := range childFvRsDomAttFvAEPg.(map[string]interface{}) {
+										if childClassNameFvRsDomAttFvAEPg == "fvUplinkOrderCont" {
+											FvUplinkOrderContFvRsDomAttFvAEPg := getEmptyFvUplinkOrderContFvRsDomAttFvAEPgResourceModel()
+											fvUplinkOrderContchildAttributeValue := childClassDetailsFvRsDomAttFvAEPg.(map[string]interface{})["attributes"].(map[string]interface{})
+											for childAttributeName, childAttributeValue := range fvUplinkOrderContchildAttributeValue {
+												if childAttributeName == "active" {
+													FvUplinkOrderContFvRsDomAttFvAEPg.Active = basetypes.NewStringValue(childAttributeValue.(string))
+												}
+												if childAttributeName == "annotation" {
+													FvUplinkOrderContFvRsDomAttFvAEPg.Annotation = basetypes.NewStringValue(childAttributeValue.(string))
+												}
+												if childAttributeName == "descr" {
+													FvUplinkOrderContFvRsDomAttFvAEPg.Descr = basetypes.NewStringValue(childAttributeValue.(string))
+												}
+												if childAttributeName == "name" {
+													FvUplinkOrderContFvRsDomAttFvAEPg.Name = basetypes.NewStringValue(childAttributeValue.(string))
+												}
+												if childAttributeName == "nameAlias" {
+													FvUplinkOrderContFvRsDomAttFvAEPg.NameAlias = basetypes.NewStringValue(childAttributeValue.(string))
+												}
+												if childAttributeName == "ownerKey" {
+													FvUplinkOrderContFvRsDomAttFvAEPg.OwnerKey = basetypes.NewStringValue(childAttributeValue.(string))
+												}
+												if childAttributeName == "ownerTag" {
+													FvUplinkOrderContFvRsDomAttFvAEPg.OwnerTag = basetypes.NewStringValue(childAttributeValue.(string))
+												}
+												if childAttributeName == "standby" {
+													FvUplinkOrderContFvRsDomAttFvAEPg.Standby = basetypes.NewStringValue(childAttributeValue.(string))
+												}
+											}
+											TagAnnotationFvUplinkOrderContFvRsDomAttFvAEPgList := make([]TagAnnotationFvUplinkOrderContFvRsDomAttFvAEPgResourceModel, 0)
+											TagTagFvUplinkOrderContFvRsDomAttFvAEPgList := make([]TagTagFvUplinkOrderContFvRsDomAttFvAEPgResourceModel, 0)
+											childrenOfFvUplinkOrderContFvRsDomAttFvAEPg, childrenOfFvUplinkOrderContFvRsDomAttFvAEPgExist := childClassDetailsFvRsDomAttFvAEPg.(map[string]interface{})["children"]
+											if childrenOfFvUplinkOrderContFvRsDomAttFvAEPgExist {
+												for _, childFvUplinkOrderContFvRsDomAttFvAEPg := range childrenOfFvUplinkOrderContFvRsDomAttFvAEPg.([]interface{}) {
+													for childClassNameFvUplinkOrderContFvRsDomAttFvAEPg, childClassDetailsFvUplinkOrderContFvRsDomAttFvAEPg := range childFvUplinkOrderContFvRsDomAttFvAEPg.(map[string]interface{}) {
+														if childClassNameFvUplinkOrderContFvRsDomAttFvAEPg == "tagAnnotation" {
+															TagAnnotationFvUplinkOrderContFvRsDomAttFvAEPg := getEmptyTagAnnotationFvUplinkOrderContFvRsDomAttFvAEPgResourceModel()
+															tagAnnotationchildAttributeValue := childClassDetailsFvUplinkOrderContFvRsDomAttFvAEPg.(map[string]interface{})["attributes"].(map[string]interface{})
+															for childAttributeName, childAttributeValue := range tagAnnotationchildAttributeValue {
+																if childAttributeName == "key" {
+																	TagAnnotationFvUplinkOrderContFvRsDomAttFvAEPg.Key = basetypes.NewStringValue(childAttributeValue.(string))
+																}
+																if childAttributeName == "value" {
+																	TagAnnotationFvUplinkOrderContFvRsDomAttFvAEPg.Value = basetypes.NewStringValue(childAttributeValue.(string))
+																}
+															}
+															TagAnnotationFvUplinkOrderContFvRsDomAttFvAEPgList = append(TagAnnotationFvUplinkOrderContFvRsDomAttFvAEPgList, TagAnnotationFvUplinkOrderContFvRsDomAttFvAEPg)
+														}
+														if childClassNameFvUplinkOrderContFvRsDomAttFvAEPg == "tagTag" {
+															TagTagFvUplinkOrderContFvRsDomAttFvAEPg := getEmptyTagTagFvUplinkOrderContFvRsDomAttFvAEPgResourceModel()
+															tagTagchildAttributeValue := childClassDetailsFvUplinkOrderContFvRsDomAttFvAEPg.(map[string]interface{})["attributes"].(map[string]interface{})
+															for childAttributeName, childAttributeValue := range tagTagchildAttributeValue {
+																if childAttributeName == "key" {
+																	TagTagFvUplinkOrderContFvRsDomAttFvAEPg.Key = basetypes.NewStringValue(childAttributeValue.(string))
+																}
+																if childAttributeName == "value" {
+																	TagTagFvUplinkOrderContFvRsDomAttFvAEPg.Value = basetypes.NewStringValue(childAttributeValue.(string))
+																}
+															}
+															TagTagFvUplinkOrderContFvRsDomAttFvAEPgList = append(TagTagFvUplinkOrderContFvRsDomAttFvAEPgList, TagTagFvUplinkOrderContFvRsDomAttFvAEPg)
+														}
+													}
+												}
+											}
+											TagAnnotationFvUplinkOrderContFvRsDomAttFvAEPgSet, _ := types.SetValueFrom(ctx, TagAnnotationFvUplinkOrderContFvRsDomAttFvAEPgType, TagAnnotationFvUplinkOrderContFvRsDomAttFvAEPgList)
+											FvUplinkOrderContFvRsDomAttFvAEPg.TagAnnotation = TagAnnotationFvUplinkOrderContFvRsDomAttFvAEPgSet
+											TagTagFvUplinkOrderContFvRsDomAttFvAEPgSet, _ := types.SetValueFrom(ctx, TagTagFvUplinkOrderContFvRsDomAttFvAEPgType, TagTagFvUplinkOrderContFvRsDomAttFvAEPgList)
+											FvUplinkOrderContFvRsDomAttFvAEPg.TagTag = TagTagFvUplinkOrderContFvRsDomAttFvAEPgSet
+											FvUplinkOrderContFvRsDomAttFvAEPgList = append(FvUplinkOrderContFvRsDomAttFvAEPgList, FvUplinkOrderContFvRsDomAttFvAEPg)
+										}
 										if childClassNameFvRsDomAttFvAEPg == "tagAnnotation" {
 											TagAnnotationFvRsDomAttFvAEPg := getEmptyTagAnnotationFvRsDomAttFvAEPgResourceModel()
 											tagAnnotationchildAttributeValue := childClassDetailsFvRsDomAttFvAEPg.(map[string]interface{})["attributes"].(map[string]interface{})
@@ -7341,6 +7715,13 @@ func getAndSetFvAEPgAttributes(ctx context.Context, diags *diag.Diagnostics, cli
 										}
 									}
 								}
+							}
+							if len(FvUplinkOrderContFvRsDomAttFvAEPgList) == 1 {
+								FvUplinkOrderContFvRsDomAttFvAEPgObject, _ := types.ObjectValueFrom(ctx, FvUplinkOrderContFvRsDomAttFvAEPgType, FvUplinkOrderContFvRsDomAttFvAEPgList[0])
+								FvRsDomAttFvAEPg.FvUplinkOrderCont = FvUplinkOrderContFvRsDomAttFvAEPgObject
+							} else {
+								FvUplinkOrderContFvRsDomAttFvAEPgObject, _ := types.ObjectValueFrom(ctx, FvUplinkOrderContFvRsDomAttFvAEPgType, getEmptyFvUplinkOrderContFvRsDomAttFvAEPgResourceModel())
+								FvRsDomAttFvAEPg.FvUplinkOrderCont = FvUplinkOrderContFvRsDomAttFvAEPgObject
 							}
 							TagAnnotationFvRsDomAttFvAEPgSet, _ := types.SetValueFrom(ctx, TagAnnotationFvRsDomAttFvAEPgType, TagAnnotationFvRsDomAttFvAEPgList)
 							FvRsDomAttFvAEPg.TagAnnotation = TagAnnotationFvRsDomAttFvAEPgSet
@@ -8657,6 +9038,7 @@ func getFvAEPgFvRsDomAttChildPayloads(ctx context.Context, diags *diag.Diagnosti
 	if !data.FvRsDomAtt.IsNull() && !data.FvRsDomAtt.IsUnknown() {
 		fvRsDomAttIdentifiers := []FvRsDomAttIdentifier{}
 		for _, fvRsDomAttFvAEPg := range fvRsDomAttFvAEPgPlan {
+			FvUplinkOrderContFvRsDomAttFvAEPgChildren := make([]map[string]interface{}, 0)
 			FvRsDomAttFvAEPgChildren := make([]map[string]interface{}, 0)
 			childMap := NewAciObject()
 			if !fvRsDomAttFvAEPg.Annotation.IsNull() && !fvRsDomAttFvAEPg.Annotation.IsUnknown() {
@@ -8735,6 +9117,123 @@ func getFvAEPgFvRsDomAttChildPayloads(ctx context.Context, diags *diag.Diagnosti
 			}
 			if !fvRsDomAttFvAEPg.Untagged.IsNull() && !fvRsDomAttFvAEPg.Untagged.IsUnknown() {
 				childMap.Attributes["untagged"] = fvRsDomAttFvAEPg.Untagged.ValueString()
+			}
+
+			var fvUplinkOrderContFvRsDomAttFvAEPgPlan, fvUplinkOrderContFvRsDomAttFvAEPgState FvUplinkOrderContFvRsDomAttFvAEPgResourceModel
+			// Loop through list and based on identifier select the correct entry from state, currently only single identifier is supported
+			fvRsDomAttFvAEPg.FvUplinkOrderCont.As(ctx, &fvUplinkOrderContFvRsDomAttFvAEPgPlan, basetypes.ObjectAsOptions{})
+			for _, fvRsDomAtt := range fvRsDomAttFvAEPgState {
+				if fvRsDomAtt.TDn == fvRsDomAttFvAEPg.TDn {
+					fvRsDomAtt.FvUplinkOrderCont.As(ctx, &fvUplinkOrderContFvRsDomAttFvAEPgState, basetypes.ObjectAsOptions{})
+					break
+				}
+			}
+			if !fvRsDomAttFvAEPg.FvUplinkOrderCont.IsNull() && !fvRsDomAttFvAEPg.FvUplinkOrderCont.IsUnknown() {
+				fvUplinkOrderContFvRsDomAttFvAEPgChildMap := NewAciObject()
+				if !IsEmptySingleNestedAttribute(fvRsDomAttFvAEPg.FvUplinkOrderCont.Attributes()) {
+					if !fvUplinkOrderContFvRsDomAttFvAEPgPlan.Active.IsUnknown() && !fvUplinkOrderContFvRsDomAttFvAEPgPlan.Active.IsNull() {
+						fvUplinkOrderContFvRsDomAttFvAEPgChildMap.Attributes["active"] = fvUplinkOrderContFvRsDomAttFvAEPgPlan.Active.ValueString()
+					}
+					if !fvUplinkOrderContFvRsDomAttFvAEPgPlan.Annotation.IsUnknown() && !fvUplinkOrderContFvRsDomAttFvAEPgPlan.Annotation.IsNull() {
+						fvUplinkOrderContFvRsDomAttFvAEPgChildMap.Attributes["annotation"] = fvUplinkOrderContFvRsDomAttFvAEPgPlan.Annotation.ValueString()
+					} else {
+						fvUplinkOrderContFvRsDomAttFvAEPgChildMap.Attributes["annotation"] = globalAnnotation
+					}
+					if !fvUplinkOrderContFvRsDomAttFvAEPgPlan.Descr.IsUnknown() && !fvUplinkOrderContFvRsDomAttFvAEPgPlan.Descr.IsNull() {
+						fvUplinkOrderContFvRsDomAttFvAEPgChildMap.Attributes["descr"] = fvUplinkOrderContFvRsDomAttFvAEPgPlan.Descr.ValueString()
+					}
+					if !fvUplinkOrderContFvRsDomAttFvAEPgPlan.Name.IsUnknown() && !fvUplinkOrderContFvRsDomAttFvAEPgPlan.Name.IsNull() {
+						fvUplinkOrderContFvRsDomAttFvAEPgChildMap.Attributes["name"] = fvUplinkOrderContFvRsDomAttFvAEPgPlan.Name.ValueString()
+					}
+					if !fvUplinkOrderContFvRsDomAttFvAEPgPlan.NameAlias.IsUnknown() && !fvUplinkOrderContFvRsDomAttFvAEPgPlan.NameAlias.IsNull() {
+						fvUplinkOrderContFvRsDomAttFvAEPgChildMap.Attributes["nameAlias"] = fvUplinkOrderContFvRsDomAttFvAEPgPlan.NameAlias.ValueString()
+					}
+					if !fvUplinkOrderContFvRsDomAttFvAEPgPlan.OwnerKey.IsUnknown() && !fvUplinkOrderContFvRsDomAttFvAEPgPlan.OwnerKey.IsNull() {
+						fvUplinkOrderContFvRsDomAttFvAEPgChildMap.Attributes["ownerKey"] = fvUplinkOrderContFvRsDomAttFvAEPgPlan.OwnerKey.ValueString()
+					}
+					if !fvUplinkOrderContFvRsDomAttFvAEPgPlan.OwnerTag.IsUnknown() && !fvUplinkOrderContFvRsDomAttFvAEPgPlan.OwnerTag.IsNull() {
+						fvUplinkOrderContFvRsDomAttFvAEPgChildMap.Attributes["ownerTag"] = fvUplinkOrderContFvRsDomAttFvAEPgPlan.OwnerTag.ValueString()
+					}
+					if !fvUplinkOrderContFvRsDomAttFvAEPgPlan.Standby.IsUnknown() && !fvUplinkOrderContFvRsDomAttFvAEPgPlan.Standby.IsNull() {
+						fvUplinkOrderContFvRsDomAttFvAEPgChildMap.Attributes["standby"] = fvUplinkOrderContFvRsDomAttFvAEPgPlan.Standby.ValueString()
+					}
+				}
+
+				var tagAnnotationFvUplinkOrderContFvRsDomAttFvAEPgPlan, tagAnnotationFvUplinkOrderContFvRsDomAttFvAEPgState []TagAnnotationFvUplinkOrderContFvRsDomAttFvAEPgResourceModel
+				fvUplinkOrderContFvRsDomAttFvAEPgPlan.TagAnnotation.ElementsAs(ctx, &tagAnnotationFvUplinkOrderContFvRsDomAttFvAEPgPlan, false)
+				if !fvUplinkOrderContFvRsDomAttFvAEPgState.TagAnnotation.IsNull() {
+					fvUplinkOrderContFvRsDomAttFvAEPgState.TagAnnotation.ElementsAs(ctx, &tagAnnotationFvUplinkOrderContFvRsDomAttFvAEPgState, false)
+				}
+				if !fvUplinkOrderContFvRsDomAttFvAEPgPlan.TagAnnotation.IsNull() && !fvUplinkOrderContFvRsDomAttFvAEPgPlan.TagAnnotation.IsUnknown() {
+					tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
+					for _, tagAnnotationFvUplinkOrderContFvRsDomAttFvAEPg := range tagAnnotationFvUplinkOrderContFvRsDomAttFvAEPgPlan {
+						tagAnnotationFvUplinkOrderContFvRsDomAttFvAEPgChildMap := NewAciObject()
+						if !tagAnnotationFvUplinkOrderContFvRsDomAttFvAEPg.Key.IsNull() && !tagAnnotationFvUplinkOrderContFvRsDomAttFvAEPg.Key.IsUnknown() {
+							tagAnnotationFvUplinkOrderContFvRsDomAttFvAEPgChildMap.Attributes["key"] = tagAnnotationFvUplinkOrderContFvRsDomAttFvAEPg.Key.ValueString()
+						}
+						if !tagAnnotationFvUplinkOrderContFvRsDomAttFvAEPg.Value.IsNull() && !tagAnnotationFvUplinkOrderContFvRsDomAttFvAEPg.Value.IsUnknown() {
+							tagAnnotationFvUplinkOrderContFvRsDomAttFvAEPgChildMap.Attributes["value"] = tagAnnotationFvUplinkOrderContFvRsDomAttFvAEPg.Value.ValueString()
+						}
+						FvUplinkOrderContFvRsDomAttFvAEPgChildren = append(FvUplinkOrderContFvRsDomAttFvAEPgChildren, map[string]interface{}{"tagAnnotation": tagAnnotationFvUplinkOrderContFvRsDomAttFvAEPgChildMap})
+						tagAnnotationIdentifier := TagAnnotationIdentifier{}
+						tagAnnotationIdentifier.Key = tagAnnotationFvUplinkOrderContFvRsDomAttFvAEPg.Key
+						tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
+					}
+					for _, tagAnnotationFvUplinkOrderContFvRsDomAttFvAEPg := range tagAnnotationFvUplinkOrderContFvRsDomAttFvAEPgState {
+						delete := true
+						for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
+							if tagAnnotationIdentifier.Key == tagAnnotationFvUplinkOrderContFvRsDomAttFvAEPg.Key {
+								delete = false
+								break
+							}
+						}
+						if delete {
+							tagAnnotationFvUplinkOrderContFvRsDomAttFvAEPgChildMapForDelete := NewAciObject()
+							tagAnnotationFvUplinkOrderContFvRsDomAttFvAEPgChildMapForDelete.Attributes["status"] = "deleted"
+							tagAnnotationFvUplinkOrderContFvRsDomAttFvAEPgChildMapForDelete.Attributes["key"] = tagAnnotationFvUplinkOrderContFvRsDomAttFvAEPg.Key.ValueString()
+							FvUplinkOrderContFvRsDomAttFvAEPgChildren = append(FvUplinkOrderContFvRsDomAttFvAEPgChildren, map[string]interface{}{"tagAnnotation": tagAnnotationFvUplinkOrderContFvRsDomAttFvAEPgChildMapForDelete})
+						}
+					}
+				}
+
+				var tagTagFvUplinkOrderContFvRsDomAttFvAEPgPlan, tagTagFvUplinkOrderContFvRsDomAttFvAEPgState []TagTagFvUplinkOrderContFvRsDomAttFvAEPgResourceModel
+				fvUplinkOrderContFvRsDomAttFvAEPgPlan.TagTag.ElementsAs(ctx, &tagTagFvUplinkOrderContFvRsDomAttFvAEPgPlan, false)
+				if !fvUplinkOrderContFvRsDomAttFvAEPgState.TagTag.IsNull() {
+					fvUplinkOrderContFvRsDomAttFvAEPgState.TagTag.ElementsAs(ctx, &tagTagFvUplinkOrderContFvRsDomAttFvAEPgState, false)
+				}
+				if !fvUplinkOrderContFvRsDomAttFvAEPgPlan.TagTag.IsNull() && !fvUplinkOrderContFvRsDomAttFvAEPgPlan.TagTag.IsUnknown() {
+					tagTagIdentifiers := []TagTagIdentifier{}
+					for _, tagTagFvUplinkOrderContFvRsDomAttFvAEPg := range tagTagFvUplinkOrderContFvRsDomAttFvAEPgPlan {
+						tagTagFvUplinkOrderContFvRsDomAttFvAEPgChildMap := NewAciObject()
+						if !tagTagFvUplinkOrderContFvRsDomAttFvAEPg.Key.IsNull() && !tagTagFvUplinkOrderContFvRsDomAttFvAEPg.Key.IsUnknown() {
+							tagTagFvUplinkOrderContFvRsDomAttFvAEPgChildMap.Attributes["key"] = tagTagFvUplinkOrderContFvRsDomAttFvAEPg.Key.ValueString()
+						}
+						if !tagTagFvUplinkOrderContFvRsDomAttFvAEPg.Value.IsNull() && !tagTagFvUplinkOrderContFvRsDomAttFvAEPg.Value.IsUnknown() {
+							tagTagFvUplinkOrderContFvRsDomAttFvAEPgChildMap.Attributes["value"] = tagTagFvUplinkOrderContFvRsDomAttFvAEPg.Value.ValueString()
+						}
+						FvUplinkOrderContFvRsDomAttFvAEPgChildren = append(FvUplinkOrderContFvRsDomAttFvAEPgChildren, map[string]interface{}{"tagTag": tagTagFvUplinkOrderContFvRsDomAttFvAEPgChildMap})
+						tagTagIdentifier := TagTagIdentifier{}
+						tagTagIdentifier.Key = tagTagFvUplinkOrderContFvRsDomAttFvAEPg.Key
+						tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
+					}
+					for _, tagTagFvUplinkOrderContFvRsDomAttFvAEPg := range tagTagFvUplinkOrderContFvRsDomAttFvAEPgState {
+						delete := true
+						for _, tagTagIdentifier := range tagTagIdentifiers {
+							if tagTagIdentifier.Key == tagTagFvUplinkOrderContFvRsDomAttFvAEPg.Key {
+								delete = false
+								break
+							}
+						}
+						if delete {
+							tagTagFvUplinkOrderContFvRsDomAttFvAEPgChildMapForDelete := NewAciObject()
+							tagTagFvUplinkOrderContFvRsDomAttFvAEPgChildMapForDelete.Attributes["status"] = "deleted"
+							tagTagFvUplinkOrderContFvRsDomAttFvAEPgChildMapForDelete.Attributes["key"] = tagTagFvUplinkOrderContFvRsDomAttFvAEPg.Key.ValueString()
+							FvUplinkOrderContFvRsDomAttFvAEPgChildren = append(FvUplinkOrderContFvRsDomAttFvAEPgChildren, map[string]interface{}{"tagTag": tagTagFvUplinkOrderContFvRsDomAttFvAEPgChildMapForDelete})
+						}
+					}
+				}
+				fvUplinkOrderContFvRsDomAttFvAEPgChildMap.Children = FvUplinkOrderContFvRsDomAttFvAEPgChildren
+				FvRsDomAttFvAEPgChildren = append(FvRsDomAttFvAEPgChildren, map[string]interface{}{"fvUplinkOrderCont": fvUplinkOrderContFvRsDomAttFvAEPgChildMap})
 			}
 
 			var tagAnnotationFvRsDomAttFvAEPgPlan, tagAnnotationFvRsDomAttFvAEPgState []TagAnnotationFvRsDomAttFvAEPgResourceModel

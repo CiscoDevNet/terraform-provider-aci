@@ -306,12 +306,14 @@ func (r *InfraHPathSResource) ModifyPlan(ctx context.Context, req resource.Modif
 				return
 			}
 		}
+
 		if !configData.InfraRsHPathAtt.IsNull() && stateData != nil {
 			if IsEmptySingleNestedAttribute(configData.InfraRsHPathAtt.Attributes()) {
 				InfraRsHPathAttObject, _ := types.ObjectValueFrom(ctx, InfraRsHPathAttInfraHPathSType, getEmptyInfraRsHPathAttInfraHPathSResourceModel())
 				planData.InfraRsHPathAtt = InfraRsHPathAttObject
 			}
 		}
+
 		if !configData.InfraRsPathToAccBaseGrp.IsNull() && stateData != nil {
 			if IsEmptySingleNestedAttribute(configData.InfraRsPathToAccBaseGrp.Attributes()) {
 				InfraRsPathToAccBaseGrpObject, _ := types.ObjectValueFrom(ctx, InfraRsPathToAccBaseGrpInfraHPathSType, getEmptyInfraRsPathToAccBaseGrpInfraHPathSResourceModel())

@@ -1031,6 +1031,11 @@ fvRsDomAtt:
       secondary_encapsulation_inner: "vlan-400"
       number_of_ports: "1"
       delimiter: "@"
+    child_1:
+      switching_mode: "native"
+    child_2:
+      untagged: "no"
+
   parents:
     - class_name: "fvAEPg"
       parent_dependency: "fvAp"
@@ -2704,3 +2709,15 @@ vmmUplinkP:
     test_values_for_parent:
       - uplink_id: "2"
       - uplink_id: "1"
+
+fvUplinkOrderCont:
+  overwrites:
+    active: active_uplinks
+    standby: standby_uplinks
+  documentation:
+    active: "The active uplink IDs of the %s object. When defined the value cannot be set back to empty."
+    standby: "The passive uplink IDs of the %s object."
+  test_values:
+    all:
+      active_uplinks: "1,2"
+      standby_uplinks: "3,4"

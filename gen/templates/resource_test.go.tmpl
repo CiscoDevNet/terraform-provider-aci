@@ -2972,7 +2972,7 @@ resource "aci_{{$.resourceName}}" "test" {
 				{{- range $child_index, $child := $value}}
 					{{- range $child_key, $child_value := $child}}
 						{{- if eq $child_key "children"}}
-							{{- $newCtx := addToChild $child_value "ResourceName" (print "aci_" $.resourceName ".test") "InheritedKey" (print $inheritedKey "." $key) "ResourceClassName" $resourceClassName "ParentClassName" $parentClassName -}}
+							{{- $newCtx := addToChild $child_value "ResourceName" $resourceName "InheritedKey" (print $inheritedKey "." $key) "ResourceClassName" $resourceClassName "ParentClassName" $parentClassName -}}
 							{{- template "testNestedChildrenRemovedFromConfig" $newCtx }}
 						{{- else if eq $child_key "version_mismatch" }}
 							{{- range $version, $attributes := $child_value }}
@@ -3004,7 +3004,7 @@ resource "aci_{{$.resourceName}}" "test" {
 				{{- range $child_index, $child := $value}}
 				{{- range $child_key, $child_value := $child}}
 						{{- if eq $child_key "children"}}
-							{{- $newCtx := addToChild $child_value "ResourceName" (print "aci_" $.resourceName ".test") "InheritedKey" (print $inheritedKey "." $key "." $child_index) "ResourceClassName" $resourceClassName "ParentClassName" $parentClassName -}}
+							{{- $newCtx := addToChild $child_value "ResourceName" $resourceName "InheritedKey" (print $inheritedKey "." $key "." $child_index) "ResourceClassName" $resourceClassName "ParentClassName" $parentClassName -}}
 							{{- template "testNestedChildrenRemovedFromConfig" $newCtx }}
 						{{- else if eq $child_key "version_mismatch" }}
 							{{- range $version, $attributes := $child_value }}
@@ -3021,7 +3021,7 @@ resource "aci_{{$.resourceName}}" "test" {
 					{{- end}}
 					{{- end}}
 					{{- end}}
-					resource.TestCheckResourceAttr("{{$resourceName}}", "{{$key}}.#", "{{len $value}}"),
+					resource.TestCheckResourceAttr("{{$resourceName}}", "{{$inheritedKey}}.{{$key}}.#", "{{len $value}}"),
 				{{- end}}
 			{{- end}}
         {{- end}}

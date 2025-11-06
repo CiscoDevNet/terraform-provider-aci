@@ -930,142 +930,59 @@ func (r *CommPolResource) ModifyPlan(ctx context.Context, req resource.ModifyPla
 				return
 			}
 		}
-		CommHttpsCommPol := getEmptyCommHttpsCommPolResourceModel()
-		CommHttpsCommPolList := make([]CommHttpsCommPolResourceModel, 0)
-		CommRsClientCertCACommHttpsCommPol := getEmptyCommRsClientCertCACommHttpsCommPolResourceModel()
-		CommRsClientCertCACommHttpsCommPolList := make([]CommRsClientCertCACommHttpsCommPolResourceModel, 0)
-		TagAnnotationCommRsClientCertCACommHttpsCommPol := getEmptyTagAnnotationCommRsClientCertCACommHttpsCommPolResourceModel()
-		TagAnnotationCommRsClientCertCACommHttpsCommPolList := make([]TagAnnotationCommRsClientCertCACommHttpsCommPolResourceModel, 0)
-		TagTagCommRsClientCertCACommHttpsCommPol := getEmptyTagTagCommRsClientCertCACommHttpsCommPolResourceModel()
-		TagTagCommRsClientCertCACommHttpsCommPolList := make([]TagTagCommRsClientCertCACommHttpsCommPolResourceModel, 0)
-		CommRsKeyRingCommHttpsCommPol := getEmptyCommRsKeyRingCommHttpsCommPolResourceModel()
-		CommRsKeyRingCommHttpsCommPolList := make([]CommRsKeyRingCommHttpsCommPolResourceModel, 0)
-		TagAnnotationCommRsKeyRingCommHttpsCommPol := getEmptyTagAnnotationCommRsKeyRingCommHttpsCommPolResourceModel()
-		TagAnnotationCommRsKeyRingCommHttpsCommPolList := make([]TagAnnotationCommRsKeyRingCommHttpsCommPolResourceModel, 0)
-		TagTagCommRsKeyRingCommHttpsCommPol := getEmptyTagTagCommRsKeyRingCommHttpsCommPolResourceModel()
-		TagTagCommRsKeyRingCommHttpsCommPolList := make([]TagTagCommRsKeyRingCommHttpsCommPolResourceModel, 0)
-		TagAnnotationCommHttpsCommPol := getEmptyTagAnnotationCommHttpsCommPolResourceModel()
-		TagAnnotationCommHttpsCommPolList := make([]TagAnnotationCommHttpsCommPolResourceModel, 0)
-		TagTagCommHttpsCommPol := getEmptyTagTagCommHttpsCommPolResourceModel()
-		TagTagCommHttpsCommPolList := make([]TagTagCommHttpsCommPolResourceModel, 0)
-		var CommHttpsConfigData CommHttpsCommPolResourceModel
+		var CommHttpsConfigData, CommHttpsPlanData CommHttpsCommPolResourceModel
 		configData.CommHttps.As(ctx, &CommHttpsConfigData, basetypes.ObjectAsOptions{})
+		planData.CommHttps.As(ctx, &CommHttpsPlanData, basetypes.ObjectAsOptions{})
+
 		var commRsClientCertCACommHttpsCommPolConfigData CommRsClientCertCACommHttpsCommPolResourceModel
 		if !CommHttpsConfigData.CommRsClientCertCA.IsNull() && stateData != nil {
 			CommHttpsConfigData.CommRsClientCertCA.As(ctx, &commRsClientCertCACommHttpsCommPolConfigData, basetypes.ObjectAsOptions{})
 			if IsEmptySingleNestedAttribute(CommHttpsConfigData.CommRsClientCertCA.Attributes()) {
 				CommRsClientCertCACommHttpsCommPolObject, _ := types.ObjectValueFrom(ctx, CommRsClientCertCACommHttpsCommPolType, getEmptyCommRsClientCertCACommHttpsCommPolResourceModel())
-				CommHttpsCommPol.CommRsClientCertCA = CommRsClientCertCACommHttpsCommPolObject
-			} else {
-				CommRsClientCertCACommHttpsCommPolObject, _ := types.ObjectValueFrom(ctx, CommRsClientCertCACommHttpsCommPolType, commRsClientCertCACommHttpsCommPolConfigData)
-				CommHttpsCommPol.CommRsClientCertCA = CommRsClientCertCACommHttpsCommPolObject
+				CommHttpsPlanData.CommRsClientCertCA = CommRsClientCertCACommHttpsCommPolObject
 			}
 		}
-		var tagAnnotationCommRsClientCertCACommHttpsCommPolConfigData []TagAnnotationCommRsClientCertCACommHttpsCommPolResourceModel
-		if !commRsClientCertCACommHttpsCommPolConfigData.TagAnnotation.IsNull() && stateData != nil {
-			commRsClientCertCACommHttpsCommPolConfigData.TagAnnotation.ElementsAs(ctx, &tagAnnotationCommRsClientCertCACommHttpsCommPolConfigData, false)
-			TagAnnotationCommRsClientCertCACommHttpsCommPolSet, _ := types.SetValueFrom(ctx, TagAnnotationCommRsClientCertCACommHttpsCommPolType, tagAnnotationCommRsClientCertCACommHttpsCommPolConfigData)
-			CommRsClientCertCACommHttpsCommPol.TagAnnotation = TagAnnotationCommRsClientCertCACommHttpsCommPolSet
-		}
-		TagAnnotationCommRsClientCertCACommHttpsCommPolList = append(TagAnnotationCommRsClientCertCACommHttpsCommPolList, TagAnnotationCommRsClientCertCACommHttpsCommPol)
-		var tagTagCommRsClientCertCACommHttpsCommPolConfigData []TagTagCommRsClientCertCACommHttpsCommPolResourceModel
-		if !commRsClientCertCACommHttpsCommPolConfigData.TagTag.IsNull() && stateData != nil {
-			commRsClientCertCACommHttpsCommPolConfigData.TagTag.ElementsAs(ctx, &tagTagCommRsClientCertCACommHttpsCommPolConfigData, false)
-			TagTagCommRsClientCertCACommHttpsCommPolSet, _ := types.SetValueFrom(ctx, TagTagCommRsClientCertCACommHttpsCommPolType, tagTagCommRsClientCertCACommHttpsCommPolConfigData)
-			CommRsClientCertCACommHttpsCommPol.TagTag = TagTagCommRsClientCertCACommHttpsCommPolSet
-		}
-		TagTagCommRsClientCertCACommHttpsCommPolList = append(TagTagCommRsClientCertCACommHttpsCommPolList, TagTagCommRsClientCertCACommHttpsCommPol)
-		CommRsClientCertCACommHttpsCommPolList = append(CommRsClientCertCACommHttpsCommPolList, CommRsClientCertCACommHttpsCommPol)
+
 		var commRsKeyRingCommHttpsCommPolConfigData CommRsKeyRingCommHttpsCommPolResourceModel
 		if !CommHttpsConfigData.CommRsKeyRing.IsNull() && stateData != nil {
 			CommHttpsConfigData.CommRsKeyRing.As(ctx, &commRsKeyRingCommHttpsCommPolConfigData, basetypes.ObjectAsOptions{})
 			if IsEmptySingleNestedAttribute(CommHttpsConfigData.CommRsKeyRing.Attributes()) {
 				CommRsKeyRingCommHttpsCommPolObject, _ := types.ObjectValueFrom(ctx, CommRsKeyRingCommHttpsCommPolType, getEmptyCommRsKeyRingCommHttpsCommPolResourceModel())
-				CommHttpsCommPol.CommRsKeyRing = CommRsKeyRingCommHttpsCommPolObject
-			} else {
-				CommRsKeyRingCommHttpsCommPolObject, _ := types.ObjectValueFrom(ctx, CommRsKeyRingCommHttpsCommPolType, commRsKeyRingCommHttpsCommPolConfigData)
-				CommHttpsCommPol.CommRsKeyRing = CommRsKeyRingCommHttpsCommPolObject
+				CommHttpsPlanData.CommRsKeyRing = CommRsKeyRingCommHttpsCommPolObject
 			}
 		}
-		var tagAnnotationCommRsKeyRingCommHttpsCommPolConfigData []TagAnnotationCommRsKeyRingCommHttpsCommPolResourceModel
-		if !commRsKeyRingCommHttpsCommPolConfigData.TagAnnotation.IsNull() && stateData != nil {
-			commRsKeyRingCommHttpsCommPolConfigData.TagAnnotation.ElementsAs(ctx, &tagAnnotationCommRsKeyRingCommHttpsCommPolConfigData, false)
-			TagAnnotationCommRsKeyRingCommHttpsCommPolSet, _ := types.SetValueFrom(ctx, TagAnnotationCommRsKeyRingCommHttpsCommPolType, tagAnnotationCommRsKeyRingCommHttpsCommPolConfigData)
-			CommRsKeyRingCommHttpsCommPol.TagAnnotation = TagAnnotationCommRsKeyRingCommHttpsCommPolSet
-		}
-		TagAnnotationCommRsKeyRingCommHttpsCommPolList = append(TagAnnotationCommRsKeyRingCommHttpsCommPolList, TagAnnotationCommRsKeyRingCommHttpsCommPol)
-		var tagTagCommRsKeyRingCommHttpsCommPolConfigData []TagTagCommRsKeyRingCommHttpsCommPolResourceModel
-		if !commRsKeyRingCommHttpsCommPolConfigData.TagTag.IsNull() && stateData != nil {
-			commRsKeyRingCommHttpsCommPolConfigData.TagTag.ElementsAs(ctx, &tagTagCommRsKeyRingCommHttpsCommPolConfigData, false)
-			TagTagCommRsKeyRingCommHttpsCommPolSet, _ := types.SetValueFrom(ctx, TagTagCommRsKeyRingCommHttpsCommPolType, tagTagCommRsKeyRingCommHttpsCommPolConfigData)
-			CommRsKeyRingCommHttpsCommPol.TagTag = TagTagCommRsKeyRingCommHttpsCommPolSet
-		}
-		TagTagCommRsKeyRingCommHttpsCommPolList = append(TagTagCommRsKeyRingCommHttpsCommPolList, TagTagCommRsKeyRingCommHttpsCommPol)
-		CommRsKeyRingCommHttpsCommPolList = append(CommRsKeyRingCommHttpsCommPolList, CommRsKeyRingCommHttpsCommPol)
-		var tagAnnotationCommHttpsCommPolConfigData []TagAnnotationCommHttpsCommPolResourceModel
-		if !CommHttpsConfigData.TagAnnotation.IsNull() && stateData != nil {
-			CommHttpsConfigData.TagAnnotation.ElementsAs(ctx, &tagAnnotationCommHttpsCommPolConfigData, false)
-			TagAnnotationCommHttpsCommPolSet, _ := types.SetValueFrom(ctx, TagAnnotationCommHttpsCommPolType, tagAnnotationCommHttpsCommPolConfigData)
-			CommHttpsCommPol.TagAnnotation = TagAnnotationCommHttpsCommPolSet
-		}
-		TagAnnotationCommHttpsCommPolList = append(TagAnnotationCommHttpsCommPolList, TagAnnotationCommHttpsCommPol)
-		var tagTagCommHttpsCommPolConfigData []TagTagCommHttpsCommPolResourceModel
-		if !CommHttpsConfigData.TagTag.IsNull() && stateData != nil {
-			CommHttpsConfigData.TagTag.ElementsAs(ctx, &tagTagCommHttpsCommPolConfigData, false)
-			TagTagCommHttpsCommPolSet, _ := types.SetValueFrom(ctx, TagTagCommHttpsCommPolType, tagTagCommHttpsCommPolConfigData)
-			CommHttpsCommPol.TagTag = TagTagCommHttpsCommPolSet
-		}
-		TagTagCommHttpsCommPolList = append(TagTagCommHttpsCommPolList, TagTagCommHttpsCommPol)
+
 		if !configData.CommHttp.IsNull() && stateData != nil {
 			if IsEmptySingleNestedAttribute(configData.CommHttp.Attributes()) {
 				CommHttpObject, _ := types.ObjectValueFrom(ctx, CommHttpCommPolType, getEmptyCommHttpCommPolResourceModel())
 				planData.CommHttp = CommHttpObject
 			}
 		}
+
 		if !configData.CommHttps.IsNull() && stateData != nil {
 			if IsEmptySingleNestedAttribute(configData.CommHttps.Attributes()) {
 				CommHttpsObject, _ := types.ObjectValueFrom(ctx, CommHttpsCommPolType, getEmptyCommHttpsCommPolResourceModel())
 				planData.CommHttps = CommHttpsObject
 			} else {
-				CommHttpsCommPol.AccessControlAllowCredential = CommHttpsConfigData.AccessControlAllowCredential
-				CommHttpsCommPol.AccessControlAllowOrigins = CommHttpsConfigData.AccessControlAllowOrigins
-				CommHttpsCommPol.AdminSt = CommHttpsConfigData.AdminSt
-				CommHttpsCommPol.Annotation = CommHttpsConfigData.Annotation
-				CommHttpsCommPol.CliOnlyMode = CommHttpsConfigData.CliOnlyMode
-				CommHttpsCommPol.ClientCertAuthState = CommHttpsConfigData.ClientCertAuthState
-				CommHttpsCommPol.Descr = CommHttpsConfigData.Descr
-				CommHttpsCommPol.DhParam = CommHttpsConfigData.DhParam
-				CommHttpsCommPol.GlobalThrottleRate = CommHttpsConfigData.GlobalThrottleRate
-				CommHttpsCommPol.GlobalThrottleSt = CommHttpsConfigData.GlobalThrottleSt
-				CommHttpsCommPol.GlobalThrottleUnit = CommHttpsConfigData.GlobalThrottleUnit
-				CommHttpsCommPol.MaxRequestStatusCount = CommHttpsConfigData.MaxRequestStatusCount
-				CommHttpsCommPol.Name = CommHttpsConfigData.Name
-				CommHttpsCommPol.NameAlias = CommHttpsConfigData.NameAlias
-				CommHttpsCommPol.NodeExporter = CommHttpsConfigData.NodeExporter
-				CommHttpsCommPol.Port = CommHttpsConfigData.Port
-				CommHttpsCommPol.Referer = CommHttpsConfigData.Referer
-				CommHttpsCommPol.ServerHeader = CommHttpsConfigData.ServerHeader
-				CommHttpsCommPol.SslProtocols = CommHttpsConfigData.SslProtocols
-				CommHttpsCommPol.ThrottleRate = CommHttpsConfigData.ThrottleRate
-				CommHttpsCommPol.ThrottleSt = CommHttpsConfigData.ThrottleSt
-				CommHttpsCommPol.VisoreAccess = CommHttpsConfigData.VisoreAccess
-				CommHttpsCommPolList = append(CommHttpsCommPolList, CommHttpsCommPol)
-				CommHttpsObject, _ := types.ObjectValueFrom(ctx, CommHttpsCommPolType, CommHttpsCommPolList[0])
+				CommHttpsObject, _ := types.ObjectValueFrom(ctx, CommHttpsCommPolType, CommHttpsPlanData)
 				planData.CommHttps = CommHttpsObject
 			}
 		}
+
 		if !configData.CommShellinabox.IsNull() && stateData != nil {
 			if IsEmptySingleNestedAttribute(configData.CommShellinabox.Attributes()) {
 				CommShellinaboxObject, _ := types.ObjectValueFrom(ctx, CommShellinaboxCommPolType, getEmptyCommShellinaboxCommPolResourceModel())
 				planData.CommShellinabox = CommShellinaboxObject
 			}
 		}
+
 		if !configData.CommSsh.IsNull() && stateData != nil {
 			if IsEmptySingleNestedAttribute(configData.CommSsh.Attributes()) {
 				CommSshObject, _ := types.ObjectValueFrom(ctx, CommSshCommPolType, getEmptyCommSshCommPolResourceModel())
 				planData.CommSsh = CommSshObject
 			}
 		}
+
 		if !configData.CommTelnet.IsNull() && stateData != nil {
 			if IsEmptySingleNestedAttribute(configData.CommTelnet.Attributes()) {
 				CommTelnetObject, _ := types.ObjectValueFrom(ctx, CommTelnetCommPolType, getEmptyCommTelnetCommPolResourceModel())
@@ -2426,52 +2343,43 @@ func (r *CommPolResource) Update(ctx context.Context, req resource.UpdateRequest
 	// Read Terraform plan data into the model
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
 	resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
-	// Error out when child object commHttp is being deleted
 	if IsEmptySingleNestedAttribute(data.CommHttp.Attributes()) && !IsEmptySingleNestedAttribute(stateData.CommHttp.Attributes()) {
 		resp.Diagnostics.AddError(
-			"CommHttp object cannot be deleted",
+			"CommHttp object defined by http_service cannot be deleted",
 			"deletion of child is only possible upon deletion of the parent",
 		)
 	}
-	// Error out when child object commHttps is being deleted
+	var commHttpsCommPolData CommHttpsCommPolResourceModel
+	var commHttpsCommPolStateData CommHttpsCommPolResourceModel
+	data.CommHttps.As(ctx, &commHttpsCommPolData, basetypes.ObjectAsOptions{})
+	stateData.CommHttps.As(ctx, &commHttpsCommPolStateData, basetypes.ObjectAsOptions{})
 	if IsEmptySingleNestedAttribute(data.CommHttps.Attributes()) && !IsEmptySingleNestedAttribute(stateData.CommHttps.Attributes()) {
 		resp.Diagnostics.AddError(
-			"CommHttps object cannot be deleted",
+			"CommHttps object defined by http_ssl_configuration cannot be deleted",
 			"deletion of child is only possible upon deletion of the parent",
 		)
 	}
-	var CommHttpsData CommHttpsCommPolResourceModel
-	var CommHttpsStateData CommHttpsCommPolResourceModel
-	data.CommHttps.As(ctx, &CommHttpsData, basetypes.ObjectAsOptions{})
-	stateData.CommHttps.As(ctx, &CommHttpsStateData, basetypes.ObjectAsOptions{})
-	var commRsKeyRingCommHttpsCommPolData CommRsKeyRingCommHttpsCommPolResourceModel
-	var commRsKeyRingCommHttpsCommPolStateData CommRsKeyRingCommHttpsCommPolResourceModel
-	CommHttpsData.CommRsKeyRing.As(ctx, &commRsKeyRingCommHttpsCommPolData, basetypes.ObjectAsOptions{})
-	CommHttpsStateData.CommRsKeyRing.As(ctx, &commRsKeyRingCommHttpsCommPolStateData, basetypes.ObjectAsOptions{})
-	if IsEmptySingleNestedAttribute(CommHttpsData.CommRsKeyRing.Attributes()) && !IsEmptySingleNestedAttribute(CommHttpsStateData.CommRsKeyRing.Attributes()) {
+	if IsEmptySingleNestedAttribute(commHttpsCommPolData.CommRsKeyRing.Attributes()) && !IsEmptySingleNestedAttribute(commHttpsCommPolStateData.CommRsKeyRing.Attributes()) {
 		resp.Diagnostics.AddError(
-			"CommRsKeyRing object cannot be deleted",
+			"CommRsKeyRing object defined by key_ring cannot be deleted",
 			"deletion of child is only possible upon deletion of the parent",
 		)
 	}
-	// Error out when child object commShellinabox is being deleted
 	if IsEmptySingleNestedAttribute(data.CommShellinabox.Attributes()) && !IsEmptySingleNestedAttribute(stateData.CommShellinabox.Attributes()) {
 		resp.Diagnostics.AddError(
-			"CommShellinabox object cannot be deleted",
+			"CommShellinabox object defined by shellinabox_service cannot be deleted",
 			"deletion of child is only possible upon deletion of the parent",
 		)
 	}
-	// Error out when child object commSsh is being deleted
 	if IsEmptySingleNestedAttribute(data.CommSsh.Attributes()) && !IsEmptySingleNestedAttribute(stateData.CommSsh.Attributes()) {
 		resp.Diagnostics.AddError(
-			"CommSsh object cannot be deleted",
+			"CommSsh object defined by ssh_service cannot be deleted",
 			"deletion of child is only possible upon deletion of the parent",
 		)
 	}
-	// Error out when child object commTelnet is being deleted
 	if IsEmptySingleNestedAttribute(data.CommTelnet.Attributes()) && !IsEmptySingleNestedAttribute(stateData.CommTelnet.Attributes()) {
 		resp.Diagnostics.AddError(
-			"CommTelnet object cannot be deleted",
+			"CommTelnet object defined by telnet_service cannot be deleted",
 			"deletion of child is only possible upon deletion of the parent",
 		)
 	}
@@ -3419,9 +3327,9 @@ func getCommPolCommHttpChildPayloads(ctx context.Context, diags *diag.Diagnostic
 
 func getCommPolCommHttpsChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *CommPolResourceModel, commHttpsCommPolPlan, commHttpsCommPolState CommHttpsCommPolResourceModel) []map[string]interface{} {
 	childPayloads := []map[string]interface{}{}
-	CommRsClientCertCACommHttpsCommPolChildren := make([]map[string]interface{}, 0)
-	CommRsKeyRingCommHttpsCommPolChildren := make([]map[string]interface{}, 0)
 	if !data.CommHttps.IsNull() && !data.CommHttps.IsUnknown() {
+		CommRsClientCertCACommHttpsCommPolChildren := make([]map[string]interface{}, 0)
+		CommRsKeyRingCommHttpsCommPolChildren := make([]map[string]interface{}, 0)
 		CommHttpsCommPolChildren := make([]map[string]interface{}, 0)
 		childMap := NewAciObject()
 		if !IsEmptySingleNestedAttribute(data.CommHttps.Attributes()) {
