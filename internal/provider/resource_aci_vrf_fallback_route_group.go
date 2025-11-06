@@ -371,6 +371,7 @@ func (r *FvFBRGroupResource) ModifyPlan(ctx context.Context, req resource.Modify
 				return
 			}
 		}
+
 		if !configData.FvFBRoute.IsNull() && stateData != nil {
 			if IsEmptySingleNestedAttribute(configData.FvFBRoute.Attributes()) {
 				FvFBRouteObject, _ := types.ObjectValueFrom(ctx, FvFBRouteFvFBRGroupType, getEmptyFvFBRouteFvFBRGroupResourceModel())

@@ -338,6 +338,7 @@ func (r *NetflowMonitorPolResource) ModifyPlan(ctx context.Context, req resource
 				return
 			}
 		}
+
 		if !configData.NetflowRsMonitorToRecord.IsNull() && stateData != nil {
 			if IsEmptySingleNestedAttribute(configData.NetflowRsMonitorToRecord.Attributes()) {
 				NetflowRsMonitorToRecordObject, _ := types.ObjectValueFrom(ctx, NetflowRsMonitorToRecordNetflowMonitorPolType, getEmptyNetflowRsMonitorToRecordNetflowMonitorPolResourceModel())
@@ -945,10 +946,9 @@ func (r *NetflowMonitorPolResource) Update(ctx context.Context, req resource.Upd
 	// Read Terraform plan data into the model
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
 	resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
-	// Error out when child object netflowRsMonitorToRecord is being deleted
 	if IsEmptySingleNestedAttribute(data.NetflowRsMonitorToRecord.Attributes()) && !IsEmptySingleNestedAttribute(stateData.NetflowRsMonitorToRecord.Attributes()) {
 		resp.Diagnostics.AddError(
-			"NetflowRsMonitorToRecord object cannot be deleted",
+			"NetflowRsMonitorToRecord object defined by relation_to_netflow_record cannot be deleted",
 			"deletion of child is only possible upon deletion of the parent",
 		)
 	}

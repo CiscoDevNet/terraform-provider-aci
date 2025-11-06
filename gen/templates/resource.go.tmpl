@@ -795,40 +795,62 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 		}
 		{{- range .Children}}
 			{{- if containsSingleNestedChildren .Children}}
-				{{- template "declareChildListsInGetandSetAttributesFunctionWithGetEmpty" . }}
+				{{- if or .IdentifiedBy }}
+
+		{{ .ResourceClassName }}{{.ParentHierarchy}}List := make([]{{.ResourceClassName}}{{.ParentHierarchy}}ResourceModel, 0)
+				{{- end }}
 				{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
-		var {{ .ResourceClassName }}ConfigData {{.ResourceClassName}}{{.ParentHierarchy}}ResourceModel
+		var {{ .ResourceClassName }}ConfigData, {{ .ResourceClassName }}PlanData {{.ResourceClassName}}{{.ParentHierarchy}}ResourceModel
 		configData.{{ .ResourceClassName }}.As(ctx, &{{ .ResourceClassName }}ConfigData, basetypes.ObjectAsOptions{})
+		planData.{{ .ResourceClassName }}.As(ctx, &{{ .ResourceClassName }}PlanData, basetypes.ObjectAsOptions{})
 				{{- else}}
-		var {{ .ResourceClassName }}ConfigData []{{.ResourceClassName}}{{.ParentHierarchy}}ResourceModel
-		configData.{{ .ResourceClassName }}.ElementsAs(ctx, &{{ .ResourceClassName }}ConfigData, false)
+		var {{ .ResourceClassName }}ConfigDataList, {{ .ResourceClassName }}PlanDataList []{{.ResourceClassName}}{{.ParentHierarchy}}ResourceModel
+		planData.{{ .ResourceClassName }}.ElementsAs(ctx, &{{ .ResourceClassName }}PlanDataList, false)
+		configData.{{ .ResourceClassName }}.ElementsAs(ctx, &{{ .ResourceClassName }}ConfigDataList, false)
+
+		for _, {{ .ResourceClassName }}PlanData := range {{ .ResourceClassName }}PlanDataList {
+			var {{ .ResourceClassName }}ConfigData {{.ResourceClassName}}{{.ParentHierarchy}}ResourceModel
+			for _, configData := range {{ .ResourceClassName }}ConfigDataList {
+					{{- range .Properties}}
+						{{- if .IsNaming }}
+				if {{ .ResourceClassName }}PlanData.{{.Name}} == configData.{{.Name}} {
+					{{ .ResourceClassName }}ConfigData = configData
+					break
+				}
+						{{- end}}
+					{{- end}}
+			}
 				{{- end}}
 				{{- $resource := . }}
 				{{- range .Children}}
 				{{- $newCtx := addToTemplateProperties . "configData" $resource -}}
 				{{- template "modifyPlanForSingleNestedChildren" $newCtx }}
 				{{- end}}
+				{{- if not (or (not .IdentifiedBy) .MaxOneClassAllowed)}}
+			{{ .ResourceClassName }}{{.ParentHierarchy}}List = append({{ .ResourceClassName }}{{.ParentHierarchy}}List, {{ .ResourceClassName }}PlanData)
+		}
+				{{- end}}
 			{{- end}}
 		{{- end}}
 		{{- range .Children}}
 			{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+
 			if !configData.{{ .ResourceClassName }}.IsNull() && stateData != nil {
 				if IsEmptySingleNestedAttribute(configData.{{ .ResourceClassName }}.Attributes()) {
 					{{.ResourceClassName}}Object, _ := types.ObjectValueFrom(ctx, {{.ResourceClassName}}{{$.ResourceClassName}}Type, getEmpty{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel())
 					planData.{{.ResourceClassName}} = {{.ResourceClassName}}Object
 				} {{- if containsSingleNestedChildren .Children}} else {
-					{{- range .Properties}}
-					{{.ResourceClassName}}{{$.ResourceClassName}}.{{.Name}} = {{.ResourceClassName}}ConfigData.{{.Name}}
-					{{- end}}
-					{{.ResourceClassName}}{{.ParentHierarchy}}List = append({{.ResourceClassName}}{{.ParentHierarchy}}List, {{.ResourceClassName}}{{.ParentHierarchy}})
-					{{.ResourceClassName}}Object, _ := types.ObjectValueFrom(ctx, {{.ResourceClassName}}{{$.ResourceClassName}}Type, {{ .ResourceClassName }}{{.ParentHierarchy}}List[0])
+					{{.ResourceClassName}}Object, _ := types.ObjectValueFrom(ctx, {{.ResourceClassName}}{{$.ResourceClassName}}Type, {{ .ResourceClassName }}PlanData)
 					planData.{{.ResourceClassName}} = {{.ResourceClassName}}Object
 				} {{- end}}
 			}
 			{{- else}}
 				{{- if containsSingleNestedChildren .Children}}
-			{{.ResourceClassName}}Set, _ := types.SetValueFrom(ctx, {{ .ResourceClassName }}Type, {{ .ResourceClassName }}{{.ParentHierarchy}}List[0])
-			planData.{{.ResourceClassName}} = {{.ResourceClassName}}Set
+
+			if !configData.{{ .ResourceClassName }}.IsNull() && stateData != nil {
+				{{.ResourceClassName}}Set, _ := types.SetValueFrom(ctx, {{ .ResourceClassName }}{{ .ParentHierarchy }}Type, {{ .ResourceClassName }}{{.ParentHierarchy}}List)
+				planData.{{.ResourceClassName}} = {{.ResourceClassName}}Set
+			}
 				{{- end}}
 			{{- end}}
 		{{- end}}
@@ -1832,42 +1854,48 @@ func (r *{{.ResourceClassName}}Resource) Read(ctx context.Context, req resource.
 func (r *{{.ResourceClassName}}Resource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	tflog.Debug(ctx, "Start update of resource: aci_{{.ResourceName}}")
 	var data *{{.ResourceClassName}}ResourceModel
-		{{- if .HasChild }}
+	{{- if .HasChild }}
     var stateData *{{ .ResourceClassName }}ResourceModel
-		{{- end }}
+	{{- end }}
 
 	// Read Terraform plan data into the model
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
 	{{- if .HasChild}}
 	resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
 		{{- range .Children}}
-			{{- if and (or (not .IdentifiedBy) .MaxOneClassAllowed) (not .AllowDelete)}}
-	// Error out when child object {{.PkgName}} is being deleted
-	if IsEmptySingleNestedAttribute(data.{{ .ResourceClassName }}.Attributes()) && !IsEmptySingleNestedAttribute(stateData.{{ .ResourceClassName }}.Attributes()) {
-		resp.Diagnostics.AddError(
-			"{{ .ResourceClassName }} object cannot be deleted",
-			"deletion of child is only possible upon deletion of the parent",
-		)
-	}
+			{{- if containsNotDeletableSingleNestedChildren .Children}}
+				{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+		var {{.PkgName}}{{.ParentHierarchy}}Data {{.ResourceClassName}}{{.ParentHierarchy}}ResourceModel
+		var {{.PkgName}}{{.ParentHierarchy}}StateData {{.ResourceClassName}}{{.ParentHierarchy}}ResourceModel
+		data.{{ .ResourceClassName }}.As(ctx, &{{.PkgName}}{{.ParentHierarchy}}Data, basetypes.ObjectAsOptions{})
+		stateData.{{ .ResourceClassName }}.As(ctx, &{{.PkgName}}{{.ParentHierarchy}}StateData, basetypes.ObjectAsOptions{})
+				{{- else}}
+		var {{.PkgName}}{{.ParentHierarchy}}DataList []{{.ResourceClassName}}{{.ParentHierarchy}}ResourceModel
+		var {{.PkgName}}{{.ParentHierarchy}}StateDataList []{{.ResourceClassName}}{{.ParentHierarchy}}ResourceModel
+		data.{{ .ResourceClassName }}.ElementsAs(ctx, &{{.PkgName}}{{.ParentHierarchy}}DataList, false)
+		stateData.{{ .ResourceClassName }}.ElementsAs(ctx, &{{.PkgName}}{{.ParentHierarchy}}StateDataList, false)
+		{{- $PkgName := .PkgName}}{{- $ParentHierarchy := .ParentHierarchy}}
+		for _, {{.PkgName}}{{.ParentHierarchy}}Data := range {{.PkgName}}{{.ParentHierarchy}}DataList {
+			var {{.PkgName}}{{.ParentHierarchy}}StateData {{.ResourceClassName}}{{.ParentHierarchy}}ResourceModel
+			for _, stateData := range {{.PkgName}}{{.ParentHierarchy}}StateDataList {
+				{{- range .Properties}}
+					{{- if .IsNaming }}
+				if {{$PkgName}}{{$ParentHierarchy}}Data.{{.Name}} == stateData.{{.Name}} {
+					{{$PkgName}}{{$ParentHierarchy}}StateData = stateData
+					break
+				}
+					{{- end}}
+				{{- end}}
+			}
+				{{- end}}
 			{{- end}}
-		{{- if containsDeletableSingleNestedChildren .Children}}
-		{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
-		var {{ .ResourceClassName }}Data {{.ResourceClassName}}{{.ParentHierarchy}}ResourceModel
-		var {{ .ResourceClassName }}StateData {{.ResourceClassName}}{{.ParentHierarchy}}ResourceModel
-		data.{{ .ResourceClassName }}.As(ctx, &{{ .ResourceClassName }}Data, basetypes.ObjectAsOptions{})
-		stateData.{{ .ResourceClassName }}.As(ctx, &{{ .ResourceClassName }}StateData, basetypes.ObjectAsOptions{})
-		{{- else}}
-		var {{ .ResourceClassName }}Data []{{.ResourceClassName}}{{.ParentHierarchy}}ResourceModel
-		var {{ .ResourceClassName }}StateData []{{.ResourceClassName}}{{.ParentHierarchy}}ResourceModel
-		data.{{ .ResourceClassName }}.ElementsAs(ctx, &{{ .ResourceClassName }}Data, false)
-		stateData.{{ .ResourceClassName }}.ElementsAs(ctx, &{{ .ResourceClassName }}StateData, false)
-		{{- end}}
-		{{- $resource := . }}
-		{{- range .Children}}
-			{{- $newCtx := addToTemplateProperties . "data" $resource -}}
-			{{- template "isDeleteAllowedForSingleNestedChildren" $newCtx }}
-		{{- end}}
-		{{- end}}
+		{{- $newCtx := addToTemplateProperties . "data" . -}}
+		{{- template "isDeleteAllowedForSingleNestedChildren" $newCtx }}
+			{{- if containsNotDeletableSingleNestedChildren .Children}}
+				{{- if not (or (not .IdentifiedBy) .MaxOneClassAllowed)}}
+		}
+				{{- end}}
+			{{- end}}
 		{{- end}}
 	{{- end}}
 
@@ -2267,15 +2295,15 @@ func set{{.ResourceClassName}}Id(ctx context.Context, data *{{.ResourceClassName
 func get{{$.ResourceClassName}}{{ .ResourceClassName }}ChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *{{$.ResourceClassName}}ResourceModel, {{.PkgName}}{{.ParentHierarchy}}Plan, {{.PkgName}}{{.ParentHierarchy}}State {{if not ( or (not .IdentifiedBy) .MaxOneClassAllowed)}}[]{{end}}{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel) []map[string]interface{} {
 	childPayloads := []map[string]interface{}{}
 	{{- $enteredGrandChildDeclarationZone := false }}
-    {{- range .Children}}   
-    	{{- $enteredGrandChildDeclarationZone = true }}
-    	{{- template "grandChildDeclarationInChildPayloadFunction" . }}
-    {{- end}}
 	if !data.{{.ResourceClassName}}.IsNull() && !data.{{.ResourceClassName}}.IsUnknown() {
         {{- if and (and .IdentifiedBy (not (and .MaxOneClassAllowed (hasPrefix .RnFormat  "rs")))) (not (or (not .IdentifiedBy) .MaxOneClassAllowed))}}
         {{ .PkgName }}Identifiers := []{{.ResourceClassName}}Identifier{}
         {{- end}}
         		{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+		{{- range .Children}}
+			{{- $enteredGrandChildDeclarationZone = true }}
+			{{- template "grandChildDeclarationInChildPayloadFunction" . }}
+    	{{- end}}
 		{{.ResourceClassName}}{{.ParentHierarchy}}Children := make([]map[string]interface{}, 0)
 		childMap := NewAciObject()
 		if !IsEmptySingleNestedAttribute(data.{{ .ResourceClassName }}.Attributes()) {
@@ -2320,6 +2348,10 @@ func get{{$.ResourceClassName}}{{ .ResourceClassName }}ChildPayloads(ctx context
 		{{- end}}
 		{{- else}}
 	for _, {{ .PkgName }}{{.ParentHierarchy}} := range {{ .PkgName }}{{.ParentHierarchy}}Plan {
+			{{- range .Children}}
+				{{- $enteredGrandChildDeclarationZone = true }}
+				{{- template "grandChildDeclarationInChildPayloadFunction" . }}
+			{{- end}}
 			{{- if $enteredGrandChildDeclarationZone }}
 			{{- $enteredGrandChildDeclarationZone = false }}
 			{{.ResourceClassName}}{{.ParentHierarchy}}Children := make([]map[string]interface{}, 0)
@@ -2412,7 +2444,7 @@ func get{{$.ResourceClassName}}{{ .ResourceClassName }}ChildPayloads(ctx context
 			childPayloads = append(childPayloads, map[string]interface{}{"{{ .PkgName }}": {{.PkgName}}{{.ParentHierarchy}}ChildMapForDelete})
 			{{- else}}
 			diags.AddError(
-				"{{ .ResourceClassName }} object cannot be deleted",
+				"{{ .ResourceClassName }} object defined by {{.ResourceName}} cannot be deleted",
 				"deletion of child is only possible upon deletion of the parent",
 			)
 			return nil
@@ -2863,38 +2895,52 @@ var {{.PkgName}}{{.ParentHierarchy}}Plan, {{.PkgName}}{{.ParentHierarchy}}State 
 var {{.PkgName}}{{.ParentHierarchy}}Plan, {{.PkgName}}{{.ParentHierarchy}}State  []{{.ResourceClassName}}{{.ParentHierarchy}}ResourceModel
 {{- end}}
 {{- if .TemplateProperties.AlreadyInPlan }}
-{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+	{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+// Loop through list and based on identifier select the correct entry from state, currently only single identifier is supported
 {{.ParentHierarchy | decapitalize}}.{{.ResourceClassName}}.As(ctx, &{{.PkgName}}{{.ParentHierarchy}}Plan, basetypes.ObjectAsOptions{})
-if !{{.ParentHierarchy | decapitalize}}State.{{.ResourceClassName}}.IsNull(){
-	{{.ParentHierarchy | decapitalize}}State.{{.ResourceClassName}}.As(ctx, &{{.PkgName}}{{.ParentHierarchy}}State, basetypes.ObjectAsOptions{})
+		{{- if .DirectParent.IdentifiedBy}}
+for _, {{ .DirectParent.PkgName }} := range {{ .DirectParent.PkgName }}{{ .DirectParent.DirectParent.ResourceClassName }}State {
+	{{- range .DirectParent.Properties}}
+		{{- if .IsNaming }}
+		if {{ $.DirectParent.PkgName }}.{{.Name}} == {{$.ParentHierarchy | decapitalize}}.{{.Name}} {
+			{{ $.DirectParent.PkgName }}.{{$.ResourceClassName}}.As(ctx, &{{$.PkgName}}{{$.ParentHierarchy}}State, basetypes.ObjectAsOptions{})
+			break
+		}
+		{{- end}}
+	{{- end}}
 }
-{{- else}}
+		{{- end}}
+	{{- else}}
 {{.ParentHierarchy | decapitalize}}.{{.ResourceClassName}}.ElementsAs(ctx, &{{.PkgName}}{{.ParentHierarchy}}Plan, false)
 for _, {{ .PkgName }}{{.ParentHierarchy}}state := range {{.ParentHierarchy | decapitalize}}State {
 	{{ .PkgName }}{{.ParentHierarchy}}state.{{.ResourceClassName}}.ElementsAs(ctx, &{{.PkgName}}{{.ParentHierarchy}}State, false)
 }
-{{- end}}
+	{{- end}}
 if !{{ .ParentHierarchy | decapitalize}}.{{.ResourceClassName}}.IsNull() && !{{ .ParentHierarchy | decapitalize}}.{{.ResourceClassName}}.IsUnknown(){
 {{- else}}
-{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+	{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
 {{.ParentHierarchy | decapitalize}}Plan.{{.ResourceClassName}}.As(ctx, &{{.PkgName}}{{.ParentHierarchy}}Plan, basetypes.ObjectAsOptions{})
 if !{{.ParentHierarchy | decapitalize}}State.{{.ResourceClassName}}.IsNull(){
 	{{.ParentHierarchy | decapitalize}}State.{{.ResourceClassName}}.As(ctx, &{{.PkgName}}{{.ParentHierarchy}}State, basetypes.ObjectAsOptions{})
 }
-{{- else}}
+	{{- else}}
 {{.ParentHierarchy | decapitalize}}Plan.{{.ResourceClassName}}.ElementsAs(ctx, &{{.PkgName}}{{.ParentHierarchy}}Plan, false)
 if !{{.ParentHierarchy | decapitalize}}State.{{.ResourceClassName}}.IsNull(){
 	{{.ParentHierarchy | decapitalize}}State.{{.ResourceClassName}}.ElementsAs(ctx, &{{.PkgName}}{{.ParentHierarchy}}State, false)
 }
-{{- end}}
+	{{- end}}
 if !{{ .ParentHierarchy | decapitalize}}Plan.{{.ResourceClassName}}.IsNull() && !{{ .ParentHierarchy | decapitalize}}Plan.{{.ResourceClassName}}.IsUnknown(){
 {{- end}}
 	{{- if and (and .IdentifiedBy (not (and .MaxOneClassAllowed (hasPrefix .RnFormat  "rs")))) (not (or (not .IdentifiedBy) .MaxOneClassAllowed))}}
         {{ .PkgName }}Identifiers := []{{.ResourceClassName}}Identifier{}
 	{{- end}}
-{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+	{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
 		{{.PkgName}}{{.ParentHierarchy}}ChildMap := NewAciObject()
+		{{- if and .DirectParent.IdentifiedBy (not .DirectParent.MaxOneClassAllowed)}}
+		if !IsEmptySingleNestedAttribute({{ .ParentHierarchy | decapitalize}}.{{.ResourceClassName}}.Attributes()) {
+		{{- else }}
 		if !IsEmptySingleNestedAttribute({{ .ParentHierarchy | decapitalize}}Plan.{{.ResourceClassName}}.Attributes()) {
+		{{- end }}
 			{{- range .Properties}}
 				if !{{ .PkgName }}{{$.ParentHierarchy}}Plan.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}.IsUnknown() &&  !{{ .PkgName }}{{$.ParentHierarchy}}Plan.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}.IsNull(){
 				{{- if eq .ValueType "bitmask"}}
@@ -3014,7 +3060,7 @@ for _, {{ .PkgName }}{{.ParentHierarchy}} := range {{.PkgName}}{{.ParentHierarch
 			{{ .ParentHierarchy }}Children = append({{ .ParentHierarchy }}Children, map[string]interface{}{"{{.PkgName}}": {{.PkgName}}{{.ParentHierarchy}}ChildMapForDelete})
 			{{- else}}
 			diags.AddError(
-				"{{ .ResourceClassName }} object cannot be deleted",
+				"{{ .ResourceClassName }} object defined by {{.ResourceName}} cannot be deleted",
 				"deletion of child is only possible upon deletion of the parent",
 			)
 			return nil
@@ -3157,17 +3203,15 @@ for childAttributeName, childAttributeValue := range {{.PkgName}}childAttributeV
 
 {{- define "modifyPlanForSingleNestedChildren" }}
 {{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
+
 	var {{.PkgName}}{{.ParentHierarchy}}ConfigData {{.ResourceClassName}}{{.ParentHierarchy}}ResourceModel
 	{{- if .TemplateProperties.configData}}
 	if !{{.TemplateProperties.configData.ResourceClassName}}ConfigData.{{.ResourceClassName}}.IsNull() && stateData != nil {
 		{{.TemplateProperties.configData.ResourceClassName}}ConfigData.{{.ResourceClassName}}.As(ctx, &{{.PkgName}}{{.ParentHierarchy}}ConfigData, basetypes.ObjectAsOptions{})
         if IsEmptySingleNestedAttribute({{.TemplateProperties.configData.ResourceClassName}}ConfigData.{{.ResourceClassName}}.Attributes()) {
             {{.ResourceClassName}}{{.ParentHierarchy}}Object, _ := types.ObjectValueFrom(ctx, {{ .ResourceClassName }}{{.ParentHierarchy}}Type, getEmpty{{ .ResourceClassName }}{{.ParentHierarchy}}ResourceModel())
-			{{.ParentHierarchy}}.{{ .ResourceClassName }} = {{.ResourceClassName}}{{.ParentHierarchy}}Object
-        } else {
-			{{.ResourceClassName}}{{.ParentHierarchy}}Object, _ := types.ObjectValueFrom(ctx, {{ .ResourceClassName }}{{.ParentHierarchy}}Type, {{.PkgName}}{{.ParentHierarchy}}ConfigData)
-			{{.ParentHierarchy}}.{{ .ResourceClassName }} = {{.ResourceClassName}}{{.ParentHierarchy}}Object
-		}
+			{{.TemplateProperties.configData.ResourceClassName}}PlanData.{{ .ResourceClassName }} = {{.ResourceClassName}}{{.ParentHierarchy}}Object
+        }
     }
 	{{- else}}
 	if !{{.ParentHierarchy | decapitalize}}ConfigData.{{.ResourceClassName}}.IsNull() && stateData != nil {
@@ -3181,68 +3225,33 @@ for childAttributeName, childAttributeValue := range {{.PkgName}}childAttributeV
 		}
     }
 	{{- end}}
-{{- else}}
-	var {{.PkgName}}{{.ParentHierarchy}}ConfigData []{{.ResourceClassName}}{{.ParentHierarchy}}ResourceModel
-	{{- if .TemplateProperties.configData}}
-	if !{{.TemplateProperties.configData.ResourceClassName}}ConfigData.{{.ResourceClassName}}.IsNull() && stateData != nil {
-		{{.TemplateProperties.configData.ResourceClassName}}ConfigData.{{.ResourceClassName}}.ElementsAs(ctx, &{{.PkgName}}{{.ParentHierarchy}}ConfigData, false)
-	{{- else}}
-	if !{{.ParentHierarchy | decapitalize}}ConfigData.{{.ResourceClassName}}.IsNull() && stateData != nil {
-		{{.ParentHierarchy | decapitalize}}ConfigData.{{.ResourceClassName}}.ElementsAs(ctx, &{{.PkgName}}{{.ParentHierarchy}}ConfigData, false)
-	{{- end}}
-	{{.ResourceClassName}}{{.ParentHierarchy}}Set, _ := types.SetValueFrom(ctx, {{ .ResourceClassName }}{{.ParentHierarchy}}Type, {{.PkgName}}{{.ParentHierarchy}}ConfigData)
-	{{.ParentHierarchy}}.{{ .ResourceClassName }} = {{.ResourceClassName}}{{.ParentHierarchy}}Set
-	}
 {{- end}}
-{{- range .Children}}
-	{{- $newCtx := addToTemplateProperties . "configData" "" -}}
-	{{- template "modifyPlanForSingleNestedChildren" $newCtx }}
-{{- end}}
-{{.ResourceClassName}}{{$.ParentHierarchy}}List = append({{.ResourceClassName}}{{$.ParentHierarchy}}List, {{.ResourceClassName}}{{$.ParentHierarchy}})
 {{- end}}
 
 {{- define "isDeleteAllowedForSingleNestedChildren" }}
 	{{- if or (and (or (not .IdentifiedBy) .MaxOneClassAllowed) (not .AllowDelete)) (containsDeletableSingleNestedChildren .Children)}}
-	var {{.PkgName}}{{.ParentHierarchy}}Data {{.ResourceClassName}}{{.ParentHierarchy}}ResourceModel
-	var {{.PkgName}}{{.ParentHierarchy}}StateData {{.ResourceClassName}}{{.ParentHierarchy}}ResourceModel
-	{{- if .TemplateProperties.data}}
-	{{.TemplateProperties.data.ResourceClassName}}Data.{{.ResourceClassName}}.As(ctx, &{{.PkgName}}{{.ParentHierarchy}}Data, basetypes.ObjectAsOptions{})
-	{{.TemplateProperties.data.ResourceClassName}}StateData.{{.ResourceClassName}}.As(ctx, &{{.PkgName}}{{.ParentHierarchy}}StateData, basetypes.ObjectAsOptions{})
-	{{- if (not .AllowDelete)}}
-	if IsEmptySingleNestedAttribute({{.TemplateProperties.data.ResourceClassName}}Data.{{.ResourceClassName}}.Attributes()) && !IsEmptySingleNestedAttribute({{.TemplateProperties.data.ResourceClassName}}StateData.{{.ResourceClassName}}.Attributes()) {
+		{{- if .TemplateProperties.data}}
+			{{- if (not .AllowDelete)}}
+	if IsEmptySingleNestedAttribute(data.{{.ResourceClassName}}.Attributes()) && !IsEmptySingleNestedAttribute(stateData.{{.ResourceClassName}}.Attributes()) {
 		resp.Diagnostics.AddError(
-			"{{ .ResourceClassName }} object cannot be deleted",
+			"{{ .ResourceClassName }} object defined by {{.ResourceName}} cannot be deleted",
 			"deletion of child is only possible upon deletion of the parent",
 		)
 	}
 			{{- end}}
-	{{- else}}
-	{{.ParentHierarchy | decapitalize}}Data.{{.ResourceClassName}}.As(ctx, &{{.PkgName}}{{.ParentHierarchy}}Data, basetypes.ObjectAsOptions{})
-	{{.ParentHierarchy | decapitalize}}StateData.{{.ResourceClassName}}.As(ctx, &{{.PkgName}}{{.ParentHierarchy}}StateData, basetypes.ObjectAsOptions{})
-	{{- if (not .AllowDelete)}}
-	if IsEmptySingleNestedAttribute({{.ParentHierarchy}}Data.{{.ResourceClassName}}.Attributes()) && !IsEmptySingleNestedAttribute({{.ParentHierarchy}}StateData.{{.ResourceClassName}}.Attributes()) {
+		{{- else}}
+			{{- if (not .AllowDelete)}}
+	if IsEmptySingleNestedAttribute({{.ParentHierarchy | decapitalize}}Data.{{.ResourceClassName}}.Attributes()) && !IsEmptySingleNestedAttribute({{.ParentHierarchy | decapitalize}}StateData.{{.ResourceClassName}}.Attributes()) {
 		resp.Diagnostics.AddError(
-			"{{ .ResourceClassName }} object cannot be deleted",
+			"{{ .ResourceClassName }} object defined by {{.ResourceName}} cannot be deleted",
 			"deletion of child is only possible upon deletion of the parent",
 		)
 	}
 			{{- end}}
+		{{- end}}
 	{{- end}}
-	{{- else}}
-	{{- if containsDeletableSingleNestedChildren .Children}}
-	var {{.PkgName}}{{.ParentHierarchy}}Data []{{.ResourceClassName}}{{.ParentHierarchy}}ResourceModel
-	var {{.PkgName}}{{.ParentHierarchy}}StateData []{{.ResourceClassName}}{{.ParentHierarchy}}ResourceModel
-	{{- if .TemplateProperties.data}}
-	{{.TemplateProperties.data.ResourceClassName}}Data.{{.ResourceClassName}}.ElementsAs(ctx, &{{.PkgName}}{{.ParentHierarchy}}Data, false)
-	{{.TemplateProperties.data.ResourceClassName}}StateData.{{.ResourceClassName}}.ElementsAs(ctx, &{{.PkgName}}{{.ParentHierarchy}}StateData, false)
-	{{- else}}
-	{{.ParentHierarchy | decapitalize}}Data.{{.ResourceClassName}}.ElementsAs(ctx, &{{.PkgName}}{{.ParentHierarchy}}Data, false)
-	{{.ParentHierarchy | decapitalize}}StateData.{{.ResourceClassName}}.ElementsAs(ctx, &{{.PkgName}}{{.ParentHierarchy}}StateData, false)
-	{{- end}}
-	{{- end}}
-	{{- end}}
-{{- range .Children}}
+	{{- range .Children}}
 	{{- $newCtx := addToTemplateProperties . "data" "" -}}
 	{{- template "isDeleteAllowedForSingleNestedChildren" $newCtx }}
-{{- end}}
+	{{- end}}
 {{- end}}

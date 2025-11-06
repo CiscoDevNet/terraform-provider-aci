@@ -148,9 +148,31 @@ resource "aci_application_epg" "full_example_application_profile" {
       primary_encapsulation_inner   = "vlan-300"
       resolution_immediacy          = "immediate"
       secondary_encapsulation_inner = "vlan-400"
-      switching_mode                = "AVE"
+      switching_mode                = "native"
       target_dn                     = "uni/vmmp-VMware/dom-domain_1"
       untagged                      = "no"
+      uplink_order_container = {
+        active_uplinks  = "1,2"
+        annotation      = "annotation_1"
+        description     = "description_1"
+        name            = "name_1"
+        name_alias      = "name_alias_1"
+        owner_key       = "owner_key_1"
+        owner_tag       = "owner_tag_1"
+        standby_uplinks = "3,4"
+        annotations = [
+          {
+            key   = "key_0"
+            value = "value_1"
+          }
+        ]
+        tags = [
+          {
+            key   = "key_0"
+            value = "value_1"
+          }
+        ]
+      }
       annotations = [
         {
           key   = "key_0"

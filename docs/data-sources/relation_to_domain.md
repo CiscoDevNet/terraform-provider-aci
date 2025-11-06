@@ -72,6 +72,21 @@ data "aci_relation_to_domain" "example_application_epg" {
 * `secondary_encapsulation_inner` (secondaryEncapInner) - (string) The secondary inner encapsulation of the Relation To Domain object. This is used for the portgroup at the VMWare Distributed Virtual Switch (DVS). This VLAN is internal to the DVS and is used for communication between the other VMs and the AVE VM at a host. Traffic is not forwarded to the fabric over the VLAN. Only applicable for Cisco ACI Virtual Edge (AVE) domains. This attribute is supported in ACI versions: 3.1(1i) and later.
 * `switching_mode` (switchingMode) - (string) The switching mode of the Relation To Domain object. This attribute is supported in ACI versions: 3.1(1i) and later.
 * `untagged` (untagged) - (string) The untagged status of the Relation To Domain object. This attribute is supported in ACI versions: 3.2(10e) to 3.2(10g), 3.2(7f) to 3.2(9h), 4.2(1i) and later.
+* `uplink_order_container` - (map) A map of Uplink Order Container (ACI object [fvUplinkOrderCont](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvUplinkOrderCont/overview)). This attribute is supported in ACI versions: 4.2(1i) and later.
+    * `active_uplinks` (active) - (string) The active uplink IDs of the Uplink Order Container object. When defined the value cannot be set back to empty.
+    * `annotation` (annotation) - (string) The annotation of the Uplink Order Container object.
+    * `description` (descr) - (string) The description of the Uplink Order Container object.
+    * `name` (name) - (string) The name of the Uplink Order Container object.
+    * `name_alias` (nameAlias) - (string) The name alias of the Uplink Order Container object.
+    * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
+    * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
+    * `standby_uplinks` (standby) - (string) The passive uplink IDs of the Uplink Order Container object.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.

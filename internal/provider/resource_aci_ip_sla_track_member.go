@@ -228,6 +228,7 @@ func (r *FvTrackMemberResource) ModifyPlan(ctx context.Context, req resource.Mod
 				return
 			}
 		}
+
 		if !configData.FvRsIpslaMonPol.IsNull() && stateData != nil {
 			if IsEmptySingleNestedAttribute(configData.FvRsIpslaMonPol.Attributes()) {
 				FvRsIpslaMonPolObject, _ := types.ObjectValueFrom(ctx, FvRsIpslaMonPolFvTrackMemberType, getEmptyFvRsIpslaMonPolFvTrackMemberResourceModel())
@@ -587,10 +588,9 @@ func (r *FvTrackMemberResource) Update(ctx context.Context, req resource.UpdateR
 	// Read Terraform plan data into the model
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
 	resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
-	// Error out when child object fvRsIpslaMonPol is being deleted
 	if IsEmptySingleNestedAttribute(data.FvRsIpslaMonPol.Attributes()) && !IsEmptySingleNestedAttribute(stateData.FvRsIpslaMonPol.Attributes()) {
 		resp.Diagnostics.AddError(
-			"FvRsIpslaMonPol object cannot be deleted",
+			"FvRsIpslaMonPol object defined by relation_to_ip_sla_monitoring_policy cannot be deleted",
 			"deletion of child is only possible upon deletion of the parent",
 		)
 	}

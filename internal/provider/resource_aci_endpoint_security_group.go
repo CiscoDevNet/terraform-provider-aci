@@ -1420,6 +1420,7 @@ func (r *FvESgResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanR
 				return
 			}
 		}
+
 		if !configData.FvRsScope.IsNull() && stateData != nil {
 			if IsEmptySingleNestedAttribute(configData.FvRsScope.Attributes()) {
 				FvRsScopeObject, _ := types.ObjectValueFrom(ctx, FvRsScopeFvESgType, getEmptyFvRsScopeFvESgResourceModel())
@@ -3006,10 +3007,9 @@ func (r *FvESgResource) Update(ctx context.Context, req resource.UpdateRequest, 
 	// Read Terraform plan data into the model
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
 	resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
-	// Error out when child object fvRsScope is being deleted
 	if IsEmptySingleNestedAttribute(data.FvRsScope.Attributes()) && !IsEmptySingleNestedAttribute(stateData.FvRsScope.Attributes()) {
 		resp.Diagnostics.AddError(
-			"FvRsScope object cannot be deleted",
+			"FvRsScope object defined by relation_to_vrf cannot be deleted",
 			"deletion of child is only possible upon deletion of the parent",
 		)
 	}

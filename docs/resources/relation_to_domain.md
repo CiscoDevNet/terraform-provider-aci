@@ -73,6 +73,28 @@ resource "aci_relation_to_domain" "full_example_application_epg" {
   switching_mode                = "AVE"
   target_dn                     = "uni/vmmp-VMware/dom-domain_2"
   untagged                      = "no"
+  uplink_order_container = {
+    active_uplinks  = "1,2"
+    annotation      = "annotation_1"
+    description     = "description_1"
+    name            = "name_1"
+    name_alias      = "name_alias_1"
+    owner_key       = "owner_key_1"
+    owner_tag       = "owner_tag_1"
+    standby_uplinks = "3,4"
+    annotations = [
+      {
+        key   = "key_0"
+        value = "value_1"
+      }
+    ]
+    tags = [
+      {
+        key   = "key_0"
+        value = "value_1"
+      }
+    ]
+  }
   annotations = [
     {
       key   = "key_0"
@@ -156,6 +178,28 @@ All examples for the Relation To Domain resource can be found in the [examples](
 * `untagged` (untagged) - (string) The untagged status of the Relation To Domain object. This attribute is supported in ACI versions: 3.2(10e) to 3.2(10g), 3.2(7f) to 3.2(9h), 4.2(1i) and later.
   - Default: `"no"`
   - Valid Values: `"no"`, `"yes"`.
+* `uplink_order_container` - (map) A map of Uplink Order Container (ACI object [fvUplinkOrderCont](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvUplinkOrderCont/overview)). This attribute is supported in ACI versions: 4.2(1i) and later.
+  #### Optional ####
+    
+    * `active_uplinks` (active) - (string) The active uplink IDs of the Uplink Order Container object. When defined the value cannot be set back to empty.
+    * `annotation` (annotation) - (string) The annotation of the Uplink Order Container object.
+      - Default: `"orchestrator:terraform"`
+    * `description` (descr) - (string) The description of the Uplink Order Container object.
+    * `name` (name) - (string) The name of the Uplink Order Container object.
+    * `name_alias` (nameAlias) - (string) The name alias of the Uplink Order Container object.
+    * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
+    * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
+    * `standby_uplinks` (standby) - (string) The passive uplink IDs of the Uplink Order Container object.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+      #### Required ####
+  
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+      #### Required ####
+  
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
   

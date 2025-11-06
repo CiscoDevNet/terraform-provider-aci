@@ -1080,6 +1080,7 @@ func (r *L3extInstPResource) ModifyPlan(ctx context.Context, req resource.Modify
 				return
 			}
 		}
+
 		if !configData.FvRsCustQosPol.IsNull() && stateData != nil {
 			if IsEmptySingleNestedAttribute(configData.FvRsCustQosPol.Attributes()) {
 				FvRsCustQosPolObject, _ := types.ObjectValueFrom(ctx, FvRsCustQosPolL3extInstPType, getEmptyFvRsCustQosPolL3extInstPResourceModel())
@@ -2343,10 +2344,9 @@ func (r *L3extInstPResource) Update(ctx context.Context, req resource.UpdateRequ
 	// Read Terraform plan data into the model
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
 	resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
-	// Error out when child object fvRsCustQosPol is being deleted
 	if IsEmptySingleNestedAttribute(data.FvRsCustQosPol.Attributes()) && !IsEmptySingleNestedAttribute(stateData.FvRsCustQosPol.Attributes()) {
 		resp.Diagnostics.AddError(
-			"FvRsCustQosPol object cannot be deleted",
+			"FvRsCustQosPol object defined by relation_to_custom_qos_policy cannot be deleted",
 			"deletion of child is only possible upon deletion of the parent",
 		)
 	}

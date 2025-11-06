@@ -267,6 +267,14 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_data_plane_policing_policy.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_data_plane_policing_policy.data_plane_policing_policy_name", "data_plane_policing_policy_name_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.uplink_order_container.active_uplinks", "1,2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.uplink_order_container.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.uplink_order_container.description", "description_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.uplink_order_container.name", "name_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.uplink_order_container.name_alias", "name_alias_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.uplink_order_container.owner_key", "owner_key_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.uplink_order_container.owner_tag", "owner_tag_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.uplink_order_container.standby_uplinks", "3,4"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.class_preference", "encap"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.delimiter", "@"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.deployment_immediacy", "immediate"),
@@ -281,7 +289,7 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.primary_encapsulation_inner", "vlan-300"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.resolution_immediacy", "immediate"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.secondary_encapsulation_inner", "vlan-400"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.switching_mode", "AVE"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.switching_mode", "native"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.target_dn", "uni/vmmp-VMware/dom-domain_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.untagged", "no"),
 					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)-", "inside",
@@ -291,6 +299,14 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					composeAggregateTestCheckFuncWithVersion(t, "4.2(3j)-", "inside",
 						resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.custom_epg_name", "custom_epg_name_1")),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.uplink_order_container.active_uplinks", "1,2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.uplink_order_container.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.uplink_order_container.description", "description_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.uplink_order_container.name", "name_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.uplink_order_container.name_alias", "name_alias_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.uplink_order_container.owner_key", "owner_key_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.uplink_order_container.owner_tag", "owner_tag_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.uplink_order_container.standby_uplinks", "3,4"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.class_preference", "useg"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.delimiter", ""),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.deployment_immediacy", "lazy"),
@@ -307,7 +323,7 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.secondary_encapsulation_inner", "unknown"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.switching_mode", "native"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.target_dn", "uni/vmmp-VMware/dom-domain_2"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.untagged", "yes"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.untagged", "no"),
 					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)-", "inside",
 						resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.binding_type", "ephemeral"),
 						resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.number_of_ports", "0"),
@@ -410,12 +426,12 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.annotations.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "tags.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.tags.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.description", "description_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.match", "all"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.name", "criterion"),
@@ -431,23 +447,23 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_bridge_domain.annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_bridge_domain.annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_bridge_domain.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_bridge_domain.annotations.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_bridge_domain.tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_bridge_domain.tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_bridge_domain.tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_bridge_domain.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "tags.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_bridge_domain.tags.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_consumed_contracts.0.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_consumed_contracts.0.annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_consumed_contracts.0.annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_consumed_contracts.0.annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_consumed_contracts.0.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_consumed_contracts.0.annotations.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_consumed_contracts.0.tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_consumed_contracts.0.tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_consumed_contracts.0.tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_consumed_contracts.0.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "tags.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_consumed_contracts.0.tags.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_consumed_contracts.0.contract_name", "contract_name_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_consumed_contracts.0.priority", "level1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_consumed_contracts.1.annotation", "annotation_2"),
@@ -455,12 +471,12 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_consumed_contracts.1.annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_consumed_contracts.1.annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_consumed_contracts.1.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_consumed_contracts.1.annotations.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_consumed_contracts.1.tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_consumed_contracts.1.tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_consumed_contracts.1.tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_consumed_contracts.1.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "tags.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_consumed_contracts.1.tags.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_consumed_contracts.1.contract_name", "contract_name_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_consumed_contracts.1.priority", "level2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_consumed_contracts.#", "2"),
@@ -469,24 +485,24 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_contract_masters.0.annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_contract_masters.0.annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_contract_masters.0.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_contract_masters.0.annotations.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_contract_masters.0.tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_contract_masters.0.tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_contract_masters.0.tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_contract_masters.0.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "tags.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_contract_masters.0.tags.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_contract_masters.0.target_dn", "uni/tn-test_name/ap-test_name/epg-epg_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_contract_masters.1.annotation", "annotation_2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_contract_masters.1.annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_contract_masters.1.annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_contract_masters.1.annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_contract_masters.1.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_contract_masters.1.annotations.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_contract_masters.1.tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_contract_masters.1.tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_contract_masters.1.tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_contract_masters.1.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "tags.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_contract_masters.1.tags.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_contract_masters.1.target_dn", "uni/tn-test_name/ap-test_name/epg-epg_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_contract_masters.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_custom_qos_policy.annotation", "annotation_1"),
@@ -494,36 +510,54 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_custom_qos_policy.annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_custom_qos_policy.annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_custom_qos_policy.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_custom_qos_policy.annotations.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_custom_qos_policy.tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_custom_qos_policy.tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_custom_qos_policy.tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_custom_qos_policy.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "tags.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_custom_qos_policy.tags.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_custom_qos_policy.custom_qos_policy_name", "custom_qos_policy_name_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_data_plane_policing_policy.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_data_plane_policing_policy.annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_data_plane_policing_policy.annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_data_plane_policing_policy.annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_data_plane_policing_policy.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_data_plane_policing_policy.annotations.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_data_plane_policing_policy.tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_data_plane_policing_policy.tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_data_plane_policing_policy.tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_data_plane_policing_policy.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "tags.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_data_plane_policing_policy.tags.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_data_plane_policing_policy.data_plane_policing_policy_name", "data_plane_policing_policy_name_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.annotations.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "tags.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.tags.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.uplink_order_container.active_uplinks", "1,2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.uplink_order_container.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.uplink_order_container.annotations.0.key", "key_0"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.uplink_order_container.annotations.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.uplink_order_container.annotations.1.key", "key_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.uplink_order_container.annotations.1.value", "test_value"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.uplink_order_container.annotations.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.uplink_order_container.tags.0.key", "key_0"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.uplink_order_container.tags.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.uplink_order_container.tags.1.key", "key_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.uplink_order_container.tags.1.value", "test_value"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.uplink_order_container.tags.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.uplink_order_container.description", "description_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.uplink_order_container.name", "name_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.uplink_order_container.name_alias", "name_alias_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.uplink_order_container.owner_key", "owner_key_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.uplink_order_container.owner_tag", "owner_tag_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.uplink_order_container.standby_uplinks", "3,4"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.class_preference", "encap"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.delimiter", "@"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.deployment_immediacy", "immediate"),
@@ -538,7 +572,7 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.primary_encapsulation_inner", "vlan-300"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.resolution_immediacy", "immediate"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.secondary_encapsulation_inner", "vlan-400"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.switching_mode", "AVE"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.switching_mode", "native"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.target_dn", "uni/vmmp-VMware/dom-domain_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.untagged", "no"),
 					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)-", "inside",
@@ -552,12 +586,30 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.annotations.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "tags.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.tags.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.uplink_order_container.active_uplinks", "1,2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.uplink_order_container.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.uplink_order_container.annotations.0.key", "key_0"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.uplink_order_container.annotations.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.uplink_order_container.annotations.1.key", "key_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.uplink_order_container.annotations.1.value", "test_value"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.uplink_order_container.annotations.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.uplink_order_container.tags.0.key", "key_0"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.uplink_order_container.tags.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.uplink_order_container.tags.1.key", "key_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.uplink_order_container.tags.1.value", "test_value"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.uplink_order_container.tags.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.uplink_order_container.description", "description_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.uplink_order_container.name", "name_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.uplink_order_container.name_alias", "name_alias_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.uplink_order_container.owner_key", "owner_key_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.uplink_order_container.owner_tag", "owner_tag_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.uplink_order_container.standby_uplinks", "3,4"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.class_preference", "useg"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.delimiter", ""),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.deployment_immediacy", "lazy"),
@@ -574,7 +626,7 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.secondary_encapsulation_inner", "unknown"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.switching_mode", "native"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.target_dn", "uni/vmmp-VMware/dom-domain_2"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.untagged", "yes"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.untagged", "no"),
 					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)-", "inside",
 						resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.binding_type", "ephemeral"),
 						resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.1.number_of_ports", "0"),
@@ -587,12 +639,12 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_fibre_channel_paths.0.annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_fibre_channel_paths.0.annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_fibre_channel_paths.0.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_fibre_channel_paths.0.annotations.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_fibre_channel_paths.0.tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_fibre_channel_paths.0.tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_fibre_channel_paths.0.tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_fibre_channel_paths.0.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "tags.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_fibre_channel_paths.0.tags.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_fibre_channel_paths.0.description", "description_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_fibre_channel_paths.0.target_dn", "topology/pod-1/paths-101/pathep-[eth1/1]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_fibre_channel_paths.0.vsan", "vsan-10"),
@@ -602,12 +654,12 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_fibre_channel_paths.1.annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_fibre_channel_paths.1.annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_fibre_channel_paths.1.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_fibre_channel_paths.1.annotations.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_fibre_channel_paths.1.tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_fibre_channel_paths.1.tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_fibre_channel_paths.1.tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_fibre_channel_paths.1.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "tags.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_fibre_channel_paths.1.tags.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_fibre_channel_paths.1.description", "description_2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_fibre_channel_paths.1.target_dn", "topology/pod-1/paths-101/pathep-[eth1/2]"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_fibre_channel_paths.1.vsan", "unknown"),
@@ -618,12 +670,12 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_imported_contracts.0.annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_imported_contracts.0.annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_imported_contracts.0.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_imported_contracts.0.annotations.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_imported_contracts.0.tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_imported_contracts.0.tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_imported_contracts.0.tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_imported_contracts.0.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "tags.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_imported_contracts.0.tags.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_imported_contracts.0.imported_contract_name", "imported_contract_name_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_imported_contracts.0.priority", "level1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_imported_contracts.1.annotation", "annotation_2"),
@@ -631,12 +683,12 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_imported_contracts.1.annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_imported_contracts.1.annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_imported_contracts.1.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_imported_contracts.1.annotations.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_imported_contracts.1.tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_imported_contracts.1.tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_imported_contracts.1.tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_imported_contracts.1.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "tags.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_imported_contracts.1.tags.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_imported_contracts.1.imported_contract_name", "imported_contract_name_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_imported_contracts.1.priority", "level2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_imported_contracts.#", "2"),
@@ -645,24 +697,24 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_intra_epg_contracts.0.annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_intra_epg_contracts.0.annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_intra_epg_contracts.0.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_intra_epg_contracts.0.annotations.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_intra_epg_contracts.0.tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_intra_epg_contracts.0.tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_intra_epg_contracts.0.tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_intra_epg_contracts.0.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "tags.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_intra_epg_contracts.0.tags.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_intra_epg_contracts.0.contract_name", "contract_name_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_intra_epg_contracts.1.annotation", "annotation_2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_intra_epg_contracts.1.annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_intra_epg_contracts.1.annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_intra_epg_contracts.1.annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_intra_epg_contracts.1.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_intra_epg_contracts.1.annotations.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_intra_epg_contracts.1.tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_intra_epg_contracts.1.tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_intra_epg_contracts.1.tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_intra_epg_contracts.1.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "tags.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_intra_epg_contracts.1.tags.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_intra_epg_contracts.1.contract_name", "contract_name_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_intra_epg_contracts.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_monitoring_policy.annotation", "annotation_1"),
@@ -670,24 +722,24 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_monitoring_policy.annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_monitoring_policy.annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_monitoring_policy.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_monitoring_policy.annotations.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_monitoring_policy.tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_monitoring_policy.tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_monitoring_policy.tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_monitoring_policy.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "tags.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_monitoring_policy.tags.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_monitoring_policy.monitoring_policy_name", "monitoring_policy_name_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.0.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.0.annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.0.annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.0.annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.0.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.0.annotations.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.0.tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.0.tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.0.tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.0.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "tags.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.0.tags.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.0.contract_name", "contract_name_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.0.match_criteria", "All"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.0.priority", "level1"),
@@ -696,12 +748,12 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.1.annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.1.annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.1.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.1.annotations.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.1.tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.1.tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.1.tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.1.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "tags.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.1.tags.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.1.contract_name", "contract_name_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.1.match_criteria", "AtleastOne"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_provided_contracts.1.priority", "level2"),
@@ -711,12 +763,12 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_leafs.0.annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_leafs.0.annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_leafs.0.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_leafs.0.annotations.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_leafs.0.tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_leafs.0.tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_leafs.0.tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_leafs.0.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "tags.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_leafs.0.tags.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_leafs.0.deployment_immediacy", "immediate"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_leafs.0.description", "description_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_leafs.0.encapsulation", "vlan-100"),
@@ -727,12 +779,12 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_leafs.1.annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_leafs.1.annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_leafs.1.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_leafs.1.annotations.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_leafs.1.tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_leafs.1.tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_leafs.1.tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_leafs.1.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "tags.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_leafs.1.tags.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_leafs.1.deployment_immediacy", "lazy"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_leafs.1.description", "description_2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_leafs.1.encapsulation", "vlan-101"),
@@ -744,12 +796,12 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_paths.0.annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_paths.0.annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_paths.0.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_paths.0.annotations.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_paths.0.tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_paths.0.tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_paths.0.tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_paths.0.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "tags.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_paths.0.tags.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_paths.0.deployment_immediacy", "immediate"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_paths.0.description", "description_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_paths.0.encapsulation", "vlan-202"),
@@ -761,12 +813,12 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_paths.1.annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_paths.1.annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_paths.1.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_paths.1.annotations.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_paths.1.tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_paths.1.tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_paths.1.tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_paths.1.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "tags.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_paths.1.tags.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_paths.1.deployment_immediacy", "lazy"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_paths.1.description", "description_2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_static_paths.1.encapsulation", "vlan-201"),
@@ -779,24 +831,24 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_taboo_contracts.0.annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_taboo_contracts.0.annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_taboo_contracts.0.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_taboo_contracts.0.annotations.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_taboo_contracts.0.tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_taboo_contracts.0.tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_taboo_contracts.0.tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_taboo_contracts.0.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "tags.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_taboo_contracts.0.tags.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_taboo_contracts.0.taboo_contract_name", "taboo_contract_name_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_taboo_contracts.1.annotation", "annotation_2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_taboo_contracts.1.annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_taboo_contracts.1.annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_taboo_contracts.1.annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_taboo_contracts.1.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_taboo_contracts.1.annotations.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_taboo_contracts.1.tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_taboo_contracts.1.tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_taboo_contracts.1.tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_taboo_contracts.1.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "tags.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_taboo_contracts.1.tags.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_taboo_contracts.1.taboo_contract_name", "taboo_contract_name_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_taboo_contracts.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_trust_control_policy.annotation", "annotation_1"),
@@ -804,12 +856,12 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_trust_control_policy.annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_trust_control_policy.annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_trust_control_policy.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_trust_control_policy.annotations.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_trust_control_policy.tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_trust_control_policy.tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_trust_control_policy.tags.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_trust_control_policy.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "tags.#", "2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_trust_control_policy.tags.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_trust_control_policy.trust_control_policy_name", "trust_control_policy_name_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "tags.0.value", "value_1"),
@@ -870,6 +922,20 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.tags.0.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.tags.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.tags.#", "1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.uplink_order_container.active_uplinks", "1,2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.uplink_order_container.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.uplink_order_container.annotations.0.key", "key_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.uplink_order_container.annotations.0.value", "test_value"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.uplink_order_container.annotations.#", "1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.uplink_order_container.tags.0.key", "key_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.uplink_order_container.tags.0.value", "test_value"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.uplink_order_container.tags.#", "1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.uplink_order_container.description", "description_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.uplink_order_container.name", "name_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.uplink_order_container.name_alias", "name_alias_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.uplink_order_container.owner_key", "owner_key_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.uplink_order_container.owner_tag", "owner_tag_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.uplink_order_container.standby_uplinks", "3,4"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.class_preference", "useg"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.delimiter", ""),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.deployment_immediacy", "lazy"),
@@ -886,7 +952,7 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.secondary_encapsulation_inner", "unknown"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.switching_mode", "native"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.target_dn", "uni/vmmp-VMware/dom-domain_2"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.untagged", "yes"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.untagged", "no"),
 					composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)-", "inside",
 						resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.binding_type", "ephemeral"),
 						resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_domains.0.number_of_ports", "0"),
@@ -1498,6 +1564,36 @@ resource "aci_application_epg" "test" {
           value = "test_value"
 	    },
       ]
+      uplink_order_container = {
+        active_uplinks = "1,2"
+        annotation = "annotation_1"
+        annotations = [
+	      {
+            key = "key_0"
+            value = "value_1"
+	      },
+	      {
+            key = "key_1"
+            value = "test_value"
+	      },
+        ]
+        tags = [
+	      {
+            key = "key_0"
+            value = "value_1"
+	      },
+	      {
+            key = "key_1"
+            value = "test_value"
+	      },
+        ]
+        description = "description_1"
+        name = "name_1"
+        name_alias = "name_alias_1"
+        owner_key = "owner_key_1"
+        owner_tag = "owner_tag_1"
+        standby_uplinks = "3,4"
+      }
       class_preference = "encap"
       delimiter = "@"
       deployment_immediacy = "immediate"
@@ -1512,7 +1608,7 @@ resource "aci_application_epg" "test" {
       primary_encapsulation_inner = "vlan-300"
       resolution_immediacy = "immediate"
       secondary_encapsulation_inner = "vlan-400"
-      switching_mode = "AVE"
+      switching_mode = "native"
       target_dn = "uni/vmmp-VMware/dom-domain_1"
       untagged = "no"
       binding_type = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.0(1h)-") ? "dynamicBinding" : null
@@ -1542,6 +1638,36 @@ resource "aci_application_epg" "test" {
           value = "test_value"
 	    },
       ]
+      uplink_order_container = {
+        active_uplinks = "1,2"
+        annotation = "annotation_1"
+        annotations = [
+	      {
+            key = "key_0"
+            value = "value_1"
+	      },
+	      {
+            key = "key_1"
+            value = "test_value"
+	      },
+        ]
+        tags = [
+	      {
+            key = "key_0"
+            value = "value_1"
+	      },
+	      {
+            key = "key_1"
+            value = "test_value"
+	      },
+        ]
+        description = "description_1"
+        name = "name_1"
+        name_alias = "name_alias_1"
+        owner_key = "owner_key_1"
+        owner_tag = "owner_tag_1"
+        standby_uplinks = "3,4"
+      }
       class_preference = "useg"
       delimiter = ""
       deployment_immediacy = "lazy"
@@ -1558,7 +1684,7 @@ resource "aci_application_epg" "test" {
       secondary_encapsulation_inner = "unknown"
       switching_mode = "native"
       target_dn = "uni/vmmp-VMware/dom-domain_2"
-      untagged = "yes"
+      untagged = "no"
       binding_type = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.0(1h)-") ? "ephemeral" : null
       number_of_ports = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.0(1h)-") ? "0" : null
       port_allocation = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.0(1h)-") ? "fixed" : null
@@ -2109,6 +2235,28 @@ resource "aci_application_epg" "test" {
           value = "test_value"
 	    },
       ]
+      uplink_order_container = {
+        active_uplinks = "1,2"
+        annotation = "annotation_1"
+        annotations = [ 
+	      {
+            key = "key_1"
+            value = "test_value"
+	      },
+        ]
+        tags = [ 
+	      {
+            key = "key_1"
+            value = "test_value"
+	      },
+        ]
+        description = "description_1"
+        name = "name_1"
+        name_alias = "name_alias_1"
+        owner_key = "owner_key_1"
+        owner_tag = "owner_tag_1"
+        standby_uplinks = "3,4"
+      }
 	  class_preference = "useg"
 	  delimiter = ""
 	  deployment_immediacy = "lazy"
@@ -2125,7 +2273,7 @@ resource "aci_application_epg" "test" {
 	  secondary_encapsulation_inner = "unknown"
 	  switching_mode = "native"
 	  target_dn = "uni/vmmp-VMware/dom-domain_2"
-	  untagged = "yes"
+	  untagged = "no"
   	  binding_type = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.0(1h)-") ? "ephemeral" : null
   	  number_of_ports = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.0(1h)-") ? "0" : null
   	  port_allocation = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.0(1h)-") ? "fixed" : null

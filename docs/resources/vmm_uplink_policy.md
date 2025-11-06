@@ -87,7 +87,7 @@ All examples for the VMM Uplink Policy resource can be found in the [examples](h
 ### Optional ###
 
 * `annotation` (annotation) - (string) The annotation of the VMM Uplink Policy object.
-  - Default: `orchestrator:terraform`
+  - Default: `"orchestrator:terraform"`
 * `name_alias` (nameAlias) - (string) The name alias of the VMM Uplink Policy object.
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####

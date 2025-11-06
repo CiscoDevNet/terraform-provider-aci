@@ -390,6 +390,7 @@ func (r *FvApResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRe
 				return
 			}
 		}
+
 		if !configData.FvRsApMonPol.IsNull() && stateData != nil {
 			if IsEmptySingleNestedAttribute(configData.FvRsApMonPol.Attributes()) {
 				FvRsApMonPolObject, _ := types.ObjectValueFrom(ctx, FvRsApMonPolFvApType, getEmptyFvRsApMonPolFvApResourceModel())

@@ -1643,36 +1643,42 @@ func (r *FvCtxResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanR
 				return
 			}
 		}
+
 		if !configData.FvRsBgpCtxPol.IsNull() && stateData != nil {
 			if IsEmptySingleNestedAttribute(configData.FvRsBgpCtxPol.Attributes()) {
 				FvRsBgpCtxPolObject, _ := types.ObjectValueFrom(ctx, FvRsBgpCtxPolFvCtxType, getEmptyFvRsBgpCtxPolFvCtxResourceModel())
 				planData.FvRsBgpCtxPol = FvRsBgpCtxPolObject
 			}
 		}
+
 		if !configData.FvRsCtxMonPol.IsNull() && stateData != nil {
 			if IsEmptySingleNestedAttribute(configData.FvRsCtxMonPol.Attributes()) {
 				FvRsCtxMonPolObject, _ := types.ObjectValueFrom(ctx, FvRsCtxMonPolFvCtxType, getEmptyFvRsCtxMonPolFvCtxResourceModel())
 				planData.FvRsCtxMonPol = FvRsCtxMonPolObject
 			}
 		}
+
 		if !configData.FvRsCtxToEpRet.IsNull() && stateData != nil {
 			if IsEmptySingleNestedAttribute(configData.FvRsCtxToEpRet.Attributes()) {
 				FvRsCtxToEpRetObject, _ := types.ObjectValueFrom(ctx, FvRsCtxToEpRetFvCtxType, getEmptyFvRsCtxToEpRetFvCtxResourceModel())
 				planData.FvRsCtxToEpRet = FvRsCtxToEpRetObject
 			}
 		}
+
 		if !configData.FvRsCtxToExtRouteTagPol.IsNull() && stateData != nil {
 			if IsEmptySingleNestedAttribute(configData.FvRsCtxToExtRouteTagPol.Attributes()) {
 				FvRsCtxToExtRouteTagPolObject, _ := types.ObjectValueFrom(ctx, FvRsCtxToExtRouteTagPolFvCtxType, getEmptyFvRsCtxToExtRouteTagPolFvCtxResourceModel())
 				planData.FvRsCtxToExtRouteTagPol = FvRsCtxToExtRouteTagPolObject
 			}
 		}
+
 		if !configData.FvRsCtxToSDWanVpn.IsNull() && stateData != nil {
 			if IsEmptySingleNestedAttribute(configData.FvRsCtxToSDWanVpn.Attributes()) {
 				FvRsCtxToSDWanVpnObject, _ := types.ObjectValueFrom(ctx, FvRsCtxToSDWanVpnFvCtxType, getEmptyFvRsCtxToSDWanVpnFvCtxResourceModel())
 				planData.FvRsCtxToSDWanVpn = FvRsCtxToSDWanVpnObject
 			}
 		}
+
 		if !configData.FvRsOspfCtxPol.IsNull() && stateData != nil {
 			if IsEmptySingleNestedAttribute(configData.FvRsOspfCtxPol.Attributes()) {
 				FvRsOspfCtxPolObject, _ := types.ObjectValueFrom(ctx, FvRsOspfCtxPolFvCtxType, getEmptyFvRsOspfCtxPolFvCtxResourceModel())
@@ -3550,31 +3556,27 @@ func (r *FvCtxResource) Update(ctx context.Context, req resource.UpdateRequest, 
 	// Read Terraform plan data into the model
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
 	resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
-	// Error out when child object fvRsBgpCtxPol is being deleted
 	if IsEmptySingleNestedAttribute(data.FvRsBgpCtxPol.Attributes()) && !IsEmptySingleNestedAttribute(stateData.FvRsBgpCtxPol.Attributes()) {
 		resp.Diagnostics.AddError(
-			"FvRsBgpCtxPol object cannot be deleted",
+			"FvRsBgpCtxPol object defined by relation_to_bgp_timers cannot be deleted",
 			"deletion of child is only possible upon deletion of the parent",
 		)
 	}
-	// Error out when child object fvRsCtxToEpRet is being deleted
 	if IsEmptySingleNestedAttribute(data.FvRsCtxToEpRet.Attributes()) && !IsEmptySingleNestedAttribute(stateData.FvRsCtxToEpRet.Attributes()) {
 		resp.Diagnostics.AddError(
-			"FvRsCtxToEpRet object cannot be deleted",
+			"FvRsCtxToEpRet object defined by relation_from_vrf_to_end_point_retention_policy cannot be deleted",
 			"deletion of child is only possible upon deletion of the parent",
 		)
 	}
-	// Error out when child object fvRsCtxToExtRouteTagPol is being deleted
 	if IsEmptySingleNestedAttribute(data.FvRsCtxToExtRouteTagPol.Attributes()) && !IsEmptySingleNestedAttribute(stateData.FvRsCtxToExtRouteTagPol.Attributes()) {
 		resp.Diagnostics.AddError(
-			"FvRsCtxToExtRouteTagPol object cannot be deleted",
+			"FvRsCtxToExtRouteTagPol object defined by relation_from_vrf_to_l3out_route_tag_policy cannot be deleted",
 			"deletion of child is only possible upon deletion of the parent",
 		)
 	}
-	// Error out when child object fvRsOspfCtxPol is being deleted
 	if IsEmptySingleNestedAttribute(data.FvRsOspfCtxPol.Attributes()) && !IsEmptySingleNestedAttribute(stateData.FvRsOspfCtxPol.Attributes()) {
 		resp.Diagnostics.AddError(
-			"FvRsOspfCtxPol object cannot be deleted",
+			"FvRsOspfCtxPol object defined by relation_to_ospf_timers cannot be deleted",
 			"deletion of child is only possible upon deletion of the parent",
 		)
 	}

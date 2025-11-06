@@ -105,6 +105,9 @@ fvAEPg:
       deployment_immediacy: relation_to_static_leafs.deployment_immediacy
       mode: relation_to_static_leafs.mode
 
+fvUplinkOrderCont:
+  allow_delete: false
+
 fvRsAEPgMonPol:
   resource_name: "relation_from_application_epg_to_monitoring_policy"
 
