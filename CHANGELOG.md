@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.18.0 (November 7, 2025)
+
+IMPROVEMENTS:
+- Add name attribute to aci_l3_ext_subnet resource and datasource.
+- Add aci_vmm_uplink_container and aci_vmm_uplink_policy resources and datasources.
+- Add support for importing multiple children objects using json string to aci_rest_managed resource.
+
 ## 2.17.0 (July 17, 2025)
 
 This release includes resources and data sources that have been migrated from SDKv2 to the Terraform Provider Framework. Those resources and data sources will continue to accept legacy attributes but deprecation warnings will be displayed. See the [migration guide](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/guides/migration) for more details on the migration and how to upgrade the provider to this release and any subsequent v2.x release that will include migrated resources and data sources.
