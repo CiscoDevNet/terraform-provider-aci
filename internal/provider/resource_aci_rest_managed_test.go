@@ -907,7 +907,7 @@ func TestAccAciRestManaged_undeletableObject(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_rest_managed.fvFabricExtConnP", "content.id", "1"),
 					resource.TestCheckResourceAttr("aci_rest_managed.fvFabricExtConnP", "content.name", "IPN"),
 					resource.TestCheckResourceAttr("aci_rest_managed.fvFabricExtConnP", "content.rt", "extended:as2-nn4:5:16"),
-					resource.TestCheckResourceAttr("aci_rest_managed.fvFabricExtConnP", "content.siteId", "1"),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvFabricExtConnP", "content.siteId", "0"),
 					resource.TestCheckResourceAttr("aci_rest_managed.fvFabricExtConnP", "content.%", "4"),
 
 					// Validate the attributes for fvPeeringP
@@ -1462,7 +1462,7 @@ func testAccAciRestManagedConfig_undeletableObject() string {
 		  id     = "1"
 		  name   = "IPN"
 		  rt     = "extended:as2-nn4:5:16"
-		  siteId = "1"
+		  siteId = "0"
 		}
 	  }
 	  resource "aci_rest_managed" "fvPeeringP" {

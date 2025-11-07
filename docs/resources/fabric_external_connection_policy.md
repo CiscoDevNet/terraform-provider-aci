@@ -56,7 +56,7 @@ resource "aci_fabric_external_connection_policy" "full_example_tenant" {
   owner_key   = "owner_key_1"
   owner_tag   = "owner_tag_1"
   community   = "extended:as2-nn4:5:16"
-  site_id     = "1"
+  site_id     = "0"
   peering_profile = {
     annotation  = "annotation_1"
     description = "description_1"
