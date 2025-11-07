@@ -18,7 +18,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.10"
-      - run: pip install git-cliff typos
+      - run: pip install git-cliff==2.4.0 typos
       - name: Check new changlog entry for version bump type
         id: type
         run: |
@@ -77,7 +77,7 @@ jobs:
       - name: Set git config
         run: git config user.email "193842815+dcne-automation@users.noreply.github.com" && git config user.name "dcne-automation"
       - name: Commit
-        run: git add -u && git status && git commit -m "[ignore] Update Changelog and annotation_unsupported.go for new release (${{ steps.vars.outputs.version }})"
+        run: git add -u && git status && git commit -m "[ignore] Update CHANGELOG.md, sbom.spdx.json and annotation_unsupported.go for ${{ steps.vars.outputs.version }} release"
       - name: Branch & Push
         run: git checkout -b release_pr && git push --set-upstream origin release_pr --force && git clean -f -d
 
