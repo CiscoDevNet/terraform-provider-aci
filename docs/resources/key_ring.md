@@ -95,7 +95,7 @@ ffPUWQ0j+fiK+covFG8NL7H+26NSGB5+Xsn9uwOGLj7K/YT6CbBtr9hJiuWjM1Al
 -----END PRIVATE KEY-----
 EOT
   key_type              = "RSA"
-  modulus               = "mod1024"
+  modulus               = "mod2048"
   name                  = "test_name"
   name_alias            = "name_alias_1"
   owner_key             = "owner_key_1"
@@ -182,7 +182,7 @@ ffPUWQ0j+fiK+covFG8NL7H+26NSGB5+Xsn9uwOGLj7K/YT6CbBtr9hJiuWjM1Al
 -----END PRIVATE KEY-----
 EOT
   key_type              = "RSA"
-  modulus               = "mod1024"
+  modulus               = "mod2048"
   name                  = "test_name"
   name_alias            = "name_alias_1"
   owner_key             = "owner_key_1"
