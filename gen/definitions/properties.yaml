@@ -2570,6 +2570,8 @@ fvPeeringP:
     bgp_evpn_peering_profile: "peering_profile"
 
 lacpEnhancedLagPol:
+  ignores:
+    - "id"
   overwrites:
     lbmode: "load_balancing_mode"
     num_links: "number_of_links"
