@@ -26,6 +26,8 @@ func TestAccResourceLacpEnhancedLagPolWithVmmVSwitchPolicyCont(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_lacp_enhanced_lag_policy.allow_test_2", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_lacp_enhanced_lag_policy.allow_test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_lacp_enhanced_lag_policy.allow_test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_lacp_enhanced_lag_policy.allow_test", "id_attribute", ""),
+					resource.TestCheckResourceAttr("aci_lacp_enhanced_lag_policy.allow_test_2", "id_attribute", ""),
 					resource.TestCheckResourceAttr("aci_lacp_enhanced_lag_policy.allow_test", "load_balancing_mode", "src-dst-ip"),
 					resource.TestCheckResourceAttr("aci_lacp_enhanced_lag_policy.allow_test_2", "load_balancing_mode", "src-dst-ip"),
 					resource.TestCheckResourceAttr("aci_lacp_enhanced_lag_policy.allow_test", "mode", "active"),
@@ -66,6 +68,8 @@ func TestAccResourceLacpEnhancedLagPolWithVmmVSwitchPolicyCont(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_lacp_enhanced_lag_policy.allow_test_2", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_lacp_enhanced_lag_policy.allow_test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_lacp_enhanced_lag_policy.allow_test_2", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_lacp_enhanced_lag_policy.allow_test", "id_attribute", ""),
+					resource.TestCheckResourceAttr("aci_lacp_enhanced_lag_policy.allow_test_2", "id_attribute", ""),
 					resource.TestCheckResourceAttr("aci_lacp_enhanced_lag_policy.allow_test", "load_balancing_mode", "src-dst-ip"),
 					resource.TestCheckResourceAttr("aci_lacp_enhanced_lag_policy.allow_test_2", "load_balancing_mode", "src-dst-ip"),
 					resource.TestCheckResourceAttr("aci_lacp_enhanced_lag_policy.allow_test", "mode", "active"),
@@ -90,6 +94,7 @@ func TestAccResourceLacpEnhancedLagPolWithVmmVSwitchPolicyCont(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_lacp_enhanced_lag_policy.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_lacp_enhanced_lag_policy.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_lacp_enhanced_lag_policy.test", "id_attribute", ""),
 					resource.TestCheckResourceAttr("aci_lacp_enhanced_lag_policy.test", "load_balancing_mode", "src-dst-ip"),
 					resource.TestCheckResourceAttr("aci_lacp_enhanced_lag_policy.test", "mode", "active"),
 					resource.TestCheckResourceAttr("aci_lacp_enhanced_lag_policy.test", "name_alias", ""),
@@ -103,6 +108,7 @@ func TestAccResourceLacpEnhancedLagPolWithVmmVSwitchPolicyCont(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_lacp_enhanced_lag_policy.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_lacp_enhanced_lag_policy.test", "annotation", "annotation"),
+					resource.TestCheckResourceAttr("aci_lacp_enhanced_lag_policy.test", "id_attribute", "id_attribute_1"),
 					resource.TestCheckResourceAttr("aci_lacp_enhanced_lag_policy.test", "load_balancing_mode", "dst-ip"),
 					resource.TestCheckResourceAttr("aci_lacp_enhanced_lag_policy.test", "mode", "active"),
 					resource.TestCheckResourceAttr("aci_lacp_enhanced_lag_policy.test", "name_alias", "name_alias_1"),
@@ -124,6 +130,7 @@ func TestAccResourceLacpEnhancedLagPolWithVmmVSwitchPolicyCont(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_lacp_enhanced_lag_policy.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_lacp_enhanced_lag_policy.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_lacp_enhanced_lag_policy.test", "id_attribute", ""),
 					resource.TestCheckResourceAttr("aci_lacp_enhanced_lag_policy.test", "load_balancing_mode", "src-dst-ip"),
 					resource.TestCheckResourceAttr("aci_lacp_enhanced_lag_policy.test", "mode", "active"),
 					resource.TestCheckResourceAttr("aci_lacp_enhanced_lag_policy.test", "name_alias", ""),
@@ -143,6 +150,7 @@ func TestAccResourceLacpEnhancedLagPolWithVmmVSwitchPolicyCont(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_lacp_enhanced_lag_policy.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_lacp_enhanced_lag_policy.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_lacp_enhanced_lag_policy.test", "id_attribute", ""),
 					resource.TestCheckResourceAttr("aci_lacp_enhanced_lag_policy.test", "load_balancing_mode", "src-dst-ip"),
 					resource.TestCheckResourceAttr("aci_lacp_enhanced_lag_policy.test", "mode", "active"),
 					resource.TestCheckResourceAttr("aci_lacp_enhanced_lag_policy.test", "name_alias", ""),
@@ -236,6 +244,7 @@ resource "aci_lacp_enhanced_lag_policy" "test" {
   parent_dn = aci_vswitch_policy.test.id
   name = "test_name"
   annotation = "annotation"
+  id_attribute = "id_attribute_1"
   load_balancing_mode = "dst-ip"
   mode = "active"
   name_alias = "name_alias_1"
@@ -248,6 +257,7 @@ resource "aci_lacp_enhanced_lag_policy" "test" {
   parent_dn = aci_vswitch_policy.test.id
   name = "test_name"
   annotation = "orchestrator:terraform"
+  id_attribute = ""
   load_balancing_mode = "src-dst-ip"
   mode = "active"
   name_alias = ""

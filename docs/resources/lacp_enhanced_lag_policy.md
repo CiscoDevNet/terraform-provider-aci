@@ -49,6 +49,7 @@ The configuration snippet below shows all possible attributes of the LACP Enhanc
 resource "aci_lacp_enhanced_lag_policy" "full_example_vswitch_policy" {
   parent_dn           = aci_vswitch_policy.example.id
   annotation          = "annotation"
+  id_attribute        = "id_attribute_1"
   load_balancing_mode = "dst-ip"
   mode                = "active"
   name                = "test_name"
@@ -88,6 +89,7 @@ All examples for the LACP Enhanced Lag Policy resource can be found in the [exam
 
 * `annotation` (annotation) - (string) The annotation of the LACP Enhanced Lag Policy object.
   - Default: `"orchestrator:terraform"`
+* `id_attribute` (id) - (string) The identifier of the LACP Enhanced Lag Policy object.
 * `load_balancing_mode` (lbmode) - (string) The load balancing mode of the LACP Enhanced Lag Policy object.
   - Default: `"src-dst-ip"`
   - Valid Values: `"dst-ip"`, `"dst-ip-l4port"`, `"dst-ip-l4port-vlan"`, `"dst-ip-vlan"`, `"dst-l4port"`, `"dst-mac"`, `"src-dst-ip"`, `"src-dst-ip-l4port"`, `"src-dst-ip-l4port-vlan"`, `"src-dst-ip-vlan"`, `"src-dst-l4port"`, `"src-dst-mac"`, `"src-ip"`, `"src-ip-l4port"`, `"src-ip-l4port-vlan"`, `"src-ip-vlan"`, `"src-l4port"`, `"src-mac"`, `"src-port-id"`, `"vlan"`.
