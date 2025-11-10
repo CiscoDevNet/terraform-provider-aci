@@ -73,6 +73,11 @@ resource "aci_rest_managed" "tenant_with_cleanup" {
     name  = "PRODUCTION_TENANT"
     descr = "Production tenant for applications"
   }
+
+  # Content to apply to parent during terraform destroy
+  content_on_destroy = {
+    descr = "Decommissioned - Archived Tenant"
+  }
   
   child {
     rn         = "ap-web"
@@ -80,6 +85,10 @@ resource "aci_rest_managed" "tenant_with_cleanup" {
     content = {
       name  = "web"
       descr = "Web application profile"
+    }
+    # Content to apply to child during terraform destroy
+    content_on_destroy = {
+      descr = "Archived - Web application"
     }
   }
   
@@ -90,23 +99,8 @@ resource "aci_rest_managed" "tenant_with_cleanup" {
       name  = "database"
       descr = "Database application profile"
     }
+    # No content_on_destroy - this child will be DELETED during destroy
   }
-  
-  # Content to apply during terraform destroy
-  content_on_destroy = {
-    descr = "Decommissioned - Archived Tenant"
-  }
-  
-  # Children to modify during destroy (others will be deleted)
-  child_on_destroy {
-    rn         = "ap-web"
-    class_name = "fvAp"
-    content = {
-      descr = "Archived - Web application"
-    }
-  }
-  
-  # Note: ap-database is not listed in child_on_destroy, so it will be deleted normally
 }
 ```
 
@@ -137,7 +131,7 @@ resource "aci_rest_managed" "tenant_with_cleanup" {
 
 * `content_on_destroy` - (map) A map of key-value pairs to be applied to the parent object during Terraform destroy operations. This allows modifying the object with clean up values instead of deleting it. When this attribute is specified, the object will be updated with these values rather than being deleted from ACI.
 
-  ~> When adding `content_on_destroy` to an existing resource, Terraform will show this attribute being added in the plan. This is expected behavior and will not trigger any API calls or resource modifications. You must run `terraform apply` to store the `content_on_destroy` configuration in the state before it can take effect during `terraform destroy`. The attribute values are only applied when executing `terraform destroy` and have no impact on the resource during normal operations.
+  ~> When adding `content_on_destroy` to an existing resource, Terraform will show this attribute being added in the plan. This is expected behavior. You must run `terraform apply` to store the `content_on_destroy` configuration in the state before it can take effect during `terraform destroy`. The attribute values are only applied when executing `terraform destroy` and have no impact on the resource during normal operations.
 
   !> The `annotation` property is not allowed to be set in `content_on_destroy`.
 
@@ -154,20 +148,11 @@ resource "aci_rest_managed" "tenant_with_cleanup" {
 
   * `content` - (map) A map of key-value pairs which represents the attributes for the child object. When annotation is provided in the content of the child it will take precedence over the annotation set at the parent level.
 
-* `child_on_destroy` - (block) A nested block representing a child object to be modified during Terraform destroy operations. Multiple `child_on_destroy` blocks can be specified. Children listed here will be updated with the specified content instead of being deleted. Children not listed in `child_on_destroy` will be deleted normally during destroy.
+  * `content_on_destroy` - (map) A map of key-value pairs to be applied to this specific child object during Terraform destroy operations. When specified, this child will be updated with these values instead of being deleted. Children without `content_on_destroy` will be deleted normally during destroy.
 
-  !> `child_on_destroy` only takes effect when `content_on_destroy` is also specified. Without `content_on_destroy`, all children will be deleted using the standard deletion process.
+      ~> When adding `content_on_destroy` to an existing child, Terraform will show the child being replaced in the plan. This is expected behavior due to how Terraform handles set elements. You must run `terraform apply` to store the `content_on_destroy` configuration in the state before it can take effect during `terraform destroy`.
 
-  ~> Only children that have both matching `rn` and `class_name` in `child_on_destroy` will be modified during destroy. All other children will be deleted.
-
-  #### Required ####
-
-  * `rn` - (string) The Relative Name of the child object. Must match the rn of an existing child in the child block.
-  * `class_name` - (string) Class name of child object. Must match the class_name of an existing child in the child block.
-
-  #### Optional ###
-
-  * `content` - (map) A map of key-value pairs which represents the attributes to be applied to the child object during destroy.
+      ~> Child-level `content_on_destroy` only takes effect when the parent-level `content_on_destroy` is also specified. If the parent does not have `content_on_destroy`, all children will be deleted using the standard deletion process regardless of child-level `content_on_destroy` configuration.
 
 ## Importing ##
 

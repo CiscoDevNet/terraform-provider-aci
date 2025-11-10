@@ -949,8 +949,31 @@ func TestAccAciRestManaged_onDestroyCreate(t *testing.T) {
 					// Check content_on_destroy
 					resource.TestCheckResourceAttr("aci_rest_managed.tenant_with_destroy", "content_on_destroy.descr", "Decommissioned Tenant"),
 
-					// Check child_on_destroy (2 children with destroy config)
-					resource.TestCheckResourceAttr("aci_rest_managed.tenant_with_destroy", "child_on_destroy.#", "2"),
+					// Check ap-web with content_on_destroy
+					resource.TestCheckTypeSetElemNestedAttrs("aci_rest_managed.tenant_with_destroy", "child.*", map[string]string{
+						"rn":                       "ap-web",
+						"class_name":               "fvAp",
+						"content.name":             "web",
+						"content.descr":            "Web Application",
+						"content_on_destroy.descr": "Archived Web App",
+					}),
+
+					// Check ap-database without content_on_destroy
+					resource.TestCheckTypeSetElemNestedAttrs("aci_rest_managed.tenant_with_destroy", "child.*", map[string]string{
+						"rn":            "ap-database",
+						"class_name":    "fvAp",
+						"content.name":  "database",
+						"content.descr": "Database Application",
+					}),
+
+					// Check ctx-vrf1 with content_on_destroy
+					resource.TestCheckTypeSetElemNestedAttrs("aci_rest_managed.tenant_with_destroy", "child.*", map[string]string{
+						"rn":                       "ctx-vrf1",
+						"class_name":               "fvCtx",
+						"content.name":             "vrf1",
+						"content.descr":            "Production VRF",
+						"content_on_destroy.descr": "Archived VRF",
+					}),
 				),
 			},
 		},
@@ -1024,7 +1047,7 @@ func TestAccAciRestManaged_onDestroyImport(t *testing.T) {
 	})
 }
 
-// Explicit Destroy of resource with on_destroy attributes
+// Explicit Destroy of resource with content_on_destroy attributes
 func TestAccAciRestManaged_explpicitDestroy(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(1g)-") },
@@ -1613,6 +1636,9 @@ func testAccAciRestManagedConfig_onDestroy() string {
                 name  = "web"
                 descr = "Web Application"
             }
+            content_on_destroy = {
+                descr = "Archived Web App"
+            }
         }
 
         child {
@@ -1622,6 +1648,7 @@ func testAccAciRestManagedConfig_onDestroy() string {
                 name  = "database"
                 descr = "Database Application"
             }
+            # No content_on_destroy - this child will be DELETED during destroy
         }
 
         child {
@@ -1631,26 +1658,13 @@ func testAccAciRestManagedConfig_onDestroy() string {
                 name  = "vrf1"
                 descr = "Production VRF"
             }
+            content_on_destroy = {
+                descr = "Archived VRF"
+            }
         }
 
         content_on_destroy = {
             descr = "Decommissioned Tenant"
-        }
-
-        child_on_destroy {
-            rn         = "ap-web"
-            class_name = "fvAp"
-            content = {
-                descr = "Archived Web App"
-            }
-        }
-
-        child_on_destroy {
-            rn         = "ctx-vrf1"
-            class_name = "fvCtx"
-            content = {
-                descr = "Archived VRF"
-            }
         }
     }
     `, onDestroyTestName)
