@@ -48,14 +48,14 @@ type AciRestManagedResourceModel struct {
 	Annotation       types.String `tfsdk:"annotation"`
 	EscapeHtml       types.Bool   `tfsdk:"escape_html"`
 	ContentOnDestroy types.Map    `tfsdk:"content_on_destroy"`
-	ChildOnDestroy   types.Set    `tfsdk:"child_on_destroy"`
 }
 
 // ChildAciRestManagedResourceModel describes the resource data model for the children without relationships.
 type ChildAciRestManagedResourceModel struct {
-	Rn        types.String `tfsdk:"rn"`
-	ClassName types.String `tfsdk:"class_name"`
-	Content   types.Map    `tfsdk:"content"`
+	Rn               types.String `tfsdk:"rn"`
+	ClassName        types.String `tfsdk:"class_name"`
+	Content          types.Map    `tfsdk:"content"`
+	ContentOnDestroy types.Map    `tfsdk:"content_on_destroy"`
 }
 
 type AciRestManagedChildIdentifier struct {
@@ -119,15 +119,6 @@ func (r *AciRestManagedResource) ModifyPlan(ctx context.Context, req resource.Mo
 					"Annotation is not supported in content_on_destroy, please remove annotation from content_on_destroy",
 				)
 			}
-		}
-
-		// Warn if child_on_destroy is specified without content_on_destroy
-		if (!planData.ChildOnDestroy.IsNull() && !planData.ChildOnDestroy.IsUnknown()) &&
-			(planData.ContentOnDestroy.IsNull() || planData.ContentOnDestroy.IsUnknown()) {
-			resp.Diagnostics.AddWarning(
-				"child_on_destroy will be ignored",
-				"child_on_destroy is only applied when content_on_destroy is also specified. Please add content_on_destroy or remove child_on_destroy.",
-			)
 		}
 
 		if stateData == nil && !globalAllowExistingOnCreate && !planData.Dn.IsUnknown() {
@@ -197,7 +188,7 @@ func (r *AciRestManagedResource) Schema(ctx context.Context, req resource.Schema
 				MarkdownDescription: "Enable escaping of HTML characters when encoding the JSON payload.",
 			},
 			"content_on_destroy": schema.MapAttribute{
-				MarkdownDescription: "Map of key-value pairs to be applied to the parent object during destroy operation. This allows you to modify the object before deletion instead of deleting it. Note: This is required for child_on_destroy to take effect.",
+				MarkdownDescription: "Map of key-value pairs to be applied to the parent object during destroy operation. This allows you to modify the object before deletion instead of deleting it.",
 				Optional:            true,
 				ElementType:         types.StringType,
 			},
@@ -233,23 +224,8 @@ func (r *AciRestManagedResource) Schema(ctx context.Context, req resource.Schema
 								mapplanmodifier.UseStateForUnknown(),
 							},
 						},
-					},
-				},
-			},
-			"child_on_destroy": schema.SetNestedBlock{
-				MarkdownDescription: "List of children to be applied during destroy operation. Note: This only takes effect when content_on_destroy is also specified. Children not listed here will be deleted normally.",
-				NestedObject: schema.NestedBlockObject{
-					Attributes: map[string]schema.Attribute{
-						"rn": schema.StringAttribute{
-							MarkdownDescription: "The relative name of the child object.",
-							Required:            true,
-						},
-						"class_name": schema.StringAttribute{
-							MarkdownDescription: "Class name of child object.",
-							Required:            true,
-						},
-						"content": schema.MapAttribute{
-							MarkdownDescription: "Map of key-value pairs which represents the attributes for the child object.",
+						"content_on_destroy": schema.MapAttribute{
+							MarkdownDescription: "Map of key-value pairs to be applied to the child object during destroy operation. This allows you to modify the child object before deletion instead of deleting it.",
 							Optional:            true,
 							ElementType:         types.StringType,
 						},
@@ -431,17 +407,40 @@ func (r *AciRestManagedResource) Delete(ctx context.Context, req resource.Delete
 		// Apply content_on_destroy to parent
 		data.Content = data.ContentOnDestroy
 
-		var destroyChildren []ChildAciRestManagedResourceModel
-		data.ChildOnDestroy.ElementsAs(ctx, &destroyChildren, false)
-
 		var currentChildren []ChildAciRestManagedResourceModel
 		data.Child.ElementsAs(ctx, &currentChildren, false)
 
+		// Process children to determine which have content_on_destroy
+		var childrenWithDestroyConfig []ChildAciRestManagedResourceModel
+
+		for _, child := range currentChildren {
+			// Check if this child has content_on_destroy
+			hasChildContentOnDestroy := !child.ContentOnDestroy.IsNull() && !child.ContentOnDestroy.IsUnknown()
+
+			if hasChildContentOnDestroy {
+				// Child has content_on_destroy - replace content with content_on_destroy
+				tflog.Debug(ctx, fmt.Sprintf("Child %s (%s) has content_on_destroy, will be modified",
+					child.Rn.ValueString(), child.ClassName.ValueString()))
+
+				modifiedChild := ChildAciRestManagedResourceModel{
+					Rn:        child.Rn,
+					ClassName: child.ClassName,
+					Content:   child.ContentOnDestroy, // Replace content with content_on_destroy
+				}
+				childrenWithDestroyConfig = append(childrenWithDestroyConfig, modifiedChild)
+			} else {
+				// Child does not have content_on_destroy - will be deleted
+				tflog.Debug(ctx, fmt.Sprintf("Child %s (%s) does not have content_on_destroy, will be deleted",
+					child.Rn.ValueString(), child.ClassName.ValueString()))
+			}
+		}
+
 		// Build JSON payload with:
-		// - Parent with destroy content
-		// - Children with destroy config (destroyChildren)
-		// - Children to be deleted (currentChildren) passed as childState to mark them for deletion
-		jsonPayload = getAciRestManagedCreateJsonPayload(ctx, &resp.Diagnostics, false, data, destroyChildren, currentChildren)
+		// - Parent with destroy content (data.Content = data.ContentOnDestroy)
+		// - Children with destroy config (childrenWithDestroyConfig - content replaced with content_on_destroy)
+		// - All current children (currentChildren) passed as childState
+		//   getAciRestManagedChildPayloads will compare and mark children not in childrenWithDestroyConfig for deletion
+		jsonPayload = getAciRestManagedCreateJsonPayload(ctx, &resp.Diagnostics, false, data, childrenWithDestroyConfig, currentChildren)
 
 		// Restore original values
 		data.Content = originalContent
@@ -455,10 +454,6 @@ func (r *AciRestManagedResource) Delete(ctx context.Context, req resource.Delete
 	} else {
 		// No content_on_destroy - perform regular delete
 		tflog.Debug(ctx, "No content_on_destroy specified, performing regular delete")
-
-		if !data.ChildOnDestroy.IsNull() && !data.ChildOnDestroy.IsUnknown() {
-			tflog.Debug(ctx, "child_on_destroy is specified but will be ignored because content_on_destroy is not present")
-		}
 
 		jsonPayload = GetDeleteJsonPayload(ctx, &resp.Diagnostics, data.ClassName.ValueString(), data.Id.ValueString())
 		if resp.Diagnostics.HasError() {
@@ -726,6 +721,7 @@ func setAciRestManagedAttributes(ctx context.Context, diags *diag.Diagnostics, c
 		}
 
 		aciRestManagedChild.Content, _ = types.MapValue(types.StringType, childContent)
+		aciRestManagedChild.ContentOnDestroy = child.ContentOnDestroy
 		foundChildren = append(foundChildren, aciRestManagedChild)
 	}
 
@@ -777,6 +773,7 @@ func setAciRestManagedAttributes(ctx context.Context, diags *diag.Diagnostics, c
 					}
 				}
 				aciRestManagedChild.Content, _ = types.MapValue(types.StringType, childContent)
+				aciRestManagedChild.ContentOnDestroy = types.MapNull(types.StringType)
 				foundChildren = append(foundChildren, aciRestManagedChild)
 			}
 		}
