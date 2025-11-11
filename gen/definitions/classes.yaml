@@ -1137,3 +1137,81 @@ vnsLDevIf:
   sub_category: "L4-L7"
   ui_locations:
     - "Tenants -> Services -> L4-L7 -> Imported Devices"
+
+infraAccPortP:
+  resource_name: "leaf_interface_profile"
+  sub_category: "Access Policies"
+  ui_locations:
+    - "Fabric -> Access Policies -> Interfaces -> Leaf Interfaces -> Profiles -> Interfaces"
+  migration_version: 1
+
+infraSpAccPortP:
+  resource_name: "spine_interface_profile"
+  sub_category: "Access Policies"
+  ui_locations:
+    - "Fabric -> Access Policies -> Interfaces -> Spine Interfaces -> Profiles"
+  migration_version: 1
+
+infraFexP:
+  resource_name: "fex_profile"
+  sub_category: "Access Policies"
+  ui_locations:
+    - "Fabric -> Access Policies -> Interfaces -> Leaf Interfaces -> Profiles -> Fex Interfaces"
+  migration_version: 1
+
+infraHPortS:
+  resource_name: "access_port_selector"
+  sub_category: "Access Policies"
+  ui_locations:
+    - "Fabric -> Access Policies -> Interfaces -> Leaf Interfaces -> Profiles -> Interface Selectors"
+  migration_version: 1
+  migration_blocks:
+    infraHPortS:
+      leaf_interface_profile_dn: parent_dn
+      access_port_selector_type: port_selector_type
+    infraRsAccBaseGrp:
+      relation_infra_rs_acc_base_grp: relation_to_leaf_access_port_policy_group.target_dn
+
+infraRsAccBaseGrp:
+  resource_name: "relation_to_leaf_access_port_policy_group"
+
+infraAccPortGrp:
+  resource_name: "leaf_access_port_policy_group"
+
+infraSHPortS:
+  resource_name: "spine_access_port_selector"
+  sub_category: "Access Policies"
+  ui_locations:
+    - "Fabric -> Access Policies -> Interfaces -> Spine Interfaces -> Profiles -> Interface Selectors"
+  migration_version: 1
+  migration_blocks:
+    infraSHPortS:
+      spine_interface_profile_dn: parent_dn
+      spine_access_port_selector_type: port_selector_type
+    infraRsSpAccGrp:
+      relation_infra_rs_sp_acc_grp: relation_to_spine_port_policy_group.target_dn
+
+infraRsSpAccGrp:
+  resource_name: "relation_to_spine_port_policy_group"
+
+infraSpAccPortGrp:
+  resource_name: "spine_port_policy_group"
+
+infraPortBlk:
+  sub_category: "Access Policies"
+  ui_locations:
+    - "Fabric -> Access Policies -> Interfaces -> Leaf/Spine Interfaces -> Profiles -> Interface Selectors -> Port Blocks"
+  resource_notes:
+    - "Port Blocks are only applied and visible in UI when the `port_selector_type` attribute on it's parent is set to `range`."
+  migration_version: 1
+  migration_blocks:
+    infraPortBlk:
+      access_port_selector_dn: parent_dn
+    infraRsAccBndlSubgrp:
+      relation_infra_rs_acc_bndl_subgrp: relation_to_pc_vpc_override_policy.target_dn
+
+infraRsAccBndlSubgrp:
+  resource_name: "relation_to_pc_vpc_override_policy"
+
+infraAccBndlSubgrp:
+  resource_name: "leaf_access_bundle_policy_sub_group"
