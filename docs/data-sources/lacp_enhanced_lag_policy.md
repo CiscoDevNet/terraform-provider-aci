@@ -49,6 +49,7 @@ data "aci_lacp_enhanced_lag_policy" "example_vswitch_policy" {
 
 * `id` - (string) The distinguished name (DN) of the LACP Enhanced Lag Policy object.
 * `annotation` (annotation) - (string) The annotation of the LACP Enhanced Lag Policy object.
+* `id_attribute` (id) - (string) The identifier of the LACP Enhanced Lag Policy object.
 * `load_balancing_mode` (lbmode) - (string) The load balancing mode of the LACP Enhanced Lag Policy object.
 * `mode` (mode) - (string) The LACP mode of the LACP Enhanced Lag Policy object.
 * `name_alias` (nameAlias) - (string) The name alias of the LACP Enhanced Lag Policy object.
