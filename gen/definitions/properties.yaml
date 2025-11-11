@@ -2778,6 +2778,8 @@ infraHPortS:
       - "port_selector_type"
 
 infraRsAccBaseGrp:
+  documentation:
+    tDn: "The distinguished name of the target."
   test_values:
     all:
       fex_id: "102"
@@ -2828,7 +2830,7 @@ infraPortBlk:
       parent_dn: "aci_access_port_selector.test.id"
     - class_name: "infraZHPortS"
       parent_dependency: "infraSpAccPortP"
-      parent_dn: "aaci_spine_access_port_selector.test.id"
+      parent_dn: "aci_spine_access_port_selector.test.id"
   test_values:
     default:
       from_card: "1"
