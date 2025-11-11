@@ -87,6 +87,8 @@ global:
     Lacp Enhanced Lag Policy: "LACP Enhanced Lag Policy"
     Vmm: "VMM"
     Policys: "Policies"
+    Leaf Access Bundle Policy Sub Group: "PC VPC Override Policy"
+    Fex: "FEX"
   ignores:
     - "userdom"
 
@@ -2743,3 +2745,109 @@ vnsLDevIf:
     datasource_required:
       logical_device: "uni/tn-test_tenant_imported_device/lDevVip-test_imported_device"
   custom_test_dependency_name: "ImportedVnsLDevVipWithFvTenant"
+
+infraAccPortP:
+  default_values:
+    parent_dn: "uni/infra"
+
+infraSpAccPortP:
+  default_values:
+    parent_dn: "uni/infra"
+
+infraFexP:
+  default_values:
+    parent_dn: "uni/infra"
+
+infraHPortS:
+  overwrites:
+    type: port_selector_type
+  documentation:
+    type: "The port selector type of the %s object."
+  test_values:
+    resource_required:
+      port_selector_type: "range"
+    datasource_required:
+      port_selector_type: "range"
+    datasource_non_existing:
+      port_selector_type: "range"
+    legacy:
+      port_selector_type: "range"
+    ignore_in_legacy:
+      - "port_selector_type"
+
+infraRsAccBaseGrp:
+  test_values:
+    all:
+      fex_id: "102"
+  targets:
+    - class_name: "infraAccPortGrp"
+      target_dn: "uni/infra/funcprof/accportgrp-leaf_access_port_policy_group_1"
+      relation_resource_name: "leaf_access_port_policy_group"
+      properties:
+        name: "leaf_access_port_policy_group_1"
+
+infraSHPortS:
+  overwrites:
+    type: port_selector_type
+  documentation:
+    type: "The port selector type of the %s object."
+  test_values:
+    resource_required:
+      port_selector_type: "ALL"
+    datasource_required:
+      port_selector_type: "ALL"
+    datasource_non_existing:
+      port_selector_type: "ALL"
+    legacy:
+      port_selector_type: "ALL"
+    ignore_in_legacy:
+      - "port_selector_type"
+
+infraRsSpAccGrp:
+  test_values:
+    all:
+      target_dn: "uni/infra/funcprof/spaccportgrp-spine_port_policy_group_1"
+  targets:
+    - class_name: "infraSpAccPortGrp"
+      target_dn: "uni/infra/funcprof/spaccportgrp-spine_port_policy_group_1"
+      relation_resource_name: "spine_port_policy_group"
+      properties:
+        name: "spine_port_policy_group_1"
+
+infraPortBlk:
+  documentation:
+    fromCard: "The start of the line card range for the %s object."
+    fromPort: "The start of the port range for the %s object."
+    toCard: " The end of the line card range for the %s object."
+    toPort: "The end of the port range for the %s object."
+  parents:
+    - class_name: "infraHPortS"
+      parent_dependency: "infraAccPortP"
+      parent_dn: "aci_access_port_selector.test.id"
+    - class_name: "infraZHPortS"
+      parent_dependency: "infraSpAccPortP"
+      parent_dn: "aaci_spine_access_port_selector.test.id"
+  test_values:
+    default:
+      from_card: "1"
+      from_port: "1"
+      to_card: "1"
+      to_port: "1"
+    all:
+      from_card: "2"
+      from_port: "3"
+      to_card: "4"
+      to_port: "5"
+
+infraRsAccBndlSubgrp:
+  documentation:
+    tDn: "The distinguished name (DN) of the target PC VPC Override Policy."
+  example_value_overwrite:
+    target_dn: "aci_leaf_access_bundle_policy_sub_group.example.id"
+  test_values:
+    all:
+      # Set to empty string to avoid validation error on APIC during tests, due to complicated test dependency structure
+      # Empty string still tests if the object is created and if the tDn value matches the input of ""
+      # Response Status Code: 400, Error Code: 182, Error Message: Validation failed PortBlk has a reln to AccBndlSubgrp not contained by AccBndlGrp its parent is associated to.
+      target_dn: ""
+
