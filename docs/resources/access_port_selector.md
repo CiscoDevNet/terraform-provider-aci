@@ -170,7 +170,7 @@ All examples for the Access Port Selector resource can be found in the [examples
       - Default: `"orchestrator:terraform"`
     * `fex_id` (fexId) - (string) The interface policy group FEX ID.
       - Default: `"101"`
-    * `target_dn` (tDn) - (string) Select or create an interface policy group to associate to the Access Port selector.
+    * `target_dn` (tDn) - (string) The distinguished name of the target.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
   

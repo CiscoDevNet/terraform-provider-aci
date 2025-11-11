@@ -68,7 +68,7 @@ data "aci_access_port_selector" "example_fex_profile" {
 * `relation_to_leaf_access_port_policy_group` - (map) A map of Relation To Leaf Access Port Policy Group (ACI object [infraRsAccBaseGrp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraRsAccBaseGrp/overview)) pointing to Access Interface Policy Group (ACI Object [infraAccBaseGrp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraAccBaseGrp/overview)).
     * `annotation` (annotation) - (string) The annotation of the Relation To Leaf Access Port Policy Group object. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `fex_id` (fexId) - (string) The interface policy group FEX ID.
-    * `target_dn` (tDn) - (string) Select or create an interface policy group to associate to the Access Port selector.
+    * `target_dn` (tDn) - (string) The distinguished name of the target.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.

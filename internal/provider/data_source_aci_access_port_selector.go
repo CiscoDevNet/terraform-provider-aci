@@ -109,7 +109,7 @@ func (d *InfraHPortSDataSource) Schema(ctx context.Context, req datasource.Schem
 					},
 					"target_dn": schema.StringAttribute{
 						Computed:            true,
-						MarkdownDescription: `Select or create an interface policy group to associate to the Access Port selector.`,
+						MarkdownDescription: `The distinguished name of the target.`,
 					},
 					"annotations": schema.SetNestedAttribute{
 						MarkdownDescription: ``,
