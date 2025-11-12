@@ -87,7 +87,7 @@ global:
     Lacp Enhanced Lag Policy: "LACP Enhanced Lag Policy"
     Vmm: "VMM"
     Policys: "Policies"
-    Leaf Access Bundle Policy Sub Group: "PC VPC Override Policy"
+    Pc Vpc Override Policy: "PC VPC Override Policy"
     Fex: "FEX"
   ignores:
     - "userdom"

@@ -606,7 +606,7 @@ func (r *InfraPortBlkResource) Schema(ctx context.Context, req resource.SchemaRe
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.UseStateForUnknown(),
 						},
-						MarkdownDescription: `The annotation of the Relation To Pc Vpc Override Policy object.`,
+						MarkdownDescription: `The annotation of the Relation To PC VPC Override Policy object.`,
 					},
 					"target_dn": schema.StringAttribute{
 						Optional: true,

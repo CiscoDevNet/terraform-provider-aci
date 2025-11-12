@@ -96,7 +96,7 @@ func (d *InfraPortBlkDataSource) Schema(ctx context.Context, req datasource.Sche
 				Attributes: map[string]schema.Attribute{
 					"annotation": schema.StringAttribute{
 						Computed:            true,
-						MarkdownDescription: `The annotation of the Relation To Pc Vpc Override Policy object.`,
+						MarkdownDescription: `The annotation of the Relation To PC VPC Override Policy object.`,
 					},
 					"target_dn": schema.StringAttribute{
 						Computed:            true,

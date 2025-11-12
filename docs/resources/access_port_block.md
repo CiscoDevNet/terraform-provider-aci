@@ -167,10 +167,10 @@ All examples for the Access Port Block resource can be found in the [examples](h
   - Default: `"1"`
 * `to_port` (toPort) - (string) The end of the port range for the Access Port Block object.
   - Default: `"1"`
-* `relation_to_pc_vpc_override_policy` - (map) A map of Relation To Pc Vpc Override Policy (ACI object [infraRsAccBndlSubgrp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraRsAccBndlSubgrp/overview)) pointing to PC VPC Override Policy (ACI Object [infraAccBndlSubgrp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraAccBndlSubgrp/overview)) which can be configured using the [aci_leaf_access_bundle_policy_sub_group](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/leaf_access_bundle_policy_sub_group) resource.
+* `relation_to_pc_vpc_override_policy` - (map) A map of Relation To PC VPC Override Policy (ACI object [infraRsAccBndlSubgrp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraRsAccBndlSubgrp/overview)) pointing to Leaf Access Bundle Policy Sub Group (ACI Object [infraAccBndlSubgrp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraAccBndlSubgrp/overview)) which can be configured using the [aci_leaf_access_bundle_policy_sub_group](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/leaf_access_bundle_policy_sub_group) resource.
   #### Optional ####
     
-    * `annotation` (annotation) - (string) The annotation of the Relation To Pc Vpc Override Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `annotation` (annotation) - (string) The annotation of the Relation To PC VPC Override Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
       - Default: `"orchestrator:terraform"`
     * `target_dn` (tDn) - (string) The distinguished name (DN) of the target PC VPC Override Policy.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
