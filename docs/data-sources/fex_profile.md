@@ -42,14 +42,6 @@ data "aci_fex_profile" "example" {
 
 * `name` (name) - (string) The name of the FEX Profile object.
 
-### Optional ###
-
-* `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
-  - The distinguished name (DN) of classes below can be used but currently there is no available resource for it:
-    - [infraInfra](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraInfra/overview)
-
-  - Default: `uni/infra`
-
 ### Read-Only ###
 
 * `id` - (string) The distinguished name (DN) of the FEX Profile object.

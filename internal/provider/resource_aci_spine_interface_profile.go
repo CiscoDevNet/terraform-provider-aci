@@ -8,6 +8,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
@@ -41,7 +42,6 @@ type InfraSpAccPortPResource struct {
 // InfraSpAccPortPResourceModel describes the resource data model.
 type InfraSpAccPortPResourceModel struct {
 	Id            types.String `tfsdk:"id"`
-	ParentDn      types.String `tfsdk:"parent_dn"`
 	Annotation    types.String `tfsdk:"annotation"`
 	Descr         types.String `tfsdk:"description"`
 	Name          types.String `tfsdk:"name"`
@@ -55,7 +55,6 @@ type InfraSpAccPortPResourceModel struct {
 func getEmptyInfraSpAccPortPResourceModel() *InfraSpAccPortPResourceModel {
 	return &InfraSpAccPortPResourceModel{
 		Id:         basetypes.NewStringNull(),
-		ParentDn:   basetypes.NewStringNull(),
 		Annotation: basetypes.NewStringNull(),
 		Descr:      basetypes.NewStringNull(),
 		Name:       basetypes.NewStringNull(),
@@ -131,7 +130,7 @@ func (r *InfraSpAccPortPResource) ModifyPlan(ctx context.Context, req resource.M
 			return
 		}
 
-		if (planData.Id.IsUnknown() || planData.Id.IsNull()) && !planData.ParentDn.IsUnknown() && !planData.Name.IsUnknown() {
+		if (planData.Id.IsUnknown() || planData.Id.IsNull()) && !planData.Name.IsUnknown() {
 			setInfraSpAccPortPId(ctx, planData)
 		}
 
@@ -165,16 +164,6 @@ func (r *InfraSpAccPortPResource) Schema(ctx context.Context, req resource.Schem
 				MarkdownDescription: "The distinguished name (DN) of the Spine Interface Profile object.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
-				},
-			},
-			"parent_dn": schema.StringAttribute{
-				Optional:            true,
-				Computed:            true,
-				Default:             stringdefault.StaticString("uni/infra"),
-				MarkdownDescription: "The distinguished name (DN) of the parent object.",
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
-					stringplanmodifier.RequiresReplace(),
 				},
 			},
 			"annotation": schema.StringAttribute{
@@ -483,7 +472,6 @@ func getAndSetInfraSpAccPortPAttributes(ctx context.Context, diags *diag.Diagnos
 			for attributeName, attributeValue := range attributes {
 				if attributeName == "dn" {
 					readData.Id = basetypes.NewStringValue(attributeValue.(string))
-					setInfraSpAccPortPParentDn(ctx, attributeValue.(string), readData)
 				}
 				if attributeName == "annotation" {
 					readData.Annotation = basetypes.NewStringValue(attributeValue.(string))
@@ -558,28 +546,12 @@ func getAndSetInfraSpAccPortPAttributes(ctx context.Context, diags *diag.Diagnos
 }
 
 func getInfraSpAccPortPRn(ctx context.Context, data *InfraSpAccPortPResourceModel) string {
-	return fmt.Sprintf("spaccportprof-%s", data.Name.ValueString())
-}
-
-func setInfraSpAccPortPParentDn(ctx context.Context, dn string, data *InfraSpAccPortPResourceModel) {
-	bracketIndex := 0
-	rnIndex := 0
-	for i := len(dn) - 1; i >= 0; i-- {
-		if string(dn[i]) == "]" {
-			bracketIndex = bracketIndex + 1
-		} else if string(dn[i]) == "[" {
-			bracketIndex = bracketIndex - 1
-		} else if string(dn[i]) == "/" && bracketIndex == 0 {
-			rnIndex = i
-			break
-		}
-	}
-	data.ParentDn = basetypes.NewStringValue(dn[:rnIndex])
+	return fmt.Sprintf("infra/spaccportprof-%s", data.Name.ValueString())
 }
 
 func setInfraSpAccPortPId(ctx context.Context, data *InfraSpAccPortPResourceModel) {
 	rn := getInfraSpAccPortPRn(ctx, data)
-	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
+	data.Id = types.StringValue(fmt.Sprintf("%s/%s", strings.Split([]string{"uni/infra/spaccportprof-{name}"}[0], "/")[0], rn))
 }
 
 func getInfraSpAccPortPTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *InfraSpAccPortPResourceModel, tagAnnotationInfraSpAccPortPPlan, tagAnnotationInfraSpAccPortPState []TagAnnotationInfraSpAccPortPResourceModel) []map[string]interface{} {

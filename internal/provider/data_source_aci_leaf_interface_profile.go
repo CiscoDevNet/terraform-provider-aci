@@ -12,7 +12,6 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
@@ -44,10 +43,6 @@ func (d *InfraAccPortPDataSource) Schema(ctx context.Context, req datasource.Sch
 			"id": schema.StringAttribute{
 				Computed:            true,
 				MarkdownDescription: "The distinguished name (DN) of the Leaf Interface Profile object.",
-			},
-			"parent_dn": schema.StringAttribute{
-				Optional:            true,
-				MarkdownDescription: "The distinguished name (DN) of the parent object.",
 			},
 			"annotation": schema.StringAttribute{
 				Computed:            true,
@@ -141,10 +136,6 @@ func (d *InfraAccPortPDataSource) Read(ctx context.Context, req datasource.ReadR
 
 	if resp.Diagnostics.HasError() {
 		return
-	}
-
-	if data.ParentDn.IsNull() || data.ParentDn.IsUnknown() {
-		data.ParentDn = basetypes.NewStringValue("uni/infra")
 	}
 
 	setInfraAccPortPId(ctx, data)
