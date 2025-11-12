@@ -82,11 +82,6 @@ All examples for the FEX Profile resource can be found in the [examples](https:/
 
 ### Optional ###
 
-* `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
-  - The distinguished name (DN) of classes below can be used but currently there is no available resource for it:
-    - [infraInfra](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraInfra/overview)
-
-  - Default: `uni/infra`
 * `annotation` (annotation) - (string) The annotation of the FEX Profile object. This attribute is supported in ACI versions: 3.2(1l) and later.
   - Default: `"orchestrator:terraform"`
 * `description` (descr) - (string) The description of the FEX Profile object.

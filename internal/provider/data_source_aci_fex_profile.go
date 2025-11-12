@@ -12,7 +12,6 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
@@ -44,10 +43,6 @@ func (d *InfraFexPDataSource) Schema(ctx context.Context, req datasource.SchemaR
 			"id": schema.StringAttribute{
 				Computed:            true,
 				MarkdownDescription: "The distinguished name (DN) of the FEX Profile object.",
-			},
-			"parent_dn": schema.StringAttribute{
-				Optional:            true,
-				MarkdownDescription: "The distinguished name (DN) of the parent object.",
 			},
 			"annotation": schema.StringAttribute{
 				Computed:            true,
@@ -141,10 +136,6 @@ func (d *InfraFexPDataSource) Read(ctx context.Context, req datasource.ReadReque
 
 	if resp.Diagnostics.HasError() {
 		return
-	}
-
-	if data.ParentDn.IsNull() || data.ParentDn.IsUnknown() {
-		data.ParentDn = basetypes.NewStringValue("uni/infra")
 	}
 
 	setInfraFexPId(ctx, data)

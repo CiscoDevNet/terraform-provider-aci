@@ -2746,18 +2746,6 @@ vnsLDevIf:
       logical_device: "uni/tn-test_tenant_imported_device/lDevVip-test_imported_device"
   custom_test_dependency_name: "ImportedVnsLDevVipWithFvTenant"
 
-infraAccPortP:
-  default_values:
-    parent_dn: "uni/infra"
-
-infraSpAccPortP:
-  default_values:
-    parent_dn: "uni/infra"
-
-infraFexP:
-  default_values:
-    parent_dn: "uni/infra"
-
 infraHPortS:
   overwrites:
     type: port_selector_type
