@@ -64,8 +64,8 @@ data "aci_access_port_block" "example_spine_access_port_selector" {
 * `name_alias` (nameAlias) - (string) The name alias of the Access Port Block object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `to_card` (toCard) - (string)  The end of the line card range for the Access Port Block object.
 * `to_port` (toPort) - (string) The end of the port range for the Access Port Block object.
-* `relation_to_pc_vpc_override_policy` - (map) A map of Relation To Pc Vpc Override Policy (ACI object [infraRsAccBndlSubgrp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraRsAccBndlSubgrp/overview)) pointing to PC VPC Override Policy (ACI Object [infraAccBndlSubgrp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraAccBndlSubgrp/overview)).
-    * `annotation` (annotation) - (string) The annotation of the Relation To Pc Vpc Override Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `relation_to_pc_vpc_override_policy` - (map) A map of Relation To PC VPC Override Policy (ACI object [infraRsAccBndlSubgrp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraRsAccBndlSubgrp/overview)) pointing to Leaf Access Bundle Policy Sub Group (ACI Object [infraAccBndlSubgrp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraAccBndlSubgrp/overview)).
+    * `annotation` (annotation) - (string) The annotation of the Relation To PC VPC Override Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `target_dn` (tDn) - (string) The distinguished name (DN) of the target PC VPC Override Policy.
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
