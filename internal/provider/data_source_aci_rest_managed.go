@@ -37,6 +37,12 @@ type AciRestManagedDataSourceModel struct {
 	Annotation types.String `tfsdk:"annotation"`
 }
 
+type ChildAciRestManagedDataSourceModel struct {
+	Rn        types.String `tfsdk:"rn"`
+	ClassName types.String `tfsdk:"class_name"`
+	Content   types.Map    `tfsdk:"content"`
+}
+
 func (d *AciRestManagedDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
 	tflog.Debug(ctx, "Start schema of datasource: aci_rest_managed")
 	resp.TypeName = req.ProviderTypeName + "_rest_managed"
@@ -164,13 +170,13 @@ func (d *AciRestManagedDataSource) Read(ctx context.Context, req datasource.Read
 			}
 			data.Content, _ = types.MapValue(types.StringType, content)
 
-			childList := make([]ChildAciRestManagedResourceModel, 0)
+			childList := make([]ChildAciRestManagedDataSourceModel, 0)
 			if _, ok := classReadInfo[0].(map[string]interface{})["children"]; ok {
 				for _, child := range classReadInfo[0].(map[string]interface{})["children"].([]interface{}) {
 					for childClassName, childClassDetails := range child.(map[string]interface{}) {
 						childAttributes := childClassDetails.(map[string]interface{})["attributes"].(map[string]interface{})
 						childContents := map[string]attr.Value{}
-						ChildAciRestManaged := ChildAciRestManagedResourceModel{}
+						ChildAciRestManaged := ChildAciRestManagedDataSourceModel{}
 						ChildAciRestManaged.ClassName = basetypes.NewStringValue(childClassName)
 
 						if val, ok := childAttributes["rn"]; ok {

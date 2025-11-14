@@ -400,10 +400,6 @@ func (r *AciRestManagedResource) Delete(ctx context.Context, req resource.Delete
 	if hasContentOnDestroy {
 		tflog.Debug(ctx, "content_on_destroy is specified, applying destroy configuration")
 
-		// Store original values
-		originalContent := data.Content
-		originalChild := data.Child
-
 		// Apply content_on_destroy to parent
 		data.Content = data.ContentOnDestroy
 
@@ -442,19 +438,12 @@ func (r *AciRestManagedResource) Delete(ctx context.Context, req resource.Delete
 		//   getAciRestManagedChildPayloads will compare and mark children not in childrenWithDestroyConfig for deletion
 		jsonPayload = getAciRestManagedCreateJsonPayload(ctx, &resp.Diagnostics, false, data, childrenWithDestroyConfig, currentChildren)
 
-		// Restore original values
-		data.Content = originalContent
-		data.Child = originalChild
-
 		if resp.Diagnostics.HasError() {
 			return
 		}
 
-		tflog.Debug(ctx, "Successfully built destroy configuration payload")
 	} else {
 		// No content_on_destroy - perform regular delete
-		tflog.Debug(ctx, "No content_on_destroy specified, performing regular delete")
-
 		jsonPayload = GetDeleteJsonPayload(ctx, &resp.Diagnostics, data.ClassName.ValueString(), data.Id.ValueString())
 		if resp.Diagnostics.HasError() {
 			return
