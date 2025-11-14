@@ -205,22 +205,3 @@ func CheckOutputBool(name string, value bool) resource.TestCheckFunc {
 		return nil
 	}
 }
-
-func findAndValidateChildForRestManaged(state *terraform.InstanceState, childCount int, expectedRn, expectedClassName string, expectedContent map[string]string) error {
-	for i := 0; i < childCount; i++ {
-		rn := state.Attributes[fmt.Sprintf("child.%d.rn", i)]
-		className := state.Attributes[fmt.Sprintf("child.%d.class_name", i)]
-
-		if rn == expectedRn && className == expectedClassName {
-			// Found the child, validate content
-			for key, expectedValue := range expectedContent {
-				actualValue := state.Attributes[fmt.Sprintf("child.%d.content.%s", i, key)]
-				if actualValue != expectedValue {
-					return fmt.Errorf("child %s: expected content.%s '%s', got '%s'", expectedRn, key, expectedValue, actualValue)
-				}
-			}
-			return nil // Child found and validated
-		}
-	}
-	return fmt.Errorf("child '%s' with class '%s' not found in imported state", expectedRn, expectedClassName)
-}
