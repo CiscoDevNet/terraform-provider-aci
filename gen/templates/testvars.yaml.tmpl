@@ -13,6 +13,15 @@ legacy_attributes:
 			{{- end}}
 		{{- end}}
 	{{- end }}
+
+{{- $ignore := getIgnoreInLegacy .PkgName .Definitions}}
+{{- if gt (len $ignore) 0}}
+
+ignore_in_legacy:
+  {{- range $ignore}}
+  - "{{.}}"
+  {{- end}}
+{{- end}}
 {{- end}}
 {{- if .LegacyBlocks}}
 legacy_blocks:

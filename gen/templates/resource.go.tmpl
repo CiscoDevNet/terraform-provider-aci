@@ -707,6 +707,10 @@ func set{{ .ResourceClassName }}LegacyAttributes(ctx context.Context, diags *dia
 						if childAttributeName == "{{.PropertyName}}" {
 							data.Deprecated{{.ResourceClassName}} = basetypes.NewStringValue(childAttributeValue.(string))
 						}
+								{{- else if eq $Overwrite "target_dn"}}
+						if childAttributeName == "tDn" {
+							data.Deprecated{{.ResourceClassName}} = basetypes.NewStringValue(childAttributeValue.(string))
+						}
 								{{- end}}
 							{{- end}}
 					}
@@ -882,7 +886,9 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 									{{- if eq .Name "Annotation"}}
 			{{ .Name | decapitalize }}Value := planData.{{ .Name }}
 									{{- else if not (isNewNamedClassAttribute $Overwrite) }}
+										{{- if (ne .Name "TDn")}}
 			{{ .Name | decapitalize }}Value := basetypes.NewStringUnknown()
+										{{- end}}
 									{{- end}}
 								{{- end}}
 			if stateData != nil && !IsEmptySingleNestedAttribute(stateData.{{ $SetName }}.Attributes()) {
@@ -890,7 +896,9 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 								{{- range .Properties}}
 									{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
 									{{- if not (isNewNamedClassAttribute $Overwrite) }}
+										{{- if (ne .Name "TDn")}}
 				{{ .Name | decapitalize }}Value = newAttributeValues.{{.Name}}
+										{{- end}}
 									{{- end}}
 								{{- end}}
 								{{- range .Children}}
@@ -915,16 +923,16 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 								{{- $AttributeName := getLegacyChildAttribute .PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
 									{{- if or (eq .Name "Annotation") (eq $AttributeName "")}}
 				{{ .Name }}: {{ .Name | decapitalize }}Value,
-									{{- else}}
-										{{- if isNewNamedClassAttribute $Overwrite }}
-											{{- if isNewNamedClassAttributeMatch $Overwrite $ResourceName}}
+									{{- else if eq .Name "TDn"}}
+				{{ .Name }}: configData.Deprecated{{ $SetName }},					
+									{{- else if isNewNamedClassAttribute $Overwrite }}
+										{{- if isNewNamedClassAttributeMatch $Overwrite $ResourceName}}
 				{{ .Name }}: {{ .Name | decapitalize }}Value,
-											{{- else}}
-				{{ .Name }}: basetypes.NewStringValue(""),
-											{{- end }}
 										{{- else}}
+				{{ .Name }}: basetypes.NewStringValue(""),
+										{{- end }}
+									{{- else}}
 				{{ .Name }}: configData.Deprecated{{ .Name }},
-										{{- end}}
 									{{- end}}
 								{{- end}}
 								{{- range .Children}}

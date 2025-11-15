@@ -104,6 +104,7 @@ var templateFuncs = template.FuncMap{
 	"isInterfaceSlice":                         IsInterfaceSlice,
 	"replace":                                  Replace,
 	"lookupTestValue":                          LookupTestValue,
+	"getTestValueOverwrite":                    GetTestValueOverwrite,
 	"lookupChildTestValue":                     LookupChildTestValue,
 	"createParentDnValue":                      CreateParentDnValue,
 	"getResourceName":                          GetResourceName,
@@ -152,6 +153,7 @@ var templateFuncs = template.FuncMap{
 	"getDeprecatedExplanation":                 GetDeprecatedExplanation,
 	"getIgnoredExplanation":                    GetIgnoredExplanation,
 	"getCustomTestDependency":                  GetCustomTestDependency,
+	"getIgnoreInLegacy":                        GetIgnoreInLegacy,
 }
 
 func GetDeprecatedExplanation(attributeName, replacedByAttributeName string) string {
@@ -231,7 +233,7 @@ func GetTestValue(name string, model Model) string {
 					childValue := GetOverwriteAttributeValue(child.PkgName, childKey, fmt.Sprintf("%s_1", childKey), "default", 0, model.Definitions).(string)
 					properties = append(properties, getChildTarget(model, childKey, childValue, false))
 				} else if property.PropertyName == "tDn" {
-					return getChildTarget(model, child.PkgName, "target_dn_0", true)
+					return getChildTarget(model, child.PkgName, "", true)
 				}
 			}
 			// If there are multiple properties that has suffix of Name, return the one that matches the child resource name
@@ -762,6 +764,21 @@ func LookupTestValue(classPkgName, originalPropertyName string, testVars map[str
 	}
 
 	return lookupValue
+}
+
+func GetTestValueOverwrite(classPkgName, propertyName, propertyValue string, definitions Definitions) string {
+	if classDetails, ok := definitions.Properties[classPkgName]; ok {
+		for key, value := range classDetails.(map[interface{}]interface{}) {
+			if key.(string) == "example_value_overwrite" {
+				for k, v := range value.(map[interface{}]interface{}) {
+					if k.(string) == propertyName {
+						return v.(string)
+					}
+				}
+			}
+		}
+	}
+	return propertyValue
 }
 
 // Retrieves a value for a attribute of a aci class when defined in the testVars YAML file of the class
@@ -2704,6 +2721,24 @@ func GetOverwriteAttributeValue(classPkgName, propertyName, propertyValue, testT
 		return fmt.Sprintf("%s_%d", propertyValue, index)
 	}
 	return propertyValue
+}
+
+func GetIgnoreInLegacy(classPkgName string, definitions Definitions) []string {
+	result := []string{}
+	if classDetails, ok := definitions.Properties[classPkgName]; ok {
+		for key, value := range classDetails.(map[interface{}]interface{}) {
+			if key.(string) == "test_values" {
+				for test_type, test_type_values := range value.(map[interface{}]interface{}) {
+					if test_type.(string) == "ignore_in_legacy" {
+						for _, test_type_value := range test_type_values.([]interface{}) {
+							result = append(result, test_type_value.(string))
+						}
+					}
+				}
+			}
+		}
+	}
+	return result
 }
 
 // Determine if possible parent classes in terraform configuration should be overwritten by contained_by from the classes.yaml file

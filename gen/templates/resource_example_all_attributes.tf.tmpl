@@ -91,15 +91,21 @@ resource "aci_{{$topContext.ResourceName}}" {{- if ne $formatValue.ContainedBy "
 {{- define "childResourcesAndPropertiesDocExamples" -}}
 {{- $testvars := .TemplateProperties.TestVars -}}
 {{- $indent := .TemplateProperties.Indent -}}
+{{- $pkgName := .PkgName -}}
 {{$ChildResourceName := overwriteProperty .PkgName .ResourceName $.Definitions}}
     {{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
   {{ $indent }}{{$ChildResourceName}} = {
     {{- range .Properties}}{{- if not .ReadOnly }}{{- if ne .NamedPropertyClass ""}}
       {{ $indent }}{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = aci_{{getResourceName .NamedPropertyClass $.Definitions}}.example.name
         {{- else if eq .SnakeCaseName "t_dn" }}
-          {{- range $index, $testParent := $testvars.parents }}{{$attributeValue := getTestTargetDn $testvars.child_targets $ChildResourceName "target_dn_0" true nil 0 true | replace "test_0" "example_2" }}
+          {{- $overwriteTDn := getTestValueOverwrite $pkgName "target_dn" "target_dn_0" $.Definitions}}
+          {{- if ne $overwriteTDn "target_dn_0"}}
+      {{ $indent }}target_dn = {{ $overwriteTDn }}
+          {{- else}}
+            {{- range $index, $testParent := $testvars.parents }}{{$attributeValue := getTestTargetDn $testvars.child_targets $ChildResourceName "target_dn_0" true nil 0 true | replace "test_0" "example_2" }}
       {{ $indent }}target_dn = {{if containsString $attributeValue "."}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}
-          {{- break}}
+            {{- break}}
+            {{- end}}
           {{- end}}
         {{- else if .IgnoreInTest}}
       {{ $indent }}{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = {{.IgnoreInTestExampleValue}}
