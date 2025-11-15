@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.19.0 (November 15, 2025)
+
+IMPROVEMENTS:
+- Add support for uplink_order_container (fvuplinkordercont) in relation_to_domains attribute of aci_application_epg and aci_relation_to_domain resource and datasource
+- Add resource and data source to import l4-l7 logical devices from one tenant to another.
+- Addition of new attributes to resource_aci_rest_managed to modify an object during destroy instead of deleting it
+
 ## 2.18.0 (November 7, 2025)
 
 IMPROVEMENTS:
