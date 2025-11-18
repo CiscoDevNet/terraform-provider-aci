@@ -154,6 +154,17 @@ var templateFuncs = template.FuncMap{
 	"getIgnoredExplanation":                    GetIgnoredExplanation,
 	"getCustomTestDependency":                  GetCustomTestDependency,
 	"getIgnoreInLegacy":                        GetIgnoreInLegacy,
+	"isSensitiveAttribute":                     IsSensitiveAttribute,
+}
+
+func IsSensitiveAttribute(attributeName string, properties map[string]Property) bool {
+
+	if attributeValue, ok := properties[attributeName]; ok {
+		if attributeValue.ValueType == "password" {
+			return true
+		}
+	}
+	return false
 }
 
 func GetDeprecatedExplanation(attributeName, replacedByAttributeName string) string {

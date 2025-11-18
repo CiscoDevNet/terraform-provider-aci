@@ -205,6 +205,17 @@ vmmUplinkP:
   ui_locations:
     - "Virtual Networking -> VMware -> Name of Uplinks"
 
+vmmUsrAccP:
+  resource_name: "vmm_credential"
+  ui_locations:
+    - "Virtual Networking -> Provider -> Domain -> Credentials"
+  migration_version: 1
+  migration_blocks:
+    vmmUsrAccP:
+      vmm_domain_dn: parent_dn
+      pwd: password
+      usr: username
+
 fvAp:
   resource_name: "application_profile"
   ui_locations:

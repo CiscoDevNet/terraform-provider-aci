@@ -2727,6 +2727,14 @@ fvUplinkOrderCont:
       active_uplinks: "1,2"
       standby_uplinks: "3,4"
 
+vmmUsrAccP:
+  overwrites:
+    pwd: "password"
+    usr: "username"
+  documentation:
+    pwd: "The username of the %s object. This sensitive value is excluded from the resource's lifecycle configuration and is not tracked by Terraform."
+    usr: "The password of the %s object."
+
 vnsLDevIf:
   overwrites:
     ldev: "logical_device"

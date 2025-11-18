@@ -627,7 +627,12 @@ func set{{ .ResourceClassName }}LegacyAttributes(ctx context.Context, diags *dia
 	data.DeprecatedParentDn = data.ParentDn
 	{{- end}}
 	{{- range .LegacyAttributes}}
-		{{-  if containsString .Name .AttributeName}}
+		{{- if isSensitiveAttribute .AttributeName $.Properties }}
+	data.Deprecated{{.Name}} = staticData.Deprecated{{.Name}}
+		{{- end}}
+	{{- end}}
+	{{- range .LegacyAttributes}}
+		{{- if containsString .Name .AttributeName}}
 			{{- if or (eq (getMigrationType .ValueType) "Set") (eq (getMigrationType .ValueType) "List")}}
 	if !staticData.{{ .Name }}.IsUnknown() && !staticData.{{ .Name }}.IsNull() {
 		data.{{ .Name }} = staticData.{{ .Name }}
@@ -653,7 +658,7 @@ func set{{ .ResourceClassName }}LegacyAttributes(ctx context.Context, diags *dia
 	{{- if $changed}}
 	attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
 	for attributeName, attributeValue := range attributes {
-		{{- range .LegacyAttributes}}{{- if ne .ReplacedBy.AttributeName "" }}
+		{{- range .LegacyAttributes}}{{- if and (ne .ReplacedBy.AttributeName "") (not (isSensitiveAttribute .AttributeName $.Properties)) }}
 			{{- if and (isNewAttributeStringType .ReplacedBy.AttributeName) (ne .Name "ParentDn")}}
 				{{- if legacyAttributeContainsNoneValue . $.Properties}}
 		if attributeName == "{{decapitalize .Name}}" && attributeValue.(string) == "" {
@@ -860,7 +865,7 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 		{{- end}}
 		{{ if .LegacyAttributes}}{{ $ResourceClassName := .ResourceClassName}}
 			{{ range .LegacyAttributes}}{{$SetName := .Name}}
-				{{- if and (ne .ReplacedBy.AttributeName "") (eq (getMigrationType .ValueType) "String") (isNewAttributeStringType .ReplacedBy.AttributeName) }}
+				{{- if and (ne .ReplacedBy.AttributeName "") (eq (getMigrationType .ValueType) "String") (isNewAttributeStringType .ReplacedBy.AttributeName) (not (isSensitiveAttribute .AttributeName $.Properties))}}
 		if !configData.Deprecated{{ .Name }}.IsNull() {
 					{{- if .NeedsCustomType}}
 			planData.{{ .Name }} = customTypes.{{$ResourceClassName}}{{.Name}}StringValue{StringValue: configData.Deprecated{{ .Name }} }
@@ -1213,7 +1218,7 @@ func avoid{{.ResourceClassName}}PlanChangeForKnownAfterApplyOnly(ctx context.Con
 		{{- end}}
 	{{- end}}
 	{{- range .LegacyAttributes}}
-		{{- if ne .ReplacedBy.AttributeName "" }}
+		{{- if and (ne .ReplacedBy.AttributeName "") (not (isSensitiveAttribute .AttributeName $.Properties)) }}
 	if configData.Deprecated{{ .Name }}.IsNull() {
 		planData.Deprecated{{.Name}} = stateData.Deprecated{{.Name}}
 	}
@@ -1233,7 +1238,7 @@ func avoid{{.ResourceClassName}}PlanChangeForKnownAfterApplyOnly(ctx context.Con
 		{{- end}}
 	{{- end}}
 	{{- range .LegacyAttributes}}
-		{{- if ne .ReplacedBy.AttributeName "" }}
+		{{- if and (ne .ReplacedBy.AttributeName "") (not (isSensitiveAttribute .AttributeName $.Properties)) }}
 			{{- if eq (getMigrationType .ValueType) "String"}}
 		if configData.Deprecated{{.Name}}.IsNull() {
 			planData.Deprecated{{.Name}} = basetypes.NewStringUnknown()
@@ -1448,7 +1453,11 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 						{{- if eq (getMigrationType .ValueType) "String"}}
 			"{{.AttributeName}}": schema.StringAttribute{
 				Optional: true,
+				{{- if isSensitiveAttribute .AttributeName $.Properties }}
+				Sensitive: true,
+				{{- else}}
 				Computed: true,
+				{{- end}}
 				DeprecationMessage: "{{getDeprecatedExplanation .AttributeName $ReplacedAttribute}}",
 				Validators: []validator.String{
 					stringvalidator.ConflictsWith(path.Expressions{
@@ -2505,7 +2514,9 @@ func get{{.ResourceClassName}}CreateJsonPayload(ctx context.Context, diags *diag
 		{{- else}}
 	if !data.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}.IsNull() && !data.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}.IsUnknown(){
 		payloadMap["attributes"].(map[string]string)["{{ .PropertyName }}"] = data.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}.ValueString()
-	}
+	}{{if and (eq .ValueType "password") (isLegacyAttribute .Name $.LegacyAttributes)}} else if !data.Deprecated{{ .Name }}.IsNull() && !data.Deprecated{{ .Name }}.IsUnknown(){
+		payloadMap["attributes"].(map[string]string)["{{ .PropertyName }}"] = data.Deprecated{{ .Name }}.ValueString()
+	}{{- end}}
 		{{- end}}
 	{{- end}}{{- end}}
 	{{- if .MultiParentFormats }}
