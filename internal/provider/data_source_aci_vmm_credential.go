@@ -88,11 +88,11 @@ func (d *VmmUsrAccPDataSource) Schema(ctx context.Context, req datasource.Schema
 			},
 			"password": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The username of the VMM Credential object. This sensitive value is excluded from the resource's lifecycle configuration and is not tracked by Terraform.`,
+				MarkdownDescription: `The password of the VMM Credential object. This sensitive value is excluded from the resource's lifecycle configuration and is not tracked by Terraform.`,
 			},
 			"username": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The password of the VMM Credential object.`,
+				MarkdownDescription: `The username of the VMM Credential object.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,

@@ -441,7 +441,7 @@ func (r *VmmUsrAccPResource) Schema(ctx context.Context, req resource.SchemaRequ
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators:          []validator.String{},
-				MarkdownDescription: `The username of the VMM Credential object. This sensitive value is excluded from the resource's lifecycle configuration and is not tracked by Terraform.`,
+				MarkdownDescription: `The password of the VMM Credential object. This sensitive value is excluded from the resource's lifecycle configuration and is not tracked by Terraform.`,
 			},
 			"username": schema.StringAttribute{
 				Optional: true,
@@ -451,7 +451,7 @@ func (r *VmmUsrAccPResource) Schema(ctx context.Context, req resource.SchemaRequ
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators:          []validator.String{},
-				MarkdownDescription: `The password of the VMM Credential object.`,
+				MarkdownDescription: `The username of the VMM Credential object.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,

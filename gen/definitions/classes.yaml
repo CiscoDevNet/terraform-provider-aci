@@ -207,6 +207,7 @@ vmmUplinkP:
 
 vmmUsrAccP:
   resource_name: "vmm_credential"
+  sub_category: "Virtual Networking"
   ui_locations:
     - "Virtual Networking -> Provider -> Domain -> Credentials"
   migration_version: 1
