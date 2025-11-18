@@ -2732,8 +2732,8 @@ vmmUsrAccP:
     pwd: "password"
     usr: "username"
   documentation:
-    pwd: "The username of the %s object. This sensitive value is excluded from the resource's lifecycle configuration and is not tracked by Terraform."
-    usr: "The password of the %s object."
+    pwd: "The password of the %s object. This sensitive value is excluded from the resource's lifecycle configuration and is not tracked by Terraform."
+    usr: "The username of the %s object."
 
 vnsLDevIf:
   overwrites:
