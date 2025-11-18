@@ -54,6 +54,28 @@ resource "aci_application_epg" "full_example_application_profile" {
       }
     ]
   }
+  relation_from_application_epg_to_attachable_access_entity_profiles = [
+    {
+      annotation                 = "annotation_1"
+      encapsulation              = "encapsulation_1"
+      deployment_immediacy       = "immediate"
+      mode                       = "native"
+      primary_encapsulation      = "primary_encapsulation_1"
+      tn_infra_att_entity_p_name = aci_.example.name
+      annotations = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
+      tags = [
+        {
+          key   = "key_0"
+          value = "value_1"
+        }
+      ]
+    }
+  ]
   relation_to_bridge_domain = {
     annotation         = "annotation_1"
     bridge_domain_name = aci_bridge_domain.example.name

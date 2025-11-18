@@ -346,6 +346,70 @@ func (d *FvAEPgDataSource) Schema(ctx context.Context, req datasource.SchemaRequ
 					},
 				},
 			},
+			"relation_from_application_epg_to_attachable_access_entity_profiles": schema.SetNestedAttribute{
+				MarkdownDescription: ``,
+				Computed:            true,
+				NestedObject: schema.NestedAttributeObject{
+					Attributes: map[string]schema.Attribute{
+						"annotation": schema.StringAttribute{
+							Computed:            true,
+							MarkdownDescription: `The annotation of the Relation From Application EPG To Attachable Access Entity Profile object.`,
+						},
+						"encapsulation": schema.StringAttribute{
+							Computed:            true,
+							MarkdownDescription: `The port encapsulation.`,
+						},
+						"deployment_immediacy": schema.StringAttribute{
+							Computed:            true,
+							MarkdownDescription: `The deployment immediacy of the Relation From Application EPG To Attachable Access Entity Profile object. Specifies when the policy is pushed into the hardware policy content-addressable memory (CAM).`,
+						},
+						"mode": schema.StringAttribute{
+							Computed:            true,
+							MarkdownDescription: `The BGP Domain mode.`,
+						},
+						"primary_encapsulation": schema.StringAttribute{
+							Computed:            true,
+							MarkdownDescription: `primaryEncap.`,
+						},
+						"tn_infra_att_entity_p_name": schema.StringAttribute{
+							Computed:            true,
+							MarkdownDescription: `Name.`,
+						},
+						"annotations": schema.SetNestedAttribute{
+							MarkdownDescription: ``,
+							Computed:            true,
+							NestedObject: schema.NestedAttributeObject{
+								Attributes: map[string]schema.Attribute{
+									"key": schema.StringAttribute{
+										Computed:            true,
+										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+									},
+									"value": schema.StringAttribute{
+										Computed:            true,
+										MarkdownDescription: `The value of the property.`,
+									},
+								},
+							},
+						},
+						"tags": schema.SetNestedAttribute{
+							MarkdownDescription: ``,
+							Computed:            true,
+							NestedObject: schema.NestedAttributeObject{
+								Attributes: map[string]schema.Attribute{
+									"key": schema.StringAttribute{
+										Computed:            true,
+										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+									},
+									"value": schema.StringAttribute{
+										Computed:            true,
+										MarkdownDescription: `The value of the property.`,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
 			"relation_to_bridge_domain": schema.SingleNestedAttribute{
 				MarkdownDescription: `A source relation to the bridge domain associated to this endpoint group. This is an internal object.`,
 				Computed:            true,

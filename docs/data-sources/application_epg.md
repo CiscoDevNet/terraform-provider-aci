@@ -88,6 +88,19 @@ data "aci_application_epg" "example_application_profile" {
     * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
+* `relation_from_application_epg_to_attachable_access_entity_profiles` - (list) A list of Relation From Application EPG To Attachable Access Entity Profiles (ACI object [fvRsAepAtt](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsAepAtt/overview)) pointing to  (ACI Object [infraAttEntityP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraAttEntityP/overview)). This attribute is supported in ACI versions: 6.1(3f) and later.
+    * `annotation` (annotation) - (string) The annotation of the Relation From Application EPG To Attachable Access Entity Profile object.
+    * `encapsulation` (encap) - (string) The port encapsulation.
+    * `deployment_immediacy` (instrImedcy) - (string) The deployment immediacy of the Relation From Application EPG To Attachable Access Entity Profile object. Specifies when the policy is pushed into the hardware policy content-addressable memory (CAM).
+    * `mode` (mode) - (string) The BGP Domain mode.
+    * `primary_encapsulation` (primaryEncap) - (string) primaryEncap.
+    * `tn_infra_att_entity_p_name` (tnInfraAttEntityPName) - (string) Name.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
 * `relation_to_bridge_domain` - (map) A map of Relation To Bridge Domain (ACI object [fvRsBd](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsBd/overview)) pointing to Bridge Domain (ACI Object [fvBD](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvBD/overview)).
     * `annotation` (annotation) - (string) The annotation of the Relation To Bridge Domain object. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `bridge_domain_name` (tnFvBDName) - (string) The name of the bridge domain associated with this EPG.
