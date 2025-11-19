@@ -629,7 +629,9 @@ func getAndSetPkiKeyRingAttributes(ctx context.Context, diags *diag.Diagnostics,
 					readData.EccCurve = basetypes.NewStringValue(attributeValue.(string))
 				}
 				// Sensitive attributes are not returned by the APIC, so they are explicitly set to their current state values.
-				readData.Key = data.Key
+				if !data.Key.IsUnknown() {
+					readData.Key = data.Key
+				}
 				if attributeName == "keyType" {
 					readData.KeyType = basetypes.NewStringValue(attributeValue.(string))
 				}
