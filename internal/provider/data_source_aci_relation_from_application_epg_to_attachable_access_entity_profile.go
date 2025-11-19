@@ -48,13 +48,9 @@ func (d *FvRsAepAttDataSource) Schema(ctx context.Context, req datasource.Schema
 				Required:            true,
 				MarkdownDescription: "The distinguished name (DN) of the parent object.",
 			},
-			"annotation": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The annotation of the Relation From Application EPG To Attachable Access Entity Profile object.`,
-			},
 			"encapsulation": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The port encapsulation.`,
+				MarkdownDescription: `The encapsulation of the Relation From Application EPG To Attachable Access Entity Profile object. The encapsulation refers to the EPG VLAN when class preference is set to 'encap', or to the Secondary VLAN when class preference is set to 'useg'.`,
 			},
 			"deployment_immediacy": schema.StringAttribute{
 				Computed:            true,
@@ -62,15 +58,15 @@ func (d *FvRsAepAttDataSource) Schema(ctx context.Context, req datasource.Schema
 			},
 			"mode": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The BGP Domain mode.`,
+				MarkdownDescription: `The mode of the Relation From Application EPG To Attachable Access Entity Profile object.`,
 			},
 			"primary_encapsulation": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `primaryEncap.`,
+				MarkdownDescription: `The primary encapsulation of the Relation From Application EPG To Attachable Access Entity Profile object. This is used when the class preference is set to 'useg'.`,
 			},
-			"tn_infra_att_entity_p_name": schema.StringAttribute{
+			"attachable_access_entity_profile_name": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: `Name.`,
+				MarkdownDescription: `The name of the Attachable Access Entity Profile object.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,

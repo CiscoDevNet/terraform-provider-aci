@@ -56,12 +56,11 @@ resource "aci_application_epg" "full_example_application_profile" {
   }
   relation_from_application_epg_to_attachable_access_entity_profiles = [
     {
-      annotation                 = "annotation_1"
-      encapsulation              = "encapsulation_1"
-      deployment_immediacy       = "immediate"
-      mode                       = "native"
-      primary_encapsulation      = "primary_encapsulation_1"
-      tn_infra_att_entity_p_name = aci_.example.name
+      encapsulation                         = "vlan-100"
+      deployment_immediacy                  = "immediate"
+      mode                                  = "native"
+      primary_encapsulation                 = "vlan-200"
+      attachable_access_entity_profile_name = aci_attachable_access_entity_profile.example.name
       annotations = [
         {
           key   = "key_0"

@@ -137,12 +137,11 @@ children:
             value: "test_value"
       
   relation_from_application_epg_to_attachable_access_entity_profiles:
-    - annotation: "annotation_1"
-      encapsulation: "encapsulation_1"
+    - encapsulation: "vlan-100"
       deployment_immediacy: "immediate"
       mode: "native"
-      primary_encapsulation: "primary_encapsulation_1"
-      tn_infra_att_entity_p_name: "tn_infra_att_entity_p_name_0"
+      primary_encapsulation: "vlan-200"
+      attachable_access_entity_profile_name: "attachable_access_entity_profile_name_0"
       
       children:
         annotations:
@@ -159,12 +158,11 @@ children:
           - key: "key_1"
             value: "test_value"
       
-    - annotation: "annotation_2"
-      encapsulation: "encapsulation_2"
+    - encapsulation: "unknown"
       deployment_immediacy: "lazy"
       mode: "regular"
-      primary_encapsulation: "primary_encapsulation_2"
-      tn_infra_att_entity_p_name: "tn_infra_att_entity_p_name_1"
+      primary_encapsulation: "unknown"
+      attachable_access_entity_profile_name: "attachable_access_entity_profile_name_1"
       
       children:
         annotations:

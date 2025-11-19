@@ -4,27 +4,25 @@
 
 
 default:
-  annotation: "orchestrator:terraform"
-  encapsulation: ""
+  encapsulation: "unknown"
   deployment_immediacy: "lazy"
   mode: "regular"
-  primary_encapsulation: ""
+  primary_encapsulation: "unknown"
 
 datasource_non_existing:
-  tn_infra_att_entity_p_name: "non_existing_tn_infra_att_entity_p_name"
+  attachable_access_entity_profile_name: "non_existing_tn_infra_att_entity_p_name"
 
 datasource_required:
-  tn_infra_att_entity_p_name: "test_tn_infra_att_entity_p_name"
+  attachable_access_entity_profile_name: "test_tn_infra_att_entity_p_name"
 
 resource_required:
-  tn_infra_att_entity_p_name: "test_tn_infra_att_entity_p_name"
+  attachable_access_entity_profile_name: "test_tn_infra_att_entity_p_name"
 
 all:
-  annotation: "annotation"
-  encapsulation: "encapsulation_1"
+  encapsulation: "vlan-100"
   deployment_immediacy: "immediate"
   mode: "native"
-  primary_encapsulation: "primary_encapsulation_1"
+  primary_encapsulation: "vlan-200"
 
 children:
   annotations:

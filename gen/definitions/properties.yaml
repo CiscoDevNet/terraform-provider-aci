@@ -815,6 +815,46 @@ fvIpAttr:
       parent_dependency: "fvAEPg"
       parent_dn: "epg_useg_block_statement.test.id"
 
+infraRsDomP:
+  documentation:
+    tDn: "The distinguished name of the target Domain object."
+  overwrites:
+    relation_from_attachable_access_entity_profile_to_domains: relation_to_domains
+  test_values:
+    datasource_non_existing:
+      target_dn: "uni/phys-physical_domain_3"
+  targets:
+    - class_name: "physDomP"
+      target_dn: "uni/phys-physical_domain_0"
+      target_dn_overwrite_docs: "aci_physical_domain.example.id"
+      relation_resource_name: "domain"
+      properties:
+        name: "physical_domain_0"
+    - class_name: "physDomP"
+      target_dn: "uni/phys-physical_domain_1"
+      relation_resource_name: "domain"
+      properties:
+        name: "physical_domain_1"
+
+fvRsAepAtt:
+  ignores:
+    - "annotation"
+  default_values:
+    encap: "unknown"
+    primaryEncap: "unknown"
+  documentation:
+    encap: "The encapsulation of the %s object. The encapsulation refers to the EPG VLAN when class preference is set to 'encap', or to the Secondary VLAN when class preference is set to 'useg'."
+    primaryEncap: "The primary encapsulation of the %s object. This is used when the class preference is set to 'useg'."
+    tnInfraAttEntityPName: "The name of the Attachable Access Entity Profile object"
+    mode: "The mode of the %s object."
+  test_values:
+    default:
+      encapsulation: "unknown"
+      primary_encapsulation: "unknown"
+    all:
+      encapsulation: "vlan-100"
+      primary_encapsulation: "vlan-200"
+
 fvAEPg:
   read_only_properties:
     - "pcTag"
@@ -999,7 +1039,7 @@ fvRsDomAtt:
     bindingType: "The binding type of the %s object."
     classPref: "The class preference of the %s object. Set 'useg' to allow microsegmentation."
     delimiter: "The delimiter of the %s object."
-    encap: "The encapsulation of the %s object. The encapsulation refers to the EPG VLAN when class preference is set to 'encap, or to the Secondary VLAN when class preference is set to 'useg'."
+    encap: "The encapsulation of the %s object. The encapsulation refers to the EPG VLAN when class preference is set to 'encap', or to the Secondary VLAN when class preference is set to 'useg'."
     encapMode: "The encapsulation mode of the %s object."
     customEpgName: "The display name of the user configured port-group."
     epgCos: "The class of service (CoS) of the %s object."

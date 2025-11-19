@@ -1041,7 +1041,9 @@ resource "aci_management_access_policy" "test" {
     port = "23"
   }
 	  	
-  depends_on = [aci_certificate_authority.test_certificate_authority_0]
+  depends_on = [
+    aci_certificate_authority.test_certificate_authority_0,
+  ]
 }
 `
 

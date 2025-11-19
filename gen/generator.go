@@ -3137,6 +3137,27 @@ func GetTestTargetDn(targets []interface{}, resourceName, targetDnValue string, 
 		}
 	}
 
+	if targetDnValue == "" && overwriteDocs {
+		for _, target := range filteredTargets {
+			if v, ok := target.(map[interface{}]interface{})["target_dn_overwrite_docs"].(string); ok && overwriteDocs && v != "" {
+				return v
+			}
+		}
+	} else if targetDnValue == "test_t_dn" {
+		for _, target := range filteredTargets {
+			if reference {
+				if v, ok := target.(map[interface{}]interface{})["target_dn_ref"].(string); ok && v != "" {
+					return v
+				}
+			} else {
+				if v, ok := target.(map[interface{}]interface{})["target_dn"].(string); ok && v != "" {
+					return v
+				}
+			}
+
+		}
+	}
+
 	return targetDnValue
 }
 

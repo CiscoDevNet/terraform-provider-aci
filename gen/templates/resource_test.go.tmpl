@@ -2519,10 +2519,14 @@ resource "aci_{{$.resourceName}}" "test" {
 			{{- end}}
   		{{- end}}
 	  {{- if $childDependencies }}
-	  	{{ $testIndex := 0 }}
-	  	{{- range $index, $target := .child_targets}}{{if not $target.static}}
-  depends_on = [aci_{{$target.target_resource_name}}.test_{{$target.target_resource_name}}_{{mod $testIndex 2}}]
-			{{- end}}
+	  	{{ $testIndex := 0 }}{{$first := true}}
+	  	{{- range $index, $target := .child_targets}}{{if not $target.static}}{{if eq $first true}}
+  depends_on = [{{$first = false}}{{- end}}
+    aci_{{$target.target_resource_name}}.test_{{$target.target_resource_name}}_{{mod $testIndex 2}}{{ $testIndex = add $testIndex 1 }},
+          {{- end}}
+        {{- end}}
+        {{- if not $first}}
+  ]
 		{{- end}}
   	  {{- end}}
 }
