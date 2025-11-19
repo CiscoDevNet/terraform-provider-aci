@@ -104,12 +104,11 @@ resource "aci_application_epg" "full_example_application_profile" {
   }
   relation_from_application_epg_to_attachable_access_entity_profiles = [
     {
-      annotation                 = "annotation_1"
-      encapsulation              = "encapsulation_1"
-      deployment_immediacy       = "immediate"
-      mode                       = "native"
-      primary_encapsulation      = "primary_encapsulation_1"
-      tn_infra_att_entity_p_name = aci_.example.name
+      encapsulation                         = "vlan-100"
+      deployment_immediacy                  = "immediate"
+      mode                                  = "native"
+      primary_encapsulation                 = "vlan-200"
+      attachable_access_entity_profile_name = aci_attachable_access_entity_profile.example.name
       annotations = [
         {
           key   = "key_0"
@@ -539,22 +538,22 @@ All examples for the Application EPG resource can be found in the [examples](htt
   
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-* `relation_from_application_epg_to_attachable_access_entity_profiles` - (list) A list of Relation From Application EPG To Attachable Access Entity Profiles (ACI object [fvRsAepAtt](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsAepAtt/overview)) pointing to  (ACI Object [infraAttEntityP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraAttEntityP/overview)). This attribute is supported in ACI versions: 6.1(3f) and later.
+* `relation_from_application_epg_to_attachable_access_entity_profiles` - (list) A list of Relation From Application EPG To Attachable Access Entity Profiles (ACI object [fvRsAepAtt](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsAepAtt/overview)) pointing to Attachable Access Entity Profile (ACI Object [infraAttEntityP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraAttEntityP/overview)) which can be configured using the [aci_attachable_access_entity_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/attachable_access_entity_profile) resource. This attribute is supported in ACI versions: 6.1(3f) and later.
   #### Required ####
   
-    * `tn_infra_att_entity_p_name` (tnInfraAttEntityPName) - (string) Name. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/) with `aci_.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/) with `data.aci_.example.name`.
+    * `attachable_access_entity_profile_name` (tnInfraAttEntityPName) - (string) The name of the Attachable Access Entity Profile object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/attachable_access_entity_profile) with `aci_attachable_access_entity_profile.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/attachable_access_entity_profile) with `data.aci_attachable_access_entity_profile.example.name`.
   #### Optional ####
     
-    * `annotation` (annotation) - (string) The annotation of the Relation From Application EPG To Attachable Access Entity Profile object.
-      - Default: `"orchestrator:terraform"`
-    * `encapsulation` (encap) - (string) The port encapsulation.
+    * `encapsulation` (encap) - (string) The encapsulation of the Relation From Application EPG To Attachable Access Entity Profile object. The encapsulation refers to the EPG VLAN when class preference is set to 'encap', or to the Secondary VLAN when class preference is set to 'useg'.
+      - Default: `"unknown"`
     * `deployment_immediacy` (instrImedcy) - (string) The deployment immediacy of the Relation From Application EPG To Attachable Access Entity Profile object. Specifies when the policy is pushed into the hardware policy content-addressable memory (CAM).
       - Default: `"lazy"`
       - Valid Values: `"immediate"`, `"lazy"`.
-    * `mode` (mode) - (string) The BGP Domain mode.
+    * `mode` (mode) - (string) The mode of the Relation From Application EPG To Attachable Access Entity Profile object.
       - Default: `"regular"`
       - Valid Values: `"native"`, `"regular"`, `"untagged"`.
-    * `primary_encapsulation` (primaryEncap) - (string) primaryEncap.
+    * `primary_encapsulation` (primaryEncap) - (string) The primary encapsulation of the Relation From Application EPG To Attachable Access Entity Profile object. This is used when the class preference is set to 'useg'.
+      - Default: `"unknown"`
     * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
   
@@ -660,7 +659,7 @@ All examples for the Application EPG resource can be found in the [examples](htt
       - Valid Values: `"encap"`, `"useg"`.
     * `custom_epg_name` (customEpgName) - (string) The display name of the user configured port-group. This attribute is supported in ACI versions: 4.2(3j) and later.
     * `delimiter` (delimiter) - (string) The delimiter of the Relation To Domain object. This attribute is supported in ACI versions: 2.0(1m) and later.
-    * `encapsulation` (encap) - (string) The encapsulation of the Relation To Domain object. The encapsulation refers to the EPG VLAN when class preference is set to 'encap, or to the Secondary VLAN when class preference is set to 'useg'. This attribute is supported in ACI versions: 1.1(1j) and later.
+    * `encapsulation` (encap) - (string) The encapsulation of the Relation To Domain object. The encapsulation refers to the EPG VLAN when class preference is set to 'encap', or to the Secondary VLAN when class preference is set to 'useg'. This attribute is supported in ACI versions: 1.1(1j) and later.
     * `encapsulation_mode` (encapMode) - (string) The encapsulation mode of the Relation To Domain object. This attribute is supported in ACI versions: 2.1(1h) and later.
       - Default: `"auto"`
       - Valid Values: `"auto"`, `"vlan"`, `"vxlan"`.

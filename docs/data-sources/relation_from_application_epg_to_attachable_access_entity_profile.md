@@ -31,8 +31,8 @@ Data source for ACI Relation From Application EPG To Attachable Access Entity Pr
 ```hcl
 
 data "aci_relation_from_application_epg_to_attachable_access_entity_profile" "example_application_epg" {
-  parent_dn                  = aci_application_epg.example.id
-  tn_infra_att_entity_p_name = aci_.example.name
+  parent_dn                             = aci_application_epg.example.id
+  attachable_access_entity_profile_name = aci_attachable_access_entity_profile.example.name
 }
 
 ```
@@ -43,16 +43,15 @@ data "aci_relation_from_application_epg_to_attachable_access_entity_profile" "ex
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_application_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/application_epg) ([fvAEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvAEPg/overview))
-* `tn_infra_att_entity_p_name` (tnInfraAttEntityPName) - (string) Name. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/) with `aci_.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/) with `data.aci_.example.name`.
+* `attachable_access_entity_profile_name` (tnInfraAttEntityPName) - (string) The name of the Attachable Access Entity Profile object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/attachable_access_entity_profile) with `aci_attachable_access_entity_profile.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/attachable_access_entity_profile) with `data.aci_attachable_access_entity_profile.example.name`.
 
 ### Read-Only ###
 
 * `id` - (string) The distinguished name (DN) of the Relation From Application EPG To Attachable Access Entity Profile object.
-* `annotation` (annotation) - (string) The annotation of the Relation From Application EPG To Attachable Access Entity Profile object.
-* `encapsulation` (encap) - (string) The port encapsulation.
+* `encapsulation` (encap) - (string) The encapsulation of the Relation From Application EPG To Attachable Access Entity Profile object. The encapsulation refers to the EPG VLAN when class preference is set to 'encap', or to the Secondary VLAN when class preference is set to 'useg'.
 * `deployment_immediacy` (instrImedcy) - (string) The deployment immediacy of the Relation From Application EPG To Attachable Access Entity Profile object. Specifies when the policy is pushed into the hardware policy content-addressable memory (CAM).
-* `mode` (mode) - (string) The BGP Domain mode.
-* `primary_encapsulation` (primaryEncap) - (string) primaryEncap.
+* `mode` (mode) - (string) The mode of the Relation From Application EPG To Attachable Access Entity Profile object.
+* `primary_encapsulation` (primaryEncap) - (string) The primary encapsulation of the Relation From Application EPG To Attachable Access Entity Profile object. This is used when the class preference is set to 'useg'.
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.

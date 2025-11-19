@@ -19,7 +19,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -44,12 +43,11 @@ type FvRsAepAttResource struct {
 type FvRsAepAttResourceModel struct {
 	Id                    types.String `tfsdk:"id"`
 	ParentDn              types.String `tfsdk:"parent_dn"`
-	Annotation            types.String `tfsdk:"annotation"`
 	Encap                 types.String `tfsdk:"encapsulation"`
 	InstrImedcy           types.String `tfsdk:"deployment_immediacy"`
 	Mode                  types.String `tfsdk:"mode"`
 	PrimaryEncap          types.String `tfsdk:"primary_encapsulation"`
-	TnInfraAttEntityPName types.String `tfsdk:"tn_infra_att_entity_p_name"`
+	TnInfraAttEntityPName types.String `tfsdk:"attachable_access_entity_profile_name"`
 	TagAnnotation         types.Set    `tfsdk:"annotations"`
 	TagTag                types.Set    `tfsdk:"tags"`
 }
@@ -58,7 +56,6 @@ func getEmptyFvRsAepAttResourceModel() *FvRsAepAttResourceModel {
 	return &FvRsAepAttResourceModel{
 		Id:                    basetypes.NewStringNull(),
 		ParentDn:              basetypes.NewStringNull(),
-		Annotation:            basetypes.NewStringNull(),
 		Encap:                 basetypes.NewStringNull(),
 		InstrImedcy:           basetypes.NewStringNull(),
 		Mode:                  basetypes.NewStringNull(),
@@ -176,16 +173,6 @@ func (r *FvRsAepAttResource) Schema(ctx context.Context, req resource.SchemaRequ
 					stringplanmodifier.RequiresReplace(),
 				},
 			},
-			"annotation": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				Default:             stringdefault.StaticString(globalAnnotation),
-				MarkdownDescription: `The annotation of the Relation From Application EPG To Attachable Access Entity Profile object.`,
-			},
 			"encapsulation": schema.StringAttribute{
 				Optional: true,
 				Computed: true,
@@ -193,7 +180,7 @@ func (r *FvRsAepAttResource) Schema(ctx context.Context, req resource.SchemaRequ
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The port encapsulation.`,
+				MarkdownDescription: `The encapsulation of the Relation From Application EPG To Attachable Access Entity Profile object. The encapsulation refers to the EPG VLAN when class preference is set to 'encap', or to the Secondary VLAN when class preference is set to 'useg'.`,
 			},
 			"deployment_immediacy": schema.StringAttribute{
 				Optional: true,
@@ -217,7 +204,7 @@ func (r *FvRsAepAttResource) Schema(ctx context.Context, req resource.SchemaRequ
 				Validators: []validator.String{
 					stringvalidator.OneOf("native", "regular", "untagged"),
 				},
-				MarkdownDescription: `The BGP Domain mode.`,
+				MarkdownDescription: `The mode of the Relation From Application EPG To Attachable Access Entity Profile object.`,
 			},
 			"primary_encapsulation": schema.StringAttribute{
 				Optional: true,
@@ -226,16 +213,16 @@ func (r *FvRsAepAttResource) Schema(ctx context.Context, req resource.SchemaRequ
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `primaryEncap.`,
+				MarkdownDescription: `The primary encapsulation of the Relation From Application EPG To Attachable Access Entity Profile object. This is used when the class preference is set to 'useg'.`,
 			},
-			"tn_infra_att_entity_p_name": schema.StringAttribute{
+			"attachable_access_entity_profile_name": schema.StringAttribute{
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
-				MarkdownDescription: `Name.`,
+				MarkdownDescription: `The name of the Attachable Access Entity Profile object.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,
@@ -490,9 +477,6 @@ func getAndSetFvRsAepAttAttributes(ctx context.Context, diags *diag.Diagnostics,
 					readData.Id = basetypes.NewStringValue(attributeValue.(string))
 					setFvRsAepAttParentDn(ctx, attributeValue.(string), readData)
 				}
-				if attributeName == "annotation" {
-					readData.Annotation = basetypes.NewStringValue(attributeValue.(string))
-				}
 				if attributeName == "encap" {
 					readData.Encap = basetypes.NewStringValue(attributeValue.(string))
 				}
@@ -687,9 +671,6 @@ func getFvRsAepAttCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics
 	childPayloads = append(childPayloads, TagTagchildPayloads...)
 
 	payloadMap["children"] = childPayloads
-	if !data.Annotation.IsNull() && !data.Annotation.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["annotation"] = data.Annotation.ValueString()
-	}
 	if !data.Encap.IsNull() && !data.Encap.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["encap"] = data.Encap.ValueString()
 	}

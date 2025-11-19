@@ -152,14 +152,13 @@ func getEmptyFvAEPgResourceModel() *FvAEPgResourceModel {
 		}),
 		FvRsAepAtt: types.SetNull(types.ObjectType{
 			AttrTypes: map[string]attr.Type{
-				"annotation":                 types.StringType,
-				"encapsulation":              types.StringType,
-				"deployment_immediacy":       types.StringType,
-				"mode":                       types.StringType,
-				"primary_encapsulation":      types.StringType,
-				"tn_infra_att_entity_p_name": types.StringType,
-				"annotations":                types.SetType{ElemType: TagAnnotationFvRsAepAttFvAEPgType},
-				"tags":                       types.SetType{ElemType: TagTagFvRsAepAttFvAEPgType},
+				"encapsulation":                         types.StringType,
+				"deployment_immediacy":                  types.StringType,
+				"mode":                                  types.StringType,
+				"primary_encapsulation":                 types.StringType,
+				"attachable_access_entity_profile_name": types.StringType,
+				"annotations":                           types.SetType{ElemType: TagAnnotationFvRsAepAttFvAEPgType},
+				"tags":                                  types.SetType{ElemType: TagTagFvRsAepAttFvAEPgType},
 			},
 		}),
 		FvRsBd: types.ObjectNull(map[string]attr.Type{
@@ -518,19 +517,17 @@ var TagTagFvRsAEPgMonPolFvAEPgType = types.ObjectType{
 
 // FvRsAepAttFvAEPgResourceModel describes the resource data model for the children without relation ships.
 type FvRsAepAttFvAEPgResourceModel struct {
-	Annotation            types.String `tfsdk:"annotation"`
 	Encap                 types.String `tfsdk:"encapsulation"`
 	InstrImedcy           types.String `tfsdk:"deployment_immediacy"`
 	Mode                  types.String `tfsdk:"mode"`
 	PrimaryEncap          types.String `tfsdk:"primary_encapsulation"`
-	TnInfraAttEntityPName types.String `tfsdk:"tn_infra_att_entity_p_name"`
+	TnInfraAttEntityPName types.String `tfsdk:"attachable_access_entity_profile_name"`
 	TagAnnotation         types.Set    `tfsdk:"annotations"`
 	TagTag                types.Set    `tfsdk:"tags"`
 }
 
 func getEmptyFvRsAepAttFvAEPgResourceModel() FvRsAepAttFvAEPgResourceModel {
 	return FvRsAepAttFvAEPgResourceModel{
-		Annotation:            basetypes.NewStringNull(),
 		Encap:                 basetypes.NewStringNull(),
 		InstrImedcy:           basetypes.NewStringNull(),
 		Mode:                  basetypes.NewStringNull(),
@@ -553,14 +550,13 @@ func getEmptyFvRsAepAttFvAEPgResourceModel() FvRsAepAttFvAEPgResourceModel {
 
 var FvRsAepAttFvAEPgType = types.ObjectType{
 	AttrTypes: map[string]attr.Type{
-		"annotation":                 types.StringType,
-		"encapsulation":              types.StringType,
-		"deployment_immediacy":       types.StringType,
-		"mode":                       types.StringType,
-		"primary_encapsulation":      types.StringType,
-		"tn_infra_att_entity_p_name": types.StringType,
-		"annotations":                types.SetType{ElemType: TagAnnotationFvRsAepAttFvAEPgType},
-		"tags":                       types.SetType{ElemType: TagTagFvRsAepAttFvAEPgType},
+		"encapsulation":                         types.StringType,
+		"deployment_immediacy":                  types.StringType,
+		"mode":                                  types.StringType,
+		"primary_encapsulation":                 types.StringType,
+		"attachable_access_entity_profile_name": types.StringType,
+		"annotations":                           types.SetType{ElemType: TagAnnotationFvRsAepAttFvAEPgType},
+		"tags":                                  types.SetType{ElemType: TagTagFvRsAepAttFvAEPgType},
 	},
 }
 
@@ -574,10 +570,6 @@ func FvRsAepAttFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(ctx co
 	if len(stateSetValues) == len(planSetValues) {
 		for index, stateValue := range stateSetValues {
 			nullInStateFound := false
-			if stateValue.Annotation.IsNull() {
-				nullInStateFound = true
-				planSetValues[index].Annotation = basetypes.NewStringNull()
-			}
 			if stateValue.Encap.IsNull() {
 				nullInStateFound = true
 				planSetValues[index].Encap = basetypes.NewStringNull()
@@ -2751,14 +2743,13 @@ func (r *FvAEPgResource) UpgradeState(ctx context.Context) map[int64]resource.St
 				upgradedStateData.FvRsAepAtt = types.SetNull(
 					types.ObjectType{
 						AttrTypes: map[string]attr.Type{
-							"annotation":                 basetypes.StringType{},
-							"encapsulation":              basetypes.StringType{},
-							"deployment_immediacy":       basetypes.StringType{},
-							"mode":                       basetypes.StringType{},
-							"primary_encapsulation":      basetypes.StringType{},
-							"tn_infra_att_entity_p_name": basetypes.StringType{},
-							"annotations":                basetypes.SetType{ElemType: TagAnnotationFvRsAepAttFvAEPgType},
-							"tags":                       basetypes.SetType{ElemType: TagTagFvRsAepAttFvAEPgType},
+							"encapsulation":                         basetypes.StringType{},
+							"deployment_immediacy":                  basetypes.StringType{},
+							"mode":                                  basetypes.StringType{},
+							"primary_encapsulation":                 basetypes.StringType{},
+							"attachable_access_entity_profile_name": basetypes.StringType{},
+							"annotations":                           basetypes.SetType{ElemType: TagAnnotationFvRsAepAttFvAEPgType},
+							"tags":                                  basetypes.SetType{ElemType: TagTagFvRsAepAttFvAEPgType},
 						},
 					},
 				)
@@ -4881,15 +4872,6 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
-						"annotation": schema.StringAttribute{
-							Optional: true,
-							Computed: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
-							},
-							Validators:          []validator.String{},
-							MarkdownDescription: `The annotation of the Relation From Application EPG To Attachable Access Entity Profile object.`,
-						},
 						"encapsulation": schema.StringAttribute{
 							Optional: true,
 							Computed: true,
@@ -4897,7 +4879,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 								stringplanmodifier.UseStateForUnknown(),
 							},
 							Validators:          []validator.String{},
-							MarkdownDescription: `The port encapsulation.`,
+							MarkdownDescription: `The encapsulation of the Relation From Application EPG To Attachable Access Entity Profile object. The encapsulation refers to the EPG VLAN when class preference is set to 'encap', or to the Secondary VLAN when class preference is set to 'useg'.`,
 						},
 						"deployment_immediacy": schema.StringAttribute{
 							Optional: true,
@@ -4919,7 +4901,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Validators: []validator.String{
 								stringvalidator.OneOf("native", "regular", "untagged"),
 							},
-							MarkdownDescription: `The BGP Domain mode.`,
+							MarkdownDescription: `The mode of the Relation From Application EPG To Attachable Access Entity Profile object.`,
 						},
 						"primary_encapsulation": schema.StringAttribute{
 							Optional: true,
@@ -4928,9 +4910,9 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 								stringplanmodifier.UseStateForUnknown(),
 							},
 							Validators:          []validator.String{},
-							MarkdownDescription: `primaryEncap.`,
+							MarkdownDescription: `The primary encapsulation of the Relation From Application EPG To Attachable Access Entity Profile object. This is used when the class preference is set to 'useg'.`,
 						},
-						"tn_infra_att_entity_p_name": schema.StringAttribute{
+						"attachable_access_entity_profile_name": schema.StringAttribute{
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
@@ -4939,7 +4921,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Validators: []validator.String{
 								MakeStringRequired(),
 							},
-							MarkdownDescription: `Name.`,
+							MarkdownDescription: `The name of the Attachable Access Entity Profile object.`,
 						},
 						"annotations": schema.SetNestedAttribute{
 							MarkdownDescription: ``,
@@ -5498,7 +5480,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 								stringplanmodifier.UseStateForUnknown(),
 							},
 							Validators:          []validator.String{},
-							MarkdownDescription: `The encapsulation of the Relation To Domain object. The encapsulation refers to the EPG VLAN when class preference is set to 'encap, or to the Secondary VLAN when class preference is set to 'useg'.`,
+							MarkdownDescription: `The encapsulation of the Relation To Domain object. The encapsulation refers to the EPG VLAN when class preference is set to 'encap', or to the Secondary VLAN when class preference is set to 'useg'.`,
 						},
 						"encapsulation_mode": schema.StringAttribute{
 							Optional: true,
@@ -7624,9 +7606,6 @@ func getAndSetFvAEPgAttributes(ctx context.Context, diags *diag.Diagnostics, cli
 						if childClassName == "fvRsAepAtt" {
 							FvRsAepAttFvAEPg := getEmptyFvRsAepAttFvAEPgResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
-								if childAttributeName == "annotation" {
-									FvRsAepAttFvAEPg.Annotation = basetypes.NewStringValue(childAttributeValue.(string))
-								}
 								if childAttributeName == "encap" {
 									FvRsAepAttFvAEPg.Encap = basetypes.NewStringValue(childAttributeValue.(string))
 								}
@@ -8977,11 +8956,6 @@ func getFvAEPgFvRsAepAttChildPayloads(ctx context.Context, diags *diag.Diagnosti
 		for _, fvRsAepAttFvAEPg := range fvRsAepAttFvAEPgPlan {
 			FvRsAepAttFvAEPgChildren := make([]map[string]interface{}, 0)
 			childMap := NewAciObject()
-			if !fvRsAepAttFvAEPg.Annotation.IsNull() && !fvRsAepAttFvAEPg.Annotation.IsUnknown() {
-				childMap.Attributes["annotation"] = fvRsAepAttFvAEPg.Annotation.ValueString()
-			} else {
-				childMap.Attributes["annotation"] = globalAnnotation
-			}
 			if !fvRsAepAttFvAEPg.Encap.IsNull() && !fvRsAepAttFvAEPg.Encap.IsUnknown() {
 				childMap.Attributes["encap"] = fvRsAepAttFvAEPg.Encap.ValueString()
 			}

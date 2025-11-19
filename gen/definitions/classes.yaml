@@ -115,13 +115,19 @@ infraAttEntityP:
   migration_version: 1
   migration_blocks:
     infraRsDomP:
-      relation_infra_rs_dom_p: relation_from_attachable_access_entity_profile_to_domain.target_dn
+      relation_infra_rs_dom_p: relation_to_domains.target_dn
 
 infraRsDomP:
   resource_name: "relation_from_attachable_access_entity_profile_to_domain"
   ui_locations:
     - "Fabric -> Access Policies -> Policies -> Global -> Attachable Access Entity Profiles -> Domains"
   sub_category: "Access Policies"
+  multi_relationship_class: true
+  relationship_classes:
+    - "vmmDomP"
+    - "physDomP"
+    - "fcDomP"
+    - "l2extDomP"
 
 fvRsAepAtt:
   resource_name: "relation_from_application_epg_to_attachable_access_entity_profile"

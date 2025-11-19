@@ -21,12 +21,11 @@ func TestAccDataSourceFvRsAepAttWithFvAEPg(t *testing.T) {
 				Config:             testConfigFvRsAepAttDataSourceDependencyWithFvAEPg,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "tn_infra_att_entity_p_name", "test_tn_infra_att_entity_p_name"),
-					resource.TestCheckResourceAttr("data.aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("data.aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "attachable_access_entity_profile_name", "test_tn_infra_att_entity_p_name"),
 					resource.TestCheckResourceAttr("data.aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "deployment_immediacy", "lazy"),
-					resource.TestCheckResourceAttr("data.aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "encapsulation", ""),
+					resource.TestCheckResourceAttr("data.aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "encapsulation", "unknown"),
 					resource.TestCheckResourceAttr("data.aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "mode", "regular"),
-					resource.TestCheckResourceAttr("data.aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "primary_encapsulation", ""),
+					resource.TestCheckResourceAttr("data.aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "primary_encapsulation", "unknown"),
 				),
 			},
 			{
@@ -40,7 +39,7 @@ func TestAccDataSourceFvRsAepAttWithFvAEPg(t *testing.T) {
 const testConfigFvRsAepAttDataSourceDependencyWithFvAEPg = testConfigFvRsAepAttMinDependencyWithFvAEPg + `
 data "aci_relation_from_application_epg_to_attachable_access_entity_profile" "test" {
   parent_dn = aci_application_epg.test.id
-  tn_infra_att_entity_p_name = "test_tn_infra_att_entity_p_name"
+  attachable_access_entity_profile_name = "test_tn_infra_att_entity_p_name"
   depends_on = [aci_relation_from_application_epg_to_attachable_access_entity_profile.test]
 }
 `
@@ -48,6 +47,6 @@ data "aci_relation_from_application_epg_to_attachable_access_entity_profile" "te
 const testConfigFvRsAepAttNotExistingFvAEPg = testConfigFvAEPgMin + `
 data "aci_relation_from_application_epg_to_attachable_access_entity_profile" "test_non_existing" {
   parent_dn = aci_application_epg.test.id
-  tn_infra_att_entity_p_name = "non_existing_tn_infra_att_entity_p_name"
+  attachable_access_entity_profile_name = "non_existing_tn_infra_att_entity_p_name"
 }
 `

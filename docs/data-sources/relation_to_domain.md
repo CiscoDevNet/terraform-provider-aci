@@ -53,7 +53,7 @@ data "aci_relation_to_domain" "example_application_epg" {
 * `class_preference` (classPref) - (string) The class preference of the Relation To Domain object. Set 'useg' to allow microsegmentation. This attribute is supported in ACI versions: 1.2(2g) and later.
 * `custom_epg_name` (customEpgName) - (string) The display name of the user configured port-group. This attribute is supported in ACI versions: 4.2(3j) and later.
 * `delimiter` (delimiter) - (string) The delimiter of the Relation To Domain object. This attribute is supported in ACI versions: 2.0(1m) and later.
-* `encapsulation` (encap) - (string) The encapsulation of the Relation To Domain object. The encapsulation refers to the EPG VLAN when class preference is set to 'encap, or to the Secondary VLAN when class preference is set to 'useg'. This attribute is supported in ACI versions: 1.1(1j) and later.
+* `encapsulation` (encap) - (string) The encapsulation of the Relation To Domain object. The encapsulation refers to the EPG VLAN when class preference is set to 'encap', or to the Secondary VLAN when class preference is set to 'useg'. This attribute is supported in ACI versions: 1.1(1j) and later.
 * `encapsulation_mode` (encapMode) - (string) The encapsulation mode of the Relation To Domain object. This attribute is supported in ACI versions: 2.1(1h) and later.
 * `epg_cos` (epgCos) - (string) The class of service (CoS) of the Relation To Domain object. This attribute is supported in ACI versions: 3.0(1k) and later.
 * `epg_cos_pref` (epgCosPref) - (string) The class of service (CoS) preference of the Relation To Domain object. This attribute is supported in ACI versions: 3.0(1k) and later.

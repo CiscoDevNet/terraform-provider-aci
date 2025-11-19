@@ -250,18 +250,16 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
 						resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.precedence", "1"),
 						resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.scope", "scope-bd")),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.0.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.0.attachable_access_entity_profile_name", "attachable_access_entity_profile_name_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.0.deployment_immediacy", "immediate"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.0.encapsulation", "encapsulation_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.0.encapsulation", "vlan-100"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.0.mode", "native"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.0.primary_encapsulation", "primary_encapsulation_1"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.0.tn_infra_att_entity_p_name", "tn_infra_att_entity_p_name_0"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.0.primary_encapsulation", "vlan-200"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.1.attachable_access_entity_profile_name", "attachable_access_entity_profile_name_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.1.deployment_immediacy", "lazy"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.1.encapsulation", "encapsulation_2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.1.encapsulation", "unknown"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.1.mode", "regular"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.1.primary_encapsulation", "primary_encapsulation_2"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.1.tn_infra_att_entity_p_name", "tn_infra_att_entity_p_name_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.1.primary_encapsulation", "unknown"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_bridge_domain.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_bridge_domain.bridge_domain_name", "bridge_domain_name_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_consumed_contracts.0.annotation", "annotation_1"),
@@ -453,7 +451,7 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
 						resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.precedence", "1"),
 						resource.TestCheckResourceAttr("aci_application_epg.test", "epg_useg_block_statement.scope", "scope-bd")),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.0.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.0.attachable_access_entity_profile_name", "attachable_access_entity_profile_name_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.0.annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.0.annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.0.annotations.1.key", "key_1"),
@@ -465,11 +463,10 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.0.tags.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.0.tags.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.0.deployment_immediacy", "immediate"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.0.encapsulation", "encapsulation_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.0.encapsulation", "vlan-100"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.0.mode", "native"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.0.primary_encapsulation", "primary_encapsulation_1"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.0.tn_infra_att_entity_p_name", "tn_infra_att_entity_p_name_0"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.1.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.0.primary_encapsulation", "vlan-200"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.1.attachable_access_entity_profile_name", "attachable_access_entity_profile_name_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.1.annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.1.annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.1.annotations.1.key", "key_1"),
@@ -481,10 +478,9 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.1.tags.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.1.tags.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.1.deployment_immediacy", "lazy"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.1.encapsulation", "encapsulation_2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.1.encapsulation", "unknown"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.1.mode", "regular"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.1.primary_encapsulation", "primary_encapsulation_2"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.1.tn_infra_att_entity_p_name", "tn_infra_att_entity_p_name_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.1.primary_encapsulation", "unknown"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_bridge_domain.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_bridge_domain.bridge_domain_name", "bridge_domain_name_1"),
@@ -925,7 +921,7 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.0.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.0.annotation", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.0.attachable_access_entity_profile_name", "attachable_access_entity_profile_name_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.0.annotations.0.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.0.annotations.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.0.annotations.#", "1"),
@@ -933,10 +929,9 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.0.tags.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.0.tags.#", "1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.0.deployment_immediacy", "lazy"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.0.encapsulation", "encapsulation_2"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.0.encapsulation", "unknown"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.0.mode", "regular"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.0.primary_encapsulation", "primary_encapsulation_2"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.0.tn_infra_att_entity_p_name", "tn_infra_att_entity_p_name_1"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.0.primary_encapsulation", "unknown"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_from_application_epg_to_attachable_access_entity_profiles.#", "1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_bridge_domain.annotation", "annotation_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_bridge_domain.bridge_domain_name", "bridge_domain_name_1"),
@@ -1428,7 +1423,7 @@ resource "aci_application_epg" "test" {
   }
   relation_from_application_epg_to_attachable_access_entity_profiles = [
     {
-      annotation = "annotation_1"
+      attachable_access_entity_profile_name = "attachable_access_entity_profile_name_0"
       annotations = [
 	    {
           key = "key_0"
@@ -1450,13 +1445,12 @@ resource "aci_application_epg" "test" {
 	    },
       ]
       deployment_immediacy = "immediate"
-      encapsulation = "encapsulation_1"
+      encapsulation = "vlan-100"
       mode = "native"
-      primary_encapsulation = "primary_encapsulation_1"
-      tn_infra_att_entity_p_name = "tn_infra_att_entity_p_name_0"
+      primary_encapsulation = "vlan-200"
     },
     {
-      annotation = "annotation_2"
+      attachable_access_entity_profile_name = "attachable_access_entity_profile_name_1"
       annotations = [
 	    {
           key = "key_0"
@@ -1478,10 +1472,9 @@ resource "aci_application_epg" "test" {
 	    },
       ]
       deployment_immediacy = "lazy"
-      encapsulation = "encapsulation_2"
+      encapsulation = "unknown"
       mode = "regular"
-      primary_encapsulation = "primary_encapsulation_2"
-      tn_infra_att_entity_p_name = "tn_infra_att_entity_p_name_1"
+      primary_encapsulation = "unknown"
     },
   ]
   relation_to_bridge_domain = {
@@ -2269,7 +2262,7 @@ resource "aci_application_epg" "test" {
   epg_useg_block_statement = {}
   relation_from_application_epg_to_attachable_access_entity_profiles = [ 
 	{
-	  annotation = "annotation_2"
+	  attachable_access_entity_profile_name = "attachable_access_entity_profile_name_1"
       annotations = [ 
 	    {
           key = "key_1"
@@ -2283,10 +2276,9 @@ resource "aci_application_epg" "test" {
 	    },
       ]
 	  deployment_immediacy = "lazy"
-	  encapsulation = "encapsulation_2"
+	  encapsulation = "unknown"
 	  mode = "regular"
-	  primary_encapsulation = "primary_encapsulation_2"
-	  tn_infra_att_entity_p_name = "tn_infra_att_entity_p_name_1"
+	  primary_encapsulation = "unknown"
 	},
   ]
   relation_to_bridge_domain = {
