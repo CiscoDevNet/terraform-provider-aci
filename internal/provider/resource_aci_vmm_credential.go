@@ -243,7 +243,9 @@ func (r *VmmUsrAccPResource) UpgradeState(ctx context.Context) map[int64]resourc
 
 func setVmmUsrAccPLegacyAttributes(ctx context.Context, diags *diag.Diagnostics, data, staticData *VmmUsrAccPResourceModel, classReadInfo []interface{}) {
 	data.DeprecatedParentDn = data.ParentDn
-	data.DeprecatedPwd = staticData.DeprecatedPwd
+	if !staticData.DeprecatedPwd.IsUnknown() {
+		data.DeprecatedPwd = staticData.DeprecatedPwd
+	}
 	attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
 	for attributeName, attributeValue := range attributes {
 		if attributeName == "usr" {
@@ -278,6 +280,12 @@ func (r *VmmUsrAccPResource) ModifyPlan(ctx context.Context, req resource.Modify
 			planData.ParentDn = configData.DeprecatedParentDn
 		}
 
+		if !configData.DeprecatedPwd.IsNull() {
+			planData.Pwd = configData.DeprecatedPwd
+		} else if !configData.Pwd.IsNull() {
+			planData.DeprecatedPwd = configData.Pwd
+		}
+
 		if !configData.DeprecatedUsr.IsNull() {
 			planData.Usr = configData.DeprecatedUsr
 		}
@@ -295,6 +303,9 @@ func avoidVmmUsrAccPPlanChangeForKnownAfterApplyOnly(ctx context.Context, planDa
 	// Set read-only and deprecated attributes in planData from stateData
 	if configData.DeprecatedParentDn.IsNull() {
 		planData.DeprecatedParentDn = stateData.DeprecatedParentDn
+	}
+	if configData.DeprecatedPwd.IsNull() {
+		planData.DeprecatedPwd = stateData.DeprecatedPwd
 	}
 	if configData.DeprecatedUsr.IsNull() {
 		planData.DeprecatedUsr = stateData.DeprecatedUsr
@@ -338,6 +349,7 @@ func (r *VmmUsrAccPResource) Schema(ctx context.Context, req resource.SchemaRequ
 			},
 			"pwd": schema.StringAttribute{
 				Optional:           true,
+				Computed:           true,
 				Sensitive:          true,
 				DeprecationMessage: "Attribute 'pwd' is deprecated, please refer to 'password' instead. The attribute will be removed in the next major version of the provider.",
 				Validators: []validator.String{
@@ -435,6 +447,7 @@ func (r *VmmUsrAccPResource) Schema(ctx context.Context, req resource.SchemaRequ
 			},
 			"password": schema.StringAttribute{
 				Optional:  true,
+				Computed:  true,
 				Sensitive: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
@@ -726,7 +739,9 @@ func getAndSetVmmUsrAccPAttributes(ctx context.Context, diags *diag.Diagnostics,
 					readData.OwnerTag = basetypes.NewStringValue(attributeValue.(string))
 				}
 				// Sensitive attributes are not returned by the APIC, so they are explicitly set to their current state values.
-				readData.Pwd = data.Pwd
+				if !data.Pwd.IsUnknown() {
+					readData.Pwd = data.Pwd
+				}
 				if attributeName == "usr" {
 					readData.Usr = basetypes.NewStringValue(attributeValue.(string))
 				}
@@ -930,8 +945,6 @@ func getVmmUsrAccPCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics
 	}
 	if !data.Pwd.IsNull() && !data.Pwd.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["pwd"] = data.Pwd.ValueString()
-	} else if !data.DeprecatedPwd.IsNull() && !data.DeprecatedPwd.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["pwd"] = data.DeprecatedPwd.ValueString()
 	}
 	if !data.Usr.IsNull() && !data.Usr.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["usr"] = data.Usr.ValueString()
