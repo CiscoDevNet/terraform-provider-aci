@@ -346,7 +346,7 @@ func (d *FvAEPgDataSource) Schema(ctx context.Context, req datasource.SchemaRequ
 					},
 				},
 			},
-			"relation_from_application_epg_to_attachable_access_entity_profiles": schema.SetNestedAttribute{
+			"relation_to_attachable_access_entity_profiles": schema.SetNestedAttribute{
 				MarkdownDescription: ``,
 				Computed:            true,
 				NestedObject: schema.NestedAttributeObject{

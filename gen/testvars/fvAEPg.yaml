@@ -136,7 +136,7 @@ children:
           - key: "key_1"
             value: "test_value"
       
-  relation_from_application_epg_to_attachable_access_entity_profiles:
+  relation_to_attachable_access_entity_profiles:
     - encapsulation: "vlan-100"
       deployment_immediacy: "immediate"
       mode: "native"

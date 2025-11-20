@@ -102,7 +102,7 @@ resource "aci_application_epg" "full_example_application_profile" {
       }
     ]
   }
-  relation_from_application_epg_to_attachable_access_entity_profiles = [
+  relation_to_attachable_access_entity_profiles = [
     {
       encapsulation                         = "vlan-100"
       deployment_immediacy                  = "immediate"
@@ -538,7 +538,7 @@ All examples for the Application EPG resource can be found in the [examples](htt
   
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-* `relation_from_application_epg_to_attachable_access_entity_profiles` - (list) A list of Relation From Application EPG To Attachable Access Entity Profiles (ACI object [fvRsAepAtt](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsAepAtt/overview)) pointing to Attachable Access Entity Profile (ACI Object [infraAttEntityP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraAttEntityP/overview)) which can be configured using the [aci_attachable_access_entity_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/attachable_access_entity_profile) resource. This attribute is supported in ACI versions: 6.1(3f) and later.
+* `relation_to_attachable_access_entity_profiles` - (list) A list of Relation From Application EPG To Attachable Access Entity Profiles (ACI object [fvRsAepAtt](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsAepAtt/overview)) pointing to Attachable Access Entity Profile (ACI Object [infraAttEntityP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraAttEntityP/overview)) which can be configured using the [aci_attachable_access_entity_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/attachable_access_entity_profile) resource. This attribute is supported in ACI versions: 6.1(3f) and later.
   #### Required ####
   
     * `attachable_access_entity_profile_name` (tnInfraAttEntityPName) - (string) The name of the Attachable Access Entity Profile object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/attachable_access_entity_profile) with `aci_attachable_access_entity_profile.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/attachable_access_entity_profile) with `data.aci_attachable_access_entity_profile.example.name`.
