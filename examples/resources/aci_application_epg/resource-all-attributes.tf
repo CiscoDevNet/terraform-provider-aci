@@ -54,7 +54,7 @@ resource "aci_application_epg" "full_example_application_profile" {
       }
     ]
   }
-  relation_from_application_epg_to_attachable_access_entity_profiles = [
+  relation_to_attachable_access_entity_profiles = [
     {
       encapsulation                         = "vlan-100"
       deployment_immediacy                  = "immediate"

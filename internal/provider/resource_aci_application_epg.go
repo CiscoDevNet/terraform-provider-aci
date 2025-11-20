@@ -66,7 +66,7 @@ type FvAEPgResourceModel struct {
 	Shutdown                        types.String                      `tfsdk:"admin_state"`
 	FvCrtrn                         types.Object                      `tfsdk:"epg_useg_block_statement"`
 	FvRsAEPgMonPol                  types.Object                      `tfsdk:"relation_to_monitoring_policy"`
-	FvRsAepAtt                      types.Set                         `tfsdk:"relation_from_application_epg_to_attachable_access_entity_profiles"`
+	FvRsAepAtt                      types.Set                         `tfsdk:"relation_to_attachable_access_entity_profiles"`
 	FvRsBd                          types.Object                      `tfsdk:"relation_to_bridge_domain"`
 	FvRsCons                        types.Set                         `tfsdk:"relation_to_consumed_contracts"`
 	FvRsConsIf                      types.Set                         `tfsdk:"relation_to_imported_contracts"`
@@ -4862,7 +4862,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 					},
 				},
 			},
-			"relation_from_application_epg_to_attachable_access_entity_profiles": schema.SetNestedAttribute{
+			"relation_to_attachable_access_entity_profiles": schema.SetNestedAttribute{
 				MarkdownDescription: ``,
 				Optional:            true,
 				Computed:            true,

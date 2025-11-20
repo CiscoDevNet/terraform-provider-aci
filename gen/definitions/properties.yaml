@@ -837,6 +837,8 @@ infraRsDomP:
         name: "physical_domain_1"
 
 fvRsAepAtt:
+  overwrites:
+    relation_from_application_epg_to_attachable_access_entity_profiles: "relation_to_attachable_access_entity_profiles"
   ignores:
     - "annotation"
   default_values:
