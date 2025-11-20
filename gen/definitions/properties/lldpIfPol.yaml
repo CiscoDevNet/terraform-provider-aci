@@ -1,0 +1,8 @@
+documentation:
+    adminRxSt: The receive (rx) state of the %s object
+    adminTxSt: The transmit (tx) state of the %s object
+    portDCBXPVer: The Data Center Bridging Exchange Protocol (DCBXP) version of the %s object. Changing the DCBX version may prevent the port parameters from converging. The link may need to be reset for the change to take effect.
+overwrites:
+    admin_rx_st: receive_state
+    admin_tx_st: transmit_state
+    port_dcbxp_ver: dcbxp_version

@@ -1,0 +1,2 @@
+documentation:
+    mode: The mode of the %s object. Do not change the mode from 'disabled' directly to 'enabled'. Doing so can lead to traffic loss. Instead, from 'disabled' mode, change the mode to 'learning', wait 5 minutes, and then change the mode to 'enabled'. Changing to 'learning' mode allows Cisco ACI Virtual Edge to add flow table entries for existing flows.

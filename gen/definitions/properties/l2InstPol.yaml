@@ -1,0 +1,7 @@
+documentation:
+    fabricMtu: The MTU Size for Fabric Ports.
+    managementMtu: The MTU Size for Management Ports.
+test_values:
+    all:
+        fabric_mtu: "6000"
+        management_mtu: "7000"

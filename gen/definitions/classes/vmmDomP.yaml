@@ -1,1 +1,31 @@
+migration_blocks:
+    infraRsVipAddrNs:
+        relation_infra_rs_vip_addr_ns: relation_to_ip_address_pool.target_dn
+    infraRsVlanNs:
+        relation_infra_rs_vlan_ns: relation_to_vlan_pool.target_dn
+    vmmDomP:
+        config_infra_pg: configure_infra_port_groups
+        ctrl_knob: endpoint_data_path_verification
+        enable_ave: enable_ave_mode
+        enable_tag: enable_tag_collection
+        enable_vm_folder: enable_vm_folder_data_retrieval
+        encap_mode: encapsulation_mode
+        enf_pref: switching_enforcement_preference
+        ep_inventory_type: endpoint_inventory_type
+        ep_ret_time: endpoint_retention_time
+        hv_avail_monitor: host_availability_assurance
+        mcast_addr: multicast_address
+        mode: switch_type
+        pref_encap_mode: default_encapsulation_mode
+        provider_profile_dn: parent_dn
+    vmmRsDomMcastAddrNs:
+        relation_vmm_rs_dom_mcast_addr_ns: relation_to_multicast_pool.target_dn
+    vmmRsPrefEnhancedLagPol:
+        relation_vmm_rs_pref_enhanced_lag_pol: relation_to_lacp_enhanced_lag_policy.target_dn
+migration_version: 1
+parent_example_dn: uni/vmmp-VMware
 resource_name: vmm_domain
+static_parent: true
+sub_category: Virtual Networking
+ui_locations:
+    - Virtual Networking -> Provider -> Domain
