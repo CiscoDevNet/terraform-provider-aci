@@ -1,0 +1,9 @@
+contained_by:
+    - polUni
+resource_name: firewall_policy
+resource_notes:
+    - For more information about the Firewall Policy, refer to the [Cisco ACI Virtual Edge Configuration Guide](https://www.cisco.com/c/en/us/td/docs/dcn/aci/aci-virtual-edge/3x/Configuration/cisco-aci-virtual-edge-configuration-guide-32x/Cisco-ACI-Virtual-Edge-Configuration-Guide-32x_chapter_distributed_firewall.html)
+rn_prepend: infra
+sub_category: Access Policies
+ui_locations:
+    - Access Policies -> Policies -> Interface -> Firewall

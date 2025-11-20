@@ -1,0 +1,14 @@
+contained_by:
+    - polUni
+dn_formats:
+    - uni/infra/lldpIfP-{name}
+migration_blocks:
+    lldpIfPol:
+        admin_rx_st: receive_state
+        admin_tx_st: transmit_state
+migration_version: 1
+resource_name: lldp_interface_policy
+rn_prepend: infra
+sub_category: Access Policies
+ui_locations:
+    - Access Policies -> Policies -> Interface -> LLDP Interface

@@ -1,0 +1,10 @@
+documentation:
+    tDn: The distinguished name of the target.
+targets:
+    - class_name: fvnsVlanInstP
+      properties:
+        alloc_mode: static
+        name: vlan_pool_name_1
+      relation_resource_name: vlan_pool
+      target_dn: uni/infra/vlanns-[vlan_pool_name_1]-static
+      target_dn_ref: aci_vlan_pool.test_vlan_pool_1.id

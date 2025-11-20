@@ -34,6 +34,9 @@ resource "aci_{{$.ResourceName}}" "full_example_{{getResourceName $key $.Definit
 // This example is only applicable to Cisco Cloud Network Controller
 {{- end}}
 resource "aci_{{$.ResourceName}}" "full_example" {
+  {{- if and $.HasParent (ne $.ParentExampleDn "")}}
+  parent_dn = "{{ $.ParentExampleDn }}"
+  {{- end}}
   {{- range $.Properties}}{{- if not .ReadOnly }}{{- if ne .NamedPropertyClass ""}}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = aci_{{getResourceName .NamedPropertyClass $.Definitions}}.example.name
     {{- else if eq .SnakeCaseName "t_dn" }}

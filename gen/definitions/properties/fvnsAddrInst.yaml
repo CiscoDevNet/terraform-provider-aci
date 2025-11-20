@@ -1,0 +1,19 @@
+default_values:
+    skipGwVal: "no"
+documentation:
+    addr: The gateway address of the %s object.
+    addrType: The gateway address type of the %s object.
+    skipGwVal: Skip gateway validation for the %s object.
+overwrites:
+    addr: gateway_address
+    addr_type: address_type
+    skip_gw_val: skip_gateway_validation
+resource_required:
+    - gateway_address
+test_values:
+    all:
+        gateway_address: 10.0.0.1/24
+    default:
+        gateway_address: 10.0.0.1/24
+    resource_required:
+        gateway_address: 10.0.0.1/24
