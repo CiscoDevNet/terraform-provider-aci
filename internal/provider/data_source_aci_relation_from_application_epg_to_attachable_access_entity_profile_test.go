@@ -23,7 +23,7 @@ func TestAccDataSourceFvRsAepAttWithFvAEPg(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("data.aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "attachable_access_entity_profile_name", "test_tn_infra_att_entity_p_name"),
 					resource.TestCheckResourceAttr("data.aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "deployment_immediacy", "lazy"),
-					resource.TestCheckResourceAttr("data.aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "encapsulation", "unknown"),
+					resource.TestCheckResourceAttr("data.aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "encapsulation", "vlan-100"),
 					resource.TestCheckResourceAttr("data.aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "mode", "regular"),
 					resource.TestCheckResourceAttr("data.aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "primary_encapsulation", "unknown"),
 				),

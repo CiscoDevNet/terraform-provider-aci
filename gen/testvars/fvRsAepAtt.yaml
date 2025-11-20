@@ -4,7 +4,7 @@
 
 
 default:
-  encapsulation: "unknown"
+  encapsulation: "vlan-100"
   deployment_immediacy: "lazy"
   mode: "regular"
   primary_encapsulation: "unknown"
@@ -16,6 +16,7 @@ datasource_required:
   attachable_access_entity_profile_name: "test_tn_infra_att_entity_p_name"
 
 resource_required:
+  encapsulation: "vlan-100"
   attachable_access_entity_profile_name: "test_tn_infra_att_entity_p_name"
 
 all:

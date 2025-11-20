@@ -158,7 +158,7 @@ children:
           - key: "key_1"
             value: "test_value"
       
-    - encapsulation: "unknown"
+    - encapsulation: "vlan-100"
       deployment_immediacy: "lazy"
       mode: "regular"
       primary_encapsulation: "unknown"

@@ -4878,8 +4878,10 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
-							Validators:          []validator.String{},
-							MarkdownDescription: `The encapsulation of the Relation From Application EPG To Attachable Access Entity Profile object. The encapsulation refers to the EPG VLAN when class preference is set to 'encap', or to the Secondary VLAN when class preference is set to 'useg'.`,
+							Validators: []validator.String{
+								MakeStringRequired(),
+							},
+							MarkdownDescription: `The encapsulation of the Relation From Application EPG To Attachable Access Entity Profile object.`,
 						},
 						"deployment_immediacy": schema.StringAttribute{
 							Optional: true,
@@ -4910,7 +4912,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 								stringplanmodifier.UseStateForUnknown(),
 							},
 							Validators:          []validator.String{},
-							MarkdownDescription: `The primary encapsulation of the Relation From Application EPG To Attachable Access Entity Profile object. This is used when the class preference is set to 'useg'.`,
+							MarkdownDescription: `The primary encapsulation of the Relation From Application EPG To Attachable Access Entity Profile object.`,
 						},
 						"attachable_access_entity_profile_name": schema.StringAttribute{
 							Optional: true,

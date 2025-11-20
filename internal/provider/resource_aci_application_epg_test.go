@@ -257,7 +257,7 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_attachable_access_entity_profiles.0.primary_encapsulation", "vlan-200"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_attachable_access_entity_profiles.1.attachable_access_entity_profile_name", "attachable_access_entity_profile_name_1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_attachable_access_entity_profiles.1.deployment_immediacy", "lazy"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_attachable_access_entity_profiles.1.encapsulation", "unknown"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_attachable_access_entity_profiles.1.encapsulation", "vlan-100"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_attachable_access_entity_profiles.1.mode", "regular"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_attachable_access_entity_profiles.1.primary_encapsulation", "unknown"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_bridge_domain.annotation", "annotation_1"),
@@ -478,7 +478,7 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_attachable_access_entity_profiles.1.tags.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_attachable_access_entity_profiles.1.tags.#", "2"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_attachable_access_entity_profiles.1.deployment_immediacy", "lazy"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_attachable_access_entity_profiles.1.encapsulation", "unknown"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_attachable_access_entity_profiles.1.encapsulation", "vlan-100"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_attachable_access_entity_profiles.1.mode", "regular"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_attachable_access_entity_profiles.1.primary_encapsulation", "unknown"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_attachable_access_entity_profiles.#", "2"),
@@ -929,7 +929,7 @@ func TestAccResourceFvAEPgWithFvAp(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_attachable_access_entity_profiles.0.tags.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_attachable_access_entity_profiles.0.tags.#", "1"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_attachable_access_entity_profiles.0.deployment_immediacy", "lazy"),
-					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_attachable_access_entity_profiles.0.encapsulation", "unknown"),
+					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_attachable_access_entity_profiles.0.encapsulation", "vlan-100"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_attachable_access_entity_profiles.0.mode", "regular"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_attachable_access_entity_profiles.0.primary_encapsulation", "unknown"),
 					resource.TestCheckResourceAttr("aci_application_epg.test", "relation_to_attachable_access_entity_profiles.#", "1"),
@@ -1472,7 +1472,7 @@ resource "aci_application_epg" "test" {
 	    },
       ]
       deployment_immediacy = "lazy"
-      encapsulation = "unknown"
+      encapsulation = "vlan-100"
       mode = "regular"
       primary_encapsulation = "unknown"
     },
@@ -2276,7 +2276,7 @@ resource "aci_application_epg" "test" {
 	    },
       ]
 	  deployment_immediacy = "lazy"
-	  encapsulation = "unknown"
+	  encapsulation = "vlan-100"
 	  mode = "regular"
 	  primary_encapsulation = "unknown"
 	},
