@@ -89,6 +89,7 @@ global:
     Policys: "Policies"
     Pc Vpc Override Policy: "PC VPC Override Policy"
     Fex: "FEX"
+    From Attachable Access Entity Profile To Domains: "To Domains"
   ignores:
     - "userdom"
 
