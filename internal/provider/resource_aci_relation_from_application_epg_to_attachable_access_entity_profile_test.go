@@ -26,8 +26,8 @@ func TestAccResourceFvRsAepAttWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.allow_test_2", "attachable_access_entity_profile_name", "test_tn_infra_att_entity_p_name"),
 					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.allow_test", "deployment_immediacy", "lazy"),
 					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.allow_test_2", "deployment_immediacy", "lazy"),
-					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.allow_test", "encapsulation", "unknown"),
-					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.allow_test_2", "encapsulation", "unknown"),
+					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.allow_test", "encapsulation", "vlan-100"),
+					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.allow_test_2", "encapsulation", "vlan-100"),
 					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.allow_test", "mode", "regular"),
 					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.allow_test_2", "mode", "regular"),
 					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.allow_test", "primary_encapsulation", "unknown"),
@@ -64,8 +64,8 @@ func TestAccResourceFvRsAepAttWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.allow_test_2", "attachable_access_entity_profile_name", "test_tn_infra_att_entity_p_name"),
 					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.allow_test", "deployment_immediacy", "lazy"),
 					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.allow_test_2", "deployment_immediacy", "lazy"),
-					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.allow_test", "encapsulation", "unknown"),
-					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.allow_test_2", "encapsulation", "unknown"),
+					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.allow_test", "encapsulation", "vlan-100"),
+					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.allow_test_2", "encapsulation", "vlan-100"),
 					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.allow_test", "mode", "regular"),
 					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.allow_test_2", "mode", "regular"),
 					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.allow_test", "primary_encapsulation", "unknown"),
@@ -86,7 +86,7 @@ func TestAccResourceFvRsAepAttWithFvAEPg(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "attachable_access_entity_profile_name", "test_tn_infra_att_entity_p_name"),
 					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "deployment_immediacy", "lazy"),
-					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "encapsulation", "unknown"),
+					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "encapsulation", "vlan-100"),
 					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "mode", "regular"),
 					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "primary_encapsulation", "unknown"),
 				),
@@ -109,6 +109,7 @@ func TestAccResourceFvRsAepAttWithFvAEPg(t *testing.T) {
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "attachable_access_entity_profile_name", "test_tn_infra_att_entity_p_name"),
+					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "encapsulation", "vlan-100"),
 				),
 			},
 			// Update with empty strings config or default value
@@ -117,8 +118,8 @@ func TestAccResourceFvRsAepAttWithFvAEPg(t *testing.T) {
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "attachable_access_entity_profile_name", "test_tn_infra_att_entity_p_name"),
+					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "encapsulation", "vlan-100"),
 					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "deployment_immediacy", "lazy"),
-					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "encapsulation", "unknown"),
 					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "mode", "regular"),
 					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "primary_encapsulation", "unknown"),
 				),
@@ -135,8 +136,8 @@ func TestAccResourceFvRsAepAttWithFvAEPg(t *testing.T) {
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "attachable_access_entity_profile_name", "test_tn_infra_att_entity_p_name"),
+					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "encapsulation", "vlan-100"),
 					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "deployment_immediacy", "lazy"),
-					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "encapsulation", "unknown"),
 					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "mode", "regular"),
 					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "primary_encapsulation", "unknown"),
 					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "annotations.0.key", "key_0"),
@@ -208,10 +209,12 @@ const testConfigFvRsAepAttMinDependencyWithFvAEPgAllowExisting = testConfigFvAEP
 resource "aci_relation_from_application_epg_to_attachable_access_entity_profile" "allow_test" {
   parent_dn = aci_application_epg.test.id
   attachable_access_entity_profile_name = "test_tn_infra_att_entity_p_name"
+  encapsulation = "vlan-100"
 }
 resource "aci_relation_from_application_epg_to_attachable_access_entity_profile" "allow_test_2" {
   parent_dn = aci_application_epg.test.id
   attachable_access_entity_profile_name = "test_tn_infra_att_entity_p_name"
+  encapsulation = "vlan-100"
   depends_on = [aci_relation_from_application_epg_to_attachable_access_entity_profile.allow_test]
 }
 `
@@ -220,6 +223,7 @@ const testConfigFvRsAepAttMinDependencyWithFvAEPg = testConfigFvAEPgMin + `
 resource "aci_relation_from_application_epg_to_attachable_access_entity_profile" "test" {
   parent_dn = aci_application_epg.test.id
   attachable_access_entity_profile_name = "test_tn_infra_att_entity_p_name"
+  encapsulation = "vlan-100"
 }
 `
 
@@ -239,7 +243,7 @@ resource "aci_relation_from_application_epg_to_attachable_access_entity_profile"
   parent_dn = aci_application_epg.test.id
   attachable_access_entity_profile_name = "test_tn_infra_att_entity_p_name"
   deployment_immediacy = "lazy"
-  encapsulation = "unknown"
+  encapsulation = "vlan-100"
   mode = "regular"
   primary_encapsulation = "unknown"
 }
@@ -248,6 +252,7 @@ const testConfigFvRsAepAttChildrenDependencyWithFvAEPg = testConfigFvAEPgMin + `
 resource "aci_relation_from_application_epg_to_attachable_access_entity_profile" "test" {
   parent_dn = aci_application_epg.test.id
   attachable_access_entity_profile_name = "test_tn_infra_att_entity_p_name"
+  encapsulation = "vlan-100"
   annotations = [
     {
       key = "key_0"
@@ -275,6 +280,7 @@ const testConfigFvRsAepAttChildrenRemoveFromConfigDependencyWithFvAEPg = testCon
 resource "aci_relation_from_application_epg_to_attachable_access_entity_profile" "test" {
   parent_dn = aci_application_epg.test.id
   attachable_access_entity_profile_name = "test_tn_infra_att_entity_p_name"
+  encapsulation = "vlan-100"
 }
 `
 
@@ -282,6 +288,7 @@ const testConfigFvRsAepAttChildrenRemoveOneDependencyWithFvAEPg = testConfigFvAE
 resource "aci_relation_from_application_epg_to_attachable_access_entity_profile" "test" {
   parent_dn = aci_application_epg.test.id
   attachable_access_entity_profile_name = "test_tn_infra_att_entity_p_name"
+  encapsulation = "vlan-100"
   annotations = [ 
 	{
 	  key = "key_1"
@@ -301,6 +308,7 @@ const testConfigFvRsAepAttChildrenRemoveAllDependencyWithFvAEPg = testConfigFvAE
 resource "aci_relation_from_application_epg_to_attachable_access_entity_profile" "test" {
   parent_dn = aci_application_epg.test.id
   attachable_access_entity_profile_name = "test_tn_infra_att_entity_p_name"
+  encapsulation = "vlan-100"
   annotations = []
   tags = []
 }

@@ -36,6 +36,7 @@ The configuration snippet below creates a Relation From Application EPG To Attac
 
 resource "aci_relation_from_application_epg_to_attachable_access_entity_profile" "example_application_epg" {
   parent_dn                             = aci_application_epg.example.id
+  encapsulation                         = "vlan-100"
   attachable_access_entity_profile_name = aci_attachable_access_entity_profile.example.name
 }
 
@@ -77,6 +78,7 @@ All examples for the Relation From Application EPG To Attachable Access Entity P
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_application_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/application_epg) ([fvAEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvAEPg/overview))
+* `encapsulation` (encap) - (string) The encapsulation of the Relation From Application EPG To Attachable Access Entity Profile object.
 * `attachable_access_entity_profile_name` (tnInfraAttEntityPName) - (string) The name of the Attachable Access Entity Profile object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/attachable_access_entity_profile) with `aci_attachable_access_entity_profile.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/attachable_access_entity_profile) with `data.aci_attachable_access_entity_profile.example.name`.
 
 ### Read-Only ###
@@ -85,16 +87,13 @@ All examples for the Relation From Application EPG To Attachable Access Entity P
 
 ### Optional ###
 
-* `encapsulation` (encap) - (string) The encapsulation of the Relation From Application EPG To Attachable Access Entity Profile object. The encapsulation refers to the EPG VLAN when class preference is set to 'encap', or to the Secondary VLAN when class preference is set to 'useg'.
-  - Default: `"unknown"`
 * `deployment_immediacy` (instrImedcy) - (string) The deployment immediacy of the Relation From Application EPG To Attachable Access Entity Profile object. Specifies when the policy is pushed into the hardware policy content-addressable memory (CAM).
   - Default: `"lazy"`
   - Valid Values: `"immediate"`, `"lazy"`.
 * `mode` (mode) - (string) The mode of the Relation From Application EPG To Attachable Access Entity Profile object.
   - Default: `"regular"`
   - Valid Values: `"native"`, `"regular"`, `"untagged"`.
-* `primary_encapsulation` (primaryEncap) - (string) The primary encapsulation of the Relation From Application EPG To Attachable Access Entity Profile object. This is used when the class preference is set to 'useg'.
-  - Default: `"unknown"`
+* `primary_encapsulation` (primaryEncap) - (string) The primary encapsulation of the Relation From Application EPG To Attachable Access Entity Profile object.
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
   

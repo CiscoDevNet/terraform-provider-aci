@@ -48,10 +48,10 @@ data "aci_relation_from_application_epg_to_attachable_access_entity_profile" "ex
 ### Read-Only ###
 
 * `id` - (string) The distinguished name (DN) of the Relation From Application EPG To Attachable Access Entity Profile object.
-* `encapsulation` (encap) - (string) The encapsulation of the Relation From Application EPG To Attachable Access Entity Profile object. The encapsulation refers to the EPG VLAN when class preference is set to 'encap', or to the Secondary VLAN when class preference is set to 'useg'.
+* `encapsulation` (encap) - (string) The encapsulation of the Relation From Application EPG To Attachable Access Entity Profile object.
 * `deployment_immediacy` (instrImedcy) - (string) The deployment immediacy of the Relation From Application EPG To Attachable Access Entity Profile object. Specifies when the policy is pushed into the hardware policy content-addressable memory (CAM).
 * `mode` (mode) - (string) The mode of the Relation From Application EPG To Attachable Access Entity Profile object.
-* `primary_encapsulation` (primaryEncap) - (string) The primary encapsulation of the Relation From Application EPG To Attachable Access Entity Profile object. This is used when the class preference is set to 'useg'.
+* `primary_encapsulation` (primaryEncap) - (string) The primary encapsulation of the Relation From Application EPG To Attachable Access Entity Profile object.
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
