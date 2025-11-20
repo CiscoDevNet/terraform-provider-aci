@@ -1,0 +1,7 @@
+dn_formats:
+    - uni/tn-{name}/addrinst-{name}/fromaddr-[{from}]-toaddr-[{to}]
+    - uni/tn-{name}/ap-{name}/epg-{name}/CtrlrAddrInst-{name}/fromaddr-[{from}]-toaddr-[{to}]
+resource_name: ip_address_block
+sub_category: Tenant Policies
+ui_locations:
+    - Tenants (mgmt) -> IP Address Pools -> Address Blocks

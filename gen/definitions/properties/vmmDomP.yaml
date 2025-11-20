@@ -1,0 +1,81 @@
+add_valid_values:
+    arpLearning:
+        - ""
+    parentDn:
+        - uni/vmmp-VMware
+        - uni/vmmp-Microsoft
+        - uni/vmmp-CloudFoundry
+        - uni/vmmp-OpenShift
+        - uni/vmmp-OpenStack
+        - uni/vmmp-Kubernetes
+        - uni/vmmp-Redhat
+        - uni/vmmp-Nutanix
+default_values:
+    arpLearning: ""
+    configInfraPg: "no"
+    enableAVE: "no"
+    enableTag: "no"
+    enableVmFolder: "no"
+    hvAvailMonitor: "no"
+    parentDn: uni/vmmp-VMWare
+documentation:
+    accessMode: The access mode of the %s object.
+    arpLearning: Enable ARP learning for the the %s object, this attribute is only applicable for Application Virtual Switch (AVS).
+    aveTimeOut: The timeout in seconds that the Cisco ACI Virtual Edge (AVE), the virtual switch for ACI, can remain in a non-working state before vCenter takes action.
+    configInfraPg: Configure port groups for the virtual APIC.
+    ctrlKnob: This mechanism allows disabling endpoint verification, prevents the un-deployment of an EPG while processing an endpoint detach when the fabric is still receiving traffic for the endpoint.
+    customSwitchName: The custom vSwitch name.
+    delimiter: The delimiter of the %s object.
+    enableAVE: Enable Cisco ACI Virtual Edge (AVE) mode on the %s object.
+    enableTag: Enable Tag data retrieval for the %s object.
+    enableVmFolder: Enable VM Folder data retrieval for the %s object.
+    encapMode: The encapsulation mode of the %s object. When default_encapsulation_mode is not specified, the encapsulation_mode is automatically set based on the encapsulation blocks associated with the domain.
+    enfPref: The switching enforcement preference of the %s object. This determines whether switching is done within the virtual switch (Local Switching) or whether all switched traffic must go through the fabric (No Local Switching).
+    epInventoryType: The endpoint inventory type of the %s object. When set to on-link type the inventory will contain all endpoints that share a fabric uplink.
+    epRetTime: The endpoint retention time of the %s object.
+    hvAvailMonitor: Enable host availability assurance, which creates a vSphere Proactive HA provider object that resides in VMware vCenter. The object enables VMware vCenter to quarantine a host with a nonworking Cisco Application Centric Infrastructure Virtual Edge and move its VMs.
+    mcastAddr: The multicast address of the %s object.
+    mode: The switch type of the %s object.
+    prefEncapMode: The default encapsulation mode of the %s object.
+overwrites:
+    config_infra_pg: configure_infra_port_groups
+    ctrl_knob: endpoint_data_path_verification
+    enable_ave: enable_ave_mode
+    enable_tag: enable_tag_collection
+    enable_vm_folder: enable_vm_folder_data_retrieval
+    enf_pref: switching_enforcement_preference
+    ep_inventory_type: endpoint_inventory_type
+    ep_ret_time: endpoint_retention_time
+    hv_avail_monitor: host_availability_assurance
+    mcast_addr: multicast_address
+    mode: switch_type
+    pref_encap_mode: default_encapsulation_mode
+test_values:
+    all:
+        arp_learning: ""
+        custom_switch_name: ""
+        delimiter: '@'
+        multicast_address: 224.0.1.0
+        parent_dn: uni/vmmp-VMware
+    datasource_non_existing:
+        parent_dn: uni/vmmp-VMware
+    datasource_required:
+        parent_dn: uni/vmmp-VMware
+    default:
+        arp_learning: ""
+        custom_switch_name: ""
+        delimiter: ""
+        multicast_address: 0.0.0.0
+        parent_dn: uni/vmmp-VMware
+    ignore_in_legacy:
+        - parent_dn
+    legacy:
+        endpoint_retention_time: "0"
+        multicast_address: 0.0.0.0
+        parent_dn: uni/vmmp-VMware
+        switch_type: default
+    resource_required:
+        parent_dn: uni/vmmp-VMware
+type_overwrites:
+    arpLearning: string
+    ctrlKnob: string

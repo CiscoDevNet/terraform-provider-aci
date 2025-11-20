@@ -53,6 +53,11 @@ Data source for ACI {{.ResourceNameAsDescription}}
     {{- range .DocumentationParentDns}}
   - {{ . }}
     {{- end}}
+    {{- if .HasParentValidValues}}{{- $idx := 0}}
+      {{- range .ParentDnValidValues}}
+          {{ $idx = add $idx 1}}{{$idx}}. {{ . }} 
+      {{- end}}
+    {{- end}}
   {{- end}}
   {{- range .Properties}}
     {{- if .IsNaming}}

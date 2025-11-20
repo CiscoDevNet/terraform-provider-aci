@@ -1,0 +1,9 @@
+children:
+    - fvnsUcastAddrBlk
+contained_by:
+    - polUni
+resource_name: ip_address_pool
+rn_prepend: tn-mgmt
+sub_category: Tenant Policies
+ui_locations:
+    - Tenants (mgmt) -> IP Address Pools

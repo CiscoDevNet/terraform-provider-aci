@@ -12117,7 +12117,7 @@
               },
               "ctrl": {
                 "type": [
-                  "list",
+                  "set",
                   "string"
                 ],
                 "description_kind": "plain",
@@ -31221,7 +31221,7 @@
               },
               "ctrl": {
                 "type": [
-                  "list",
+                  "set",
                   "string"
                 ],
                 "description_kind": "plain",

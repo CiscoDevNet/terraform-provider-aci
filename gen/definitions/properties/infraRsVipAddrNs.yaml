@@ -1,0 +1,7 @@
+targets:
+    - class_name: fvnsAddrInst
+      properties:
+        gateway_address: 10.0.0.1/24
+        name: ip_address_pool_name_1
+      relation_resource_name: ip_address_pool
+      target_dn: uni/tn-mgmt/addrinst-ip_address_pool_name_1
