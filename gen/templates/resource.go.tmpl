@@ -2942,7 +2942,7 @@ for _, {{ .PkgName }}{{.ParentHierarchy}}state := range {{.ParentHierarchy | dec
 	{{ .PkgName }}{{.ParentHierarchy}}state.{{.ResourceClassName}}.ElementsAs(ctx, &{{.PkgName}}{{.ParentHierarchy}}State, false)
 }
 	{{- end}}
-if !{{ .ParentHierarchy | decapitalize}}.{{.ResourceClassName}}.IsNull() && !{{ .ParentHierarchy | decapitalize}}.{{.ResourceClassName}}.IsUnknown(){
+if !{{ .ParentHierarchy | decapitalize}}.{{.ResourceClassName}}.IsNull() && !{{ .ParentHierarchy | decapitalize}}.{{.ResourceClassName}}.IsUnknown(){{- if and (or (not .IdentifiedBy) .MaxOneClassAllowed) (not .AllowDelete)}}&& !IsEmptySingleNestedAttribute({{ .ParentHierarchy | decapitalize}}.{{.ResourceClassName}}.Attributes()){{- end}} {
 {{- else}}
 	{{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
 {{.ParentHierarchy | decapitalize}}Plan.{{.ResourceClassName}}.As(ctx, &{{.PkgName}}{{.ParentHierarchy}}Plan, basetypes.ObjectAsOptions{})
@@ -2955,7 +2955,7 @@ if !{{.ParentHierarchy | decapitalize}}State.{{.ResourceClassName}}.IsNull(){
 	{{.ParentHierarchy | decapitalize}}State.{{.ResourceClassName}}.ElementsAs(ctx, &{{.PkgName}}{{.ParentHierarchy}}State, false)
 }
 	{{- end}}
-if !{{ .ParentHierarchy | decapitalize}}Plan.{{.ResourceClassName}}.IsNull() && !{{ .ParentHierarchy | decapitalize}}Plan.{{.ResourceClassName}}.IsUnknown(){
+if !{{ .ParentHierarchy | decapitalize}}Plan.{{.ResourceClassName}}.IsNull() && !{{ .ParentHierarchy | decapitalize}}Plan.{{.ResourceClassName}}.IsUnknown() {
 {{- end}}
 	{{- if and (and .IdentifiedBy (not (and .MaxOneClassAllowed (hasPrefix .RnFormat  "rs")))) (not (or (not .IdentifiedBy) .MaxOneClassAllowed))}}
         {{ .PkgName }}Identifiers := []{{.ResourceClassName}}Identifier{}

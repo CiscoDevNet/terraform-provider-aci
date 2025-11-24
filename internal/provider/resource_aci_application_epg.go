@@ -9128,7 +9128,7 @@ func getFvAEPgFvRsDomAttChildPayloads(ctx context.Context, diags *diag.Diagnosti
 					break
 				}
 			}
-			if !fvRsDomAttFvAEPg.FvUplinkOrderCont.IsNull() && !fvRsDomAttFvAEPg.FvUplinkOrderCont.IsUnknown() {
+			if !fvRsDomAttFvAEPg.FvUplinkOrderCont.IsNull() && !fvRsDomAttFvAEPg.FvUplinkOrderCont.IsUnknown() && !IsEmptySingleNestedAttribute(fvRsDomAttFvAEPg.FvUplinkOrderCont.Attributes()) {
 				fvUplinkOrderContFvRsDomAttFvAEPgChildMap := NewAciObject()
 				if !IsEmptySingleNestedAttribute(fvRsDomAttFvAEPg.FvUplinkOrderCont.Attributes()) {
 					if !fvUplinkOrderContFvRsDomAttFvAEPgPlan.Active.IsUnknown() && !fvUplinkOrderContFvRsDomAttFvAEPgPlan.Active.IsNull() {
