@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.19.0 (November 25, 2025)
+
+IMPROVEMENTS:
+- Add support for uplink_order_container (fvuplinkordercont) in relation_to_domains attribute of aci_application_epg and aci_relation_to_domain resource and datasource
+- Add resource and data source to import l4-l7 logical devices from one tenant to another.
+- Addition of new attributes to resource_aci_rest_managed to modify an object during destroy instead of deleting it
+- Migrate resources and datasource aci_access_port_block, aci_access_port_selector, aci_fex_profile. aci_leaf_interface_profile, aci_spine_interface_profile and aci_spine_access_port_selector to terraform plugin framework
+- Migrate resource and datasource aci_vmm_credential to terraform plugin framework
+- Add resource and datasource aci_relation_from_application_epg_to_attachable_access_entity_profile for fvrsaepatt class support
+- Migrate resource and datasource aci_attachable_access_entity_profile to terraform plugin framework and add resource and datasource for aci_relation_from_attachable_access_entity_profile_to_domain
+
+BUG FIXES:
+- Bug fix for update of single nested children
+
 ## 2.18.0 (November 7, 2025)
 
 IMPROVEMENTS:
