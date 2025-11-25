@@ -109,6 +109,11 @@ func (d *{{.ResourceClassName}}DataSource) Schema(ctx context.Context, req datas
 				{{- else}}
 				Required:            true,
 				{{- end}}
+				{{- if .HasParentValidValues}}
+				Validators: []validator.String{
+					stringvalidator.OneOf({{- validatorString .ParentDnValidValues}}),
+				},
+				{{- end}}
 				MarkdownDescription: "The distinguished name (DN) of the parent object.",
 			},
 			{{- end}}
