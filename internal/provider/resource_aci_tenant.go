@@ -855,7 +855,8 @@ func (r *FvTenantResource) ImportState(ctx context.Context, req resource.ImportS
 }
 
 func getAndSetFvTenantAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvTenantResourceModel) {
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "fvTenant,fvRsTenantMonPol,tagAnnotation,tagTag,tagAnnotation,tagTag"), "GET", nil)
+	childClasses := getChildClassesForGetRequest([]string{"fvRsTenantMonPol", "tagAnnotation", "tagTag"})
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), strings.Join(childClasses, ",")), "GET", nil)
 
 	readData := getEmptyFvTenantResourceModel()
 

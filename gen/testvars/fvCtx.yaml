@@ -11,6 +11,17 @@ legacy_attributes:
   relation_fv_rs_ctx_mon_pol: "aci_monitoring_policy.test_monitoring_policy_1.id"
   relation_fv_rs_bgp_ctx_pol: "aci_bgp_timers.test_bgp_timers_0.id"
   relation_fv_rs_ospf_ctx_pol: "aci_ospf_timers.test_ospf_timers_0.id"
+
+legacy_attribute_versions:
+  bd_enforced_enable: 3.0(1k)-
+  tenant_dn: no_version_found
+  pc_enf_dir: 1.2(1i)-
+  pc_enf_pref: 1.0(1e)-
+  relation_fv_rs_ctx_to_ep_ret: 1.0(1e)-
+  relation_fv_rs_ctx_to_ext_route_tag_pol: 1.1(1j)-
+  relation_fv_rs_ctx_mon_pol: 1.0(1e)-
+  relation_fv_rs_bgp_ctx_pol: 1.0(1e)-
+  relation_fv_rs_ospf_ctx_pol: 1.0(1e)-
 legacy_blocks:
   relation_fv_rs_ctx_to_bgp_ctx_af_pol:
     af: "ipv4-ucast"
@@ -69,252 +80,258 @@ children:
       bgp_timers_name: "bgp_timers_name_1"
       deletable_child: false
       child_required: false
+      child_versions: 1.0(1e)-
       children:
         annotations:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
         tags:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
   relation_to_monitoring_policy:
     - annotation: "annotation_1"
       monitoring_policy_name: "monitoring_policy_name_1"
       deletable_child: true
       child_required: false
+      child_versions: 1.0(1e)-
       children:
         annotations:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
         tags:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
   relation_to_bgp_address_family_contexts:
     - address_family: "ipv4-ucast"
       annotation: "annotation_1"
       bgp_address_family_context_name: "bgp_address_family_context_name_0"
-      
+      child_versions: 1.1(1j)-
       children:
         annotations:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
         tags:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
     - address_family: "ipv6-ucast"
       annotation: "annotation_2"
       bgp_address_family_context_name: "bgp_address_family_context_name_1"
-      
+      child_versions: 1.1(1j)-
       children:
         annotations:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
         tags:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
   relation_to_eigrp_address_family_contexts:
     - address_family: "ipv4-ucast"
       annotation: "annotation_1"
       eigrp_address_family_context_name: "eigrp_address_family_context_name_0"
-      
+      child_versions: 1.1(1j)-
       children:
         annotations:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
         tags:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
     - address_family: "ipv6-ucast"
       annotation: "annotation_2"
       eigrp_address_family_context_name: "eigrp_address_family_context_name_1"
-      
+      child_versions: 1.1(1j)-
       children:
         annotations:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
         tags:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
   relation_to_end_point_retention_policy:
     - annotation: "annotation_1"
       end_point_retention_policy_name: "end_point_retention_policy_name_1"
       deletable_child: false
       child_required: false
+      child_versions: 1.0(1e)-
       children:
         annotations:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
         tags:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
   relation_to_l3out_route_tag_policy:
     - annotation: "annotation_1"
       l3out_route_tag_policy_name: "l3out_route_tag_policy_name_1"
       deletable_child: false
       child_required: false
+      child_versions: 1.1(1j)-
       children:
         annotations:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
         tags:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
   relation_to_address_family_ospf_timers:
     - address_family: "ipv4-ucast"
       annotation: "annotation_1"
       ospf_timers_name: "ospf_timers_name_0"
-      
+      child_versions: 1.1(1j)-
       children:
         annotations:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
         tags:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
     - address_family: "ipv6-ucast"
       annotation: "annotation_2"
       ospf_timers_name: "ospf_timers_name_1"
-      
+      child_versions: 1.1(1j)-
       children:
         annotations:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
         tags:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
   relation_to_wan_vpn:
     - annotation: "annotation_1"
       target_dn: "target_dn_1"
       deletable_child: true
       child_required: false
+      child_versions: 4.2(1i)-
       children:
         annotations:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
         tags:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
   relation_to_ospf_timers:
     - annotation: "annotation_1"
       ospf_timers_name: "ospf_timers_name_1"
       deletable_child: false
       child_required: false
+      child_versions: 1.0(1e)-
       children:
         annotations:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
         tags:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
   annotations:
     - key: "key_0"
       value: "value_1"
-      
+      child_versions: 3.2(1l)-
     - key: "key_1"
       value: "test_value"
-      
+      child_versions: 3.2(1l)-
   tags:
     - key: "key_0"
       value: "value_1"
-      
+      child_versions: 3.2(1l)-
     - key: "key_1"
       value: "test_value"
-      
+      child_versions: 3.2(1l)-
 parents:
   - class_name: "fvTenant"
     parent_dependency: ""

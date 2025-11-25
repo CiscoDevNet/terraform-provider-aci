@@ -139,14 +139,20 @@ func TestAccResourceFvFBRMemberWithFvFBRGroup(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "name", ""),
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "tags.1.value", "test_value"),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "annotations.1.value", "test_value"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "tags.1.value", "test_value"),
+					),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -165,16 +171,22 @@ func TestAccResourceFvFBRMemberWithFvFBRGroup(t *testing.T) {
 				Config:             testConfigFvFBRMemberChildrenRemoveFromConfigDependencyWithFvFBRGroup,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "tags.#", "2"),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "annotations.#", "2"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
@@ -182,12 +194,18 @@ func TestAccResourceFvFBRMemberWithFvFBRGroup(t *testing.T) {
 				Config:             testConfigFvFBRMemberChildrenRemoveOneDependencyWithFvFBRGroup,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "tags.#", "1"),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "annotations.#", "1"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
@@ -248,7 +266,7 @@ const testConfigFvFBRMemberChildrenDependencyWithFvFBRGroup = testConfigFvFBRGro
 resource "aci_vrf_fallback_route_group_member" "test" {
   parent_dn = aci_vrf_fallback_route_group.test.id
   fallback_member = "2.2.2.3"
-  annotations = [
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -257,8 +275,8 @@ resource "aci_vrf_fallback_route_group_member" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  tags = [
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -267,7 +285,7 @@ resource "aci_vrf_fallback_route_group_member" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
+  ] : null
 }
 `
 
@@ -282,18 +300,18 @@ const testConfigFvFBRMemberChildrenRemoveOneDependencyWithFvFBRGroup = testConfi
 resource "aci_vrf_fallback_route_group_member" "test" {
   parent_dn = aci_vrf_fallback_route_group.test.id
   fallback_member = "2.2.2.3"
-  annotations = [ 
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  tags = [ 
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
+  ] : null
 }
 `
 
@@ -301,7 +319,7 @@ const testConfigFvFBRMemberChildrenRemoveAllDependencyWithFvFBRGroup = testConfi
 resource "aci_vrf_fallback_route_group_member" "test" {
   parent_dn = aci_vrf_fallback_route_group.test.id
   fallback_member = "2.2.2.3"
-  annotations = []
-  tags = []
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
 }
 `

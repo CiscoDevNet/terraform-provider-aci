@@ -219,14 +219,20 @@ func TestAccResourceIgmpSnoopPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "start_query_interval", "31"),
 					composeAggregateTestCheckFuncWithVersion(t, "5.1(1h)-", "inside",
 						resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "querier_version", "v3")),
-					resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "tags.1.value", "test_value"),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "annotations.1.value", "test_value"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "tags.1.value", "test_value"),
+					),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -245,16 +251,22 @@ func TestAccResourceIgmpSnoopPolWithFvTenant(t *testing.T) {
 				Config:             testConfigIgmpSnoopPolChildrenRemoveFromConfigDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "tags.#", "2"),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "annotations.#", "2"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
@@ -262,12 +274,18 @@ func TestAccResourceIgmpSnoopPolWithFvTenant(t *testing.T) {
 				Config:             testConfigIgmpSnoopPolChildrenRemoveOneDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "tags.#", "1"),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "annotations.#", "1"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_igmp_snooping_policy.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
@@ -346,7 +364,7 @@ const testConfigIgmpSnoopPolChildrenDependencyWithFvTenant = testConfigFvTenantM
 resource "aci_igmp_snooping_policy" "test" {
   parent_dn = aci_tenant.test.id
   name = "test_name"
-  annotations = [
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -355,8 +373,8 @@ resource "aci_igmp_snooping_policy" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  tags = [
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -365,7 +383,7 @@ resource "aci_igmp_snooping_policy" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
+  ] : null
 }
 `
 
@@ -380,18 +398,18 @@ const testConfigIgmpSnoopPolChildrenRemoveOneDependencyWithFvTenant = testConfig
 resource "aci_igmp_snooping_policy" "test" {
   parent_dn = aci_tenant.test.id
   name = "test_name"
-  annotations = [ 
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  tags = [ 
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
+  ] : null
 }
 `
 
@@ -399,7 +417,7 @@ const testConfigIgmpSnoopPolChildrenRemoveAllDependencyWithFvTenant = testConfig
 resource "aci_igmp_snooping_policy" "test" {
   parent_dn = aci_tenant.test.id
   name = "test_name"
-  annotations = []
-  tags = []
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
 }
 `

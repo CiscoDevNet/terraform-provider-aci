@@ -156,14 +156,20 @@ func TestAccResourcePkiTP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.1.value", "test_value"),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.value", "test_value"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.1.value", "test_value"),
+					),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -182,16 +188,22 @@ func TestAccResourcePkiTP(t *testing.T) {
 				Config:             testConfigPkiTPChildrenRemoveFromConfig,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.#", "2"),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.#", "2"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
@@ -199,12 +211,18 @@ func TestAccResourcePkiTP(t *testing.T) {
 				Config:             testConfigPkiTPChildrenRemoveOne,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.#", "1"),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.#", "1"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
@@ -365,14 +383,20 @@ func TestAccResourcePkiTPWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.1.value", "test_value"),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.value", "test_value"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.1.value", "test_value"),
+					),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -391,16 +415,22 @@ func TestAccResourcePkiTPWithFvTenant(t *testing.T) {
 				Config:             testConfigPkiTPChildrenRemoveFromConfigDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.#", "2"),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.#", "2"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
@@ -408,12 +438,18 @@ func TestAccResourcePkiTPWithFvTenant(t *testing.T) {
 				Config:             testConfigPkiTPChildrenRemoveOneDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.#", "1"),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.#", "1"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
@@ -476,7 +512,7 @@ const testConfigPkiTPChildren = `
 resource "aci_certificate_authority" "test" {
   certificate_chain = "-----BEGIN CERTIFICATE-----\nMIICODCCAaGgAwIBAgIJAIt8XMntue0VMA0GCSqGSIb3DQEBCwUAMDQxDjAMBgNV\nBAMMBUFkbWluMRUwEwYDVQQKDAxZb3VyIENvbXBhbnkxCzAJBgNVBAYTAlVTMCAX\nDTE4MDEwOTAwNTk0NFoYDzIxMTcxMjE2MDA1OTQ0WjA0MQ4wDAYDVQQDDAVBZG1p\nbjEVMBMGA1UECgwMWW91ciBDb21wYW55MQswCQYDVQQGEwJVUzCBnzANBgkqhkiG\n9w0BAQEFAAOBjQAwgYkCgYEAohG/7axtt7CbSaMP7r+2mhTKbNgh0Ww36C7Ta14i\nv+VmLyKkQHnXinKGhp6uy3Nug+15a+eIu7CrgpBVMQeCiWfsnwRocKcQJWIYDrWl\nXHxGQn31yYKR6mylE7Dcj3rMFybnyhezr5D8GcP85YRPmwG9H2hO/0Y1FUnWu9Iw\nAQkCAwEAAaNQME4wHQYDVR0OBBYEFD0jLXfpkrU/ChzRvfruRs/fy1VXMB8GA1Ud\nIwQYMBaAFD0jLXfpkrU/ChzRvfruRs/fy1VXMAwGA1UdEwQFMAMBAf8wDQYJKoZI\nhvcNAQELBQADgYEAOmvre+5tgZ0+F3DgsfxNQqLTrGiBgGCIymPkP/cBXXkNuJyl\n3ac7tArHQc7WEA4U2R2rZbEq8FC3UJJm4nUVtCPvEh3G9OhN2xwYev79yt6pIn/l\nKU0Td2OpVyo0eLqjoX5u2G90IBWzhyjFbo+CcKMrSVKj1YOdG0E3OuiJf00=\n-----END CERTIFICATE-----"
   name = "test_name"
-  annotations = [
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -485,8 +521,8 @@ resource "aci_certificate_authority" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  tags = [
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -495,7 +531,7 @@ resource "aci_certificate_authority" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
+  ] : null
 }
 `
 
@@ -510,18 +546,18 @@ const testConfigPkiTPChildrenRemoveOne = `
 resource "aci_certificate_authority" "test" {
   certificate_chain = "-----BEGIN CERTIFICATE-----\nMIICODCCAaGgAwIBAgIJAIt8XMntue0VMA0GCSqGSIb3DQEBCwUAMDQxDjAMBgNV\nBAMMBUFkbWluMRUwEwYDVQQKDAxZb3VyIENvbXBhbnkxCzAJBgNVBAYTAlVTMCAX\nDTE4MDEwOTAwNTk0NFoYDzIxMTcxMjE2MDA1OTQ0WjA0MQ4wDAYDVQQDDAVBZG1p\nbjEVMBMGA1UECgwMWW91ciBDb21wYW55MQswCQYDVQQGEwJVUzCBnzANBgkqhkiG\n9w0BAQEFAAOBjQAwgYkCgYEAohG/7axtt7CbSaMP7r+2mhTKbNgh0Ww36C7Ta14i\nv+VmLyKkQHnXinKGhp6uy3Nug+15a+eIu7CrgpBVMQeCiWfsnwRocKcQJWIYDrWl\nXHxGQn31yYKR6mylE7Dcj3rMFybnyhezr5D8GcP85YRPmwG9H2hO/0Y1FUnWu9Iw\nAQkCAwEAAaNQME4wHQYDVR0OBBYEFD0jLXfpkrU/ChzRvfruRs/fy1VXMB8GA1Ud\nIwQYMBaAFD0jLXfpkrU/ChzRvfruRs/fy1VXMAwGA1UdEwQFMAMBAf8wDQYJKoZI\nhvcNAQELBQADgYEAOmvre+5tgZ0+F3DgsfxNQqLTrGiBgGCIymPkP/cBXXkNuJyl\n3ac7tArHQc7WEA4U2R2rZbEq8FC3UJJm4nUVtCPvEh3G9OhN2xwYev79yt6pIn/l\nKU0Td2OpVyo0eLqjoX5u2G90IBWzhyjFbo+CcKMrSVKj1YOdG0E3OuiJf00=\n-----END CERTIFICATE-----"
   name = "test_name"
-  annotations = [ 
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  tags = [ 
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
+  ] : null
 }
 `
 
@@ -529,8 +565,8 @@ const testConfigPkiTPChildrenRemoveAll = `
 resource "aci_certificate_authority" "test" {
   certificate_chain = "-----BEGIN CERTIFICATE-----\nMIICODCCAaGgAwIBAgIJAIt8XMntue0VMA0GCSqGSIb3DQEBCwUAMDQxDjAMBgNV\nBAMMBUFkbWluMRUwEwYDVQQKDAxZb3VyIENvbXBhbnkxCzAJBgNVBAYTAlVTMCAX\nDTE4MDEwOTAwNTk0NFoYDzIxMTcxMjE2MDA1OTQ0WjA0MQ4wDAYDVQQDDAVBZG1p\nbjEVMBMGA1UECgwMWW91ciBDb21wYW55MQswCQYDVQQGEwJVUzCBnzANBgkqhkiG\n9w0BAQEFAAOBjQAwgYkCgYEAohG/7axtt7CbSaMP7r+2mhTKbNgh0Ww36C7Ta14i\nv+VmLyKkQHnXinKGhp6uy3Nug+15a+eIu7CrgpBVMQeCiWfsnwRocKcQJWIYDrWl\nXHxGQn31yYKR6mylE7Dcj3rMFybnyhezr5D8GcP85YRPmwG9H2hO/0Y1FUnWu9Iw\nAQkCAwEAAaNQME4wHQYDVR0OBBYEFD0jLXfpkrU/ChzRvfruRs/fy1VXMB8GA1Ud\nIwQYMBaAFD0jLXfpkrU/ChzRvfruRs/fy1VXMAwGA1UdEwQFMAMBAf8wDQYJKoZI\nhvcNAQELBQADgYEAOmvre+5tgZ0+F3DgsfxNQqLTrGiBgGCIymPkP/cBXXkNuJyl\n3ac7tArHQc7WEA4U2R2rZbEq8FC3UJJm4nUVtCPvEh3G9OhN2xwYev79yt6pIn/l\nKU0Td2OpVyo0eLqjoX5u2G90IBWzhyjFbo+CcKMrSVKj1YOdG0E3OuiJf00=\n-----END CERTIFICATE-----"
   name = "test_name"
-  annotations = []
-  tags = []
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
 }
 `
 
@@ -586,7 +622,7 @@ resource "aci_certificate_authority" "test" {
   parent_dn = aci_tenant.test.id
   certificate_chain = "-----BEGIN CERTIFICATE-----\nMIICODCCAaGgAwIBAgIJAIt8XMntue0VMA0GCSqGSIb3DQEBCwUAMDQxDjAMBgNV\nBAMMBUFkbWluMRUwEwYDVQQKDAxZb3VyIENvbXBhbnkxCzAJBgNVBAYTAlVTMCAX\nDTE4MDEwOTAwNTk0NFoYDzIxMTcxMjE2MDA1OTQ0WjA0MQ4wDAYDVQQDDAVBZG1p\nbjEVMBMGA1UECgwMWW91ciBDb21wYW55MQswCQYDVQQGEwJVUzCBnzANBgkqhkiG\n9w0BAQEFAAOBjQAwgYkCgYEAohG/7axtt7CbSaMP7r+2mhTKbNgh0Ww36C7Ta14i\nv+VmLyKkQHnXinKGhp6uy3Nug+15a+eIu7CrgpBVMQeCiWfsnwRocKcQJWIYDrWl\nXHxGQn31yYKR6mylE7Dcj3rMFybnyhezr5D8GcP85YRPmwG9H2hO/0Y1FUnWu9Iw\nAQkCAwEAAaNQME4wHQYDVR0OBBYEFD0jLXfpkrU/ChzRvfruRs/fy1VXMB8GA1Ud\nIwQYMBaAFD0jLXfpkrU/ChzRvfruRs/fy1VXMAwGA1UdEwQFMAMBAf8wDQYJKoZI\nhvcNAQELBQADgYEAOmvre+5tgZ0+F3DgsfxNQqLTrGiBgGCIymPkP/cBXXkNuJyl\n3ac7tArHQc7WEA4U2R2rZbEq8FC3UJJm4nUVtCPvEh3G9OhN2xwYev79yt6pIn/l\nKU0Td2OpVyo0eLqjoX5u2G90IBWzhyjFbo+CcKMrSVKj1YOdG0E3OuiJf00=\n-----END CERTIFICATE-----"
   name = "test_name"
-  annotations = [
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -595,8 +631,8 @@ resource "aci_certificate_authority" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  tags = [
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -605,7 +641,7 @@ resource "aci_certificate_authority" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
+  ] : null
 }
 `
 
@@ -622,18 +658,18 @@ resource "aci_certificate_authority" "test" {
   parent_dn = aci_tenant.test.id
   certificate_chain = "-----BEGIN CERTIFICATE-----\nMIICODCCAaGgAwIBAgIJAIt8XMntue0VMA0GCSqGSIb3DQEBCwUAMDQxDjAMBgNV\nBAMMBUFkbWluMRUwEwYDVQQKDAxZb3VyIENvbXBhbnkxCzAJBgNVBAYTAlVTMCAX\nDTE4MDEwOTAwNTk0NFoYDzIxMTcxMjE2MDA1OTQ0WjA0MQ4wDAYDVQQDDAVBZG1p\nbjEVMBMGA1UECgwMWW91ciBDb21wYW55MQswCQYDVQQGEwJVUzCBnzANBgkqhkiG\n9w0BAQEFAAOBjQAwgYkCgYEAohG/7axtt7CbSaMP7r+2mhTKbNgh0Ww36C7Ta14i\nv+VmLyKkQHnXinKGhp6uy3Nug+15a+eIu7CrgpBVMQeCiWfsnwRocKcQJWIYDrWl\nXHxGQn31yYKR6mylE7Dcj3rMFybnyhezr5D8GcP85YRPmwG9H2hO/0Y1FUnWu9Iw\nAQkCAwEAAaNQME4wHQYDVR0OBBYEFD0jLXfpkrU/ChzRvfruRs/fy1VXMB8GA1Ud\nIwQYMBaAFD0jLXfpkrU/ChzRvfruRs/fy1VXMAwGA1UdEwQFMAMBAf8wDQYJKoZI\nhvcNAQELBQADgYEAOmvre+5tgZ0+F3DgsfxNQqLTrGiBgGCIymPkP/cBXXkNuJyl\n3ac7tArHQc7WEA4U2R2rZbEq8FC3UJJm4nUVtCPvEh3G9OhN2xwYev79yt6pIn/l\nKU0Td2OpVyo0eLqjoX5u2G90IBWzhyjFbo+CcKMrSVKj1YOdG0E3OuiJf00=\n-----END CERTIFICATE-----"
   name = "test_name"
-  annotations = [ 
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  tags = [ 
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
+  ] : null
 }
 `
 
@@ -642,7 +678,7 @@ resource "aci_certificate_authority" "test" {
   parent_dn = aci_tenant.test.id
   certificate_chain = "-----BEGIN CERTIFICATE-----\nMIICODCCAaGgAwIBAgIJAIt8XMntue0VMA0GCSqGSIb3DQEBCwUAMDQxDjAMBgNV\nBAMMBUFkbWluMRUwEwYDVQQKDAxZb3VyIENvbXBhbnkxCzAJBgNVBAYTAlVTMCAX\nDTE4MDEwOTAwNTk0NFoYDzIxMTcxMjE2MDA1OTQ0WjA0MQ4wDAYDVQQDDAVBZG1p\nbjEVMBMGA1UECgwMWW91ciBDb21wYW55MQswCQYDVQQGEwJVUzCBnzANBgkqhkiG\n9w0BAQEFAAOBjQAwgYkCgYEAohG/7axtt7CbSaMP7r+2mhTKbNgh0Ww36C7Ta14i\nv+VmLyKkQHnXinKGhp6uy3Nug+15a+eIu7CrgpBVMQeCiWfsnwRocKcQJWIYDrWl\nXHxGQn31yYKR6mylE7Dcj3rMFybnyhezr5D8GcP85YRPmwG9H2hO/0Y1FUnWu9Iw\nAQkCAwEAAaNQME4wHQYDVR0OBBYEFD0jLXfpkrU/ChzRvfruRs/fy1VXMB8GA1Ud\nIwQYMBaAFD0jLXfpkrU/ChzRvfruRs/fy1VXMAwGA1UdEwQFMAMBAf8wDQYJKoZI\nhvcNAQELBQADgYEAOmvre+5tgZ0+F3DgsfxNQqLTrGiBgGCIymPkP/cBXXkNuJyl\n3ac7tArHQc7WEA4U2R2rZbEq8FC3UJJm4nUVtCPvEh3G9OhN2xwYev79yt6pIn/l\nKU0Td2OpVyo0eLqjoX5u2G90IBWzhyjFbo+CcKMrSVKj1YOdG0E3OuiJf00=\n-----END CERTIFICATE-----"
   name = "test_name"
-  annotations = []
-  tags = []
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
 }
 `

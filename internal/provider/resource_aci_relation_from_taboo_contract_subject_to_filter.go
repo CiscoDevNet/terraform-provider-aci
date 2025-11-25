@@ -444,7 +444,8 @@ func (r *VzRsDenyRuleResource) ImportState(ctx context.Context, req resource.Imp
 }
 
 func getAndSetVzRsDenyRuleAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *VzRsDenyRuleResourceModel) {
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "vzRsDenyRule,tagAnnotation,tagTag"), "GET", nil)
+	childClasses := getChildClassesForGetRequest([]string{"tagAnnotation", "tagTag"})
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), strings.Join(childClasses, ",")), "GET", nil)
 
 	readData := getEmptyVzRsDenyRuleResourceModel()
 

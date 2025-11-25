@@ -159,17 +159,26 @@ func TestAccResourceInfraHPortSWithInfraAccPortP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_access_port_selector.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_access_port_selector.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_access_port_selector.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.fex_id", "102"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.target_dn", "uni/infra/funcprof/accportgrp-leaf_access_port_policy_group_1"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "tags.1.value", "test_value"),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "annotations.1.value", "test_value"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.fex_id", "102"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.target_dn", "uni/infra/funcprof/accportgrp-leaf_access_port_policy_group_1"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "tags.1.value", "test_value"),
+					),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -188,29 +197,38 @@ func TestAccResourceInfraHPortSWithInfraAccPortP(t *testing.T) {
 				Config:             testConfigInfraHPortSChildrenRemoveFromConfigDependencyWithInfraAccPortP,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.fex_id", "102"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.target_dn", "uni/infra/funcprof/accportgrp-leaf_access_port_policy_group_1"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "tags.#", "2"),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "annotations.#", "2"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.fex_id", "102"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.target_dn", "uni/infra/funcprof/accportgrp-leaf_access_port_policy_group_1"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
@@ -218,12 +236,20 @@ func TestAccResourceInfraHPortSWithInfraAccPortP(t *testing.T) {
 				Config:             testConfigInfraHPortSChildrenRemoveOneDependencyWithInfraAccPortP,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "tags.#", "1"),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "annotations.#", "1"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside"),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "tags.#", "1"),
+					),
 				),
 				ConfigStateChecks: []statecheck.StateCheck{
 					statecheck.ExpectKnownValue("aci_access_port_selector.test",
@@ -429,17 +455,26 @@ func TestAccResourceInfraHPortSWithInfraFexP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_access_port_selector.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_access_port_selector.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_access_port_selector.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.fex_id", "102"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.target_dn", "uni/infra/funcprof/accportgrp-leaf_access_port_policy_group_1"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "tags.1.value", "test_value"),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "annotations.1.value", "test_value"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.fex_id", "102"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.target_dn", "uni/infra/funcprof/accportgrp-leaf_access_port_policy_group_1"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "tags.1.value", "test_value"),
+					),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -458,29 +493,38 @@ func TestAccResourceInfraHPortSWithInfraFexP(t *testing.T) {
 				Config:             testConfigInfraHPortSChildrenRemoveFromConfigDependencyWithInfraFexP,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.fex_id", "102"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.target_dn", "uni/infra/funcprof/accportgrp-leaf_access_port_policy_group_1"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "tags.#", "2"),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "annotations.#", "2"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.fex_id", "102"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "relation_to_leaf_access_port_policy_group.target_dn", "uni/infra/funcprof/accportgrp-leaf_access_port_policy_group_1"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
@@ -488,12 +532,20 @@ func TestAccResourceInfraHPortSWithInfraFexP(t *testing.T) {
 				Config:             testConfigInfraHPortSChildrenRemoveOneDependencyWithInfraFexP,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_access_port_selector.test", "tags.#", "1"),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "annotations.#", "1"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside"),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_access_port_selector.test", "tags.#", "1"),
+					),
 				),
 				ConfigStateChecks: []statecheck.StateCheck{
 					statecheck.ExpectKnownValue("aci_access_port_selector.test",
@@ -613,7 +665,7 @@ resource "aci_access_port_selector" "test" {
   parent_dn = aci_leaf_interface_profile.test.id
   name = "test_name"
   port_selector_type = "range"
-  annotations = [
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -622,8 +674,8 @@ resource "aci_access_port_selector" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  relation_to_leaf_access_port_policy_group = {
+  ] : null
+  relation_to_leaf_access_port_policy_group = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? {
     annotation = "annotation_1"
     annotations = [
 	  {
@@ -647,8 +699,8 @@ resource "aci_access_port_selector" "test" {
     ]
     fex_id = "102"
     target_dn = aci_leaf_access_port_policy_group.test_leaf_access_port_policy_group_0.id
-  }
-  tags = [
+  } : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -657,7 +709,7 @@ resource "aci_access_port_selector" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
+  ] : null
 }
 `
 
@@ -674,19 +726,19 @@ resource "aci_access_port_selector" "test" {
   parent_dn = aci_leaf_interface_profile.test.id
   name = "test_name"
   port_selector_type = "range"
-  annotations = [ 
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  relation_to_leaf_access_port_policy_group = {}
-  tags = [ 
+  ] : null
+  relation_to_leaf_access_port_policy_group = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? {} : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
+  ] : null
 }
 `
 
@@ -695,18 +747,18 @@ resource "aci_access_port_selector" "test" {
   parent_dn = aci_leaf_interface_profile.test.id
   name = "test_name"
   port_selector_type = "range"
-  annotations = []
-  relation_to_leaf_access_port_policy_group = {}
-  tags = []
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  relation_to_leaf_access_port_policy_group = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? {} : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
 }
 `
 
 const testConfigInfraHPortSLegacyAttributesWithInfraAccPortP = testChildDependencyConfigInfraHPortS + testConfigInfraAccPortPMin + `
 resource "aci_access_port_selector" "test" {
   name = "test_name"
-  access_port_selector_type = "range"
+  access_port_selector_type = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? "range" : null
   leaf_interface_profile_dn = aci_leaf_interface_profile.test.id
-  relation_infra_rs_acc_base_grp = aci_leaf_access_port_policy_group.test_leaf_access_port_policy_group_0.id
+  relation_infra_rs_acc_base_grp = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? aci_leaf_access_port_policy_group.test_leaf_access_port_policy_group_0.id : null
 }
 `
 
@@ -762,7 +814,7 @@ resource "aci_access_port_selector" "test" {
   parent_dn = aci_fex_profile.test.id
   name = "test_name"
   port_selector_type = "range"
-  annotations = [
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -771,8 +823,8 @@ resource "aci_access_port_selector" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  relation_to_leaf_access_port_policy_group = {
+  ] : null
+  relation_to_leaf_access_port_policy_group = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? {
     annotation = "annotation_1"
     annotations = [
 	  {
@@ -796,8 +848,8 @@ resource "aci_access_port_selector" "test" {
     ]
     fex_id = "102"
     target_dn = aci_leaf_access_port_policy_group.test_leaf_access_port_policy_group_0.id
-  }
-  tags = [
+  } : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -806,7 +858,7 @@ resource "aci_access_port_selector" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
+  ] : null
 }
 `
 
@@ -823,19 +875,19 @@ resource "aci_access_port_selector" "test" {
   parent_dn = aci_fex_profile.test.id
   name = "test_name"
   port_selector_type = "range"
-  annotations = [ 
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  relation_to_leaf_access_port_policy_group = {}
-  tags = [ 
+  ] : null
+  relation_to_leaf_access_port_policy_group = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? {} : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
+  ] : null
 }
 `
 
@@ -844,17 +896,17 @@ resource "aci_access_port_selector" "test" {
   parent_dn = aci_fex_profile.test.id
   name = "test_name"
   port_selector_type = "range"
-  annotations = []
-  relation_to_leaf_access_port_policy_group = {}
-  tags = []
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  relation_to_leaf_access_port_policy_group = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? {} : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
 }
 `
 
 const testConfigInfraHPortSLegacyAttributesWithInfraFexP = testChildDependencyConfigInfraHPortS + testConfigInfraFexPMin + `
 resource "aci_access_port_selector" "test" {
   name = "test_name"
-  access_port_selector_type = "range"
+  access_port_selector_type = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? "range" : null
   leaf_interface_profile_dn = aci_leaf_interface_profile.test.id
-  relation_infra_rs_acc_base_grp = aci_leaf_access_port_policy_group.test_leaf_access_port_policy_group_0.id
+  relation_infra_rs_acc_base_grp = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? aci_leaf_access_port_policy_group.test_leaf_access_port_policy_group_0.id : null
 }
 `

@@ -115,14 +115,20 @@ func TestAccResourceFvRsBDToOutWithFvBD(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_from_bridge_domain_to_l3_outside.test", "l3_outside_name", "test_tn_l3ext_out_name"),
 					resource.TestCheckResourceAttr("aci_relation_from_bridge_domain_to_l3_outside.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_relation_from_bridge_domain_to_l3_outside.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_from_bridge_domain_to_l3_outside.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_from_bridge_domain_to_l3_outside.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_from_bridge_domain_to_l3_outside.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_from_bridge_domain_to_l3_outside.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_from_bridge_domain_to_l3_outside.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_from_bridge_domain_to_l3_outside.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_from_bridge_domain_to_l3_outside.test", "tags.1.value", "test_value"),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_from_bridge_domain_to_l3_outside.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_from_bridge_domain_to_l3_outside.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_from_bridge_domain_to_l3_outside.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_from_bridge_domain_to_l3_outside.test", "annotations.1.value", "test_value"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_from_bridge_domain_to_l3_outside.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_from_bridge_domain_to_l3_outside.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_from_bridge_domain_to_l3_outside.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_from_bridge_domain_to_l3_outside.test", "tags.1.value", "test_value"),
+					),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -141,16 +147,22 @@ func TestAccResourceFvRsBDToOutWithFvBD(t *testing.T) {
 				Config:             testConfigFvRsBDToOutChildrenRemoveFromConfigDependencyWithFvBD,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_from_bridge_domain_to_l3_outside.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_from_bridge_domain_to_l3_outside.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_from_bridge_domain_to_l3_outside.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_from_bridge_domain_to_l3_outside.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_from_bridge_domain_to_l3_outside.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_relation_from_bridge_domain_to_l3_outside.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_from_bridge_domain_to_l3_outside.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_from_bridge_domain_to_l3_outside.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_from_bridge_domain_to_l3_outside.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_from_bridge_domain_to_l3_outside.test", "tags.#", "2"),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_from_bridge_domain_to_l3_outside.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_from_bridge_domain_to_l3_outside.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_from_bridge_domain_to_l3_outside.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_from_bridge_domain_to_l3_outside.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_from_bridge_domain_to_l3_outside.test", "annotations.#", "2"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_from_bridge_domain_to_l3_outside.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_from_bridge_domain_to_l3_outside.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_from_bridge_domain_to_l3_outside.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_from_bridge_domain_to_l3_outside.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_from_bridge_domain_to_l3_outside.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
@@ -158,12 +170,18 @@ func TestAccResourceFvRsBDToOutWithFvBD(t *testing.T) {
 				Config:             testConfigFvRsBDToOutChildrenRemoveOneDependencyWithFvBD,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_from_bridge_domain_to_l3_outside.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_from_bridge_domain_to_l3_outside.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_from_bridge_domain_to_l3_outside.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_relation_from_bridge_domain_to_l3_outside.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_from_bridge_domain_to_l3_outside.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_from_bridge_domain_to_l3_outside.test", "tags.#", "1"),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_from_bridge_domain_to_l3_outside.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_from_bridge_domain_to_l3_outside.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_from_bridge_domain_to_l3_outside.test", "annotations.#", "1"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_from_bridge_domain_to_l3_outside.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_from_bridge_domain_to_l3_outside.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_from_bridge_domain_to_l3_outside.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
@@ -218,7 +236,7 @@ const testConfigFvRsBDToOutChildrenDependencyWithFvBD = testConfigFvBDMinDepende
 resource "aci_relation_from_bridge_domain_to_l3_outside" "test" {
   parent_dn = aci_bridge_domain.test.id
   l3_outside_name = "test_tn_l3ext_out_name"
-  annotations = [
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -227,8 +245,8 @@ resource "aci_relation_from_bridge_domain_to_l3_outside" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  tags = [
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -237,7 +255,7 @@ resource "aci_relation_from_bridge_domain_to_l3_outside" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
+  ] : null
 }
 `
 
@@ -252,18 +270,18 @@ const testConfigFvRsBDToOutChildrenRemoveOneDependencyWithFvBD = testConfigFvBDM
 resource "aci_relation_from_bridge_domain_to_l3_outside" "test" {
   parent_dn = aci_bridge_domain.test.id
   l3_outside_name = "test_tn_l3ext_out_name"
-  annotations = [ 
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  tags = [ 
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
+  ] : null
 }
 `
 
@@ -271,7 +289,7 @@ const testConfigFvRsBDToOutChildrenRemoveAllDependencyWithFvBD = testConfigFvBDM
 resource "aci_relation_from_bridge_domain_to_l3_outside" "test" {
   parent_dn = aci_bridge_domain.test.id
   l3_outside_name = "test_tn_l3ext_out_name"
-  annotations = []
-  tags = []
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
 }
 `
