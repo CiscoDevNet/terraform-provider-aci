@@ -19,7 +19,7 @@ func TestAccResourceFvIdGroupAttrWithFvCrtrn(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigFvIdGroupAttrMinDependencyWithFvCrtrnAllowExisting,
+				Config:             testConfigFvIdGroupAttrMinDependencyWithFvCrtrnAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.allow_test", "selector", "adepg/authsvr-common-sg1-ISE_1/grpcont/dom-cisco.com/grp-Eng"),
@@ -48,7 +48,7 @@ func TestAccResourceFvIdGroupAttrWithFvCrtrn(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:      testConfigFvIdGroupAttrMinDependencyWithFvCrtrnAllowExisting,
+				Config:      testConfigFvIdGroupAttrMinDependencyWithFvCrtrnAllowExisting + testConfigDataSourceSystem,
 				ExpectError: regexp.MustCompile("Object Already Exists"),
 			},
 		},
@@ -61,7 +61,7 @@ func TestAccResourceFvIdGroupAttrWithFvCrtrn(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigFvIdGroupAttrMinDependencyWithFvCrtrnAllowExisting,
+				Config:             testConfigFvIdGroupAttrMinDependencyWithFvCrtrnAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.allow_test", "selector", "adepg/authsvr-common-sg1-ISE_1/grpcont/dom-cisco.com/grp-Eng"),
@@ -89,7 +89,7 @@ func TestAccResourceFvIdGroupAttrWithFvCrtrn(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigFvIdGroupAttrMinDependencyWithFvCrtrn,
+				Config:             testConfigFvIdGroupAttrMinDependencyWithFvCrtrn + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "selector", "adepg/authsvr-common-sg1-ISE_1/grpcont/dom-cisco.com/grp-Eng"),
@@ -103,7 +103,7 @@ func TestAccResourceFvIdGroupAttrWithFvCrtrn(t *testing.T) {
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config:             testConfigFvIdGroupAttrAllDependencyWithFvCrtrn,
+				Config:             testConfigFvIdGroupAttrAllDependencyWithFvCrtrn + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "selector", "adepg/authsvr-common-sg1-ISE_1/grpcont/dom-cisco.com/grp-Eng"),
@@ -117,7 +117,7 @@ func TestAccResourceFvIdGroupAttrWithFvCrtrn(t *testing.T) {
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config:             testConfigFvIdGroupAttrMinDependencyWithFvCrtrn,
+				Config:             testConfigFvIdGroupAttrMinDependencyWithFvCrtrn + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "selector", "adepg/authsvr-common-sg1-ISE_1/grpcont/dom-cisco.com/grp-Eng"),
@@ -125,7 +125,7 @@ func TestAccResourceFvIdGroupAttrWithFvCrtrn(t *testing.T) {
 			},
 			// Update with empty strings config or default value
 			{
-				Config:             testConfigFvIdGroupAttrResetDependencyWithFvCrtrn,
+				Config:             testConfigFvIdGroupAttrResetDependencyWithFvCrtrn + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "selector", "adepg/authsvr-common-sg1-ISE_1/grpcont/dom-cisco.com/grp-Eng"),
@@ -145,7 +145,7 @@ func TestAccResourceFvIdGroupAttrWithFvCrtrn(t *testing.T) {
 			},
 			// Update with children
 			{
-				Config:             testConfigFvIdGroupAttrChildrenDependencyWithFvCrtrn,
+				Config:             testConfigFvIdGroupAttrChildrenDependencyWithFvCrtrn + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "selector", "adepg/authsvr-common-sg1-ISE_1/grpcont/dom-cisco.com/grp-Eng"),
@@ -155,14 +155,18 @@ func TestAccResourceFvIdGroupAttrWithFvCrtrn(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "tags.1.value", "test_value"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "annotations.1.value", "test_value"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "tags.1.value", "test_value"),
+					),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -178,37 +182,45 @@ func TestAccResourceFvIdGroupAttrWithFvCrtrn(t *testing.T) {
 			},
 			// Update with children removed from config
 			{
-				Config:             testConfigFvIdGroupAttrChildrenRemoveFromConfigDependencyWithFvCrtrn,
+				Config:             testConfigFvIdGroupAttrChildrenRemoveFromConfigDependencyWithFvCrtrn + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
 			{
-				Config:             testConfigFvIdGroupAttrChildrenRemoveOneDependencyWithFvCrtrn,
+				Config:             testConfigFvIdGroupAttrChildrenRemoveOneDependencyWithFvCrtrn + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "tags.#", "1"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "annotations.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
 			{
-				Config:             testConfigFvIdGroupAttrChildrenRemoveAllDependencyWithFvCrtrn,
+				Config:             testConfigFvIdGroupAttrChildrenRemoveAllDependencyWithFvCrtrn + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_epg_useg_ad_group_attribute.test", "annotations.#", "0"),
@@ -268,7 +280,7 @@ const testConfigFvIdGroupAttrChildrenDependencyWithFvCrtrn = testConfigFvCrtrnMi
 resource "aci_epg_useg_ad_group_attribute" "test" {
   parent_dn = aci_epg_useg_block_statement.test.id
   selector = "adepg/authsvr-common-sg1-ISE_1/grpcont/dom-cisco.com/grp-Eng"
-  annotations = [
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -277,8 +289,8 @@ resource "aci_epg_useg_ad_group_attribute" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  tags = [
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -287,7 +299,7 @@ resource "aci_epg_useg_ad_group_attribute" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
+  ] : null
 }
 `
 
@@ -302,18 +314,18 @@ const testConfigFvIdGroupAttrChildrenRemoveOneDependencyWithFvCrtrn = testConfig
 resource "aci_epg_useg_ad_group_attribute" "test" {
   parent_dn = aci_epg_useg_block_statement.test.id
   selector = "adepg/authsvr-common-sg1-ISE_1/grpcont/dom-cisco.com/grp-Eng"
-  annotations = [ 
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  tags = [ 
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
+  ] : null
 }
 `
 
@@ -321,7 +333,7 @@ const testConfigFvIdGroupAttrChildrenRemoveAllDependencyWithFvCrtrn = testConfig
 resource "aci_epg_useg_ad_group_attribute" "test" {
   parent_dn = aci_epg_useg_block_statement.test.id
   selector = "adepg/authsvr-common-sg1-ISE_1/grpcont/dom-cisco.com/grp-Eng"
-  annotations = []
-  tags = []
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
 }
 `

@@ -19,7 +19,7 @@ func TestAccResourceSynceEthIfPol(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config: testConfigSynceEthIfPolMinAllowExisting,
+				Config: testConfigSynceEthIfPolMinAllowExisting + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_synce_interface_policy.allow_test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_synce_interface_policy.allow_test_2", "name", "test_name"),
@@ -82,7 +82,7 @@ func TestAccResourceSynceEthIfPol(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config: testConfigSynceEthIfPolMinAllowExisting,
+				Config: testConfigSynceEthIfPolMinAllowExisting + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_synce_interface_policy.allow_test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_synce_interface_policy.allow_test_2", "name", "test_name"),
@@ -131,7 +131,7 @@ func TestAccResourceSynceEthIfPol(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config: testConfigSynceEthIfPolMin,
+				Config: testConfigSynceEthIfPolMin + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "admin_state", "disabled"),
@@ -155,7 +155,7 @@ func TestAccResourceSynceEthIfPol(t *testing.T) {
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config: testConfigSynceEthIfPolAll,
+				Config: testConfigSynceEthIfPolAll + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "admin_state", "enabled"),
@@ -179,7 +179,7 @@ func TestAccResourceSynceEthIfPol(t *testing.T) {
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config: testConfigSynceEthIfPolMin,
+				Config: testConfigSynceEthIfPolMin + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "admin_state", "enabled"),
@@ -203,7 +203,7 @@ func TestAccResourceSynceEthIfPol(t *testing.T) {
 			},
 			// Update with empty strings config or default value
 			{
-				Config: testConfigSynceEthIfPolReset,
+				Config: testConfigSynceEthIfPolReset + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "admin_state", "disabled"),
@@ -233,7 +233,7 @@ func TestAccResourceSynceEthIfPol(t *testing.T) {
 			},
 			// Update with children
 			{
-				Config: testConfigSynceEthIfPolChildren,
+				Config: testConfigSynceEthIfPolChildren + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "admin_state", "disabled"),
 					resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "annotation", "orchestrator:terraform"),
@@ -252,21 +252,25 @@ func TestAccResourceSynceEthIfPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "source_priority", "100"),
 					resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "synchronization_status_message", "yes"),
 					resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "wait_to_restore_time", "5"),
-					resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children removed from config
 			{
-				Config: testConfigSynceEthIfPolChildrenRemoveFromConfig,
+				Config: testConfigSynceEthIfPolChildrenRemoveFromConfig + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "admin_state", "disabled"),
 					resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "annotation", "orchestrator:terraform"),
@@ -285,21 +289,25 @@ func TestAccResourceSynceEthIfPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "source_priority", "100"),
 					resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "synchronization_status_message", "yes"),
 					resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "wait_to_restore_time", "5"),
-					resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
 			{
-				Config: testConfigSynceEthIfPolChildrenRemoveOne,
+				Config: testConfigSynceEthIfPolChildrenRemoveOne + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "admin_state", "disabled"),
 					resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "annotation", "orchestrator:terraform"),
@@ -318,17 +326,21 @@ func TestAccResourceSynceEthIfPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "source_priority", "100"),
 					resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "synchronization_status_message", "yes"),
 					resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "wait_to_restore_time", "5"),
-					resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "tags.#", "1"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "annotations.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
 			{
-				Config: testConfigSynceEthIfPolChildrenRemoveAll,
+				Config: testConfigSynceEthIfPolChildrenRemoveAll + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "admin_state", "disabled"),
 					resource.TestCheckResourceAttr("aci_synce_interface_policy.test", "annotation", "orchestrator:terraform"),

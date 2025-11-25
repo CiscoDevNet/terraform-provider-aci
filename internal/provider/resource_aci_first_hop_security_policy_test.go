@@ -22,7 +22,7 @@ func TestAccResourceFhsBDPolWithFvTenant(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigFhsBDPolMinDependencyWithFvTenantAllowExisting,
+				Config:             testConfigFhsBDPolMinDependencyWithFvTenantAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_first_hop_security_policy.allow_test", "name", "test_name"),
@@ -55,7 +55,7 @@ func TestAccResourceFhsBDPolWithFvTenant(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:      testConfigFhsBDPolMinDependencyWithFvTenantAllowExisting,
+				Config:      testConfigFhsBDPolMinDependencyWithFvTenantAllowExisting + testConfigDataSourceSystem,
 				ExpectError: regexp.MustCompile("Object Already Exists"),
 			},
 		},
@@ -68,7 +68,7 @@ func TestAccResourceFhsBDPolWithFvTenant(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigFhsBDPolMinDependencyWithFvTenantAllowExisting,
+				Config:             testConfigFhsBDPolMinDependencyWithFvTenantAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_first_hop_security_policy.allow_test", "name", "test_name"),
@@ -100,7 +100,7 @@ func TestAccResourceFhsBDPolWithFvTenant(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigFhsBDPolMinDependencyWithFvTenant,
+				Config:             testConfigFhsBDPolMinDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "name", "test_name"),
@@ -116,7 +116,7 @@ func TestAccResourceFhsBDPolWithFvTenant(t *testing.T) {
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config:             testConfigFhsBDPolAllDependencyWithFvTenant,
+				Config:             testConfigFhsBDPolAllDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "name", "test_name"),
@@ -132,7 +132,7 @@ func TestAccResourceFhsBDPolWithFvTenant(t *testing.T) {
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config:             testConfigFhsBDPolMinDependencyWithFvTenant,
+				Config:             testConfigFhsBDPolMinDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "name", "test_name"),
@@ -140,7 +140,7 @@ func TestAccResourceFhsBDPolWithFvTenant(t *testing.T) {
 			},
 			// Update with empty strings config or default value
 			{
-				Config:             testConfigFhsBDPolResetDependencyWithFvTenant,
+				Config:             testConfigFhsBDPolResetDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "name", "test_name"),
@@ -162,7 +162,7 @@ func TestAccResourceFhsBDPolWithFvTenant(t *testing.T) {
 			},
 			// Update with children
 			{
-				Config:             testConfigFhsBDPolChildrenDependencyWithFvTenant,
+				Config:             testConfigFhsBDPolChildrenDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "name", "test_name"),
@@ -174,27 +174,33 @@ func TestAccResourceFhsBDPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "router_advertisement", "enabled"),
 					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "source_guard", "enabled-both"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.description", "description_1"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.managed_config_check", "no"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.managed_config_flag", "no"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.max_hop_limit", "10"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.max_router_preference", "disabled"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.min_hop_limit", "1"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.name", "name_1"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.name_alias", "name_alias_1"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.other_config_check", "no"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.other_config_flag", "no"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.owner_key", "owner_key_1"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.owner_tag", "owner_tag_1"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "tags.1.value", "test_value"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "annotations.1.value", "test_value"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.description", "description_1"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.managed_config_check", "no"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.managed_config_flag", "no"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.max_hop_limit", "10"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.max_router_preference", "disabled"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.min_hop_limit", "1"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.name", "name_1"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.name_alias", "name_alias_1"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.other_config_check", "no"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.other_config_flag", "no"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.owner_key", "owner_key_1"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.owner_tag", "owner_tag_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "tags.1.value", "test_value"),
+					),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -210,55 +216,66 @@ func TestAccResourceFhsBDPolWithFvTenant(t *testing.T) {
 			},
 			// Update with children removed from config
 			{
-				Config:             testConfigFhsBDPolChildrenRemoveFromConfigDependencyWithFvTenant,
+				Config:             testConfigFhsBDPolChildrenRemoveFromConfigDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.description", "description_1"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.managed_config_check", "no"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.managed_config_flag", "no"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.max_hop_limit", "10"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.max_router_preference", "disabled"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.min_hop_limit", "1"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.name", "name_1"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.name_alias", "name_alias_1"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.other_config_check", "no"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.other_config_flag", "no"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.owner_key", "owner_key_1"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.owner_tag", "owner_tag_1"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.description", "description_1"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.managed_config_check", "no"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.managed_config_flag", "no"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.max_hop_limit", "10"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.max_router_preference", "disabled"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.min_hop_limit", "1"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.name", "name_1"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.name_alias", "name_alias_1"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.other_config_check", "no"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.other_config_flag", "no"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.owner_key", "owner_key_1"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "route_advertisement_guard_policy.owner_tag", "owner_tag_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
 			{
-				Config:             testConfigFhsBDPolChildrenRemoveOneDependencyWithFvTenant,
+				Config:             testConfigFhsBDPolChildrenRemoveOneDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "tags.#", "1"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "annotations.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "tags.#", "1"),
+					),
 				),
 				ConfigStateChecks: []statecheck.StateCheck{
 					statecheck.ExpectKnownValue("aci_first_hop_security_policy.test",
@@ -287,7 +304,7 @@ func TestAccResourceFhsBDPolWithFvTenant(t *testing.T) {
 			},
 			// Update with all children removed
 			{
-				Config:             testConfigFhsBDPolChildrenRemoveAllDependencyWithFvTenant,
+				Config:             testConfigFhsBDPolChildrenRemoveAllDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_first_hop_security_policy.test", "annotations.#", "0"),
@@ -375,7 +392,7 @@ const testConfigFhsBDPolChildrenDependencyWithFvTenant = testConfigFvTenantMin +
 resource "aci_first_hop_security_policy" "test" {
   parent_dn = aci_tenant.test.id
   name = "test_name"
-  annotations = [
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -384,8 +401,8 @@ resource "aci_first_hop_security_policy" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  route_advertisement_guard_policy = {
+  ] : null
+  route_advertisement_guard_policy = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.0(1k)-") ? {
     annotation = "annotation_1"
     annotations = [
 	  {
@@ -419,8 +436,8 @@ resource "aci_first_hop_security_policy" "test" {
     other_config_flag = "no"
     owner_key = "owner_key_1"
     owner_tag = "owner_tag_1"
-  }
-  tags = [
+  } : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -429,7 +446,7 @@ resource "aci_first_hop_security_policy" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
+  ] : null
 }
 `
 
@@ -444,19 +461,19 @@ const testConfigFhsBDPolChildrenRemoveOneDependencyWithFvTenant = testConfigFvTe
 resource "aci_first_hop_security_policy" "test" {
   parent_dn = aci_tenant.test.id
   name = "test_name"
-  annotations = [ 
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  route_advertisement_guard_policy = {}
-  tags = [ 
+  ] : null
+  route_advertisement_guard_policy = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.0(1k)-") ? {} : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
+  ] : null
 }
 `
 
@@ -464,8 +481,8 @@ const testConfigFhsBDPolChildrenRemoveAllDependencyWithFvTenant = testConfigFvTe
 resource "aci_first_hop_security_policy" "test" {
   parent_dn = aci_tenant.test.id
   name = "test_name"
-  annotations = []
-  route_advertisement_guard_policy = {}
-  tags = []
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  route_advertisement_guard_policy = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.0(1k)-") ? {} : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
 }
 `

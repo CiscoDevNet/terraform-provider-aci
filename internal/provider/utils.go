@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"slices"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
@@ -16,6 +17,19 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
+
+func getChildClassesForGetRequest(childClasses []string) []string {
+	classVersions := classVersions()
+	subtreeClasses := []string{}
+	for _, childClass := range childClasses {
+		childVersion := classVersions[childClass]
+		inside, err := CompareVersionsRange(apicVersion, childVersion, "inside")
+		if err == nil && inside && !slices.Contains(subtreeClasses, childClass) {
+			subtreeClasses = append(subtreeClasses, childClass)
+		}
+	}
+	return subtreeClasses
+}
 
 func IsEmptySingleNestedAttribute(attributes map[string]attr.Value) bool {
 	for _, value := range attributes {

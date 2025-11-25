@@ -495,7 +495,8 @@ func (r *L2PortSecurityPolResource) ImportState(ctx context.Context, req resourc
 }
 
 func getAndSetL2PortSecurityPolAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *L2PortSecurityPolResourceModel) {
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "l2PortSecurityPol,tagAnnotation,tagTag"), "GET", nil)
+	childClasses := getChildClassesForGetRequest([]string{"tagAnnotation", "tagTag"})
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), strings.Join(childClasses, ",")), "GET", nil)
 
 	readData := getEmptyL2PortSecurityPolResourceModel()
 

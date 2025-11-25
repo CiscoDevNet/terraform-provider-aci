@@ -287,22 +287,28 @@ func TestAccResourceFvRsDomAttWithFvAEPg(t *testing.T) {
 						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "port_allocation", "none")),
 					composeAggregateTestCheckFuncWithVersion(t, "4.2(3j)-", "inside",
 						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "custom_epg_name", "")),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.active_uplinks", "1,2"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.description", "description_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.name", "name_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.name_alias", "name_alias_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.owner_key", "owner_key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.owner_tag", "owner_tag_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.standby_uplinks", "3,4"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "annotations.1.value", "test_value"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "tags.1.value", "test_value"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.active_uplinks", "1,2"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.description", "description_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.name", "name_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.name_alias", "name_alias_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.owner_key", "owner_key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.owner_tag", "owner_tag_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.standby_uplinks", "3,4"),
+					),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -321,34 +327,40 @@ func TestAccResourceFvRsDomAttWithFvAEPg(t *testing.T) {
 				Config:             testConfigFvRsDomAttChildrenRemoveFromConfigDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.active_uplinks", "1,2"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.description", "description_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.name", "name_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.name_alias", "name_alias_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.owner_key", "owner_key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.owner_tag", "owner_tag_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.standby_uplinks", "3,4"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "tags.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.active_uplinks", "1,2"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.description", "description_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.name", "name_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.name_alias", "name_alias_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.owner_key", "owner_key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.owner_tag", "owner_tag_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.standby_uplinks", "3,4"),
+					),
 				),
 			},
 			// Update with children first child removed
@@ -356,26 +368,32 @@ func TestAccResourceFvRsDomAttWithFvAEPg(t *testing.T) {
 				Config:             testConfigFvRsDomAttChildrenRemoveOneDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "tags.#", "1"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.active_uplinks", "1,2"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.tags.#", "1"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.description", "description_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.name", "name_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.name_alias", "name_alias_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.owner_key", "owner_key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.owner_tag", "owner_tag_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.standby_uplinks", "3,4"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "annotations.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "tags.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.active_uplinks", "1,2"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.annotations.#", "1"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.tags.#", "1"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.description", "description_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.name", "name_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.name_alias", "name_alias_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.owner_key", "owner_key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.owner_tag", "owner_tag_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_domain.test", "uplink_order_container.standby_uplinks", "3,4"),
+					),
 				),
 			},
 			// Update with all children removed
@@ -483,7 +501,7 @@ const testConfigFvRsDomAttChildrenDependencyWithFvAEPg = testDependencyConfigFvR
 resource "aci_relation_to_domain" "test" {
   parent_dn = aci_application_epg.test.id
   target_dn = "uni/vmmp-VMware/dom-domain_1"
-  annotations = [
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -492,8 +510,8 @@ resource "aci_relation_to_domain" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  tags = [
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -502,8 +520,8 @@ resource "aci_relation_to_domain" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  uplink_order_container = {
+  ] : null
+  uplink_order_container = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.2(1i)-") ? {
     active_uplinks = "1,2"
     annotation = "annotation_1"
     annotations = [
@@ -532,7 +550,7 @@ resource "aci_relation_to_domain" "test" {
     owner_key = "owner_key_1"
     owner_tag = "owner_tag_1"
     standby_uplinks = "3,4"
-  }
+  } : null
 }
 `
 
@@ -547,19 +565,19 @@ const testConfigFvRsDomAttChildrenRemoveOneDependencyWithFvAEPg = testDependency
 resource "aci_relation_to_domain" "test" {
   parent_dn = aci_application_epg.test.id
   target_dn = "uni/vmmp-VMware/dom-domain_1"
-  annotations = [ 
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  tags = [ 
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  uplink_order_container = {
+  ] : null
+  uplink_order_container = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.2(1i)-") ? {
     active_uplinks = "1,2"
     annotation = "annotation_1"
     annotations = [ 
@@ -580,7 +598,7 @@ resource "aci_relation_to_domain" "test" {
     owner_key = "owner_key_1"
     owner_tag = "owner_tag_1"
     standby_uplinks = "3,4"
-  }
+  } : null
 }
 `
 
@@ -588,9 +606,9 @@ const testConfigFvRsDomAttChildrenRemoveAllDependencyWithFvAEPg = testDependency
 resource "aci_relation_to_domain" "test" {
   parent_dn = aci_application_epg.test.id
   target_dn = "uni/vmmp-VMware/dom-domain_1"
-  annotations = []
-  tags = []
-  uplink_order_container = {
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  uplink_order_container = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.2(1i)-") ? {
     active_uplinks = "1,2"
     annotation = "annotation_1"
     annotations = []
@@ -601,6 +619,6 @@ resource "aci_relation_to_domain" "test" {
     owner_key = "owner_key_1"
     owner_tag = "owner_tag_1"
     standby_uplinks = "3,4"
-  }
+  } : null
 }
 `

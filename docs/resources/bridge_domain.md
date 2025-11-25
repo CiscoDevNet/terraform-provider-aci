@@ -557,7 +557,7 @@ All examples for the Bridge Domain resource can be found in the [examples](https
   
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-* `relation_to_dhcp_relay_policy` - (map) A map of Relation From Bridge Domain To DHCP Relay Policy (ACI object [fvRsBDToRelayP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsBDToRelayP/overview)) pointing to DHCP Relay Policy (ACI Object [dhcpRelayP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/dhcpRelayP/overview)) which can be configured using the [aci_dhcp_relay_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/dhcp_relay_policy) resource.
+* `relation_to_dhcp_relay_policy` - (map) A map of Relation From Bridge Domain To DHCP Relay Policy (ACI object [fvRsBDToRelayP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsBDToRelayP/overview)) pointing to DHCP Relay Policy (ACI Object [dhcpRelayP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/dhcpRelayP/overview)) which can be configured using the [aci_dhcp_relay_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/dhcp_relay_policy) resource. This attribute is supported in ACI versions: 1.0(1e) to 6.1(1e)
   #### Optional ####
     
     * `annotation` (annotation) - (string) The annotation of the Relation From Bridge Domain To DHCP Relay Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.

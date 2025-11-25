@@ -250,14 +250,18 @@ func TestAccResourceNdIfPolWithFvTenant(t *testing.T) {
 						resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "nud_retry_base", "1"),
 						resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "nud_retry_interval", "1000"),
 						resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "nud_retry_max_attempts", "3")),
-					resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "tags.1.value", "test_value"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "annotations.1.value", "test_value"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "tags.1.value", "test_value"),
+					),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -276,16 +280,20 @@ func TestAccResourceNdIfPolWithFvTenant(t *testing.T) {
 				Config:             testConfigNdIfPolChildrenRemoveFromConfigDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
@@ -293,12 +301,16 @@ func TestAccResourceNdIfPolWithFvTenant(t *testing.T) {
 				Config:             testConfigNdIfPolChildrenRemoveOneDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "tags.#", "1"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "annotations.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_neighbor_discovery_interface_policy.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
@@ -385,7 +397,7 @@ const testConfigNdIfPolChildrenDependencyWithFvTenant = testConfigFvTenantMin + 
 resource "aci_neighbor_discovery_interface_policy" "test" {
   parent_dn = aci_tenant.test.id
   name = "test_name"
-  annotations = [
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -394,8 +406,8 @@ resource "aci_neighbor_discovery_interface_policy" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  tags = [
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -404,7 +416,7 @@ resource "aci_neighbor_discovery_interface_policy" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
+  ] : null
 }
 `
 
@@ -419,18 +431,18 @@ const testConfigNdIfPolChildrenRemoveOneDependencyWithFvTenant = testConfigFvTen
 resource "aci_neighbor_discovery_interface_policy" "test" {
   parent_dn = aci_tenant.test.id
   name = "test_name"
-  annotations = [ 
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  tags = [ 
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
+  ] : null
 }
 `
 
@@ -438,7 +450,7 @@ const testConfigNdIfPolChildrenRemoveAllDependencyWithFvTenant = testConfigFvTen
 resource "aci_neighbor_discovery_interface_policy" "test" {
   parent_dn = aci_tenant.test.id
   name = "test_name"
-  annotations = []
-  tags = []
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
 }
 `

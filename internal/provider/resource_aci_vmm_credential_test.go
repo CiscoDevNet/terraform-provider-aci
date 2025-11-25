@@ -19,7 +19,7 @@ func TestAccResourceVmmUsrAccPWithVmmDomP(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigVmmUsrAccPMinDependencyWithVmmDomPAllowExisting,
+				Config:             testConfigVmmUsrAccPMinDependencyWithVmmDomPAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_vmm_credential.allow_test", "name", "test_name"),
@@ -48,7 +48,7 @@ func TestAccResourceVmmUsrAccPWithVmmDomP(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:      testConfigVmmUsrAccPMinDependencyWithVmmDomPAllowExisting,
+				Config:      testConfigVmmUsrAccPMinDependencyWithVmmDomPAllowExisting + testConfigDataSourceSystem,
 				ExpectError: regexp.MustCompile("Object Already Exists"),
 			},
 		},
@@ -61,7 +61,7 @@ func TestAccResourceVmmUsrAccPWithVmmDomP(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigVmmUsrAccPMinDependencyWithVmmDomPAllowExisting,
+				Config:             testConfigVmmUsrAccPMinDependencyWithVmmDomPAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_vmm_credential.allow_test", "name", "test_name"),
@@ -89,7 +89,7 @@ func TestAccResourceVmmUsrAccPWithVmmDomP(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigVmmUsrAccPMinDependencyWithVmmDomP,
+				Config:             testConfigVmmUsrAccPMinDependencyWithVmmDomP + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_vmm_credential.test", "name", "test_name"),
@@ -103,7 +103,7 @@ func TestAccResourceVmmUsrAccPWithVmmDomP(t *testing.T) {
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config:             testConfigVmmUsrAccPAllDependencyWithVmmDomP,
+				Config:             testConfigVmmUsrAccPAllDependencyWithVmmDomP + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_vmm_credential.test", "name", "test_name"),
@@ -117,7 +117,7 @@ func TestAccResourceVmmUsrAccPWithVmmDomP(t *testing.T) {
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config:             testConfigVmmUsrAccPMinDependencyWithVmmDomP,
+				Config:             testConfigVmmUsrAccPMinDependencyWithVmmDomP + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_vmm_credential.test", "name", "test_name"),
@@ -125,7 +125,7 @@ func TestAccResourceVmmUsrAccPWithVmmDomP(t *testing.T) {
 			},
 			// Update with empty strings config or default value
 			{
-				Config:             testConfigVmmUsrAccPResetDependencyWithVmmDomP,
+				Config:             testConfigVmmUsrAccPResetDependencyWithVmmDomP + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_vmm_credential.test", "name", "test_name"),
@@ -146,7 +146,7 @@ func TestAccResourceVmmUsrAccPWithVmmDomP(t *testing.T) {
 			},
 			// Update with children
 			{
-				Config:             testConfigVmmUsrAccPChildrenDependencyWithVmmDomP,
+				Config:             testConfigVmmUsrAccPChildrenDependencyWithVmmDomP + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_vmm_credential.test", "name", "test_name"),
@@ -156,14 +156,18 @@ func TestAccResourceVmmUsrAccPWithVmmDomP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_vmm_credential.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_vmm_credential.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_vmm_credential.test", "username", ""),
-					resource.TestCheckResourceAttr("aci_vmm_credential.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_vmm_credential.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_vmm_credential.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vmm_credential.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vmm_credential.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_vmm_credential.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_vmm_credential.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vmm_credential.test", "tags.1.value", "test_value"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_vmm_credential.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_vmm_credential.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_vmm_credential.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vmm_credential.test", "annotations.1.value", "test_value"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_vmm_credential.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_vmm_credential.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_vmm_credential.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vmm_credential.test", "tags.1.value", "test_value"),
+					),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -180,37 +184,45 @@ func TestAccResourceVmmUsrAccPWithVmmDomP(t *testing.T) {
 			},
 			// Update with children removed from config
 			{
-				Config:             testConfigVmmUsrAccPChildrenRemoveFromConfigDependencyWithVmmDomP,
+				Config:             testConfigVmmUsrAccPChildrenRemoveFromConfigDependencyWithVmmDomP + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_vmm_credential.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_vmm_credential.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_vmm_credential.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vmm_credential.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vmm_credential.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_vmm_credential.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_vmm_credential.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_vmm_credential.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vmm_credential.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vmm_credential.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_vmm_credential.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_vmm_credential.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_vmm_credential.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vmm_credential.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vmm_credential.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_vmm_credential.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_vmm_credential.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_vmm_credential.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vmm_credential.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vmm_credential.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
 			{
-				Config:             testConfigVmmUsrAccPChildrenRemoveOneDependencyWithVmmDomP,
+				Config:             testConfigVmmUsrAccPChildrenRemoveOneDependencyWithVmmDomP + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_vmm_credential.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vmm_credential.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vmm_credential.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_vmm_credential.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vmm_credential.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vmm_credential.test", "tags.#", "1"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_vmm_credential.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vmm_credential.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vmm_credential.test", "annotations.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_vmm_credential.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vmm_credential.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vmm_credential.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
 			{
-				Config:             testConfigVmmUsrAccPChildrenRemoveAllDependencyWithVmmDomP,
+				Config:             testConfigVmmUsrAccPChildrenRemoveAllDependencyWithVmmDomP + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_vmm_credential.test", "annotations.#", "0"),
@@ -219,7 +231,7 @@ func TestAccResourceVmmUsrAccPWithVmmDomP(t *testing.T) {
 			},
 			// Update with legacy attribute config
 			{
-				Config:             testConfigVmmUsrAccPLegacyAttributesWithVmmDomP,
+				Config:             testConfigVmmUsrAccPLegacyAttributesWithVmmDomP + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 			},
 		},
@@ -231,7 +243,7 @@ func TestAccResourceVmmUsrAccPWithVmmDomP(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with legacy attribute config
 			{
-				Config:             testConfigVmmUsrAccPLegacyAttributesWithVmmDomP,
+				Config:             testConfigVmmUsrAccPLegacyAttributesWithVmmDomP + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 			},
 		},
@@ -289,7 +301,7 @@ const testConfigVmmUsrAccPChildrenDependencyWithVmmDomP = testConfigVmmDomPMin +
 resource "aci_vmm_credential" "test" {
   parent_dn = aci_vmm_domain.test.id
   name = "test_name"
-  annotations = [
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -298,8 +310,8 @@ resource "aci_vmm_credential" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  tags = [
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -308,7 +320,7 @@ resource "aci_vmm_credential" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
+  ] : null
 }
 `
 
@@ -323,18 +335,18 @@ const testConfigVmmUsrAccPChildrenRemoveOneDependencyWithVmmDomP = testConfigVmm
 resource "aci_vmm_credential" "test" {
   parent_dn = aci_vmm_domain.test.id
   name = "test_name"
-  annotations = [ 
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  tags = [ 
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
+  ] : null
 }
 `
 
@@ -342,16 +354,16 @@ const testConfigVmmUsrAccPChildrenRemoveAllDependencyWithVmmDomP = testConfigVmm
 resource "aci_vmm_credential" "test" {
   parent_dn = aci_vmm_domain.test.id
   name = "test_name"
-  annotations = []
-  tags = []
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
 }
 `
 
 const testConfigVmmUsrAccPLegacyAttributesWithVmmDomP = testConfigVmmDomPMin + `
 resource "aci_vmm_credential" "test" {
   name = "test_name"
-  pwd = "password_1"
-  usr = "username_1"
+  pwd = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? "password_1" : null
+  usr = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? "username_1" : null
   vmm_domain_dn = aci_vmm_domain.test.id
 }
 `

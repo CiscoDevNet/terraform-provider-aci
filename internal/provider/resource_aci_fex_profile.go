@@ -458,7 +458,8 @@ func (r *InfraFexPResource) ImportState(ctx context.Context, req resource.Import
 }
 
 func getAndSetInfraFexPAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *InfraFexPResourceModel) {
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "infraFexP,tagAnnotation,tagTag"), "GET", nil)
+	childClasses := getChildClassesForGetRequest([]string{"tagAnnotation", "tagTag"})
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), strings.Join(childClasses, ",")), "GET", nil)
 
 	readData := getEmptyInfraFexPResourceModel()
 

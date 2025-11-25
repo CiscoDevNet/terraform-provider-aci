@@ -1,1 +1,2 @@
 resource_name: relation_from_bridge_domain_to_dhcp_relay_policy
+class_version: "1.0(1e)-6.1(1e)"

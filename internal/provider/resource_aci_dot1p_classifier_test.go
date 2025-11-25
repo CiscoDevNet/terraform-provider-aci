@@ -19,7 +19,7 @@ func TestAccResourceQosDot1PClassWithQosCustomPol(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigQosDot1PClassMinDependencyWithQosCustomPolAllowExisting,
+				Config:             testConfigQosDot1PClassMinDependencyWithQosCustomPolAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_dot1p_classifier.allow_test", "annotation", "orchestrator:terraform"),
@@ -52,7 +52,7 @@ func TestAccResourceQosDot1PClassWithQosCustomPol(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:      testConfigQosDot1PClassMinDependencyWithQosCustomPolAllowExisting,
+				Config:      testConfigQosDot1PClassMinDependencyWithQosCustomPolAllowExisting + testConfigDataSourceSystem,
 				ExpectError: regexp.MustCompile("Object Already Exists"),
 			},
 		},
@@ -65,7 +65,7 @@ func TestAccResourceQosDot1PClassWithQosCustomPol(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigQosDot1PClassMinDependencyWithQosCustomPolAllowExisting,
+				Config:             testConfigQosDot1PClassMinDependencyWithQosCustomPolAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_dot1p_classifier.allow_test", "annotation", "orchestrator:terraform"),
@@ -97,7 +97,7 @@ func TestAccResourceQosDot1PClassWithQosCustomPol(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigQosDot1PClassMinDependencyWithQosCustomPol,
+				Config:             testConfigQosDot1PClassMinDependencyWithQosCustomPol + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "annotation", "orchestrator:terraform"),
@@ -113,7 +113,7 @@ func TestAccResourceQosDot1PClassWithQosCustomPol(t *testing.T) {
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config:             testConfigQosDot1PClassAllDependencyWithQosCustomPol,
+				Config:             testConfigQosDot1PClassAllDependencyWithQosCustomPol + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "annotation", "annotation"),
@@ -129,7 +129,7 @@ func TestAccResourceQosDot1PClassWithQosCustomPol(t *testing.T) {
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config:             testConfigQosDot1PClassMinDependencyWithQosCustomPol,
+				Config:             testConfigQosDot1PClassMinDependencyWithQosCustomPol + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "from", "1"),
@@ -138,7 +138,7 @@ func TestAccResourceQosDot1PClassWithQosCustomPol(t *testing.T) {
 			},
 			// Update with empty strings config or default value
 			{
-				Config:             testConfigQosDot1PClassResetDependencyWithQosCustomPol,
+				Config:             testConfigQosDot1PClassResetDependencyWithQosCustomPol + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "from", "1"),
@@ -160,7 +160,7 @@ func TestAccResourceQosDot1PClassWithQosCustomPol(t *testing.T) {
 			},
 			// Update with children
 			{
-				Config:             testConfigQosDot1PClassChildrenDependencyWithQosCustomPol,
+				Config:             testConfigQosDot1PClassChildrenDependencyWithQosCustomPol + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "from", "1"),
@@ -172,14 +172,18 @@ func TestAccResourceQosDot1PClassWithQosCustomPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "priority", "unspecified"),
 					resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "target", "unspecified"),
 					resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "target_cos", "unspecified"),
-					resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "tags.1.value", "test_value"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "annotations.1.value", "test_value"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "tags.1.value", "test_value"),
+					),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -195,37 +199,45 @@ func TestAccResourceQosDot1PClassWithQosCustomPol(t *testing.T) {
 			},
 			// Update with children removed from config
 			{
-				Config:             testConfigQosDot1PClassChildrenRemoveFromConfigDependencyWithQosCustomPol,
+				Config:             testConfigQosDot1PClassChildrenRemoveFromConfigDependencyWithQosCustomPol + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
 			{
-				Config:             testConfigQosDot1PClassChildrenRemoveOneDependencyWithQosCustomPol,
+				Config:             testConfigQosDot1PClassChildrenRemoveOneDependencyWithQosCustomPol + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "tags.#", "1"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "annotations.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
 			{
-				Config:             testConfigQosDot1PClassChildrenRemoveAllDependencyWithQosCustomPol,
+				Config:             testConfigQosDot1PClassChildrenRemoveAllDependencyWithQosCustomPol + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "annotations.#", "0"),
@@ -234,7 +246,7 @@ func TestAccResourceQosDot1PClassWithQosCustomPol(t *testing.T) {
 			},
 			// Update with minimum config and custom type semantic equivalent values
 			{
-				Config:             testConfigQosDot1PClassCustomTypeDependencyWithQosCustomPol,
+				Config:             testConfigQosDot1PClassCustomTypeDependencyWithQosCustomPol + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_dot1p_classifier.test", "from", "0"),
@@ -305,7 +317,7 @@ resource "aci_dot1p_classifier" "test" {
   parent_dn = aci_custom_qos_policy.test.id
   from = "1"
   to = "2"
-  annotations = [
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -314,8 +326,8 @@ resource "aci_dot1p_classifier" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  tags = [
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -324,7 +336,7 @@ resource "aci_dot1p_classifier" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
+  ] : null
 }
 `
 
@@ -341,18 +353,18 @@ resource "aci_dot1p_classifier" "test" {
   parent_dn = aci_custom_qos_policy.test.id
   from = "1"
   to = "2"
-  annotations = [ 
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  tags = [ 
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
+  ] : null
 }
 `
 
@@ -361,8 +373,8 @@ resource "aci_dot1p_classifier" "test" {
   parent_dn = aci_custom_qos_policy.test.id
   from = "1"
   to = "2"
-  annotations = []
-  tags = []
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
 }
 `
 

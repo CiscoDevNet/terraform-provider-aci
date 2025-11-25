@@ -19,7 +19,7 @@ func TestAccResourceFvEpMacTagWithFvTenant(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigFvEpMacTagMinDependencyWithFvTenantAllowExisting,
+				Config:             testConfigFvEpMacTagMinDependencyWithFvTenantAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.allow_test", "bd_name", "test_bd_name"),
@@ -46,7 +46,7 @@ func TestAccResourceFvEpMacTagWithFvTenant(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:      testConfigFvEpMacTagMinDependencyWithFvTenantAllowExisting,
+				Config:      testConfigFvEpMacTagMinDependencyWithFvTenantAllowExisting + testConfigDataSourceSystem,
 				ExpectError: regexp.MustCompile("Object Already Exists"),
 			},
 		},
@@ -59,7 +59,7 @@ func TestAccResourceFvEpMacTagWithFvTenant(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigFvEpMacTagMinDependencyWithFvTenantAllowExisting,
+				Config:             testConfigFvEpMacTagMinDependencyWithFvTenantAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.allow_test", "bd_name", "test_bd_name"),
@@ -85,7 +85,7 @@ func TestAccResourceFvEpMacTagWithFvTenant(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigFvEpMacTagMinDependencyWithFvTenant,
+				Config:             testConfigFvEpMacTagMinDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "bd_name", "test_bd_name"),
@@ -98,7 +98,7 @@ func TestAccResourceFvEpMacTagWithFvTenant(t *testing.T) {
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config:             testConfigFvEpMacTagAllDependencyWithFvTenant,
+				Config:             testConfigFvEpMacTagAllDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "bd_name", "test_bd_name"),
@@ -111,7 +111,7 @@ func TestAccResourceFvEpMacTagWithFvTenant(t *testing.T) {
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config:             testConfigFvEpMacTagMinDependencyWithFvTenant,
+				Config:             testConfigFvEpMacTagMinDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "bd_name", "test_bd_name"),
@@ -120,7 +120,7 @@ func TestAccResourceFvEpMacTagWithFvTenant(t *testing.T) {
 			},
 			// Update with empty strings config or default value
 			{
-				Config:             testConfigFvEpMacTagResetDependencyWithFvTenant,
+				Config:             testConfigFvEpMacTagResetDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "bd_name", "test_bd_name"),
@@ -139,7 +139,7 @@ func TestAccResourceFvEpMacTagWithFvTenant(t *testing.T) {
 			},
 			// Update with children
 			{
-				Config:             testConfigFvEpMacTagChildrenDependencyWithFvTenant,
+				Config:             testConfigFvEpMacTagChildrenDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "bd_name", "test_bd_name"),
@@ -148,14 +148,18 @@ func TestAccResourceFvEpMacTagWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "id_attribute", "0"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "name", ""),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "tags.1.value", "test_value"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "annotations.1.value", "test_value"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "tags.1.value", "test_value"),
+					),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -171,37 +175,45 @@ func TestAccResourceFvEpMacTagWithFvTenant(t *testing.T) {
 			},
 			// Update with children removed from config
 			{
-				Config:             testConfigFvEpMacTagChildrenRemoveFromConfigDependencyWithFvTenant,
+				Config:             testConfigFvEpMacTagChildrenRemoveFromConfigDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
 			{
-				Config:             testConfigFvEpMacTagChildrenRemoveOneDependencyWithFvTenant,
+				Config:             testConfigFvEpMacTagChildrenRemoveOneDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "tags.#", "1"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "annotations.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
 			{
-				Config:             testConfigFvEpMacTagChildrenRemoveAllDependencyWithFvTenant,
+				Config:             testConfigFvEpMacTagChildrenRemoveAllDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_endpoint_tag_mac.test", "annotations.#", "0"),
@@ -263,7 +275,7 @@ resource "aci_endpoint_tag_mac" "test" {
   parent_dn = aci_tenant.test.id
   bd_name = "test_bd_name"
   mac = "00:00:00:00:00:01"
-  annotations = [
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -272,8 +284,8 @@ resource "aci_endpoint_tag_mac" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  tags = [
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -282,7 +294,7 @@ resource "aci_endpoint_tag_mac" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
+  ] : null
 }
 `
 
@@ -299,18 +311,18 @@ resource "aci_endpoint_tag_mac" "test" {
   parent_dn = aci_tenant.test.id
   bd_name = "test_bd_name"
   mac = "00:00:00:00:00:01"
-  annotations = [ 
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  tags = [ 
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
+  ] : null
 }
 `
 
@@ -319,7 +331,7 @@ resource "aci_endpoint_tag_mac" "test" {
   parent_dn = aci_tenant.test.id
   bd_name = "test_bd_name"
   mac = "00:00:00:00:00:01"
-  annotations = []
-  tags = []
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
 }
 `

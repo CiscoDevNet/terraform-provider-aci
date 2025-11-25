@@ -19,7 +19,7 @@ func TestAccResourceFvRsAepAttWithFvAEPg(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigFvRsAepAttMinDependencyWithFvAEPgAllowExisting,
+				Config:             testConfigFvRsAepAttMinDependencyWithFvAEPgAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.allow_test", "attachable_access_entity_profile_name", "test_tn_infra_att_entity_p_name"),
@@ -44,7 +44,7 @@ func TestAccResourceFvRsAepAttWithFvAEPg(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:      testConfigFvRsAepAttMinDependencyWithFvAEPgAllowExisting,
+				Config:      testConfigFvRsAepAttMinDependencyWithFvAEPgAllowExisting + testConfigDataSourceSystem,
 				ExpectError: regexp.MustCompile("Object Already Exists"),
 			},
 		},
@@ -57,7 +57,7 @@ func TestAccResourceFvRsAepAttWithFvAEPg(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigFvRsAepAttMinDependencyWithFvAEPgAllowExisting,
+				Config:             testConfigFvRsAepAttMinDependencyWithFvAEPgAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.allow_test", "attachable_access_entity_profile_name", "test_tn_infra_att_entity_p_name"),
@@ -81,7 +81,7 @@ func TestAccResourceFvRsAepAttWithFvAEPg(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigFvRsAepAttMinDependencyWithFvAEPg,
+				Config:             testConfigFvRsAepAttMinDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "attachable_access_entity_profile_name", "test_tn_infra_att_entity_p_name"),
@@ -93,7 +93,7 @@ func TestAccResourceFvRsAepAttWithFvAEPg(t *testing.T) {
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config:             testConfigFvRsAepAttAllDependencyWithFvAEPg,
+				Config:             testConfigFvRsAepAttAllDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "attachable_access_entity_profile_name", "test_tn_infra_att_entity_p_name"),
@@ -105,7 +105,7 @@ func TestAccResourceFvRsAepAttWithFvAEPg(t *testing.T) {
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config:             testConfigFvRsAepAttMinDependencyWithFvAEPg,
+				Config:             testConfigFvRsAepAttMinDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "attachable_access_entity_profile_name", "test_tn_infra_att_entity_p_name"),
@@ -114,7 +114,7 @@ func TestAccResourceFvRsAepAttWithFvAEPg(t *testing.T) {
 			},
 			// Update with empty strings config or default value
 			{
-				Config:             testConfigFvRsAepAttResetDependencyWithFvAEPg,
+				Config:             testConfigFvRsAepAttResetDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "attachable_access_entity_profile_name", "test_tn_infra_att_entity_p_name"),
@@ -132,7 +132,7 @@ func TestAccResourceFvRsAepAttWithFvAEPg(t *testing.T) {
 			},
 			// Update with children
 			{
-				Config:             testConfigFvRsAepAttChildrenDependencyWithFvAEPg,
+				Config:             testConfigFvRsAepAttChildrenDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "attachable_access_entity_profile_name", "test_tn_infra_att_entity_p_name"),
@@ -140,14 +140,18 @@ func TestAccResourceFvRsAepAttWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "deployment_immediacy", "lazy"),
 					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "mode", "regular"),
 					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "primary_encapsulation", "unknown"),
-					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "tags.1.value", "test_value"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "annotations.1.value", "test_value"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "tags.1.value", "test_value"),
+					),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -163,37 +167,45 @@ func TestAccResourceFvRsAepAttWithFvAEPg(t *testing.T) {
 			},
 			// Update with children removed from config
 			{
-				Config:             testConfigFvRsAepAttChildrenRemoveFromConfigDependencyWithFvAEPg,
+				Config:             testConfigFvRsAepAttChildrenRemoveFromConfigDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
 			{
-				Config:             testConfigFvRsAepAttChildrenRemoveOneDependencyWithFvAEPg,
+				Config:             testConfigFvRsAepAttChildrenRemoveOneDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "tags.#", "1"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "annotations.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
 			{
-				Config:             testConfigFvRsAepAttChildrenRemoveAllDependencyWithFvAEPg,
+				Config:             testConfigFvRsAepAttChildrenRemoveAllDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_from_application_epg_to_attachable_access_entity_profile.test", "annotations.#", "0"),
@@ -253,7 +265,7 @@ resource "aci_relation_from_application_epg_to_attachable_access_entity_profile"
   parent_dn = aci_application_epg.test.id
   attachable_access_entity_profile_name = "test_tn_infra_att_entity_p_name"
   encapsulation = "vlan-100"
-  annotations = [
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -262,8 +274,8 @@ resource "aci_relation_from_application_epg_to_attachable_access_entity_profile"
       key = "key_1"
       value = "test_value"
     },
-  ]
-  tags = [
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -272,7 +284,7 @@ resource "aci_relation_from_application_epg_to_attachable_access_entity_profile"
       key = "key_1"
       value = "test_value"
     },
-  ]
+  ] : null
 }
 `
 
@@ -289,18 +301,18 @@ resource "aci_relation_from_application_epg_to_attachable_access_entity_profile"
   parent_dn = aci_application_epg.test.id
   attachable_access_entity_profile_name = "test_tn_infra_att_entity_p_name"
   encapsulation = "vlan-100"
-  annotations = [ 
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  tags = [ 
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
+  ] : null
 }
 `
 
@@ -309,7 +321,7 @@ resource "aci_relation_from_application_epg_to_attachable_access_entity_profile"
   parent_dn = aci_application_epg.test.id
   attachable_access_entity_profile_name = "test_tn_infra_att_entity_p_name"
   encapsulation = "vlan-100"
-  annotations = []
-  tags = []
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
 }
 `
