@@ -19,7 +19,7 @@ func TestAccResourceFvRsOtmListMemberWithFvTrackList(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigFvRsOtmListMemberMinDependencyWithFvTrackListAllowExisting,
+				Config:             testConfigFvRsOtmListMemberMinDependencyWithFvTrackListAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.allow_test", "target_dn", "uni/tn-test_tenant/trackmember-track_member_name_1"),
@@ -40,7 +40,7 @@ func TestAccResourceFvRsOtmListMemberWithFvTrackList(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:      testConfigFvRsOtmListMemberMinDependencyWithFvTrackListAllowExisting,
+				Config:      testConfigFvRsOtmListMemberMinDependencyWithFvTrackListAllowExisting + testConfigDataSourceSystem,
 				ExpectError: regexp.MustCompile("Object Already Exists"),
 			},
 		},
@@ -53,7 +53,7 @@ func TestAccResourceFvRsOtmListMemberWithFvTrackList(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigFvRsOtmListMemberMinDependencyWithFvTrackListAllowExisting,
+				Config:             testConfigFvRsOtmListMemberMinDependencyWithFvTrackListAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.allow_test", "target_dn", "uni/tn-test_tenant/trackmember-track_member_name_1"),
@@ -73,7 +73,7 @@ func TestAccResourceFvRsOtmListMemberWithFvTrackList(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigFvRsOtmListMemberMinDependencyWithFvTrackList,
+				Config:             testConfigFvRsOtmListMemberMinDependencyWithFvTrackList + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "target_dn", "uni/tn-test_tenant/trackmember-track_member_name_1"),
@@ -83,7 +83,7 @@ func TestAccResourceFvRsOtmListMemberWithFvTrackList(t *testing.T) {
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config:             testConfigFvRsOtmListMemberAllDependencyWithFvTrackList,
+				Config:             testConfigFvRsOtmListMemberAllDependencyWithFvTrackList + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "target_dn", "uni/tn-test_tenant/trackmember-track_member_name_1"),
@@ -93,7 +93,7 @@ func TestAccResourceFvRsOtmListMemberWithFvTrackList(t *testing.T) {
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config:             testConfigFvRsOtmListMemberMinDependencyWithFvTrackList,
+				Config:             testConfigFvRsOtmListMemberMinDependencyWithFvTrackList + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "target_dn", "uni/tn-test_tenant/trackmember-track_member_name_1"),
@@ -101,7 +101,7 @@ func TestAccResourceFvRsOtmListMemberWithFvTrackList(t *testing.T) {
 			},
 			// Update with empty strings config or default value
 			{
-				Config:             testConfigFvRsOtmListMemberResetDependencyWithFvTrackList,
+				Config:             testConfigFvRsOtmListMemberResetDependencyWithFvTrackList + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "target_dn", "uni/tn-test_tenant/trackmember-track_member_name_1"),
@@ -117,20 +117,24 @@ func TestAccResourceFvRsOtmListMemberWithFvTrackList(t *testing.T) {
 			},
 			// Update with children
 			{
-				Config:             testConfigFvRsOtmListMemberChildrenDependencyWithFvTrackList,
+				Config:             testConfigFvRsOtmListMemberChildrenDependencyWithFvTrackList + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "target_dn", "uni/tn-test_tenant/trackmember-track_member_name_1"),
 					resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "weight", "10"),
-					resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "tags.1.value", "test_value"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "annotations.1.value", "test_value"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "tags.1.value", "test_value"),
+					),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -146,37 +150,45 @@ func TestAccResourceFvRsOtmListMemberWithFvTrackList(t *testing.T) {
 			},
 			// Update with children removed from config
 			{
-				Config:             testConfigFvRsOtmListMemberChildrenRemoveFromConfigDependencyWithFvTrackList,
+				Config:             testConfigFvRsOtmListMemberChildrenRemoveFromConfigDependencyWithFvTrackList + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
 			{
-				Config:             testConfigFvRsOtmListMemberChildrenRemoveOneDependencyWithFvTrackList,
+				Config:             testConfigFvRsOtmListMemberChildrenRemoveOneDependencyWithFvTrackList + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "tags.#", "1"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "annotations.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
 			{
-				Config:             testConfigFvRsOtmListMemberChildrenRemoveAllDependencyWithFvTrackList,
+				Config:             testConfigFvRsOtmListMemberChildrenRemoveAllDependencyWithFvTrackList + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_ip_sla_track_member.test", "annotations.#", "0"),
@@ -231,7 +243,7 @@ const testConfigFvRsOtmListMemberChildrenDependencyWithFvTrackList = testDepende
 resource "aci_relation_to_ip_sla_track_member" "test" {
   parent_dn = aci_ip_sla_track_list.test.id
   target_dn = "uni/tn-test_tenant/trackmember-track_member_name_1"
-  annotations = [
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -240,8 +252,8 @@ resource "aci_relation_to_ip_sla_track_member" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  tags = [
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -250,7 +262,7 @@ resource "aci_relation_to_ip_sla_track_member" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
+  ] : null
 }
 `
 
@@ -265,18 +277,18 @@ const testConfigFvRsOtmListMemberChildrenRemoveOneDependencyWithFvTrackList = te
 resource "aci_relation_to_ip_sla_track_member" "test" {
   parent_dn = aci_ip_sla_track_list.test.id
   target_dn = "uni/tn-test_tenant/trackmember-track_member_name_1"
-  annotations = [ 
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  tags = [ 
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
+  ] : null
 }
 `
 
@@ -284,7 +296,7 @@ const testConfigFvRsOtmListMemberChildrenRemoveAllDependencyWithFvTrackList = te
 resource "aci_relation_to_ip_sla_track_member" "test" {
   parent_dn = aci_ip_sla_track_list.test.id
   target_dn = "uni/tn-test_tenant/trackmember-track_member_name_1"
-  annotations = []
-  tags = []
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
 }
 `

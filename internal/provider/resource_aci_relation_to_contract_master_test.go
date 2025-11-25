@@ -19,7 +19,7 @@ func TestAccResourceFvRsSecInheritedWithFvAEPg(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigFvRsSecInheritedMinDependencyWithFvAEPgAllowExisting,
+				Config:             testConfigFvRsSecInheritedMinDependencyWithFvAEPgAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_contract_master.allow_test", "target_dn", "uni/tn-test_name/ap-test_name/epg-epg_0"),
@@ -38,7 +38,7 @@ func TestAccResourceFvRsSecInheritedWithFvAEPg(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:      testConfigFvRsSecInheritedMinDependencyWithFvAEPgAllowExisting,
+				Config:      testConfigFvRsSecInheritedMinDependencyWithFvAEPgAllowExisting + testConfigDataSourceSystem,
 				ExpectError: regexp.MustCompile("Object Already Exists"),
 			},
 		},
@@ -51,7 +51,7 @@ func TestAccResourceFvRsSecInheritedWithFvAEPg(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigFvRsSecInheritedMinDependencyWithFvAEPgAllowExisting,
+				Config:             testConfigFvRsSecInheritedMinDependencyWithFvAEPgAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_contract_master.allow_test", "target_dn", "uni/tn-test_name/ap-test_name/epg-epg_0"),
@@ -69,7 +69,7 @@ func TestAccResourceFvRsSecInheritedWithFvAEPg(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigFvRsSecInheritedMinDependencyWithFvAEPg,
+				Config:             testConfigFvRsSecInheritedMinDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "target_dn", "uni/tn-test_name/ap-test_name/epg-epg_0"),
@@ -78,7 +78,7 @@ func TestAccResourceFvRsSecInheritedWithFvAEPg(t *testing.T) {
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config:             testConfigFvRsSecInheritedAllDependencyWithFvAEPg,
+				Config:             testConfigFvRsSecInheritedAllDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "target_dn", "uni/tn-test_name/ap-test_name/epg-epg_0"),
@@ -87,7 +87,7 @@ func TestAccResourceFvRsSecInheritedWithFvAEPg(t *testing.T) {
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config:             testConfigFvRsSecInheritedMinDependencyWithFvAEPg,
+				Config:             testConfigFvRsSecInheritedMinDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "target_dn", "uni/tn-test_name/ap-test_name/epg-epg_0"),
@@ -95,7 +95,7 @@ func TestAccResourceFvRsSecInheritedWithFvAEPg(t *testing.T) {
 			},
 			// Update with empty strings config or default value
 			{
-				Config:             testConfigFvRsSecInheritedResetDependencyWithFvAEPg,
+				Config:             testConfigFvRsSecInheritedResetDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "target_dn", "uni/tn-test_name/ap-test_name/epg-epg_0"),
@@ -110,19 +110,23 @@ func TestAccResourceFvRsSecInheritedWithFvAEPg(t *testing.T) {
 			},
 			// Update with children
 			{
-				Config:             testConfigFvRsSecInheritedChildrenDependencyWithFvAEPg,
+				Config:             testConfigFvRsSecInheritedChildrenDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "target_dn", "uni/tn-test_name/ap-test_name/epg-epg_0"),
 					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.1.value", "test_value"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.1.value", "test_value"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.1.value", "test_value"),
+					),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -138,37 +142,45 @@ func TestAccResourceFvRsSecInheritedWithFvAEPg(t *testing.T) {
 			},
 			// Update with children removed from config
 			{
-				Config:             testConfigFvRsSecInheritedChildrenRemoveFromConfigDependencyWithFvAEPg,
+				Config:             testConfigFvRsSecInheritedChildrenRemoveFromConfigDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
 			{
-				Config:             testConfigFvRsSecInheritedChildrenRemoveOneDependencyWithFvAEPg,
+				Config:             testConfigFvRsSecInheritedChildrenRemoveOneDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.#", "1"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
 			{
-				Config:             testConfigFvRsSecInheritedChildrenRemoveAllDependencyWithFvAEPg,
+				Config:             testConfigFvRsSecInheritedChildrenRemoveAllDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.#", "0"),
@@ -187,7 +199,7 @@ func TestAccResourceFvRsSecInheritedWithFvESg(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigFvRsSecInheritedMinDependencyWithFvESgAllowExisting,
+				Config:             testConfigFvRsSecInheritedMinDependencyWithFvESgAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_contract_master.allow_test", "target_dn", "uni/tn-test_name/ap-test_name/esg-esg_0"),
@@ -206,7 +218,7 @@ func TestAccResourceFvRsSecInheritedWithFvESg(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:      testConfigFvRsSecInheritedMinDependencyWithFvESgAllowExisting,
+				Config:      testConfigFvRsSecInheritedMinDependencyWithFvESgAllowExisting + testConfigDataSourceSystem,
 				ExpectError: regexp.MustCompile("Object Already Exists"),
 			},
 		},
@@ -219,7 +231,7 @@ func TestAccResourceFvRsSecInheritedWithFvESg(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigFvRsSecInheritedMinDependencyWithFvESgAllowExisting,
+				Config:             testConfigFvRsSecInheritedMinDependencyWithFvESgAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_contract_master.allow_test", "target_dn", "uni/tn-test_name/ap-test_name/esg-esg_0"),
@@ -237,7 +249,7 @@ func TestAccResourceFvRsSecInheritedWithFvESg(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigFvRsSecInheritedMinDependencyWithFvESg,
+				Config:             testConfigFvRsSecInheritedMinDependencyWithFvESg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "target_dn", "uni/tn-test_name/ap-test_name/esg-esg_0"),
@@ -246,7 +258,7 @@ func TestAccResourceFvRsSecInheritedWithFvESg(t *testing.T) {
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config:             testConfigFvRsSecInheritedAllDependencyWithFvESg,
+				Config:             testConfigFvRsSecInheritedAllDependencyWithFvESg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "target_dn", "uni/tn-test_name/ap-test_name/esg-esg_0"),
@@ -255,7 +267,7 @@ func TestAccResourceFvRsSecInheritedWithFvESg(t *testing.T) {
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config:             testConfigFvRsSecInheritedMinDependencyWithFvESg,
+				Config:             testConfigFvRsSecInheritedMinDependencyWithFvESg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "target_dn", "uni/tn-test_name/ap-test_name/esg-esg_0"),
@@ -263,7 +275,7 @@ func TestAccResourceFvRsSecInheritedWithFvESg(t *testing.T) {
 			},
 			// Update with empty strings config or default value
 			{
-				Config:             testConfigFvRsSecInheritedResetDependencyWithFvESg,
+				Config:             testConfigFvRsSecInheritedResetDependencyWithFvESg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "target_dn", "uni/tn-test_name/ap-test_name/esg-esg_0"),
@@ -278,19 +290,23 @@ func TestAccResourceFvRsSecInheritedWithFvESg(t *testing.T) {
 			},
 			// Update with children
 			{
-				Config:             testConfigFvRsSecInheritedChildrenDependencyWithFvESg,
+				Config:             testConfigFvRsSecInheritedChildrenDependencyWithFvESg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "target_dn", "uni/tn-test_name/ap-test_name/esg-esg_0"),
 					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.1.value", "test_value"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.1.value", "test_value"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.1.value", "test_value"),
+					),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -306,37 +322,45 @@ func TestAccResourceFvRsSecInheritedWithFvESg(t *testing.T) {
 			},
 			// Update with children removed from config
 			{
-				Config:             testConfigFvRsSecInheritedChildrenRemoveFromConfigDependencyWithFvESg,
+				Config:             testConfigFvRsSecInheritedChildrenRemoveFromConfigDependencyWithFvESg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
 			{
-				Config:             testConfigFvRsSecInheritedChildrenRemoveOneDependencyWithFvESg,
+				Config:             testConfigFvRsSecInheritedChildrenRemoveOneDependencyWithFvESg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.#", "1"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
 			{
-				Config:             testConfigFvRsSecInheritedChildrenRemoveAllDependencyWithFvESg,
+				Config:             testConfigFvRsSecInheritedChildrenRemoveAllDependencyWithFvESg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_contract_master.test", "annotations.#", "0"),
@@ -405,7 +429,7 @@ const testConfigFvRsSecInheritedChildrenDependencyWithFvAEPg = testDependencyCon
 resource "aci_relation_to_contract_master" "test" {
   parent_dn = aci_application_epg.test.id
   target_dn = aci_application_epg.test_application_epg_0.id
-  annotations = [
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -414,8 +438,8 @@ resource "aci_relation_to_contract_master" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  tags = [
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -424,7 +448,7 @@ resource "aci_relation_to_contract_master" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
+  ] : null
 }
 `
 
@@ -439,18 +463,18 @@ const testConfigFvRsSecInheritedChildrenRemoveOneDependencyWithFvAEPg = testDepe
 resource "aci_relation_to_contract_master" "test" {
   parent_dn = aci_application_epg.test.id
   target_dn = aci_application_epg.test_application_epg_0.id
-  annotations = [ 
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  tags = [ 
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
+  ] : null
 }
 `
 
@@ -458,8 +482,8 @@ const testConfigFvRsSecInheritedChildrenRemoveAllDependencyWithFvAEPg = testDepe
 resource "aci_relation_to_contract_master" "test" {
   parent_dn = aci_application_epg.test.id
   target_dn = aci_application_epg.test_application_epg_0.id
-  annotations = []
-  tags = []
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
 }
 `
 
@@ -501,7 +525,7 @@ const testConfigFvRsSecInheritedChildrenDependencyWithFvESg = testDependencyConf
 resource "aci_relation_to_contract_master" "test" {
   parent_dn = aci_endpoint_security_group.test.id
   target_dn = aci_endpoint_security_group.test_endpoint_security_group_0.id
-  annotations = [
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -510,8 +534,8 @@ resource "aci_relation_to_contract_master" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  tags = [
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -520,7 +544,7 @@ resource "aci_relation_to_contract_master" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
+  ] : null
 }
 `
 
@@ -535,18 +559,18 @@ const testConfigFvRsSecInheritedChildrenRemoveOneDependencyWithFvESg = testDepen
 resource "aci_relation_to_contract_master" "test" {
   parent_dn = aci_endpoint_security_group.test.id
   target_dn = aci_endpoint_security_group.test_endpoint_security_group_0.id
-  annotations = [ 
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  tags = [ 
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
+  ] : null
 }
 `
 
@@ -554,7 +578,7 @@ const testConfigFvRsSecInheritedChildrenRemoveAllDependencyWithFvESg = testDepen
 resource "aci_relation_to_contract_master" "test" {
   parent_dn = aci_endpoint_security_group.test.id
   target_dn = aci_endpoint_security_group.test_endpoint_security_group_0.id
-  annotations = []
-  tags = []
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
 }
 `

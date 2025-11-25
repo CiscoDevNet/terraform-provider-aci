@@ -380,61 +380,91 @@ func TestAccResourceFvBDWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttrSet("aci_bridge_domain.test", "pc_tag"),
 					resource.TestCheckResourceAttrSet("aci_bridge_domain.test", "scope"),
 					resource.TestCheckResourceAttrSet("aci_bridge_domain.test", "segment"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "legacy_mode.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "legacy_mode.description", "description_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "legacy_mode.encapsulation", "vlan-100"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "legacy_mode.name", "name_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "legacy_mode.name_alias", "name_alias_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "legacy_mode.owner_key", "owner_key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "legacy_mode.owner_tag", "owner_tag_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_dhcp_relay_policy.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_dhcp_relay_policy.dhcp_relay_policy_name", "dhcp_relay_policy_name_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_end_point_retention_policy.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_end_point_retention_policy.end_point_retention_policy_name", "end_point_retention_policy_name_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_end_point_retention_policy.resolve_action", "inherit"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_first_hop_security_policy.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_first_hop_security_policy.first_hop_security_policy_name", "first_hop_security_policy_name_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_igmp_snooping_policy.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_igmp_snooping_policy.igmp_snooping_policy_name", "igmp_snooping_policy_name_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.0.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.0.l3_outside_name", "l3_outside_name_0"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.1.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.1.l3_outside_name", "l3_outside_name_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_mld_snooping_policy.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_mld_snooping_policy.mld_snooping_policy_name", "mld_snooping_policy_name_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitoring_policy.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitoring_policy.monitoring_policy_name", "monitoring_policy_name_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.neighbor_discovery_interface_policy_name", "neighbor_discovery_interface_policy_name_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.filter_type", "ce"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.netflow_monitor_policy_name", "netflow_monitor_policy_name_0"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.1.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.1.filter_type", "ipv4"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.1.netflow_monitor_policy_name", "netflow_monitor_policy_name_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_route_control_profile.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_route_control_profile.l3_outside_name", "l3_outside_name_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_route_control_profile.route_control_profile_name", "route_control_profile_name_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_vrf.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_vrf.vrf_name", "vrf_name_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.description", "description_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.mac", "00:00:00:00:00:03"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.name", "name_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.name_alias", "name_alias_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.1.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.1.description", "description_2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.1.mac", "00:00:00:00:00:01"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.1.name", "name_2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.1.name_alias", "name_alias_2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "tags.1.value", "test_value"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "annotations.1.value", "test_value"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "legacy_mode.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "legacy_mode.description", "description_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "legacy_mode.encapsulation", "vlan-100"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "legacy_mode.name", "name_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "legacy_mode.name_alias", "name_alias_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "legacy_mode.owner_key", "owner_key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "legacy_mode.owner_tag", "owner_tag_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-6.1(1e)", "inside",
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_dhcp_relay_policy.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_dhcp_relay_policy.dhcp_relay_policy_name", "dhcp_relay_policy_name_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_end_point_retention_policy.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_end_point_retention_policy.end_point_retention_policy_name", "end_point_retention_policy_name_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_end_point_retention_policy.resolve_action", "inherit"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_first_hop_security_policy.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_first_hop_security_policy.first_hop_security_policy_name", "first_hop_security_policy_name_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_igmp_snooping_policy.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_igmp_snooping_policy.igmp_snooping_policy_name", "igmp_snooping_policy_name_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.0.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.0.l3_outside_name", "l3_outside_name_0"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.1.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.1.l3_outside_name", "l3_outside_name_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_mld_snooping_policy.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_mld_snooping_policy.mld_snooping_policy_name", "mld_snooping_policy_name_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitoring_policy.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitoring_policy.monitoring_policy_name", "monitoring_policy_name_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.neighbor_discovery_interface_policy_name", "neighbor_discovery_interface_policy_name_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.filter_type", "ce"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.netflow_monitor_policy_name", "netflow_monitor_policy_name_0"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.1.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.1.filter_type", "ipv4"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.1.netflow_monitor_policy_name", "netflow_monitor_policy_name_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_route_control_profile.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_route_control_profile.l3_outside_name", "l3_outside_name_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_route_control_profile.route_control_profile_name", "route_control_profile_name_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_vrf.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_vrf.vrf_name", "vrf_name_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.description", "description_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.mac", "00:00:00:00:00:03"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.name", "name_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.name_alias", "name_alias_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.1.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.1.description", "description_2"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.1.mac", "00:00:00:00:00:01"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.1.name", "name_2"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.1.name_alias", "name_alias_2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "tags.1.value", "test_value"),
+					),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -456,226 +486,256 @@ func TestAccResourceFvBDWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttrSet("aci_bridge_domain.test", "pc_tag"),
 					resource.TestCheckResourceAttrSet("aci_bridge_domain.test", "scope"),
 					resource.TestCheckResourceAttrSet("aci_bridge_domain.test", "segment"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "legacy_mode.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "legacy_mode.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "legacy_mode.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "legacy_mode.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "legacy_mode.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "legacy_mode.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "legacy_mode.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "legacy_mode.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "legacy_mode.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "legacy_mode.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "legacy_mode.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "legacy_mode.description", "description_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "legacy_mode.encapsulation", "vlan-100"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "legacy_mode.name", "name_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "legacy_mode.name_alias", "name_alias_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "legacy_mode.owner_key", "owner_key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "legacy_mode.owner_tag", "owner_tag_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_dhcp_relay_policy.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_dhcp_relay_policy.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_dhcp_relay_policy.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_dhcp_relay_policy.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_dhcp_relay_policy.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_dhcp_relay_policy.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_dhcp_relay_policy.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_dhcp_relay_policy.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_dhcp_relay_policy.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_dhcp_relay_policy.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_dhcp_relay_policy.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_dhcp_relay_policy.dhcp_relay_policy_name", "dhcp_relay_policy_name_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_end_point_retention_policy.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_end_point_retention_policy.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_end_point_retention_policy.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_end_point_retention_policy.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_end_point_retention_policy.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_end_point_retention_policy.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_end_point_retention_policy.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_end_point_retention_policy.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_end_point_retention_policy.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_end_point_retention_policy.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_end_point_retention_policy.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_end_point_retention_policy.end_point_retention_policy_name", "end_point_retention_policy_name_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_end_point_retention_policy.resolve_action", "inherit"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_first_hop_security_policy.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_first_hop_security_policy.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_first_hop_security_policy.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_first_hop_security_policy.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_first_hop_security_policy.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_first_hop_security_policy.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_first_hop_security_policy.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_first_hop_security_policy.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_first_hop_security_policy.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_first_hop_security_policy.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_first_hop_security_policy.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_first_hop_security_policy.first_hop_security_policy_name", "first_hop_security_policy_name_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_igmp_snooping_policy.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_igmp_snooping_policy.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_igmp_snooping_policy.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_igmp_snooping_policy.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_igmp_snooping_policy.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_igmp_snooping_policy.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_igmp_snooping_policy.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_igmp_snooping_policy.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_igmp_snooping_policy.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_igmp_snooping_policy.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_igmp_snooping_policy.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_igmp_snooping_policy.igmp_snooping_policy_name", "igmp_snooping_policy_name_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.0.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.0.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.0.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.0.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.0.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.0.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.0.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.0.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.0.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.0.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.0.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.0.l3_outside_name", "l3_outside_name_0"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.1.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.1.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.1.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.1.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.1.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.1.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.1.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.1.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.1.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.1.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.1.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.1.l3_outside_name", "l3_outside_name_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.#", "2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_mld_snooping_policy.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_mld_snooping_policy.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_mld_snooping_policy.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_mld_snooping_policy.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_mld_snooping_policy.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_mld_snooping_policy.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_mld_snooping_policy.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_mld_snooping_policy.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_mld_snooping_policy.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_mld_snooping_policy.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_mld_snooping_policy.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_mld_snooping_policy.mld_snooping_policy_name", "mld_snooping_policy_name_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitoring_policy.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitoring_policy.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitoring_policy.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitoring_policy.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitoring_policy.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitoring_policy.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitoring_policy.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitoring_policy.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitoring_policy.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitoring_policy.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitoring_policy.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitoring_policy.monitoring_policy_name", "monitoring_policy_name_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.neighbor_discovery_interface_policy_name", "neighbor_discovery_interface_policy_name_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.filter_type", "ce"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.netflow_monitor_policy_name", "netflow_monitor_policy_name_0"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.1.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.1.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.1.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.1.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.1.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.1.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.1.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.1.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.1.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.1.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.1.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.1.filter_type", "ipv4"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.1.netflow_monitor_policy_name", "netflow_monitor_policy_name_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.#", "2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_route_control_profile.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_route_control_profile.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_route_control_profile.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_route_control_profile.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_route_control_profile.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_route_control_profile.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_route_control_profile.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_route_control_profile.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_route_control_profile.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_route_control_profile.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_route_control_profile.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_route_control_profile.l3_outside_name", "l3_outside_name_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_route_control_profile.route_control_profile_name", "route_control_profile_name_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_vrf.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_vrf.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_vrf.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_vrf.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_vrf.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_vrf.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_vrf.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_vrf.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_vrf.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_vrf.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_vrf.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_vrf.vrf_name", "vrf_name_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.description", "description_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.mac", "00:00:00:00:00:03"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.name", "name_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.name_alias", "name_alias_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.1.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.1.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.1.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.1.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.1.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.1.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.1.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.1.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.1.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.1.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.1.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.1.description", "description_2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.1.mac", "00:00:00:00:00:01"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.1.name", "name_2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.1.name_alias", "name_alias_2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.#", "2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "legacy_mode.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "legacy_mode.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "legacy_mode.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "legacy_mode.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "legacy_mode.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "legacy_mode.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "legacy_mode.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "legacy_mode.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "legacy_mode.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "legacy_mode.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "legacy_mode.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "legacy_mode.description", "description_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "legacy_mode.encapsulation", "vlan-100"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "legacy_mode.name", "name_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "legacy_mode.name_alias", "name_alias_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "legacy_mode.owner_key", "owner_key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "legacy_mode.owner_tag", "owner_tag_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-6.1(1e)", "inside",
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_dhcp_relay_policy.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_dhcp_relay_policy.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_dhcp_relay_policy.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_dhcp_relay_policy.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_dhcp_relay_policy.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_dhcp_relay_policy.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_dhcp_relay_policy.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_dhcp_relay_policy.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_dhcp_relay_policy.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_dhcp_relay_policy.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_dhcp_relay_policy.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_dhcp_relay_policy.dhcp_relay_policy_name", "dhcp_relay_policy_name_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_end_point_retention_policy.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_end_point_retention_policy.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_end_point_retention_policy.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_end_point_retention_policy.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_end_point_retention_policy.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_end_point_retention_policy.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_end_point_retention_policy.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_end_point_retention_policy.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_end_point_retention_policy.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_end_point_retention_policy.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_end_point_retention_policy.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_end_point_retention_policy.end_point_retention_policy_name", "end_point_retention_policy_name_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_end_point_retention_policy.resolve_action", "inherit"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_first_hop_security_policy.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_first_hop_security_policy.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_first_hop_security_policy.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_first_hop_security_policy.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_first_hop_security_policy.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_first_hop_security_policy.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_first_hop_security_policy.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_first_hop_security_policy.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_first_hop_security_policy.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_first_hop_security_policy.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_first_hop_security_policy.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_first_hop_security_policy.first_hop_security_policy_name", "first_hop_security_policy_name_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_igmp_snooping_policy.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_igmp_snooping_policy.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_igmp_snooping_policy.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_igmp_snooping_policy.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_igmp_snooping_policy.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_igmp_snooping_policy.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_igmp_snooping_policy.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_igmp_snooping_policy.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_igmp_snooping_policy.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_igmp_snooping_policy.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_igmp_snooping_policy.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_igmp_snooping_policy.igmp_snooping_policy_name", "igmp_snooping_policy_name_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.0.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.0.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.0.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.0.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.0.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.0.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.0.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.0.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.0.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.0.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.0.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.0.l3_outside_name", "l3_outside_name_0"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.1.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.1.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.1.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.1.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.1.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.1.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.1.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.1.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.1.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.1.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.1.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.1.l3_outside_name", "l3_outside_name_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_mld_snooping_policy.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_mld_snooping_policy.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_mld_snooping_policy.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_mld_snooping_policy.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_mld_snooping_policy.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_mld_snooping_policy.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_mld_snooping_policy.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_mld_snooping_policy.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_mld_snooping_policy.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_mld_snooping_policy.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_mld_snooping_policy.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_mld_snooping_policy.mld_snooping_policy_name", "mld_snooping_policy_name_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitoring_policy.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitoring_policy.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitoring_policy.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitoring_policy.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitoring_policy.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitoring_policy.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitoring_policy.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitoring_policy.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitoring_policy.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitoring_policy.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitoring_policy.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_monitoring_policy.monitoring_policy_name", "monitoring_policy_name_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.neighbor_discovery_interface_policy_name", "neighbor_discovery_interface_policy_name_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.filter_type", "ce"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.netflow_monitor_policy_name", "netflow_monitor_policy_name_0"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.1.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.1.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.1.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.1.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.1.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.1.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.1.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.1.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.1.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.1.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.1.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.1.filter_type", "ipv4"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.1.netflow_monitor_policy_name", "netflow_monitor_policy_name_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_route_control_profile.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_route_control_profile.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_route_control_profile.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_route_control_profile.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_route_control_profile.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_route_control_profile.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_route_control_profile.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_route_control_profile.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_route_control_profile.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_route_control_profile.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_route_control_profile.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_route_control_profile.l3_outside_name", "l3_outside_name_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_route_control_profile.route_control_profile_name", "route_control_profile_name_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_vrf.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_vrf.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_vrf.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_vrf.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_vrf.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_vrf.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_vrf.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_vrf.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_vrf.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_vrf.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_vrf.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_vrf.vrf_name", "vrf_name_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.description", "description_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.mac", "00:00:00:00:00:03"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.name", "name_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.name_alias", "name_alias_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.1.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.1.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.1.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.1.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.1.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.1.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.1.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.1.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.1.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.1.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.1.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.1.description", "description_2"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.1.mac", "00:00:00:00:00:01"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.1.name", "name_2"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.1.name_alias", "name_alias_2"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
@@ -686,84 +746,109 @@ func TestAccResourceFvBDWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttrSet("aci_bridge_domain.test", "pc_tag"),
 					resource.TestCheckResourceAttrSet("aci_bridge_domain.test", "scope"),
 					resource.TestCheckResourceAttrSet("aci_bridge_domain.test", "segment"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_end_point_retention_policy.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_end_point_retention_policy.annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_end_point_retention_policy.annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_end_point_retention_policy.annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_end_point_retention_policy.tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_end_point_retention_policy.tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_end_point_retention_policy.tags.#", "1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_end_point_retention_policy.end_point_retention_policy_name", "end_point_retention_policy_name_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_end_point_retention_policy.resolve_action", "inherit"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_igmp_snooping_policy.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_igmp_snooping_policy.annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_igmp_snooping_policy.annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_igmp_snooping_policy.annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_igmp_snooping_policy.tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_igmp_snooping_policy.tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_igmp_snooping_policy.tags.#", "1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_igmp_snooping_policy.igmp_snooping_policy_name", "igmp_snooping_policy_name_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.0.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.0.annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.0.annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.0.annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.0.tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.0.tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.0.tags.#", "1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.0.l3_outside_name", "l3_outside_name_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.#", "1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_mld_snooping_policy.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_mld_snooping_policy.annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_mld_snooping_policy.annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_mld_snooping_policy.annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_mld_snooping_policy.tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_mld_snooping_policy.tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_mld_snooping_policy.tags.#", "1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_mld_snooping_policy.mld_snooping_policy_name", "mld_snooping_policy_name_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.tags.#", "1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.neighbor_discovery_interface_policy_name", "neighbor_discovery_interface_policy_name_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.tags.#", "1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.filter_type", "ipv4"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.netflow_monitor_policy_name", "netflow_monitor_policy_name_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.#", "1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_vrf.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_vrf.annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_vrf.annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_vrf.annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_vrf.tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_vrf.tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_vrf.tags.#", "1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_vrf.vrf_name", "vrf_name_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.tags.#", "1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.description", "description_2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.mac", "00:00:00:00:00:01"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.name", "name_2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.name_alias", "name_alias_2"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.#", "1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_bridge_domain.test", "tags.#", "1"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "annotations.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside"),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-6.1(1e)", "inside"),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_end_point_retention_policy.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_end_point_retention_policy.annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_end_point_retention_policy.annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_end_point_retention_policy.annotations.#", "1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_end_point_retention_policy.tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_end_point_retention_policy.tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_end_point_retention_policy.tags.#", "1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_end_point_retention_policy.end_point_retention_policy_name", "end_point_retention_policy_name_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_end_point_retention_policy.resolve_action", "inherit"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside"),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_igmp_snooping_policy.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_igmp_snooping_policy.annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_igmp_snooping_policy.annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_igmp_snooping_policy.annotations.#", "1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_igmp_snooping_policy.tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_igmp_snooping_policy.tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_igmp_snooping_policy.tags.#", "1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_igmp_snooping_policy.igmp_snooping_policy_name", "igmp_snooping_policy_name_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.0.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.0.annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.0.annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.0.annotations.#", "1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.0.tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.0.tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.0.tags.#", "1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.0.l3_outside_name", "l3_outside_name_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_l3_outsides.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_mld_snooping_policy.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_mld_snooping_policy.annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_mld_snooping_policy.annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_mld_snooping_policy.annotations.#", "1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_mld_snooping_policy.tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_mld_snooping_policy.tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_mld_snooping_policy.tags.#", "1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_mld_snooping_policy.mld_snooping_policy_name", "mld_snooping_policy_name_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside"),
+					composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.annotations.#", "1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.tags.#", "1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_neighbor_discovery_interface_policy.neighbor_discovery_interface_policy_name", "neighbor_discovery_interface_policy_name_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.annotations.#", "1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.tags.#", "1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.filter_type", "ipv4"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.0.netflow_monitor_policy_name", "netflow_monitor_policy_name_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_netflow_monitor_policies.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside"),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_vrf.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_vrf.annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_vrf.annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_vrf.annotations.#", "1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_vrf.tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_vrf.tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_vrf.tags.#", "1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "relation_to_vrf.vrf_name", "vrf_name_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.annotations.#", "1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.tags.#", "1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.description", "description_2"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.mac", "00:00:00:00:00:01"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.name", "name_2"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.0.name_alias", "name_alias_2"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "rogue_coop_exceptions.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test", "tags.#", "1"),
+					),
 				),
 				ConfigStateChecks: []statecheck.StateCheck{
 					statecheck.ExpectKnownValue("aci_bridge_domain.test",
@@ -1093,7 +1178,7 @@ const testConfigFvBDChildrenDependencyWithFvTenant = testChildDependencyConfigFv
 resource "aci_bridge_domain" "test" {
   parent_dn = aci_tenant.test.id
   name = "test_name"
-  annotations = [
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -1102,8 +1187,8 @@ resource "aci_bridge_domain" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  legacy_mode = {
+  ] : null
+  legacy_mode = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? {
     annotation = "annotation_1"
     annotations = [
 	  {
@@ -1131,8 +1216,8 @@ resource "aci_bridge_domain" "test" {
     name_alias = "name_alias_1"
     owner_key = "owner_key_1"
     owner_tag = "owner_tag_1"
-  }
-  relation_to_dhcp_relay_policy = {
+  } : null
+  relation_to_dhcp_relay_policy = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-6.1(1e)") ? {
     annotation = "annotation_1"
     annotations = [
 	  {
@@ -1155,8 +1240,8 @@ resource "aci_bridge_domain" "test" {
 	  },
     ]
     dhcp_relay_policy_name = aci_dhcp_relay_policy.test_dhcp_relay_policy_0.name
-  }
-  relation_to_end_point_retention_policy = {
+  } : null
+  relation_to_end_point_retention_policy = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? {
     annotation = "annotation_1"
     annotations = [
 	  {
@@ -1180,8 +1265,8 @@ resource "aci_bridge_domain" "test" {
     ]
     end_point_retention_policy_name = aci_end_point_retention_policy.test_end_point_retention_policy_1.name
     resolve_action = "inherit"
-  }
-  relation_to_first_hop_security_policy = {
+  } : null
+  relation_to_first_hop_security_policy = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.0(1k)-") ? {
     annotation = "annotation_1"
     annotations = [
 	  {
@@ -1204,8 +1289,8 @@ resource "aci_bridge_domain" "test" {
 	  },
     ]
     first_hop_security_policy_name = aci_first_hop_security_policy.test_first_hop_security_policy_1.name
-  }
-  relation_to_igmp_snooping_policy = {
+  } : null
+  relation_to_igmp_snooping_policy = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? {
     annotation = "annotation_1"
     annotations = [
 	  {
@@ -1228,8 +1313,8 @@ resource "aci_bridge_domain" "test" {
 	  },
     ]
     igmp_snooping_policy_name = aci_igmp_snooping_policy.test_igmp_snooping_policy_0.name
-  }
-  relation_to_l3_outsides = [
+  } : null
+  relation_to_l3_outsides = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? [
     {
       annotation = "annotation_1"
       annotations = [
@@ -1278,8 +1363,8 @@ resource "aci_bridge_domain" "test" {
       ]
       l3_outside_name = aci_l3_outside.test_l3_outside_1.name
     },
-  ]
-  relation_to_mld_snooping_policy = {
+  ] : null
+  relation_to_mld_snooping_policy = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.1(1i)-") ? {
     annotation = "annotation_1"
     annotations = [
 	  {
@@ -1302,8 +1387,8 @@ resource "aci_bridge_domain" "test" {
 	  },
     ]
     mld_snooping_policy_name = aci_mld_snooping_policy.test_mld_snooping_policy_1.name
-  }
-  relation_to_monitoring_policy = {
+  } : null
+  relation_to_monitoring_policy = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? {
     annotation = "annotation_1"
     annotations = [
 	  {
@@ -1326,8 +1411,8 @@ resource "aci_bridge_domain" "test" {
 	  },
     ]
     monitoring_policy_name = aci_monitoring_policy.test_monitoring_policy_0.name
-  }
-  relation_to_neighbor_discovery_interface_policy = {
+  } : null
+  relation_to_neighbor_discovery_interface_policy = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.1(1j)-") ? {
     annotation = "annotation_1"
     annotations = [
 	  {
@@ -1350,8 +1435,8 @@ resource "aci_bridge_domain" "test" {
 	  },
     ]
     neighbor_discovery_interface_policy_name = aci_neighbor_discovery_interface_policy.test_neighbor_discovery_interface_policy_0.name
-  }
-  relation_to_netflow_monitor_policies = [
+  } : null
+  relation_to_netflow_monitor_policies = provider::aci::compare_versions(data.aci_system.version.version,"inside","2.2(1k)-") ? [
     {
       annotation = "annotation_1"
       annotations = [
@@ -1402,8 +1487,8 @@ resource "aci_bridge_domain" "test" {
       filter_type = "ipv4"
       netflow_monitor_policy_name = aci_netflow_monitor_policy.test_netflow_monitor_policy_1.name
     },
-  ]
-  relation_to_route_control_profile = {
+  ] : null
+  relation_to_route_control_profile = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? {
     annotation = "annotation_1"
     annotations = [
 	  {
@@ -1427,8 +1512,8 @@ resource "aci_bridge_domain" "test" {
     ]
     l3_outside_name = aci_l3_outside.test_l3_outside_1.name
     route_control_profile_name = aci_route_control_profile.test_route_control_profile_1.name
-  }
-  relation_to_vrf = {
+  } : null
+  relation_to_vrf = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? {
     annotation = "annotation_1"
     annotations = [
 	  {
@@ -1451,8 +1536,8 @@ resource "aci_bridge_domain" "test" {
 	  },
     ]
     vrf_name = aci_vrf.test_vrf_0.name
-  }
-  rogue_coop_exceptions = [
+  } : null
+  rogue_coop_exceptions = provider::aci::compare_versions(data.aci_system.version.version,"inside","5.2(3e)-") ? [
     {
       annotation = "annotation_1"
       annotations = [
@@ -1507,8 +1592,8 @@ resource "aci_bridge_domain" "test" {
       name = "name_2"
       name_alias = "name_alias_2"
     },
-  ]
-  tags = [
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -1517,7 +1602,7 @@ resource "aci_bridge_domain" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
+  ] : null
 }
 `
 
@@ -1532,15 +1617,15 @@ const testConfigFvBDChildrenRemoveOneDependencyWithFvTenant = testChildDependenc
 resource "aci_bridge_domain" "test" {
   parent_dn = aci_tenant.test.id
   name = "test_name"
-  annotations = [ 
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  legacy_mode = {}
-  relation_to_dhcp_relay_policy = {}
-  relation_to_end_point_retention_policy = {
+  ] : null
+  legacy_mode = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? {} : null
+  relation_to_dhcp_relay_policy = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-6.1(1e)") ? {} : null
+  relation_to_end_point_retention_policy = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? {
     annotation = "annotation_1"
     annotations = [ 
 	  {
@@ -1556,9 +1641,9 @@ resource "aci_bridge_domain" "test" {
     ]
     end_point_retention_policy_name = aci_end_point_retention_policy.test_end_point_retention_policy_1.name
     resolve_action = "inherit"
-  }
-  relation_to_first_hop_security_policy = {}
-  relation_to_igmp_snooping_policy = {
+  } : null
+  relation_to_first_hop_security_policy = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.0(1k)-") ? {} : null
+  relation_to_igmp_snooping_policy = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? {
     annotation = "annotation_1"
     annotations = [ 
 	  {
@@ -1573,8 +1658,8 @@ resource "aci_bridge_domain" "test" {
 	  },
     ]
     igmp_snooping_policy_name = aci_igmp_snooping_policy.test_igmp_snooping_policy_0.name
-  }
-  relation_to_l3_outsides = [ 
+  } : null
+  relation_to_l3_outsides = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? [ 
 	{
 	  annotation = "annotation_2"
       annotations = [ 
@@ -1591,8 +1676,8 @@ resource "aci_bridge_domain" "test" {
       ]
 	  l3_outside_name = aci_l3_outside.test_l3_outside_1.name
 	},
-  ]
-  relation_to_mld_snooping_policy = {
+  ] : null
+  relation_to_mld_snooping_policy = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.1(1i)-") ? {
     annotation = "annotation_1"
     annotations = [ 
 	  {
@@ -1607,9 +1692,9 @@ resource "aci_bridge_domain" "test" {
 	  },
     ]
     mld_snooping_policy_name = aci_mld_snooping_policy.test_mld_snooping_policy_1.name
-  }
-  relation_to_monitoring_policy = {}
-  relation_to_neighbor_discovery_interface_policy = {
+  } : null
+  relation_to_monitoring_policy = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? {} : null
+  relation_to_neighbor_discovery_interface_policy = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.1(1j)-") ? {
     annotation = "annotation_1"
     annotations = [ 
 	  {
@@ -1624,8 +1709,8 @@ resource "aci_bridge_domain" "test" {
 	  },
     ]
     neighbor_discovery_interface_policy_name = aci_neighbor_discovery_interface_policy.test_neighbor_discovery_interface_policy_0.name
-  }
-  relation_to_netflow_monitor_policies = [ 
+  } : null
+  relation_to_netflow_monitor_policies = provider::aci::compare_versions(data.aci_system.version.version,"inside","2.2(1k)-") ? [ 
 	{
 	  annotation = "annotation_2"
       annotations = [ 
@@ -1643,9 +1728,9 @@ resource "aci_bridge_domain" "test" {
 	  filter_type = "ipv4"
 	  netflow_monitor_policy_name = aci_netflow_monitor_policy.test_netflow_monitor_policy_1.name
 	},
-  ]
-  relation_to_route_control_profile = {}
-  relation_to_vrf = {
+  ] : null
+  relation_to_route_control_profile = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? {} : null
+  relation_to_vrf = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? {
     annotation = "annotation_1"
     annotations = [ 
 	  {
@@ -1660,8 +1745,8 @@ resource "aci_bridge_domain" "test" {
 	  },
     ]
     vrf_name = aci_vrf.test_vrf_0.name
-  }
-  rogue_coop_exceptions = [ 
+  } : null
+  rogue_coop_exceptions = provider::aci::compare_versions(data.aci_system.version.version,"inside","5.2(3e)-") ? [ 
 	{
 	  annotation = "annotation_2"
       annotations = [ 
@@ -1681,13 +1766,13 @@ resource "aci_bridge_domain" "test" {
 	  name = "name_2"
 	  name_alias = "name_alias_2"
 	},
-  ]
-  tags = [ 
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
+  ] : null
 }
 `
 
@@ -1695,78 +1780,78 @@ const testConfigFvBDChildrenRemoveAllDependencyWithFvTenant = testChildDependenc
 resource "aci_bridge_domain" "test" {
   parent_dn = aci_tenant.test.id
   name = "test_name"
-  annotations = []
-  legacy_mode = {}
-  relation_to_dhcp_relay_policy = {}
-  relation_to_end_point_retention_policy = {
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  legacy_mode = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? {} : null
+  relation_to_dhcp_relay_policy = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-6.1(1e)") ? {} : null
+  relation_to_end_point_retention_policy = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? {
     annotation = "annotation_1"
     annotations = []
     tags = []
     end_point_retention_policy_name = aci_end_point_retention_policy.test_end_point_retention_policy_1.name
     resolve_action = "inherit"
-  }
-  relation_to_first_hop_security_policy = {}
-  relation_to_igmp_snooping_policy = {
+  } : null
+  relation_to_first_hop_security_policy = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.0(1k)-") ? {} : null
+  relation_to_igmp_snooping_policy = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? {
     annotation = "annotation_1"
     annotations = []
     tags = []
     igmp_snooping_policy_name = aci_igmp_snooping_policy.test_igmp_snooping_policy_0.name
-  }
-  relation_to_l3_outsides = []
-  relation_to_mld_snooping_policy = {
+  } : null
+  relation_to_l3_outsides = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? [] : null
+  relation_to_mld_snooping_policy = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.1(1i)-") ? {
     annotation = "annotation_1"
     annotations = []
     tags = []
     mld_snooping_policy_name = aci_mld_snooping_policy.test_mld_snooping_policy_1.name
-  }
-  relation_to_monitoring_policy = {}
-  relation_to_neighbor_discovery_interface_policy = {
+  } : null
+  relation_to_monitoring_policy = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? {} : null
+  relation_to_neighbor_discovery_interface_policy = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.1(1j)-") ? {
     annotation = "annotation_1"
     annotations = []
     tags = []
     neighbor_discovery_interface_policy_name = aci_neighbor_discovery_interface_policy.test_neighbor_discovery_interface_policy_0.name
-  }
-  relation_to_netflow_monitor_policies = []
-  relation_to_route_control_profile = {}
-  relation_to_vrf = {
+  } : null
+  relation_to_netflow_monitor_policies = provider::aci::compare_versions(data.aci_system.version.version,"inside","2.2(1k)-") ? [] : null
+  relation_to_route_control_profile = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? {} : null
+  relation_to_vrf = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? {
     annotation = "annotation_1"
     annotations = []
     tags = []
     vrf_name = aci_vrf.test_vrf_0.name
-  }
-  rogue_coop_exceptions = []
-  tags = []
+  } : null
+  rogue_coop_exceptions = provider::aci::compare_versions(data.aci_system.version.version,"inside","5.2(3e)-") ? [] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
 }
 `
 
 const testConfigFvBDLegacyAttributesWithFvTenant = testChildDependencyConfigFvBD + testConfigFvTenantMin + `
 resource "aci_bridge_domain" "test" {
   name = "test_name"
-  arp_flood = "no"
-  ep_clear = "no"
-  ep_move_detect_mode = "garp"
-  host_based_routing = "no"
-  intersite_bum_traffic_allow = "no"
-  ipv6_mcast_allow = "no"
-  ll_addr = "fe80::1"
-  mac = "00:22:BD:F8:19:FE"
-  mcast_allow = "no"
-  multi_dst_pkt_act = "bd-flood"
-  relation_fv_rs_abd_pol_mon_pol = aci_monitoring_policy.test_monitoring_policy_0.id
-  relation_fv_rs_bd_to_ep_ret = aci_end_point_retention_policy.test_end_point_retention_policy_1.id
-  relation_fv_rs_bd_to_fhs = aci_first_hop_security_policy.test_first_hop_security_policy_1.id
-  relation_fv_rs_bd_to_nd_p = aci_neighbor_discovery_interface_policy.test_neighbor_discovery_interface_policy_0.id
-  relation_fv_rs_bd_to_out = [aci_l3_outside.test_l3_outside_1.id]
-  relation_fv_rs_bd_to_relay_p = aci_dhcp_relay_policy.test_dhcp_relay_policy_0.id
-  relation_fv_rs_ctx = aci_vrf.test_vrf_0.id
-  relation_fv_rs_igmpsn = aci_igmp_snooping_policy.test_igmp_snooping_policy_0.id
-  relation_fv_rs_mldsn = aci_mld_snooping_policy.test_mld_snooping_policy_1.id
+  arp_flood = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? "no" : null
+  ep_clear = provider::aci::compare_versions(data.aci_system.version.version,"inside","2.2(2e)-") ? "no" : null
+  ep_move_detect_mode = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.1(1j)-") ? "garp" : null
+  host_based_routing = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.0(1h)-") ? "no" : null
+  intersite_bum_traffic_allow = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.0(1k)-") ? "no" : null
+  ipv6_mcast_allow = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.2(1i)-") ? "no" : null
+  ll_addr = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.1(1j)-") ? "fe80::1" : null
+  mac = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? "00:22:BD:F8:19:FE" : null
+  mcast_allow = provider::aci::compare_versions(data.aci_system.version.version,"inside","2.0(1m)-") ? "no" : null
+  multi_dst_pkt_act = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.1(1j)-") ? "bd-flood" : null
+  relation_fv_rs_abd_pol_mon_pol = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? aci_monitoring_policy.test_monitoring_policy_0.id : null
+  relation_fv_rs_bd_to_ep_ret = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? aci_end_point_retention_policy.test_end_point_retention_policy_1.id : null
+  relation_fv_rs_bd_to_fhs = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.0(1k)-") ? aci_first_hop_security_policy.test_first_hop_security_policy_1.id : null
+  relation_fv_rs_bd_to_nd_p = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.1(1j)-") ? aci_neighbor_discovery_interface_policy.test_neighbor_discovery_interface_policy_0.id : null
+  relation_fv_rs_bd_to_out = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? [aci_l3_outside.test_l3_outside_1.id] : null
+  relation_fv_rs_bd_to_relay_p = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-6.1(1e)") ? aci_dhcp_relay_policy.test_dhcp_relay_policy_0.id : null
+  relation_fv_rs_ctx = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? aci_vrf.test_vrf_0.id : null
+  relation_fv_rs_igmpsn = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? aci_igmp_snooping_policy.test_igmp_snooping_policy_0.id : null
+  relation_fv_rs_mldsn = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.1(1i)-") ? aci_mld_snooping_policy.test_mld_snooping_policy_1.id : null
   tenant_dn = aci_tenant.test.id
-  unicast_route = "yes"
-  unk_mac_ucast_act = "flood"
-  unk_mcast_act = "flood"
-  v6unk_mcast_act = "flood"
-  vmac = "00:22:BD:F8:19:FB"
+  unicast_route = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? "yes" : null
+  unk_mac_ucast_act = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? "flood" : null
+  unk_mcast_act = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? "flood" : null
+  v6unk_mcast_act = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.1(1i)-") ? "flood" : null
+  vmac = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.2(1i)-") ? "00:22:BD:F8:19:FB" : null
   relation_fv_rs_bd_to_netflow_monitor_pol {
     flt_type = "ce"
     tn_netflow_monitor_pol_name = aci_netflow_monitor_policy.test_netflow_monitor_policy_1.id

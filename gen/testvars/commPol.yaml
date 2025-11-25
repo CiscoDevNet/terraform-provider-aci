@@ -43,6 +43,7 @@ children:
       visore_access: "disabled"
       deletable_child: false
       child_required: false
+      child_versions: 1.0(1e)-
       version_mismatch:
         4.1(1i)-:
           cli_only_mode: "disabled"
@@ -58,17 +59,17 @@ children:
         annotations:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
         tags:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
   http_ssl_configuration:
     - allow_credentials: "disabled"
       allow_origins: "allow_origins_1"
@@ -86,6 +87,7 @@ children:
       visore_access: "disabled"
       deletable_child: false
       child_required: false
+      child_versions: 1.0(1e)-
       version_mismatch:
         4.0(1h)-:
           client_certificate_authentication_state: "disabled"
@@ -107,55 +109,57 @@ children:
             target_dn: "uni/userext/pkiext/tp-test_name"
             deletable_child: true
             child_required: false
+            child_versions: 4.0(1h)-
             children:
               annotations:
                 - key: "key_0"
                   value: "value_1"
-      
+                  child_versions: 3.2(1l)-
                 - key: "key_1"
                   value: "test_value"
-      
+                  child_versions: 3.2(1l)-
               tags:
                 - key: "key_0"
                   value: "value_1"
-      
+                  child_versions: 3.2(1l)-
                 - key: "key_1"
                   value: "test_value"
-      
+                  child_versions: 3.2(1l)-
         key_ring:
           - annotation: "annotation_1"
             key_ring_name: "default"
             deletable_child: false
             child_required: false
+            child_versions: 1.0(1e)-
             children:
               annotations:
                 - key: "key_0"
                   value: "value_1"
-      
+                  child_versions: 3.2(1l)-
                 - key: "key_1"
                   value: "test_value"
-      
+                  child_versions: 3.2(1l)-
               tags:
                 - key: "key_0"
                   value: "value_1"
-      
+                  child_versions: 3.2(1l)-
                 - key: "key_1"
                   value: "test_value"
-      
+                  child_versions: 3.2(1l)-
         annotations:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
         tags:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
   ssh_access_via_web:
     - admin_state: "disabled"
       annotation: "annotation_1"
@@ -164,21 +168,22 @@ children:
       name_alias: "name_alias_1"
       deletable_child: false
       child_required: false
+      child_versions: 1.2(1i)-
       children:
         annotations:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
         tags:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
   ssh_service:
     - admin_state: "disabled"
       annotation: "annotation_1"
@@ -190,6 +195,7 @@ children:
       ssh_macs: ["hmac-sha1"]
       deletable_child: false
       child_required: false
+      child_versions: 1.0(1e)-
       version_mismatch:
         4.1(1i)-:
           password_authentication_state: "disabled"
@@ -199,17 +205,17 @@ children:
         annotations:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
         tags:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
   telnet_service:
     - admin_state: "disabled"
       annotation: "annotation_1"
@@ -219,35 +225,36 @@ children:
       port: "23"
       deletable_child: false
       child_required: false
+      child_versions: 1.0(1e)-
       children:
         annotations:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
         tags:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
   annotations:
     - key: "key_0"
       value: "value_1"
-      
+      child_versions: 3.2(1l)-
     - key: "key_1"
       value: "test_value"
-      
+      child_versions: 3.2(1l)-
   tags:
     - key: "key_0"
       value: "value_1"
-      
+      child_versions: 3.2(1l)-
     - key: "key_1"
       value: "test_value"
-      
+      child_versions: 3.2(1l)-
 child_targets:
   - class_name: "pkiTP"
     target_dn: ""

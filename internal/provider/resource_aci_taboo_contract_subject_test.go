@@ -19,7 +19,7 @@ func TestAccResourceVzTSubjWithVzTaboo(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigVzTSubjMinDependencyWithVzTabooAllowExisting,
+				Config:             testConfigVzTSubjMinDependencyWithVzTabooAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_taboo_contract_subject.allow_test", "name", "test_name"),
@@ -42,7 +42,7 @@ func TestAccResourceVzTSubjWithVzTaboo(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:      testConfigVzTSubjMinDependencyWithVzTabooAllowExisting,
+				Config:      testConfigVzTSubjMinDependencyWithVzTabooAllowExisting + testConfigDataSourceSystem,
 				ExpectError: regexp.MustCompile("Object Already Exists"),
 			},
 		},
@@ -55,7 +55,7 @@ func TestAccResourceVzTSubjWithVzTaboo(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigVzTSubjMinDependencyWithVzTabooAllowExisting,
+				Config:             testConfigVzTSubjMinDependencyWithVzTabooAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_taboo_contract_subject.allow_test", "name", "test_name"),
@@ -77,7 +77,7 @@ func TestAccResourceVzTSubjWithVzTaboo(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigVzTSubjMinDependencyWithVzTaboo,
+				Config:             testConfigVzTSubjMinDependencyWithVzTaboo + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "name", "test_name"),
@@ -88,7 +88,7 @@ func TestAccResourceVzTSubjWithVzTaboo(t *testing.T) {
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config:             testConfigVzTSubjAllDependencyWithVzTaboo,
+				Config:             testConfigVzTSubjAllDependencyWithVzTaboo + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "name", "test_name"),
@@ -99,7 +99,7 @@ func TestAccResourceVzTSubjWithVzTaboo(t *testing.T) {
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config:             testConfigVzTSubjMinDependencyWithVzTaboo,
+				Config:             testConfigVzTSubjMinDependencyWithVzTaboo + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "name", "test_name"),
@@ -107,7 +107,7 @@ func TestAccResourceVzTSubjWithVzTaboo(t *testing.T) {
 			},
 			// Update with empty strings config or default value
 			{
-				Config:             testConfigVzTSubjResetDependencyWithVzTaboo,
+				Config:             testConfigVzTSubjResetDependencyWithVzTaboo + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "name", "test_name"),
@@ -124,29 +124,35 @@ func TestAccResourceVzTSubjWithVzTaboo(t *testing.T) {
 			},
 			// Update with children
 			{
-				Config:             testConfigVzTSubjChildrenDependencyWithVzTaboo,
+				Config:             testConfigVzTSubjChildrenDependencyWithVzTaboo + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.directives.#", "2"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.directives.0", "log"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.directives.1", "no_stats"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.filter_name", "filter_name_0"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.1.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.1.directives.#", "0"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.1.filter_name", "filter_name_1"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "tags.1.value", "test_value"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "annotations.1.value", "test_value"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.directives.#", "2"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.directives.0", "log"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.directives.1", "no_stats"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.filter_name", "filter_name_0"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.1.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.1.directives.#", "0"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.1.filter_name", "filter_name_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "tags.1.value", "test_value"),
+					),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -162,76 +168,88 @@ func TestAccResourceVzTSubjWithVzTaboo(t *testing.T) {
 			},
 			// Update with children removed from config
 			{
-				Config:             testConfigVzTSubjChildrenRemoveFromConfigDependencyWithVzTaboo,
+				Config:             testConfigVzTSubjChildrenRemoveFromConfigDependencyWithVzTaboo + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.directives.#", "2"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.directives.0", "log"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.directives.1", "no_stats"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.filter_name", "filter_name_0"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.1.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.1.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.1.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.1.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.1.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.1.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.1.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.1.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.1.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.1.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.1.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.1.directives.#", "0"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.1.filter_name", "filter_name_1"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.#", "2"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.directives.#", "2"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.directives.0", "log"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.directives.1", "no_stats"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.filter_name", "filter_name_0"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.1.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.1.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.1.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.1.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.1.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.1.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.1.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.1.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.1.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.1.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.1.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.1.directives.#", "0"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.1.filter_name", "filter_name_1"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
 			{
-				Config:             testConfigVzTSubjChildrenRemoveOneDependencyWithVzTaboo,
+				Config:             testConfigVzTSubjChildrenRemoveOneDependencyWithVzTaboo + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.tags.#", "1"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.directives.#", "0"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.filter_name", "filter_name_1"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.#", "1"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "tags.#", "1"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "annotations.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.annotations.#", "1"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.tags.#", "1"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.directives.#", "0"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.0.filter_name", "filter_name_1"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "relation_to_filters.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
 			{
-				Config:             testConfigVzTSubjChildrenRemoveAllDependencyWithVzTaboo,
+				Config:             testConfigVzTSubjChildrenRemoveAllDependencyWithVzTaboo + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_taboo_contract_subject.test", "annotations.#", "0"),
@@ -293,7 +311,7 @@ const testConfigVzTSubjChildrenDependencyWithVzTaboo = testChildDependencyConfig
 resource "aci_taboo_contract_subject" "test" {
   parent_dn = aci_taboo_contract.test.id
   name = "test_name"
-  annotations = [
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -302,8 +320,8 @@ resource "aci_taboo_contract_subject" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  relation_to_filters = [
+  ] : null
+  relation_to_filters = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? [
     {
       annotation = "annotation_1"
       annotations = [
@@ -354,8 +372,8 @@ resource "aci_taboo_contract_subject" "test" {
       directives = []
       filter_name = aci_filter.test_filter_0.name
     },
-  ]
-  tags = [
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -364,7 +382,7 @@ resource "aci_taboo_contract_subject" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
+  ] : null
 }
 `
 
@@ -379,13 +397,13 @@ const testConfigVzTSubjChildrenRemoveOneDependencyWithVzTaboo = testChildDepende
 resource "aci_taboo_contract_subject" "test" {
   parent_dn = aci_taboo_contract.test.id
   name = "test_name"
-  annotations = [ 
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  relation_to_filters = [ 
+  ] : null
+  relation_to_filters = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? [ 
 	{
 	  annotation = "annotation_2"
       annotations = [ 
@@ -403,13 +421,13 @@ resource "aci_taboo_contract_subject" "test" {
 	  directives = []
 	  filter_name = aci_filter.test_filter_0.name
 	},
-  ]
-  tags = [ 
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
+  ] : null
 }
 `
 
@@ -417,8 +435,8 @@ const testConfigVzTSubjChildrenRemoveAllDependencyWithVzTaboo = testChildDepende
 resource "aci_taboo_contract_subject" "test" {
   parent_dn = aci_taboo_contract.test.id
   name = "test_name"
-  annotations = []
-  relation_to_filters = []
-  tags = []
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  relation_to_filters = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? [] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
 }
 `

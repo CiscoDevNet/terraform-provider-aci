@@ -19,7 +19,7 @@ func TestAccResourceMgmtSubnetWithMgmtInstP(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigMgmtSubnetMinDependencyWithMgmtInstPAllowExisting,
+				Config:             testConfigMgmtSubnetMinDependencyWithMgmtInstPAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.allow_test", "ip", "1.1.1.0/24"),
@@ -44,7 +44,7 @@ func TestAccResourceMgmtSubnetWithMgmtInstP(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:      testConfigMgmtSubnetMinDependencyWithMgmtInstPAllowExisting,
+				Config:      testConfigMgmtSubnetMinDependencyWithMgmtInstPAllowExisting + testConfigDataSourceSystem,
 				ExpectError: regexp.MustCompile("Object Already Exists"),
 			},
 		},
@@ -57,7 +57,7 @@ func TestAccResourceMgmtSubnetWithMgmtInstP(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigMgmtSubnetMinDependencyWithMgmtInstPAllowExisting,
+				Config:             testConfigMgmtSubnetMinDependencyWithMgmtInstPAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.allow_test", "ip", "1.1.1.0/24"),
@@ -81,7 +81,7 @@ func TestAccResourceMgmtSubnetWithMgmtInstP(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigMgmtSubnetMinDependencyWithMgmtInstP,
+				Config:             testConfigMgmtSubnetMinDependencyWithMgmtInstP + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "ip", "1.1.1.0/24"),
@@ -93,7 +93,7 @@ func TestAccResourceMgmtSubnetWithMgmtInstP(t *testing.T) {
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config:             testConfigMgmtSubnetAllDependencyWithMgmtInstP,
+				Config:             testConfigMgmtSubnetAllDependencyWithMgmtInstP + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "ip", "1.1.1.0/24"),
@@ -105,7 +105,7 @@ func TestAccResourceMgmtSubnetWithMgmtInstP(t *testing.T) {
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config:             testConfigMgmtSubnetMinDependencyWithMgmtInstP,
+				Config:             testConfigMgmtSubnetMinDependencyWithMgmtInstP + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "ip", "1.1.1.0/24"),
@@ -113,7 +113,7 @@ func TestAccResourceMgmtSubnetWithMgmtInstP(t *testing.T) {
 			},
 			// Update with empty strings config or default value
 			{
-				Config:             testConfigMgmtSubnetResetDependencyWithMgmtInstP,
+				Config:             testConfigMgmtSubnetResetDependencyWithMgmtInstP + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "ip", "1.1.1.0/24"),
@@ -131,7 +131,7 @@ func TestAccResourceMgmtSubnetWithMgmtInstP(t *testing.T) {
 			},
 			// Update with children
 			{
-				Config:             testConfigMgmtSubnetChildrenDependencyWithMgmtInstP,
+				Config:             testConfigMgmtSubnetChildrenDependencyWithMgmtInstP + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "ip", "1.1.1.0/24"),
@@ -139,14 +139,18 @@ func TestAccResourceMgmtSubnetWithMgmtInstP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "name", ""),
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.1.value", "test_value"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.1.value", "test_value"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.1.value", "test_value"),
+					),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -162,37 +166,45 @@ func TestAccResourceMgmtSubnetWithMgmtInstP(t *testing.T) {
 			},
 			// Update with children removed from config
 			{
-				Config:             testConfigMgmtSubnetChildrenRemoveFromConfigDependencyWithMgmtInstP,
+				Config:             testConfigMgmtSubnetChildrenRemoveFromConfigDependencyWithMgmtInstP + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
 			{
-				Config:             testConfigMgmtSubnetChildrenRemoveOneDependencyWithMgmtInstP,
+				Config:             testConfigMgmtSubnetChildrenRemoveOneDependencyWithMgmtInstP + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.#", "1"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
 			{
-				Config:             testConfigMgmtSubnetChildrenRemoveAllDependencyWithMgmtInstP,
+				Config:             testConfigMgmtSubnetChildrenRemoveAllDependencyWithMgmtInstP + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "annotations.#", "0"),
@@ -248,7 +260,7 @@ const testConfigMgmtSubnetChildrenDependencyWithMgmtInstP = testConfigMgmtInstPM
 resource "aci_external_management_network_subnet" "test" {
   parent_dn = aci_external_management_network_instance_profile.test.id
   ip = "1.1.1.0/24"
-  annotations = [
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -257,8 +269,8 @@ resource "aci_external_management_network_subnet" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  tags = [
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -267,7 +279,7 @@ resource "aci_external_management_network_subnet" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
+  ] : null
 }
 `
 
@@ -282,18 +294,18 @@ const testConfigMgmtSubnetChildrenRemoveOneDependencyWithMgmtInstP = testConfigM
 resource "aci_external_management_network_subnet" "test" {
   parent_dn = aci_external_management_network_instance_profile.test.id
   ip = "1.1.1.0/24"
-  annotations = [ 
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  tags = [ 
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
+  ] : null
 }
 `
 
@@ -301,7 +313,7 @@ const testConfigMgmtSubnetChildrenRemoveAllDependencyWithMgmtInstP = testConfigM
 resource "aci_external_management_network_subnet" "test" {
   parent_dn = aci_external_management_network_instance_profile.test.id
   ip = "1.1.1.0/24"
-  annotations = []
-  tags = []
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
 }
 `

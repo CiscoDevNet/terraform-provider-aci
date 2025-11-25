@@ -19,7 +19,7 @@ func TestAccResourceL3extProvLblWithL3extOut(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigL3extProvLblMinDependencyWithL3extOutAllowExisting,
+				Config:             testConfigL3extProvLblMinDependencyWithL3extOutAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_l3out_provider_label.allow_test", "name", "prov_label"),
@@ -48,7 +48,7 @@ func TestAccResourceL3extProvLblWithL3extOut(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:      testConfigL3extProvLblMinDependencyWithL3extOutAllowExisting,
+				Config:      testConfigL3extProvLblMinDependencyWithL3extOutAllowExisting + testConfigDataSourceSystem,
 				ExpectError: regexp.MustCompile("Object Already Exists"),
 			},
 		},
@@ -61,7 +61,7 @@ func TestAccResourceL3extProvLblWithL3extOut(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigL3extProvLblMinDependencyWithL3extOutAllowExisting,
+				Config:             testConfigL3extProvLblMinDependencyWithL3extOutAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_l3out_provider_label.allow_test", "name", "prov_label"),
@@ -89,7 +89,7 @@ func TestAccResourceL3extProvLblWithL3extOut(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigL3extProvLblMinDependencyWithL3extOut,
+				Config:             testConfigL3extProvLblMinDependencyWithL3extOut + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "name", "prov_label"),
@@ -103,7 +103,7 @@ func TestAccResourceL3extProvLblWithL3extOut(t *testing.T) {
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config:             testConfigL3extProvLblAllDependencyWithL3extOut,
+				Config:             testConfigL3extProvLblAllDependencyWithL3extOut + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "name", "prov_label"),
@@ -117,7 +117,7 @@ func TestAccResourceL3extProvLblWithL3extOut(t *testing.T) {
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config:             testConfigL3extProvLblMinDependencyWithL3extOut,
+				Config:             testConfigL3extProvLblMinDependencyWithL3extOut + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "name", "prov_label"),
@@ -125,7 +125,7 @@ func TestAccResourceL3extProvLblWithL3extOut(t *testing.T) {
 			},
 			// Update with empty strings config or default value
 			{
-				Config:             testConfigL3extProvLblResetDependencyWithL3extOut,
+				Config:             testConfigL3extProvLblResetDependencyWithL3extOut + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "name", "prov_label"),
@@ -145,7 +145,7 @@ func TestAccResourceL3extProvLblWithL3extOut(t *testing.T) {
 			},
 			// Update with children
 			{
-				Config:             testConfigL3extProvLblChildrenDependencyWithL3extOut,
+				Config:             testConfigL3extProvLblChildrenDependencyWithL3extOut + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "name", "prov_label"),
@@ -155,14 +155,18 @@ func TestAccResourceL3extProvLblWithL3extOut(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "tag", "yellow-green"),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "tags.1.value", "test_value"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "annotations.1.value", "test_value"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "tags.1.value", "test_value"),
+					),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -178,37 +182,45 @@ func TestAccResourceL3extProvLblWithL3extOut(t *testing.T) {
 			},
 			// Update with children removed from config
 			{
-				Config:             testConfigL3extProvLblChildrenRemoveFromConfigDependencyWithL3extOut,
+				Config:             testConfigL3extProvLblChildrenRemoveFromConfigDependencyWithL3extOut + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
 			{
-				Config:             testConfigL3extProvLblChildrenRemoveOneDependencyWithL3extOut,
+				Config:             testConfigL3extProvLblChildrenRemoveOneDependencyWithL3extOut + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "tags.#", "1"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "annotations.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
 			{
-				Config:             testConfigL3extProvLblChildrenRemoveAllDependencyWithL3extOut,
+				Config:             testConfigL3extProvLblChildrenRemoveAllDependencyWithL3extOut + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "annotations.#", "0"),
@@ -268,7 +280,7 @@ const testConfigL3extProvLblChildrenDependencyWithL3extOut = testConfigL3extOutM
 resource "aci_l3out_provider_label" "test" {
   parent_dn = aci_l3_outside.test.id
   name = "prov_label"
-  annotations = [
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -277,8 +289,8 @@ resource "aci_l3out_provider_label" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  tags = [
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -287,7 +299,7 @@ resource "aci_l3out_provider_label" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
+  ] : null
 }
 `
 
@@ -302,18 +314,18 @@ const testConfigL3extProvLblChildrenRemoveOneDependencyWithL3extOut = testConfig
 resource "aci_l3out_provider_label" "test" {
   parent_dn = aci_l3_outside.test.id
   name = "prov_label"
-  annotations = [ 
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  tags = [ 
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
+  ] : null
 }
 `
 
@@ -321,7 +333,7 @@ const testConfigL3extProvLblChildrenRemoveAllDependencyWithL3extOut = testConfig
 resource "aci_l3out_provider_label" "test" {
   parent_dn = aci_l3_outside.test.id
   name = "prov_label"
-  annotations = []
-  tags = []
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
 }
 `

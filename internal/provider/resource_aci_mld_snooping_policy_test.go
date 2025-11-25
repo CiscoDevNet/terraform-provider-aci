@@ -219,14 +219,18 @@ func TestAccResourceMldSnoopPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "start_query_interval", "31"),
 					composeAggregateTestCheckFuncWithVersion(t, "5.1(1h)-", "inside",
 						resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "version", "v2")),
-					resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "tags.1.value", "test_value"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "annotations.1.value", "test_value"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "tags.1.value", "test_value"),
+					),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -245,16 +249,20 @@ func TestAccResourceMldSnoopPolWithFvTenant(t *testing.T) {
 				Config:             testConfigMldSnoopPolChildrenRemoveFromConfigDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
@@ -262,12 +270,16 @@ func TestAccResourceMldSnoopPolWithFvTenant(t *testing.T) {
 				Config:             testConfigMldSnoopPolChildrenRemoveOneDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "tags.#", "1"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "annotations.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_mld_snooping_policy.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
@@ -346,7 +358,7 @@ const testConfigMldSnoopPolChildrenDependencyWithFvTenant = testConfigFvTenantMi
 resource "aci_mld_snooping_policy" "test" {
   parent_dn = aci_tenant.test.id
   name = "test_name"
-  annotations = [
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -355,8 +367,8 @@ resource "aci_mld_snooping_policy" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  tags = [
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -365,7 +377,7 @@ resource "aci_mld_snooping_policy" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
+  ] : null
 }
 `
 
@@ -380,18 +392,18 @@ const testConfigMldSnoopPolChildrenRemoveOneDependencyWithFvTenant = testConfigF
 resource "aci_mld_snooping_policy" "test" {
   parent_dn = aci_tenant.test.id
   name = "test_name"
-  annotations = [ 
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  tags = [ 
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
+  ] : null
 }
 `
 
@@ -399,7 +411,7 @@ const testConfigMldSnoopPolChildrenRemoveAllDependencyWithFvTenant = testConfigF
 resource "aci_mld_snooping_policy" "test" {
   parent_dn = aci_tenant.test.id
   name = "test_name"
-  annotations = []
-  tags = []
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
 }
 `

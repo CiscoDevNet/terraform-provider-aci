@@ -19,7 +19,7 @@ func TestAccResourceQosDppPolWithFvTenant(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigQosDppPolMinDependencyWithFvTenantAllowExisting,
+				Config:             testConfigQosDppPolMinDependencyWithFvTenantAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_data_plane_policing_policy.allow_test", "name", "test_name"),
@@ -88,7 +88,7 @@ func TestAccResourceQosDppPolWithFvTenant(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:      testConfigQosDppPolMinDependencyWithFvTenantAllowExisting,
+				Config:      testConfigQosDppPolMinDependencyWithFvTenantAllowExisting + testConfigDataSourceSystem,
 				ExpectError: regexp.MustCompile("Object Already Exists"),
 			},
 		},
@@ -101,7 +101,7 @@ func TestAccResourceQosDppPolWithFvTenant(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigQosDppPolMinDependencyWithFvTenantAllowExisting,
+				Config:             testConfigQosDppPolMinDependencyWithFvTenantAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_data_plane_policing_policy.allow_test", "name", "test_name"),
@@ -169,7 +169,7 @@ func TestAccResourceQosDppPolWithFvTenant(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigQosDppPolMinDependencyWithFvTenant,
+				Config:             testConfigQosDppPolMinDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "name", "test_name"),
@@ -203,7 +203,7 @@ func TestAccResourceQosDppPolWithFvTenant(t *testing.T) {
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config:             testConfigQosDppPolAllDependencyWithFvTenant,
+				Config:             testConfigQosDppPolAllDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "name", "test_name"),
@@ -237,7 +237,7 @@ func TestAccResourceQosDppPolWithFvTenant(t *testing.T) {
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config:             testConfigQosDppPolMinDependencyWithFvTenant,
+				Config:             testConfigQosDppPolMinDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "name", "test_name"),
@@ -245,7 +245,7 @@ func TestAccResourceQosDppPolWithFvTenant(t *testing.T) {
 			},
 			// Update with empty strings config or default value
 			{
-				Config:             testConfigQosDppPolResetDependencyWithFvTenant,
+				Config:             testConfigQosDppPolResetDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "name", "test_name"),
@@ -285,7 +285,7 @@ func TestAccResourceQosDppPolWithFvTenant(t *testing.T) {
 			},
 			// Update with children
 			{
-				Config:             testConfigQosDppPolChildrenDependencyWithFvTenant,
+				Config:             testConfigQosDppPolChildrenDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "name", "test_name"),
@@ -315,14 +315,18 @@ func TestAccResourceQosDppPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "violate_action", "drop"),
 					resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "violate_mark_cos", "unspecified"),
 					resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "violate_mark_dscp", "unspecified"),
-					resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "tags.1.value", "test_value"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "annotations.1.value", "test_value"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "tags.1.value", "test_value"),
+					),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -338,37 +342,45 @@ func TestAccResourceQosDppPolWithFvTenant(t *testing.T) {
 			},
 			// Update with children removed from config
 			{
-				Config:             testConfigQosDppPolChildrenRemoveFromConfigDependencyWithFvTenant,
+				Config:             testConfigQosDppPolChildrenRemoveFromConfigDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
 			{
-				Config:             testConfigQosDppPolChildrenRemoveOneDependencyWithFvTenant,
+				Config:             testConfigQosDppPolChildrenRemoveOneDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "tags.#", "1"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "annotations.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
 			{
-				Config:             testConfigQosDppPolChildrenRemoveAllDependencyWithFvTenant,
+				Config:             testConfigQosDppPolChildrenRemoveAllDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "annotations.#", "0"),
@@ -377,7 +389,7 @@ func TestAccResourceQosDppPolWithFvTenant(t *testing.T) {
 			},
 			// Update with minimum config and custom type semantic equivalent values
 			{
-				Config:             testConfigQosDppPolCustomTypeDependencyWithFvTenant,
+				Config:             testConfigQosDppPolCustomTypeDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_data_plane_policing_policy.test", "burst", "0xffffffffffffffff"),
@@ -484,7 +496,7 @@ const testConfigQosDppPolChildrenDependencyWithFvTenant = testConfigFvTenantMin 
 resource "aci_data_plane_policing_policy" "test" {
   parent_dn = aci_tenant.test.id
   name = "test_name"
-  annotations = [
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -493,8 +505,8 @@ resource "aci_data_plane_policing_policy" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  tags = [
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -503,7 +515,7 @@ resource "aci_data_plane_policing_policy" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
+  ] : null
 }
 `
 
@@ -518,18 +530,18 @@ const testConfigQosDppPolChildrenRemoveOneDependencyWithFvTenant = testConfigFvT
 resource "aci_data_plane_policing_policy" "test" {
   parent_dn = aci_tenant.test.id
   name = "test_name"
-  annotations = [ 
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  tags = [ 
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
+  ] : null
 }
 `
 
@@ -537,8 +549,8 @@ const testConfigQosDppPolChildrenRemoveAllDependencyWithFvTenant = testConfigFvT
 resource "aci_data_plane_policing_policy" "test" {
   parent_dn = aci_tenant.test.id
   name = "test_name"
-  annotations = []
-  tags = []
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
 }
 `
 

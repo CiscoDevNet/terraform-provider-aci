@@ -671,7 +671,8 @@ func (r *VzTSubjResource) ImportState(ctx context.Context, req resource.ImportSt
 }
 
 func getAndSetVzTSubjAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *VzTSubjResourceModel) {
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "vzTSubj,tagAnnotation,tagTag,vzRsDenyRule,tagAnnotation,tagTag"), "GET", nil)
+	childClasses := getChildClassesForGetRequest([]string{"tagAnnotation", "tagTag", "vzRsDenyRule"})
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), strings.Join(childClasses, ",")), "GET", nil)
 
 	readData := getEmptyVzTSubjResourceModel()
 

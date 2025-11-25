@@ -8,6 +8,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
@@ -5221,7 +5222,8 @@ func (r *FvBDResource) ImportState(ctx context.Context, req resource.ImportState
 }
 
 func getAndSetFvBDAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvBDResourceModel) {
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "fvBD,fvAccP,fvRogueExceptionMac,fvRsABDPolMonPol,fvRsBDToFhs,fvRsBDToNdP,fvRsBDToNetflowMonitorPol,fvRsBDToOut,fvRsBDToProfile,fvRsBDToRelayP,fvRsBdToEpRet,fvRsCtx,fvRsIgmpsn,fvRsMldsn,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag"), "GET", nil)
+	childClasses := getChildClassesForGetRequest([]string{"fvAccP", "fvRogueExceptionMac", "fvRsABDPolMonPol", "fvRsBDToFhs", "fvRsBDToNdP", "fvRsBDToNetflowMonitorPol", "fvRsBDToOut", "fvRsBDToProfile", "fvRsBDToRelayP", "fvRsBdToEpRet", "fvRsCtx", "fvRsIgmpsn", "fvRsMldsn", "tagAnnotation", "tagTag"})
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), strings.Join(childClasses, ",")), "GET", nil)
 
 	readData := getEmptyFvBDResourceModel()
 

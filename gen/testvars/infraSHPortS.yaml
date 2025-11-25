@@ -6,6 +6,11 @@ legacy_attributes:
   spine_access_port_selector_type: "ALL"
   relation_infra_rs_sp_acc_grp: "aci_spine_port_policy_group.test_spine_port_policy_group_0.id"
 
+legacy_attribute_versions:
+  spine_interface_profile_dn: no_version_found
+  spine_access_port_selector_type: 2.0(1m)-
+  relation_infra_rs_sp_acc_grp: 2.0(1m)-
+
 ignore_in_legacy:
   - "port_selector_type"
 
@@ -42,35 +47,36 @@ children:
       target_dn: "uni/infra/funcprof/spaccportgrp-spine_port_policy_group_1"
       deletable_child: true
       child_required: false
+      child_versions: 2.0(1m)-
       children:
         annotations:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
         tags:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
   annotations:
     - key: "key_0"
       value: "value_1"
-      
+      child_versions: 3.2(1l)-
     - key: "key_1"
       value: "test_value"
-      
+      child_versions: 3.2(1l)-
   tags:
     - key: "key_0"
       value: "value_1"
-      
+      child_versions: 3.2(1l)-
     - key: "key_1"
       value: "test_value"
-      
+      child_versions: 3.2(1l)-
 parents:
   - class_name: "infraSpAccPortP"
     parent_dependency: ""

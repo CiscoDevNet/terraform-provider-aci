@@ -155,6 +155,63 @@ var templateFuncs = template.FuncMap{
 	"getCustomTestDependency":                  GetCustomTestDependency,
 	"getIgnoreInLegacy":                        GetIgnoreInLegacy,
 	"isSensitiveAttribute":                     IsSensitiveAttribute,
+	"getChildVersion":                          GetChildVersion,
+	"getChildClassNames":                       GetChildClassNames,
+	"getLegacyAttributeVersion":                GetLegacyAttributeVersion,
+	"getLegacyAttributeVersionInTest":          GetLegacyAttributeVersionInTest,
+}
+
+func GetChildClassNames(model Model, childClassNames []string) []string {
+
+	if childClassNames == nil {
+		childClassNames = []string{}
+	}
+
+	for _, child := range model.Children {
+		if !slices.Contains(childClassNames, child.PkgName) {
+			childClassNames = append(childClassNames, child.PkgName)
+		}
+
+		if child.HasChild {
+			childClassNames = GetChildClassNames(child, childClassNames)
+		}
+
+	}
+	sort.Strings(childClassNames)
+	return childClassNames
+}
+
+func GetLegacyAttributeVersion(attributename string, model Model) string {
+
+	for _, property := range model.Properties {
+		if property.Name == attributename {
+			return property.RawVersion
+		}
+	}
+
+	for _, child := range model.Children {
+		if child.ResourceClassName == attributename {
+			return child.RawVersions
+		}
+	}
+
+	return "no_version_found"
+}
+
+func GetLegacyAttributeVersionInTest(attributename string, versions interface{}) string {
+
+	if version, ok := versions.(map[interface{}]interface{})[attributename]; ok {
+		return version.(string)
+	}
+	return "no_version_found"
+}
+
+func GetChildVersion(children []interface{}) string {
+
+	if versions, ok := children[0].(map[interface{}]interface{})["child_versions"]; ok {
+		return versions.(string)
+	}
+	return ""
 }
 
 func IsSensitiveAttribute(attributeName string, properties map[string]Property) bool {
@@ -524,6 +581,7 @@ func GetNewChildAttributes(legacyAttributes map[string]LegacyAttribute, properti
 var labels = []string{"dns_provider", "filter_entry"}
 var duplicateLabels = []string{}
 var resourceNames = map[string]string{}
+var classVersions = map[string]string{}
 var targetRelationalPropertyClasses = map[string]string{}
 var alwaysIncludeChildren = []string{"tag:Annotation", "tag:Tag"}
 var excludeChildResourceNamesFromDocs = []string{"", "annotation", "tag"}
@@ -969,6 +1027,8 @@ func renderTemplate(templateName, outputFileName, outputPath string, outputData 
 		err = tmpl.Execute(&buffer, outputData.([]string))
 	} else if strings.Contains(templateName, "custom_type.go.tmpl") {
 		err = tmpl.Execute(&buffer, outputData.(Property))
+	} else if strings.Contains(templateName, "class_versions.go.tmpl") {
+		err = tmpl.Execute(&buffer, outputData.(map[string]string))
 	} else {
 		err = tmpl.Execute(&buffer, outputData.(Model))
 	}
@@ -1293,6 +1353,7 @@ func main() {
 	classModels := getClassModels(definitions)
 	annotationUnsupported := generateAnnotationUnsupported()
 
+	renderTemplate("class_versions.go.tmpl", "versions.go", providerPath, classVersions)
 	renderTemplate("provider.go.tmpl", "provider.go", providerPath, classModels)
 	renderTemplate("index.md.tmpl", "index.md", docsPath, ProviderModel{Example: string(getExampleCode(providerExamplePath))})
 	if len(annotationUnsupported) > 0 {
@@ -2055,15 +2116,20 @@ func (m *Model) SetClassComment(classDetails interface{}) {
 }
 
 func (m *Model) SetClassVersions(classDetails interface{}) {
-	versions, ok := classDetails.(map[string]interface{})["versions"]
-	if ok {
-		m.RawVersions = versions.(string)
-		m.Versions = formatVersion(versions.(string))
+
+	m.RawVersions = GetOverwriteClassVersion(m.PkgName, m.Definitions, false)
+	if m.RawVersions == "" {
+		v, ok := classDetails.(map[string]interface{})["versions"]
+		if ok {
+			m.RawVersions = v.(string)
+		}
 	}
+	m.Versions = formatVersion(m.RawVersions)
+	classVersions[m.PkgName] = m.RawVersions
 }
 
 func (m *Model) SetTestApplicableFromVersion(classDetails interface{}) {
-	m.ClassVersion = GetOverwriteClassVersion(m.PkgName, m.Definitions)
+	m.ClassVersion = GetOverwriteClassVersion(m.PkgName, m.Definitions, true)
 	if m.ClassVersion == "" {
 		versions, ok := classDetails.(map[string]interface{})["versions"]
 		if ok {
@@ -2823,10 +2889,16 @@ func GetOverwriteTestType(classPkgName string, definitions Definitions) string {
 	return ""
 }
 
-func GetOverwriteClassVersion(classPkgName string, definitions Definitions) string {
+func GetOverwriteClassVersion(classPkgName string, definitions Definitions, tests bool) string {
+
+	matchKey := "class_version"
+	if tests {
+		matchKey = "class_version_tests"
+	}
+
 	if v, ok := definitions.Classes[classPkgName]; ok {
 		for key, value := range v.(map[string]interface{}) {
-			if key == "class_version" {
+			if key == matchKey {
 				return value.(string)
 			}
 		}

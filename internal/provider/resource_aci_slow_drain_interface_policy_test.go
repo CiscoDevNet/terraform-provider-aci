@@ -19,7 +19,7 @@ func TestAccResourceQosSdIfPol(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config: testConfigQosSdIfPolMinAllowExisting,
+				Config: testConfigQosSdIfPolMinAllowExisting + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.allow_test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.allow_test_2", "name", "test_name"),
@@ -66,7 +66,7 @@ func TestAccResourceQosSdIfPol(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config: testConfigQosSdIfPolMinAllowExisting,
+				Config: testConfigQosSdIfPolMinAllowExisting + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.allow_test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.allow_test_2", "name", "test_name"),
@@ -99,7 +99,7 @@ func TestAccResourceQosSdIfPol(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config: testConfigQosSdIfPolMin,
+				Config: testConfigQosSdIfPolMin + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "annotation", "orchestrator:terraform"),
@@ -115,7 +115,7 @@ func TestAccResourceQosSdIfPol(t *testing.T) {
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config: testConfigQosSdIfPolAll,
+				Config: testConfigQosSdIfPolAll + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "annotation", "annotation"),
@@ -131,7 +131,7 @@ func TestAccResourceQosSdIfPol(t *testing.T) {
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config: testConfigQosSdIfPolMin,
+				Config: testConfigQosSdIfPolMin + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "annotation", "orchestrator:terraform"),
@@ -147,7 +147,7 @@ func TestAccResourceQosSdIfPol(t *testing.T) {
 			},
 			// Update with empty strings config or default value
 			{
-				Config: testConfigQosSdIfPolReset,
+				Config: testConfigQosSdIfPolReset + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "annotation", "orchestrator:terraform"),
@@ -169,7 +169,7 @@ func TestAccResourceQosSdIfPol(t *testing.T) {
 			},
 			// Update with children
 			{
-				Config: testConfigQosSdIfPolChildren,
+				Config: testConfigQosSdIfPolChildren + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "congestion_clear_action", "off"),
@@ -180,21 +180,25 @@ func TestAccResourceQosSdIfPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children removed from config
 			{
-				Config: testConfigQosSdIfPolChildrenRemoveFromConfig,
+				Config: testConfigQosSdIfPolChildrenRemoveFromConfig + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "congestion_clear_action", "off"),
@@ -205,21 +209,25 @@ func TestAccResourceQosSdIfPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
 			{
-				Config: testConfigQosSdIfPolChildrenRemoveOne,
+				Config: testConfigQosSdIfPolChildrenRemoveOne + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "congestion_clear_action", "off"),
@@ -230,17 +238,21 @@ func TestAccResourceQosSdIfPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "tags.#", "1"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "annotations.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
 			{
-				Config: testConfigQosSdIfPolChildrenRemoveAll,
+				Config: testConfigQosSdIfPolChildrenRemoveAll + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_slow_drain_interface_policy.test", "congestion_clear_action", "off"),
