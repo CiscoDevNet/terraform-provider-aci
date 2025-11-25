@@ -123,22 +123,31 @@ func TestAccResourceVmmUplinkPContWithVmmDomP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "number_of_uplinks", "2"),
 					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.name_alias", "name_alias_1"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.uplink_id", "2"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.uplink_name", "uplink_name_2"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.1.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.1.name_alias", "name_alias_2"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.1.uplink_id", "1"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.1.uplink_name", "uplink_name_1"),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "annotations.1.value", "test_value"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "tags.1.value", "test_value"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.name_alias", "name_alias_1"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.uplink_id", "2"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.uplink_name", "uplink_name_2"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.1.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.1.name_alias", "name_alias_2"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.1.uplink_id", "1"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.1.uplink_name", "uplink_name_1"),
+					),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -157,45 +166,54 @@ func TestAccResourceVmmUplinkPContWithVmmDomP(t *testing.T) {
 				Config:             testConfigVmmUplinkPContChildrenRemoveFromConfigDependencyWithVmmDomP,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.name_alias", "name_alias_1"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.uplink_id", "2"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.uplink_name", "uplink_name_2"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.1.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.1.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.1.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.1.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.1.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.1.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.1.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.1.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.1.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.1.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.1.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.1.name_alias", "name_alias_2"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.1.uplink_id", "1"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.1.uplink_name", "uplink_name_1"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.#", "2"),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "annotations.#", "2"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "tags.#", "2"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.name_alias", "name_alias_1"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.uplink_id", "2"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.uplink_name", "uplink_name_2"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.1.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.1.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.1.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.1.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.1.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.1.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.1.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.1.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.1.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.1.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.1.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.1.name_alias", "name_alias_2"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.1.uplink_id", "1"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.1.uplink_name", "uplink_name_1"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
@@ -203,23 +221,32 @@ func TestAccResourceVmmUplinkPContWithVmmDomP(t *testing.T) {
 				Config:             testConfigVmmUplinkPContChildrenRemoveOneDependencyWithVmmDomP,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "tags.#", "1"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.tags.#", "1"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.name_alias", "name_alias_2"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.uplink_id", "1"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.uplink_name", "uplink_name_1"),
-					resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.#", "1"),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "annotations.#", "1"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "tags.#", "1"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.annotations.#", "1"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.tags.#", "1"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.name_alias", "name_alias_2"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.uplink_id", "1"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.0.uplink_name", "uplink_name_1"),
+						resource.TestCheckResourceAttr("aci_vmm_uplink_container.test", "uplink_policies.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
@@ -277,7 +304,7 @@ const testConfigVmmUplinkPContChildrenDependencyWithVmmDomP = testConfigVmmDomPM
 resource "aci_vmm_uplink_container" "test" {
   parent_dn = aci_vmm_domain.test.id
   number_of_uplinks = "2"
-  annotations = [
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -286,8 +313,8 @@ resource "aci_vmm_uplink_container" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  tags = [
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -296,8 +323,8 @@ resource "aci_vmm_uplink_container" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  uplink_policies = [
+  ] : null
+  uplink_policies = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.2(1i)-") ? [
     {
       annotation = "annotation_1"
       annotations = [
@@ -350,7 +377,7 @@ resource "aci_vmm_uplink_container" "test" {
       uplink_id = "1"
       uplink_name = "uplink_name_1"
     },
-  ]
+  ] : null
 }
 `
 
@@ -365,19 +392,19 @@ const testConfigVmmUplinkPContChildrenRemoveOneDependencyWithVmmDomP = testConfi
 resource "aci_vmm_uplink_container" "test" {
   parent_dn = aci_vmm_domain.test.id
   number_of_uplinks = "2"
-  annotations = [ 
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  tags = [ 
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  uplink_policies = [ 
+  ] : null
+  uplink_policies = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.2(1i)-") ? [ 
 	{
 	  annotation = "annotation_2"
       annotations = [ 
@@ -396,7 +423,7 @@ resource "aci_vmm_uplink_container" "test" {
 	  uplink_id = "1"
 	  uplink_name = "uplink_name_1"
 	},
-  ]
+  ] : null
 }
 `
 
@@ -404,8 +431,8 @@ const testConfigVmmUplinkPContChildrenRemoveAllDependencyWithVmmDomP = testConfi
 resource "aci_vmm_uplink_container" "test" {
   parent_dn = aci_vmm_domain.test.id
   number_of_uplinks = "2"
-  annotations = []
-  tags = []
-  uplink_policies = []
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  uplink_policies = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.2(1i)-") ? [] : null
 }
 `

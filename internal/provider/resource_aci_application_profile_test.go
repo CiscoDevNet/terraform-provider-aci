@@ -158,16 +158,25 @@ func TestAccResourceFvApWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_application_profile.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_application_profile.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_application_profile.test", "priority", "unspecified"),
-					resource.TestCheckResourceAttr("aci_application_profile.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_application_profile.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_application_profile.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_application_profile.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_monitoring_policy.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_monitoring_policy.monitoring_policy_name", "monitoring_policy_name_1"),
-					resource.TestCheckResourceAttr("aci_application_profile.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_application_profile.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_application_profile.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_application_profile.test", "tags.1.value", "test_value"),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_application_profile.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_application_profile.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_application_profile.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_application_profile.test", "annotations.1.value", "test_value"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_monitoring_policy.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_monitoring_policy.monitoring_policy_name", "monitoring_policy_name_1"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_application_profile.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_application_profile.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_application_profile.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_application_profile.test", "tags.1.value", "test_value"),
+					),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -186,28 +195,37 @@ func TestAccResourceFvApWithFvTenant(t *testing.T) {
 				Config:             testConfigFvApChildrenRemoveFromConfigDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_application_profile.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_application_profile.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_application_profile.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_application_profile.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_profile.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_monitoring_policy.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_monitoring_policy.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_monitoring_policy.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_monitoring_policy.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_monitoring_policy.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_monitoring_policy.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_monitoring_policy.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_monitoring_policy.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_monitoring_policy.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_monitoring_policy.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_monitoring_policy.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_monitoring_policy.monitoring_policy_name", "monitoring_policy_name_1"),
-					resource.TestCheckResourceAttr("aci_application_profile.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_application_profile.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_application_profile.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_application_profile.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_profile.test", "tags.#", "2"),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_application_profile.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_application_profile.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_application_profile.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_application_profile.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_application_profile.test", "annotations.#", "2"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_monitoring_policy.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_monitoring_policy.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_monitoring_policy.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_monitoring_policy.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_monitoring_policy.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_monitoring_policy.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_monitoring_policy.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_monitoring_policy.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_monitoring_policy.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_monitoring_policy.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_monitoring_policy.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_application_profile.test", "relation_to_monitoring_policy.monitoring_policy_name", "monitoring_policy_name_1"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_application_profile.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_application_profile.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_application_profile.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_application_profile.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_application_profile.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
@@ -215,12 +233,20 @@ func TestAccResourceFvApWithFvTenant(t *testing.T) {
 				Config:             testConfigFvApChildrenRemoveOneDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_application_profile.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_application_profile.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_profile.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_application_profile.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_application_profile.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_application_profile.test", "tags.#", "1"),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_application_profile.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_application_profile.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_application_profile.test", "annotations.#", "1"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside"),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_application_profile.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_application_profile.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_application_profile.test", "tags.#", "1"),
+					),
 				),
 				ConfigStateChecks: []statecheck.StateCheck{
 					statecheck.ExpectKnownValue("aci_application_profile.test",
@@ -344,7 +370,7 @@ const testConfigFvApChildrenDependencyWithFvTenant = testChildDependencyConfigFv
 resource "aci_application_profile" "test" {
   parent_dn = aci_tenant.test.id
   name = "test_name"
-  annotations = [
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -353,8 +379,8 @@ resource "aci_application_profile" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  relation_to_monitoring_policy = {
+  ] : null
+  relation_to_monitoring_policy = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? {
     annotation = "annotation_1"
     annotations = [
 	  {
@@ -377,8 +403,8 @@ resource "aci_application_profile" "test" {
 	  },
     ]
     monitoring_policy_name = aci_monitoring_policy.test_monitoring_policy_0.name
-  }
-  tags = [
+  } : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -387,7 +413,7 @@ resource "aci_application_profile" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
+  ] : null
 }
 `
 
@@ -402,19 +428,19 @@ const testConfigFvApChildrenRemoveOneDependencyWithFvTenant = testChildDependenc
 resource "aci_application_profile" "test" {
   parent_dn = aci_tenant.test.id
   name = "test_name"
-  annotations = [ 
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  relation_to_monitoring_policy = {}
-  tags = [ 
+  ] : null
+  relation_to_monitoring_policy = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? {} : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
+  ] : null
 }
 `
 
@@ -422,9 +448,9 @@ const testConfigFvApChildrenRemoveAllDependencyWithFvTenant = testChildDependenc
 resource "aci_application_profile" "test" {
   parent_dn = aci_tenant.test.id
   name = "test_name"
-  annotations = []
-  relation_to_monitoring_policy = {}
-  tags = []
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  relation_to_monitoring_policy = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? {} : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
 }
 `
 
@@ -438,8 +464,8 @@ resource "aci_application_profile" "test" {
 const testConfigFvApLegacyAttributesWithFvTenant = testChildDependencyConfigFvAp + testConfigFvTenantMin + `
 resource "aci_application_profile" "test" {
   name = "test_name"
-  prio = "level1"
-  relation_fv_rs_ap_mon_pol = aci_monitoring_policy.test_monitoring_policy_0.id
+  prio = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? "level1" : null
+  relation_fv_rs_ap_mon_pol = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? aci_monitoring_policy.test_monitoring_policy_0.id : null
   tenant_dn = aci_tenant.test.id
 }
 `

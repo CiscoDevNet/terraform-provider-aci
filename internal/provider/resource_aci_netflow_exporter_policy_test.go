@@ -201,18 +201,30 @@ func TestAccResourceNetflowExporterPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "qos_dscp_value", "CS2"),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "source_ip_type", "custom-src-ip"),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "version", "v9"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_epg.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_epg.target_dn", "uni/tn-test_name/ap-test_name/epg-test_epg"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_vrf.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_vrf.target_dn", "uni/tn-test_name/ctx-test_vrf"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "tags.1.value", "test_value"),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "annotations.1.value", "test_value"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_epg.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_epg.target_dn", "uni/tn-test_name/ap-test_name/epg-test_epg"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_vrf.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_vrf.target_dn", "uni/tn-test_name/ctx-test_vrf"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "tags.1.value", "test_value"),
+					),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -231,40 +243,52 @@ func TestAccResourceNetflowExporterPolWithFvTenant(t *testing.T) {
 				Config:             testConfigNetflowExporterPolChildrenRemoveFromConfigDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_epg.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_epg.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_epg.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_epg.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_epg.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_epg.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_epg.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_epg.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_epg.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_epg.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_epg.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_epg.target_dn", "uni/tn-test_name/ap-test_name/epg-test_epg"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_vrf.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_vrf.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_vrf.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_vrf.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_vrf.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_vrf.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_vrf.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_vrf.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_vrf.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_vrf.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_vrf.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_vrf.target_dn", "uni/tn-test_name/ctx-test_vrf"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "tags.#", "2"),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "annotations.#", "2"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_epg.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_epg.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_epg.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_epg.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_epg.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_epg.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_epg.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_epg.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_epg.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_epg.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_epg.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_epg.target_dn", "uni/tn-test_name/ap-test_name/epg-test_epg"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_vrf.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_vrf.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_vrf.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_vrf.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_vrf.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_vrf.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_vrf.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_vrf.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_vrf.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_vrf.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_vrf.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "relation_to_vrf.target_dn", "uni/tn-test_name/ctx-test_vrf"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
@@ -272,12 +296,22 @@ func TestAccResourceNetflowExporterPolWithFvTenant(t *testing.T) {
 				Config:             testConfigNetflowExporterPolChildrenRemoveOneDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "tags.#", "1"),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "annotations.#", "1"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside"),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside"),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "tags.#", "1"),
+					),
 				),
 				ConfigStateChecks: []statecheck.StateCheck{
 					statecheck.ExpectKnownValue("aci_netflow_exporter_policy.test",
@@ -427,7 +461,7 @@ resource "aci_netflow_exporter_policy" "test" {
   destination_port = "https"
   name = "netfow_exporter"
   source_ip_address = "1.1.1.1/10"
-  annotations = [
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -436,8 +470,8 @@ resource "aci_netflow_exporter_policy" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  relation_to_epg = {
+  ] : null
+  relation_to_epg = provider::aci::compare_versions(data.aci_system.version.version,"inside","2.2(1k)-") ? {
     annotation = "annotation_1"
     annotations = [
 	  {
@@ -460,8 +494,8 @@ resource "aci_netflow_exporter_policy" "test" {
 	  },
     ]
     target_dn = "uni/tn-test_name/ap-test_name/epg-test_epg"
-  }
-  relation_to_vrf = {
+  } : null
+  relation_to_vrf = provider::aci::compare_versions(data.aci_system.version.version,"inside","2.2(1k)-") ? {
     annotation = "annotation_1"
     annotations = [
 	  {
@@ -484,8 +518,8 @@ resource "aci_netflow_exporter_policy" "test" {
 	  },
     ]
     target_dn = "uni/tn-test_name/ctx-test_vrf"
-  }
-  tags = [
+  } : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -494,7 +528,7 @@ resource "aci_netflow_exporter_policy" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
+  ] : null
 }
 `
 
@@ -515,20 +549,20 @@ resource "aci_netflow_exporter_policy" "test" {
   destination_port = "https"
   name = "netfow_exporter"
   source_ip_address = "1.1.1.1/10"
-  annotations = [ 
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  relation_to_epg = {}
-  relation_to_vrf = {}
-  tags = [ 
+  ] : null
+  relation_to_epg = provider::aci::compare_versions(data.aci_system.version.version,"inside","2.2(1k)-") ? {} : null
+  relation_to_vrf = provider::aci::compare_versions(data.aci_system.version.version,"inside","2.2(1k)-") ? {} : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
+  ] : null
 }
 `
 
@@ -539,10 +573,10 @@ resource "aci_netflow_exporter_policy" "test" {
   destination_port = "https"
   name = "netfow_exporter"
   source_ip_address = "1.1.1.1/10"
-  annotations = []
-  relation_to_epg = {}
-  relation_to_vrf = {}
-  tags = []
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  relation_to_epg = provider::aci::compare_versions(data.aci_system.version.version,"inside","2.2(1k)-") ? {} : null
+  relation_to_vrf = provider::aci::compare_versions(data.aci_system.version.version,"inside","2.2(1k)-") ? {} : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
 }
 `
 

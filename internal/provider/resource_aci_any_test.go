@@ -138,34 +138,49 @@ func TestAccResourceVzAnyWithFvCtx(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_any.test", "name", ""),
 					resource.TestCheckResourceAttr("aci_any.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_any.test", "preferred_group_member", "disabled"),
-					resource.TestCheckResourceAttr("aci_any.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_any.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.0.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.0.contract_name", "contract_name_0"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.0.priority", "level1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.1.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.1.contract_name", "contract_name_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.1.priority", "level2"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.0.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.0.imported_contract_name", "imported_contract_name_0"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.0.priority", "level1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.1.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.1.imported_contract_name", "imported_contract_name_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.1.priority", "level2"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.contract_name", "contract_name_0"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.match_criteria", "All"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.priority", "level1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.1.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.1.contract_name", "contract_name_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.1.match_criteria", "AtleastOne"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.1.priority", "level2"),
-					resource.TestCheckResourceAttr("aci_any.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_any.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "tags.1.value", "test_value"),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_any.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_any.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "annotations.1.value", "test_value"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.0.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.0.contract_name", "contract_name_0"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.0.priority", "level1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.1.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.1.contract_name", "contract_name_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.1.priority", "level2"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.0.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.0.imported_contract_name", "imported_contract_name_0"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.0.priority", "level1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.1.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.1.imported_contract_name", "imported_contract_name_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.1.priority", "level2"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.contract_name", "contract_name_0"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.match_criteria", "All"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.priority", "level1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.1.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.1.contract_name", "contract_name_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.1.match_criteria", "AtleastOne"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.1.priority", "level2"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_any.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_any.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "tags.1.value", "test_value"),
+					),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -184,99 +199,114 @@ func TestAccResourceVzAnyWithFvCtx(t *testing.T) {
 				Config:             testConfigVzAnyChildrenRemoveFromConfigDependencyWithFvCtx,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_any.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_any.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_any.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.0.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.0.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.0.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.0.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.0.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.0.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.0.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.0.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.0.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.0.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.0.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.0.contract_name", "contract_name_0"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.0.priority", "level1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.1.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.1.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.1.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.1.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.1.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.1.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.1.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.1.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.1.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.1.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.1.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.1.contract_name", "contract_name_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.1.priority", "level2"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.#", "2"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.0.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.0.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.0.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.0.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.0.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.0.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.0.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.0.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.0.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.0.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.0.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.0.imported_contract_name", "imported_contract_name_0"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.0.priority", "level1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.1.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.1.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.1.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.1.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.1.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.1.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.1.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.1.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.1.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.1.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.1.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.1.imported_contract_name", "imported_contract_name_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.1.priority", "level2"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.#", "2"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.contract_name", "contract_name_0"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.match_criteria", "All"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.priority", "level1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.1.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.1.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.1.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.1.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.1.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.1.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.1.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.1.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.1.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.1.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.1.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.1.contract_name", "contract_name_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.1.match_criteria", "AtleastOne"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.1.priority", "level2"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.#", "2"),
-					resource.TestCheckResourceAttr("aci_any.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_any.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_any.test", "tags.#", "2"),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_any.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_any.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_any.test", "annotations.#", "2"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.0.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.0.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.0.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.0.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.0.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.0.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.0.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.0.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.0.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.0.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.0.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.0.contract_name", "contract_name_0"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.0.priority", "level1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.1.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.1.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.1.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.1.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.1.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.1.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.1.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.1.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.1.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.1.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.1.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.1.contract_name", "contract_name_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.1.priority", "level2"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.#", "2"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.0.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.0.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.0.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.0.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.0.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.0.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.0.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.0.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.0.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.0.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.0.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.0.imported_contract_name", "imported_contract_name_0"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.0.priority", "level1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.1.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.1.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.1.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.1.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.1.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.1.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.1.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.1.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.1.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.1.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.1.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.1.imported_contract_name", "imported_contract_name_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.1.priority", "level2"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.#", "2"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.contract_name", "contract_name_0"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.match_criteria", "All"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.priority", "level1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.1.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.1.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.1.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.1.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.1.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.1.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.1.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.1.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.1.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.1.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.1.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.1.contract_name", "contract_name_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.1.match_criteria", "AtleastOne"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.1.priority", "level2"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.#", "2"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_any.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_any.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_any.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
@@ -284,43 +314,58 @@ func TestAccResourceVzAnyWithFvCtx(t *testing.T) {
 				Config:             testConfigVzAnyChildrenRemoveOneDependencyWithFvCtx,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_any.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_any.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.0.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.0.annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.0.annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.0.annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.0.tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.0.tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.0.tags.#", "1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.0.contract_name", "contract_name_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.0.priority", "level2"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.#", "1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.0.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.0.annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.0.annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.0.annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.0.tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.0.tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.0.tags.#", "1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.0.imported_contract_name", "imported_contract_name_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.0.priority", "level2"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.#", "1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.tags.#", "1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.contract_name", "contract_name_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.match_criteria", "AtleastOne"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.priority", "level2"),
-					resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.#", "1"),
-					resource.TestCheckResourceAttr("aci_any.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_any.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_any.test", "tags.#", "1"),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_any.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_any.test", "annotations.#", "1"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.0.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.0.annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.0.annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.0.annotations.#", "1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.0.tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.0.tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.0.tags.#", "1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.0.contract_name", "contract_name_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.0.priority", "level2"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_consumer_contracts.#", "1"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.0.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.0.annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.0.annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.0.annotations.#", "1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.0.tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.0.tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.0.tags.#", "1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.0.imported_contract_name", "imported_contract_name_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.0.priority", "level2"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_contract_interfaces.#", "1"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.annotations.#", "1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.tags.#", "1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.contract_name", "contract_name_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.match_criteria", "AtleastOne"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.0.priority", "level2"),
+						resource.TestCheckResourceAttr("aci_any.test", "relation_to_provider_contracts.#", "1"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_any.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_any.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_any.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
@@ -418,7 +463,7 @@ resource "aci_any" "test" {
 const testConfigVzAnyChildrenDependencyWithFvCtx = testChildDependencyConfigVzAny + testConfigFvCtxMinDependencyWithFvTenant + `
 resource "aci_any" "test" {
   parent_dn = aci_vrf.test.id
-  annotations = [
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -427,8 +472,8 @@ resource "aci_any" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  relation_to_consumer_contracts = [
+  ] : null
+  relation_to_consumer_contracts = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? [
     {
       annotation = "annotation_1"
       annotations = [
@@ -479,8 +524,8 @@ resource "aci_any" "test" {
       contract_name = aci_contract.test_contract_1.name
       priority = "level2"
     },
-  ]
-  relation_to_contract_interfaces = [
+  ] : null
+  relation_to_contract_interfaces = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? [
     {
       annotation = "annotation_1"
       annotations = [
@@ -531,8 +576,8 @@ resource "aci_any" "test" {
       imported_contract_name = aci_imported_contract.test_imported_contract_0.name
       priority = "level2"
     },
-  ]
-  relation_to_provider_contracts = [
+  ] : null
+  relation_to_provider_contracts = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? [
     {
       annotation = "annotation_1"
       annotations = [
@@ -585,8 +630,8 @@ resource "aci_any" "test" {
       match_criteria = "AtleastOne"
       priority = "level2"
     },
-  ]
-  tags = [
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -595,7 +640,7 @@ resource "aci_any" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
+  ] : null
 }
 `
 
@@ -608,13 +653,13 @@ resource "aci_any" "test" {
 const testConfigVzAnyChildrenRemoveOneDependencyWithFvCtx = testChildDependencyConfigVzAny + testConfigFvCtxMinDependencyWithFvTenant + `
 resource "aci_any" "test" {
   parent_dn = aci_vrf.test.id
-  annotations = [ 
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  relation_to_consumer_contracts = [ 
+  ] : null
+  relation_to_consumer_contracts = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? [ 
 	{
 	  annotation = "annotation_2"
       annotations = [ 
@@ -632,8 +677,8 @@ resource "aci_any" "test" {
 	  contract_name = aci_contract.test_contract_1.name
 	  priority = "level2"
 	},
-  ]
-  relation_to_contract_interfaces = [ 
+  ] : null
+  relation_to_contract_interfaces = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? [ 
 	{
 	  annotation = "annotation_2"
       annotations = [ 
@@ -651,8 +696,8 @@ resource "aci_any" "test" {
 	  imported_contract_name = aci_imported_contract.test_imported_contract_0.name
 	  priority = "level2"
 	},
-  ]
-  relation_to_provider_contracts = [ 
+  ] : null
+  relation_to_provider_contracts = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? [ 
 	{
 	  annotation = "annotation_2"
       annotations = [ 
@@ -671,34 +716,34 @@ resource "aci_any" "test" {
 	  match_criteria = "AtleastOne"
 	  priority = "level2"
 	},
-  ]
-  tags = [ 
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
+  ] : null
 }
 `
 
 const testConfigVzAnyChildrenRemoveAllDependencyWithFvCtx = testChildDependencyConfigVzAny + testConfigFvCtxMinDependencyWithFvTenant + `
 resource "aci_any" "test" {
   parent_dn = aci_vrf.test.id
-  annotations = []
-  relation_to_consumer_contracts = []
-  relation_to_contract_interfaces = []
-  relation_to_provider_contracts = []
-  tags = []
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  relation_to_consumer_contracts = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? [] : null
+  relation_to_contract_interfaces = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? [] : null
+  relation_to_provider_contracts = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? [] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
 }
 `
 
 const testConfigVzAnyLegacyAttributesWithFvCtx = testChildDependencyConfigVzAny + testConfigFvCtxMinDependencyWithFvTenant + `
 resource "aci_any" "test" {
-  match_t = "All"
-  pref_gr_memb = "disabled"
-  relation_vz_rs_any_to_cons = [aci_contract.test_contract_1.id]
-  relation_vz_rs_any_to_cons_if = [aci_imported_contract.test_imported_contract_0.id]
-  relation_vz_rs_any_to_prov = [aci_contract.test_contract_1.id]
+  match_t = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? "All" : null
+  pref_gr_memb = provider::aci::compare_versions(data.aci_system.version.version,"inside","2.1(1h)-") ? "disabled" : null
+  relation_vz_rs_any_to_cons = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? [aci_contract.test_contract_1.id] : null
+  relation_vz_rs_any_to_cons_if = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? [aci_imported_contract.test_imported_contract_0.id] : null
+  relation_vz_rs_any_to_prov = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? [aci_contract.test_contract_1.id] : null
   vrf_dn = aci_vrf.test.id
 }
 `

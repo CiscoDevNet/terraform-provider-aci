@@ -8,6 +8,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
@@ -831,7 +832,8 @@ func (r *FhsBDPolResource) ImportState(ctx context.Context, req resource.ImportS
 }
 
 func getAndSetFhsBDPolAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FhsBDPolResourceModel) {
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "fhsBDPol,fhsRaGuardPol,tagAnnotation,tagTag,tagAnnotation,tagTag"), "GET", nil)
+	childClasses := getChildClassesForGetRequest([]string{"fhsRaGuardPol", "tagAnnotation", "tagTag"})
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), strings.Join(childClasses, ",")), "GET", nil)
 
 	readData := getEmptyFhsBDPolResourceModel()
 

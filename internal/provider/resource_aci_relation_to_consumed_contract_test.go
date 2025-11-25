@@ -123,14 +123,20 @@ func TestAccResourceFvRsConsWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "contract_name", "test_tn_vz_br_cp_name"),
 					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "priority", "unspecified"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "tags.1.value", "test_value"),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotations.1.value", "test_value"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "tags.1.value", "test_value"),
+					),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -149,16 +155,22 @@ func TestAccResourceFvRsConsWithFvAEPg(t *testing.T) {
 				Config:             testConfigFvRsConsChildrenRemoveFromConfigDependencyWithFvAEPg,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "tags.#", "2"),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotations.#", "2"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
@@ -166,12 +178,18 @@ func TestAccResourceFvRsConsWithFvAEPg(t *testing.T) {
 				Config:             testConfigFvRsConsChildrenRemoveOneDependencyWithFvAEPg,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "tags.#", "1"),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotations.#", "1"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
@@ -308,14 +326,20 @@ func TestAccResourceFvRsConsWithFvESg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "contract_name", "test_tn_vz_br_cp_name"),
 					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "priority", "unspecified"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "tags.1.value", "test_value"),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotations.1.value", "test_value"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "tags.1.value", "test_value"),
+					),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -334,16 +358,22 @@ func TestAccResourceFvRsConsWithFvESg(t *testing.T) {
 				Config:             testConfigFvRsConsChildrenRemoveFromConfigDependencyWithFvESg,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "tags.#", "2"),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotations.#", "2"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
@@ -351,12 +381,18 @@ func TestAccResourceFvRsConsWithFvESg(t *testing.T) {
 				Config:             testConfigFvRsConsChildrenRemoveOneDependencyWithFvESg,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "tags.#", "1"),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "annotations.#", "1"),
+					),
+					// foo
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_contract.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
@@ -433,7 +469,7 @@ const testConfigFvRsConsChildrenDependencyWithFvAEPg = testDependencyConfigFvRsC
 resource "aci_relation_to_consumed_contract" "test" {
   parent_dn = aci_application_epg.test.id
   contract_name = "test_tn_vz_br_cp_name"
-  annotations = [
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -442,8 +478,8 @@ resource "aci_relation_to_consumed_contract" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  tags = [
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -452,7 +488,7 @@ resource "aci_relation_to_consumed_contract" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
+  ] : null
 }
 `
 
@@ -467,18 +503,18 @@ const testConfigFvRsConsChildrenRemoveOneDependencyWithFvAEPg = testDependencyCo
 resource "aci_relation_to_consumed_contract" "test" {
   parent_dn = aci_application_epg.test.id
   contract_name = "test_tn_vz_br_cp_name"
-  annotations = [ 
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  tags = [ 
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
+  ] : null
 }
 `
 
@@ -486,8 +522,8 @@ const testConfigFvRsConsChildrenRemoveAllDependencyWithFvAEPg = testDependencyCo
 resource "aci_relation_to_consumed_contract" "test" {
   parent_dn = aci_application_epg.test.id
   contract_name = "test_tn_vz_br_cp_name"
-  annotations = []
-  tags = []
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
 }
 `
 
@@ -539,7 +575,7 @@ const testConfigFvRsConsChildrenDependencyWithFvESg = testDependencyConfigFvRsCo
 resource "aci_relation_to_consumed_contract" "test" {
   parent_dn = aci_endpoint_security_group.test.id
   contract_name = "test_tn_vz_br_cp_name"
-  annotations = [
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -548,8 +584,8 @@ resource "aci_relation_to_consumed_contract" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  tags = [
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -558,7 +594,7 @@ resource "aci_relation_to_consumed_contract" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
+  ] : null
 }
 `
 
@@ -573,18 +609,18 @@ const testConfigFvRsConsChildrenRemoveOneDependencyWithFvESg = testDependencyCon
 resource "aci_relation_to_consumed_contract" "test" {
   parent_dn = aci_endpoint_security_group.test.id
   contract_name = "test_tn_vz_br_cp_name"
-  annotations = [ 
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  tags = [ 
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
+  ] : null
 }
 `
 
@@ -592,8 +628,8 @@ const testConfigFvRsConsChildrenRemoveAllDependencyWithFvESg = testDependencyCon
 resource "aci_relation_to_consumed_contract" "test" {
   parent_dn = aci_endpoint_security_group.test.id
   contract_name = "test_tn_vz_br_cp_name"
-  annotations = []
-  tags = []
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
 }
 `
 

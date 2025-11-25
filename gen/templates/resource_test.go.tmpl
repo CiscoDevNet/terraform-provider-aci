@@ -419,6 +419,8 @@ PreCheck: func() { testAccPreCheck(t, "{{.test_type}}", "{{$.class_version}}") }
 					resource.TestCheckResourceAttrSet("aci_{{$.resourceName}}.test", "{{$key}}"),
 			{{- end}}
 			{{- range $key, $value := $.children}}
+			// foo
+			composeAggregateTestCheckFuncWithVersion(t, "{{getChildVersion $value}}", "inside",
 				{{- if eq (len $value) 1}}
 					{{- range $child_index, $child := $value}}
 						{{- range $child_key, $child_value := $child}}
@@ -445,7 +447,7 @@ PreCheck: func() { testAccPreCheck(t, "{{.test_type}}", "{{$.class_version}}") }
 							{{- range $index, $subvalue := $child_value}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$child_key}}.{{$index}}", "{{$subvalue}}"),
 							{{- end}}	
-							{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required")}}
+							{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions")}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$child_key}}", "{{$child_value}}"),
 							{{- end}}
 						{{- end}}
@@ -466,7 +468,7 @@ PreCheck: func() { testAccPreCheck(t, "{{.test_type}}", "{{$.class_version}}") }
 							{{- else }}
 								{{- if eq $child_key "target_dn"}}
 	  				resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}", "{{$key}}.{{$child_index}}.{{$child_key}}", "{{getTestTargetDn $.child_targets $key $child_value false nil $child_index false}}"),		
-								{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required")}}
+								{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions")}}
 									{{- if (isInterfaceSlice $child_value)}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}", "{{$key}}.{{$child_index}}.{{$child_key}}.#", "{{len $child_value}}"),
 										{{- range $index, $subvalue := $child_value}}
@@ -480,6 +482,7 @@ PreCheck: func() { testAccPreCheck(t, "{{.test_type}}", "{{$.class_version}}") }
 						{{- end}}
 					{{- end}}
 				{{- end}}
+			),
 			{{- end}}
 				),
 			},
@@ -544,6 +547,8 @@ PreCheck: func() { testAccPreCheck(t, "{{.test_type}}", "{{$.class_version}}") }
 					resource.TestCheckResourceAttrSet("aci_{{$.resourceName}}.test", "{{$key}}"),
 		{{- end}}
 		{{- range $key, $value := $.children}}
+		// foo
+		composeAggregateTestCheckFuncWithVersion(t, "{{getChildVersion $value}}", "inside",
 			{{- if eq (len $value) 1}}
 				{{- range $child_index, $child := $value}}
 					{{- range $child_key, $child_value := $child}}
@@ -570,7 +575,7 @@ PreCheck: func() { testAccPreCheck(t, "{{.test_type}}", "{{$.class_version}}") }
 							{{- range $index, $subvalue := $child_value}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}", "{{$key}}.{{$child_key}}.{{$index}}", "{{$subvalue}}"),
 							{{- end}}	
-						{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required")}}
+						{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions")}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}", "{{$key}}.{{$child_key}}", "{{$child_value}}"),
 						{{- end}}
 					{{- end}}
@@ -591,7 +596,7 @@ PreCheck: func() { testAccPreCheck(t, "{{.test_type}}", "{{$.class_version}}") }
 						{{- else }}
 							{{- if eq $child_key "target_dn"}}
 	  				resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}", "{{$key}}.{{$child_index}}.{{$child_key}}", "{{getTestTargetDn $.child_targets $key $child_value false nil $child_index false}}"),		
-							{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required")}}
+							{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions")}}
 								{{- if (isInterfaceSlice $child_value)}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}", "{{$key}}.{{$child_index}}.{{$child_key}}.#", "{{len $child_value}}"),
 									{{- range $index, $subvalue := $child_value}}
@@ -606,6 +611,7 @@ PreCheck: func() { testAccPreCheck(t, "{{.test_type}}", "{{$.class_version}}") }
 				{{- end}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}", "{{$key}}.#", "2"),
 			{{- end}}
+		),
 		{{- end}}
 				),
 			},
@@ -638,6 +644,8 @@ PreCheck: func() { testAccPreCheck(t, "{{.test_type}}", "{{$.class_version}}") }
 					resource.TestCheckResourceAttrSet("aci_{{$.resourceName}}.test", "{{$key}}"),
 		{{- end}}
 		{{- range $key, $value := $.children}}
+		// foo
+		composeAggregateTestCheckFuncWithVersion(t, "{{getChildVersion $value}}", "inside",
 			{{- if eq (len $value) 1}}{{- $child := index $value 0 }}
 				{{- if not $child.deletable_child}}
 					{{- range $child_key, $child_value := $child}}
@@ -664,7 +672,7 @@ PreCheck: func() { testAccPreCheck(t, "{{.test_type}}", "{{$.class_version}}") }
 							{{- range $index, $subvalue := $child_value}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}", "{{$key}}.{{$child_key}}.{{$index}}", "{{$subvalue}}"),
 							{{- end}}	
-						{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required")}}
+						{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions")}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}", "{{$key}}.{{$child_key}}", "{{$child_value}}"),
 							{{- end}}
 						{{- end}}
@@ -690,13 +698,14 @@ PreCheck: func() { testAccPreCheck(t, "{{.test_type}}", "{{$.class_version}}") }
 							{{- range $index, $subvalue := $child_value}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}", "{{$key}}.0.{{$child_key}}.{{$index}}", "{{$subvalue}}"),
 							{{- end}}
-						{{- else}}
+						{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions")}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}", "{{$key}}.0.{{$child_key}}", "{{$child_value}}"),
 						{{- end}}
 					{{- end}}
 				{{- end}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}", "{{$key}}.#", "1"),
 			{{- end}}
+		),
 		{{- end}}
 				),
 		{{- if $single_nested_children}}
@@ -710,7 +719,7 @@ PreCheck: func() { testAccPreCheck(t, "{{.test_type}}", "{{$.class_version}}") }
 						knownvalue.MapExact(
 							map[string]knownvalue.Check{
 						{{- range $child_key, $child_value := $child}}
-							{{- if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "version_mismatch") (ne $child_key "children") }}
+							{{- if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions") (ne $child_key "version_mismatch") (ne $child_key "children") }}
 								"{{$child_key}}": knownvalue.Null(),
 							{{- else if eq $child_key "version_mismatch"}}
 								{{- range $version, $attributes := $child_value }}
@@ -797,7 +806,7 @@ PreCheck: func() { testAccPreCheck(t, "{{.test_type}}", "{{$.class_version}}") }
 							{{- range $index, $subvalue := $child_value}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}", "{{$key}}.{{$child_key}}.{{$index}}", "{{$subvalue}}"),
 							{{- end}}
-						{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required")}}
+						{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions")}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}", "{{$key}}.{{$child_key}}", "{{$child_value}}"),
 							{{- end}}
 						{{- end}}
@@ -819,7 +828,7 @@ PreCheck: func() { testAccPreCheck(t, "{{.test_type}}", "{{$.class_version}}") }
 						knownvalue.MapExact(
 							map[string]knownvalue.Check{
 						{{- range $child_key, $child_value := $child}}
-							{{- if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "version_mismatch") (ne $child_key "children")}}
+							{{- if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions") (ne $child_key "version_mismatch") (ne $child_key "children")}}
 								"{{$child_key}}": knownvalue.Null(),
 							{{- else if eq $child_key "version_mismatch"}}
 								{{- range $version, $attributes := $child_value }}
@@ -1237,6 +1246,8 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 					resource.TestCheckResourceAttrSet("aci_{{$.resourceName}}.test", "{{$key}}"),
 		{{- end}}
 		{{- range $key, $value := $.children}}
+		// foo
+		composeAggregateTestCheckFuncWithVersion(t, "{{getChildVersion $value}}", "inside",
 			{{- if eq (len $value) 1}}
 				{{- range $child_index, $child := $value}}
 					{{- range $child_key, $child_value := $child}}
@@ -1263,7 +1274,7 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 								{{- range $index, $subvalue := $child_value}}
 						resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$child_key}}.{{$index}}", "{{$subvalue}}"),
 								{{- end}}
-						{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required")}}
+						{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions")}}
 						resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$child_key}}", "{{$child_value}}"),
 							{{- end}}
 						{{- end}}
@@ -1290,7 +1301,7 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 						{{- else }}
 					{{- if eq $child_key "target_dn"}}
 	  				resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$child_index}}.{{$child_key}}", "{{getTestTargetDn $.child_targets $key $child_value false nil $child_index false}}"),		
-					{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required")}}
+					{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions")}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$child_index}}.{{$child_key}}", "{{$child_value}}"),
 						{{- end}}
 					{{- end}}
@@ -1298,6 +1309,7 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 					{{- end}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "{{len $value}}"),
 				{{- end}}
+		),
 			{{- end}}
 				),
 			},
@@ -1347,6 +1359,8 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 					resource.TestCheckResourceAttrSet("aci_{{$.resourceName}}.test", "{{$key}}"),
 		{{- end}}
 		{{- range $key, $value := $.children}}
+			// foo
+			composeAggregateTestCheckFuncWithVersion(t, "{{getChildVersion $value}}", "inside",
 			{{- if eq (len $value) 1}}
 				{{- range $child_index, $child := $value}}
 					{{- range $child_key, $child_value := $child}}
@@ -1373,7 +1387,7 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 								{{- range $index, $subvalue := $child_value}}
 						resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$child_key}}.{{$index}}", "{{$subvalue}}"),
 								{{- end}}
-						{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required")}}
+						{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions")}}
 						resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$child_key}}", "{{$child_value}}"),
 							{{- end}}
 						{{- end}}
@@ -1394,7 +1408,7 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 						{{- else }}
 					{{- if eq $child_key "target_dn"}}
 	  				resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$child_index}}.{{$child_key}}", "{{getTestTargetDn $.child_targets $key $child_value false nil $child_index false}}"),		
-					{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required")}}
+					{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions")}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$child_index}}.{{$child_key}}", "{{$child_value}}"),
 								{{- end}}
 							{{- end}}
@@ -1402,6 +1416,7 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 					{{- end}}
 						resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "{{len $value}}"),
 			{{- end}}
+			),
 		{{- end}}
 				),
 			},
@@ -1451,6 +1466,8 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 					resource.TestCheckResourceAttrSet("aci_{{$.resourceName}}.test", "{{$key}}"),
 		{{- end}}
 		{{- range $key, $value := $.children}}
+		// foo
+		composeAggregateTestCheckFuncWithVersion(t, "{{getChildVersion $value}}", "inside",
 			{{- if eq (len $value) 1}}{{- $child := index $value 0 }}
 				{{- if not $child.deletable_child}}
 					{{- range $child_key, $child_value := $child}}
@@ -1477,7 +1494,7 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 								{{- range $index, $subvalue := $child_value}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$child_key}}.{{$index}}", "{{$subvalue}}"),
 								{{- end}}
-						{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required")}}
+						{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions")}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$child_key}}", "{{$child_value}}"),
 							{{- end}}
 						{{- end}}
@@ -1498,13 +1515,14 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 						{{- else }}
 					{{- if eq $child_key "target_dn"}}
 	  				resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.0.{{$child_key}}", "{{getTestTargetDn $.child_targets $key $child_value false nil 1 false}}"),
-					{{- else}}
+					{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions")}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.0.{{$child_key}}", "{{$child_value}}"),
 							{{- end}}
 						{{- end}}
 					{{- end}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "1"),
 			{{- end}}
+		),
 		{{- end}}
 				),
 		{{- if $single_nested_children}}
@@ -1518,7 +1536,7 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 						knownvalue.MapExact(
 							map[string]knownvalue.Check{
 						{{- range $child_key, $child_value := $child}}
-							{{- if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "version_mismatch") (ne $child_key "children") }}
+							{{- if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions") (ne $child_key "version_mismatch") (ne $child_key "children") }}
 								"{{$child_key}}": knownvalue.Null(),	
 							{{- else if eq $child_key "version_mismatch"}}
 								{{- range $version, $attributes := $child_value }}
@@ -1624,7 +1642,7 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 							{{- range $index, $subvalue := $child_value}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$child_key}}.{{$index}}", "{{$subvalue}}"),
 							{{- end}}
-						{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required")}}
+						{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions")}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$child_key}}", "{{$child_value}}"),
 							{{- end}}
 						{{- end}}
@@ -1646,7 +1664,7 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 						knownvalue.MapExact(
 							map[string]knownvalue.Check{
 						{{- range $child_key, $child_value := $child}}
-							{{- if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "version_mismatch") (ne $child_key "children") }}
+							{{- if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions") (ne $child_key "version_mismatch") (ne $child_key "children") }}
 								"{{$child_key}}": knownvalue.Null(),	
 							{{- else if eq $child_key "version_mismatch"}}
 								{{- range $version, $attributes := $child_value }}
@@ -1800,7 +1818,7 @@ resource "aci_{{$.resourceName}}" "allow_test" {
 									{{- else}}
     {{$child_key}} = []
 									{{- end}}		
-								{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required")}}{{$attributeValue := getTestTargetValue $.child_targets $child_key $child_value}}
+								{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions")}}{{$attributeValue := getTestTargetValue $.child_targets $child_key $child_value}}
     {{$child_key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}
 	  							{{- end}}
 							{{- end}}
@@ -1844,7 +1862,7 @@ resource "aci_{{$.resourceName}}" "allow_test_2" {
 									{{- else}}
     {{$child_key}} = []
 									{{- end}}		
-								{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required")}}{{$attributeValue := getTestTargetValue $.child_targets $child_key $child_value}}
+								{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions")}}{{$attributeValue := getTestTargetValue $.child_targets $child_key $child_value}}
     {{$child_key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}
 	  							{{- end}}
 							{{- end}}
@@ -1892,7 +1910,7 @@ resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClas
 									{{- else}}
     {{$child_key}} = []
 									{{- end}}		
-								{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required")}}{{$attributeValue := getTestTargetValue $.child_targets $child_key $child_value}}
+								{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions")}}{{$attributeValue := getTestTargetValue $.child_targets $child_key $child_value}}
     {{$child_key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}
 	  							{{- end}}
 							{{- end}}
@@ -1968,7 +1986,7 @@ resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClas
 									{{- else}}
     {{$child_key}} = []
 									{{- end}}		
-								{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required")}}{{$attributeValue := getTestTargetValue $.child_targets $child_key $child_value}}
+								{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions")}}{{$attributeValue := getTestTargetValue $.child_targets $child_key $child_value}}
     {{$child_key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}
 	  							{{- end}}
 							{{- end}}
@@ -2044,7 +2062,7 @@ resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClas
 									{{- else}}
     {{$child_key}} = []
 									{{- end}}		
-								{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required")}}{{$attributeValue := getTestTargetValue $.child_targets $child_key $child_value}}
+								{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions")}}{{$attributeValue := getTestTargetValue $.child_targets $child_key $child_value}}
     {{$child_key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}
 	  							{{- end}}
 							{{- end}}
@@ -2073,7 +2091,7 @@ resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClas
   			{{- range $key, $value := $.children}}{{$index := 0}}
 				{{- if eq (len $value) 1}}
 				{{- $child := index $value 0}}
-  {{$key}} = {
+  {{$key}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{getChildVersion $value}}") ? {
 					{{- range $child_key, $child_value := $child}}
 						{{- if eq $child_key "children"}}
 							{{- $newCtx := addToChild $child_value "Indent" "  " -}}
@@ -2093,14 +2111,14 @@ resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClas
 							{{- else}}
     {{$child_key}} = []
 				{{- end}}	
-						{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required")}}{{$attributeValue := getTestTargetValue $.child_targets $child_key $child_value}}
+						{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions")}}{{$attributeValue := getTestTargetValue $.child_targets $child_key $child_value}}
     {{$child_key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{- else if isInterfaceSlice $attributeValue}}{{- if lt 0 (len $attributeValue)}}[{{fromInterfacesToString $attributeValue}}]{{else}}[]{{end}}{{else}}"{{$attributeValue}}"{{end}}
 	  					{{- end}}
 					{{- end}}
 					{{- end}}{{ $index = add $index 1 }}
-  }
+  } : null
 				{{- else}}
-  {{$key}} = [
+  {{$key}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{getChildVersion $value}}") ? [
 					{{- range $child := $value}}
     {
 						{{- range $child_key, $child_value := $child}}
@@ -2116,14 +2134,14 @@ resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClas
 							{{- else }}
 								{{- if eq $child_key "target_dn"}}{{$attributeValue := getTestTargetDn $.child_targets $key $child_value true nil $index false}}
       {{$child_key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{- else if isInterfaceSlice $attributeValue}}{{- if lt 0 (len $attributeValue)}}[{{fromInterfacesToString $attributeValue}}]{{else}}[]{{end}}{{else}}"{{$attributeValue}}"{{end}}		
-								{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required")}}{{$attributeValue := getTestTargetValue $.child_targets $child_key $child_value}}
+								{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions")}}{{$attributeValue := getTestTargetValue $.child_targets $child_key $child_value}}
       {{$child_key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{- else if isInterfaceSlice $attributeValue}}{{- if lt 0 (len $attributeValue)}}[{{fromInterfacesToString $attributeValue}}]{{else}}[]{{end}}{{else}}"{{$attributeValue}}"{{end}}
 	  							{{- end}}
 							{{- end}}
 						{{- end}}{{ $index = add $index 1 }}
     },
 					{{- end}}
-  ]
+  ] : null
   				{{- end}}
 			{{- end}}
 }
@@ -2163,7 +2181,7 @@ resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClas
 									{{- else}}
     {{$child_key}} = []
 									{{- end}}		
-								{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required")}}{{$attributeValue := getTestTargetValue $.child_targets $child_key $child_value}}
+								{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions")}}{{$attributeValue := getTestTargetValue $.child_targets $child_key $child_value}}
     {{$child_key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{else}}"{{$attributeValue}}"{{end}}
 	  							{{- end}}
 							{{- end}}
@@ -2192,9 +2210,9 @@ resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClas
 			{{- if eq (len $value) 1}}
 				{{- $child := index $value 0}}
 				{{- if $child.deletable_child}}
-  {{$key}} = {}
+  {{$key}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{getChildVersion $value}}") ? {} : null
 				{{- else}}
-  {{$key}} = {
+  {{$key}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{getChildVersion $value}}") ? {
 					{{- range $child_key, $child_value := $child}}
 						{{- if eq $child_key "children"}}
 							{{- $newCtx := addToChild $child_value "Indent" "  " -}}
@@ -2214,15 +2232,15 @@ resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClas
 				{{- else}}
     {{$child_key}} = []
 				{{- end}}		
-						{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required")}}{{$attributeValue := getTestTargetValue $.child_targets $child_key $child_value}}
+						{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions")}}{{$attributeValue := getTestTargetValue $.child_targets $child_key $child_value}}
     {{$child_key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{- else if isInterfaceSlice $attributeValue}}{{- if lt 0 (len $attributeValue)}}[{{fromInterfacesToString $attributeValue}}]{{else}}[]{{end}}{{else}}"{{$attributeValue}}"{{end}}
 	  					{{- end}}
 					{{- end}}
 					{{- end}}{{ $index = add $index 1 }}
-  }
+  } : null
 				{{- end}}
 			{{- else}}
-  {{$key}} = [ {{$child := index $value 1 }}
+  {{$key}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{getChildVersion $value}}") ? [ {{$child := index $value 1 }}
 	{
 	  			{{- range $child_key, $child_value := $child}}
 					{{- if eq $child_key "children"}}
@@ -2237,13 +2255,13 @@ resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClas
 					{{- else }}
 						{{- if eq $child_key "target_dn"}}{{$attributeValue := getTestTargetDn $.child_targets $key $child_value true nil 1 false}}
 	  {{$child_key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{- else if isInterfaceSlice $attributeValue}}{{- if lt 0 (len $attributeValue)}}[{{fromInterfacesToString $attributeValue}}]{{else}}[]{{end}}{{else}}"{{$attributeValue}}"{{end}}
-	  					{{- else }}{{$attributeValue := getTestTargetValue $.child_targets $child_key $child_value}}
+	  					{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions")}}{{$attributeValue := getTestTargetValue $.child_targets $child_key $child_value}}
 	  {{$child_key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{- else if isInterfaceSlice $attributeValue}}{{- if lt 0 (len $attributeValue)}}[{{fromInterfacesToString $attributeValue}}]{{else}}[]{{end}}{{else}}"{{$attributeValue}}"{{end}}
 	  					{{- end}}
 					{{- end}}
 				{{- end}}
 	},
-  ]
+  ] : null
 	{{- end}}
 {{- end}}
 }
@@ -2265,9 +2283,9 @@ resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClas
 			{{- if eq (len $value) 1}}
 				{{- $child := index $value 0}}
 				{{- if $child.deletable_child}}
-  {{$key}} = {}
+  {{$key}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{getChildVersion $value}}") ? {} : null
 				{{- else }}
-  {{$key}} = {
+  {{$key}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{getChildVersion $value}}") ? {
 				{{- range $child_key, $child_value := $child}}
 					{{- if eq $child_key "children"}}
 						{{- $newCtx := addToChild $child_value "Indent" "  " -}}
@@ -2287,15 +2305,15 @@ resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClas
 				{{- else}}
     {{$child_key}} = []
 				{{- end}}		
-					{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required")}}{{$attributeValue := getTestTargetValue $.child_targets $child_key $child_value}}
+					{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions")}}{{$attributeValue := getTestTargetValue $.child_targets $child_key $child_value}}
     {{$child_key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{- else if isInterfaceSlice $attributeValue}}{{- if lt 0 (len $attributeValue)}}[{{fromInterfacesToString $attributeValue}}]{{else}}[]{{end}}{{else}}"{{$attributeValue}}"{{end}}
 	  				{{- end}}
 				{{- end}}
 				{{- end}}{{ $index = add $index 1 }}
-  }
+  } : null
 				{{- end}}
 			{{- else}}
-  {{$key}} = []
+  {{$key}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{getChildVersion $value}}") ? [] : null
 			{{- end}}
         {{- end}}
 }
@@ -2328,11 +2346,19 @@ resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClas
   {{$key}} = "{{$value}}"
 				{{- end}}
 			{{- end}}
-			{{- range $key, $value := $.legacy_attributes}}
-				{{- if isInterfaceSlice $value}}{{$list_value := index $value 0}}
+			{{- range $key, $value := $.legacy_attributes}}{{$legacyVersion := getLegacyAttributeVersionInTest $key $.legacy_attribute_versions}}
+				{{- if eq $legacyVersion "no_version_found" }}
+					{{- if isInterfaceSlice $value}}{{$list_value := index $value 0}}
   {{$key}} = {{if isReference $list_value}}{{$value}}{{else}}["{{$list_value}}"]{{end}}
-				{{- else}}
+					{{- else}}
   {{$key}} = {{if isReference $value}}{{$value}}{{else}}"{{$value}}"{{end}}
+					{{- end}}
+				{{- else}}
+					{{- if isInterfaceSlice $value}}{{$list_value := index $value 0}}
+  {{$key}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{$legacyVersion}}") ? {{if isReference $list_value}}{{$value}}{{else}}["{{$list_value}}"]{{end}} : null
+					{{- else}}
+  {{$key}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{$legacyVersion}}") ? {{if isReference $value}}{{$value}}{{else}}"{{$value}}"{{end}} : null
+					{{- end}}
 				{{- end}}
 			{{- end}}
 			{{- range $key, $value := $.legacy_blocks}}
@@ -2485,7 +2511,7 @@ resource "aci_{{$.resourceName}}" "test" {
 				{{- else}}
     {{$child_key}} = []
 				{{- end}}		
-					{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required")}}
+					{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions")}}
     {{$child_key}} = "{{$child_value}}"
 	  				{{- end}}
 				{{- end}}
@@ -2508,7 +2534,7 @@ resource "aci_{{$.resourceName}}" "test" {
 					{{- else }}
 						{{- if eq $child_key "target_dn"}}{{$attributeValue := getTestTargetDn $.child_targets $key $child_value true nil $index false}}
 	  {{$child_key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{- else if isInterfaceSlice $attributeValue}}{{- if lt 0 (len $attributeValue)}}[{{fromInterfacesToString $attributeValue}}]{{else}}[]{{end}}{{else}}"{{$attributeValue}}"{{end}}		
-						{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required")}}
+						{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions")}}
 	  {{$child_key}} = "{{$child_value}}"
 	  						{{- end}}
 						{{- end}}
@@ -2587,7 +2613,7 @@ resource "aci_{{$.resourceName}}" "test" {
 				{{- else}}
     {{$child_key}} = []
 				{{- end}}		
-					{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required")}}
+					{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions")}}
     {{$child_key}} = "{{$child_value}}"
 	  				{{- end}}
 				{{- end}}
@@ -2610,7 +2636,7 @@ resource "aci_{{$.resourceName}}" "test" {
 					{{- else }}
 						{{- if eq $child_key "target_dn"}}{{$attributeValue := getTestTargetDn $.child_targets $key $child_value true nil 1 false}}
 	  {{$child_key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{- else if isInterfaceSlice $attributeValue}}{{- if lt 0 (len $attributeValue)}}[{{fromInterfacesToString $attributeValue}}]{{else}}[]{{end}}{{else}}"{{$attributeValue}}"{{end}}
-	  					{{- else }}
+	  					{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions")}}
 	  {{$child_key}} = "{{$child_value}}"
 	  					{{- end}}
 					{{- end}}
@@ -2665,7 +2691,7 @@ resource "aci_{{$.resourceName}}" "test" {
 				{{- else}}
     {{$child_key}} = []
 				{{- end}}		
-					{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required")}}
+					{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions")}}
     {{$child_key}} = "{{$child_value}}"
 	  				{{- end}}
 				{{- end}}
@@ -2757,7 +2783,7 @@ resource "aci_{{$.resourceName}}" "test" {
 				{{- else}}
     {{$indent}}{{$child_key}} = []
 				{{- end}}		
-					{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required")}}
+					{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions")}}
     {{$indent}}{{$child_key}} = "{{$child_value}}"
 	  				{{- end}}
 				{{- end}}
@@ -2780,7 +2806,7 @@ resource "aci_{{$.resourceName}}" "test" {
 					{{- else }}
 						{{- if eq $child_key "target_dn"}}{{$attributeValue := getTestTargetDn $.child_targets $key $child_value true nil $index false}}
       {{$indent}}{{$child_key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{- else if isInterfaceSlice $attributeValue}}{{- if lt 0 (len $attributeValue)}}[{{fromInterfacesToString $attributeValue}}]{{else}}[]{{end}}{{else}}"{{$attributeValue}}"{{end}}		
-						{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required")}}
+						{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions")}}
       {{$indent}}{{$child_key}} = "{{$child_value}}"
 	  						{{- end}}
 						{{- end}}
@@ -2830,7 +2856,7 @@ resource "aci_{{$.resourceName}}" "test" {
 				{{- else}}
     {{$indent}}{{$child_key}} = []
 				{{- end}}			
-					{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required")}}
+					{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions")}}
     {{$indent}}{{$child_key}} = "{{$child_value}}"
 	  				{{- end}}
 				{{- end}}
@@ -2853,7 +2879,7 @@ resource "aci_{{$.resourceName}}" "test" {
 					{{- else }}
 						{{- if eq $child_key "target_dn"}}{{$attributeValue := getTestTargetDn $.child_targets $key $child_value true nil 1 false}}
       {{$indent}}{{$child_key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{- else if isInterfaceSlice $attributeValue}}{{- if lt 0 (len $attributeValue)}}[{{fromInterfacesToString $attributeValue}}]{{else}}[]{{end}}{{else}}"{{$attributeValue}}"{{end}}
-	  					{{- else }}
+	  					{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions")}}
       {{$indent}}{{$child_key}} = "{{$child_value}}"
 	  					{{- end}}
 					{{- end}}
@@ -2901,7 +2927,7 @@ resource "aci_{{$.resourceName}}" "test" {
 				{{- else}}
     {{$indent}}{{$child_key}} = []
 				{{- end}}			
-					{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required")}}{{$attributeValue := getTestTargetValue $.child_targets $child_key $child_value}}
+					{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions")}}{{$attributeValue := getTestTargetValue $.child_targets $child_key $child_value}}
     {{$indent}}{{$child_key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{- else if isInterfaceSlice $attributeValue}}{{- if lt 0 (len $attributeValue)}}[{{fromInterfacesToString $attributeValue}}]{{else}}[]{{end}}{{else}}"{{$attributeValue}}"{{end}}
 	  				{{- end}}
 				{{- end}}
@@ -2947,7 +2973,7 @@ resource "aci_{{$.resourceName}}" "test" {
 								{{- range $index, $subvalue := $child_value}}
 						resource.TestCheckResourceAttr("{{$resourceName}}", "{{$inheritedKey}}.{{$key}}.{{$child_key}}.{{$index}}", "{{$subvalue}}"),
 							{{- end}}
-						{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required")}}
+						{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions")}}
 						resource.TestCheckResourceAttr("{{$resourceName}}", "{{$inheritedKey}}.{{$key}}.{{$child_key}}", "{{$child_value}}"),
 							{{- end}}
 						{{- end}}
@@ -2969,7 +2995,7 @@ resource "aci_{{$.resourceName}}" "test" {
 						{{- else }}
 					{{- if eq $child_key "target_dn"}}
 	  				resource.TestCheckResourceAttr("{{$resourceName}}{{- if eq $resourceClassName $parentClassName }}_1{{- end }}", "{{$inheritedKey}}.{{$key}}.{{$child_index}}.{{$child_key}}", "{{getTestTargetDn $.child_targets $key $child_value false nil $child_index false}}"),		
-					{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required")}}
+					{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions")}}
 					resource.TestCheckResourceAttr("{{$resourceName}}{{- if eq $resourceClassName $parentClassName }}_1{{- end }}", "{{$inheritedKey}}.{{$key}}.{{$child_index}}.{{$child_key}}", "{{$child_value}}"),
 						{{- end}}
 					{{- end}}
@@ -3010,7 +3036,7 @@ resource "aci_{{$.resourceName}}" "test" {
 								{{- range $index, $subvalue := $child_value}}
 						resource.TestCheckResourceAttr("{{$resourceName}}{{- if eq $resourceClassName $parentClassName }}_1{{- end }}", "{{$inheritedKey}}.{{$key}}.{{$child_key}}.{{$index}}", "{{$subvalue}}"),
 								{{- end}}
-						{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required")}}
+						{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions")}}
 						resource.TestCheckResourceAttr("{{$resourceName}}{{- if eq $resourceClassName $parentClassName }}_1{{- end }}", "{{$inheritedKey}}.{{$key}}.{{$child_key}}", "{{$child_value}}"),
 							{{- end}}
 						{{- end}}
@@ -3031,7 +3057,7 @@ resource "aci_{{$.resourceName}}" "test" {
 						{{- else }}
 					{{- if eq $child_key "target_dn"}}
 	  				resource.TestCheckResourceAttr("{{$resourceName}}{{- if eq $resourceClassName $parentClassName }}_1{{- end }}", "{{$inheritedKey}}.{{$key}}.{{$child_index}}.{{$child_key}}", "{{getTestTargetDn $.child_targets $key $child_value false nil $child_index false}}"),		
-					{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required")}}
+					{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions")}}
 					resource.TestCheckResourceAttr("{{$resourceName}}{{- if eq $resourceClassName $parentClassName }}_1{{- end }}", "{{$inheritedKey}}.{{$key}}.{{$child_index}}.{{$child_key}}", "{{$child_value}}"),
 						{{- end}}
 					{{- end}}
@@ -3074,7 +3100,7 @@ resource "aci_{{$.resourceName}}" "test" {
 							{{- range $index, $subvalue := $child_value}}
 					resource.TestCheckResourceAttr("{{$resourceName}}{{- if eq $resourceClassName $parentClassName }}_1{{- end }}", "{{$inheritedKey}}.{{$key}}.{{$child_key}}.{{$index}}", "{{$subvalue}}"),
 							{{- end}}	
-						{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required")}}
+						{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions")}}
 					resource.TestCheckResourceAttr("{{$resourceName}}{{- if eq $resourceClassName $parentClassName }}_1{{- end }}", "{{$inheritedKey}}.{{$key}}.{{$child_key}}", "{{$child_value}}"),
 							{{- end}}
 						{{- end}}
@@ -3095,7 +3121,7 @@ resource "aci_{{$.resourceName}}" "test" {
 						{{- else }}
 					{{- if eq $child_key "target_dn"}}
 	  				resource.TestCheckResourceAttr("{{$resourceName}}{{- if eq $resourceClassName $parentClassName }}_1{{- end }}", "{{$inheritedKey}}.{{$key}}.0.{{$child_key}}", "{{getTestTargetDn $.child_targets $key $child_value false nil 1 false}}"),
-					{{- else}}
+					{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions")}}
 					resource.TestCheckResourceAttr("{{$resourceName}}{{- if eq $resourceClassName $parentClassName }}_1{{- end }}", "{{$inheritedKey}}.{{$key}}.0.{{$child_key}}", "{{$child_value}}"),
 							{{- end}}
 						{{- end}}
@@ -3135,7 +3161,7 @@ resource "aci_{{$.resourceName}}" "test" {
 							{{- range $index, $subvalue := $child_value}}
 					resource.TestCheckResourceAttr("{{$resourceName}}{{- if eq $resourceClassName $parentClassName }}_1{{- end }}", "{{$inheritedKey}}.{{$key}}.{{$child_key}}.{{$index}}", "{{$subvalue}}"),
 							{{- end}}
-						{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required")}}
+						{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions")}}
 					resource.TestCheckResourceAttr("{{$resourceName}}{{- if eq $resourceClassName $parentClassName }}_1{{- end }}", "{{$inheritedKey}}.{{$key}}.{{$child_key}}", "{{$child_value}}"),
 							{{- end}}
 						{{- end}}
@@ -3177,7 +3203,7 @@ resource "aci_{{$.resourceName}}" "test" {
 								{{- range $index, $subvalue := $child_value}}
 						resource.TestCheckResourceAttr("{{$resourceName}}", "{{$inheritedKey}}.{{$key}}.{{$child_key}}.{{$index}}", "{{$subvalue}}"),
 								{{- end}}
-						{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required")}}
+						{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions")}}
 						resource.TestCheckResourceAttr("{{$resourceName}}", "{{$inheritedKey}}.{{$key}}.{{$child_key}}", "{{$child_value}}"),
 								{{- end}}
 						{{- end}}
@@ -3198,7 +3224,7 @@ resource "aci_{{$.resourceName}}" "test" {
 						{{- else }}
 					{{- if eq $child_key "target_dn"}}
 	  				resource.TestCheckResourceAttr("{{$resourceName}}", "{{$inheritedKey}}.{{$key}}.{{$child_index}}.{{$child_key}}", "{{getTestTargetDn $.child_targets $key $child_value false nil $child_index false}}"),		
-					{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required")}}
+					{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions")}}
 					resource.TestCheckResourceAttr("{{$resourceName}}", "{{$inheritedKey}}.{{$key}}.{{$child_index}}.{{$child_key}}", "{{$child_value}}"),
 						{{- end}}
 					{{- end}}
@@ -3239,7 +3265,7 @@ resource "aci_{{$.resourceName}}" "test" {
 								{{- range $index, $subvalue := $child_value}}
 						resource.TestCheckResourceAttr("{{$resourceName}}", "{{$inheritedKey}}.{{$key}}.{{$child_key}}.{{$index}}", "{{$subvalue}}"),
 							{{- end}}	
-						{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required")}}
+						{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions")}}
 						resource.TestCheckResourceAttr("{{$resourceName}}", "{{$inheritedKey}}.{{$key}}.{{$child_key}}", "{{$child_value}}"),
 							{{- end}}
 						{{- end}}
@@ -3260,7 +3286,7 @@ resource "aci_{{$.resourceName}}" "test" {
 						{{- else }}
 					{{- if eq $child_key "target_dn"}}
 	  				resource.TestCheckResourceAttr("{{$resourceName}}", "{{$inheritedKey}}.{{$key}}.{{$child_index}}.{{$child_key}}", "{{getTestTargetDn $.child_targets $key $child_value false nil $child_index false}}"),		
-					{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required")}}
+					{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions")}}
 					resource.TestCheckResourceAttr("{{$resourceName}}", "{{$inheritedKey}}.{{$key}}.{{$child_index}}.{{$child_key}}", "{{$child_value}}"),
 								{{- end}}
 							{{- end}}
@@ -3301,7 +3327,7 @@ resource "aci_{{$.resourceName}}" "test" {
 							{{- range $index, $subvalue := $child_value}}
 					resource.TestCheckResourceAttr("{{$resourceName}}", "{{$inheritedKey}}.{{$key}}.{{$child_key}}.{{$index}}", "{{$subvalue}}"),
 							{{- end}}
-						{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required")}}
+						{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions")}}
 					resource.TestCheckResourceAttr("{{$resourceName}}", "{{$inheritedKey}}.{{$key}}.{{$child_key}}", "{{$child_value}}"),
 							{{- end}}
 						{{- end}}
@@ -3322,7 +3348,7 @@ resource "aci_{{$.resourceName}}" "test" {
 						{{- else }}
 					{{- if eq $child_key "target_dn"}}
 	  				resource.TestCheckResourceAttr("{{$resourceName}}", "{{$inheritedKey}}.{{$key}}.0.{{$child_key}}", "{{getTestTargetDn $.child_targets $key $child_value false nil 1 false}}"),
-					{{- else}}
+					{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions")}}
 					resource.TestCheckResourceAttr("{{$resourceName}}", "{{$inheritedKey}}.{{$key}}.0.{{$child_key}}", "{{$child_value}}"),
 							{{- end}}
 						{{- end}}
@@ -3355,7 +3381,7 @@ resource "aci_{{$.resourceName}}" "test" {
 									{{- end }}{{- end }}),
 								{{- end }}
 						{{- else }}
-						{{- if and (ne $child_key "deletable_child") (ne $child_key "child_required")}}
+						{{- if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions")}}
 					resource.TestCheckResourceAttr("{{$resourceName}}", "{{$inheritedKey}}.{{$key}}.{{$child_key}}", "{{$child_value}}"),
 						{{- else if (isInterfaceSlice $child_value)}}
 					resource.TestCheckResourceAttr("{{$resourceName}}", "{{$inheritedKey}}.{{$key}}.{{$child_key}}.#", "{{len $child_value}}"),
@@ -3386,7 +3412,7 @@ resource "aci_{{$.resourceName}}" "test" {
             knownvalue.MapExact(
                 map[string]knownvalue.Check{
             {{- range $child_key, $child_value := $child}}
-                {{- if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "version_mismatch") (ne $child_key "children") }}
+                {{- if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions") (ne $child_key "version_mismatch") (ne $child_key "children") }}
                     "{{$child_key}}": knownvalue.Null(),
                 {{- else if eq $child_key "version_mismatch"}}
                     {{- range $version, $attributes := $child_value }}
@@ -3430,7 +3456,7 @@ resource "aci_{{$.resourceName}}" "test" {
             knownvalue.MapExact(
                 map[string]knownvalue.Check{
             {{- range $child_key, $child_value := $child}}
-                {{- if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "version_mismatch") (ne $child_key "children") }}
+                {{- if and (ne $child_key "deletable_child") (ne $child_key "child_required") (ne $child_key "child_versions") (ne $child_key "version_mismatch") (ne $child_key "children") }}
                     "{{$child_key}}": knownvalue.Null(),
                 {{- else if eq $child_key "version_mismatch"}}
                     {{- range $version, $attributes := $child_value }}
