@@ -208,6 +208,7 @@ func (p *AciProvider) Resources(ctx context.Context) []func() resource.Resource 
 	return []func() resource.Resource{
 		NewCommPolResource,
 		NewEigrpCtxAfPolResource,
+		NewFabricLinkFlapPolResource,
 		NewFhsBDPolResource,
 		NewFhsTrustCtrlPolResource,
 		NewFvAEPgResource,
@@ -311,6 +312,7 @@ func (p *AciProvider) DataSources(ctx context.Context) []func() datasource.DataS
 	return []func() datasource.DataSource{
 		NewCommPolDataSource,
 		NewEigrpCtxAfPolDataSource,
+		NewFabricLinkFlapPolDataSource,
 		NewFhsBDPolDataSource,
 		NewFhsTrustCtrlPolDataSource,
 		NewFvAEPgDataSource,

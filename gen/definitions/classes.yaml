@@ -1266,3 +1266,12 @@ infraRsAccBndlSubgrp:
 
 infraAccBndlSubgrp:
   resource_name: "leaf_access_bundle_policy_sub_group"
+
+fabricLinkFlapPol:
+  resource_name: "link_flap_interface_policy"
+  sub_category: "Access Policies"
+  ui_locations:
+    - "Fabric -> Access Policies -> Policies -> Interface -> Link Flap"
+  contained_by:
+    - "polUni"
+  rn_prepend: "infra"
