@@ -60,6 +60,8 @@ data "aci_annotation" "example_application_epg" {
   - [aci_cloud_external_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/cloud_external_epg) ([cloudExtEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/cloudExtEPg/overview))
   - [aci_cloud_service_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/cloud_service_epg) ([cloudSvcEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/cloudSvcEPg/overview))
   - [aci_management_access_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/management_access_policy) ([commPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/commPol/overview))
+  - [aci_copp_interface_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/copp_interface_policy) ([coppIfPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/coppIfPol/overview))
+  - [aci_copp_interface_protocol_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/copp_interface_protocol_policy) ([coppProtoClassP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/coppProtoClassP/overview))
   - [aci_dhcp_relay_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/dhcp_relay_policy) ([dhcpRelayP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/dhcpRelayP/overview))
   - [aci_eigrp_address_family_context](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/eigrp_address_family_context) ([eigrpCtxAfPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/eigrpCtxAfPol/overview))
   - [aci_first_hop_security_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/first_hop_security_policy) ([fhsBDPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fhsBDPol/overview))
@@ -72,8 +74,6 @@ data "aci_annotation" "example_application_epg" {
   - [aci_epg_useg_dns_attribute](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/epg_useg_dns_attribute) ([fvDnsAttr](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvDnsAttr/overview))
   - [aci_endpoint_security_group](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/endpoint_security_group) ([fvESg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvESg/overview))
   - [aci_endpoint_tag_ip](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/endpoint_tag_ip) ([fvEpIpTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvEpIpTag/overview))
-  - [aci_endpoint_tag_mac](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/endpoint_tag_mac) ([fvEpMacTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvEpMacTag/overview))
-  - [aci_end_point_retention_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/end_point_retention_policy) ([fvEpRetPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvEpRetPol/overview))
 * `key` (key) - (string) The key used to uniquely identify this configuration object.
 
 ### Read-Only ###
