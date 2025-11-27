@@ -1,0 +1,9 @@
+children:
+    - coppProtoClassP
+contained_by:
+    - polUni
+resource_name: copp_interface_policy
+rn_prepend: infra
+sub_category: Access Policies
+ui_locations:
+    - Fabric -> Access Policies -> Policies -> Interface -> CoPP Interface
