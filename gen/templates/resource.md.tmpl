@@ -123,8 +123,8 @@ All examples for the {{.ResourceNameAsDescription}} resource can be found in the
       {{- if eq .ValueType "bitmask"}}
 * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (list) {{.Comment}}{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
         {{- if .DefaultValue }}
-          {{- if eq .DefaultValue "@aci_gen_default_value_overwrite_to_empty_string!"}}
-  - Default: `""`
+          {{- if eq .DefaultValue "@aci_gen_default_value_overwrite_to_empty_list!"}}
+  - Default: `[]`
           {{- else}}
   - Default: `"{{ .DefaultValue }}"`
           {{- end}}
@@ -241,6 +241,8 @@ import {
         {{- if .DefaultValue }}
           {{- if eq .DefaultValue "@aci_gen_default_value_overwrite_to_empty_string!"}}
       {{ $indent }}- Default: `""`
+          {{- else if eq .DefaultValue "@aci_gen_default_value_overwrite_to_empty_list!"}}
+      {{ $indent }}- Default: `[]`
           {{- else}}
       {{ $indent }}- Default: `"{{ .DefaultValue }}"`
           {{- end}}
