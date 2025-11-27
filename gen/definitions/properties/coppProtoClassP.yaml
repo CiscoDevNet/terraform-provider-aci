@@ -1,0 +1,20 @@
+default_values:
+    matchProto: '@aci_gen_default_value_overwrite_to_empty_list!'
+documentation:
+    burst: The burst size of the %s object.
+    matchProto: The protocols to match in the %s object.
+    rate: The rate of the %s object.
+overwrites:
+    copp_interface_protocol_policys: protocol_policies
+    match_proto: match_protocols
+test_values:
+    all:
+        burst: "15"
+        match_protocols:
+            - arp
+            - bfd
+        rate: "15"
+    default:
+        burst: "10"
+        match_protocols: []
+        rate: "10"
