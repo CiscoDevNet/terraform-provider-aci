@@ -19,6 +19,7 @@ var classVersions = map[string]string{
 	"dwdmIfPol":                  "3.1(1i)-",
 	"eigrpCtxAfPol":              "1.1(1j)-",
 	"fabricHIfPol":               "1.0(1e)-",
+	"fabricLinkFlapPol":          "4.2(5k)-",
 	"fcIfPol":                    "2.0(1m)-",
 	"fhsBDPol":                   "3.0(1k)-",
 	"fhsRaGuardPol":              "3.0(1k)-",

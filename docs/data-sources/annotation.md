@@ -66,6 +66,7 @@ data "aci_annotation" "example_application_epg" {
   - [aci_dwdm_interface_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/dwdm_interface_policy) ([dwdmIfPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/dwdmIfPol/overview))
   - [aci_eigrp_address_family_context](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/eigrp_address_family_context) ([eigrpCtxAfPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/eigrpCtxAfPol/overview))
   - [aci_link_level_interface_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/link_level_interface_policy) ([fabricHIfPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fabricHIfPol/overview))
+  - [aci_link_flap_interface_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/link_flap_interface_policy) ([fabricLinkFlapPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fabricLinkFlapPol/overview))
   - [aci_fibre_channel_interface_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/fibre_channel_interface_policy) ([fcIfPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fcIfPol/overview))
   - [aci_first_hop_security_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/first_hop_security_policy) ([fhsBDPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fhsBDPol/overview))
   - [aci_trust_control_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/trust_control_policy) ([fhsTrustCtrlPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fhsTrustCtrlPol/overview))
@@ -73,7 +74,6 @@ data "aci_annotation" "example_application_epg" {
   - [aci_application_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/application_profile) ([fvAp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvAp/overview))
   - [aci_bridge_domain](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bridge_domain) ([fvBD](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvBD/overview))
   - [aci_epg_useg_block_statement](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/epg_useg_block_statement) ([fvCrtrn](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvCrtrn/overview))
-  - [aci_vrf](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vrf) ([fvCtx](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvCtx/overview))
 * `key` (key) - (string) The key used to uniquely identify this configuration object.
 
 ### Read-Only ###

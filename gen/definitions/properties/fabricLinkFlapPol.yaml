@@ -1,0 +1,10 @@
+documentation:
+    linkFlapErrorMax: The maximum amount of link flaps allowed before the port goes into error disabled mode. The value must be in the range 2 - 30.
+    linkFlapErrorSeconds: The duration in seconds to reach the maximum amount of link flaps before the port goes into error disabled mode. The value must be in the range 5 - 420.
+overwrites:
+    link_flap_error_max: maximum_flaps
+    link_flap_error_seconds: allowed_time_for_flaps
+test_values:
+    all:
+        allowed_time_for_flaps: "350"
+        maximum_flaps: "10"
