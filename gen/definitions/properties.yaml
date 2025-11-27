@@ -90,6 +90,7 @@ global:
     Pc Vpc Override Policy: "PC VPC Override Policy"
     Fex: "FEX"
     From Attachable Access Entity Profile To Domains: "To Domains"
+    Dwdm: "DWDM"
   ignores:
     - "userdom"
 
@@ -2895,3 +2896,8 @@ infraRsAccBndlSubgrp:
       # Response Status Code: 400, Error Code: 182, Error Message: Validation failed PortBlk has a reln to AccBndlSubgrp not contained by AccBndlGrp its parent is associated to.
       target_dn: ""
 
+dwdmIfPol:
+  overwrites:
+    fcot_channel_number: channel_nummber
+  documentation:
+    fcotChannelNumber: "The channel number of the %s object."
