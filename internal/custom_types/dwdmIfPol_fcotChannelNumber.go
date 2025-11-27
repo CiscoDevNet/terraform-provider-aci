@@ -1,0 +1,248 @@
+package customTypes
+
+import (
+	"context"
+	"fmt"
+
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
+	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
+	"github.com/hashicorp/terraform-plugin-go/tftypes"
+)
+
+// DwdmIfPolFcotChannelNumber custom string type.
+
+var _ basetypes.StringTypable = DwdmIfPolFcotChannelNumberStringType{}
+
+type DwdmIfPolFcotChannelNumberStringType struct {
+	basetypes.StringType
+}
+
+func (t DwdmIfPolFcotChannelNumberStringType) Equal(o attr.Type) bool {
+	other, ok := o.(DwdmIfPolFcotChannelNumberStringType)
+
+	if !ok {
+		return false
+	}
+
+	return t.StringType.Equal(other.StringType)
+}
+
+func (t DwdmIfPolFcotChannelNumberStringType) String() string {
+	return "DwdmIfPolFcotChannelNumberStringType"
+}
+
+func (t DwdmIfPolFcotChannelNumberStringType) ValueFromString(ctx context.Context, in basetypes.StringValue) (basetypes.StringValuable, diag.Diagnostics) {
+	value := DwdmIfPolFcotChannelNumberStringValue{
+		StringValue: in,
+	}
+
+	return value, nil
+}
+
+func (t DwdmIfPolFcotChannelNumberStringType) ValueFromTerraform(ctx context.Context, in tftypes.Value) (attr.Value, error) {
+	attrValue, err := t.StringType.ValueFromTerraform(ctx, in)
+
+	if err != nil {
+		return nil, err
+	}
+
+	stringValue, ok := attrValue.(basetypes.StringValue)
+
+	if !ok {
+		return nil, fmt.Errorf("unexpected value type of %T", attrValue)
+	}
+
+	stringValuable, diags := t.ValueFromString(ctx, stringValue)
+
+	if diags.HasError() {
+		return nil, fmt.Errorf("unexpected error converting StringValue to StringValuable: %v", diags)
+	}
+
+	return stringValuable, nil
+}
+
+func (t DwdmIfPolFcotChannelNumberStringType) ValueType(ctx context.Context) attr.Value {
+	return DwdmIfPolFcotChannelNumberStringValue{}
+}
+
+// DwdmIfPolFcotChannelNumber custom string value.
+
+var _ basetypes.StringValuableWithSemanticEquals = DwdmIfPolFcotChannelNumberStringValue{}
+
+type DwdmIfPolFcotChannelNumberStringValue struct {
+	basetypes.StringValue
+}
+
+func (v DwdmIfPolFcotChannelNumberStringValue) Equal(o attr.Value) bool {
+	other, ok := o.(DwdmIfPolFcotChannelNumberStringValue)
+
+	if !ok {
+		return false
+	}
+
+	return v.StringValue.Equal(other.StringValue)
+}
+
+func (v DwdmIfPolFcotChannelNumberStringValue) Type(ctx context.Context) attr.Type {
+	return DwdmIfPolFcotChannelNumberStringType{}
+}
+
+func (v DwdmIfPolFcotChannelNumberStringValue) StringSemanticEquals(ctx context.Context, newValuable basetypes.StringValuable) (bool, diag.Diagnostics) {
+	var diags diag.Diagnostics
+
+	newValue, ok := newValuable.(DwdmIfPolFcotChannelNumberStringValue)
+
+	if !ok {
+		diags.AddError(
+			"Semantic Equality Check Error",
+			"An unexpected value type was received while performing semantic equality checks. "+
+				"Please report this to the provider developers.\n\n"+
+				"Expected Value Type: "+fmt.Sprintf("%T", v)+"\n"+
+				"Got Value Type: "+fmt.Sprintf("%T", newValuable),
+		)
+
+		return false, diags
+	}
+
+	priorMappedValue := DwdmIfPolFcotChannelNumberValueMap(v.StringValue)
+
+	newMappedValue := DwdmIfPolFcotChannelNumberValueMap(newValue.StringValue)
+
+	return priorMappedValue.Equal(newMappedValue), diags
+}
+
+func (v DwdmIfPolFcotChannelNumberStringValue) NamedValueString() string {
+	return DwdmIfPolFcotChannelNumberValueMap(basetypes.NewStringValue(v.ValueString())).ValueString()
+}
+
+func DwdmIfPolFcotChannelNumberValueMap(value basetypes.StringValue) basetypes.StringValue {
+	matchMap := map[string]string{
+		"1":  "Channel1",
+		"10": "Channel10",
+		"11": "Channel11",
+		"12": "Channel12",
+		"13": "Channel13",
+		"14": "Channel14",
+		"15": "Channel15",
+		"16": "Channel16",
+		"17": "Channel17",
+		"18": "Channel18",
+		"19": "Channel19",
+		"2":  "Channel2",
+		"20": "Channel20",
+		"21": "Channel21",
+		"22": "Channel22",
+		"23": "Channel23",
+		"24": "Channel24",
+		"25": "Channel25",
+		"26": "Channel26",
+		"27": "Channel27",
+		"28": "Channel28",
+		"29": "Channel29",
+		"3":  "Channel3",
+		"30": "Channel30",
+		"31": "Channel31",
+		"32": "Channel32",
+		"33": "Channel33",
+		"34": "Channel34",
+		"35": "Channel35",
+		"36": "Channel36",
+		"37": "Channel37",
+		"38": "Channel38",
+		"39": "Channel39",
+		"4":  "Channel4",
+		"40": "Channel40",
+		"41": "Channel41",
+		"42": "Channel42",
+		"43": "Channel43",
+		"44": "Channel44",
+		"45": "Channel45",
+		"46": "Channel46",
+		"47": "Channel47",
+		"48": "Channel48",
+		"49": "Channel49",
+		"5":  "Channel5",
+		"50": "Channel50",
+		"51": "Channel51",
+		"52": "Channel52",
+		"53": "Channel53",
+		"54": "Channel54",
+		"55": "Channel55",
+		"56": "Channel56",
+		"57": "Channel57",
+		"58": "Channel58",
+		"59": "Channel59",
+		"6":  "Channel6",
+		"60": "Channel60",
+		"61": "Channel61",
+		"62": "Channel62",
+		"63": "Channel63",
+		"64": "Channel64",
+		"65": "Channel65",
+		"66": "Channel66",
+		"67": "Channel67",
+		"68": "Channel68",
+		"69": "Channel69",
+		"7":  "Channel7",
+		"70": "Channel70",
+		"71": "Channel71",
+		"72": "Channel72",
+		"73": "Channel73",
+		"74": "Channel74",
+		"75": "Channel75",
+		"76": "Channel76",
+		"77": "Channel77",
+		"78": "Channel78",
+		"79": "Channel79",
+		"8":  "Channel8",
+		"80": "Channel80",
+		"81": "Channel81",
+		"82": "Channel82",
+		"83": "Channel83",
+		"84": "Channel84",
+		"85": "Channel85",
+		"86": "Channel86",
+		"87": "Channel87",
+		"88": "Channel88",
+		"89": "Channel89",
+		"9":  "Channel9",
+		"90": "Channel90",
+		"91": "Channel91",
+		"92": "Channel92",
+		"93": "Channel93",
+		"94": "Channel94",
+		"95": "Channel95",
+		"96": "Channel96",
+	}
+
+	if val, ok := matchMap[value.ValueString()]; ok {
+		return basetypes.NewStringValue(val)
+	}
+
+	return value
+}
+
+func NewDwdmIfPolFcotChannelNumberStringNull() DwdmIfPolFcotChannelNumberStringValue {
+	return DwdmIfPolFcotChannelNumberStringValue{
+		StringValue: basetypes.NewStringNull(),
+	}
+}
+
+func NewDwdmIfPolFcotChannelNumberStringUnknown() DwdmIfPolFcotChannelNumberStringValue {
+	return DwdmIfPolFcotChannelNumberStringValue{
+		StringValue: basetypes.NewStringUnknown(),
+	}
+}
+
+func NewDwdmIfPolFcotChannelNumberStringValue(value string) DwdmIfPolFcotChannelNumberStringValue {
+	return DwdmIfPolFcotChannelNumberStringValue{
+		StringValue: basetypes.NewStringValue(value),
+	}
+}
+
+func NewDwdmIfPolFcotChannelNumberStringPointerValue(value *string) DwdmIfPolFcotChannelNumberStringValue {
+	return DwdmIfPolFcotChannelNumberStringValue{
+		StringValue: basetypes.NewStringPointerValue(value),
+	}
+}

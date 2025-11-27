@@ -1290,6 +1290,11 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 						{{- else }}
 					{{- if eq $child_key "target_dn"}}
 	  				resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$child_index}}.{{$child_key}}", "{{getTestTargetDn $.child_targets $key $child_value false nil $child_index false}}"),		
+					{{- else if (isInterfaceSlice $child_value)}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$child_index}}.{{$child_key}}.#", "{{len $child_value}}"),
+							{{- range $index, $subvalue := $child_value}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$child_index}}.{{$child_key}}.{{$index}}", "{{$subvalue}}"),
+							{{- end}}
 					{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required")}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$child_index}}.{{$child_key}}", "{{$child_value}}"),
 						{{- end}}
@@ -1392,9 +1397,14 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 									{{- end }}),
 								{{- end }}
 						{{- else }}
-					{{- if eq $child_key "target_dn"}}
+						{{- if eq $child_key "target_dn"}}
 	  				resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$child_index}}.{{$child_key}}", "{{getTestTargetDn $.child_targets $key $child_value false nil $child_index false}}"),		
-					{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required")}}
+						{{- else if (isInterfaceSlice $child_value)}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$child_index}}.{{$child_key}}.#", "{{len $child_value}}"),
+								{{- range $index, $subvalue := $child_value}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$child_index}}.{{$child_key}}.{{$index}}", "{{$subvalue}}"),
+								{{- end}}
+						{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required")}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$child_index}}.{{$child_key}}", "{{$child_value}}"),
 								{{- end}}
 							{{- end}}
@@ -1496,9 +1506,14 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 									{{- end }}),
 								{{- end }}
 						{{- else }}
-					{{- if eq $child_key "target_dn"}}
+						{{- if eq $child_key "target_dn"}}
 	  				resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.0.{{$child_key}}", "{{getTestTargetDn $.child_targets $key $child_value false nil 1 false}}"),
-					{{- else}}
+						{{- else if (isInterfaceSlice $child_value)}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.0.{{$child_key}}.#", "{{len $child_value}}"),
+							{{- range $index, $subvalue := $child_value}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.0.{{$child_key}}.{{$index}}", "{{$subvalue}}"),
+							{{- end}}
+						{{- else}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.0.{{$child_key}}", "{{$child_value}}"),
 							{{- end}}
 						{{- end}}
@@ -2508,6 +2523,12 @@ resource "aci_{{$.resourceName}}" "test" {
 					{{- else }}
 						{{- if eq $child_key "target_dn"}}{{$attributeValue := getTestTargetDn $.child_targets $key $child_value true nil $index false}}
 	  {{$child_key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{- else if isInterfaceSlice $attributeValue}}{{- if lt 0 (len $attributeValue)}}[{{fromInterfacesToString $attributeValue}}]{{else}}[]{{end}}{{else}}"{{$attributeValue}}"{{end}}		
+						{{- else if (isInterfaceSlice $child_value)}}
+							{{- if lt 0 (len $child_value)}}
+      {{$child_key}} = [{{range $index, $subvalue := $child_value}}{{if lt $index (subtract (len $child_value) 1)}}"{{$subvalue}}", {{else}}"{{$subvalue}}"{{end}}{{end}}]
+							{{- else}}
+      {{$child_key}} = []
+							{{- end}}
 						{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required")}}
 	  {{$child_key}} = "{{$child_value}}"
 	  						{{- end}}
@@ -2537,7 +2558,7 @@ resource "aci_{{$.resourceName}}" "test" {
   		{{- range $key, $value := $.resource_required}}
   			{{- if eq $key "target_dn" }}{{$attributeValue := getTestTargetDn $.targets $.resourceName $value true nil 0 false}}
   {{$key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{- else if isInterfaceSlice $attributeValue}}{{- if lt 0 (len $attributeValue)}}[{{fromInterfacesToString $attributeValue}}]{{else}}[]{{end}}{{else}}"{{$attributeValue}}"{{end}}
-  			{{- else }}
+			{{- else }}
   {{$key}} = "{{$value}}"
   			{{- end }}
   		{{- end}}
@@ -2610,7 +2631,13 @@ resource "aci_{{$.resourceName}}" "test" {
 					{{- else }}
 						{{- if eq $child_key "target_dn"}}{{$attributeValue := getTestTargetDn $.child_targets $key $child_value true nil 1 false}}
 	  {{$child_key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{- else if isInterfaceSlice $attributeValue}}{{- if lt 0 (len $attributeValue)}}[{{fromInterfacesToString $attributeValue}}]{{else}}[]{{end}}{{else}}"{{$attributeValue}}"{{end}}
-	  					{{- else }}
+	  					{{- else if (isInterfaceSlice $child_value)}}
+							{{- if lt 0 (len $child_value)}}
+      {{$child_key}} = [{{range $index, $subvalue := $child_value}}{{if lt $index (subtract (len $child_value) 1)}}"{{$subvalue}}", {{else}}"{{$subvalue}}"{{end}}{{end}}]
+							{{- else}}
+      {{$child_key}} = []
+							{{- end}}
+						{{- else }}
 	  {{$child_key}} = "{{$child_value}}"
 	  					{{- end}}
 					{{- end}}
@@ -3170,16 +3197,16 @@ resource "aci_{{$.resourceName}}" "test" {
 									{{- end }}{{- end }}),
 								{{- end }}
 						{{- else }}
-						{{- if eq $child_key "target_dn"}}
+							{{- if eq $child_key "target_dn"}}
 						resource.TestCheckResourceAttr("{{$resourceName}}", "{{$inheritedKey}}.{{$key}}.{{$child_key}}", "{{getTestTargetDn $.child_targets $key $child_value false nil $child_index false}}"),		
-						{{- else if (isInterfaceSlice $child_value)}}
+							{{- else if (isInterfaceSlice $child_value)}}
 						resource.TestCheckResourceAttr("{{$resourceName}}", "{{$inheritedKey}}.{{$key}}.{{$child_key}}.#", "{{len $child_value}}"),
-								{{- range $index, $subvalue := $child_value}}
+									{{- range $index, $subvalue := $child_value}}
 						resource.TestCheckResourceAttr("{{$resourceName}}", "{{$inheritedKey}}.{{$key}}.{{$child_key}}.{{$index}}", "{{$subvalue}}"),
-								{{- end}}
-						{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required")}}
+									{{- end}}
+							{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required")}}
 						resource.TestCheckResourceAttr("{{$resourceName}}", "{{$inheritedKey}}.{{$key}}.{{$child_key}}", "{{$child_value}}"),
-								{{- end}}
+							{{- end}}
 						{{- end}}
 					{{- end}}
 				{{- end }}
@@ -3196,9 +3223,14 @@ resource "aci_{{$.resourceName}}" "test" {
 									{{- end }}),
 								{{- end }}
 						{{- else }}
-					{{- if eq $child_key "target_dn"}}
+						{{- if eq $child_key "target_dn"}}
 	  				resource.TestCheckResourceAttr("{{$resourceName}}", "{{$inheritedKey}}.{{$key}}.{{$child_index}}.{{$child_key}}", "{{getTestTargetDn $.child_targets $key $child_value false nil $child_index false}}"),		
-					{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required")}}
+						{{- else if (isInterfaceSlice $child_value)}}
+					resource.TestCheckResourceAttr("{{$resourceName}}", "{{$inheritedKey}}.{{$key}}.{{$child_key}}.#", "{{len $child_value}}"),
+							{{- range $index, $subvalue := $child_value}}
+					resource.TestCheckResourceAttr("{{$resourceName}}", "{{$inheritedKey}}.{{$key}}.{{$child_key}}.{{$index}}", "{{$subvalue}}"),
+							{{- end}}
+						{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required")}}
 					resource.TestCheckResourceAttr("{{$resourceName}}", "{{$inheritedKey}}.{{$key}}.{{$child_index}}.{{$child_key}}", "{{$child_value}}"),
 						{{- end}}
 					{{- end}}
