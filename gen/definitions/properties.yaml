@@ -2923,3 +2923,26 @@ macsecParamPol:
 macsecKeyChainPol:
   default_values:
     parent_dn: "uni/infra/macsecpcont"
+
+macsecKeyPol:
+  remove_valid_values:
+    endTime:
+      - "infinite"
+    startTime:
+      - "now"
+  documentation:
+    keyName:  "The key name of the %s object."
+    endTime: "The end time of the %s object. The default value cannot be used directly, since APIC will calculate this value to the datetime representation which results in a applied state that does not match the planned state. Do not provide this attribute when APIC should calculate the current datetime ('now'). Furthermore, make sure that the time-zone part (in the full example this is '-08:00') matches the time-zone configured on APIC. Not doing so will result in unexpected behaviour."
+    startTime: "The start time of the %s object. Please make sure that the time-zone part (in the full example this is '-08:00') matches the time-zone configured on APIC. Not doing so will result in unexpected behaviour."
+    preSharedKey: "The  pre-shared key of the %s object."
+  test_values:
+    default:
+      start_time: "2025-11-28T03:12:09.452-08:00"
+    all:
+      start_time: "2025-11-28T03:12:09.452-08:00"
+      pre_shared_key: "123456789a223456789a323456789abc"
+    resource_required:
+      key_name: "aa"
+      start_time: "2025-11-28T03:12:09.452-08:00"
+    datasource_required:
+      key_name: "aa"
