@@ -178,15 +178,24 @@ type VersionResult struct {
 }
 
 func ParseVersion(rawVersion string) VersionResult {
-	versionRegex := regexp.MustCompile(`(\d+)\.(\d+)\((\d+)([a-z])\)`)
+	versionRegex := regexp.MustCompile(`((\d+)\.(\d+)\((\d+)([a-z])\)|(\d+)\.(\d+)\((\d+))`)
 	matches := versionRegex.FindStringSubmatch(rawVersion)
 	if matches == nil {
 		return VersionResult{Error: "unknown"}
 	}
-	major, _ := strconv.Atoi(matches[1])
-	minor, _ := strconv.Atoi(matches[2])
-	patch, _ := strconv.Atoi(matches[3])
-	tag := int(matches[4][0])
+	major, _ := strconv.Atoi(matches[2])
+	minor := 0
+	patch := 0
+	tag := 0
+	if major != 0 {
+		minor, _ = strconv.Atoi(matches[3])
+		patch, _ = strconv.Atoi(matches[4])
+		tag = int(matches[5][0])
+	} else {
+		major, _ = strconv.Atoi(matches[6])
+		minor, _ = strconv.Atoi(matches[7])
+		patch, _ = strconv.Atoi(matches[8])
+	}
 
 	return VersionResult{Version: &Version{Major: major, Minor: minor, Patch: patch, Tag: tag}}
 
