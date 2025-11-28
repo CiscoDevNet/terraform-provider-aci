@@ -90,6 +90,8 @@ global:
     Pc Vpc Override Policy: "PC VPC Override Policy"
     Fex: "FEX"
     From Attachable Access Entity Profile To Domains: "To Domains"
+    Macsec: "MACsec"
+    No Drop Dscp: "No-Drop-DSCP"
   ignores:
     - "userdom"
 
@@ -2895,3 +2897,8 @@ infraRsAccBndlSubgrp:
       # Response Status Code: 400, Error Code: 182, Error Message: Validation failed PortBlk has a reln to AccBndlSubgrp not contained by AccBndlGrp its parent is associated to.
       target_dn: ""
 
+qosNodropDscpMatchIfPol:
+  overwrites:
+    dscp_match_admin_st: admin_state
+  documentation:
+    dscpMatchAdminSt: "The administrative state of the %s object."
