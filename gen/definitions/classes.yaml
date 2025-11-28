@@ -1266,3 +1266,17 @@ infraRsAccBndlSubgrp:
 
 infraAccBndlSubgrp:
   resource_name: "leaf_access_bundle_policy_sub_group"
+
+
+poeIfPol:
+  sub_category: "Access Policies"
+  ui_locations:
+    - "Fabric -> Access Policies -> Policies -> Interface -> PoE"
+  contained_by:
+    - "polUni"
+  rn_prepend: "infra"
+
+poeRsPoeEpg:
+  resource_name: "relation_to_application_epg"
+  relationship_classes:
+    - "fvAEPg"
