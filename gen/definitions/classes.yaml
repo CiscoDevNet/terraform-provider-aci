@@ -1266,3 +1266,46 @@ infraRsAccBndlSubgrp:
 
 infraAccBndlSubgrp:
   resource_name: "leaf_access_bundle_policy_sub_group"
+
+macsecIfPol:
+  resource_name: "macsec_interface_policy"
+  sub_category: "Access Policies"
+  ui_locations:
+    - "Fabric -> Access Policies -> Policies -> Interface -> MACSec -> Interfaces"
+  contained_by:
+    - "polUni"
+  rn_prepend: "infra"
+
+macsecRsToKeyChainPol:
+  resource_name: "relation_to_macsec_key_chain"
+  relationship_classes:
+    - "macsecKeyChainPol"
+
+macsecRsToParamPol:
+  resource_name: "relation_to_macsec_parameters"
+  relationship_classes:
+    - "macsecParamPol"
+
+macsecParamPol:
+  resource_name: "macsec_parameters"
+  sub_category: "Access Policies"
+  ui_locations:
+    - "Fabric -> Access Policies -> Policies -> Interface -> MACSec -> Parameters"
+  contained_by:
+    - "polUni"
+  rn_prepend: "infra/macsecpcont"
+
+macsecKeyChainPol:
+  resource_name: "macsec_key_chain"
+  sub_category: "Access Policies"
+  ui_locations:
+    - "Fabric -> Access Policies -> Policies -> Interface -> MACSec -> MACSec KeyChain Policies"
+    - "Fabric -> Fabric Policies -> Policies -> MACSec -> MACSec KeyChain Policies"
+
+macsecKeyPol:
+  resource_name: "macsec_key"
+  sub_category: "Access Policies"
+  ui_locations:
+    - "Fabric -> Access Policies -> Policies -> Interface -> MACSec -> MACSec KeyChain Policies -> MACSec Key Policy"
+    - "Fabric -> Fabric Policies -> Policies -> MACSec -> MACSec KeyChain Policies -> MACSec Key Policy"
+  class_version: "6.0(2h)-"
