@@ -18,6 +18,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
@@ -43,16 +44,18 @@ type MacsecIfPolResource struct {
 
 // MacsecIfPolResourceModel describes the resource data model.
 type MacsecIfPolResourceModel struct {
-	Id            types.String `tfsdk:"id"`
-	AdminSt       types.String `tfsdk:"admin_state"`
-	Annotation    types.String `tfsdk:"annotation"`
-	Descr         types.String `tfsdk:"description"`
-	Name          types.String `tfsdk:"name"`
-	NameAlias     types.String `tfsdk:"name_alias"`
-	OwnerKey      types.String `tfsdk:"owner_key"`
-	OwnerTag      types.String `tfsdk:"owner_tag"`
-	TagAnnotation types.Set    `tfsdk:"annotations"`
-	TagTag        types.Set    `tfsdk:"tags"`
+	Id                    types.String `tfsdk:"id"`
+	AdminSt               types.String `tfsdk:"admin_state"`
+	Annotation            types.String `tfsdk:"annotation"`
+	Descr                 types.String `tfsdk:"description"`
+	Name                  types.String `tfsdk:"name"`
+	NameAlias             types.String `tfsdk:"name_alias"`
+	OwnerKey              types.String `tfsdk:"owner_key"`
+	OwnerTag              types.String `tfsdk:"owner_tag"`
+	MacsecRsToKeyChainPol types.Object `tfsdk:"relation_to_macsec_key_chain"`
+	MacsecRsToParamPol    types.Object `tfsdk:"relation_to_macsec_parameters"`
+	TagAnnotation         types.Set    `tfsdk:"annotations"`
+	TagTag                types.Set    `tfsdk:"tags"`
 }
 
 func getEmptyMacsecIfPolResourceModel() *MacsecIfPolResourceModel {
@@ -65,6 +68,18 @@ func getEmptyMacsecIfPolResourceModel() *MacsecIfPolResourceModel {
 		NameAlias:  basetypes.NewStringNull(),
 		OwnerKey:   basetypes.NewStringNull(),
 		OwnerTag:   basetypes.NewStringNull(),
+		MacsecRsToKeyChainPol: types.ObjectNull(map[string]attr.Type{
+			"annotation":  types.StringType,
+			"target_dn":   types.StringType,
+			"annotations": types.SetType{ElemType: TagAnnotationMacsecRsToKeyChainPolMacsecIfPolType},
+			"tags":        types.SetType{ElemType: TagTagMacsecRsToKeyChainPolMacsecIfPolType},
+		}),
+		MacsecRsToParamPol: types.ObjectNull(map[string]attr.Type{
+			"annotation":  types.StringType,
+			"target_dn":   types.StringType,
+			"annotations": types.SetType{ElemType: TagAnnotationMacsecRsToParamPolMacsecIfPolType},
+			"tags":        types.SetType{ElemType: TagTagMacsecRsToParamPolMacsecIfPolType},
+		}),
 		TagAnnotation: types.SetNull(types.ObjectType{
 			AttrTypes: map[string]attr.Type{
 				"key":   types.StringType,
@@ -78,6 +93,154 @@ func getEmptyMacsecIfPolResourceModel() *MacsecIfPolResourceModel {
 			},
 		}),
 	}
+}
+
+// MacsecRsToKeyChainPolMacsecIfPolResourceModel describes the resource data model for the children without relation ships.
+type MacsecRsToKeyChainPolMacsecIfPolResourceModel struct {
+	Annotation    types.String `tfsdk:"annotation"`
+	TDn           types.String `tfsdk:"target_dn"`
+	TagAnnotation types.Set    `tfsdk:"annotations"`
+	TagTag        types.Set    `tfsdk:"tags"`
+}
+
+func getEmptyMacsecRsToKeyChainPolMacsecIfPolResourceModel() MacsecRsToKeyChainPolMacsecIfPolResourceModel {
+	return MacsecRsToKeyChainPolMacsecIfPolResourceModel{
+		Annotation: basetypes.NewStringNull(),
+		TDn:        basetypes.NewStringNull(),
+		TagAnnotation: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"key":   types.StringType,
+				"value": types.StringType,
+			},
+		}),
+		TagTag: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"key":   types.StringType,
+				"value": types.StringType,
+			},
+		}),
+	}
+}
+
+var MacsecRsToKeyChainPolMacsecIfPolType = map[string]attr.Type{
+	"annotation":  types.StringType,
+	"target_dn":   types.StringType,
+	"annotations": types.SetType{ElemType: TagAnnotationMacsecRsToKeyChainPolMacsecIfPolType},
+	"tags":        types.SetType{ElemType: TagTagMacsecRsToKeyChainPolMacsecIfPolType},
+}
+
+// TagAnnotationMacsecRsToKeyChainPolMacsecIfPolResourceModel describes the resource data model for the children without relation ships.
+type TagAnnotationMacsecRsToKeyChainPolMacsecIfPolResourceModel struct {
+	Key   types.String `tfsdk:"key"`
+	Value types.String `tfsdk:"value"`
+}
+
+func getEmptyTagAnnotationMacsecRsToKeyChainPolMacsecIfPolResourceModel() TagAnnotationMacsecRsToKeyChainPolMacsecIfPolResourceModel {
+	return TagAnnotationMacsecRsToKeyChainPolMacsecIfPolResourceModel{
+		Key:   basetypes.NewStringNull(),
+		Value: basetypes.NewStringNull(),
+	}
+}
+
+var TagAnnotationMacsecRsToKeyChainPolMacsecIfPolType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
+}
+
+// TagTagMacsecRsToKeyChainPolMacsecIfPolResourceModel describes the resource data model for the children without relation ships.
+type TagTagMacsecRsToKeyChainPolMacsecIfPolResourceModel struct {
+	Key   types.String `tfsdk:"key"`
+	Value types.String `tfsdk:"value"`
+}
+
+func getEmptyTagTagMacsecRsToKeyChainPolMacsecIfPolResourceModel() TagTagMacsecRsToKeyChainPolMacsecIfPolResourceModel {
+	return TagTagMacsecRsToKeyChainPolMacsecIfPolResourceModel{
+		Key:   basetypes.NewStringNull(),
+		Value: basetypes.NewStringNull(),
+	}
+}
+
+var TagTagMacsecRsToKeyChainPolMacsecIfPolType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
+}
+
+// MacsecRsToParamPolMacsecIfPolResourceModel describes the resource data model for the children without relation ships.
+type MacsecRsToParamPolMacsecIfPolResourceModel struct {
+	Annotation    types.String `tfsdk:"annotation"`
+	TDn           types.String `tfsdk:"target_dn"`
+	TagAnnotation types.Set    `tfsdk:"annotations"`
+	TagTag        types.Set    `tfsdk:"tags"`
+}
+
+func getEmptyMacsecRsToParamPolMacsecIfPolResourceModel() MacsecRsToParamPolMacsecIfPolResourceModel {
+	return MacsecRsToParamPolMacsecIfPolResourceModel{
+		Annotation: basetypes.NewStringNull(),
+		TDn:        basetypes.NewStringNull(),
+		TagAnnotation: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"key":   types.StringType,
+				"value": types.StringType,
+			},
+		}),
+		TagTag: types.SetNull(types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"key":   types.StringType,
+				"value": types.StringType,
+			},
+		}),
+	}
+}
+
+var MacsecRsToParamPolMacsecIfPolType = map[string]attr.Type{
+	"annotation":  types.StringType,
+	"target_dn":   types.StringType,
+	"annotations": types.SetType{ElemType: TagAnnotationMacsecRsToParamPolMacsecIfPolType},
+	"tags":        types.SetType{ElemType: TagTagMacsecRsToParamPolMacsecIfPolType},
+}
+
+// TagAnnotationMacsecRsToParamPolMacsecIfPolResourceModel describes the resource data model for the children without relation ships.
+type TagAnnotationMacsecRsToParamPolMacsecIfPolResourceModel struct {
+	Key   types.String `tfsdk:"key"`
+	Value types.String `tfsdk:"value"`
+}
+
+func getEmptyTagAnnotationMacsecRsToParamPolMacsecIfPolResourceModel() TagAnnotationMacsecRsToParamPolMacsecIfPolResourceModel {
+	return TagAnnotationMacsecRsToParamPolMacsecIfPolResourceModel{
+		Key:   basetypes.NewStringNull(),
+		Value: basetypes.NewStringNull(),
+	}
+}
+
+var TagAnnotationMacsecRsToParamPolMacsecIfPolType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
+}
+
+// TagTagMacsecRsToParamPolMacsecIfPolResourceModel describes the resource data model for the children without relation ships.
+type TagTagMacsecRsToParamPolMacsecIfPolResourceModel struct {
+	Key   types.String `tfsdk:"key"`
+	Value types.String `tfsdk:"value"`
+}
+
+func getEmptyTagTagMacsecRsToParamPolMacsecIfPolResourceModel() TagTagMacsecRsToParamPolMacsecIfPolResourceModel {
+	return TagTagMacsecRsToParamPolMacsecIfPolResourceModel{
+		Key:   basetypes.NewStringNull(),
+		Value: basetypes.NewStringNull(),
+	}
+}
+
+var TagTagMacsecRsToParamPolMacsecIfPolType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
 }
 
 // TagAnnotationMacsecIfPolResourceModel describes the resource data model for the children without relation ships.
@@ -126,9 +289,10 @@ type MacsecIfPolIdentifier struct {
 
 func (r *MacsecIfPolResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
 	if !req.Plan.Raw.IsNull() {
-		var planData, stateData *MacsecIfPolResourceModel
+		var planData, stateData, configData *MacsecIfPolResourceModel
 		resp.Diagnostics.Append(req.Plan.Get(ctx, &planData)...)
 		resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
+		resp.Diagnostics.Append(req.Config.Get(ctx, &configData)...)
 
 		if resp.Diagnostics.HasError() {
 			return
@@ -142,6 +306,20 @@ func (r *MacsecIfPolResource) ModifyPlan(ctx context.Context, req resource.Modif
 			CheckDn(ctx, &resp.Diagnostics, r.client, "macsecIfPol", planData.Id.ValueString())
 			if resp.Diagnostics.HasError() {
 				return
+			}
+		}
+
+		if !configData.MacsecRsToKeyChainPol.IsNull() && stateData != nil {
+			if IsEmptySingleNestedAttribute(configData.MacsecRsToKeyChainPol.Attributes()) {
+				MacsecRsToKeyChainPolObject, _ := types.ObjectValueFrom(ctx, MacsecRsToKeyChainPolMacsecIfPolType, getEmptyMacsecRsToKeyChainPolMacsecIfPolResourceModel())
+				planData.MacsecRsToKeyChainPol = MacsecRsToKeyChainPolObject
+			}
+		}
+
+		if !configData.MacsecRsToParamPol.IsNull() && stateData != nil {
+			if IsEmptySingleNestedAttribute(configData.MacsecRsToParamPol.Attributes()) {
+				MacsecRsToParamPolObject, _ := types.ObjectValueFrom(ctx, MacsecRsToParamPolMacsecIfPolType, getEmptyMacsecRsToParamPolMacsecIfPolResourceModel())
+				planData.MacsecRsToParamPol = MacsecRsToParamPolObject
 			}
 		}
 
@@ -235,6 +413,162 @@ func (r *MacsecIfPolResource) Schema(ctx context.Context, req resource.SchemaReq
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
+			},
+			"relation_to_macsec_key_chain": schema.SingleNestedAttribute{
+				MarkdownDescription: `Relation to KeyChainPol`,
+				Optional:            true,
+				Computed:            true,
+				PlanModifiers: []planmodifier.Object{
+					objectplanmodifier.UseNonNullStateForUnknown(),
+				},
+				Attributes: map[string]schema.Attribute{
+					"annotation": schema.StringAttribute{
+						Optional: true,
+						Computed: true,
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.UseNonNullStateForUnknown(),
+						},
+						MarkdownDescription: `The annotation of the Relation To MACsec Key Chain object.`,
+					},
+					"target_dn": schema.StringAttribute{
+						Optional: true,
+						Computed: true,
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.UseNonNullStateForUnknown(),
+						},
+						MarkdownDescription: `The distinguished name of the target.`,
+					},
+					"annotations": schema.SetNestedAttribute{
+						MarkdownDescription: ``,
+						Optional:            true,
+						Computed:            true,
+						PlanModifiers: []planmodifier.Set{
+							setplanmodifier.UseNonNullStateForUnknown(),
+						},
+						NestedObject: schema.NestedAttributeObject{
+							Attributes: map[string]schema.Attribute{
+								"key": schema.StringAttribute{
+									Required: true,
+									PlanModifiers: []planmodifier.String{
+										stringplanmodifier.UseNonNullStateForUnknown(),
+									},
+									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+								},
+								"value": schema.StringAttribute{
+									Required: true,
+									PlanModifiers: []planmodifier.String{
+										stringplanmodifier.UseNonNullStateForUnknown(),
+									},
+									MarkdownDescription: `The value of the property.`,
+								},
+							},
+						},
+					},
+					"tags": schema.SetNestedAttribute{
+						MarkdownDescription: ``,
+						Optional:            true,
+						Computed:            true,
+						PlanModifiers: []planmodifier.Set{
+							setplanmodifier.UseNonNullStateForUnknown(),
+						},
+						NestedObject: schema.NestedAttributeObject{
+							Attributes: map[string]schema.Attribute{
+								"key": schema.StringAttribute{
+									Required: true,
+									PlanModifiers: []planmodifier.String{
+										stringplanmodifier.UseNonNullStateForUnknown(),
+									},
+									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+								},
+								"value": schema.StringAttribute{
+									Required: true,
+									PlanModifiers: []planmodifier.String{
+										stringplanmodifier.UseNonNullStateForUnknown(),
+									},
+									MarkdownDescription: `The value of the property.`,
+								},
+							},
+						},
+					},
+				},
+			},
+			"relation_to_macsec_parameters": schema.SingleNestedAttribute{
+				MarkdownDescription: `Relation to IfPol`,
+				Optional:            true,
+				Computed:            true,
+				PlanModifiers: []planmodifier.Object{
+					objectplanmodifier.UseNonNullStateForUnknown(),
+				},
+				Attributes: map[string]schema.Attribute{
+					"annotation": schema.StringAttribute{
+						Optional: true,
+						Computed: true,
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.UseNonNullStateForUnknown(),
+						},
+						MarkdownDescription: `The annotation of the Relation To MACsec Parameters object.`,
+					},
+					"target_dn": schema.StringAttribute{
+						Optional: true,
+						Computed: true,
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.UseNonNullStateForUnknown(),
+						},
+						MarkdownDescription: `The distinguished name of the target.`,
+					},
+					"annotations": schema.SetNestedAttribute{
+						MarkdownDescription: ``,
+						Optional:            true,
+						Computed:            true,
+						PlanModifiers: []planmodifier.Set{
+							setplanmodifier.UseNonNullStateForUnknown(),
+						},
+						NestedObject: schema.NestedAttributeObject{
+							Attributes: map[string]schema.Attribute{
+								"key": schema.StringAttribute{
+									Required: true,
+									PlanModifiers: []planmodifier.String{
+										stringplanmodifier.UseNonNullStateForUnknown(),
+									},
+									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+								},
+								"value": schema.StringAttribute{
+									Required: true,
+									PlanModifiers: []planmodifier.String{
+										stringplanmodifier.UseNonNullStateForUnknown(),
+									},
+									MarkdownDescription: `The value of the property.`,
+								},
+							},
+						},
+					},
+					"tags": schema.SetNestedAttribute{
+						MarkdownDescription: ``,
+						Optional:            true,
+						Computed:            true,
+						PlanModifiers: []planmodifier.Set{
+							setplanmodifier.UseNonNullStateForUnknown(),
+						},
+						NestedObject: schema.NestedAttributeObject{
+							Attributes: map[string]schema.Attribute{
+								"key": schema.StringAttribute{
+									Required: true,
+									PlanModifiers: []planmodifier.String{
+										stringplanmodifier.UseNonNullStateForUnknown(),
+									},
+									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
+								},
+								"value": schema.StringAttribute{
+									Required: true,
+									PlanModifiers: []planmodifier.String{
+										stringplanmodifier.UseNonNullStateForUnknown(),
+									},
+									MarkdownDescription: `The value of the property.`,
+								},
+							},
+						},
+					},
+				},
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,
@@ -347,13 +681,19 @@ func (r *MacsecIfPolResource) Create(ctx context.Context, req resource.CreateReq
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_macsec_interface_policy with id '%s'", data.Id.ValueString()))
 
+	var macsecRsToKeyChainPolPlan, macsecRsToKeyChainPolState MacsecRsToKeyChainPolMacsecIfPolResourceModel
+	data.MacsecRsToKeyChainPol.As(ctx, &macsecRsToKeyChainPolPlan, basetypes.ObjectAsOptions{})
+	stateData.MacsecRsToKeyChainPol.As(ctx, &macsecRsToKeyChainPolState, basetypes.ObjectAsOptions{})
+	var macsecRsToParamPolPlan, macsecRsToParamPolState MacsecRsToParamPolMacsecIfPolResourceModel
+	data.MacsecRsToParamPol.As(ctx, &macsecRsToParamPolPlan, basetypes.ObjectAsOptions{})
+	stateData.MacsecRsToParamPol.As(ctx, &macsecRsToParamPolState, basetypes.ObjectAsOptions{})
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationMacsecIfPolResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
 	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
 	var tagTagPlan, tagTagState []TagTagMacsecIfPolResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getMacsecIfPolCreateJsonPayload(ctx, &resp.Diagnostics, true, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := getMacsecIfPolCreateJsonPayload(ctx, &resp.Diagnostics, true, data, macsecRsToKeyChainPolPlan, macsecRsToKeyChainPolState, macsecRsToParamPolPlan, macsecRsToParamPolState, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -413,13 +753,19 @@ func (r *MacsecIfPolResource) Update(ctx context.Context, req resource.UpdateReq
 
 	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_macsec_interface_policy with id '%s'", data.Id.ValueString()))
 
+	var macsecRsToKeyChainPolPlan, macsecRsToKeyChainPolState MacsecRsToKeyChainPolMacsecIfPolResourceModel
+	data.MacsecRsToKeyChainPol.As(ctx, &macsecRsToKeyChainPolPlan, basetypes.ObjectAsOptions{})
+	stateData.MacsecRsToKeyChainPol.As(ctx, &macsecRsToKeyChainPolState, basetypes.ObjectAsOptions{})
+	var macsecRsToParamPolPlan, macsecRsToParamPolState MacsecRsToParamPolMacsecIfPolResourceModel
+	data.MacsecRsToParamPol.As(ctx, &macsecRsToParamPolPlan, basetypes.ObjectAsOptions{})
+	stateData.MacsecRsToParamPol.As(ctx, &macsecRsToParamPolState, basetypes.ObjectAsOptions{})
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationMacsecIfPolResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
 	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
 	var tagTagPlan, tagTagState []TagTagMacsecIfPolResourceModel
 	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
 	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getMacsecIfPolCreateJsonPayload(ctx, &resp.Diagnostics, false, data, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
+	jsonPayload := getMacsecIfPolCreateJsonPayload(ctx, &resp.Diagnostics, false, data, macsecRsToKeyChainPolPlan, macsecRsToKeyChainPolState, macsecRsToParamPolPlan, macsecRsToParamPolState, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -473,7 +819,7 @@ func (r *MacsecIfPolResource) ImportState(ctx context.Context, req resource.Impo
 }
 
 func getAndSetMacsecIfPolAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *MacsecIfPolResourceModel) {
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "macsecIfPol,tagAnnotation,tagTag"), "GET", nil)
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "macsecIfPol,macsecRsToKeyChainPol,macsecRsToParamPol,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag"), "GET", nil)
 
 	readData := getEmptyMacsecIfPolResourceModel()
 
@@ -510,6 +856,8 @@ func getAndSetMacsecIfPolAttributes(ctx context.Context, diags *diag.Diagnostics
 					readData.OwnerTag = basetypes.NewStringValue(attributeValue.(string))
 				}
 			}
+			MacsecRsToKeyChainPolMacsecIfPolList := make([]MacsecRsToKeyChainPolMacsecIfPolResourceModel, 0)
+			MacsecRsToParamPolMacsecIfPolList := make([]MacsecRsToParamPolMacsecIfPolResourceModel, 0)
 			TagAnnotationMacsecIfPolList := make([]TagAnnotationMacsecIfPolResourceModel, 0)
 			TagTagMacsecIfPolList := make([]TagTagMacsecIfPolResourceModel, 0)
 			_, ok := classReadInfo[0].(map[string]interface{})["children"]
@@ -518,6 +866,110 @@ func getAndSetMacsecIfPolAttributes(ctx context.Context, diags *diag.Diagnostics
 				for _, child := range children {
 					for childClassName, childClassDetails := range child.(map[string]interface{}) {
 						childAttributes := childClassDetails.(map[string]interface{})["attributes"].(map[string]interface{})
+						if childClassName == "macsecRsToKeyChainPol" {
+							MacsecRsToKeyChainPolMacsecIfPol := getEmptyMacsecRsToKeyChainPolMacsecIfPolResourceModel()
+							for childAttributeName, childAttributeValue := range childAttributes {
+								if childAttributeName == "annotation" {
+									MacsecRsToKeyChainPolMacsecIfPol.Annotation = basetypes.NewStringValue(childAttributeValue.(string))
+								}
+								if childAttributeName == "tDn" {
+									MacsecRsToKeyChainPolMacsecIfPol.TDn = basetypes.NewStringValue(childAttributeValue.(string))
+								}
+
+							}
+							TagAnnotationMacsecRsToKeyChainPolMacsecIfPolList := make([]TagAnnotationMacsecRsToKeyChainPolMacsecIfPolResourceModel, 0)
+							TagTagMacsecRsToKeyChainPolMacsecIfPolList := make([]TagTagMacsecRsToKeyChainPolMacsecIfPolResourceModel, 0)
+							childrenOfMacsecRsToKeyChainPolMacsecIfPol, childrenOfMacsecRsToKeyChainPolMacsecIfPolExist := childClassDetails.(map[string]interface{})["children"]
+							if childrenOfMacsecRsToKeyChainPolMacsecIfPolExist {
+								for _, childMacsecRsToKeyChainPolMacsecIfPol := range childrenOfMacsecRsToKeyChainPolMacsecIfPol.([]interface{}) {
+									for childClassNameMacsecRsToKeyChainPolMacsecIfPol, childClassDetailsMacsecRsToKeyChainPolMacsecIfPol := range childMacsecRsToKeyChainPolMacsecIfPol.(map[string]interface{}) {
+										if childClassNameMacsecRsToKeyChainPolMacsecIfPol == "tagAnnotation" {
+											TagAnnotationMacsecRsToKeyChainPolMacsecIfPol := getEmptyTagAnnotationMacsecRsToKeyChainPolMacsecIfPolResourceModel()
+											tagAnnotationchildAttributeValue := childClassDetailsMacsecRsToKeyChainPolMacsecIfPol.(map[string]interface{})["attributes"].(map[string]interface{})
+											for childAttributeName, childAttributeValue := range tagAnnotationchildAttributeValue {
+												if childAttributeName == "key" {
+													TagAnnotationMacsecRsToKeyChainPolMacsecIfPol.Key = basetypes.NewStringValue(childAttributeValue.(string))
+												}
+												if childAttributeName == "value" {
+													TagAnnotationMacsecRsToKeyChainPolMacsecIfPol.Value = basetypes.NewStringValue(childAttributeValue.(string))
+												}
+											}
+											TagAnnotationMacsecRsToKeyChainPolMacsecIfPolList = append(TagAnnotationMacsecRsToKeyChainPolMacsecIfPolList, TagAnnotationMacsecRsToKeyChainPolMacsecIfPol)
+										}
+										if childClassNameMacsecRsToKeyChainPolMacsecIfPol == "tagTag" {
+											TagTagMacsecRsToKeyChainPolMacsecIfPol := getEmptyTagTagMacsecRsToKeyChainPolMacsecIfPolResourceModel()
+											tagTagchildAttributeValue := childClassDetailsMacsecRsToKeyChainPolMacsecIfPol.(map[string]interface{})["attributes"].(map[string]interface{})
+											for childAttributeName, childAttributeValue := range tagTagchildAttributeValue {
+												if childAttributeName == "key" {
+													TagTagMacsecRsToKeyChainPolMacsecIfPol.Key = basetypes.NewStringValue(childAttributeValue.(string))
+												}
+												if childAttributeName == "value" {
+													TagTagMacsecRsToKeyChainPolMacsecIfPol.Value = basetypes.NewStringValue(childAttributeValue.(string))
+												}
+											}
+											TagTagMacsecRsToKeyChainPolMacsecIfPolList = append(TagTagMacsecRsToKeyChainPolMacsecIfPolList, TagTagMacsecRsToKeyChainPolMacsecIfPol)
+										}
+									}
+								}
+							}
+							TagAnnotationMacsecRsToKeyChainPolMacsecIfPolSet, _ := types.SetValueFrom(ctx, TagAnnotationMacsecRsToKeyChainPolMacsecIfPolType, TagAnnotationMacsecRsToKeyChainPolMacsecIfPolList)
+							MacsecRsToKeyChainPolMacsecIfPol.TagAnnotation = TagAnnotationMacsecRsToKeyChainPolMacsecIfPolSet
+							TagTagMacsecRsToKeyChainPolMacsecIfPolSet, _ := types.SetValueFrom(ctx, TagTagMacsecRsToKeyChainPolMacsecIfPolType, TagTagMacsecRsToKeyChainPolMacsecIfPolList)
+							MacsecRsToKeyChainPolMacsecIfPol.TagTag = TagTagMacsecRsToKeyChainPolMacsecIfPolSet
+							MacsecRsToKeyChainPolMacsecIfPolList = append(MacsecRsToKeyChainPolMacsecIfPolList, MacsecRsToKeyChainPolMacsecIfPol)
+						}
+						if childClassName == "macsecRsToParamPol" {
+							MacsecRsToParamPolMacsecIfPol := getEmptyMacsecRsToParamPolMacsecIfPolResourceModel()
+							for childAttributeName, childAttributeValue := range childAttributes {
+								if childAttributeName == "annotation" {
+									MacsecRsToParamPolMacsecIfPol.Annotation = basetypes.NewStringValue(childAttributeValue.(string))
+								}
+								if childAttributeName == "tDn" {
+									MacsecRsToParamPolMacsecIfPol.TDn = basetypes.NewStringValue(childAttributeValue.(string))
+								}
+
+							}
+							TagAnnotationMacsecRsToParamPolMacsecIfPolList := make([]TagAnnotationMacsecRsToParamPolMacsecIfPolResourceModel, 0)
+							TagTagMacsecRsToParamPolMacsecIfPolList := make([]TagTagMacsecRsToParamPolMacsecIfPolResourceModel, 0)
+							childrenOfMacsecRsToParamPolMacsecIfPol, childrenOfMacsecRsToParamPolMacsecIfPolExist := childClassDetails.(map[string]interface{})["children"]
+							if childrenOfMacsecRsToParamPolMacsecIfPolExist {
+								for _, childMacsecRsToParamPolMacsecIfPol := range childrenOfMacsecRsToParamPolMacsecIfPol.([]interface{}) {
+									for childClassNameMacsecRsToParamPolMacsecIfPol, childClassDetailsMacsecRsToParamPolMacsecIfPol := range childMacsecRsToParamPolMacsecIfPol.(map[string]interface{}) {
+										if childClassNameMacsecRsToParamPolMacsecIfPol == "tagAnnotation" {
+											TagAnnotationMacsecRsToParamPolMacsecIfPol := getEmptyTagAnnotationMacsecRsToParamPolMacsecIfPolResourceModel()
+											tagAnnotationchildAttributeValue := childClassDetailsMacsecRsToParamPolMacsecIfPol.(map[string]interface{})["attributes"].(map[string]interface{})
+											for childAttributeName, childAttributeValue := range tagAnnotationchildAttributeValue {
+												if childAttributeName == "key" {
+													TagAnnotationMacsecRsToParamPolMacsecIfPol.Key = basetypes.NewStringValue(childAttributeValue.(string))
+												}
+												if childAttributeName == "value" {
+													TagAnnotationMacsecRsToParamPolMacsecIfPol.Value = basetypes.NewStringValue(childAttributeValue.(string))
+												}
+											}
+											TagAnnotationMacsecRsToParamPolMacsecIfPolList = append(TagAnnotationMacsecRsToParamPolMacsecIfPolList, TagAnnotationMacsecRsToParamPolMacsecIfPol)
+										}
+										if childClassNameMacsecRsToParamPolMacsecIfPol == "tagTag" {
+											TagTagMacsecRsToParamPolMacsecIfPol := getEmptyTagTagMacsecRsToParamPolMacsecIfPolResourceModel()
+											tagTagchildAttributeValue := childClassDetailsMacsecRsToParamPolMacsecIfPol.(map[string]interface{})["attributes"].(map[string]interface{})
+											for childAttributeName, childAttributeValue := range tagTagchildAttributeValue {
+												if childAttributeName == "key" {
+													TagTagMacsecRsToParamPolMacsecIfPol.Key = basetypes.NewStringValue(childAttributeValue.(string))
+												}
+												if childAttributeName == "value" {
+													TagTagMacsecRsToParamPolMacsecIfPol.Value = basetypes.NewStringValue(childAttributeValue.(string))
+												}
+											}
+											TagTagMacsecRsToParamPolMacsecIfPolList = append(TagTagMacsecRsToParamPolMacsecIfPolList, TagTagMacsecRsToParamPolMacsecIfPol)
+										}
+									}
+								}
+							}
+							TagAnnotationMacsecRsToParamPolMacsecIfPolSet, _ := types.SetValueFrom(ctx, TagAnnotationMacsecRsToParamPolMacsecIfPolType, TagAnnotationMacsecRsToParamPolMacsecIfPolList)
+							MacsecRsToParamPolMacsecIfPol.TagAnnotation = TagAnnotationMacsecRsToParamPolMacsecIfPolSet
+							TagTagMacsecRsToParamPolMacsecIfPolSet, _ := types.SetValueFrom(ctx, TagTagMacsecRsToParamPolMacsecIfPolType, TagTagMacsecRsToParamPolMacsecIfPolList)
+							MacsecRsToParamPolMacsecIfPol.TagTag = TagTagMacsecRsToParamPolMacsecIfPolSet
+							MacsecRsToParamPolMacsecIfPolList = append(MacsecRsToParamPolMacsecIfPolList, MacsecRsToParamPolMacsecIfPol)
+						}
 						if childClassName == "tagAnnotation" {
 							TagAnnotationMacsecIfPol := getEmptyTagAnnotationMacsecIfPolResourceModel()
 							for childAttributeName, childAttributeValue := range childAttributes {
@@ -547,6 +999,20 @@ func getAndSetMacsecIfPolAttributes(ctx context.Context, diags *diag.Diagnostics
 					}
 				}
 			}
+			if len(MacsecRsToKeyChainPolMacsecIfPolList) == 1 {
+				macsecRsToKeyChainPolObject, _ := types.ObjectValueFrom(ctx, MacsecRsToKeyChainPolMacsecIfPolType, MacsecRsToKeyChainPolMacsecIfPolList[0])
+				readData.MacsecRsToKeyChainPol = macsecRsToKeyChainPolObject
+			} else {
+				macsecRsToKeyChainPolObject, _ := types.ObjectValueFrom(ctx, MacsecRsToKeyChainPolMacsecIfPolType, getEmptyMacsecRsToKeyChainPolMacsecIfPolResourceModel())
+				readData.MacsecRsToKeyChainPol = macsecRsToKeyChainPolObject
+			}
+			if len(MacsecRsToParamPolMacsecIfPolList) == 1 {
+				macsecRsToParamPolObject, _ := types.ObjectValueFrom(ctx, MacsecRsToParamPolMacsecIfPolType, MacsecRsToParamPolMacsecIfPolList[0])
+				readData.MacsecRsToParamPol = macsecRsToParamPolObject
+			} else {
+				macsecRsToParamPolObject, _ := types.ObjectValueFrom(ctx, MacsecRsToParamPolMacsecIfPolType, getEmptyMacsecRsToParamPolMacsecIfPolResourceModel())
+				readData.MacsecRsToParamPol = macsecRsToParamPolObject
+			}
 			tagAnnotationSet, _ := types.SetValueFrom(ctx, readData.TagAnnotation.ElementType(ctx), TagAnnotationMacsecIfPolList)
 			readData.TagAnnotation = tagAnnotationSet
 			tagTagSet, _ := types.SetValueFrom(ctx, readData.TagTag.ElementType(ctx), TagTagMacsecIfPolList)
@@ -570,6 +1036,208 @@ func getMacsecIfPolRn(ctx context.Context, data *MacsecIfPolResourceModel) strin
 func setMacsecIfPolId(ctx context.Context, data *MacsecIfPolResourceModel) {
 	rn := getMacsecIfPolRn(ctx, data)
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", strings.Split([]string{"uni/infra/macsecifp-{name}"}[0], "/")[0], rn))
+}
+
+func getMacsecIfPolMacsecRsToKeyChainPolChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *MacsecIfPolResourceModel, macsecRsToKeyChainPolMacsecIfPolPlan, macsecRsToKeyChainPolMacsecIfPolState MacsecRsToKeyChainPolMacsecIfPolResourceModel) []map[string]interface{} {
+	childPayloads := []map[string]interface{}{}
+	if !data.MacsecRsToKeyChainPol.IsNull() && !data.MacsecRsToKeyChainPol.IsUnknown() {
+		MacsecRsToKeyChainPolMacsecIfPolChildren := make([]map[string]interface{}, 0)
+		childMap := NewAciObject()
+		if !IsEmptySingleNestedAttribute(data.MacsecRsToKeyChainPol.Attributes()) {
+			if !macsecRsToKeyChainPolMacsecIfPolPlan.Annotation.IsUnknown() && !macsecRsToKeyChainPolMacsecIfPolPlan.Annotation.IsNull() {
+				childMap.Attributes["annotation"] = macsecRsToKeyChainPolMacsecIfPolPlan.Annotation.ValueString()
+			} else {
+				childMap.Attributes["annotation"] = globalAnnotation
+			}
+			if !macsecRsToKeyChainPolMacsecIfPolPlan.TDn.IsUnknown() && !macsecRsToKeyChainPolMacsecIfPolPlan.TDn.IsNull() {
+				childMap.Attributes["tDn"] = macsecRsToKeyChainPolMacsecIfPolPlan.TDn.ValueString()
+			}
+
+			var tagAnnotationMacsecRsToKeyChainPolMacsecIfPolPlan, tagAnnotationMacsecRsToKeyChainPolMacsecIfPolState []TagAnnotationMacsecRsToKeyChainPolMacsecIfPolResourceModel
+			macsecRsToKeyChainPolMacsecIfPolPlan.TagAnnotation.ElementsAs(ctx, &tagAnnotationMacsecRsToKeyChainPolMacsecIfPolPlan, false)
+			if !macsecRsToKeyChainPolMacsecIfPolState.TagAnnotation.IsNull() {
+				macsecRsToKeyChainPolMacsecIfPolState.TagAnnotation.ElementsAs(ctx, &tagAnnotationMacsecRsToKeyChainPolMacsecIfPolState, false)
+			}
+			if !macsecRsToKeyChainPolMacsecIfPolPlan.TagAnnotation.IsNull() && !macsecRsToKeyChainPolMacsecIfPolPlan.TagAnnotation.IsUnknown() {
+				tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
+				for _, tagAnnotationMacsecRsToKeyChainPolMacsecIfPol := range tagAnnotationMacsecRsToKeyChainPolMacsecIfPolPlan {
+					tagAnnotationMacsecRsToKeyChainPolMacsecIfPolChildMap := NewAciObject()
+					if !tagAnnotationMacsecRsToKeyChainPolMacsecIfPol.Key.IsNull() && !tagAnnotationMacsecRsToKeyChainPolMacsecIfPol.Key.IsUnknown() {
+						tagAnnotationMacsecRsToKeyChainPolMacsecIfPolChildMap.Attributes["key"] = tagAnnotationMacsecRsToKeyChainPolMacsecIfPol.Key.ValueString()
+					}
+					if !tagAnnotationMacsecRsToKeyChainPolMacsecIfPol.Value.IsNull() && !tagAnnotationMacsecRsToKeyChainPolMacsecIfPol.Value.IsUnknown() {
+						tagAnnotationMacsecRsToKeyChainPolMacsecIfPolChildMap.Attributes["value"] = tagAnnotationMacsecRsToKeyChainPolMacsecIfPol.Value.ValueString()
+					}
+					MacsecRsToKeyChainPolMacsecIfPolChildren = append(MacsecRsToKeyChainPolMacsecIfPolChildren, map[string]interface{}{"tagAnnotation": tagAnnotationMacsecRsToKeyChainPolMacsecIfPolChildMap})
+					tagAnnotationIdentifier := TagAnnotationIdentifier{}
+					tagAnnotationIdentifier.Key = tagAnnotationMacsecRsToKeyChainPolMacsecIfPol.Key
+					tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
+				}
+				for _, tagAnnotationMacsecRsToKeyChainPolMacsecIfPol := range tagAnnotationMacsecRsToKeyChainPolMacsecIfPolState {
+					delete := true
+					for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
+						if tagAnnotationIdentifier.Key == tagAnnotationMacsecRsToKeyChainPolMacsecIfPol.Key {
+							delete = false
+							break
+						}
+					}
+					if delete {
+						tagAnnotationMacsecRsToKeyChainPolMacsecIfPolChildMapForDelete := NewAciObject()
+						tagAnnotationMacsecRsToKeyChainPolMacsecIfPolChildMapForDelete.Attributes["status"] = "deleted"
+						tagAnnotationMacsecRsToKeyChainPolMacsecIfPolChildMapForDelete.Attributes["key"] = tagAnnotationMacsecRsToKeyChainPolMacsecIfPol.Key.ValueString()
+						MacsecRsToKeyChainPolMacsecIfPolChildren = append(MacsecRsToKeyChainPolMacsecIfPolChildren, map[string]interface{}{"tagAnnotation": tagAnnotationMacsecRsToKeyChainPolMacsecIfPolChildMapForDelete})
+					}
+				}
+			}
+
+			var tagTagMacsecRsToKeyChainPolMacsecIfPolPlan, tagTagMacsecRsToKeyChainPolMacsecIfPolState []TagTagMacsecRsToKeyChainPolMacsecIfPolResourceModel
+			macsecRsToKeyChainPolMacsecIfPolPlan.TagTag.ElementsAs(ctx, &tagTagMacsecRsToKeyChainPolMacsecIfPolPlan, false)
+			if !macsecRsToKeyChainPolMacsecIfPolState.TagTag.IsNull() {
+				macsecRsToKeyChainPolMacsecIfPolState.TagTag.ElementsAs(ctx, &tagTagMacsecRsToKeyChainPolMacsecIfPolState, false)
+			}
+			if !macsecRsToKeyChainPolMacsecIfPolPlan.TagTag.IsNull() && !macsecRsToKeyChainPolMacsecIfPolPlan.TagTag.IsUnknown() {
+				tagTagIdentifiers := []TagTagIdentifier{}
+				for _, tagTagMacsecRsToKeyChainPolMacsecIfPol := range tagTagMacsecRsToKeyChainPolMacsecIfPolPlan {
+					tagTagMacsecRsToKeyChainPolMacsecIfPolChildMap := NewAciObject()
+					if !tagTagMacsecRsToKeyChainPolMacsecIfPol.Key.IsNull() && !tagTagMacsecRsToKeyChainPolMacsecIfPol.Key.IsUnknown() {
+						tagTagMacsecRsToKeyChainPolMacsecIfPolChildMap.Attributes["key"] = tagTagMacsecRsToKeyChainPolMacsecIfPol.Key.ValueString()
+					}
+					if !tagTagMacsecRsToKeyChainPolMacsecIfPol.Value.IsNull() && !tagTagMacsecRsToKeyChainPolMacsecIfPol.Value.IsUnknown() {
+						tagTagMacsecRsToKeyChainPolMacsecIfPolChildMap.Attributes["value"] = tagTagMacsecRsToKeyChainPolMacsecIfPol.Value.ValueString()
+					}
+					MacsecRsToKeyChainPolMacsecIfPolChildren = append(MacsecRsToKeyChainPolMacsecIfPolChildren, map[string]interface{}{"tagTag": tagTagMacsecRsToKeyChainPolMacsecIfPolChildMap})
+					tagTagIdentifier := TagTagIdentifier{}
+					tagTagIdentifier.Key = tagTagMacsecRsToKeyChainPolMacsecIfPol.Key
+					tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
+				}
+				for _, tagTagMacsecRsToKeyChainPolMacsecIfPol := range tagTagMacsecRsToKeyChainPolMacsecIfPolState {
+					delete := true
+					for _, tagTagIdentifier := range tagTagIdentifiers {
+						if tagTagIdentifier.Key == tagTagMacsecRsToKeyChainPolMacsecIfPol.Key {
+							delete = false
+							break
+						}
+					}
+					if delete {
+						tagTagMacsecRsToKeyChainPolMacsecIfPolChildMapForDelete := NewAciObject()
+						tagTagMacsecRsToKeyChainPolMacsecIfPolChildMapForDelete.Attributes["status"] = "deleted"
+						tagTagMacsecRsToKeyChainPolMacsecIfPolChildMapForDelete.Attributes["key"] = tagTagMacsecRsToKeyChainPolMacsecIfPol.Key.ValueString()
+						MacsecRsToKeyChainPolMacsecIfPolChildren = append(MacsecRsToKeyChainPolMacsecIfPolChildren, map[string]interface{}{"tagTag": tagTagMacsecRsToKeyChainPolMacsecIfPolChildMapForDelete})
+					}
+				}
+			}
+			childMap.Children = MacsecRsToKeyChainPolMacsecIfPolChildren
+		} else {
+			childMap.Attributes["status"] = "deleted"
+		}
+		childPayloads = append(childPayloads, map[string]interface{}{"macsecRsToKeyChainPol": childMap})
+	} else {
+		MacsecRsToKeyChainPolObject, _ := types.ObjectValueFrom(ctx, MacsecRsToKeyChainPolMacsecIfPolType, getEmptyMacsecRsToKeyChainPolMacsecIfPolResourceModel())
+		data.MacsecRsToKeyChainPol = MacsecRsToKeyChainPolObject
+	}
+
+	return childPayloads
+}
+
+func getMacsecIfPolMacsecRsToParamPolChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *MacsecIfPolResourceModel, macsecRsToParamPolMacsecIfPolPlan, macsecRsToParamPolMacsecIfPolState MacsecRsToParamPolMacsecIfPolResourceModel) []map[string]interface{} {
+	childPayloads := []map[string]interface{}{}
+	if !data.MacsecRsToParamPol.IsNull() && !data.MacsecRsToParamPol.IsUnknown() {
+		MacsecRsToParamPolMacsecIfPolChildren := make([]map[string]interface{}, 0)
+		childMap := NewAciObject()
+		if !IsEmptySingleNestedAttribute(data.MacsecRsToParamPol.Attributes()) {
+			if !macsecRsToParamPolMacsecIfPolPlan.Annotation.IsUnknown() && !macsecRsToParamPolMacsecIfPolPlan.Annotation.IsNull() {
+				childMap.Attributes["annotation"] = macsecRsToParamPolMacsecIfPolPlan.Annotation.ValueString()
+			} else {
+				childMap.Attributes["annotation"] = globalAnnotation
+			}
+			if !macsecRsToParamPolMacsecIfPolPlan.TDn.IsUnknown() && !macsecRsToParamPolMacsecIfPolPlan.TDn.IsNull() {
+				childMap.Attributes["tDn"] = macsecRsToParamPolMacsecIfPolPlan.TDn.ValueString()
+			}
+
+			var tagAnnotationMacsecRsToParamPolMacsecIfPolPlan, tagAnnotationMacsecRsToParamPolMacsecIfPolState []TagAnnotationMacsecRsToParamPolMacsecIfPolResourceModel
+			macsecRsToParamPolMacsecIfPolPlan.TagAnnotation.ElementsAs(ctx, &tagAnnotationMacsecRsToParamPolMacsecIfPolPlan, false)
+			if !macsecRsToParamPolMacsecIfPolState.TagAnnotation.IsNull() {
+				macsecRsToParamPolMacsecIfPolState.TagAnnotation.ElementsAs(ctx, &tagAnnotationMacsecRsToParamPolMacsecIfPolState, false)
+			}
+			if !macsecRsToParamPolMacsecIfPolPlan.TagAnnotation.IsNull() && !macsecRsToParamPolMacsecIfPolPlan.TagAnnotation.IsUnknown() {
+				tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
+				for _, tagAnnotationMacsecRsToParamPolMacsecIfPol := range tagAnnotationMacsecRsToParamPolMacsecIfPolPlan {
+					tagAnnotationMacsecRsToParamPolMacsecIfPolChildMap := NewAciObject()
+					if !tagAnnotationMacsecRsToParamPolMacsecIfPol.Key.IsNull() && !tagAnnotationMacsecRsToParamPolMacsecIfPol.Key.IsUnknown() {
+						tagAnnotationMacsecRsToParamPolMacsecIfPolChildMap.Attributes["key"] = tagAnnotationMacsecRsToParamPolMacsecIfPol.Key.ValueString()
+					}
+					if !tagAnnotationMacsecRsToParamPolMacsecIfPol.Value.IsNull() && !tagAnnotationMacsecRsToParamPolMacsecIfPol.Value.IsUnknown() {
+						tagAnnotationMacsecRsToParamPolMacsecIfPolChildMap.Attributes["value"] = tagAnnotationMacsecRsToParamPolMacsecIfPol.Value.ValueString()
+					}
+					MacsecRsToParamPolMacsecIfPolChildren = append(MacsecRsToParamPolMacsecIfPolChildren, map[string]interface{}{"tagAnnotation": tagAnnotationMacsecRsToParamPolMacsecIfPolChildMap})
+					tagAnnotationIdentifier := TagAnnotationIdentifier{}
+					tagAnnotationIdentifier.Key = tagAnnotationMacsecRsToParamPolMacsecIfPol.Key
+					tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
+				}
+				for _, tagAnnotationMacsecRsToParamPolMacsecIfPol := range tagAnnotationMacsecRsToParamPolMacsecIfPolState {
+					delete := true
+					for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
+						if tagAnnotationIdentifier.Key == tagAnnotationMacsecRsToParamPolMacsecIfPol.Key {
+							delete = false
+							break
+						}
+					}
+					if delete {
+						tagAnnotationMacsecRsToParamPolMacsecIfPolChildMapForDelete := NewAciObject()
+						tagAnnotationMacsecRsToParamPolMacsecIfPolChildMapForDelete.Attributes["status"] = "deleted"
+						tagAnnotationMacsecRsToParamPolMacsecIfPolChildMapForDelete.Attributes["key"] = tagAnnotationMacsecRsToParamPolMacsecIfPol.Key.ValueString()
+						MacsecRsToParamPolMacsecIfPolChildren = append(MacsecRsToParamPolMacsecIfPolChildren, map[string]interface{}{"tagAnnotation": tagAnnotationMacsecRsToParamPolMacsecIfPolChildMapForDelete})
+					}
+				}
+			}
+
+			var tagTagMacsecRsToParamPolMacsecIfPolPlan, tagTagMacsecRsToParamPolMacsecIfPolState []TagTagMacsecRsToParamPolMacsecIfPolResourceModel
+			macsecRsToParamPolMacsecIfPolPlan.TagTag.ElementsAs(ctx, &tagTagMacsecRsToParamPolMacsecIfPolPlan, false)
+			if !macsecRsToParamPolMacsecIfPolState.TagTag.IsNull() {
+				macsecRsToParamPolMacsecIfPolState.TagTag.ElementsAs(ctx, &tagTagMacsecRsToParamPolMacsecIfPolState, false)
+			}
+			if !macsecRsToParamPolMacsecIfPolPlan.TagTag.IsNull() && !macsecRsToParamPolMacsecIfPolPlan.TagTag.IsUnknown() {
+				tagTagIdentifiers := []TagTagIdentifier{}
+				for _, tagTagMacsecRsToParamPolMacsecIfPol := range tagTagMacsecRsToParamPolMacsecIfPolPlan {
+					tagTagMacsecRsToParamPolMacsecIfPolChildMap := NewAciObject()
+					if !tagTagMacsecRsToParamPolMacsecIfPol.Key.IsNull() && !tagTagMacsecRsToParamPolMacsecIfPol.Key.IsUnknown() {
+						tagTagMacsecRsToParamPolMacsecIfPolChildMap.Attributes["key"] = tagTagMacsecRsToParamPolMacsecIfPol.Key.ValueString()
+					}
+					if !tagTagMacsecRsToParamPolMacsecIfPol.Value.IsNull() && !tagTagMacsecRsToParamPolMacsecIfPol.Value.IsUnknown() {
+						tagTagMacsecRsToParamPolMacsecIfPolChildMap.Attributes["value"] = tagTagMacsecRsToParamPolMacsecIfPol.Value.ValueString()
+					}
+					MacsecRsToParamPolMacsecIfPolChildren = append(MacsecRsToParamPolMacsecIfPolChildren, map[string]interface{}{"tagTag": tagTagMacsecRsToParamPolMacsecIfPolChildMap})
+					tagTagIdentifier := TagTagIdentifier{}
+					tagTagIdentifier.Key = tagTagMacsecRsToParamPolMacsecIfPol.Key
+					tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
+				}
+				for _, tagTagMacsecRsToParamPolMacsecIfPol := range tagTagMacsecRsToParamPolMacsecIfPolState {
+					delete := true
+					for _, tagTagIdentifier := range tagTagIdentifiers {
+						if tagTagIdentifier.Key == tagTagMacsecRsToParamPolMacsecIfPol.Key {
+							delete = false
+							break
+						}
+					}
+					if delete {
+						tagTagMacsecRsToParamPolMacsecIfPolChildMapForDelete := NewAciObject()
+						tagTagMacsecRsToParamPolMacsecIfPolChildMapForDelete.Attributes["status"] = "deleted"
+						tagTagMacsecRsToParamPolMacsecIfPolChildMapForDelete.Attributes["key"] = tagTagMacsecRsToParamPolMacsecIfPol.Key.ValueString()
+						MacsecRsToParamPolMacsecIfPolChildren = append(MacsecRsToParamPolMacsecIfPolChildren, map[string]interface{}{"tagTag": tagTagMacsecRsToParamPolMacsecIfPolChildMapForDelete})
+					}
+				}
+			}
+			childMap.Children = MacsecRsToParamPolMacsecIfPolChildren
+		} else {
+			childMap.Attributes["status"] = "deleted"
+		}
+		childPayloads = append(childPayloads, map[string]interface{}{"macsecRsToParamPol": childMap})
+	} else {
+		MacsecRsToParamPolObject, _ := types.ObjectValueFrom(ctx, MacsecRsToParamPolMacsecIfPolType, getEmptyMacsecRsToParamPolMacsecIfPolResourceModel())
+		data.MacsecRsToParamPol = MacsecRsToParamPolObject
+	}
+
+	return childPayloads
 }
 
 func getMacsecIfPolTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *MacsecIfPolResourceModel, tagAnnotationMacsecIfPolPlan, tagAnnotationMacsecIfPolState []TagAnnotationMacsecIfPolResourceModel) []map[string]interface{} {
@@ -650,7 +1318,7 @@ func getMacsecIfPolTagTagChildPayloads(ctx context.Context, diags *diag.Diagnost
 	return childPayloads
 }
 
-func getMacsecIfPolCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *MacsecIfPolResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationMacsecIfPolResourceModel, tagTagPlan, tagTagState []TagTagMacsecIfPolResourceModel) *container.Container {
+func getMacsecIfPolCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *MacsecIfPolResourceModel, macsecRsToKeyChainPolPlan, macsecRsToKeyChainPolState MacsecRsToKeyChainPolMacsecIfPolResourceModel, macsecRsToParamPolPlan, macsecRsToParamPolState MacsecRsToParamPolMacsecIfPolResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationMacsecIfPolResourceModel, tagTagPlan, tagTagState []TagTagMacsecIfPolResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 
@@ -658,6 +1326,18 @@ func getMacsecIfPolCreateJsonPayload(ctx context.Context, diags *diag.Diagnostic
 		payloadMap["attributes"].(map[string]string)["status"] = "created"
 	}
 	childPayloads := []map[string]interface{}{}
+
+	MacsecRsToKeyChainPolchildPayloads := getMacsecIfPolMacsecRsToKeyChainPolChildPayloads(ctx, diags, data, macsecRsToKeyChainPolPlan, macsecRsToKeyChainPolState)
+	if MacsecRsToKeyChainPolchildPayloads == nil {
+		return nil
+	}
+	childPayloads = append(childPayloads, MacsecRsToKeyChainPolchildPayloads...)
+
+	MacsecRsToParamPolchildPayloads := getMacsecIfPolMacsecRsToParamPolChildPayloads(ctx, diags, data, macsecRsToParamPolPlan, macsecRsToParamPolState)
+	if MacsecRsToParamPolchildPayloads == nil {
+		return nil
+	}
+	childPayloads = append(childPayloads, MacsecRsToParamPolchildPayloads...)
 
 	TagAnnotationchildPayloads := getMacsecIfPolTagAnnotationChildPayloads(ctx, diags, data, tagAnnotationPlan, tagAnnotationState)
 	if TagAnnotationchildPayloads == nil {

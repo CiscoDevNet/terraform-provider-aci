@@ -51,6 +51,24 @@ data "aci_macsec_interface_policy" "example" {
 * `name_alias` (nameAlias) - (string) The name alias of the MACsec Interface Policy object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
+* `relation_to_macsec_key_chain` - (map) A map of Relation To MACsec Key Chain (ACI object [macsecRsToKeyChainPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/macsecRsToKeyChainPol/overview)) pointing to MACsec Key Chain (ACI Object [macsecKeyChainPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/macsecKeyChainPol/overview)).
+    * `annotation` (annotation) - (string) The annotation of the Relation To MACsec Key Chain object. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `target_dn` (tDn) - (string) The distinguished name of the target.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
+* `relation_to_macsec_parameters` - (map) A map of Relation To MACsec Parameters (ACI object [macsecRsToParamPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/macsecRsToParamPol/overview)) pointing to MACsec Parameters (ACI Object [macsecParamPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/macsecParamPol/overview)).
+    * `annotation` (annotation) - (string) The annotation of the Relation To MACsec Parameters object. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `target_dn` (tDn) - (string) The distinguished name of the target.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
