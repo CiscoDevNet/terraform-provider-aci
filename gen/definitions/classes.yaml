@@ -1266,3 +1266,12 @@ infraRsAccBndlSubgrp:
 
 infraAccBndlSubgrp:
   resource_name: "leaf_access_bundle_policy_sub_group"
+
+macsecIfPol:
+  resource_name: "macsec_interface_policy"
+  sub_category: "Access Policies"
+  ui_locations:
+    - "Fabric -> Access Policies -> Policies -> Interface -> MACSec -> Interfaces"
+  contained_by:
+    - "polUni"
+  rn_prepend: "infra"
