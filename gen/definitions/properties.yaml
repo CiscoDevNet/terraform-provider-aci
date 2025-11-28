@@ -2900,6 +2900,27 @@ macsecIfPol:
   overwrites:
     admin_st: admin_state
 
+macsecRsToKeyChainPol:
+  targets:
+    - class_name: "macsecKeyChainPol"
+      target_dn: "uni/infra/macsecpcont/keychainp-macsec_key_chain_0"
+      relation_resource_name: "macsec_key_chain"
+      properties:
+        name: "macsec_key_chain_0"
+    - class_name: "macsecKeyChainPol"
+      target_dn: "uni/infra/macsecpcont/keychainp-macsec_key_chain_1"
+      relation_resource_name: "macsec_key_chain"
+      properties:
+        name: "macsec_key_chain_1"
+
+macsecRsToParamPol:
+  targets:
+    - class_name: "macsecParamPol"
+      target_dn: "uni/infra/macsecpcont/paramp-macsec_parameters_0"
+      relation_resource_name: "macsec_parameters"
+      properties:
+        name: "macsec_parameters_0"
+
 macsecParamPol:
   ignores:
     - "sakExpiryTime"

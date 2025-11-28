@@ -1276,6 +1276,16 @@ macsecIfPol:
     - "polUni"
   rn_prepend: "infra"
 
+macsecRsToKeyChainPol:
+  resource_name: "relation_to_macsec_key_chain"
+  relationship_classes:
+    - "macsecKeyChainPol"
+
+macsecRsToParamPol:
+  resource_name: "relation_to_macsec_parameters"
+  relationship_classes:
+    - "macsecParamPol"
+
 macsecParamPol:
   resource_name: "macsec_parameters"
   sub_category: "Access Policies"
