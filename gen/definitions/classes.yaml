@@ -1266,3 +1266,12 @@ infraRsAccBndlSubgrp:
 
 infraAccBndlSubgrp:
   resource_name: "leaf_access_bundle_policy_sub_group"
+
+qosLlfcIfPol:
+  resource_name: "link_level_flow_control_interface_policy"
+  sub_category: "Access Policies"
+  ui_locations:
+    - "Fabric -> Access Policies -> Policies -> Interface -> Link Level Flow Control"
+  contained_by:
+    - "polUni"
+  rn_prepend: "infra"
