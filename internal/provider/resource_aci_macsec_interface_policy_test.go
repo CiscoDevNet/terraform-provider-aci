@@ -9,6 +9,9 @@ import (
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	"github.com/hashicorp/terraform-plugin-testing/knownvalue"
+	"github.com/hashicorp/terraform-plugin-testing/statecheck"
+	"github.com/hashicorp/terraform-plugin-testing/tfjsonpath"
 )
 
 func TestAccResourceMacsecIfPol(t *testing.T) {
@@ -158,6 +161,30 @@ func TestAccResourceMacsecIfPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "annotations.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "annotations.#", "2"),
+					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "relation_to_macsec_key_chain.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "relation_to_macsec_key_chain.annotations.0.key", "key_0"),
+					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "relation_to_macsec_key_chain.annotations.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "relation_to_macsec_key_chain.annotations.1.key", "key_1"),
+					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "relation_to_macsec_key_chain.annotations.1.value", "test_value"),
+					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "relation_to_macsec_key_chain.annotations.#", "2"),
+					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "relation_to_macsec_key_chain.tags.0.key", "key_0"),
+					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "relation_to_macsec_key_chain.tags.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "relation_to_macsec_key_chain.tags.1.key", "key_1"),
+					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "relation_to_macsec_key_chain.tags.1.value", "test_value"),
+					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "relation_to_macsec_key_chain.tags.#", "2"),
+					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "relation_to_macsec_key_chain.target_dn", "uni/infra/macsecpcont/keychainp-macsec_key_chain_0"),
+					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "relation_to_macsec_parameters.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "relation_to_macsec_parameters.annotations.0.key", "key_0"),
+					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "relation_to_macsec_parameters.annotations.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "relation_to_macsec_parameters.annotations.1.key", "key_1"),
+					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "relation_to_macsec_parameters.annotations.1.value", "test_value"),
+					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "relation_to_macsec_parameters.annotations.#", "2"),
+					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "relation_to_macsec_parameters.tags.0.key", "key_0"),
+					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "relation_to_macsec_parameters.tags.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "relation_to_macsec_parameters.tags.1.key", "key_1"),
+					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "relation_to_macsec_parameters.tags.1.value", "test_value"),
+					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "relation_to_macsec_parameters.tags.#", "2"),
+					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "relation_to_macsec_parameters.target_dn", "uni/infra/macsecpcont/paramp-macsec_parameters_0"),
 					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "tags.1.key", "key_1"),
@@ -180,6 +207,30 @@ func TestAccResourceMacsecIfPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "annotations.1.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "annotations.1.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "annotations.#", "2"),
+					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "relation_to_macsec_key_chain.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "relation_to_macsec_key_chain.annotations.0.key", "key_0"),
+					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "relation_to_macsec_key_chain.annotations.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "relation_to_macsec_key_chain.annotations.1.key", "key_1"),
+					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "relation_to_macsec_key_chain.annotations.1.value", "test_value"),
+					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "relation_to_macsec_key_chain.annotations.#", "2"),
+					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "relation_to_macsec_key_chain.tags.0.key", "key_0"),
+					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "relation_to_macsec_key_chain.tags.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "relation_to_macsec_key_chain.tags.1.key", "key_1"),
+					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "relation_to_macsec_key_chain.tags.1.value", "test_value"),
+					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "relation_to_macsec_key_chain.tags.#", "2"),
+					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "relation_to_macsec_key_chain.target_dn", "uni/infra/macsecpcont/keychainp-macsec_key_chain_0"),
+					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "relation_to_macsec_parameters.annotation", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "relation_to_macsec_parameters.annotations.0.key", "key_0"),
+					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "relation_to_macsec_parameters.annotations.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "relation_to_macsec_parameters.annotations.1.key", "key_1"),
+					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "relation_to_macsec_parameters.annotations.1.value", "test_value"),
+					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "relation_to_macsec_parameters.annotations.#", "2"),
+					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "relation_to_macsec_parameters.tags.0.key", "key_0"),
+					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "relation_to_macsec_parameters.tags.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "relation_to_macsec_parameters.tags.1.key", "key_1"),
+					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "relation_to_macsec_parameters.tags.1.value", "test_value"),
+					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "relation_to_macsec_parameters.tags.#", "2"),
+					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "relation_to_macsec_parameters.target_dn", "uni/infra/macsecpcont/paramp-macsec_parameters_0"),
 					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "tags.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "tags.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "tags.1.key", "key_1"),
@@ -204,6 +255,30 @@ func TestAccResourceMacsecIfPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "tags.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "tags.#", "1"),
 				),
+				ConfigStateChecks: []statecheck.StateCheck{
+					statecheck.ExpectKnownValue("aci_macsec_interface_policy.test",
+						tfjsonpath.New("relation_to_macsec_key_chain"),
+						knownvalue.MapExact(
+							map[string]knownvalue.Check{
+								"annotation":  knownvalue.Null(),
+								"annotations": knownvalue.Null(),
+								"tags":        knownvalue.Null(),
+								"target_dn":   knownvalue.Null(),
+							},
+						),
+					),
+					statecheck.ExpectKnownValue("aci_macsec_interface_policy.test",
+						tfjsonpath.New("relation_to_macsec_parameters"),
+						knownvalue.MapExact(
+							map[string]knownvalue.Check{
+								"annotation":  knownvalue.Null(),
+								"annotations": knownvalue.Null(),
+								"tags":        knownvalue.Null(),
+								"target_dn":   knownvalue.Null(),
+							},
+						),
+					),
+				},
 			},
 			// Update with all children removed
 			{
@@ -218,11 +293,47 @@ func TestAccResourceMacsecIfPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "annotations.#", "0"),
 					resource.TestCheckResourceAttr("aci_macsec_interface_policy.test", "tags.#", "0"),
 				),
+				ConfigStateChecks: []statecheck.StateCheck{
+					statecheck.ExpectKnownValue("aci_macsec_interface_policy.test",
+						tfjsonpath.New("relation_to_macsec_key_chain"),
+						knownvalue.MapExact(
+							map[string]knownvalue.Check{
+								"annotation":  knownvalue.Null(),
+								"annotations": knownvalue.Null(),
+								"tags":        knownvalue.Null(),
+								"target_dn":   knownvalue.Null(),
+							},
+						),
+					),
+					statecheck.ExpectKnownValue("aci_macsec_interface_policy.test",
+						tfjsonpath.New("relation_to_macsec_parameters"),
+						knownvalue.MapExact(
+							map[string]knownvalue.Check{
+								"annotation":  knownvalue.Null(),
+								"annotations": knownvalue.Null(),
+								"tags":        knownvalue.Null(),
+								"target_dn":   knownvalue.Null(),
+							},
+						),
+					),
+				},
 			},
 		},
 		CheckDestroy: testCheckResourceDestroy,
 	})
 }
+
+const testChildDependencyConfigMacsecIfPol = `
+resource "aci_macsec_key_chain" "test_macsec_key_chain_0"{
+  name = "macsec_key_chain_0"
+}
+resource "aci_macsec_key_chain" "test_macsec_key_chain_1"{
+  name = "macsec_key_chain_1"
+}
+resource "aci_macsec_parameters" "test_macsec_parameters_0"{
+  name = "macsec_parameters_0"
+}
+`
 
 const testConfigMacsecIfPolMinAllowExisting = `
 resource "aci_macsec_interface_policy" "allow_test" {
@@ -263,7 +374,7 @@ resource "aci_macsec_interface_policy" "test" {
   owner_tag = ""
 }
 `
-const testConfigMacsecIfPolChildren = `
+const testConfigMacsecIfPolChildren = testChildDependencyConfigMacsecIfPol + `
 resource "aci_macsec_interface_policy" "test" {
   name = "test_name"
   annotations = [
@@ -276,6 +387,54 @@ resource "aci_macsec_interface_policy" "test" {
 	  value = "test_value"
 	},
   ]
+  relation_to_macsec_key_chain = {
+    annotation = "annotation_1"
+    annotations = [
+	  {
+        key = "key_0"
+        value = "value_1"
+	  },
+	  {
+        key = "key_1"
+        value = "test_value"
+	  },
+    ]
+    tags = [
+	  {
+        key = "key_0"
+        value = "value_1"
+	  },
+	  {
+        key = "key_1"
+        value = "test_value"
+	  },
+    ]
+    target_dn = aci_macsec_key_chain.test_macsec_key_chain_0.id
+  }
+  relation_to_macsec_parameters = {
+    annotation = "annotation_1"
+    annotations = [
+	  {
+        key = "key_0"
+        value = "value_1"
+	  },
+	  {
+        key = "key_1"
+        value = "test_value"
+	  },
+    ]
+    tags = [
+	  {
+        key = "key_0"
+        value = "value_1"
+	  },
+	  {
+        key = "key_1"
+        value = "test_value"
+	  },
+    ]
+    target_dn = aci_macsec_parameters.test_macsec_parameters_0.id
+  }
   tags = [
 	{
 	  key = "key_0"
@@ -286,16 +445,22 @@ resource "aci_macsec_interface_policy" "test" {
 	  value = "test_value"
 	},
   ]
+	  	
+  depends_on = [
+    aci_macsec_key_chain.test_macsec_key_chain_0,
+    aci_macsec_key_chain.test_macsec_key_chain_1,
+    aci_macsec_parameters.test_macsec_parameters_0,
+  ]
 }
 `
 
-const testConfigMacsecIfPolChildrenRemoveFromConfig = `
+const testConfigMacsecIfPolChildrenRemoveFromConfig = testChildDependencyConfigMacsecIfPol + `
 resource "aci_macsec_interface_policy" "test" {
   name = "test_name"
 }
 `
 
-const testConfigMacsecIfPolChildrenRemoveOne = `
+const testConfigMacsecIfPolChildrenRemoveOne = testChildDependencyConfigMacsecIfPol + `
 resource "aci_macsec_interface_policy" "test" {
   name = "test_name"
   annotations = [ 
@@ -304,6 +469,8 @@ resource "aci_macsec_interface_policy" "test" {
 	  value = "test_value"
 	},
   ]
+  relation_to_macsec_key_chain = {}
+  relation_to_macsec_parameters = {}
   tags = [ 
 	{
 	  key = "key_1"
@@ -313,10 +480,12 @@ resource "aci_macsec_interface_policy" "test" {
 }
 `
 
-const testConfigMacsecIfPolChildrenRemoveAll = `
+const testConfigMacsecIfPolChildrenRemoveAll = testChildDependencyConfigMacsecIfPol + `
 resource "aci_macsec_interface_policy" "test" {
   name = "test_name"
   annotations = []
+  relation_to_macsec_key_chain = {}
+  relation_to_macsec_parameters = {}
   tags = []
 }
 `

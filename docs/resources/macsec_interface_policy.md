@@ -53,6 +53,38 @@ resource "aci_macsec_interface_policy" "full_example" {
   name_alias  = "name_alias_1"
   owner_key   = "owner_key_1"
   owner_tag   = "owner_tag_1"
+  relation_to_macsec_key_chain = {
+    annotation = "annotation_1"
+    target_dn  = aci_macsec_key_chain.test_macsec_key_chain_0.id
+    annotations = [
+      {
+        key   = "key_0"
+        value = "value_1"
+      }
+    ]
+    tags = [
+      {
+        key   = "key_0"
+        value = "value_1"
+      }
+    ]
+  }
+  relation_to_macsec_parameters = {
+    annotation = "annotation_1"
+    target_dn  = aci_macsec_parameters.test_macsec_parameters_0.id
+    annotations = [
+      {
+        key   = "key_0"
+        value = "value_1"
+      }
+    ]
+    tags = [
+      {
+        key   = "key_0"
+        value = "value_1"
+      }
+    ]
+  }
   annotations = [
     {
       key   = "key_0"
@@ -92,6 +124,38 @@ All examples for the MACsec Interface Policy resource can be found in the [examp
 * `name_alias` (nameAlias) - (string) The name alias of the MACsec Interface Policy object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
+* `relation_to_macsec_key_chain` - (map) A map of Relation To MACsec Key Chain (ACI object [macsecRsToKeyChainPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/macsecRsToKeyChainPol/overview)) pointing to MACsec Key Chain (ACI Object [macsecKeyChainPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/macsecKeyChainPol/overview)) which can be configured using the [aci_macsec_key_chain](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/macsec_key_chain) resource.
+  #### Optional ####
+    
+    * `annotation` (annotation) - (string) The annotation of the Relation To MACsec Key Chain object. This attribute is supported in ACI versions: 3.2(1l) and later.
+      - Default: `"orchestrator:terraform"`
+    * `target_dn` (tDn) - (string) The distinguished name of the target.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+      #### Required ####
+  
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+      #### Required ####
+  
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
+* `relation_to_macsec_parameters` - (map) A map of Relation To MACsec Parameters (ACI object [macsecRsToParamPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/macsecRsToParamPol/overview)) pointing to MACsec Parameters (ACI Object [macsecParamPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/macsecParamPol/overview)) which can be configured using the [aci_macsec_parameters](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/macsec_parameters) resource.
+  #### Optional ####
+    
+    * `annotation` (annotation) - (string) The annotation of the Relation To MACsec Parameters object. This attribute is supported in ACI versions: 3.2(1l) and later.
+      - Default: `"orchestrator:terraform"`
+    * `target_dn` (tDn) - (string) The distinguished name of the target.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+      #### Required ####
+  
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+      #### Required ####
+  
+        * `key` (key) - (string) The key used to uniquely identify this configuration object.
+        * `value` (value) - (string) The value of the property.
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
   
