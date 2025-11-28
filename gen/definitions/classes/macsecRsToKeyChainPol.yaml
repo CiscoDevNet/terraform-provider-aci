@@ -1,0 +1,3 @@
+relationship_classes:
+    - macsecKeyChainPol
+resource_name: relation_to_macsec_key_chain
