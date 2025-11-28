@@ -2920,4 +2920,6 @@ macsecParamPol:
       key_server_priority: "39"
       window_size: "200"
 
-
+macsecKeyChainPol:
+  default_values:
+    parent_dn: "uni/infra/macsecpcont"
