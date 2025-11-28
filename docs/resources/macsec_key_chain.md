@@ -126,3 +126,7 @@ import {
   to = aci_macsec_key_chain.example
 }
 ```
+
+## Child Resources
+  
+  - [aci_macsec_key](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/macsec_key)
