@@ -1,0 +1,10 @@
+documentation:
+    llfcRcvAdminSt: The receive mode of the %s object.
+    llfcSendAdminSt: The send mode of the %s object.
+overwrites:
+    llfc_rcv_admin_st: receive_mode
+    llfc_send_admin_st: send_mode
+test_values:
+    all:
+        receive_mode: "on"
+        send_mode: "on"
