@@ -1,0 +1,27 @@
+default_values:
+    reAuth: "no"
+documentation:
+    macAuth: The authentication mode of the 802.1x Port Authentication Interface Policy.
+    maxReauthReq: The maximum re-authentication requests for the 802.1x Port Authentication Interface Policy. The value must be in the range 1 - 10.
+    maxReq: The maximum requests for the 802.1x Port Authentication Interface Policy. The value must be in the range 2 - 10.
+    reAuth: Enabling re-authentication for the 802.1x Port Authentication Interface Policy.
+    reAuthPeriod: The re-authentication period (seconds) for the 802.1x Port Authentication Interface Policy. The value must be in the range 1 - 2147483.
+    serverTimeout: The server timeout (seconds) for the 802.1x Port Authentication Interface Policy. The value must be in the range 1 - 65535.
+    suppTimeout: The supplicant timeout (seconds) for the 802.1x Port Authentication Interface Policy. The value must be in the range 1 - 65535.
+    txPeriod: The transmit period (seconds) for the 802.1x Port Authentication Interface Policy. The value must be in the range 1 - 65535.
+overwrites:
+    mac_auth: authentication_mode
+    max_reauth_req: maximum_reauthentication_requests
+    max_req: maximum_requests
+    re_auth: reauthenticate
+    re_auth_period: reauthentication_period
+    supp_timeout: supplicant_timeout
+    tx_period: transmit_period
+test_values:
+    all:
+        maximum_reauthentication_requests: "5"
+        maximum_requests: "4"
+        reauthentication_period: "3000"
+        server_timeout: "20"
+        supplicant_timeout: "25"
+        transmit_period: "35"
