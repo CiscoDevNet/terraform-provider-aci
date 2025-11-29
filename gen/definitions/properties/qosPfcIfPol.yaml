@@ -1,0 +1,4 @@
+documentation:
+    adminSt: The state of the %s object.
+overwrites:
+    admin_st: state
