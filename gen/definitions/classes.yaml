@@ -1297,3 +1297,12 @@ fabricHIfPol:
   contained_by:
     - "polUni"
   rn_prepend: "infra"
+
+qosSdIfPol:
+  resource_name: "slow_drain_interface_policy"
+  sub_category: "Access Policies"
+  ui_locations:
+    - "Fabric -> Access Policies -> Policies -> Interface -> Slow Drain"
+  contained_by:
+    - "polUni"
+  rn_prepend: "infra"
