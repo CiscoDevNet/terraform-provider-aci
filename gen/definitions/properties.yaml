@@ -90,6 +90,7 @@ global:
     Pc Vpc Override Policy: "PC VPC Override Policy"
     Fex: "FEX"
     From Attachable Access Entity Profile To Domains: "To Domains"
+    Dot1x: "802.1x"
   ignores:
     - "userdom"
 
@@ -2895,3 +2896,20 @@ infraRsAccBndlSubgrp:
       # Response Status Code: 400, Error Code: 182, Error Message: Validation failed PortBlk has a reln to AccBndlSubgrp not contained by AccBndlGrp its parent is associated to.
       target_dn: ""
 
+qosSdIfPol:
+  default_values:
+    flushAdminSt: "disabled"
+  overwrites:
+    cong_clear_action: congestion_clear_action
+    cong_detect_mult: congestion_detect_multiplier
+    flush_admin_st: flush_admin_state
+    flush_intvl: flush_timeout
+  documentation:
+    congClearAction: "The congestion clear action of the %s object."
+    congDetectMult: "The congestion detect multiplier of the %s object. The value must be in the range 1 - 10000."
+    flushAdminSt: "The flush administrative state of the %s object."
+    flushIntvl: "The flush timeout (milliseconds) of the %s object. The value must be in the range 100 - 1000."
+  test_values:
+    all:
+      flush_timeout: "300"
+      congestion_detect_multiplier: "15"
