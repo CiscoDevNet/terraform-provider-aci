@@ -90,6 +90,7 @@ global:
     Pc Vpc Override Policy: "PC VPC Override Policy"
     Fex: "FEX"
     From Attachable Access Entity Profile To Domains: "To Domains"
+    Dot1x: "802.1x"
   ignores:
     - "userdom"
 
@@ -2895,3 +2896,35 @@ infraRsAccBndlSubgrp:
       # Response Status Code: 400, Error Code: 182, Error Message: Validation failed PortBlk has a reln to AccBndlSubgrp not contained by AccBndlGrp its parent is associated to.
       target_dn: ""
 
+l2PortAuthPol:
+  overwrites:
+    admin_st: admin_state
+  documentation:
+    hostMode: "The host mode of the %s object."
+
+l2PortAuthCfgPol:
+  overwrites:
+    mac_auth: authentication_mode
+    max_req: maximum_requests
+    max_reauth_req: maximum_reauthentication_requests
+    re_auth: reauthenticate
+    re_auth_period: reauthentication_period
+    supp_timeout: supplicant_timeout
+    tx_period: transmit_period
+  documentation:
+    macAuth: "The authentication mode of the 802.1x Port Authentication Interface Policy."
+    maxReauthReq: "The maximum re-authentication requests for the 802.1x Port Authentication Interface Policy. The value must be in the range 1 - 10."
+    reAuthPeriod: "The re-authentication period (seconds) for the 802.1x Port Authentication Interface Policy. The value must be in the range 1 - 2147483."
+    maxReq: "The maximum requests for the 802.1x Port Authentication Interface Policy. The value must be in the range 2 - 10."
+    reAuth: "Enabling re-authentication for the 802.1x Port Authentication Interface Policy."
+    serverTimeout: "The server timeout (seconds) for the 802.1x Port Authentication Interface Policy. The value must be in the range 1 - 65535."
+    suppTimeout: "The supplicant timeout (seconds) for the 802.1x Port Authentication Interface Policy. The value must be in the range 1 - 65535."
+    txPeriod: "The transmit period (seconds) for the 802.1x Port Authentication Interface Policy. The value must be in the range 1 - 65535."
+  test_values:
+    all:
+      maximum_requests: "4"
+      maximum_reauthentication_requests: "5"
+      reauthentication_period: "3000"
+      supplicant_timeout: "25"
+      server_timeout: "20"
+      transmit_period: "35"
