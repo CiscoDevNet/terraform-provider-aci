@@ -1,0 +1,7 @@
+contained_by:
+    - polUni
+resource_name: dot1x_port_authentication_interface_policy
+rn_prepend: infra
+sub_category: Access Policies
+ui_locations:
+    - Fabric -> Access Policies -> Policies -> Interface -> 802.1x Port Authentication
