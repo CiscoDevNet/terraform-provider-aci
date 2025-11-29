@@ -92,6 +92,7 @@ global:
     From Attachable Access Entity Profile To Domains: "To Domains"
     Dwdm: "DWDM"
     Poe: "PoE"
+    Dot1x: "802.1x"
   ignores:
     - "userdom"
 
@@ -2984,3 +2985,21 @@ fabricHIfPol:
       port_delay: "50"
       emi_retrain: "enable"
       physical_media_type: "sfp-10g-tx"
+
+qosSdIfPol:
+  default_values:
+    flushAdminSt: "disabled"
+  overwrites:
+    cong_clear_action: congestion_clear_action
+    cong_detect_mult: congestion_detect_multiplier
+    flush_admin_st: flush_admin_state
+    flush_intvl: flush_timeout
+  documentation:
+    congClearAction: "The congestion clear action of the %s object."
+    congDetectMult: "The congestion detect multiplier of the %s object. The value must be in the range 1 - 10000."
+    flushAdminSt: "The flush administrative state of the %s object."
+    flushIntvl: "The flush timeout (milliseconds) of the %s object. The value must be in the range 100 - 1000."
+  test_values:
+    all:
+      flush_timeout: "300"
+      congestion_detect_multiplier: "15"
