@@ -1,0 +1,42 @@
+default_values:
+    selinput: "no"
+    ssm: "yes"
+documentation:
+    qloptype: The quality level options of the %s object. This attribute is only applicable when 'synchronization_status_message' is 'yes'.
+    qlrcvexactval: The exact quality receive value for the %s object. This attribute is only applicable when 'synchronization_status_message' is 'yes', and valid input value depends on the choice of 'quality_level_options'.
+    qlrcvhval: The highest quality receive value for the %s object. This attribute is only applicable when 'synchronization_status_message' is 'yes', and valid input value depends on the choice of 'quality_level_options'.
+    qlrcvlval: The lowest quality receive value for the %s object. This attribute is only applicable when 'synchronization_status_message' is 'yes', and valid input value depends on the choice of 'quality_level_options'.
+    qltxexactval: The exact quality transmit value of the %s object. This attribute is only applicable when 'synchronization_status_message' is 'yes', and valid input value depends on the choice of 'quality_level_options'.
+    qltxhval: The highest quality transmit value of the %s object. This attribute is only applicable when 'synchronization_status_message' is 'yes', and valid input value depends on the choice of 'quality_level_options'.
+    qltxlval: The lowest quality transmit value of the %s object. This attribute is only applicable when 'synchronization_status_message' is 'yes', and valid input value depends on the choice of 'quality_level_options'.
+    selinput: Enable selection input for the %s object.
+    srcpriority: The source priority of the %s object. This attribute is only applicable when 'selection_input' is 'yes'. The value must be in the range 1 - 254.
+    ssm: Enable a synchronization status message for the %s object.
+    wtr: The wait-to-restore time (minutes) for the %s object. This attribute is only applicable when 'selection_input' is 'yes'. The value must be in the range 0 - 12.
+overwrites:
+    admin_st: admin_state
+    qloptype: quality_level_options
+    qlrcvexactval: quality_receive_exact_value
+    qlrcvhval: quality_receive_highest_value
+    qlrcvlval: quality_receive_lowest_value
+    qltxexactval: quality_transmit_exact_value
+    qltxhval: quality_transmit_highest_value
+    qltxlval: quality_transmit_lowest_value
+    selinput: selection_input
+    srcpriority: source_priority
+    ssm: synchronization_status_message
+    wtr: wait_to_restore_time
+test_values:
+    all:
+        admin_state: enabled
+        quality_level_options: op2g2
+        quality_receive_exact_value: fsync-ql-o2-g2-eec2
+        quality_receive_highest_value: fsync-ql-common-none
+        quality_receive_lowest_value: fsync-ql-common-none
+        quality_transmit_exact_value: fsync-ql-o2-g2-eec2
+        quality_transmit_highest_value: fsync-ql-common-none
+        quality_transmit_lowest_value: fsync-ql-common-none
+        selection_input: "yes"
+        source_priority: "10"
+        synchronization_status_message: "yes"
+        wait_to_restore_time: "8"

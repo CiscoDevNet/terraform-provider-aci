@@ -86,6 +86,7 @@ resource_name_doc_overwrite:
     Sid: SR-MPLS Segment ID
     Sla: SLA
     Ssh Service: SSH Service
+    Synce: SyncE
     Tp: Certificate Authority
     Useg: uSeg
     Vm: VM
