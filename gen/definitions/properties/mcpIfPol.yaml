@@ -1,0 +1,28 @@
+documentation:
+    gracePeriod: The grace period in seconds for the %s object. This attribute is only applicable when 'strict_mode' is 'on'. The value must be in the range 0 - 300.
+    gracePeriodMsec: The grace period in milliseconds for the %s object. This attribute is only applicable when 'strict_mode' is 'on'. The value must be in the range 0 - 999.
+    maxPduPerVlanLimit: The maximum amount of VLANs for the %s object. The value must be in the range 1 - 2000 when 'strict_mode' is 'off', else the value must be in range 1 - 256
+    mcpMode: Enable strict mode for the %s object.
+    mcpPduPerVlan: Send MCP PDU packets per VLAN for the %s object.
+    strictInitDelayTime: The initial delay time in seconds for the %s object. This allows for MCP to wait before sending Bridge Protocol Data Units (BPDUs) which gives Spanning Tree Protocol (STP) on the external network time to converge. This attribute is only applicable when 'strict_mode' is 'on'. The value must be in the range 0 - 1800.
+    strictTxFreq: The transmission frequency in seconds for the %s object. This attribute is only applicable when 'strict_mode' is 'on'. The value must be in the range 0 - 300.
+    strictTxFreqMsec: The transmission frequency in milliseconds for the %s object. This attribute is only applicable when 'strict_mode' is 'on'. The value must be in the range 0 - 999.
+overwrites:
+    admin_st: admin_state
+    grace_period: grace_period_seconds
+    grace_period_msec: grace_period_milliseconds
+    max_pdu_per_vlan_limit: maximum_number_of_vlan
+    mcp_mode: strict_mode
+    strict_init_delay_time: initial_delay_time
+    strict_tx_freq: transmission_frequency_seconds
+    strict_tx_freq_msec: transmission_frequency_milliseconds
+test_values:
+    all:
+        admin_state: enabled
+        grace_period_milliseconds: "138"
+        grace_period_msec: "100"
+        initial_delay_time: "1750"
+        maximum_number_of_vlan: "129"
+        strict_mode: "on"
+        transmission_frequency_milliseconds: "800"
+        transmission_frequency_seconds: "10"

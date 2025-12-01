@@ -73,6 +73,7 @@ resource_name_doc_overwrite:
     L3out: L3Out
     Lacp Enhanced Lag Policy: LACP Enhanced Lag Policy
     Mac: MAC
+    Mcp: MCP
     Mld: MLD
     Nd: Neighbor Discovery (ND)
     Netflow: NetFlow
