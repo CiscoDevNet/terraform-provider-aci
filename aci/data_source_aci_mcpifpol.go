@@ -11,6 +11,7 @@ import (
 
 func dataSourceAciMiscablingProtocolInterfacePolicy() *schema.Resource {
 	return &schema.Resource{
+		DeprecationMessage: "The datasource 'aci_miscabling_protocol_interface_policy' is deprecated, please refer to 'aci_mcp_interface_policy' instead. The datasource will be removed in the next major version of the provider.",
 
 		ReadContext: dataSourceAciMiscablingProtocolInterfacePolicyRead,
 
