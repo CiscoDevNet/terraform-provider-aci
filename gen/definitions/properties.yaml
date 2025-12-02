@@ -90,6 +90,7 @@ global:
     Pc Vpc Override Policy: "PC VPC Override Policy"
     Fex: "FEX"
     From Attachable Access Entity Profile To Domains: "To Domains"
+    Copp: "CoPP"
   ignores:
     - "userdom"
 
@@ -2895,3 +2896,22 @@ infraRsAccBndlSubgrp:
       # Response Status Code: 400, Error Code: 182, Error Message: Validation failed PortBlk has a reln to AccBndlSubgrp not contained by AccBndlGrp its parent is associated to.
       target_dn: ""
 
+coppProtoClassP:
+  overwrites:
+    match_proto: match_protocols
+    copp_interface_protocol_policys: protocol_policies
+  documentation:
+    rate: "The rate of the %s object."
+    burst: "The burst size of the %s object."
+    matchProto: "The protocols to match in the %s object."
+  default_values:
+    matchProto: "@aci_gen_default_value_overwrite_to_empty_list!"
+  test_values:
+    default:
+      match_protocols: []
+      rate: "10"
+      burst: "10"
+    all:
+      match_protocols: ["arp", "bfd"]
+      rate: "15"
+      burst: "15"

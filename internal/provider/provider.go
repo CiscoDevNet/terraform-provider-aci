@@ -207,6 +207,8 @@ func (p *AciProvider) Configure(ctx context.Context, req provider.ConfigureReque
 func (p *AciProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
 		NewCommPolResource,
+		NewCoppIfPolResource,
+		NewCoppProtoClassPResource,
 		NewEigrpCtxAfPolResource,
 		NewFhsBDPolResource,
 		NewFhsTrustCtrlPolResource,
@@ -310,6 +312,8 @@ func (p *AciProvider) Resources(ctx context.Context) []func() resource.Resource 
 func (p *AciProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
 		NewCommPolDataSource,
+		NewCoppIfPolDataSource,
+		NewCoppProtoClassPDataSource,
 		NewEigrpCtxAfPolDataSource,
 		NewFhsBDPolDataSource,
 		NewFhsTrustCtrlPolDataSource,
