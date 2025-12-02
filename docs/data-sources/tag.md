@@ -56,6 +56,7 @@ data "aci_tag" "example_application_epg" {
   - Too many parent DNs to display, see model documentation for all possible parents of [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview).
   - [aci_bgp_address_family_context](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bgp_address_family_context) ([bgpCtxAfPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/bgpCtxAfPol/overview))
   - [aci_bgp_timers](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bgp_timers) ([bgpCtxPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/bgpCtxPol/overview))
+  - [aci_cdp_interface_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/cdp_interface_policy) ([cdpIfPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/cdpIfPol/overview))
   - [aci_cloud_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/cloud_epg) ([cloudEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/cloudEPg/overview))
   - [aci_cloud_external_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/cloud_external_epg) ([cloudExtEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/cloudExtEPg/overview))
   - [aci_cloud_service_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/cloud_service_epg) ([cloudSvcEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/cloudSvcEPg/overview))
@@ -73,7 +74,6 @@ data "aci_tag" "example_application_epg" {
   - [aci_endpoint_security_group](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/endpoint_security_group) ([fvESg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvESg/overview))
   - [aci_endpoint_tag_ip](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/endpoint_tag_ip) ([fvEpIpTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvEpIpTag/overview))
   - [aci_endpoint_tag_mac](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/endpoint_tag_mac) ([fvEpMacTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvEpMacTag/overview))
-  - [aci_end_point_retention_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/end_point_retention_policy) ([fvEpRetPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvEpRetPol/overview))
 * `key` (key) - (string) The key used to uniquely identify this configuration object.
 
 ### Read-Only ###
