@@ -2901,3 +2901,19 @@ dwdmIfPol:
     fcot_channel_number: channel_nummber
   documentation:
     fcotChannelNumber: "The channel number of the %s object."
+
+stpIfPol:
+  default_values:
+    ctrl: "@aci_gen_default_value_overwrite_to_empty_list!"
+  remove_valid_values:
+    ctrl:
+      - "unspecified"
+  overwrites:
+    ctrl: interface_controls
+  documentation:
+    ctrl: "The interface controls of the %s object."
+  test_values:
+    default:
+      interface_controls: []
+    all:
+      interface_controls: ["bpdu-filter", "bpdu-guard"]

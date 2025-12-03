@@ -115,6 +115,7 @@ var templateFuncs = template.FuncMap{
 	"getDevnetDocForClass":                     GetDevnetDocForClass,
 	"getMigrationType":                         GetMigrationType,
 	"isLegacyAttribute":                        IsLegacyAttribute,
+	"getLegacyAttribute":                       GetLegacyAttribute,
 	"isLegacyChild":                            IsLegacyChild,
 	"getLegacyChildAttribute":                  GetLegacyChildAttribute,
 	"getConflictingAttributeName":              GetConflictingAttributeName,
@@ -397,6 +398,13 @@ func IsLegacyAttribute(name string, legacyAttributes map[string]LegacyAttribute)
 		return true
 	}
 	return false
+}
+
+func GetLegacyAttribute(name string, legacyAttributes map[string]LegacyAttribute) LegacyAttribute {
+	if legacyAttribute, ok := legacyAttributes[name]; ok {
+		return legacyAttribute
+	}
+	return LegacyAttribute{}
 }
 
 func IsLegacyChild(child string, children []string) bool {
