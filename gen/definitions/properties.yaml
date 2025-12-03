@@ -91,6 +91,7 @@ global:
     Fex: "FEX"
     From Attachable Access Entity Profile To Domains: "To Domains"
     Dwdm: "DWDM"
+    Poe: "PoE"
   ignores:
     - "userdom"
 
@@ -2901,3 +2902,62 @@ dwdmIfPol:
     fcot_channel_number: channel_nummber
   documentation:
     fcotChannelNumber: "The channel number of the %s object."
+
+poeIfPol:
+  ignores:
+    - "consumption"  # This field appears only in the 4.2(1) release according to https://www.cisco.com/c/en/us/td/docs/switches/datacenter/aci/apic/sw/kb/Cisco-APIC-and-Power-Over-Ethernet_orig.html.
+  default_values:
+    prioHigh: "no"
+    poeVoiceVlan: "unknown"
+  remove_valid_values: # Removed valid values because they are incorrect in meta. The range is allowed however the valid values are used for UI input list, where that value can be changed.
+    max:
+      - "15400"
+      - "30000"
+      - "4000"
+      - "45000"
+      - "60000"
+      - "7000"
+  overwrites:
+    max: maximum_power
+    mode: host_mode
+    poe_voice_vlan: poe_vlan
+    police_act: policing_action
+    prio_high: port_priority_high
+    admin_st: admin_state
+  documentation:
+    poeVoiceVlan: "The PoE VLAN of the %s object."
+    mode: "The host mode of the %s object."
+    policeAct: "The policing action of the %s object."
+    prioHigh: "Enable high port priority for the %s object."
+    max: "The maximum power in milliwatts that is allowed for the %s object. The value must be in the range 4000 - 60000."
+  test_values:
+    all:
+      policing_action: "log"
+      port_priority_high: "yes"
+      host_mode: "never"
+      poe_vlan: "vlan-200"
+      maximum_power: "15400"
+
+poeRsPoeEpg:
+  documentation:
+    tDn: "The distinguished name (DN) of the EPG object."
+  targets:
+    - class_name: "fvTenant"
+      target_dn: "uni/tn-tenant_0"
+      relation_resource_name: "tenant"
+      properties:
+        name: "test_name"
+    - class_name: "fvAp"
+      parent_dependency: "fvTenant"
+      parent_dependency_dn_ref: aci_tenant.test_tenant_0.id
+      target_dn: "uni/tn-test_name/ap-ap_1"
+      relation_resource_name: "application_profile"
+      properties:
+        name: "test_name"
+    - class_name: "fvAEPg"
+      parent_dependency: "fvAp"
+      parent_dependency_dn_ref: aci_application_profile.test_application_profile_1.id
+      target_dn: "uni/tn-test_name/ap-test_name/epg-epg_0"
+      relation_resource_name: "application_epg"
+      properties:
+        name: "epg_0"
