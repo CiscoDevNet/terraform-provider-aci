@@ -1,0 +1,16 @@
+default_values:
+    ctrl: '@aci_gen_default_value_overwrite_to_empty_list!'
+documentation:
+    ctrl: The interface controls of the %s object.
+overwrites:
+    ctrl: interface_controls
+remove_valid_values:
+    ctrl:
+        - unspecified
+test_values:
+    all:
+        interface_controls:
+            - bpdu-filter
+            - bpdu-guard
+    default:
+        interface_controls: []
