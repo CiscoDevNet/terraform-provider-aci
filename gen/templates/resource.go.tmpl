@@ -297,10 +297,10 @@ func (r *{{.ResourceClassName}}Resource) UpgradeState(ctx context.Context) map[i
 					ParentDn: priorStateData.ParentDn,
 					{{- end}}
 					{{- range .Properties}}
-						{{- if isLegacyAttribute .Name $.LegacyAttributes}}
+						{{- if isLegacyAttribute .Name $.LegacyAttributes}}{{$LegacyAttribute := getLegacyAttribute .Name $.LegacyAttributes}}
 							{{- if .HasCustomType}}
 					{{ .Name }}: customTypes.{{.ResourceClassName}}{{.Name}}StringValue{ StringValue: priorStateData.{{ .Name }} },
-							{{- else}}
+							{{- else if ne (getMigrationType $LegacyAttribute.ValueType) "List"}}
 					{{ .Name }}: priorStateData.{{ .Name }},
 							{{- end}}
 						{{- else if ne .ValueType "bitmask"}}
@@ -601,7 +601,15 @@ func (r *{{.ResourceClassName}}Resource) UpgradeState(ctx context.Context) map[i
 				{{- end}}
 
 				{{- range .LegacyAttributes}}{{- if ne .ReplacedBy.AttributeName "" }}
-					{{- if or (eq (getMigrationType .ValueType) "Set") (eq (getMigrationType .ValueType) "List")}}
+					{{- if eq (getMigrationType .ValueType) "List"}}
+				var priorState{{ .Name }}List []string
+				priorStateData.{{ .Name }}.ElementsAs(ctx, &priorState{{ .Name }}List, false)
+				sort.Strings(priorState{{ .Name }}List)
+				{{ decapitalize .Name }}Set, _ := types.SetValueFrom(ctx, types.StringType, priorState{{ .Name }}List)
+				{{ decapitalize .Name }}List, _ := types.ListValueFrom(ctx, types.StringType, priorState{{ .Name }}List)
+				upgradedStateData.Deprecated{{ .Name }} = {{ decapitalize .Name }}List
+				upgradedStateData.{{ .Name }} = {{ decapitalize .Name }}Set
+					{{- else if eq (getMigrationType .ValueType) "Set" }}
 				var deprecated{{ .Name }}List []string
 				priorStateData.{{ .Name }}.ElementsAs(ctx, &deprecated{{ .Name }}List, false)
 				Deprecated{{ .Name }}Set, _ := types.SetValueFrom(ctx, types.StringType, deprecated{{ .Name }}List)
@@ -667,6 +675,16 @@ func set{{ .ResourceClassName }}LegacyAttributes(ctx context.Context, diags *dia
 			data.Deprecated{{.Name}} = basetypes.NewStringValue("none")
 		} else if attributeName == "{{decapitalize .Name}}" {
 			data.Deprecated{{.Name}} = basetypes.NewStringValue(attributeValue.(string))
+		}
+				{{- else if eq (getMigrationType .ValueType) "List" }}
+		if attributeName == "{{decapitalize .Name}}" {
+			{{decapitalize .Name}}List := make([]string, 0)
+			if attributeValue.(string) != "" {
+				{{decapitalize .Name}}List = strings.Split(attributeValue.(string), ",")
+			}
+			sort.Strings({{decapitalize .Name}}List)
+			deprecated{{.Name}}, _ := types.ListValueFrom(ctx, types.StringType, {{decapitalize .Name}}List)
+			data.Deprecated{{.Name}} = deprecated{{.Name}}
 		}
 				{{- else}}
 		if attributeName == "{{decapitalize .Name}}" {
@@ -979,6 +997,22 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 							{{- end }}
 						{{- end }}
 					{{- end }}
+				{{- else if and (ne .ReplacedBy.AttributeName "") (eq (getMigrationType .ValueType) "List") (isNewAttributeStringType .ReplacedBy.AttributeName)}}
+		// insert logic for list to set here
+		var config{{.Name}}List []string
+		if !configData.{{.Name}}.IsNull() {
+			configData.{{.Name}}.ElementsAs(ctx, &config{{.Name}}List, false)
+			sort.Strings(config{{.Name}}List)
+			{{decapitalize .Name}}List, _ := types.ListValueFrom(ctx, types.StringType, config{{.Name}}List)
+			planData.Deprecated{{.Name}} = {{decapitalize .Name}}List
+			configData.Deprecated{{.Name}} = {{decapitalize .Name}}List
+		} else if !configData.Deprecated{{.Name}}.IsNull() {
+			configData.{{.Name}}.ElementsAs(ctx, &config{{.Name}}List, false)
+			sort.Strings(config{{.Name}}List)
+			{{decapitalize .Name}}Set, _ := types.SetValueFrom(ctx, types.StringType, config{{.Name}}List)
+			planData.{{.Name}} = {{decapitalize .Name}}Set
+			configData.{{.Name}} = {{decapitalize .Name}}Set
+		}
 				{{- else if ne .ReplacedBy.AttributeName "" }}
 					{{- range $.Children}}
 						{{- if isLegacyChild .PkgName $.LegacyChildren}}
