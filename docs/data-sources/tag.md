@@ -63,6 +63,7 @@ data "aci_tag" "example_application_epg" {
   - [aci_dhcp_relay_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/dhcp_relay_policy) ([dhcpRelayP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/dhcpRelayP/overview))
   - [aci_dwdm_interface_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/dwdm_interface_policy) ([dwdmIfPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/dwdmIfPol/overview))
   - [aci_eigrp_address_family_context](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/eigrp_address_family_context) ([eigrpCtxAfPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/eigrpCtxAfPol/overview))
+  - [aci_link_level_interface_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/link_level_interface_policy) ([fabricHIfPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fabricHIfPol/overview))
   - [aci_first_hop_security_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/first_hop_security_policy) ([fhsBDPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fhsBDPol/overview))
   - [aci_trust_control_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/trust_control_policy) ([fhsTrustCtrlPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fhsTrustCtrlPol/overview))
   - [aci_application_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/application_epg) ([fvAEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvAEPg/overview))
@@ -73,7 +74,6 @@ data "aci_tag" "example_application_epg" {
   - [aci_epg_useg_dns_attribute](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/epg_useg_dns_attribute) ([fvDnsAttr](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvDnsAttr/overview))
   - [aci_endpoint_security_group](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/endpoint_security_group) ([fvESg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvESg/overview))
   - [aci_endpoint_tag_ip](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/endpoint_tag_ip) ([fvEpIpTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvEpIpTag/overview))
-  - [aci_endpoint_tag_mac](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/endpoint_tag_mac) ([fvEpMacTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvEpMacTag/overview))
 * `key` (key) - (string) The key used to uniquely identify this configuration object.
 
 ### Read-Only ###

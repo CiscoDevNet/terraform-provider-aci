@@ -2961,3 +2961,26 @@ poeRsPoeEpg:
       relation_resource_name: "application_epg"
       properties:
         name: "epg_0"
+
+fabricHIfPol:
+  remove_valid_values:
+    speed:
+      - "unknown"
+  overwrites:
+    auto_neg: auto_negotiation
+    dfe_delay_ms: port_delay
+    port_phy_media_type: physical_media_type
+  documentation:
+    autoNeg: "The auto-negotiation mode of the %s object. Auto-negotiation is an optional function of the IEEE 802.3u Fast Ethernet standard that enables devices to automatically exchange information over a link about speed and duplex abilities."
+    dfeDelayMs: "The port delay when coming up (milliseconds) of the %s object. The value must be in the range 0 - 10000."
+    emiRetrain: "The electromagnetic interference (EMI) retrain state the %s object."
+    fecMode: "The forwarding error correction (FEC) mode of the %s object."
+    linkDebounce: "The flink debounce interval (milliseconds) of the %s object. Enables the debounce timer for physical interface ports, diables when a time of 0 milliseconds is provided. The value must be in the range 0 - 5000."
+    portPhyMediaType: "The physical media type of the %s object."
+    speed: "The speed of the %s object. The data transfer rate for the port should match the destination to which the port is linked."
+  test_values:
+    all:
+      link_debounce: "2001"
+      port_delay: "50"
+      emi_retrain: "enable"
+      physical_media_type: "sfp-10g-tx"
