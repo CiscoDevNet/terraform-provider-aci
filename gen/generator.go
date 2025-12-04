@@ -1591,7 +1591,7 @@ func (m *Model) setClassModel(metaPath string, isChildIteration bool, definition
 		m.SetClassExclude()
 		m.SetClassAllowDelete(classDetails)
 		m.SetClassContainedByAndParent(classDetails, parents)
-		m.SetClassContains(classDetails)
+		m.SetClassContains(classDetails, definitions)
 		m.SetClassComment(classDetails)
 		m.SetClassVersions(classDetails)
 		m.SetClassProperties(classDetails)
@@ -2022,10 +2022,22 @@ func (m *Model) SetClassContainedByAndParent(classDetails interface{}, parents [
 	}
 }
 
-func (m *Model) SetClassContains(classDetails interface{}) {
+func (m *Model) SetClassContains(classDetails interface{}, definitions Definitions) {
+
+	removeFromContains := []interface{}{}
+	if classDetails, ok := definitions.Classes[m.PkgName]; ok {
+		for key, value := range classDetails.(map[string]interface{}) {
+			if key == "remove_from_contains" {
+				removeFromContains = value.([]interface{})
+			}
+		}
+	}
+
 	for className := range classDetails.(map[string]interface{})["contains"].(map[string]interface{}) {
 		containclassName := strings.ReplaceAll(className, ":", "")
-		m.Contains = append(m.Contains, containclassName)
+		if !DefinedInList(removeFromContains, containclassName) {
+			m.Contains = append(m.Contains, containclassName)
+		}
 	}
 	m.Contains = uniqueStringSlice(m.Contains)
 	sort.Strings(m.Contains)

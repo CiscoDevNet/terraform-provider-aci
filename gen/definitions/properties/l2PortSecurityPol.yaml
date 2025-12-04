@@ -1,0 +1,11 @@
+documentation:
+    maximum: The maximum endpoints for the %s object. The value must be in the range 0 - 12000.
+    timeout: The timeout of the %s object. The value must be in the range 60 - 3600.
+    violation: The violation action of the %s object.
+overwrites:
+    maximum: maximum_endpoints
+    violation: violation_action
+test_values:
+    all:
+        maximum_endpoints: "10101"
+        timeout: "3200"
