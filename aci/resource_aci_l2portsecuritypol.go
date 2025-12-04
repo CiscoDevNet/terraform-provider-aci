@@ -14,6 +14,8 @@ import (
 
 func resourceAciPortSecurityPolicy() *schema.Resource {
 	return &schema.Resource{
+		DeprecationMessage: "The resource 'aci_port_security_policy' is deprecated, please refer to 'aci_port_security_interface_policy' instead. The resource will be removed in the next major version of the provider.",
+
 		CreateContext: resourceAciPortSecurityPolicyCreate,
 		UpdateContext: resourceAciPortSecurityPolicyUpdate,
 		ReadContext:   resourceAciPortSecurityPolicyRead,
