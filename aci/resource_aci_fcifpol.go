@@ -14,6 +14,8 @@ import (
 
 func resourceAciInterfaceFCPolicy() *schema.Resource {
 	return &schema.Resource{
+		DeprecationMessage: "The resource 'aci_interface_fc_policy' is deprecated, please refer to 'aci_fibre_channel_interface_policy' instead. The resource will be removed in the next major version of the provider.",
+
 		CreateContext: resourceAciInterfaceFCPolicyCreate,
 		UpdateContext: resourceAciInterfaceFCPolicyUpdate,
 		ReadContext:   resourceAciInterfaceFCPolicyRead,
