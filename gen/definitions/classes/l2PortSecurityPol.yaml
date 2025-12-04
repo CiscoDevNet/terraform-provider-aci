@@ -1,0 +1,9 @@
+contained_by:
+    - polUni
+dn_formats:
+    - uni/infra/portsecurityP-{name}
+resource_name: port_security_interface_policy
+rn_prepend: infra
+sub_category: Access Policies
+ui_locations:
+    - Fabric -> Access Policies -> Policies -> Interface -> Port Security

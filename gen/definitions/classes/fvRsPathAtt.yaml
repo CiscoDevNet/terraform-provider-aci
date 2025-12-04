@@ -1,4 +1,6 @@
 resource_name: relation_to_static_path
+remove_from_contains:
+    - l2PortSecurityPol
 sub_category: Application Management
 ui_locations:
     - Tenants -> Application Profiles -> Application EPGs -> Static Ports
