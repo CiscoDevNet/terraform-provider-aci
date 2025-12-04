@@ -14,6 +14,8 @@ import (
 
 func resourceAciLinkLevelPolicy() *schema.Resource {
 	return &schema.Resource{
+		DeprecationMessage: "The resource 'aci_fabric_if_pol' is deprecated, please refer to 'aci_link_level_interface_policy' instead. The resource will be removed in the next major version of the provider.",
+
 		CreateContext: resourceAciLinkLevelPolicyCreate,
 		UpdateContext: resourceAciLinkLevelPolicyUpdate,
 		ReadContext:   resourceAciLinkLevelPolicyRead,

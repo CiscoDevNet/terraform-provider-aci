@@ -95,15 +95,15 @@ All examples for the Link Level Interface Policy resource can be found in the [e
   - Default: `"on"`
   - Valid Values: `"off"`, `"on"`, `"on-enforce"`.
 * `description` (descr) - (string) The description of the Link Level Interface Policy object.
-* `port_delay` (dfeDelayMs) - (string) The port delay when coming up (milliseconds) of the Link Level Interface Policy object. The value must be in the range 0 - 10000. This attribute is supported in ACI versions: 4.2(5k) and later.
+* `port_delay` (dfeDelayMs) - (string) The port delay (milliseconds) applied when the interface is coming up for the the Link Level Interface Policy object. The value must be in the range 0 - 10000. This attribute is supported in ACI versions: 4.2(5k) and later.
   - Default: `"0"`
-* `emi_retrain` (emiRetrain) - (string) The electromagnetic interference (EMI) retrain state the Link Level Interface Policy object. This attribute is supported in ACI versions: 4.2(7q) to 4.2(7w), 5.2(4d) and later.
+* `emi_retrain` (emiRetrain) - (string) The Electromagnetic Interference (EMI) retrain state the Link Level Interface Policy object. This attribute is supported in ACI versions: 4.2(7q) to 4.2(7w), 5.2(4d) and later.
   - Default: `"disable"`
   - Valid Values: `"disable"`, `"enable"`.
-* `fec_mode` (fecMode) - (string) The forwarding error correction (FEC) mode of the Link Level Interface Policy object. This attribute is supported in ACI versions: 1.3(1g) and later.
+* `fec_mode` (fecMode) - (string) The Forwarding Error Correction (FEC) mode of the Link Level Interface Policy object. This attribute is supported in ACI versions: 1.3(1g) and later.
   - Default: `"inherit"`
   - Valid Values: `"auto-fec"`, `"cl74-fc-fec"`, `"cl91-rs-fec"`, `"cons16-rs-fec"`, `"disable-fec"`, `"ieee-rs-fec"`, `"inherit"`, `"kp-fec"`.
-* `link_debounce` (linkDebounce) - (string) The flink debounce interval (milliseconds) of the Link Level Interface Policy object. Enables the debounce timer for physical interface ports, diables when a time of 0 milliseconds is provided. The value must be in the range 0 - 5000.
+* `link_debounce` (linkDebounce) - (string) The link debounce interval (milliseconds) of the Link Level Interface Policy object. Setting a value greater than 0 enables the debounce timer on physical interface ports. A value of 0 disables the debounce timer. The value must be in the range 0 - 5000.
   - Default: `"100"`
 * `name_alias` (nameAlias) - (string) The name alias of the Link Level Interface Policy object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.

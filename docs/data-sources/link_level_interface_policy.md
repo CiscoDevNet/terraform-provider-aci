@@ -48,10 +48,10 @@ data "aci_link_level_interface_policy" "example" {
 * `annotation` (annotation) - (string) The annotation of the Link Level Interface Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
 * `auto_negotiation` (autoNeg) - (string) The auto-negotiation mode of the Link Level Interface Policy object. Auto-negotiation is an optional function of the IEEE 802.3u Fast Ethernet standard that enables devices to automatically exchange information over a link about speed and duplex abilities.
 * `description` (descr) - (string) The description of the Link Level Interface Policy object.
-* `port_delay` (dfeDelayMs) - (string) The port delay when coming up (milliseconds) of the Link Level Interface Policy object. The value must be in the range 0 - 10000. This attribute is supported in ACI versions: 4.2(5k) and later.
-* `emi_retrain` (emiRetrain) - (string) The electromagnetic interference (EMI) retrain state the Link Level Interface Policy object. This attribute is supported in ACI versions: 4.2(7q) to 4.2(7w), 5.2(4d) and later.
-* `fec_mode` (fecMode) - (string) The forwarding error correction (FEC) mode of the Link Level Interface Policy object. This attribute is supported in ACI versions: 1.3(1g) and later.
-* `link_debounce` (linkDebounce) - (string) The flink debounce interval (milliseconds) of the Link Level Interface Policy object. Enables the debounce timer for physical interface ports, diables when a time of 0 milliseconds is provided. The value must be in the range 0 - 5000.
+* `port_delay` (dfeDelayMs) - (string) The port delay (milliseconds) applied when the interface is coming up for the the Link Level Interface Policy object. The value must be in the range 0 - 10000. This attribute is supported in ACI versions: 4.2(5k) and later.
+* `emi_retrain` (emiRetrain) - (string) The Electromagnetic Interference (EMI) retrain state the Link Level Interface Policy object. This attribute is supported in ACI versions: 4.2(7q) to 4.2(7w), 5.2(4d) and later.
+* `fec_mode` (fecMode) - (string) The Forwarding Error Correction (FEC) mode of the Link Level Interface Policy object. This attribute is supported in ACI versions: 1.3(1g) and later.
+* `link_debounce` (linkDebounce) - (string) The link debounce interval (milliseconds) of the Link Level Interface Policy object. Setting a value greater than 0 enables the debounce timer on physical interface ports. A value of 0 disables the debounce timer. The value must be in the range 0 - 5000.
 * `name_alias` (nameAlias) - (string) The name alias of the Link Level Interface Policy object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.

@@ -58,19 +58,19 @@ func (d *FabricHIfPolDataSource) Schema(ctx context.Context, req datasource.Sche
 			},
 			"port_delay": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The port delay when coming up (milliseconds) of the Link Level Interface Policy object. The value must be in the range 0 - 10000.`,
+				MarkdownDescription: `The port delay (milliseconds) applied when the interface is coming up for the the Link Level Interface Policy object. The value must be in the range 0 - 10000.`,
 			},
 			"emi_retrain": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The electromagnetic interference (EMI) retrain state the Link Level Interface Policy object.`,
+				MarkdownDescription: `The Electromagnetic Interference (EMI) retrain state the Link Level Interface Policy object.`,
 			},
 			"fec_mode": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The forwarding error correction (FEC) mode of the Link Level Interface Policy object.`,
+				MarkdownDescription: `The Forwarding Error Correction (FEC) mode of the Link Level Interface Policy object.`,
 			},
 			"link_debounce": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The flink debounce interval (milliseconds) of the Link Level Interface Policy object. Enables the debounce timer for physical interface ports, diables when a time of 0 milliseconds is provided. The value must be in the range 0 - 5000.`,
+				MarkdownDescription: `The link debounce interval (milliseconds) of the Link Level Interface Policy object. Setting a value greater than 0 enables the debounce timer on physical interface ports. A value of 0 disables the debounce timer. The value must be in the range 0 - 5000.`,
 			},
 			"name": schema.StringAttribute{
 				Required:            true,
