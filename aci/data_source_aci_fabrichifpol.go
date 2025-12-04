@@ -11,6 +11,7 @@ import (
 
 func dataSourceAciLinkLevelPolicy() *schema.Resource {
 	return &schema.Resource{
+		DeprecationMessage: "The datasource 'aci_fabric_if_pol' is deprecated, please refer to 'aci_link_level_interface_policy' instead. The datasource will be removed in the next major version of the provider.",
 
 		ReadContext: dataSourceAciLinkLevelPolicyRead,
 
